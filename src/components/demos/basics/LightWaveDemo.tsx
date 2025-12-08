@@ -1,20 +1,19 @@
 /**
- * Light Wave Demo - Interactive 2D visualization of electromagnetic waves
- * Shows light as a transverse wave with oscillating E and B fields
+ * Light Wave Demo - 电磁波交互演示（SVG + Framer Motion 版本）
+ * 展示光作为横波的特性，E场和B场振荡
  */
-import { useState, useRef, useEffect } from 'react'
-import { SliderControl, ControlPanel, ValueDisplay } from '../DemoControls'
+import { useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
+import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard } from '../DemoControls'
 
 export function LightWaveDemo() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>(0)
   const [wavelength, setWavelength] = useState(550) // nm
   const [amplitude, setAmplitude] = useState(50)
   const [speed, setSpeed] = useState(0.5)
   const [showBField, setShowBField] = useState(true)
-  const [phase, setPhase] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(true)
 
-  // Convert wavelength to RGB color
+  // 将波长转换为 RGB 颜色
   const wavelengthToRGB = (wl: number): string => {
     let r = 0, g = 0, b = 0
     if (wl >= 380 && wl < 440) {
@@ -38,208 +37,251 @@ export function LightWaveDemo() {
     return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`
   }
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+  // 生成波形路径
+  const generateWavePath = (
+    phaseOffset: number,
+    amplitudeScale: number,
+    isVertical: boolean = false
+  ) => {
+    const width = 600
+    const centerY = 150
+    const points: string[] = []
+    const pixelsPerWavelength = 80 + (wavelength - 400) / 4
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const width = canvas.width
-    const height = canvas.height
-    const centerY = height / 2
-
-    const animate = () => {
-      ctx.fillStyle = '#0a0a0f'
-      ctx.fillRect(0, 0, width, height)
-
-      // Draw axes
-      ctx.strokeStyle = '#374151'
-      ctx.lineWidth = 1
-
-      // Horizontal axis (propagation direction)
-      ctx.beginPath()
-      ctx.moveTo(50, centerY)
-      ctx.lineTo(width - 30, centerY)
-      ctx.stroke()
-
-      // Arrow head
-      ctx.beginPath()
-      ctx.moveTo(width - 30, centerY)
-      ctx.lineTo(width - 40, centerY - 5)
-      ctx.lineTo(width - 40, centerY + 5)
-      ctx.closePath()
-      ctx.fillStyle = '#374151'
-      ctx.fill()
-
-      // Vertical axis (E field)
-      ctx.beginPath()
-      ctx.moveTo(50, centerY - amplitude - 30)
-      ctx.lineTo(50, centerY + amplitude + 30)
-      ctx.stroke()
-
-      // Labels
-      ctx.fillStyle = '#9ca3af'
-      ctx.font = '12px sans-serif'
-      ctx.fillText('x', width - 25, centerY + 15)
-      ctx.fillText('E', 55, centerY - amplitude - 15)
-      if (showBField) {
-        ctx.fillStyle = '#60a5fa'
-        ctx.fillText('B', 55, centerY + amplitude + 25)
-      }
-
-      // Calculate wavelength scale (pixels per wavelength)
-      const pixelsPerWavelength = 100 + (wavelength - 400) / 3
-
-      // Draw E field wave
-      const color = wavelengthToRGB(wavelength)
-      ctx.strokeStyle = color
-      ctx.lineWidth = 2
-      ctx.beginPath()
-
-      for (let x = 50; x < width - 30; x++) {
-        const waveX = (x - 50 + phase) / pixelsPerWavelength * 2 * Math.PI
-        const y = centerY - amplitude * Math.sin(waveX)
-        if (x === 50) {
-          ctx.moveTo(x, y)
-        } else {
-          ctx.lineTo(x, y)
-        }
-      }
-      ctx.stroke()
-
-      // Draw B field wave (perpendicular, shown as dotted)
-      if (showBField) {
-        ctx.strokeStyle = '#60a5fa'
-        ctx.lineWidth = 2
-        ctx.setLineDash([5, 5])
-        ctx.beginPath()
-
-        for (let x = 50; x < width - 30; x++) {
-          const waveX = (x - 50 + phase) / pixelsPerWavelength * 2 * Math.PI
-          const y = centerY + amplitude * Math.cos(waveX) * 0.3 // Smaller amplitude for B field
-          if (x === 50) {
-            ctx.moveTo(x, y)
-          } else {
-            ctx.lineTo(x, y)
-          }
-        }
-        ctx.stroke()
-        ctx.setLineDash([])
-      }
-
-      // Draw wavelength marker
-      const markerStart = 150
-      const markerEnd = markerStart + pixelsPerWavelength
-
-      ctx.strokeStyle = '#6b7280'
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.moveTo(markerStart, centerY + amplitude + 40)
-      ctx.lineTo(markerStart, centerY + amplitude + 55)
-      ctx.moveTo(markerEnd, centerY + amplitude + 40)
-      ctx.lineTo(markerEnd, centerY + amplitude + 55)
-      ctx.moveTo(markerStart, centerY + amplitude + 47)
-      ctx.lineTo(markerEnd, centerY + amplitude + 47)
-      ctx.stroke()
-
-      ctx.fillStyle = '#9ca3af'
-      ctx.font = '11px sans-serif'
-      ctx.fillText(`λ = ${wavelength} nm`, (markerStart + markerEnd) / 2 - 30, centerY + amplitude + 68)
-
-      // Speed display
-      ctx.fillStyle = '#6b7280'
-      ctx.font = '10px sans-serif'
-      ctx.fillText(`c = 3×10⁸ m/s`, width - 100, 30)
-
-      setPhase(prev => prev + speed * 2)
-      animationRef.current = requestAnimationFrame(animate)
+    for (let x = 0; x <= width; x += 2) {
+      const waveX = (x + phaseOffset) / pixelsPerWavelength * 2 * Math.PI
+      const y = isVertical
+        ? centerY + amplitude * amplitudeScale * Math.cos(waveX)
+        : centerY - amplitude * amplitudeScale * Math.sin(waveX)
+      points.push(`${x + 50},${y}`)
     }
 
-    animate()
+    return `M ${points.join(' L ')}`
+  }
 
-    return () => {
-      cancelAnimationFrame(animationRef.current)
+  const waveColor = wavelengthToRGB(wavelength)
+
+  // 动画持续时间基于速度
+  const animationDuration = speed > 0 ? 4 / speed : 1000
+
+  // 波形数据（用于SVG路径）
+  const wavePaths = useMemo(() => {
+    const paths = []
+    for (let phase = 0; phase <= 200; phase += 10) {
+      paths.push({
+        phase,
+        ePath: generateWavePath(phase, 1, false),
+        bPath: generateWavePath(phase, 0.3, true),
+      })
     }
-  }, [wavelength, amplitude, speed, showBField, phase])
+    return paths
+  }, [wavelength, amplitude])
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-6">
-        {/* Canvas */}
+      <div className="flex gap-6 flex-col lg:flex-row">
+        {/* 可视化区域 */}
         <div className="flex-1">
-          <canvas
-            ref={canvasRef}
-            width={700}
-            height={350}
-            className="w-full rounded-lg border border-gray-700/50"
-          />
+          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+            <svg
+              viewBox="0 0 700 300"
+              className="w-full h-auto"
+              style={{ minHeight: '280px' }}
+            >
+              {/* 背景网格 */}
+              <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,150,255,0.08)" strokeWidth="1"/>
+                </pattern>
+                {/* 发光效果 */}
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              <rect width="700" height="300" fill="url(#grid)" />
+
+              {/* 坐标轴 */}
+              <line x1="50" y1="150" x2="670" y2="150" stroke="#4b5563" strokeWidth="1.5" />
+              <line x1="50" y1="50" x2="50" y2="250" stroke="#4b5563" strokeWidth="1.5" />
+
+              {/* 箭头 */}
+              <polygon points="670,150 660,145 660,155" fill="#4b5563" />
+              <polygon points="50,50 45,60 55,60" fill="#4b5563" />
+
+              {/* 轴标签 */}
+              <text x="680" y="155" fill="#9ca3af" fontSize="14">x</text>
+              <text x="55" y="45" fill="#9ca3af" fontSize="14">E</text>
+              {showBField && (
+                <text x="55" y="265" fill="#60a5fa" fontSize="12">B</text>
+              )}
+
+              {/* E场波形 - 动画 */}
+              <motion.path
+                d={generateWavePath(0, 1, false)}
+                fill="none"
+                stroke={waveColor}
+                strokeWidth="3"
+                filter="url(#glow)"
+                animate={isPlaying ? {
+                  d: wavePaths.map(p => p.ePath),
+                } : {}}
+                transition={{
+                  duration: animationDuration,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              />
+
+              {/* B场波形 - 虚线动画 */}
+              {showBField && (
+                <motion.path
+                  d={generateWavePath(0, 0.3, true)}
+                  fill="none"
+                  stroke="#60a5fa"
+                  strokeWidth="2"
+                  strokeDasharray="8 4"
+                  opacity="0.8"
+                  animate={isPlaying ? {
+                    d: wavePaths.map(p => p.bPath),
+                  } : {}}
+                  transition={{
+                    duration: animationDuration,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+              )}
+
+              {/* 波长标记 */}
+              <g transform="translate(150, 220)">
+                <line x1="0" y1="0" x2="0" y2="15" stroke="#6b7280" strokeWidth="1" />
+                <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke="#6b7280" strokeWidth="1" />
+                <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke="#6b7280" strokeWidth="1" />
+                <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill="#9ca3af" fontSize="11" textAnchor="middle">
+                  λ = {wavelength} nm
+                </text>
+              </g>
+
+              {/* 光速标注 */}
+              <text x="600" y="30" fill="#6b7280" fontSize="11">c = 3×10⁸ m/s</text>
+
+              {/* 颜色指示 */}
+              <rect x="600" y="40" width="60" height="20" rx="4" fill={waveColor} opacity="0.8" />
+            </svg>
+          </div>
+
+          {/* 可见光谱 */}
+          <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
+            <h4 className="text-sm font-semibold text-gray-300 mb-2">可见光谱 Visible Light Spectrum</h4>
+            <div
+              className="h-8 rounded cursor-pointer relative"
+              style={{
+                background: 'linear-gradient(to right, violet, blue, cyan, green, yellow, orange, red)',
+              }}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                const x = e.clientX - rect.left
+                const percent = x / rect.width
+                const newWavelength = Math.round(380 + percent * 320)
+                setWavelength(Math.max(380, Math.min(700, newWavelength)))
+              }}
+            >
+              {/* 当前波长指示器 */}
+              <motion.div
+                className="absolute top-0 w-1 h-full bg-white/80 rounded"
+                style={{ left: `${((wavelength - 380) / 320) * 100}%` }}
+                layoutId="wavelength-indicator"
+              />
+            </div>
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>380 nm (紫)</span>
+              <span>550 nm (绿)</span>
+              <span>700 nm (红)</span>
+            </div>
+          </div>
         </div>
 
-        {/* Controls */}
-        <ControlPanel title="Wave Parameters">
+        {/* 控制面板 */}
+        <ControlPanel title="波参数 Wave Parameters" className="w-full lg:w-72">
           <SliderControl
-            label="Wavelength (λ)"
+            label="波长 Wavelength (λ)"
             value={wavelength}
             min={380}
             max={700}
-            step={10}
-            unit="nm"
+            step={5}
+            unit=" nm"
             onChange={setWavelength}
+            color="cyan"
           />
           <SliderControl
-            label="Amplitude"
+            label="振幅 Amplitude"
             value={amplitude}
             min={20}
             max={80}
             step={5}
             onChange={setAmplitude}
+            color="green"
           />
           <SliderControl
-            label="Animation Speed"
+            label="动画速度 Speed"
             value={speed}
             min={0}
-            max={3}
-            step={0.5}
+            max={2}
+            step={0.1}
             onChange={setSpeed}
+            color="orange"
           />
-          <div className="flex items-center gap-2 mt-4">
-            <input
-              type="checkbox"
-              id="showBField"
+
+          <div className="flex items-center gap-4 pt-2">
+            <Toggle
+              label="显示磁场 B"
               checked={showBField}
-              onChange={(e) => setShowBField(e.target.checked)}
-              className="rounded"
+              onChange={setShowBField}
             />
-            <label htmlFor="showBField" className="text-sm text-gray-300">
-              Show B field (magnetic)
-            </label>
           </div>
 
-          <div className="mt-4 space-y-2">
-            <ValueDisplay label="Color" value={wavelengthToRGB(wavelength)} />
-            <div
-              className="w-full h-6 rounded"
-              style={{ backgroundColor: wavelengthToRGB(wavelength) }}
-            />
+          <motion.button
+            className={`w-full py-2.5 rounded-lg font-medium transition-all ${
+              isPlaying
+                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+            }`}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setIsPlaying(!isPlaying)}
+          >
+            {isPlaying ? '暂停 Pause' : '播放 Play'}
+          </motion.button>
+
+          <div className="pt-2 border-t border-slate-700">
+            <ValueDisplay label="颜色 Color" value={waveColor} />
+            <ValueDisplay label="频率 Frequency" value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
           </div>
         </ControlPanel>
       </div>
 
-      {/* Wavelength spectrum */}
-      <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-        <h4 className="text-sm font-semibold text-gray-300 mb-2">Visible Light Spectrum</h4>
-        <div
-          className="h-8 rounded"
-          style={{
-            background: 'linear-gradient(to right, violet, blue, cyan, green, yellow, orange, red)',
-          }}
-        />
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
-          <span>380 nm (Violet)</span>
-          <span>550 nm (Green)</span>
-          <span>700 nm (Red)</span>
-        </div>
+      {/* 知识卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InfoCard title="电磁波特性" color="cyan">
+          <ul className="text-xs text-gray-300 space-y-1.5">
+            <li>• 光是电磁波，由振荡的电场 (E) 和磁场 (B) 组成</li>
+            <li>• E 和 B 相互垂直，且都垂直于传播方向</li>
+            <li>• 在真空中以光速 c = 3×10⁸ m/s 传播</li>
+            <li>• 波长 λ 和频率 f 的关系：c = λ × f</li>
+          </ul>
+        </InfoCard>
+        <InfoCard title="横波特性" color="purple">
+          <ul className="text-xs text-gray-300 space-y-1.5">
+            <li>• 横波：振动方向垂直于传播方向</li>
+            <li>• 电场矢量 E 的振动方向定义了偏振方向</li>
+            <li>• 自然光的 E 矢量在各方向随机振动</li>
+            <li>• 偏振光的 E 矢量在特定平面内振动</li>
+          </ul>
+        </InfoCard>
       </div>
     </div>
   )
