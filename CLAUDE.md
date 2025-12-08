@@ -5,22 +5,36 @@
 PolarCraft is an educational voxel puzzle game based on polarized light physics. It combines real optical principles (Malus's Law, birefringence, interference) with Minecraft-style voxel gameplay. Players manipulate polarized light beams to solve puzzles using various optical components.
 
 **Tech Stack:**
-- TypeScript (strict mode enabled)
-- Three.js (3D rendering)
-- Vite (build tool)
+- **Frontend**: React 19 + TypeScript (strict mode)
+- **3D Rendering**: React Three Fiber + Three.js + drei
+- **State Management**: Zustand with subscribeWithSelector middleware
+- **Routing**: React Router v7
+- **Styling**: Tailwind CSS v4
+- **Internationalization**: i18next with language detection
+- **Build Tool**: Vite
+- **Backend** (planned): NestJS + Colyseus for real-time multiplayer
 
-**Project Structure:**
-- Interactive 3D puzzle game
-- Educational course platform with 5 units covering polarization physics
-- Interactive demos for each physics concept
+**Key Features:**
+- Interactive 3D puzzle game with 5 tutorial levels
+- Educational course platform with interactive physics demos (6 units)
+- Multi-language support (English/Chinese)
+- Dark/Light theme switching
+- Three camera modes (first-person, isometric, top-down)
 
 ## Quick Commands
 
 ```bash
-npm install      # Install dependencies
-npm run dev      # Start development server (hot reload)
-npm run build    # Production build (tsc && vite build)
-npm run preview  # Preview production build
+# Frontend
+npm install          # Install dependencies
+npm run dev          # Start development server (hot reload)
+npm run build        # Production build (tsc && vite build)
+npm run preview      # Preview production build
+
+# Backend (in /server directory)
+cd server
+npm install
+npm run start:dev    # Start NestJS server in watch mode
+npm run build        # Build for production
 ```
 
 ## Architecture
@@ -29,42 +43,114 @@ npm run preview  # Preview production build
 
 ```
 polarisation/
-├── src/                    # TypeScript source code
-│   ├── main.ts             # Game entry point, game loop, UI initialization
-│   ├── types.ts            # Type definitions, constants, and interfaces
-│   ├── World.ts            # Voxel world management, light propagation
-│   ├── LightPhysics.ts     # Polarized light physics engine (four axioms)
-│   ├── Renderer.ts         # Three.js rendering, cameras, light visualization
-│   └── PlayerControls.ts   # Input handling, block placement, player movement
-├── index.html              # Landing page (navigation hub)
-├── game.html               # Game UI and HUD
-├── demos.html              # Interactive demos and course content
-├── package.json            # Dependencies and scripts
-├── tsconfig.json           # TypeScript configuration
-├── vite.config.ts          # Vite build configuration (multi-entry)
-├── CLAUDE.md               # This file
-├── COURSE.md               # Course curriculum (5 units)
-└── README.md               # Chinese documentation
+├── src/                          # React application source
+│   ├── App.tsx                   # Root component with React Router
+│   ├── main.tsx                  # React entry point
+│   ├── index.css                 # Global styles (Tailwind)
+│   │
+│   ├── core/                     # Core game logic (framework-agnostic)
+│   │   ├── types.ts              # TypeScript types, constants, interfaces
+│   │   ├── World.ts              # Voxel world, light propagation, levels
+│   │   └── LightPhysics.ts       # Polarized light physics (four axioms)
+│   │
+│   ├── stores/                   # Zustand stores
+│   │   └── gameStore.ts          # Game state, actions, tutorial hints
+│   │
+│   ├── pages/                    # Page components
+│   │   ├── HomePage.tsx          # Landing page with navigation
+│   │   ├── GamePage.tsx          # Full game with HUD
+│   │   ├── DemosPage.tsx         # Interactive physics demos
+│   │   └── index.ts              # Barrel export
+│   │
+│   ├── components/
+│   │   ├── game/                 # 3D game components (R3F)
+│   │   │   ├── GameCanvas.tsx    # R3F Canvas wrapper
+│   │   │   ├── Scene.tsx         # Main scene, controls, lighting
+│   │   │   ├── Blocks.tsx        # Block mesh rendering
+│   │   │   ├── LightBeams.tsx    # Light beam visualization
+│   │   │   └── SelectionBox.tsx  # Block selection indicator
+│   │   │
+│   │   ├── hud/                  # Game HUD components
+│   │   │   ├── BlockSelector.tsx # Block type selection
+│   │   │   ├── InfoBar.tsx       # Level info display
+│   │   │   ├── LevelSelector.tsx # Level navigation
+│   │   │   ├── LevelGoal.tsx     # Sensor activation progress
+│   │   │   ├── TutorialHint.tsx  # Hint display
+│   │   │   ├── HelpPanel.tsx     # Controls guide (Dialog)
+│   │   │   ├── Crosshair.tsx     # FPS crosshair
+│   │   │   └── *ModeIndicator.tsx # Vision/Camera mode display
+│   │   │
+│   │   ├── demos/                # Interactive physics demos
+│   │   │   ├── basics/           # Unit 0: Optical basics
+│   │   │   ├── unit1/            # Unit 1: Polarization fundamentals
+│   │   │   ├── unit2/            # Unit 2: Interface reflection
+│   │   │   ├── unit3/            # Unit 3: Transparent media
+│   │   │   ├── unit4/            # Unit 4: Scattering
+│   │   │   ├── unit5/            # Unit 5: Full polarimetry
+│   │   │   ├── DemoCanvas.tsx    # 3D demo wrapper
+│   │   │   ├── Demo2DCanvas.tsx  # 2D demo wrapper
+│   │   │   └── DemoControls.tsx  # Shared demo UI controls
+│   │   │
+│   │   └── ui/                   # Reusable UI primitives
+│   │       ├── button.tsx        # Button component
+│   │       ├── dialog.tsx        # Dialog component
+│   │       ├── tooltip.tsx       # Tooltip component
+│   │       └── LanguageThemeSwitcher.tsx
+│   │
+│   ├── contexts/                 # React contexts
+│   │   └── ThemeContext.tsx      # Dark/light theme provider
+│   │
+│   ├── i18n/                     # Internationalization
+│   │   ├── index.ts              # i18next configuration
+│   │   └── locales/
+│   │       ├── en.json           # English translations
+│   │       └── zh.json           # Chinese translations
+│   │
+│   └── lib/
+│       └── utils.ts              # Utility functions (cn for classnames)
+│
+├── server/                       # Backend (NestJS + Colyseus)
+│   ├── src/
+│   │   ├── main.ts               # Server entry point
+│   │   ├── app.module.ts         # Root module
+│   │   └── game/                 # Game module
+│   │       ├── game.module.ts
+│   │       ├── game.gateway.ts   # WebSocket gateway
+│   │       ├── game.service.ts
+│   │       ├── rooms/            # Colyseus rooms
+│   │       └── schemas/          # State schemas
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── index.html                    # SPA entry point
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+├── postcss.config.js
+├── components.json               # shadcn/ui config
+├── CLAUDE.md                     # This file
+├── COURSE.md                     # Course curriculum
+└── README.md                     # Chinese documentation
 ```
 
-### Multi-Page Application
+### Application Routes
 
-| Page | Purpose | Entry |
-|------|---------|-------|
-| `index.html` | Landing page with navigation to game and course | Main entry |
-| `game.html` | Full game with HUD, controls, level selector | `/src/main.ts` |
-| `demos.html` | Interactive physics demos and 5-unit course | Standalone HTML |
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/` | `HomePage` | Landing page with game/course navigation |
+| `/game` | `GamePage` | Full 3D puzzle game with HUD |
+| `/demos` | `DemosPage` | Interactive physics demos and course content |
 
 ### Core Components
 
-| File | Lines | Responsibility |
-|------|-------|----------------|
-| `main.ts` | ~441 | Game class, game loop, tutorial hints, level progression, UI binding |
-| `types.ts` | ~123 | All TypeScript types, direction vectors, polarization colors, configs |
-| `World.ts` | ~516 | Block storage (Map), light propagation cellular automaton, levels |
-| `LightPhysics.ts` | ~329 | Static physics methods implementing four optical axioms |
-| `Renderer.ts` | ~913 | Three.js scene, multi-camera system, materials, light beams |
-| `PlayerControls.ts` | ~561 | Keyboard/mouse input, raycasting, block placement, physics |
+| Component | Responsibility |
+|-----------|----------------|
+| `src/core/types.ts` | Type definitions, direction vectors, polarization colors |
+| `src/core/World.ts` | Block storage, light propagation cellular automaton, levels |
+| `src/core/LightPhysics.ts` | Static physics methods (four optical axioms) |
+| `src/stores/gameStore.ts` | Global game state, actions, subscriptions |
+| `src/components/game/Scene.tsx` | R3F scene composition, controls, lighting |
+| `src/pages/DemosPage.tsx` | Demo navigation, info cards, SVG diagrams |
 
 ## Key Concepts
 
@@ -75,14 +161,26 @@ polarisation/
 3. **Birefringence** - Calcite splits light into o-ray (0°) and e-ray (90°)
 4. **Interference** - Same-phase light adds intensity, opposite-phase cancels
 
-### Light Properties
+### Core Types (src/core/types.ts)
 
 ```typescript
+// Light packet - fundamental light unit
 interface LightPacket {
   direction: Direction;           // 'north'|'south'|'east'|'west'|'up'|'down'
   intensity: number;              // 0-15
   polarization: PolarizationAngle; // 0|45|90|135
   phase: Phase;                   // 1|-1
+}
+
+// Block state
+interface BlockState {
+  type: BlockType;               // 'air'|'solid'|'emitter'|'polarizer'|'rotator'|'splitter'|'sensor'|'mirror'
+  rotation: number;              // 0, 90, 180, 270
+  polarizationAngle: PolarizationAngle;
+  rotationAmount: number;        // For rotator: 45 or 90
+  activated: boolean;            // For sensor
+  requiredIntensity: number;     // For sensor
+  facing: Direction;
 }
 ```
 
@@ -98,23 +196,60 @@ interface LightPacket {
 | `mirror` | Reflects light | `facing` |
 | `solid` | Blocks light | - |
 
-### Block State Structure
+## State Management (Zustand)
+
+### Game Store Structure
 
 ```typescript
-interface BlockState {
-  type: BlockType;
-  rotation: number;              // 0, 90, 180, 270
-  polarizationAngle: PolarizationAngle;
-  rotationAmount: number;        // For rotator: 45 or 90
-  activated: boolean;            // For sensor
-  requiredIntensity: number;     // For sensor
-  facing: Direction;
+// src/stores/gameStore.ts
+interface GameState {
+  // World instance
+  world: World | null
+
+  // Level state
+  currentLevelIndex: number
+  currentLevel: LevelData | null
+  isLevelComplete: boolean
+
+  // Player state
+  selectedBlockType: BlockType
+  selectedBlockRotation: number
+  selectedPolarizationAngle: PolarizationAngle
+
+  // View state
+  visionMode: 'normal' | 'polarized'
+  cameraMode: 'first-person' | 'isometric' | 'top-down'
+  showGrid: boolean
+  showHelp: boolean
+
+  // Tutorial
+  tutorialHints: string[]
+  currentHintIndex: number
+  showHint: boolean
+
+  // Actions
+  initWorld: (size?: number) => void
+  loadLevel: (index: number) => void
+  placeBlock: (position: BlockPosition) => void
+  removeBlock: (position: BlockPosition) => void
+  rotateBlockAt: (position: BlockPosition) => void
+  // ... more actions
+}
+```
+
+### Using the Store
+
+```tsx
+import { useGameStore } from '@/stores/gameStore'
+
+function MyComponent() {
+  const { world, visionMode, toggleVisionMode } = useGameStore()
+  // or select specific values for performance:
+  const visionMode = useGameStore(state => state.visionMode)
 }
 ```
 
 ## Game Controls
-
-### Input Mappings
 
 | Input | First-Person | Isometric/Top-Down |
 |-------|--------------|-------------------|
@@ -123,65 +258,14 @@ interface BlockState {
 | Mouse | Look around | Camera control |
 | Left Click | Place block | Place block |
 | Right Click | Delete block | Delete block |
-| R | Rotate selected block | Rotate selected block |
-| V | Toggle polarized vision | Toggle polarized vision |
-| C | Cycle camera mode | Cycle camera mode |
-| G | Toggle grid | Toggle grid |
-| H | Show/hide help | Show/hide help |
-| Q/E | - | Rotate view (isometric) |
-| 1-7 | Select block type | Select block type |
-| Scroll | - | Zoom |
+| R | Rotate hovered/selected block | Same |
+| V | Toggle polarized vision | Same |
+| C | Cycle camera mode | Same |
+| G | Toggle grid | Same |
+| H | Show/hide help | Same |
+| 1-7 | Select block type | Same |
 
-### Camera Modes
-
-- **First-person**: Traditional FPS controls with pointer lock
-- **Isometric**: Fixed-angle 3D view with orbit rotation and zoom
-- **Top-down**: Orthographic overhead view for puzzle planning
-
-## Code Patterns
-
-### Position Key Convention
-
-Blocks are stored in a Map using string keys:
-```typescript
-function posKey(x: number, y: number, z: number): string {
-  return `${x},${y},${z}`;
-}
-```
-
-### Event System
-
-World uses a simple listener pattern:
-```typescript
-world.addListener((type: string, data: unknown) => {
-  // type: 'blockChanged' | 'lightUpdated' | 'sensorChanged' | 'worldCleared'
-});
-```
-
-### Light Propagation
-
-Light propagation is a recursive cellular automaton in `World.ts`:
-1. Clear all light states
-2. Collect all emitters
-3. For each emitter, propagate light recursively
-4. At each block, process according to block type
-5. Calculate interference when multiple light packets overlap
-6. Update sensor activation states
-7. Max recursion depth: 100 (prevents infinite loops)
-
-### Rendering Flow
-
-```
-Game.gameLoop() → Game.update(dt) → Game.render()
-                      ↓
-          PlayerControls.update(dt)
-                      ↓
-              Renderer.render()
-```
-
-## Tutorial System
-
-### Tutorial Levels (5 levels in `World.ts`)
+## Tutorial Levels
 
 | Level | Name | Concept |
 |-------|------|---------|
@@ -191,154 +275,149 @@ Game.gameLoop() → Game.update(dt) → Game.render()
 | 3 | Rotator | Wave plate rotates polarization losslessly |
 | 4 | Birefringence | Calcite splitter creates two beams |
 
-### Tutorial Hints System
+## Course Structure (Interactive Demos)
 
-Hints are defined in `main.ts` with timed display:
-```typescript
-const TUTORIAL_HINTS: Record<number, TutorialHint[]> = {
-  0: [
-    { text: 'Message...', keys: ['R'], duration: 5000 },
-    // ...
-  ],
-  // per-level hints
-};
-```
-
-### Adding a New Tutorial Level
-
-Add to `TUTORIAL_LEVELS` array in `World.ts`:
-```typescript
-{
-  name: "Level Name",
-  description: "Instructions for the player",
-  blocks: [
-    { x: 0, y: 1, z: 0, type: 'emitter', state: { facing: 'south', polarizationAngle: 0 } },
-    // ... more blocks
-  ],
-  goal: { sensorPositions: [{ x: 0, y: 1, z: 3 }] }
-}
-```
-
-Then add corresponding hints in `TUTORIAL_HINTS` in `main.ts`.
+| Unit | Topic | Demos |
+|------|-------|-------|
+| 0 (Basics) | Optical Fundamentals | Light Wave, Polarization Intro, Polarization Types |
+| 1 | Light Polarization | Polarization State, Malus's Law, Birefringence, Waveplate |
+| 2 | Interface Reflection | Fresnel Equations, Brewster's Angle |
+| 3 | Transparent Media | Chromatic Polarization, Optical Rotation |
+| 4 | Turbid Media | Mie Scattering, Rayleigh Scattering |
+| 5 | Full Polarimetry | Stokes Vectors, Mueller Matrices |
 
 ## Development Guidelines
-
-### Adding a New Block Type
-
-1. Add type to `BlockType` union in `types.ts`
-2. Add default handling in `createDefaultBlockState()`
-3. Add physics processing in `LightPhysics.ts` (if affects light)
-4. Add case in `World.propagateLight()` switch statement
-5. Add material in `Renderer.initMaterials()`
-6. Add mesh creation in `Renderer.addBlockMesh()`
-7. Update UI in `game.html` block selector
 
 ### TypeScript Configuration
 
 - Target: ES2020
 - Strict mode enabled
+- JSX: react-jsx
+- Path alias: `@/*` → `./src/*`
 - No unused locals/parameters
 - No fallthrough in switch cases
-- Module: ESNext with bundler resolution
-- Includes: src/ directory only
 
 ### Code Style
 
-- Use Chinese comments for game logic documentation
-- Use English for technical/code documentation
-- Prefer static methods in `LightPhysics` class
-- Use `THREE.Vector3` for 3D operations, custom `Vec3` for block positions
+- Use Chinese comments for physics/game logic
+- Use English for technical documentation
+- Prefer functional components with hooks
+- Use Zustand for global state, local state only for UI-specific concerns
+- Use `cn()` utility for conditional classnames (Tailwind)
 - All angles in degrees (converted to radians when needed)
 
-## File-Specific Notes
+### Adding a New Demo
 
-### types.ts
-- Contains all shared types and constants
-- `DIRECTION_VECTORS` maps Direction to Vec3
-- `POLARIZATION_COLORS` maps angles to hex colors (0°=red, 45°=orange, 90°=green, 135°=blue)
-- `DEFAULT_CONFIG`: worldSize=32, chunkSize=16, maxIntensity=15, lightDecay=0
+1. Create component in appropriate `src/components/demos/unit*/` folder
+2. Add demo info to `getDemoInfo()` in `DemosPage.tsx`
+3. Add demo entry to `DEMOS` array in `DemosPage.tsx`
+4. Add translations to `src/i18n/locales/*.json`
 
-### World.ts
-- `updateLightPropagation()` is the main physics tick
-- Recursion depth limited to 100 to prevent infinite loops
-- Ground auto-initialized at y=0 for world bounds
-- `TUTORIAL_LEVELS` array contains all level definitions
+### Adding a New Block Type
 
-### LightPhysics.ts
-- All methods are static (stateless physics calculations)
-- `normalizeAngle()` snaps to nearest valid PolarizationAngle
-- Mirror reflection is simplified (no 45° mirrors yet)
-- Key methods: `applyMalusLaw()`, `splitLight()`, `calculateInterference()`
+1. Add type to `BlockType` union in `src/core/types.ts`
+2. Add default handling in `createDefaultBlockState()`
+3. Add physics processing in `LightPhysics.ts` (if affects light)
+4. Add case in `World.propagateLight()` switch statement
+5. Add mesh rendering in `Blocks.tsx`
+6. Update `BlockSelector.tsx` UI
 
-### Renderer.ts
-- Largest file (~913 lines)
-- Reuses single `BoxGeometry` for all blocks
-- `polarizedVision` mode shows polarization colors instead of yellow
-- Block meshes stored with `userData` for raycasting
-- Multi-camera system with perspective (FPS) and orthographic (iso/top-down)
-- Grid system toggled with G key
+### Adding Translations
 
-### PlayerControls.ts
-- Requires pointer lock for first-person mouse look
-- Raycasting for block targeting and placement
-- Simple physics: gravity (20 m/s²), jump velocity, collision detection
-- Callbacks: onBlockTypeChange, onVisionModeChange, onCameraModeChange
+```json
+// src/i18n/locales/en.json
+{
+  "namespace": {
+    "key": "English text"
+  }
+}
 
-### main.ts
-- Game class orchestrates all components
-- Tutorial hint system with timed display
-- Level selector UI creation
-- Goal tracking and completion detection
-- `game` object exposed on `window` for debugging
+// src/i18n/locales/zh.json
+{
+  "namespace": {
+    "key": "中文文本"
+  }
+}
+```
+
+Usage:
+```tsx
+const { t } = useTranslation()
+return <span>{t('namespace.key')}</span>
+```
+
+### Theme Support
+
+```tsx
+import { useTheme } from '@/contexts/ThemeContext'
+
+function MyComponent() {
+  const { theme, toggleTheme } = useTheme()
+
+  return (
+    <div className={theme === 'dark' ? 'bg-slate-900' : 'bg-white'}>
+      {/* Use CSS variables or conditional classes */}
+    </div>
+  )
+}
+```
 
 ## Build Configuration
 
-### Vite Config (vite.config.ts)
+### Vite Config
 
 ```typescript
+// vite.config.ts
 {
+  plugins: [react(), tailwindcss()],
   base: './',
+  resolve: {
+    alias: { '@': resolve(__dirname, './src') }
+  },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      input: {
-        main: 'index.html',
-        game: 'game.html',
-        demos: 'demos.html'
-      }
-    }
+    sourcemap: true
   }
 }
 ```
 
 ### Dependencies
 
-**Production:**
-- `three@^0.160.1` - 3D graphics engine
+**Frontend Production:**
+- `react`, `react-dom` - UI framework
+- `react-router-dom` - Client-side routing
+- `three`, `@react-three/fiber`, `@react-three/drei` - 3D rendering
+- `zustand` - State management
+- `i18next`, `react-i18next` - Internationalization
 
-**Development:**
-- `typescript@^5.3.3` - Type-safe JavaScript
-- `vite@^5.0.10` - Build tool and dev server
-- `@types/three@^0.160.0` - TypeScript definitions
+**Frontend Development:**
+- `typescript` - Type safety
+- `vite`, `@vitejs/plugin-react` - Build tool
+- `tailwindcss`, `@tailwindcss/vite` - Styling
+- `lucide-react` - Icons
+
+**Backend:**
+- `@nestjs/*` - Server framework
+- `@colyseus/*` - Real-time multiplayer
 
 ## Debugging
 
-### Debug Light Propagation
+### Access World State
 
-The `game` object is exposed on `window`:
 ```javascript
-window.game.world.getAllLightStates()
-window.game.world.getAllBlocks()
+// In browser console
+const store = window.__ZUSTAND_DEVTOOLS_GLOBAL_STORE__
+// Or import directly in a component for debugging
 ```
 
-### Test Malus's Law
+### Light Propagation
 
-Create an emitter → polarizer → sensor chain and verify intensity decreases according to `cos²(θ)`.
-
-### Test Birefringence
-
-Use 45° polarized light into a splitter - should produce two beams with equal intensity (0° and 90°).
+The World class exposes methods for debugging:
+```typescript
+world.getAllBlocks()      // Get all placed blocks
+world.getAllLightStates() // Get all light positions and packets
+world.getLightState(x, y, z) // Get light at specific position
+```
 
 ### Visual Debugging
 
@@ -346,54 +425,48 @@ Use 45° polarized light into a splitter - should produce two beams with equal i
 - Press `G` to toggle grid overlay
 - Use isometric/top-down views for better puzzle overview
 
-## Course Structure (COURSE.md)
+## Backend Server (Future Multiplayer)
 
-The project includes a 5-unit educational course on polarized light:
+The server is set up but multiplayer features are not yet implemented:
 
-| Unit | Topic | Key Concepts |
-|------|-------|--------------|
-| 1 | Light Polarization | Birefringence, Malus's Law, calcite experiments |
-| 2 | Interface Reflection | Fresnel equations, Brewster's angle |
-| 3 | Transparent Media | Chromatic polarization, optical rotation |
-| 4 | Turbid Media | Mie/Rayleigh scattering, polarization features |
-| 5 | Full Polarimetry | Stokes vectors, Mueller matrices, applications |
+```bash
+cd server
+npm run start:dev  # Starts on port 3001
+```
+
+- API prefix: `/api`
+- WebSocket: `ws://localhost:3001`
+- CORS enabled for `localhost:5173` and `localhost:3000`
+
+## Legacy Files
+
+The following files in `src/` root are from the previous vanilla TypeScript implementation and are **no longer used**:
+- `src/main.ts` - Old game entry point (replaced by `main.tsx`)
+- `src/World.ts` - Duplicated in `src/core/World.ts`
+- `src/LightPhysics.ts` - Duplicated in `src/core/LightPhysics.ts`
+- `src/Renderer.ts` - Replaced by React Three Fiber components
+- `src/PlayerControls.ts` - Replaced by R3F controls + Zustand
+
+These can be safely removed in a future cleanup.
 
 ## Common Tasks
 
-### Adding New Interactive Demo
+### Run Development Server
 
-Add to `demos.html`:
-1. Create a new section with canvas element
-2. Add navigation entry in sidebar
-3. Implement visualization JavaScript inline or in separate module
+```bash
+npm run dev
+# Opens at http://localhost:5173
+```
 
-### Updating Level Selector
+### Build for Production
 
-The level selector is created dynamically in `main.ts`:
-- Level buttons are numbered 1-5 for tutorial levels
-- Sandbox button enables free creation mode
-- Buttons are inserted into the info-bar element
+```bash
+npm run build
+npm run preview  # Test production build locally
+```
 
-### Modifying HUD
+### Add New Language
 
-Game HUD elements are in `game.html`:
-- `#info-bar` - Level name and instructions
-- `#vision-mode` - Current vision mode indicator
-- `#camera-mode` - Camera mode indicator
-- `#level-goal` - Sensor activation progress
-- `#tutorial-hint` - Timed hint display
-- `#block-selector` - Block type selection
-- `#help-panel` - Comprehensive controls guide
-
-## React Three Fiber Evaluation
-
-**Not recommended for this project** because:
-1. Current Three.js implementation is clean and performant
-2. Game complexity doesn't warrant React's component model
-3. Migration cost outweighs benefits for a puzzle game
-4. Core game logic (light physics) would remain unchanged
-
-Consider R3F only if adding:
-- Level editor with complex UI
-- User-generated content system
-- Multiplayer features requiring real-time state sync
+1. Create `src/i18n/locales/{lang}.json`
+2. Import and add to `resources` in `src/i18n/index.ts`
+3. Add language option to `LanguageThemeSwitcher.tsx`
