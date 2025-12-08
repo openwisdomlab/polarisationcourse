@@ -529,6 +529,8 @@
     "stokes": {
       "title": "斯托克斯矢量",
       "description": "用四个参数完整描述光的偏振状态",
+      "demoTitle": "斯托克斯矢量演示",
+      "demoSubtitle": "Stokes Vector - 偏振态的完整数学描述",
       "physics": {
         "principle": "斯托克斯矢量用四个参数完整描述偏振态",
         "formula": "S = [S₀, S₁, S₂, S₃]ᵀ",
@@ -556,11 +558,68 @@
           "区分水体、植被、建筑",
           "大气气溶胶反演"
         ]
+      },
+      "ui": {
+        "poincareSphere": "庞加莱球 (俯视图: S₁-S₂平面)",
+        "polarizationEllipse": "偏振椭圆",
+        "rightHanded": "(右旋)",
+        "leftHanded": "(左旋)",
+        "linearPol": "(线偏振)",
+        "stokesVector": "斯托克斯矢量",
+        "currentState": "当前偏振状态",
+        "polarizationType": "偏振类型",
+        "dop": "偏振度 (DOP)",
+        "polarizationParams": "偏振参数",
+        "lightIntensity": "光强度 I",
+        "polarizationAngle": "偏振角度 ψ",
+        "ellipticity": "椭圆度 ε",
+        "presetStates": "预设偏振状态",
+        "calculatedValues": "计算值",
+        "azimuth": "方位角 ψ",
+        "handedness": "旋向",
+        "rightHandedR": "右旋 (R)",
+        "leftHandedL": "左旋 (L)",
+        "totalIntensity": "总强度",
+        "hvDiff": "H-V",
+        "pm45Diff": "±45°",
+        "rlDiff": "R-L",
+        "stokesParams": "斯托克斯参数含义",
+        "poincareSphereInfo": "庞加莱球",
+        "equator": "赤道",
+        "linearStates": "线偏振态（H, V, ±45°）",
+        "northPole": "北极",
+        "rcp": "右旋圆偏振 (RCP)",
+        "southPole": "南极",
+        "lcp": "左旋圆偏振 (LCP)",
+        "others": "其他",
+        "ellipticalStates": "椭圆偏振态",
+        "center": "球心",
+        "unpolarized": "完全非偏振（自然光）"
+      },
+      "presets": {
+        "horizontalH": "水平线偏振 (H)",
+        "verticalV": "垂直线偏振 (V)",
+        "plus45": "+45°线偏振",
+        "minus45": "-45°线偏振",
+        "rightCircular": "右旋圆偏振 (R)",
+        "leftCircular": "左旋圆偏振 (L)",
+        "rightElliptical": "右旋椭圆偏振",
+        "naturalLight": "自然光"
+      },
+      "types": {
+        "linear": "线偏振",
+        "rightCircular": "右旋圆偏振",
+        "leftCircular": "左旋圆偏振",
+        "elliptical": "椭圆偏振",
+        "partial": "部分偏振",
+        "natural": "自然光"
       }
     },
     "mueller": {
       "title": "穆勒矩阵",
       "description": "4×4矩阵描述光学元件对偏振态的变换",
+      "demoTitle": "穆勒矩阵演示",
+      "demoSubtitle": "Mueller Matrix - 光学元件的偏振变换",
       "physics": {
         "principle": "穆勒矩阵描述光学元件对偏振态的变换",
         "formula": "S' = M · S",
@@ -587,6 +646,55 @@
           "眼底病变检测",
           "组织结构定量分析"
         ]
+      },
+      "ui": {
+        "lightSource": "光源",
+        "inputPolarization": "输入偏振",
+        "outputPolarization": "输出偏振",
+        "screen": "屏幕",
+        "extinction": "消光",
+        "muellerMatrix": "穆勒矩阵 M",
+        "stokesTransform": "斯托克斯矢量变换",
+        "inputStokes": "输入 S_in",
+        "outputStokes": "输出 S_out",
+        "intensity": "强度",
+        "selectElement": "光学元件选择",
+        "elementAngle": "元件角度 θ",
+        "inputState": "输入偏振态",
+        "transformResult": "变换结果",
+        "inputIntensity": "输入强度",
+        "outputIntensity": "输出强度",
+        "inputDOP": "输入偏振度",
+        "outputDOP": "输出偏振度",
+        "transmittance": "透射率",
+        "matrixProperties": "穆勒矩阵特性",
+        "commonMatrices": "常见穆勒矩阵",
+        "dimension": "维度",
+        "function": "作用",
+        "cascade": "级联",
+        "applicable": "适用",
+        "dimensionDesc": "4×4 实数矩阵",
+        "functionDesc": "描述光学元件对偏振态的线性变换",
+        "cascadeDesc": "M_total = M_n × ... × M_2 × M_1",
+        "applicableDesc": "可处理部分偏振光和非偏振光",
+        "polarizerDesc": "产生线偏振光，强度减半",
+        "halfWaveDesc": "反转偏振方向，改变旋向",
+        "quarterWaveDesc": "线偏振 ↔ 圆偏振 转换",
+        "rotatorDesc": "旋转偏振面，保持偏振度"
+      },
+      "elements": {
+        "polarizer": "偏振片",
+        "halfWave": "λ/2 波片",
+        "quarterWave": "λ/4 波片",
+        "rotator": "旋光器",
+        "identity": "无 (直通)"
+      },
+      "inputs": {
+        "horizontal": "水平偏振",
+        "vertical": "垂直偏振",
+        "deg45": "+45°偏振",
+        "rcp": "右旋圆偏振",
+        "unpolarized": "自然光"
       }
     }
   },

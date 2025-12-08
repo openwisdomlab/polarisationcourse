@@ -1,9 +1,11 @@
 /**
  * DemoControls - 演示控制组件
  * 提供滑块、按钮、预设等交互控件
+ * 支持亮色/暗色主题
  */
 import { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { useTheme } from '@/contexts/ThemeContext'
 
 // 滑块控制器
 interface SliderControlProps {
@@ -62,14 +64,15 @@ export function SliderControl({
   formatValue,
   color = 'cyan',
 }: SliderControlProps) {
+  const { theme } = useTheme()
   const displayValue = formatValue ? formatValue(value) : `${value}${unit}`
   const colors = sliderColorClasses[color] || sliderColorClasses.cyan
-  const textColorClass = `text-${color}-400`
+  const textColorClass = theme === 'dark' ? `text-${color}-400` : `text-${color}-600`
 
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <span className="text-gray-400">{label}</span>
+        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>{label}</span>
         <span className={cn('font-mono', textColorClass)}>{displayValue}</span>
       </div>
       <div className="relative">
@@ -85,7 +88,8 @@ export function SliderControl({
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
           className={cn(
-            'w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer relative',
+            'w-full h-2 rounded-lg appearance-none cursor-pointer relative',
+            theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200',
             '[&::-webkit-slider-thumb]:appearance-none',
             '[&::-webkit-slider-thumb]:w-4',
             '[&::-webkit-slider-thumb]:h-4',
@@ -119,6 +123,7 @@ interface PresetButtonsProps {
 }
 
 export function PresetButtons({ options, value, onChange, columns = 2 }: PresetButtonsProps) {
+  const { theme } = useTheme()
   const gridCols = {
     2: 'grid-cols-2',
     3: 'grid-cols-3',
@@ -135,8 +140,12 @@ export function PresetButtons({ options, value, onChange, columns = 2 }: PresetB
             'px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200',
             'border hover:scale-[1.02] active:scale-[0.98]',
             value === option.value
-              ? 'bg-gradient-to-r from-cyan-400/30 to-blue-400/30 text-cyan-300 border-cyan-400/50 shadow-[0_0_15px_rgba(34,211,238,0.2)]'
-              : 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-cyan-400/30 hover:text-gray-300'
+              ? theme === 'dark'
+                ? 'bg-gradient-to-r from-cyan-400/30 to-blue-400/30 text-cyan-300 border-cyan-400/50 shadow-[0_0_15px_rgba(34,211,238,0.2)]'
+                : 'bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 border-cyan-300 shadow-sm'
+              : theme === 'dark'
+                ? 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-cyan-400/30 hover:text-gray-300'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-cyan-300 hover:text-gray-800'
           )}
         >
           {option.label}
@@ -155,9 +164,10 @@ interface ButtonGroupProps {
 }
 
 export function ButtonGroup({ label, options, value, onChange }: ButtonGroupProps) {
+  const { theme } = useTheme()
   return (
     <div className="space-y-2">
-      <span className="text-sm text-gray-400">{label}</span>
+      <span className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{label}</span>
       <div className="flex gap-2 flex-wrap">
         {options.map((option) => (
           <button
@@ -166,8 +176,12 @@ export function ButtonGroup({ label, options, value, onChange }: ButtonGroupProp
             className={cn(
               'px-3 py-1.5 rounded-md text-sm transition-all',
               value === option.value
-                ? 'bg-cyan-400/30 text-cyan-400 border border-cyan-400/50'
-                : 'bg-slate-700/50 text-gray-400 border border-slate-600 hover:border-cyan-400/30'
+                ? theme === 'dark'
+                  ? 'bg-cyan-400/30 text-cyan-400 border border-cyan-400/50'
+                  : 'bg-cyan-100 text-cyan-700 border border-cyan-300'
+                : theme === 'dark'
+                  ? 'bg-slate-700/50 text-gray-400 border border-slate-600 hover:border-cyan-400/30'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-cyan-300'
             )}
           >
             {option.label}
@@ -186,23 +200,28 @@ interface ToggleProps {
 }
 
 export function Toggle({ label, checked, onChange }: ToggleProps) {
+  const { theme } = useTheme()
   return (
     <label className="flex items-center gap-3 cursor-pointer">
       <div
         className={cn(
           'w-10 h-5 rounded-full transition-colors relative',
-          checked ? 'bg-cyan-400/30' : 'bg-slate-700'
+          checked
+            ? theme === 'dark' ? 'bg-cyan-400/30' : 'bg-cyan-200'
+            : theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
         )}
         onClick={() => onChange(!checked)}
       >
         <div
           className={cn(
             'absolute top-0.5 w-4 h-4 rounded-full transition-transform',
-            checked ? 'translate-x-5 bg-cyan-400' : 'translate-x-0.5 bg-gray-500'
+            checked
+              ? theme === 'dark' ? 'translate-x-5 bg-cyan-400' : 'translate-x-5 bg-cyan-500'
+              : theme === 'dark' ? 'translate-x-0.5 bg-gray-500' : 'translate-x-0.5 bg-gray-400'
           )}
         />
       </div>
-      <span className="text-sm text-gray-400">{label}</span>
+      <span className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{label}</span>
     </label>
   )
 }
@@ -215,10 +234,17 @@ interface InfoPanelProps {
 }
 
 export function InfoPanel({ title, children, className }: InfoPanelProps) {
+  const { theme } = useTheme()
   return (
-    <div className={cn('bg-slate-800/50 rounded-lg p-4 border border-slate-700/50', className)}>
-      <h4 className="text-sm font-semibold text-cyan-400 mb-2">{title}</h4>
-      <div className="text-sm text-gray-400">{children}</div>
+    <div className={cn(
+      'rounded-lg p-4 border',
+      theme === 'dark'
+        ? 'bg-slate-800/50 border-slate-700/50'
+        : 'bg-white border-gray-200 shadow-sm',
+      className
+    )}>
+      <h4 className={cn('text-sm font-semibold mb-2', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')}>{title}</h4>
+      <div className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{children}</div>
     </div>
   )
 }
@@ -232,19 +258,31 @@ interface ValueDisplayProps {
 }
 
 export function ValueDisplay({ label, value, unit = '', color = 'cyan' }: ValueDisplayProps) {
-  const colorClasses: Record<string, string> = {
+  const { theme } = useTheme()
+  const colorClassesDark: Record<string, string> = {
     cyan: 'text-cyan-400',
     red: 'text-red-400',
     green: 'text-green-400',
     blue: 'text-blue-400',
     orange: 'text-orange-400',
     purple: 'text-purple-400',
+    yellow: 'text-yellow-400',
   }
+  const colorClassesLight: Record<string, string> = {
+    cyan: 'text-cyan-600',
+    red: 'text-red-600',
+    green: 'text-green-600',
+    blue: 'text-blue-600',
+    orange: 'text-orange-600',
+    purple: 'text-purple-600',
+    yellow: 'text-yellow-600',
+  }
+  const colorClasses = theme === 'dark' ? colorClassesDark : colorClassesLight
 
   return (
     <div className="flex justify-between items-center py-1">
-      <span className="text-gray-400 text-sm">{label}</span>
-      <span className={cn('font-mono text-sm', colorClasses[color] || 'text-cyan-400')}>
+      <span className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{label}</span>
+      <span className={cn('font-mono text-sm', colorClasses[color] || colorClasses.cyan)}>
         {value}
         {unit}
       </span>
@@ -260,15 +298,22 @@ interface ControlPanelProps {
 }
 
 export function ControlPanel({ title, children, className }: ControlPanelProps) {
+  const { theme } = useTheme()
   return (
     <div
       className={cn(
-        'bg-slate-800/70 rounded-xl p-5 border border-cyan-400/20 backdrop-blur-sm',
+        'rounded-xl p-4 border backdrop-blur-sm',
+        theme === 'dark'
+          ? 'bg-slate-800/70 border-cyan-400/20'
+          : 'bg-white/90 border-cyan-200 shadow-sm',
         className
       )}
     >
-      {title && <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>}
-      <div className="space-y-4">{children}</div>
+      {title && <h3 className={cn(
+        'text-base font-semibold mb-3',
+        theme === 'dark' ? 'text-white' : 'text-gray-800'
+      )}>{title}</h3>}
+      <div className="space-y-3">{children}</div>
     </div>
   )
 }
@@ -281,13 +326,17 @@ interface FormulaProps {
 }
 
 export function Formula({ children, className, highlight = false }: FormulaProps) {
+  const { theme } = useTheme()
   return (
     <div
       className={cn(
-        'font-mono text-cyan-400 px-4 py-3 rounded-lg text-center transition-all',
+        'font-mono px-4 py-3 rounded-lg text-center transition-all',
+        theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700',
         highlight
-          ? 'bg-gradient-to-r from-cyan-900/50 to-blue-900/50 border border-cyan-400/30'
-          : 'bg-slate-900/50',
+          ? theme === 'dark'
+            ? 'bg-gradient-to-r from-cyan-900/50 to-blue-900/50 border border-cyan-400/30'
+            : 'bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200'
+          : theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50',
         className
       )}
     >
@@ -306,36 +355,79 @@ interface InfoCardProps {
   expanded?: boolean
 }
 
-const infoCardColors = {
+const infoCardColorsDark = {
   cyan: {
     border: 'border-cyan-400/30',
     bg: 'from-cyan-900/20 to-slate-900/50',
     title: 'text-cyan-400',
     icon: 'bg-cyan-400/20 text-cyan-400',
+    headerBorder: 'border-slate-700/50',
   },
   green: {
     border: 'border-green-400/30',
     bg: 'from-green-900/20 to-slate-900/50',
     title: 'text-green-400',
     icon: 'bg-green-400/20 text-green-400',
+    headerBorder: 'border-slate-700/50',
   },
   purple: {
     border: 'border-purple-400/30',
     bg: 'from-purple-900/20 to-slate-900/50',
     title: 'text-purple-400',
     icon: 'bg-purple-400/20 text-purple-400',
+    headerBorder: 'border-slate-700/50',
   },
   orange: {
     border: 'border-orange-400/30',
     bg: 'from-orange-900/20 to-slate-900/50',
     title: 'text-orange-400',
     icon: 'bg-orange-400/20 text-orange-400',
+    headerBorder: 'border-slate-700/50',
   },
   blue: {
     border: 'border-blue-400/30',
     bg: 'from-blue-900/20 to-slate-900/50',
     title: 'text-blue-400',
     icon: 'bg-blue-400/20 text-blue-400',
+    headerBorder: 'border-slate-700/50',
+  },
+}
+
+const infoCardColorsLight = {
+  cyan: {
+    border: 'border-cyan-200',
+    bg: 'from-cyan-50 to-white',
+    title: 'text-cyan-700',
+    icon: 'bg-cyan-100 text-cyan-600',
+    headerBorder: 'border-cyan-100',
+  },
+  green: {
+    border: 'border-green-200',
+    bg: 'from-green-50 to-white',
+    title: 'text-green-700',
+    icon: 'bg-green-100 text-green-600',
+    headerBorder: 'border-green-100',
+  },
+  purple: {
+    border: 'border-purple-200',
+    bg: 'from-purple-50 to-white',
+    title: 'text-purple-700',
+    icon: 'bg-purple-100 text-purple-600',
+    headerBorder: 'border-purple-100',
+  },
+  orange: {
+    border: 'border-orange-200',
+    bg: 'from-orange-50 to-white',
+    title: 'text-orange-700',
+    icon: 'bg-orange-100 text-orange-600',
+    headerBorder: 'border-orange-100',
+  },
+  blue: {
+    border: 'border-blue-200',
+    bg: 'from-blue-50 to-white',
+    title: 'text-blue-700',
+    icon: 'bg-blue-100 text-blue-600',
+    headerBorder: 'border-blue-100',
   },
 }
 
@@ -346,20 +438,23 @@ export function InfoCard({
   children,
   className,
 }: InfoCardProps) {
+  const { theme } = useTheme()
   // 使用默认颜色作为回退，防止无效颜色值导致崩溃
-  const colors = infoCardColors[color] || infoCardColors.cyan
+  const colorsDark = infoCardColorsDark[color] || infoCardColorsDark.cyan
+  const colorsLight = infoCardColorsLight[color] || infoCardColorsLight.cyan
+  const colors = theme === 'dark' ? colorsDark : colorsLight
 
   return (
     <div
       className={cn(
-        'rounded-xl border backdrop-blur-sm overflow-hidden',
+        'rounded-xl border backdrop-blur-sm overflow-hidden shadow-sm',
         'bg-gradient-to-br',
         colors.border,
         colors.bg,
         className
       )}
     >
-      <div className="px-4 py-3 border-b border-slate-700/50 flex items-center gap-3">
+      <div className={cn('px-4 py-3 border-b flex items-center gap-3', colors.headerBorder)}>
         {icon && (
           <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', colors.icon)}>
             {icon}
@@ -380,9 +475,14 @@ interface ListItemProps {
 }
 
 export function ListItem({ icon, children, className }: ListItemProps) {
+  const { theme } = useTheme()
   return (
-    <div className={cn('flex items-start gap-3 text-sm text-gray-300', className)}>
-      {icon && <span className="text-cyan-400 mt-0.5 flex-shrink-0">{icon}</span>}
+    <div className={cn(
+      'flex items-start gap-3 text-sm',
+      theme === 'dark' ? 'text-gray-300' : 'text-gray-600',
+      className
+    )}>
+      {icon && <span className={cn('mt-0.5 flex-shrink-0', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')}>{icon}</span>}
       <span>{children}</span>
     </div>
   )
@@ -397,11 +497,15 @@ interface SimpleDiagramProps {
 }
 
 export function SimpleDiagram({ src, alt, children, className }: SimpleDiagramProps) {
+  const { theme } = useTheme()
   return (
     <div
       className={cn(
-        'bg-slate-900/50 rounded-lg p-3 border border-slate-700/50',
+        'rounded-lg p-3 border',
         'flex items-center justify-center min-h-[100px]',
+        theme === 'dark'
+          ? 'bg-slate-900/50 border-slate-700/50'
+          : 'bg-gray-50 border-gray-200',
         className
       )}
     >
@@ -436,7 +540,8 @@ export function AnimatedValue({
   min = 0,
   max = 1,
 }: AnimatedValueProps) {
-  const colorClasses: Record<string, { text: string; bar: string }> = {
+  const { theme } = useTheme()
+  const colorClassesDark: Record<string, { text: string; bar: string }> = {
     cyan: { text: 'text-cyan-400', bar: 'bg-cyan-400' },
     red: { text: 'text-red-400', bar: 'bg-red-400' },
     green: { text: 'text-green-400', bar: 'bg-green-400' },
@@ -444,20 +549,32 @@ export function AnimatedValue({
     orange: { text: 'text-orange-400', bar: 'bg-orange-400' },
     purple: { text: 'text-purple-400', bar: 'bg-purple-400' },
   }
+  const colorClassesLight: Record<string, { text: string; bar: string }> = {
+    cyan: { text: 'text-cyan-600', bar: 'bg-cyan-500' },
+    red: { text: 'text-red-600', bar: 'bg-red-500' },
+    green: { text: 'text-green-600', bar: 'bg-green-500' },
+    blue: { text: 'text-blue-600', bar: 'bg-blue-500' },
+    orange: { text: 'text-orange-600', bar: 'bg-orange-500' },
+    purple: { text: 'text-purple-600', bar: 'bg-purple-500' },
+  }
+  const colorClasses = theme === 'dark' ? colorClassesDark : colorClassesLight
   const colors = colorClasses[color] || colorClasses.cyan
   const percentage = ((value - min) / (max - min)) * 100
 
   return (
     <div className="space-y-1">
       <div className="flex justify-between items-center">
-        <span className="text-gray-400 text-sm">{label}</span>
+        <span className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{label}</span>
         <span className={cn('font-mono text-sm font-semibold', colors.text)}>
           {value.toFixed(decimals)}
           {unit}
         </span>
       </div>
       {showBar && (
-        <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+        <div className={cn(
+          'h-1.5 rounded-full overflow-hidden',
+          theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
+        )}>
           <div
             className={cn('h-full rounded-full transition-all duration-300', colors.bar)}
             style={{ width: `${Math.max(0, Math.min(100, percentage))}%` }}

@@ -15,8 +15,8 @@ function rayleighIntensity(wavelength: number): number {
   return Math.min(normalized, 10)
 }
 
-// 瑞利散射相函数
-function rayleighPhaseFunction(theta: number): number {
+// 瑞利散射相函数 (exported for future use)
+export function rayleighPhaseFunction(theta: number): number {
   // I ∝ (1 + cos²θ)
   return (3 / 16 / Math.PI) * (1 + Math.pow(Math.cos(theta), 2))
 }
@@ -129,7 +129,7 @@ function RayleighDiagram({
 
   // 散射光线（不同波长）
   const scatteredRays = useMemo(() => {
-    const rays = []
+    const rays: { wl: number; endX: number; endY: number; color: string; opacity: number; width: number; delay: number }[] = []
     const wavelengths = [450, 480, 510, 550, 600, 650]
     const angles = [-60, -40, -20, 0, 20, 40, 60, 80, 100, 120]
 
@@ -648,7 +648,7 @@ function ScatteringIntensityBars() {
 
 // 主演示组件
 export function RayleighScatteringDemo() {
-  const { t } = useTranslation()
+  const { t: _t } = useTranslation() // Reserved for future i18n
   const [sunAngle, setSunAngle] = useState(60)
   const [observerAngle, setObserverAngle] = useState(45)
   const [showPolarization, setShowPolarization] = useState(true)
@@ -717,7 +717,7 @@ export function RayleighScatteringDemo() {
               step={5}
               unit="°"
               onChange={setSunAngle}
-              color="yellow"
+              color="orange"
             />
             <SliderControl
               label="观察方向"

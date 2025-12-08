@@ -529,6 +529,8 @@
     "stokes": {
       "title": "Stokes Vector",
       "description": "Four parameters to completely describe light's polarization state",
+      "demoTitle": "Stokes Vector Demo",
+      "demoSubtitle": "Stokes Vector - Complete Mathematical Description of Polarization State",
       "physics": {
         "principle": "Stokes vector uses four parameters to completely describe polarization state",
         "formula": "S = [S₀, S₁, S₂, S₃]ᵀ",
@@ -556,11 +558,68 @@
           "Distinguish water, vegetation, buildings",
           "Atmospheric aerosol retrieval"
         ]
+      },
+      "ui": {
+        "poincareSphere": "Poincaré Sphere (Top View: S₁-S₂ Plane)",
+        "polarizationEllipse": "Polarization Ellipse",
+        "rightHanded": "(Right-handed)",
+        "leftHanded": "(Left-handed)",
+        "linearPol": "(Linear)",
+        "stokesVector": "Stokes Vector",
+        "currentState": "Current Polarization State",
+        "polarizationType": "Polarization Type",
+        "dop": "DOP",
+        "polarizationParams": "Polarization Parameters",
+        "lightIntensity": "Light Intensity I",
+        "polarizationAngle": "Polarization Angle ψ",
+        "ellipticity": "Ellipticity ε",
+        "presetStates": "Preset Polarization States",
+        "calculatedValues": "Calculated Values",
+        "azimuth": "Azimuth ψ",
+        "handedness": "Handedness",
+        "rightHandedR": "Right (R)",
+        "leftHandedL": "Left (L)",
+        "totalIntensity": "Total intensity",
+        "hvDiff": "H-V",
+        "pm45Diff": "±45°",
+        "rlDiff": "R-L",
+        "stokesParams": "Stokes Parameters Meaning",
+        "poincareSphereInfo": "Poincaré Sphere",
+        "equator": "Equator",
+        "linearStates": "Linear polarization states (H, V, ±45°)",
+        "northPole": "North Pole",
+        "rcp": "Right circular polarization (RCP)",
+        "southPole": "South Pole",
+        "lcp": "Left circular polarization (LCP)",
+        "others": "Others",
+        "ellipticalStates": "Elliptical polarization states",
+        "center": "Center",
+        "unpolarized": "Completely unpolarized (natural light)"
+      },
+      "presets": {
+        "horizontalH": "Horizontal (H)",
+        "verticalV": "Vertical (V)",
+        "plus45": "+45° Linear",
+        "minus45": "-45° Linear",
+        "rightCircular": "Right Circular (R)",
+        "leftCircular": "Left Circular (L)",
+        "rightElliptical": "Right Elliptical",
+        "naturalLight": "Natural Light"
+      },
+      "types": {
+        "linear": "Linear Pol.",
+        "rightCircular": "Right Circular",
+        "leftCircular": "Left Circular",
+        "elliptical": "Elliptical Pol.",
+        "partial": "Partial Pol.",
+        "natural": "Natural Light"
       }
     },
     "mueller": {
       "title": "Mueller Matrix",
       "description": "4×4 matrix describing optical element's transformation of polarization state",
+      "demoTitle": "Mueller Matrix Demo",
+      "demoSubtitle": "Mueller Matrix - Polarization Transformation of Optical Elements",
       "physics": {
         "principle": "Mueller matrix describes an optical element's transformation of polarization state",
         "formula": "S' = M · S",
@@ -587,6 +646,55 @@
           "Retinal lesion detection",
           "Quantitative tissue structure analysis"
         ]
+      },
+      "ui": {
+        "lightSource": "Light Source",
+        "inputPolarization": "Input Pol.",
+        "outputPolarization": "Output Pol.",
+        "screen": "Screen",
+        "extinction": "Extinction",
+        "muellerMatrix": "Mueller Matrix M",
+        "stokesTransform": "Stokes Vector Transform",
+        "inputStokes": "Input S_in",
+        "outputStokes": "Output S_out",
+        "intensity": "Intensity",
+        "selectElement": "Select Optical Element",
+        "elementAngle": "Element Angle θ",
+        "inputState": "Input Polarization State",
+        "transformResult": "Transform Result",
+        "inputIntensity": "Input Intensity",
+        "outputIntensity": "Output Intensity",
+        "inputDOP": "Input DOP",
+        "outputDOP": "Output DOP",
+        "transmittance": "Transmittance",
+        "matrixProperties": "Mueller Matrix Properties",
+        "commonMatrices": "Common Mueller Matrices",
+        "dimension": "Dimension",
+        "function": "Function",
+        "cascade": "Cascade",
+        "applicable": "Applicable",
+        "dimensionDesc": "4×4 real matrix",
+        "functionDesc": "Describes linear transformation of polarization state",
+        "cascadeDesc": "M_total = M_n × ... × M_2 × M_1",
+        "applicableDesc": "Can handle partially polarized and unpolarized light",
+        "polarizerDesc": "Produces linearly polarized light, halves intensity",
+        "halfWaveDesc": "Reverses polarization direction, changes handedness",
+        "quarterWaveDesc": "Converts linear ↔ circular polarization",
+        "rotatorDesc": "Rotates polarization plane, preserves DOP"
+      },
+      "elements": {
+        "polarizer": "Polarizer",
+        "halfWave": "λ/2 Plate",
+        "quarterWave": "λ/4 Plate",
+        "rotator": "Rotator",
+        "identity": "None (Pass)"
+      },
+      "inputs": {
+        "horizontal": "Horizontal",
+        "vertical": "Vertical",
+        "deg45": "+45° Pol.",
+        "rcp": "RCP",
+        "unpolarized": "Unpolarized"
       }
     }
   },
