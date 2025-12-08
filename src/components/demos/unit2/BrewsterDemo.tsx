@@ -1,12 +1,11 @@
 /**
  * 布儒斯特角演示 - Unit 2
  * tan(θB) = n2/n1，反射光为完全s偏振
+ * 采用纯DOM + SVG + Framer Motion一体化设计
  */
-import { useState, useCallback } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Line, Text } from '@react-three/drei'
-import { SliderControl, ControlPanel, ValueDisplay, ButtonGroup, InfoPanel, Formula } from '../DemoControls'
-import { Demo2DCanvas } from '../Demo2DCanvas'
+import { useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
+import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 计算布儒斯特角和反射率
 function calculateBrewster(theta: number, n1: number, n2: number) {
@@ -33,54 +32,61 @@ function calculateBrewster(theta: number, n1: number, n2: number) {
   }
 }
 
-// 玻璃板组件
-function GlassPlate({
-  rotation,
-  n,
+// 偏振指示器组件
+function PolarizationIndicator({
+  type,
+  x,
+  y,
+  size = 20,
+  color,
 }: {
-  rotation: number
-  n: number
+  type: 'unpolarized' | 's' | 'p' | 'partial'
+  x: number
+  y: number
+  size?: number
+  color: string
 }) {
+  if (type === 'unpolarized') {
+    return (
+      <g transform={`translate(${x}, ${y})`}>
+        <circle r={size / 2} fill="none" stroke={color} strokeWidth="2" />
+        <line x1={-size / 2 + 3} y1="0" x2={size / 2 - 3} y2="0" stroke={color} strokeWidth="2" />
+        <line x1="0" y1={-size / 2 + 3} x2="0" y2={size / 2 - 3} stroke={color} strokeWidth="2" />
+      </g>
+    )
+  }
+
+  if (type === 's') {
+    // s偏振 - 垂直于入射面（点/圆）
+    return (
+      <g transform={`translate(${x}, ${y})`}>
+        <circle r={size / 4} fill={color} />
+        <circle r={size / 2} fill="none" stroke={color} strokeWidth="1.5" opacity="0.5" />
+      </g>
+    )
+  }
+
+  if (type === 'p') {
+    // p偏振 - 平行于入射面（双箭头线）
+    return (
+      <g transform={`translate(${x}, ${y})`}>
+        <line x1={-size / 2} y1="0" x2={size / 2} y2="0" stroke={color} strokeWidth="2.5" />
+        <polygon points={`${-size / 2 - 4},0 ${-size / 2 + 2},-3 ${-size / 2 + 2},3`} fill={color} />
+        <polygon points={`${size / 2 + 4},0 ${size / 2 - 2},-3 ${size / 2 - 2},3`} fill={color} />
+      </g>
+    )
+  }
+
+  // partial - 部分偏振
   return (
-    <group rotation={[0, 0, (rotation * Math.PI) / 180]}>
-      {/* 玻璃板 */}
-      <mesh>
-        <boxGeometry args={[4, 0.3, 3]} />
-        <meshStandardMaterial
-          color="#a8d8ea"
-          transparent
-          opacity={0.4}
-        />
-      </mesh>
-      {/* 边框 */}
-      <mesh>
-        <boxGeometry args={[4, 0.3, 3]} />
-        <meshBasicMaterial color="#67e8f9" wireframe />
-      </mesh>
-      {/* 法线 */}
-      <Line
-        points={[
-          [0, 0, 0],
-          [0, 2, 0],
-        ]}
-        color="#94a3b8"
-        lineWidth={1}
-        dashed
-        dashSize={0.1}
-        gapSize={0.05}
-      />
-      <Text position={[0, 2.3, 0]} fontSize={0.2} color="#94a3b8">
-        法线
-      </Text>
-      <Text position={[2.5, 0, 0]} fontSize={0.2} color="#67e8f9">
-        n = {n.toFixed(2)}
-      </Text>
-    </group>
+    <g transform={`translate(${x}, ${y})`}>
+      <ellipse rx={size / 2} ry={size / 3} fill="none" stroke={color} strokeWidth="2" />
+    </g>
   )
 }
 
-// 入射/反射光线
-function LightBeams({
+// 布儒斯特角SVG图示
+function BrewsterDiagram({
   incidentAngle,
   n1,
   n2,
@@ -90,163 +96,256 @@ function LightBeams({
   n2: number
 }) {
   const result = calculateBrewster(incidentAngle, n1, n2)
+  const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
+  const isAtBrewster = Math.abs(incidentAngle - brewsterAngle) < 1.5
+
   const rad = (incidentAngle * Math.PI) / 180
   const refractRad = (result.theta2 * Math.PI) / 180
-  const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
-  const isAtBrewster = Math.abs(incidentAngle - brewsterAngle) < 1
 
-  // 入射光
-  const incidentStart: [number, number, number] = [-3 * Math.sin(rad), 3 * Math.cos(rad), 0]
-  const incidentEnd: [number, number, number] = [0, 0, 0]
+  // 坐标中心
+  const cx = 300
+  const cy = 200
+  const rayLength = 150
 
-  // 反射光
-  const reflectEnd: [number, number, number] = [3 * Math.sin(rad), 3 * Math.cos(rad), 0]
+  // 入射光起点
+  const incidentStart = {
+    x: cx - rayLength * Math.sin(rad),
+    y: cy - rayLength * Math.cos(rad),
+  }
 
-  // 折射光
-  const refractEnd: [number, number, number] = [
-    3 * Math.sin(refractRad),
-    -3 * Math.cos(refractRad),
-    0,
-  ]
+  // 反射光终点
+  const reflectEnd = {
+    x: cx + rayLength * Math.sin(rad),
+    y: cy - rayLength * Math.cos(rad),
+  }
+
+  // 折射光终点
+  const refractEnd = {
+    x: cx + rayLength * Math.sin(refractRad),
+    y: cy + rayLength * Math.cos(refractRad),
+  }
+
+  // 判断偏振状态
+  const getPolarizationType = () => {
+    if (isAtBrewster) return 's'
+    if (result.Rs > 0.9) return 's'
+    return 'partial'
+  }
 
   return (
-    <group>
-      {/* 入射光（自然光/未偏振） */}
-      <Line
-        points={[incidentStart, incidentEnd]}
-        color="#fbbf24"
-        lineWidth={4}
+    <svg viewBox="0 0 600 400" className="w-full h-auto">
+      <defs>
+        <linearGradient id="airGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#0f172a" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#1e3a5f" stopOpacity="0.4" />
+        </linearGradient>
+        <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1e5f5f" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#0f4c4c" stopOpacity="0.6" />
+        </linearGradient>
+        <filter id="glowYellow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="glowCyan" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* 空气层 */}
+      <rect x="30" y="20" width="540" height="180" fill="url(#airGradient)" rx="8" />
+      <text x="60" y="50" fill="#60a5fa" fontSize="13">空气 n₁ = {n1.toFixed(2)}</text>
+
+      {/* 玻璃/介质层 */}
+      <rect x="30" y="200" width="540" height="180" fill="url(#glassGradient)" rx="8" />
+      <text x="60" y="360" fill="#2dd4bf" fontSize="13">介质 n₂ = {n2.toFixed(2)}</text>
+
+      {/* 界面 */}
+      <line x1="30" y1="200" x2="570" y2="200" stroke="#67e8f9" strokeWidth="2" />
+
+      {/* 法线 */}
+      <line x1={cx} y1="30" x2={cx} y2="370" stroke="#94a3b8" strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
+      <text x={cx + 8} y="45" fill="#94a3b8" fontSize="11">法线</text>
+
+      {/* 光源 */}
+      <motion.circle
+        cx={incidentStart.x}
+        cy={incidentStart.y}
+        r="12"
+        fill="#fbbf24"
+        filter="url(#glowYellow)"
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
       />
-      {/* 入射偏振指示器 - 圆形表示未偏振 */}
-      <mesh position={[incidentStart[0] * 0.6, incidentStart[1] * 0.6, 0]}>
-        <torusGeometry args={[0.2, 0.05, 8, 16]} />
-        <meshBasicMaterial color="#fbbf24" />
-      </mesh>
+
+      {/* 入射光 */}
+      <motion.line
+        x1={incidentStart.x}
+        y1={incidentStart.y}
+        x2={cx}
+        y2={cy}
+        stroke="#fbbf24"
+        strokeWidth="4"
+        filter="url(#glowYellow)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.4 }}
+      />
+      {/* 入射偏振状态 - 自然光 */}
+      <PolarizationIndicator
+        type="unpolarized"
+        x={(incidentStart.x + cx) / 2 - 25}
+        y={(incidentStart.y + cy) / 2}
+        color="#fbbf24"
+      />
+      <text x={incidentStart.x - 60} y={incidentStart.y - 5} fill="#fbbf24" fontSize="12" fontWeight="500">
+        自然光
+      </text>
 
       {/* 反射光 */}
-      <Line
-        points={[incidentEnd, reflectEnd]}
-        color={isAtBrewster ? '#22d3ee' : '#fbbf24'}
-        lineWidth={Math.max(1, 4 * result.Rs)}
-        transparent
-        opacity={Math.max(0.3, result.Rs)}
+      <motion.line
+        x1={cx}
+        y1={cy}
+        x2={reflectEnd.x}
+        y2={reflectEnd.y}
+        stroke={isAtBrewster ? '#22d3ee' : '#94a3b8'}
+        strokeWidth={Math.max(1, 4 * (result.Rs + result.Rp) / 2)}
+        strokeOpacity={Math.max(0.3, (result.Rs + result.Rp) / 2)}
+        filter={isAtBrewster ? 'url(#glowCyan)' : undefined}
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
       />
-      {/* 反射偏振指示器 - 在布儒斯特角时为s偏振 */}
-      {result.Rs > 0.01 && (
-        <group position={[reflectEnd[0] * 0.6, reflectEnd[1] * 0.6, 0]}>
-          {isAtBrewster ? (
-            // s偏振（垂直于入射面）
-            <Line
-              points={[
-                [0, 0, -0.3],
-                [0, 0, 0.3],
-              ]}
-              color="#22d3ee"
-              lineWidth={4}
-            />
-          ) : (
-            // 部分偏振
-            <mesh>
-              <torusGeometry args={[0.15, 0.03, 8, 16]} />
-              <meshBasicMaterial color="#fbbf24" />
-            </mesh>
-          )}
-        </group>
-      )}
+      {/* 反射偏振状态 */}
+      <PolarizationIndicator
+        type={getPolarizationType()}
+        x={(cx + reflectEnd.x) / 2 + 25}
+        y={(cy + reflectEnd.y) / 2}
+        color={isAtBrewster ? '#22d3ee' : '#94a3b8'}
+      />
+      <text
+        x={reflectEnd.x + 15}
+        y={reflectEnd.y - 10}
+        fill={isAtBrewster ? '#22d3ee' : '#94a3b8'}
+        fontSize="12"
+        fontWeight="500"
+      >
+        {isAtBrewster ? '完全s偏振' : '部分偏振'}
+      </text>
 
       {/* 折射光 */}
       {!result.totalReflection && (
         <>
-          <Line
-            points={[incidentEnd, refractEnd]}
-            color="#4ade80"
-            lineWidth={Math.max(1, 4 * (1 - result.Rs))}
-            transparent
-            opacity={Math.max(0.3, 1 - result.Rs)}
+          <motion.line
+            x1={cx}
+            y1={cy}
+            x2={refractEnd.x}
+            y2={refractEnd.y}
+            stroke="#4ade80"
+            strokeWidth="4"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
           />
-          {/* 折射偏振指示器 - 在布儒斯特角时为p偏振 */}
-          <group position={[refractEnd[0] * 0.5, refractEnd[1] * 0.5, 0]}>
-            {isAtBrewster ? (
-              // p偏振（在入射面内）
-              <Line
-                points={[
-                  [-0.2 * Math.cos(refractRad), -0.2 * Math.sin(refractRad), 0],
-                  [0.2 * Math.cos(refractRad), 0.2 * Math.sin(refractRad), 0],
-                ]}
-                color="#f472b6"
-                lineWidth={4}
-              />
-            ) : (
-              <mesh>
-                <torusGeometry args={[0.15, 0.03, 8, 16]} />
-                <meshBasicMaterial color="#4ade80" />
-              </mesh>
-            )}
-          </group>
+          {/* 折射偏振状态 - 在布儒斯特角时为p偏振 */}
+          <PolarizationIndicator
+            type={isAtBrewster ? 'p' : 'partial'}
+            x={(cx + refractEnd.x) / 2 + 25}
+            y={(cy + refractEnd.y) / 2}
+            color={isAtBrewster ? '#f472b6' : '#4ade80'}
+          />
+          <text
+            x={refractEnd.x + 15}
+            y={refractEnd.y + 20}
+            fill={isAtBrewster ? '#f472b6' : '#4ade80'}
+            fontSize="12"
+            fontWeight="500"
+          >
+            {isAtBrewster ? '富含p偏振' : '折射光'}
+          </text>
         </>
       )}
 
-      {/* 角度标注 */}
-      <Text position={[-1, 2.5, 0]} fontSize={0.25} color="#fbbf24">
+      {/* 入射角弧线 */}
+      <path
+        d={`M ${cx} ${cy - 50} A 50 50 0 0 0 ${cx - 50 * Math.sin(rad)} ${cy - 50 * Math.cos(rad)}`}
+        fill="none"
+        stroke="#fbbf24"
+        strokeWidth="1.5"
+        strokeDasharray="4 2"
+      />
+      <text x={cx - 70} y={cy - 55} fill="#fbbf24" fontSize="13" fontWeight="500">
         θ = {incidentAngle}°
-      </Text>
-      {isAtBrewster && (
-        <Text position={[0, 3.2, 0]} fontSize={0.3} color="#22d3ee">
-          布儒斯特角!
-        </Text>
+      </text>
+
+      {/* 折射角弧线 */}
+      {!result.totalReflection && (
+        <>
+          <path
+            d={`M ${cx} ${cy + 40} A 40 40 0 0 1 ${cx + 40 * Math.sin(refractRad)} ${cy + 40 * Math.cos(refractRad)}`}
+            fill="none"
+            stroke="#4ade80"
+            strokeWidth="1.5"
+            strokeDasharray="4 2"
+          />
+          <text x={cx + 50} y={cy + 60} fill="#4ade80" fontSize="12">
+            θ₂ = {result.theta2.toFixed(1)}°
+          </text>
+        </>
       )}
-    </group>
+
+      {/* 布儒斯特角标注 */}
+      {isAtBrewster && (
+        <motion.g
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <rect x={cx - 80} y="8" width="160" height="30" rx="6" fill="rgba(34,211,238,0.2)" stroke="#22d3ee" strokeWidth="1" />
+          <text x={cx} y="28" textAnchor="middle" fill="#22d3ee" fontSize="14" fontWeight="bold">
+            布儒斯特角 θB = {brewsterAngle.toFixed(1)}°
+          </text>
+        </motion.g>
+      )}
+
+      {/* 90度标记 - 反射光与折射光垂直 */}
+      {isAtBrewster && !result.totalReflection && (
+        <g>
+          <path
+            d={`M ${cx + 20 * Math.sin(rad)} ${cy - 20 * Math.cos(rad)}
+                L ${cx + 20 * Math.sin(rad) + 15 * Math.sin(refractRad)} ${cy - 20 * Math.cos(rad) + 15 * Math.cos(refractRad)}
+                L ${cx + 15 * Math.sin(refractRad)} ${cy + 15 * Math.cos(refractRad)}`}
+            fill="none"
+            stroke="#fbbf24"
+            strokeWidth="1.5"
+          />
+          <text x={cx + 35} y={cy + 10} fill="#fbbf24" fontSize="11">90°</text>
+        </g>
+      )}
+
+      {/* 图例 */}
+      <g transform="translate(450, 30)">
+        <rect x="0" y="0" width="110" height="90" fill="rgba(30,41,59,0.9)" rx="6" stroke="#475569" strokeWidth="1" />
+        <text x="10" y="18" fill="#94a3b8" fontSize="10">偏振状态</text>
+        <PolarizationIndicator type="unpolarized" x={25} y={35} size={16} color="#fbbf24" />
+        <text x="45" y="39" fill="#fbbf24" fontSize="10">自然光</text>
+        <PolarizationIndicator type="s" x={25} y={55} size={16} color="#22d3ee" />
+        <text x="45" y="59" fill="#22d3ee" fontSize="10">s偏振</text>
+        <PolarizationIndicator type="p" x={25} y={75} size={16} color="#f472b6" />
+        <text x="45" y="79" fill="#f472b6" fontSize="10">p偏振</text>
+      </g>
+    </svg>
   )
 }
 
-// 3D场景
-function BrewsterScene({
-  incidentAngle,
-  n1,
-  n2,
-}: {
-  incidentAngle: number
-  n1: number
-  n2: number
-}) {
-  return (
-    <>
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={0.8} />
-      <pointLight position={[-5, 5, -5]} intensity={0.4} />
-
-      {/* 光源 */}
-      <group position={[-3 * Math.sin((incidentAngle * Math.PI) / 180), 3 * Math.cos((incidentAngle * Math.PI) / 180), 0]}>
-        <mesh>
-          <sphereGeometry args={[0.2, 16, 16]} />
-          <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={0.5} />
-        </mesh>
-        <pointLight color="#fbbf24" intensity={0.5} distance={2} />
-      </group>
-
-      {/* 玻璃板（固定水平） */}
-      <GlassPlate rotation={0} n={n2} />
-
-      {/* 光线 */}
-      <LightBeams incidentAngle={incidentAngle} n1={n1} n2={n2} />
-
-      {/* 屏幕 */}
-      <group position={[4, 2, 0]}>
-        <mesh>
-          <planeGeometry args={[1.5, 1.5]} />
-          <meshStandardMaterial color="#1e293b" />
-        </mesh>
-        <Text position={[0, -1, 0]} fontSize={0.2} color="#94a3b8">
-          反射屏幕
-        </Text>
-      </group>
-
-      <OrbitControls enablePan={true} enableZoom={true} />
-    </>
-  )
-}
-
-// 偏振度图
+// 偏振度曲线图
 function PolarizationDegreeChart({
   n1,
   n2,
@@ -258,82 +357,122 @@ function PolarizationDegreeChart({
 }) {
   const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
 
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-      ctx.fillStyle = '#1e293b'
-      ctx.fillRect(0, 0, width, height)
+  const { pdPath, rsPath, rpPath } = useMemo(() => {
+    const pdPoints: string[] = []
+    const rsPoints: string[] = []
+    const rpPoints: string[] = []
 
-      const margin = { left: 50, right: 20, top: 20, bottom: 40 }
-      const chartWidth = width - margin.left - margin.right
-      const chartHeight = height - margin.top - margin.bottom
+    for (let angle = 1; angle <= 89; angle += 1) {
+      const result = calculateBrewster(angle, n1, n2)
+      if (result.totalReflection) continue
 
-      // 坐标轴
-      ctx.strokeStyle = '#475569'
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.moveTo(margin.left, margin.top)
-      ctx.lineTo(margin.left, height - margin.bottom)
-      ctx.lineTo(width - margin.right, height - margin.bottom)
-      ctx.stroke()
+      const pd = Math.abs(result.Rs - result.Rp) / (result.Rs + result.Rp + 0.001)
+      const x = 40 + (angle / 90) * 220
+      const yPd = 130 - pd * 100
+      const yRs = 130 - result.Rs * 100
+      const yRp = 130 - result.Rp * 100
 
-      // 刻度
-      ctx.fillStyle = '#94a3b8'
-      ctx.font = '10px sans-serif'
-      ctx.fillText('0°', margin.left - 5, height - margin.bottom + 15)
-      ctx.fillText('90°', width - margin.right - 15, height - margin.bottom + 15)
-      ctx.fillText('100%', margin.left - 35, margin.top + 5)
-      ctx.fillText('0%', margin.left - 25, height - margin.bottom - 5)
-      ctx.fillText('偏振度', 5, margin.top - 5)
+      pdPoints.push(`${angle === 1 ? 'M' : 'L'} ${x},${yPd}`)
+      rsPoints.push(`${angle === 1 ? 'M' : 'L'} ${x},${yRs}`)
+      rpPoints.push(`${angle === 1 ? 'M' : 'L'} ${x},${yRp}`)
+    }
 
-      // 绘制偏振度曲线
-      // 偏振度 = (Rs - Rp) / (Rs + Rp)
-      ctx.strokeStyle = '#a78bfa'
-      ctx.lineWidth = 2
-      ctx.beginPath()
-      let started = false
-      for (let angle = 1; angle <= 89; angle++) {
-        const result = calculateBrewster(angle, n1, n2)
-        if (result.totalReflection) continue
-        const polarizationDegree = Math.abs(result.Rs - result.Rp) / (result.Rs + result.Rp + 0.001)
-        const x = margin.left + (angle / 90) * chartWidth
-        const y = height - margin.bottom - polarizationDegree * chartHeight
-        if (!started) {
-          ctx.moveTo(x, y)
-          started = true
-        } else {
-          ctx.lineTo(x, y)
-        }
-      }
-      ctx.stroke()
+    return {
+      pdPath: pdPoints.join(' '),
+      rsPath: rsPoints.join(' '),
+      rpPath: rpPoints.join(' '),
+    }
+  }, [n1, n2])
 
-      // 布儒斯特角标记
-      const brewsterX = margin.left + (brewsterAngle / 90) * chartWidth
-      ctx.strokeStyle = '#22d3ee'
-      ctx.setLineDash([5, 3])
-      ctx.beginPath()
-      ctx.moveTo(brewsterX, margin.top)
-      ctx.lineTo(brewsterX, height - margin.bottom)
-      ctx.stroke()
-      ctx.setLineDash([])
+  const currentResult = calculateBrewster(currentAngle, n1, n2)
+  const currentPD = Math.abs(currentResult.Rs - currentResult.Rp) / (currentResult.Rs + currentResult.Rp + 0.001)
+  const currentX = 40 + (currentAngle / 90) * 220
+  const currentY = 130 - currentPD * 100
 
-      ctx.fillStyle = '#22d3ee'
-      ctx.fillText(`θB = ${brewsterAngle.toFixed(1)}°`, brewsterX - 25, margin.top - 5)
+  return (
+    <svg viewBox="0 0 300 160" className="w-full h-auto">
+      <rect x="40" y="30" width="220" height="100" fill="#1e293b" rx="4" />
 
-      // 当前角度
-      const currentX = margin.left + (currentAngle / 90) * chartWidth
-      const currentResult = calculateBrewster(currentAngle, n1, n2)
-      const currentPD = Math.abs(currentResult.Rs - currentResult.Rp) / (currentResult.Rs + currentResult.Rp + 0.001)
-      const currentY = height - margin.bottom - currentPD * chartHeight
+      {/* 坐标轴 */}
+      <line x1="40" y1="130" x2="270" y2="130" stroke="#475569" strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke="#475569" strokeWidth="1" />
 
-      ctx.fillStyle = '#f472b6'
-      ctx.beginPath()
-      ctx.arc(currentX, currentY, 6, 0, 2 * Math.PI)
-      ctx.fill()
-    },
-    [n1, n2, currentAngle]
+      {/* X轴刻度 */}
+      {[0, 45, 90].map((angle) => {
+        const x = 40 + (angle / 90) * 220
+        return (
+          <g key={angle}>
+            <line x1={x} y1="130" x2={x} y2="135" stroke="#94a3b8" strokeWidth="1" />
+            <text x={x} y="147" textAnchor="middle" fill="#94a3b8" fontSize="10">{angle}°</text>
+          </g>
+        )
+      })}
+
+      {/* Y轴刻度 */}
+      {[0, 0.5, 1].map((val, i) => {
+        const y = 130 - val * 100
+        return (
+          <g key={i}>
+            <text x="30" y={y + 4} textAnchor="end" fill="#94a3b8" fontSize="10">{(val * 100).toFixed(0)}%</text>
+          </g>
+        )
+      })}
+
+      {/* 布儒斯特角标记 */}
+      <line
+        x1={40 + (brewsterAngle / 90) * 220}
+        y1="30"
+        x2={40 + (brewsterAngle / 90) * 220}
+        y2="130"
+        stroke="#22d3ee"
+        strokeWidth="1.5"
+        strokeDasharray="5 3"
+      />
+      <text
+        x={40 + (brewsterAngle / 90) * 220}
+        y="25"
+        textAnchor="middle"
+        fill="#22d3ee"
+        fontSize="9"
+        fontWeight="500"
+      >
+        θB
+      </text>
+
+      {/* Rs曲线 */}
+      <path d={rsPath} fill="none" stroke="#22d3ee" strokeWidth="1.5" opacity="0.5" />
+
+      {/* Rp曲线 */}
+      <path d={rpPath} fill="none" stroke="#f472b6" strokeWidth="1.5" opacity="0.5" />
+
+      {/* 偏振度曲线 */}
+      <path d={pdPath} fill="none" stroke="#a78bfa" strokeWidth="2.5" />
+
+      {/* 当前点 */}
+      <motion.circle
+        cx={currentX}
+        cy={currentY}
+        r="6"
+        fill="#a78bfa"
+        animate={{ cx: currentX, cy: currentY }}
+        transition={{ duration: 0.2 }}
+      />
+
+      {/* 轴标签 */}
+      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="11">θ (度)</text>
+      <text x="8" y="18" fill="#a78bfa" fontSize="10">偏振度</text>
+
+      {/* 图例 */}
+      <g transform="translate(200, 35)">
+        <line x1="0" y1="0" x2="15" y2="0" stroke="#a78bfa" strokeWidth="2" />
+        <text x="20" y="4" fill="#a78bfa" fontSize="9">偏振度</text>
+        <line x1="0" y1="12" x2="15" y2="12" stroke="#22d3ee" strokeWidth="1.5" opacity="0.5" />
+        <text x="20" y="16" fill="#22d3ee" fontSize="9">Rs</text>
+        <line x1="0" y1="24" x2="15" y2="24" stroke="#f472b6" strokeWidth="1.5" opacity="0.5" />
+        <text x="20" y="28" fill="#f472b6" fontSize="9">Rp</text>
+      </g>
+    </svg>
   )
-
-  return <Demo2DCanvas width={320} height={180} draw={draw} />
 }
 
 // 主演示组件
@@ -344,110 +483,192 @@ export function BrewsterDemo() {
 
   const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
   const result = calculateBrewster(incidentAngle, n1, n2)
-  const isAtBrewster = Math.abs(incidentAngle - brewsterAngle) < 1
+  const isAtBrewster = Math.abs(incidentAngle - brewsterAngle) < 1.5
   const polarizationDegree = Math.abs(result.Rs - result.Rp) / (result.Rs + result.Rp + 0.001)
 
   // 常见材料预设
   const materials = [
-    { name: '玻璃', n: 1.5 },
-    { name: '水', n: 1.33 },
-    { name: '钻石', n: 2.42 },
-    { name: '冰', n: 1.31 },
+    { name: '玻璃', n: 1.5, brewster: 56.3 },
+    { name: '水', n: 1.33, brewster: 53.1 },
+    { name: '钻石', n: 2.42, brewster: 67.5 },
+    { name: '冰', n: 1.31, brewster: 52.6 },
   ]
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-full">
-      {/* 3D 可视化 */}
-      <div className="flex-1 bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden min-h-[400px]">
-        <Canvas
-          camera={{ position: [0, 4, 8], fov: 50 }}
-          gl={{ antialias: true }}
-        >
-          <BrewsterScene incidentAngle={incidentAngle} n1={n1} n2={n2} />
-        </Canvas>
+    <div className="space-y-6">
+      {/* 标题 */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+          布儒斯特角交互演示
+        </h2>
+        <p className="text-gray-400 mt-1">
+          tan(θB) = n₂/n₁ —— 在此角度入射时，反射光为完全s偏振
+        </p>
       </div>
 
-      {/* 控制面板 */}
-      <div className="w-full lg:w-80 space-y-4">
-        <ControlPanel title="参数控制">
-          <SliderControl
-            label="入射角 θ"
-            value={incidentAngle}
-            min={0}
-            max={89}
-            step={1}
-            unit="°"
-            onChange={setIncidentAngle}
-          />
-          <SliderControl
-            label="介质折射率 n"
-            value={n2}
-            min={1.1}
-            max={2.5}
-            step={0.01}
-            onChange={setN2}
-            formatValue={(v) => v.toFixed(2)}
-          />
-          <ButtonGroup
-            label="常见材料"
-            options={materials.map((m) => ({ value: m.n, label: m.name }))}
-            value={n2}
-            onChange={(v) => setN2(v as number)}
-          />
-          <button
-            onClick={() => setIncidentAngle(Math.round(brewsterAngle))}
-            className="w-full py-2 bg-cyan-400/20 text-cyan-400 rounded-lg hover:bg-cyan-400/30 transition-colors"
-          >
-            跳转到布儒斯特角
-          </button>
-        </ControlPanel>
-
-        <ControlPanel title="计算结果">
-          <ValueDisplay
-            label="布儒斯特角 θB"
-            value={brewsterAngle.toFixed(1)}
-            unit="°"
-            color="cyan"
-          />
-          <ValueDisplay
-            label="当前入射角"
-            value={incidentAngle}
-            unit="°"
-            color={isAtBrewster ? 'green' : 'orange'}
-          />
-          <ValueDisplay
-            label="s偏振反射率"
-            value={(result.Rs * 100).toFixed(1)}
-            unit="%"
-          />
-          <ValueDisplay
-            label="p偏振反射率"
-            value={(result.Rp * 100).toFixed(1)}
-            unit="%"
-            color={result.Rp < 0.01 ? 'green' : 'orange'}
-          />
-          <ValueDisplay
-            label="偏振度"
-            value={(polarizationDegree * 100).toFixed(0)}
-            unit="%"
-            color={polarizationDegree > 0.9 ? 'green' : 'orange'}
-          />
-          <Formula>tan(θB) = n₂/n₁</Formula>
-        </ControlPanel>
-
-        <ControlPanel title="反射光偏振度">
-          <PolarizationDegreeChart n1={n1} n2={n2} currentAngle={incidentAngle} />
-        </ControlPanel>
-
-        <InfoPanel title="布儒斯特现象">
-          <div className="space-y-2 text-xs">
-            <p>在布儒斯特角入射时：</p>
-            <p className="text-cyan-400">• p偏振反射率为零 (Rp = 0)</p>
-            <p className="text-cyan-400">• 反射光为完全s偏振</p>
-            <p className="text-cyan-400">• 折射光+反射光方向垂直</p>
-            <p className="mt-2 text-gray-500">应用：减反射涂层、偏振镜片</p>
+      {/* 主体内容 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 左侧：可视化 */}
+        <div className="space-y-4">
+          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+            <BrewsterDiagram incidentAngle={incidentAngle} n1={n1} n2={n2} />
           </div>
-        </InfoPanel>
+
+          {/* 状态指示 */}
+          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-400">当前入射角:</span>
+                  <span className="font-mono text-lg text-orange-400">{incidentAngle}°</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-400">布儒斯特角:</span>
+                  <span className="font-mono text-lg text-cyan-400">{brewsterAngle.toFixed(1)}°</span>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className={`text-2xl font-bold ${isAtBrewster ? 'text-green-400' : 'text-gray-500'}`}>
+                  {isAtBrewster ? '匹配!' : `差 ${Math.abs(incidentAngle - brewsterAngle).toFixed(1)}°`}
+                </div>
+                <div className="text-sm text-gray-500">
+                  偏振度: <span className="text-purple-400 font-mono">{(polarizationDegree * 100).toFixed(0)}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 进度条 */}
+            <div className="mt-4">
+              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    background: isAtBrewster
+                      ? 'linear-gradient(90deg, #22d3ee, #4ade80)'
+                      : 'linear-gradient(90deg, #94a3b8, #64748b)',
+                  }}
+                  animate={{ width: `${polarizationDegree * 100}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 右侧：控制与学习 */}
+        <div className="space-y-4">
+          {/* 参数控制 */}
+          <ControlPanel title="参数控制">
+            <SliderControl
+              label="入射角 θ"
+              value={incidentAngle}
+              min={0}
+              max={89}
+              step={1}
+              unit="°"
+              onChange={setIncidentAngle}
+              color="orange"
+            />
+            <SliderControl
+              label="介质折射率 n₂"
+              value={n2}
+              min={1.1}
+              max={2.5}
+              step={0.01}
+              onChange={setN2}
+              formatValue={(v) => v.toFixed(2)}
+              color="cyan"
+            />
+
+            {/* 材料预设 */}
+            <div className="pt-2">
+              <div className="text-xs text-gray-500 mb-2">常见材料</div>
+              <div className="grid grid-cols-2 gap-2">
+                {materials.map((m) => (
+                  <button
+                    key={m.name}
+                    onClick={() => { setN2(m.n); setIncidentAngle(Math.round(m.brewster)) }}
+                    className="px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                  >
+                    {m.name} (θB≈{m.brewster.toFixed(0)}°)
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 跳转按钮 */}
+            <motion.button
+              className="w-full py-2.5 mt-3 bg-gradient-to-r from-cyan-500/20 to-cyan-400/20 text-cyan-400 rounded-lg border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors font-medium"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setIncidentAngle(Math.round(brewsterAngle))}
+            >
+              跳转到布儒斯特角
+            </motion.button>
+          </ControlPanel>
+
+          {/* 计算结果 */}
+          <ControlPanel title="计算结果">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="p-2 bg-slate-900/50 rounded-lg">
+                <div className="text-gray-500 text-xs">s偏振反射率 Rs</div>
+                <div className="text-cyan-400 font-mono text-lg">{(result.Rs * 100).toFixed(1)}%</div>
+              </div>
+              <div className="p-2 bg-slate-900/50 rounded-lg">
+                <div className="text-gray-500 text-xs">p偏振反射率 Rp</div>
+                <div className={`font-mono text-lg ${result.Rp < 0.01 ? 'text-green-400' : 'text-pink-400'}`}>
+                  {(result.Rp * 100).toFixed(1)}%
+                </div>
+              </div>
+              <div className="p-2 bg-slate-900/50 rounded-lg">
+                <div className="text-gray-500 text-xs">折射角 θ₂</div>
+                <div className="text-green-400 font-mono text-lg">{result.theta2.toFixed(1)}°</div>
+              </div>
+              <div className="p-2 bg-slate-900/50 rounded-lg">
+                <div className="text-gray-500 text-xs">θ₁ + θ₂</div>
+                <div className={`font-mono text-lg ${Math.abs(incidentAngle + result.theta2 - 90) < 1.5 ? 'text-green-400' : 'text-gray-400'}`}>
+                  {(incidentAngle + result.theta2).toFixed(1)}°
+                </div>
+              </div>
+            </div>
+
+            {/* 公式 */}
+            <div className="mt-3 p-3 bg-slate-900/50 rounded-lg text-center">
+              <span className="font-mono text-lg bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent">
+                tan(θB) = n₂/n₁ = {n2.toFixed(2)}/{n1.toFixed(2)} = {(n2/n1).toFixed(3)}
+              </span>
+            </div>
+          </ControlPanel>
+
+          {/* 偏振度曲线 */}
+          <ControlPanel title="反射光偏振度">
+            <PolarizationDegreeChart n1={n1} n2={n2} currentAngle={incidentAngle} />
+            <p className="text-xs text-gray-400 mt-2">
+              在布儒斯特角处，Rp=0，反射光偏振度达到100%（完全s偏振）。
+            </p>
+          </ControlPanel>
+        </div>
+      </div>
+
+      {/* 知识卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <InfoCard title="布儒斯特角" color="cyan">
+          <p className="text-xs text-gray-300">
+            当入射角等于布儒斯特角时，反射光与折射光垂直（θ₁+θ₂=90°），p偏振反射率为零，反射光成为完全s偏振。
+          </p>
+        </InfoCard>
+        <InfoCard title="物理解释" color="purple">
+          <p className="text-xs text-gray-300">
+            在布儒斯特角，折射光中的振动电荷（p偏振方向）与反射方向平行，无法有效辐射能量到反射方向。
+          </p>
+        </InfoCard>
+        <InfoCard title="应用场景" color="orange">
+          <ul className="text-xs text-gray-300 space-y-1">
+            <li>• 偏振镜片减少眩光</li>
+            <li>• 激光器布儒斯特窗</li>
+            <li>• 摄影偏振滤镜</li>
+          </ul>
+        </InfoCard>
       </div>
     </div>
   )

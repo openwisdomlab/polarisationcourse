@@ -1,20 +1,18 @@
 /**
  * 旋光性演示 - Unit 3
  * 演示糖溶液等手性物质对偏振面的旋转
+ * 采用纯DOM + SVG + Framer Motion一体化设计
  */
-import { useState, useRef, useCallback } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Line, Text, Cylinder } from '@react-three/drei'
-import * as THREE from 'three'
-import { SliderControl, ControlPanel, ValueDisplay, ButtonGroup, InfoPanel, Formula } from '../DemoControls'
-import { Demo2DCanvas } from '../Demo2DCanvas'
+import { useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
+import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 旋光率数据 (deg/(dm·g/mL))
-const SPECIFIC_ROTATIONS: Record<string, number> = {
-  sucrose: 66.5, // 蔗糖
-  glucose: 52.7, // 葡萄糖
-  fructose: -92, // 果糖（左旋）
-  quartz: 21.7, // 石英 (deg/mm)
+const SPECIFIC_ROTATIONS: Record<string, { value: number; direction: 'd' | 'l' }> = {
+  sucrose: { value: 66.5, direction: 'd' }, // 蔗糖 (右旋)
+  glucose: { value: 52.7, direction: 'd' }, // 葡萄糖 (右旋)
+  fructose: { value: -92, direction: 'l' }, // 果糖 (左旋)
+  tartaric: { value: 12, direction: 'd' }, // 酒石酸 (右旋)
 }
 
 // 计算旋光角度
@@ -23,174 +21,8 @@ function calculateRotation(specificRotation: number, concentration: number, path
   return specificRotation * concentration * pathLength
 }
 
-// 旋光样品管组件
-function SampleTube({
-  position,
-  length,
-  concentration,
-}: {
-  position: [number, number, number]
-  length: number
-  concentration: number
-  substance: string
-}) {
-  // 颜色基于浓度
-  const tubeColor = new THREE.Color().setHSL(0.55, 0.6, 0.3 + concentration * 0.2)
-
-  return (
-    <group position={position}>
-      {/* 管壁 */}
-      <Cylinder args={[0.8, 0.8, length * 2, 32, 1, true]} rotation={[0, 0, Math.PI / 2]}>
-        <meshStandardMaterial color="#67e8f9" transparent opacity={0.2} side={THREE.DoubleSide} />
-      </Cylinder>
-      {/* 溶液 */}
-      <Cylinder args={[0.75, 0.75, length * 2 - 0.1, 32]} rotation={[0, 0, Math.PI / 2]}>
-        <meshStandardMaterial color={tubeColor} transparent opacity={0.4} />
-      </Cylinder>
-      {/* 端盖 */}
-      <mesh position={[-length, 0, 0]}>
-        <circleGeometry args={[0.8, 32]} />
-        <meshStandardMaterial color="#475569" side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[length, 0, 0]} rotation={[0, Math.PI, 0]}>
-        <circleGeometry args={[0.8, 32]} />
-        <meshStandardMaterial color="#475569" side={THREE.DoubleSide} />
-      </mesh>
-      <Text position={[0, -1.5, 0]} fontSize={0.2} color="#94a3b8">
-        样品管 (L={length.toFixed(1)} dm)
-      </Text>
-    </group>
-  )
-}
-
-// 偏振面旋转可视化
-function PolarizationRotation({
-  start,
-  end,
-  inputAngle,
-  outputAngle,
-}: {
-  start: [number, number, number]
-  end: [number, number, number]
-  inputAngle: number
-  outputAngle: number
-}) {
-  const groupRef = useRef<THREE.Group>(null)
-  const timeRef = useRef(0)
-
-  // 沿路径显示偏振面旋转
-  const segments = 20
-  const positions: [number, number, number][] = []
-  const angles: number[] = []
-
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments
-    positions.push([
-      start[0] + (end[0] - start[0]) * t,
-      start[1] + (end[1] - start[1]) * t,
-      start[2] + (end[2] - start[2]) * t,
-    ])
-    // 线性插值角度
-    angles.push(inputAngle + (outputAngle - inputAngle) * t)
-  }
-
-  useFrame((_, delta) => {
-    timeRef.current += delta
-  })
-
-  // 根据旋转方向选择颜色
-  const isRightRotation = outputAngle > inputAngle
-  const baseColor = isRightRotation ? '#22d3ee' : '#f472b6'
-
-  return (
-    <group ref={groupRef}>
-      {/* 光束中心线 */}
-      <Line points={[start, end]} color="#fbbf24" lineWidth={2} transparent opacity={0.5} />
-      {/* 沿路径的偏振指示器 */}
-      {positions.map((pos, i) => {
-        if (i % 3 !== 0) return null // 每3个显示一个
-        const angle = angles[i]
-        const t = i / segments
-        const color = new THREE.Color(baseColor).lerp(new THREE.Color('#fbbf24'), 1 - t)
-        return (
-          <group key={i} position={pos}>
-            <Line
-              points={[
-                [0, -0.4, 0],
-                [0, 0.4, 0],
-              ]}
-              color={color}
-              lineWidth={2}
-              rotation={[0, 0, (angle * Math.PI) / 180]}
-            />
-          </group>
-        )
-      })}
-    </group>
-  )
-}
-
-// 偏振片组件
-function Polarizer({
-  position,
-  angle,
-  label,
-  color = '#22d3ee',
-}: {
-  position: [number, number, number]
-  angle: number
-  label: string
-  color?: string
-}) {
-  return (
-    <group position={position}>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.5, 0.7, 32]} />
-        <meshStandardMaterial color={color} side={THREE.DoubleSide} />
-      </mesh>
-      {/* 透光轴 */}
-      <Line
-        points={[
-          [0, -0.8, 0],
-          [0, 0.8, 0],
-        ]}
-        color={color}
-        lineWidth={3}
-        rotation={[0, 0, (angle * Math.PI) / 180]}
-      />
-      <Text position={[0, -1.2, 0]} fontSize={0.18} color="#94a3b8">
-        {label}
-      </Text>
-    </group>
-  )
-}
-
-// 观察屏
-function Screen({
-  position,
-  intensity,
-}: {
-  position: [number, number, number]
-  intensity: number
-}) {
-  const brightness = Math.max(0.05, intensity)
-  const color = new THREE.Color().setHSL(0.15, 0.8, brightness * 0.5)
-
-  return (
-    <group position={position}>
-      <mesh>
-        <planeGeometry args={[1.5, 1.5]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.3} />
-      </mesh>
-      <Text position={[0, -1.2, 0]} fontSize={0.18} color="#94a3b8">
-        屏幕 ({(intensity * 100).toFixed(0)}%)
-      </Text>
-    </group>
-  )
-}
-
-// 3D场景
-function OpticalRotationScene({
+// 旋光仪光路图
+function OpticalRotationDiagram({
   substance,
   concentration,
   pathLength,
@@ -201,115 +33,234 @@ function OpticalRotationScene({
   pathLength: number
   analyzerAngle: number
 }) {
-  const specificRotation = SPECIFIC_ROTATIONS[substance] || 66.5
+  const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
   const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
-  const polarizerAngle = 0
+  const isRightRotation = rotationAngle >= 0
 
-  // 输出偏振角
-  const outputPolarization = polarizerAngle + rotationAngle
-
-  // 通过检偏器的强度（马吕斯定律）
-  const angleDiff = Math.abs(outputPolarization - analyzerAngle)
+  // 检偏器与偏振光的角度差
+  const angleDiff = Math.abs(rotationAngle - analyzerAngle)
   const intensity = Math.pow(Math.cos((angleDiff * Math.PI) / 180), 2)
 
   return (
-    <>
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={0.8} />
+    <svg viewBox="0 0 700 300" className="w-full h-auto">
+      <defs>
+        <linearGradient id="tubeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.3" />
+          <stop offset="50%" stopColor="#0284c7" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.3" />
+        </linearGradient>
+        <linearGradient id="solutionGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.2 + concentration * 0.4} />
+          <stop offset="50%" stopColor="#f59e0b" stopOpacity={0.3 + concentration * 0.5} />
+          <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.2 + concentration * 0.4} />
+        </linearGradient>
+        <filter id="lightGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
 
-      {/* 光源 */}
-      <group position={[-5, 0, 0]}>
-        <mesh>
-          <sphereGeometry args={[0.3, 16, 16]} />
-          <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={0.5} />
-        </mesh>
-        <pointLight color="#fbbf24" intensity={0.8} distance={3} />
-        <Text position={[0, -0.8, 0]} fontSize={0.18} color="#94a3b8">
-          单色光源
-        </Text>
-      </group>
+      {/* 背景 */}
+      <rect x="0" y="0" width="700" height="300" fill="#0f172a" rx="8" />
+
+      {/* 单色光源 */}
+      <g transform="translate(50, 150)">
+        <motion.circle
+          r="20"
+          fill="#fbbf24"
+          filter="url(#lightGlow)"
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+        <text x="0" y="45" textAnchor="middle" fill="#94a3b8" fontSize="11">单色光源</text>
+      </g>
+
+      {/* 光束到起偏器 */}
+      <motion.rect
+        x="70"
+        y="145"
+        width="50"
+        height="10"
+        fill="#fbbf24"
+        opacity="0.7"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.3 }}
+      />
 
       {/* 起偏器 */}
-      <Polarizer position={[-3.5, 0, 0]} angle={polarizerAngle} label={`起偏器 (${polarizerAngle}°)`} />
+      <g transform="translate(130, 150)">
+        <rect x="-8" y="-40" width="16" height="80" fill="#1e3a5f" stroke="#22d3ee" strokeWidth="2" rx="3" />
+        <line x1="0" y1="-30" x2="0" y2="30" stroke="#22d3ee" strokeWidth="3" />
+        <text x="0" y="55" textAnchor="middle" fill="#22d3ee" fontSize="11">起偏器</text>
+        <text x="0" y="68" textAnchor="middle" fill="#94a3b8" fontSize="10">0°</text>
+      </g>
 
-      {/* 入射偏振光 */}
-      <Line
-        points={[
-          [-4.5, 0, 0],
-          [-3.8, 0, 0],
-        ]}
-        color="#fbbf24"
-        lineWidth={3}
-      />
-      <Line
-        points={[
-          [-3.2, 0, 0],
-          [-pathLength - 0.5, 0, 0],
-        ]}
-        color="#fbbf24"
-        lineWidth={3}
-      />
+      {/* 偏振光 (水平偏振) */}
+      <rect x="146" y="146" width="50" height="8" fill="#22d3ee" opacity="0.8" />
+
+      {/* 偏振指示器 - 入射 */}
+      <g transform="translate(175, 150)">
+        <line x1="-12" y1="0" x2="12" y2="0" stroke="#22d3ee" strokeWidth="2" />
+        <text x="0" y="-20" textAnchor="middle" fill="#22d3ee" fontSize="9">0°</text>
+      </g>
 
       {/* 样品管 */}
-      <SampleTube
-        position={[0, 0, 0]}
-        length={pathLength}
-        concentration={concentration}
-        substance={substance}
+      <g transform="translate(315, 150)">
+        {/* 管壁 */}
+        <rect
+          x={-80}
+          y="-30"
+          width={160 + pathLength * 60}
+          height="60"
+          fill="url(#tubeGradient)"
+          stroke="#67e8f9"
+          strokeWidth="2"
+          rx="30"
+        />
+        {/* 溶液 */}
+        <rect
+          x={-75}
+          y="-25"
+          width={150 + pathLength * 60}
+          height="50"
+          fill="url(#solutionGradient)"
+          rx="25"
+        />
+        {/* 标注 */}
+        <text x={(pathLength * 60) / 2} y="50" textAnchor="middle" fill="#67e8f9" fontSize="11">
+          样品管 (L={pathLength.toFixed(1)} dm)
+        </text>
+        <text x={(pathLength * 60) / 2} y="65" textAnchor="middle" fill="#94a3b8" fontSize="10">
+          c={concentration.toFixed(2)} g/mL
+        </text>
+      </g>
+
+      {/* 偏振面旋转指示 - 沿管路 */}
+      {[0, 0.25, 0.5, 0.75, 1].map((t, i) => {
+        const x = 240 + t * (100 + pathLength * 60)
+        const currentAngle = rotationAngle * t
+        const color = isRightRotation ? '#22d3ee' : '#f472b6'
+        return (
+          <g key={i} transform={`translate(${x}, 150)`}>
+            <motion.line
+              x1="-10"
+              y1="0"
+              x2="10"
+              y2="0"
+              stroke={color}
+              strokeWidth="2"
+              transform={`rotate(${currentAngle})`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              transition={{ delay: i * 0.1 }}
+            />
+          </g>
+        )
+      })}
+
+      {/* 出射偏振光 */}
+      <rect
+        x={410 + pathLength * 60}
+        y="146"
+        width="60"
+        height="8"
+        fill={isRightRotation ? '#22d3ee' : '#f472b6'}
+        opacity="0.8"
       />
 
-      {/* 偏振面旋转可视化 */}
-      <PolarizationRotation
-        start={[-pathLength + 0.1, 0, 0]}
-        end={[pathLength - 0.1, 0, 0]}
-        inputAngle={polarizerAngle}
-        outputAngle={outputPolarization}
-      />
-
-      {/* 出射光 */}
-      <Line
-        points={[
-          [pathLength + 0.5, 0, 0],
-          [3.2, 0, 0],
-        ]}
-        color={rotationAngle >= 0 ? '#22d3ee' : '#f472b6'}
-        lineWidth={3}
-      />
+      {/* 偏振指示器 - 出射 */}
+      <g transform={`translate(${440 + pathLength * 60}, 150)`}>
+        <motion.line
+          x1="-12"
+          y1="0"
+          x2="12"
+          y2="0"
+          stroke={isRightRotation ? '#22d3ee' : '#f472b6'}
+          strokeWidth="2.5"
+          transform={`rotate(${rotationAngle})`}
+        />
+        <text x="0" y="-20" textAnchor="middle" fill={isRightRotation ? '#22d3ee' : '#f472b6'} fontSize="9">
+          {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
+        </text>
+      </g>
 
       {/* 检偏器 */}
-      <Polarizer
-        position={[3.5, 0, 0]}
-        angle={analyzerAngle}
-        label={`检偏器 (${analyzerAngle}°)`}
-        color="#a78bfa"
+      <g transform={`translate(${500 + pathLength * 60}, 150)`}>
+        <rect x="-8" y="-40" width="16" height="80" fill="#1e3a5f" stroke="#a78bfa" strokeWidth="2" rx="3" />
+        <motion.line
+          x1="0"
+          y1="-30"
+          x2="0"
+          y2="30"
+          stroke="#a78bfa"
+          strokeWidth="3"
+          transform={`rotate(${analyzerAngle})`}
+        />
+        <text x="0" y="55" textAnchor="middle" fill="#a78bfa" fontSize="11">检偏器</text>
+        <text x="0" y="68" textAnchor="middle" fill="#94a3b8" fontSize="10">{analyzerAngle.toFixed(0)}°</text>
+      </g>
+
+      {/* 到屏幕的光束 */}
+      <rect
+        x={516 + pathLength * 60}
+        y="146"
+        width="40"
+        height="8"
+        fill="#a78bfa"
+        opacity={Math.max(0.2, intensity)}
       />
 
-      {/* 出射到屏幕 */}
-      <Line
-        points={[
-          [3.8, 0, 0],
-          [5, 0, 0],
-        ]}
-        color="#a78bfa"
-        lineWidth={Math.max(1, 3 * intensity)}
-        transparent
-        opacity={Math.max(0.3, intensity)}
-      />
+      {/* 屏幕/探测器 */}
+      <g transform={`translate(${580 + pathLength * 60}, 150)`}>
+        <motion.rect
+          x="-25"
+          y="-35"
+          width="50"
+          height="70"
+          fill={`rgba(255, 255, 255, ${intensity * 0.8})`}
+          stroke="#475569"
+          strokeWidth="2"
+          rx="6"
+          animate={{ opacity: [0.8, 1, 0.8] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        />
+        <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="11">
+          {(intensity * 100).toFixed(0)}%
+        </text>
+      </g>
 
-      {/* 屏幕 */}
-      <Screen position={[5.5, 0, 0]} intensity={intensity} />
+      {/* 旋转方向标注 */}
+      <g transform="translate(350, 230)">
+        <rect x="-80" y="-15" width="160" height="30" fill="rgba(30,41,59,0.8)" rx="6" />
+        <text x="0" y="5" textAnchor="middle" fill={isRightRotation ? '#22d3ee' : '#f472b6'} fontSize="13" fontWeight="500">
+          {isRightRotation ? '右旋 (d/+)' : '左旋 (l/-)'}: α = {rotationAngle.toFixed(1)}°
+        </text>
+      </g>
 
-      {/* 旋转角度标注 */}
-      <Text position={[0, 2, 0]} fontSize={0.25} color={rotationAngle >= 0 ? '#22d3ee' : '#f472b6'}>
-        旋转角: {rotationAngle.toFixed(1)}° ({rotationAngle >= 0 ? '右旋' : '左旋'})
-      </Text>
-
-      <OrbitControls enablePan={true} enableZoom={true} />
-    </>
+      {/* 旋转弧线指示 */}
+      <g transform={`translate(${440 + pathLength * 60}, 90)`}>
+        <path
+          d={`M 0 0 A 25 25 0 ${Math.abs(rotationAngle) > 180 ? 1 : 0} ${isRightRotation ? 1 : 0} ${25 * Math.sin((rotationAngle * Math.PI) / 180)} ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}`}
+          fill="none"
+          stroke={isRightRotation ? '#22d3ee' : '#f472b6'}
+          strokeWidth="2"
+          strokeDasharray="4 2"
+        />
+        <motion.polygon
+          points="-4,-8 4,0 -4,8"
+          fill={isRightRotation ? '#22d3ee' : '#f472b6'}
+          transform={`translate(${25 * Math.sin((rotationAngle * Math.PI) / 180)}, ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}) rotate(${rotationAngle + 90})`}
+        />
+      </g>
+    </svg>
   )
 }
 
-// 浓度-旋光角图表
+// 浓度-旋光角曲线
 function RotationChart({
   substance,
   pathLength,
@@ -319,64 +270,76 @@ function RotationChart({
   pathLength: number
   currentConcentration: number
 }) {
-  const specificRotation = SPECIFIC_ROTATIONS[substance] || 66.5
+  const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+  const isPositive = specificRotation >= 0
+  const maxRotation = Math.abs(specificRotation * 1.0 * pathLength)
 
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-      ctx.fillStyle = '#1e293b'
-      ctx.fillRect(0, 0, width, height)
+  const { pathData } = useMemo(() => {
+    const points: string[] = []
 
-      const margin = { left: 50, right: 20, top: 20, bottom: 40 }
-      const chartWidth = width - margin.left - margin.right
-      const chartHeight = height - margin.top - margin.bottom
+    for (let c = 0; c <= 1; c += 0.05) {
+      const rotation = calculateRotation(specificRotation, c, pathLength)
+      const x = 40 + c * 220
+      const y = 100 - (rotation / maxRotation) * 60
 
-      // 坐标轴
-      ctx.strokeStyle = '#475569'
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.moveTo(margin.left, margin.top)
-      ctx.lineTo(margin.left, height - margin.bottom)
-      ctx.lineTo(width - margin.right, height - margin.bottom)
-      ctx.stroke()
+      points.push(`${c === 0 ? 'M' : 'L'} ${x},${y}`)
+    }
 
-      // 标签
-      ctx.fillStyle = '#94a3b8'
-      ctx.font = '10px sans-serif'
-      ctx.fillText('0', margin.left - 10, height - margin.bottom + 15)
-      ctx.fillText('0.5', margin.left + chartWidth / 2 - 10, height - margin.bottom + 15)
-      ctx.fillText('1.0 g/mL', width - margin.right - 30, height - margin.bottom + 15)
+    return { pathData: points.join(' ') }
+  }, [specificRotation, pathLength, maxRotation])
 
-      const maxRotation = Math.abs(specificRotation * 1.0 * pathLength)
-      ctx.fillText('0°', margin.left - 20, height - margin.bottom - 5)
-      ctx.fillText(`${maxRotation.toFixed(0)}°`, margin.left - 30, margin.top + 5)
-      ctx.fillText('α', margin.left - 15, margin.top - 5)
-      ctx.fillText('c', width - margin.right + 5, height - margin.bottom + 5)
+  const currentRotation = calculateRotation(specificRotation, currentConcentration, pathLength)
+  const currentX = 40 + currentConcentration * 220
+  const currentY = 100 - (currentRotation / maxRotation) * 60
 
-      // 绘制线性关系
-      ctx.strokeStyle = specificRotation >= 0 ? '#22d3ee' : '#f472b6'
-      ctx.lineWidth = 2
-      ctx.beginPath()
-      ctx.moveTo(margin.left, height - margin.bottom)
-      ctx.lineTo(
-        width - margin.right,
-        margin.top + chartHeight * (1 - Math.abs(specificRotation * 1.0 * pathLength) / maxRotation)
-      )
-      ctx.stroke()
+  return (
+    <svg viewBox="0 0 300 160" className="w-full h-auto">
+      <rect x="40" y="30" width="220" height="100" fill="#1e293b" rx="4" />
 
-      // 当前点
-      const currentRotation = Math.abs(calculateRotation(specificRotation, currentConcentration, pathLength))
-      const currentX = margin.left + currentConcentration * chartWidth
-      const currentY = height - margin.bottom - (currentRotation / maxRotation) * chartHeight
+      {/* 坐标轴 */}
+      <line x1="40" y1="100" x2="270" y2="100" stroke="#475569" strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke="#475569" strokeWidth="1" />
 
-      ctx.fillStyle = '#f59e0b'
-      ctx.beginPath()
-      ctx.arc(currentX, currentY, 6, 0, 2 * Math.PI)
-      ctx.fill()
-    },
-    [substance, pathLength, currentConcentration]
+      {/* X轴刻度 */}
+      {[0, 0.5, 1].map((c) => {
+        const x = 40 + c * 220
+        return (
+          <g key={c}>
+            <line x1={x} y1="130" x2={x} y2="135" stroke="#94a3b8" strokeWidth="1" />
+            <text x={x} y="147" textAnchor="middle" fill="#94a3b8" fontSize="10">{c}</text>
+          </g>
+        )
+      })}
+
+      {/* Y轴刻度 */}
+      <text x="30" y="104" textAnchor="end" fill="#94a3b8" fontSize="10">0°</text>
+      <text x="30" y="44" textAnchor="end" fill="#94a3b8" fontSize="10">
+        {isPositive ? '+' : ''}{maxRotation.toFixed(0)}°
+      </text>
+
+      {/* 曲线 */}
+      <path
+        d={pathData}
+        fill="none"
+        stroke={isPositive ? '#22d3ee' : '#f472b6'}
+        strokeWidth="2.5"
+      />
+
+      {/* 当前点 */}
+      <motion.circle
+        cx={currentX}
+        cy={currentY}
+        r="6"
+        fill="#fbbf24"
+        animate={{ cx: currentX, cy: currentY }}
+        transition={{ duration: 0.2 }}
+      />
+
+      {/* 轴标签 */}
+      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="11">浓度 c (g/mL)</text>
+      <text x="15" y="70" fill="#94a3b8" fontSize="10" transform="rotate(-90 15 70)">α</text>
+    </svg>
   )
-
-  return <Demo2DCanvas width={300} height={160} draw={draw} />
 }
 
 // 主演示组件
@@ -386,123 +349,190 @@ export function OpticalRotationDemo() {
   const [pathLength, setPathLength] = useState(1.0)
   const [analyzerAngle, setAnalyzerAngle] = useState(0)
 
-  const specificRotation = SPECIFIC_ROTATIONS[substance] || 66.5
+  const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
   const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
-  const outputPolarization = rotationAngle
 
   // 透过强度
-  const angleDiff = Math.abs(outputPolarization - analyzerAngle)
+  const angleDiff = Math.abs(rotationAngle - analyzerAngle)
   const intensity = Math.pow(Math.cos((angleDiff * Math.PI) / 180), 2)
 
   // 物质选项
   const substances = [
-    { value: 'sucrose', label: '蔗糖 (右旋)' },
-    { value: 'glucose', label: '葡萄糖 (右旋)' },
-    { value: 'fructose', label: '果糖 (左旋)' },
+    { value: 'sucrose', label: '蔗糖', rotation: '+66.5°' },
+    { value: 'glucose', label: '葡萄糖', rotation: '+52.7°' },
+    { value: 'fructose', label: '果糖', rotation: '-92.0°' },
+    { value: 'tartaric', label: '酒石酸', rotation: '+12.0°' },
   ]
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-full">
-      {/* 3D 可视化 */}
-      <div className="flex-1 bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden min-h-[400px]">
-        <Canvas
-          camera={{ position: [0, 5, 12], fov: 45 }}
-          gl={{ antialias: true }}
-        >
-          <OpticalRotationScene
-            substance={substance}
-            concentration={concentration}
-            pathLength={pathLength}
-            analyzerAngle={analyzerAngle}
-          />
-        </Canvas>
+    <div className="space-y-6">
+      {/* 标题 */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+          旋光性交互演示
+        </h2>
+        <p className="text-gray-400 mt-1">
+          α = [α] × c × L —— 探索手性物质对偏振面的旋转效应
+        </p>
       </div>
 
-      {/* 控制面板 */}
-      <div className="w-full lg:w-80 space-y-4">
-        <ControlPanel title="物质选择">
-          <ButtonGroup
-            label=""
-            options={substances}
-            value={substance}
-            onChange={(v) => setSubstance(v as string)}
-          />
-          <ValueDisplay
-            label="比旋光度 [α]"
-            value={specificRotation.toFixed(1)}
-            unit="°/(dm·g/mL)"
-            color={specificRotation >= 0 ? 'cyan' : 'purple'}
-          />
-        </ControlPanel>
-
-        <ControlPanel title="实验参数">
-          <SliderControl
-            label="溶液浓度 c"
-            value={concentration}
-            min={0.05}
-            max={1.0}
-            step={0.05}
-            unit=" g/mL"
-            onChange={setConcentration}
-          />
-          <SliderControl
-            label="光程长度 L"
-            value={pathLength}
-            min={0.5}
-            max={2.0}
-            step={0.1}
-            unit=" dm"
-            onChange={setPathLength}
-          />
-          <SliderControl
-            label="检偏器角度"
-            value={analyzerAngle}
-            min={-90}
-            max={90}
-            step={1}
-            unit="°"
-            onChange={setAnalyzerAngle}
-          />
-          <button
-            onClick={() => setAnalyzerAngle(Math.round(rotationAngle))}
-            className="w-full py-2 bg-cyan-400/20 text-cyan-400 rounded-lg hover:bg-cyan-400/30"
-          >
-            对准消光位置
-          </button>
-        </ControlPanel>
-
-        <ControlPanel title="测量结果">
-          <ValueDisplay
-            label="旋光角度 α"
-            value={rotationAngle.toFixed(1)}
-            unit="°"
-            color={rotationAngle >= 0 ? 'cyan' : 'purple'}
-          />
-          <ValueDisplay
-            label="旋光方向"
-            value={rotationAngle >= 0 ? '右旋 (d)' : '左旋 (l)'}
-            color={rotationAngle >= 0 ? 'cyan' : 'purple'}
-          />
-          <ValueDisplay label="透过强度" value={(intensity * 100).toFixed(0)} unit="%" />
-          <Formula>α = [α] × c × L</Formula>
-        </ControlPanel>
-
-        <ControlPanel title="浓度-旋光角关系">
-          <RotationChart
-            substance={substance}
-            pathLength={pathLength}
-            currentConcentration={concentration}
-          />
-        </ControlPanel>
-
-        <InfoPanel title="旋光现象">
-          <div className="space-y-1 text-xs">
-            <p>旋光性源于分子手性结构</p>
-            <p className="text-cyan-400">• 右旋 (d/+): 顺时针旋转</p>
-            <p className="text-purple-400">• 左旋 (l/-): 逆时针旋转</p>
-            <p className="mt-2 text-gray-500">应用：糖度计、手性药物检测</p>
+      {/* 主体内容 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 左侧：可视化 */}
+        <div className="space-y-4">
+          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+            <OpticalRotationDiagram
+              substance={substance}
+              concentration={concentration}
+              pathLength={pathLength}
+              analyzerAngle={analyzerAngle}
+            />
           </div>
-        </InfoPanel>
+
+          {/* 测量结果摘要 */}
+          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="p-3 bg-slate-900/50 rounded-lg">
+                <div className="text-gray-500 text-xs mb-1">旋光角 α</div>
+                <div className={`font-mono text-xl ${rotationAngle >= 0 ? 'text-cyan-400' : 'text-pink-400'}`}>
+                  {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
+                </div>
+              </div>
+              <div className="p-3 bg-slate-900/50 rounded-lg">
+                <div className="text-gray-500 text-xs mb-1">旋光方向</div>
+                <div className={`font-bold text-lg ${rotationAngle >= 0 ? 'text-cyan-400' : 'text-pink-400'}`}>
+                  {rotationAngle >= 0 ? '右旋 (d)' : '左旋 (l)'}
+                </div>
+              </div>
+              <div className="p-3 bg-slate-900/50 rounded-lg">
+                <div className="text-gray-500 text-xs mb-1">透过强度</div>
+                <div className="font-mono text-xl text-purple-400">
+                  {(intensity * 100).toFixed(0)}%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 右侧：控制与学习 */}
+        <div className="space-y-4">
+          {/* 物质选择 */}
+          <ControlPanel title="物质选择">
+            <div className="space-y-2">
+              {substances.map((s) => (
+                <motion.button
+                  key={s.value}
+                  className={`w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors ${
+                    substance === s.value
+                      ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
+                      : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                  }`}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setSubstance(s.value)}
+                >
+                  <span className="font-medium">{s.label}</span>
+                  <span className={`font-mono text-sm ${s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400'}`}>
+                    [α] = {s.rotation}
+                  </span>
+                </motion.button>
+              ))}
+            </div>
+          </ControlPanel>
+
+          {/* 实验参数 */}
+          <ControlPanel title="实验参数">
+            <SliderControl
+              label="溶液浓度 c"
+              value={concentration}
+              min={0.05}
+              max={1.0}
+              step={0.05}
+              unit=" g/mL"
+              onChange={setConcentration}
+              color="orange"
+            />
+            <SliderControl
+              label="光程长度 L"
+              value={pathLength}
+              min={0.5}
+              max={2.0}
+              step={0.1}
+              unit=" dm"
+              onChange={setPathLength}
+              color="cyan"
+            />
+            <SliderControl
+              label="检偏器角度"
+              value={analyzerAngle}
+              min={-90}
+              max={90}
+              step={1}
+              unit="°"
+              onChange={setAnalyzerAngle}
+              color="purple"
+            />
+
+            <motion.button
+              className="w-full py-2 mt-2 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 rounded-lg border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setAnalyzerAngle(Math.round(rotationAngle))}
+            >
+              对准消光位置
+            </motion.button>
+          </ControlPanel>
+
+          {/* 公式与参数 */}
+          <ControlPanel title="计算公式">
+            <div className="p-3 bg-slate-900/50 rounded-lg text-center">
+              <div className="font-mono text-lg text-white mb-2">
+                α = [α] × c × L
+              </div>
+              <div className="text-xs text-gray-400 space-y-1">
+                <p>α = {specificRotation.toFixed(1)} × {concentration.toFixed(2)} × {pathLength.toFixed(1)}</p>
+                <p className={`font-mono ${rotationAngle >= 0 ? 'text-cyan-400' : 'text-pink-400'}`}>
+                  α = {rotationAngle.toFixed(2)}°
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 text-xs text-gray-500">
+              <p>[α] = 比旋光度 (°/(dm·g/mL))</p>
+              <p>c = 浓度 (g/mL)</p>
+              <p>L = 光程 (dm)</p>
+            </div>
+          </ControlPanel>
+
+          {/* 浓度-旋光角曲线 */}
+          <ControlPanel title="浓度-旋光角关系">
+            <RotationChart
+              substance={substance}
+              pathLength={pathLength}
+              currentConcentration={concentration}
+            />
+          </ControlPanel>
+        </div>
+      </div>
+
+      {/* 知识卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <InfoCard title="旋光性原理" color="cyan">
+          <p className="text-xs text-gray-300">
+            手性分子具有不重合的镜像结构，可使线偏振光的偏振面发生旋转。右旋(d/+)为顺时针，左旋(l/-)为逆时针。
+          </p>
+        </InfoCard>
+        <InfoCard title="比旋光度" color="purple">
+          <p className="text-xs text-gray-300">
+            [α]是物质的特征常数，定义为单位浓度(1 g/mL)和单位光程(1 dm)时的旋光角。依赖于波长和温度。
+          </p>
+        </InfoCard>
+        <InfoCard title="应用场景" color="orange">
+          <ul className="text-xs text-gray-300 space-y-1">
+            <li>• 糖度计测量糖浓度</li>
+            <li>• 手性药物对映体鉴定</li>
+            <li>• 食品工业质量控制</li>
+          </ul>
+        </InfoCard>
       </div>
     </div>
   )

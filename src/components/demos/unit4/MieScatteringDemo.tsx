@@ -1,98 +1,14 @@
 /**
  * 米氏散射演示 - Unit 4
- * 演示粒径与波长相当时的散射特性
+ * 演示粒径与波长可比时的散射特性
+ * 采用纯DOM + SVG + Framer Motion一体化设计
  */
-import { useState, useRef, useMemo, useCallback } from 'react'
-import { Canvas, useFrame, extend } from '@react-three/fiber'
-import { OrbitControls, Line, Text, Sphere } from '@react-three/drei'
-import * as THREE from 'three'
-import { SliderControl, ControlPanel, ValueDisplay, ButtonGroup, InfoPanel } from '../DemoControls'
-import { Demo2DCanvas } from '../Demo2DCanvas'
+import { useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
+import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
-extend({ Line_: THREE.Line })
-
-// 简化的米氏散射相函数计算
-function miePhaseFunction(theta: number, sizeParameter: number): number {
-  // 使用Henyey-Greenstein近似
-  // 当x > 1时，前向散射增强
-  const g = Math.min(0.9, sizeParameter / (sizeParameter + 2)) // 不对称因子
-  const cosTheta = Math.cos(theta)
-
-  const numerator = 1 - g * g
-  const denominator = Math.pow(1 + g * g - 2 * g * cosTheta, 1.5)
-
-  return numerator / (4 * Math.PI * denominator)
-}
-
-// 散射颗粒组件
-function ScatteringParticle({
-  position,
-  radius,
-}: {
-  position: [number, number, number]
-  radius: number
-}) {
-  return (
-    <Sphere args={[radius, 32, 32]} position={position}>
-      <meshStandardMaterial
-        color="#a8d8ea"
-        transparent
-        opacity={0.6}
-        roughness={0.3}
-      />
-    </Sphere>
-  )
-}
-
-// 散射强度可视化
-function ScatteringPattern({
-  sizeParameter,
-  wavelength,
-}: {
-  sizeParameter: number
-  wavelength: number
-}) {
-  const timeRef = useRef(0)
-
-  // 生成散射图案点
-  const linePoints = useMemo(() => {
-    const count = 100
-    const points: [number, number, number][] = []
-
-    for (let i = 0; i <= count; i++) {
-      const theta = (i / count) * 2 * Math.PI
-      const intensity = miePhaseFunction(theta, sizeParameter)
-      const r = 2 + intensity * 3 // 基础半径 + 强度缩放
-
-      points.push([r * Math.cos(theta), 0, r * Math.sin(theta)])
-    }
-
-    return points
-  }, [sizeParameter])
-
-  useFrame((_, delta) => {
-    timeRef.current += delta
-  })
-
-  const [r, g, b] = wavelengthToRGB(wavelength)
-  const color = new THREE.Color(r, g, b)
-
-  return (
-    <group>
-      {/* 散射图案线条 */}
-      <Line
-        points={linePoints}
-        color={color}
-        lineWidth={2}
-        transparent
-        opacity={0.8}
-      />
-    </group>
-  )
-}
-
-// 波长到RGB转换
-function wavelengthToRGB(wavelength: number): [number, number, number] {
+// 波长到RGB颜色转换
+function wavelengthToRGB(wavelength: number): string {
   let R = 0, G = 0, B = 0
 
   if (wavelength >= 380 && wavelength < 440) {
@@ -114,38 +30,39 @@ function wavelengthToRGB(wavelength: number): [number, number, number] {
     R = 1
   }
 
-  return [R, G, B]
+  return `rgb(${Math.round(R * 255)}, ${Math.round(G * 255)}, ${Math.round(B * 255)})`
 }
 
-// 入射光线
-function IncidentLight({ wavelength }: { wavelength: number }) {
-  const [r, g, b] = wavelengthToRGB(wavelength)
-  const color = new THREE.Color(r, g, b)
+// 米氏散射相函数（简化模型）
+function miePhaseFunction(angle: number, sizeParameter: number): number {
+  const theta = (angle * Math.PI) / 180
+  const x = sizeParameter
 
-  return (
-    <group>
-      <Line
-        points={[
-          [-6, 0, 0],
-          [0, 0, 0],
-        ]}
-        color={color}
-        lineWidth={4}
-      />
-      {/* 箭头 */}
-      <mesh position={[-0.2, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
-        <coneGeometry args={[0.15, 0.3, 8]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-      <Text position={[-4, 0.5, 0]} fontSize={0.3} color="#94a3b8">
-        入射光 (λ={wavelength}nm)
-      </Text>
-    </group>
-  )
+  // 简化的米氏散射相函数
+  // 前向散射增强随粒径增大
+  const forwardScatter = Math.pow(1 + Math.cos(theta), x / 2)
+  const backScatter = 0.1 + 0.3 * Math.pow((1 - Math.cos(theta)) / 2, 2)
+
+  // 归一化
+  const total = forwardScatter + backScatter
+  return (forwardScatter / total)
 }
 
-// 3D场景
-function MieScene({
+// 散射强度随尺寸参数变化
+function mieIntensity(sizeParameter: number): number {
+  // 米氏散射效率在x≈4时达到峰值
+  if (sizeParameter < 0.1) {
+    return Math.pow(sizeParameter, 4) // 瑞利区
+  } else if (sizeParameter < 10) {
+    // 米氏区 - 振荡行为简化
+    return 2 + Math.sin(sizeParameter) * 0.5
+  } else {
+    return 2 // 几何光学区
+  }
+}
+
+// 米氏散射图示
+function MieScatteringDiagram({
   particleSize,
   wavelength,
 }: {
@@ -154,306 +71,489 @@ function MieScene({
 }) {
   // 尺寸参数 x = 2πr/λ
   const sizeParameter = (2 * Math.PI * particleSize * 1000) / wavelength
+  const lightColor = wavelengthToRGB(wavelength)
+
+  // 计算散射模式
+  const scatterAngles = useMemo(() => {
+    const angles: { angle: number; intensity: number }[] = []
+    for (let a = 0; a < 360; a += 5) {
+      angles.push({
+        angle: a,
+        intensity: miePhaseFunction(a, sizeParameter),
+      })
+    }
+    return angles
+  }, [sizeParameter])
+
+  // 找到最大强度用于归一化
+  const maxIntensity = Math.max(...scatterAngles.map((s) => s.intensity))
+
+  // 生成散射图形路径
+  const scatterPath = useMemo(() => {
+    const cx = 300
+    const cy = 200
+    const maxRadius = 120
+
+    const points = scatterAngles.map((s) => {
+      const normalizedIntensity = s.intensity / maxIntensity
+      const r = 30 + normalizedIntensity * maxRadius
+      const rad = ((s.angle - 90) * Math.PI) / 180
+      return {
+        x: cx + r * Math.cos(rad),
+        y: cy + r * Math.sin(rad),
+      }
+    })
+
+    let path = `M ${points[0].x},${points[0].y}`
+    for (let i = 1; i < points.length; i++) {
+      path += ` L ${points[i].x},${points[i].y}`
+    }
+    path += ' Z'
+
+    return path
+  }, [scatterAngles, maxIntensity])
+
+  // 判断散射类型
+  const getScatterType = () => {
+    if (sizeParameter < 0.1) return { type: '瑞利散射', color: '#22d3ee' }
+    if (sizeParameter < 10) return { type: '米氏散射', color: '#f472b6' }
+    return { type: '几何光学', color: '#fbbf24' }
+  }
+
+  const scatterType = getScatterType()
 
   return (
-    <>
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[5, 5, 5]} intensity={0.8} />
-      <pointLight position={[-5, 5, 5]} intensity={0.4} />
+    <svg viewBox="0 0 600 400" className="w-full h-auto">
+      <defs>
+        <radialGradient id="particleGradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+          <stop offset="70%" stopColor="#94a3b8" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#64748b" stopOpacity="0.3" />
+        </radialGradient>
+        <filter id="scatterGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* 背景 */}
+      <rect x="0" y="0" width="600" height="400" fill="#0f172a" rx="8" />
+
+      {/* 坐标参考线 */}
+      <line x1="50" y1="200" x2="550" y2="200" stroke="#374151" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
+      <line x1="300" y1="50" x2="300" y2="350" stroke="#374151" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
 
       {/* 入射光 */}
-      <IncidentLight wavelength={wavelength} />
+      <motion.line
+        x1="50"
+        y1="200"
+        x2="270"
+        y2="200"
+        stroke={lightColor}
+        strokeWidth="6"
+        filter="url(#scatterGlow)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.5 }}
+      />
+      <polygon points="265,195 275,200 265,205" fill={lightColor} />
+      <text x="80" y="180" fill={lightColor} fontSize="12">入射光 λ={wavelength}nm</text>
 
-      {/* 散射颗粒 */}
-      <ScatteringParticle position={[0, 0, 0]} radius={particleSize} />
+      {/* 散射强度分布（极坐标图） */}
+      <motion.path
+        d={scatterPath}
+        fill={scatterType.color}
+        fillOpacity="0.2"
+        stroke={scatterType.color}
+        strokeWidth="2"
+        filter="url(#scatterGlow)"
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      />
 
-      {/* 散射图案 */}
-      <ScatteringPattern sizeParameter={sizeParameter} wavelength={wavelength} />
+      {/* 粒子 */}
+      <motion.circle
+        cx="300"
+        cy="200"
+        r={Math.max(5, Math.min(30, particleSize * 20))}
+        fill="url(#particleGradient)"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
 
-      {/* 标注 */}
-      <Text position={[0, -2, 0]} fontSize={0.25} color="#94a3b8">
-        粒径: {(particleSize * 1000).toFixed(0)}nm, x = {sizeParameter.toFixed(1)}
-      </Text>
+      {/* 前向散射标注 */}
+      <g transform="translate(450, 200)">
+        <line x1="0" y1="0" x2="60" y2="0" stroke={scatterType.color} strokeWidth="2" />
+        <polygon points="55,-5 65,0 55,5" fill={scatterType.color} />
+        <text x="30" y="-15" textAnchor="middle" fill={scatterType.color} fontSize="11">前向散射</text>
+      </g>
 
-      {/* 前向散射方向标注 */}
-      <Text position={[4, 0.5, 0]} fontSize={0.2} color="#22d3ee">
-        前向散射
-      </Text>
-      <Text position={[-4, -0.5, 0]} fontSize={0.2} color="#f472b6">
-        后向散射
-      </Text>
+      {/* 后向散射标注 */}
+      <g transform="translate(150, 200)">
+        <line x1="0" y1="0" x2="-60" y2="0" stroke={scatterType.color} strokeWidth="1" opacity="0.5" />
+        <text x="-30" y="-15" textAnchor="middle" fill="#94a3b8" fontSize="11">后向散射</text>
+      </g>
 
-      <OrbitControls enablePan={true} enableZoom={true} />
-    </>
+      {/* 角度标注 */}
+      {[0, 45, 90, 135, 180].map((angle) => {
+        const rad = ((angle - 90) * Math.PI) / 180
+        const r = 140
+        const x = 300 + r * Math.cos(rad)
+        const y = 200 + r * Math.sin(rad)
+        return (
+          <text
+            key={angle}
+            x={x}
+            y={y}
+            textAnchor="middle"
+            fill="#64748b"
+            fontSize="10"
+          >
+            {angle}°
+          </text>
+        )
+      })}
+
+      {/* 散射类型标识 */}
+      <g transform="translate(300, 360)">
+        <rect x="-80" y="-15" width="160" height="30" fill="rgba(30,41,59,0.9)" rx="6" stroke={scatterType.color} strokeWidth="1" />
+        <text x="0" y="5" textAnchor="middle" fill={scatterType.color} fontSize="14" fontWeight="500">
+          {scatterType.type}
+        </text>
+      </g>
+
+      {/* 尺寸参数显示 */}
+      <g transform="translate(50, 360)">
+        <text x="0" y="0" fill="#94a3b8" fontSize="12">
+          尺寸参数 x = 2πr/λ = {sizeParameter.toFixed(2)}
+        </text>
+      </g>
+
+      {/* 粒子尺寸比较 */}
+      <g transform="translate(480, 80)">
+        <rect x="-40" y="-15" width="110" height="90" fill="rgba(30,41,59,0.8)" rx="6" />
+        <text x="15" y="5" textAnchor="middle" fill="#94a3b8" fontSize="10">尺寸比较</text>
+
+        {/* 粒子 */}
+        <circle cx="15" cy="35" r={Math.max(3, Math.min(15, particleSize * 10))} fill="#94a3b8" />
+        <text x="15" y="60" textAnchor="middle" fill="#64748b" fontSize="9">r={particleSize.toFixed(2)}μm</text>
+
+        {/* 波长指示 */}
+        <line x1="-20" y1="35" x2="50" y2="35" stroke={lightColor} strokeWidth="1" strokeDasharray="2 2" opacity="0.5" />
+      </g>
+    </svg>
   )
 }
 
-// 角度分布图
-function AngularDistributionChart({
-  sizeParameter,
+// 尺寸参数效应图
+function SizeParameterChart({
+  currentSize,
   wavelength,
 }: {
-  sizeParameter: number
+  currentSize: number
   wavelength: number
 }) {
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-      ctx.fillStyle = '#1e293b'
-      ctx.fillRect(0, 0, width, height)
+  const currentX = (2 * Math.PI * currentSize * 1000) / wavelength
 
-      const centerX = width / 2
-      const centerY = height / 2
-      const maxRadius = Math.min(width, height) / 2 - 30
+  const { pathData, regions } = useMemo(() => {
+    const points: string[] = []
 
-      // 绘制参考圆
-      ctx.strokeStyle = '#374151'
-      ctx.lineWidth = 1
-      for (let r = maxRadius / 3; r <= maxRadius; r += maxRadius / 3) {
-        ctx.beginPath()
-        ctx.arc(centerX, centerY, r, 0, 2 * Math.PI)
-        ctx.stroke()
-      }
+    for (let x = 0.01; x <= 20; x += 0.1) {
+      const intensity = mieIntensity(x)
+      const chartX = 40 + (Math.log10(x) + 2) * 55 // 对数刻度
+      const chartY = 130 - intensity * 30
 
-      // 绘制角度参考线
-      for (let angle = 0; angle < 360; angle += 45) {
-        const rad = (angle * Math.PI) / 180
-        ctx.beginPath()
-        ctx.moveTo(centerX, centerY)
-        ctx.lineTo(centerX + maxRadius * Math.cos(rad), centerY - maxRadius * Math.sin(rad))
-        ctx.stroke()
-      }
+      points.push(`${x < 0.02 ? 'M' : 'L'} ${chartX},${chartY}`)
+    }
 
-      // 角度标签
-      ctx.fillStyle = '#94a3b8'
-      ctx.font = '10px sans-serif'
-      ctx.fillText('0°', centerX + maxRadius + 5, centerY + 4)
-      ctx.fillText('90°', centerX - 10, centerY - maxRadius - 5)
-      ctx.fillText('180°', centerX - maxRadius - 25, centerY + 4)
-      ctx.fillText('270°', centerX - 10, centerY + maxRadius + 15)
+    return {
+      pathData: points.join(' '),
+      regions: [
+        { name: '瑞利', xStart: 0.01, xEnd: 0.1, color: '#22d3ee' },
+        { name: '米氏', xStart: 0.1, xEnd: 10, color: '#f472b6' },
+        { name: '几何', xStart: 10, xEnd: 20, color: '#fbbf24' },
+      ],
+    }
+  }, [])
 
-      // 绘制散射图案
-      const [r, g, b] = wavelengthToRGB(wavelength)
-      ctx.strokeStyle = `rgb(${r * 255}, ${g * 255}, ${b * 255})`
-      ctx.fillStyle = `rgba(${r * 255}, ${g * 255}, ${b * 255}, 0.3)`
-      ctx.lineWidth = 2
+  // 当前点的X坐标（对数刻度）
+  const currentChartX = 40 + (Math.log10(Math.max(0.01, currentX)) + 2) * 55
+  const currentIntensity = mieIntensity(currentX)
+  const currentChartY = 130 - currentIntensity * 30
 
-      // 找最大值用于归一化
-      let maxIntensity = 0
-      for (let theta = 0; theta < 2 * Math.PI; theta += 0.1) {
-        const intensity = miePhaseFunction(theta, sizeParameter)
-        if (intensity > maxIntensity) maxIntensity = intensity
-      }
+  return (
+    <svg viewBox="0 0 300 160" className="w-full h-auto">
+      {/* 背景区域 */}
+      {regions.map((region) => {
+        const x1 = 40 + (Math.log10(region.xStart) + 2) * 55
+        const x2 = 40 + (Math.log10(region.xEnd) + 2) * 55
+        return (
+          <rect
+            key={region.name}
+            x={Math.max(40, x1)}
+            y="30"
+            width={Math.min(x2 - x1, 260 - x1 + 40)}
+            height="100"
+            fill={region.color}
+            opacity="0.1"
+          />
+        )
+      })}
 
-      ctx.beginPath()
-      for (let i = 0; i <= 360; i++) {
-        const theta = (i * Math.PI) / 180
-        const intensity = miePhaseFunction(theta, sizeParameter)
-        const radius = (intensity / maxIntensity) * maxRadius * 0.9
-        const x = centerX + radius * Math.cos(-theta + Math.PI)
-        const y = centerY + radius * Math.sin(-theta + Math.PI)
-        if (i === 0) ctx.moveTo(x, y)
-        else ctx.lineTo(x, y)
-      }
-      ctx.closePath()
-      ctx.fill()
-      ctx.stroke()
+      <rect x="40" y="30" width="220" height="100" fill="transparent" stroke="#374151" strokeWidth="1" rx="4" />
 
-      // 入射方向箭头
-      ctx.fillStyle = '#fbbf24'
-      ctx.beginPath()
-      ctx.moveTo(20, centerY - 5)
-      ctx.lineTo(40, centerY)
-      ctx.lineTo(20, centerY + 5)
-      ctx.fill()
-      ctx.fillStyle = '#94a3b8'
-      ctx.fillText('入射', 5, centerY - 10)
-    },
-    [sizeParameter, wavelength]
+      {/* 坐标轴 */}
+      <line x1="40" y1="130" x2="270" y2="130" stroke="#475569" strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke="#475569" strokeWidth="1" />
+
+      {/* X轴刻度（对数） */}
+      {[0.01, 0.1, 1, 10].map((x) => {
+        const chartX = 40 + (Math.log10(x) + 2) * 55
+        return (
+          <g key={x}>
+            <line x1={chartX} y1="130" x2={chartX} y2="135" stroke="#94a3b8" strokeWidth="1" />
+            <text x={chartX} y="147" textAnchor="middle" fill="#94a3b8" fontSize="9">{x}</text>
+          </g>
+        )
+      })}
+
+      {/* 区域标签 */}
+      {regions.map((region) => {
+        const x = 40 + (Math.log10(Math.sqrt(region.xStart * region.xEnd)) + 2) * 55
+        return (
+          <text key={region.name} x={x} y="45" textAnchor="middle" fill={region.color} fontSize="9">
+            {region.name}
+          </text>
+        )
+      })}
+
+      {/* 效率曲线 */}
+      <path d={pathData} fill="none" stroke="#ffffff" strokeWidth="2" />
+
+      {/* 当前点 */}
+      <motion.circle
+        cx={currentChartX}
+        cy={currentChartY}
+        r="6"
+        fill="#fbbf24"
+        animate={{ cx: currentChartX, cy: currentChartY }}
+        transition={{ duration: 0.2 }}
+      />
+
+      {/* 轴标签 */}
+      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="10">尺寸参数 x</text>
+      <text x="15" y="85" fill="#94a3b8" fontSize="9" transform="rotate(-90 15 85)">Q</text>
+    </svg>
   )
-
-  return <Demo2DCanvas width={280} height={280} draw={draw} />
-}
-
-// 粒径vs散射效率图
-function SizeEfficiencyChart({ currentSize }: { currentSize: number }) {
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-      ctx.fillStyle = '#1e293b'
-      ctx.fillRect(0, 0, width, height)
-
-      const margin = { left: 50, right: 20, top: 20, bottom: 40 }
-      const chartWidth = width - margin.left - margin.right
-      const chartHeight = height - margin.top - margin.bottom
-
-      // 坐标轴
-      ctx.strokeStyle = '#475569'
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.moveTo(margin.left, margin.top)
-      ctx.lineTo(margin.left, height - margin.bottom)
-      ctx.lineTo(width - margin.right, height - margin.bottom)
-      ctx.stroke()
-
-      // 标签
-      ctx.fillStyle = '#94a3b8'
-      ctx.font = '10px sans-serif'
-      ctx.fillText('0.01', margin.left - 5, height - margin.bottom + 15)
-      ctx.fillText('1', margin.left + chartWidth / 2 - 5, height - margin.bottom + 15)
-      ctx.fillText('10 μm', width - margin.right - 25, height - margin.bottom + 15)
-      ctx.fillText('Q', margin.left - 15, margin.top + 5)
-      ctx.fillText('r', width - margin.right + 5, height - margin.bottom)
-
-      // 绘制散射效率曲线（简化模型）
-      const colors = ['#ef4444', '#22c55e', '#3b82f6'] // RGB
-      const wavelengths = [650, 550, 450]
-
-      wavelengths.forEach((wavelength, idx) => {
-        ctx.strokeStyle = colors[idx]
-        ctx.lineWidth = 2
-        ctx.beginPath()
-        let started = false
-
-        for (let logR = -2; logR <= 1; logR += 0.05) {
-          const r = Math.pow(10, logR) // μm
-          const x = 2 * Math.PI * r * 1000 / wavelength
-          // 简化的散射效率
-          let Q
-          if (x < 0.5) {
-            Q = x * x * x * x * 0.5 // Rayleigh
-          } else if (x < 10) {
-            Q = 2 - 2 * Math.exp(-x / 2) // 过渡区
-          } else {
-            Q = 2 // 几何极限
-          }
-
-          const px = margin.left + ((logR + 2) / 3) * chartWidth
-          const py = height - margin.bottom - (Q / 3) * chartHeight
-
-          if (!started) {
-            ctx.moveTo(px, py)
-            started = true
-          } else {
-            ctx.lineTo(px, py)
-          }
-        }
-        ctx.stroke()
-      })
-
-      // 当前粒径标记
-      const logCurrentSize = Math.log10(currentSize)
-      const currentX = margin.left + ((logCurrentSize + 2) / 3) * chartWidth
-      ctx.strokeStyle = '#fbbf24'
-      ctx.setLineDash([5, 3])
-      ctx.beginPath()
-      ctx.moveTo(currentX, margin.top)
-      ctx.lineTo(currentX, height - margin.bottom)
-      ctx.stroke()
-      ctx.setLineDash([])
-
-      // 图例
-      ctx.font = '9px sans-serif'
-      ctx.fillStyle = '#ef4444'
-      ctx.fillText('R', width - 55, 15)
-      ctx.fillStyle = '#22c55e'
-      ctx.fillText('G', width - 40, 15)
-      ctx.fillStyle = '#3b82f6'
-      ctx.fillText('B', width - 25, 15)
-    },
-    [currentSize]
-  )
-
-  return <Demo2DCanvas width={300} height={160} draw={draw} />
 }
 
 // 主演示组件
 export function MieScatteringDemo() {
   const [particleSize, setParticleSize] = useState(0.5) // μm
-  const [wavelength, setWavelength] = useState(550)
+  const [wavelength, setWavelength] = useState(550) // nm
 
   // 尺寸参数
   const sizeParameter = (2 * Math.PI * particleSize * 1000) / wavelength
 
   // 散射类型判断
-  const getScatteringType = () => {
-    if (sizeParameter < 0.1) return '瑞利散射'
-    if (sizeParameter < 10) return '米氏散射'
-    return '几何光学'
+  const getScatterInfo = () => {
+    if (sizeParameter < 0.1) {
+      return {
+        type: '瑞利散射区',
+        description: '粒径远小于波长，散射强度∝λ⁻⁴',
+        color: 'cyan',
+      }
+    }
+    if (sizeParameter < 10) {
+      return {
+        type: '米氏散射区',
+        description: '粒径与波长可比，前向散射增强',
+        color: 'pink',
+      }
+    }
+    return {
+      type: '几何光学区',
+      description: '粒径远大于波长，可用几何光学描述',
+      color: 'orange',
+    }
   }
 
+  const scatterInfo = getScatterInfo()
+
+  // 粒子预设
+  const presets = [
+    { name: '空气分子', size: 0.001, λ: 550 },
+    { name: '烟雾颗粒', size: 0.1, λ: 550 },
+    { name: '花粉', size: 0.5, λ: 550 },
+    { name: '云滴', size: 5, λ: 550 },
+  ]
+
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-full">
-      {/* 3D 可视化 */}
-      <div className="flex-1 bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden min-h-[400px]">
-        <Canvas
-          camera={{ position: [0, 8, 8], fov: 50 }}
-          gl={{ antialias: true }}
-        >
-          <MieScene particleSize={particleSize} wavelength={wavelength} />
-        </Canvas>
+    <div className="space-y-6">
+      {/* 标题 */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent">
+          米氏散射交互演示
+        </h2>
+        <p className="text-gray-400 mt-1">
+          探索粒径与波长可比时的散射特性
+        </p>
       </div>
 
-      {/* 控制面板 */}
-      <div className="w-full lg:w-80 space-y-4">
-        <ControlPanel title="参数控制">
-          <SliderControl
-            label="粒子半径"
-            value={particleSize}
-            min={0.01}
-            max={5}
-            step={0.01}
-            onChange={setParticleSize}
-            formatValue={(v) => `${(v * 1000).toFixed(0)} nm`}
-          />
-          <SliderControl
-            label="入射波长"
-            value={wavelength}
-            min={400}
-            max={700}
-            step={10}
-            unit=" nm"
-            onChange={setWavelength}
-          />
-          <ButtonGroup
-            label="预设粒径"
-            options={[
-              { value: 0.03, label: '30nm' },
-              { value: 0.3, label: '300nm' },
-              { value: 3, label: '3μm' },
-            ]}
-            value={particleSize}
-            onChange={(v) => setParticleSize(v as number)}
-          />
-        </ControlPanel>
-
-        <ControlPanel title="散射参数">
-          <ValueDisplay label="尺寸参数 x = 2πr/λ" value={sizeParameter.toFixed(2)} />
-          <ValueDisplay label="散射类型" value={getScatteringType()} color="cyan" />
-          <ValueDisplay
-            label="前向散射强度"
-            value={(miePhaseFunction(0, sizeParameter) * 100).toFixed(1)}
-          />
-          <ValueDisplay
-            label="后向散射强度"
-            value={(miePhaseFunction(Math.PI, sizeParameter) * 100).toFixed(1)}
-          />
-        </ControlPanel>
-
-        <ControlPanel title="角度分布">
-          <AngularDistributionChart sizeParameter={sizeParameter} wavelength={wavelength} />
-        </ControlPanel>
-
-        <ControlPanel title="散射效率 vs 粒径">
-          <SizeEfficiencyChart currentSize={particleSize} />
-        </ControlPanel>
-
-        <InfoPanel title="米氏散射特点">
-          <div className="space-y-1 text-xs">
-            <p>• 粒径 ≈ 波长时发生</p>
-            <p>• 前向散射占主导</p>
-            <p>• 散射不依赖波长（白云）</p>
-            <p>• 计算复杂，需完整麦克斯韦方程</p>
+      {/* 主体内容 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 左侧：可视化 */}
+        <div className="space-y-4">
+          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90 border border-pink-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+            <MieScatteringDiagram particleSize={particleSize} wavelength={wavelength} />
           </div>
-        </InfoPanel>
+
+          {/* 散射特征摘要 */}
+          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 bg-slate-900/50 rounded-lg text-center">
+                <div className="text-gray-500 text-xs mb-1">尺寸参数 x</div>
+                <div className={`font-mono text-xl text-${scatterInfo.color}-400`}>
+                  {sizeParameter.toFixed(3)}
+                </div>
+              </div>
+              <div className="p-3 bg-slate-900/50 rounded-lg text-center">
+                <div className="text-gray-500 text-xs mb-1">散射区域</div>
+                <div className={`font-bold text-lg text-${scatterInfo.color}-400`}>
+                  {scatterInfo.type}
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 mt-3 text-center">
+              {scatterInfo.description}
+            </p>
+          </div>
+        </div>
+
+        {/* 右侧：控制与学习 */}
+        <div className="space-y-4">
+          {/* 参数控制 */}
+          <ControlPanel title="参数控制">
+            <SliderControl
+              label="粒子半径 r"
+              value={particleSize}
+              min={0.001}
+              max={5}
+              step={0.001}
+              unit=" μm"
+              onChange={setParticleSize}
+              formatValue={(v) => v.toFixed(3)}
+              color="purple"
+            />
+            <SliderControl
+              label="波长 λ"
+              value={wavelength}
+              min={400}
+              max={700}
+              step={10}
+              unit=" nm"
+              onChange={setWavelength}
+              color="cyan"
+            />
+
+            {/* 粒子预设 */}
+            <div className="pt-2">
+              <div className="text-xs text-gray-500 mb-2">典型粒子</div>
+              <div className="grid grid-cols-2 gap-2">
+                {presets.map((p) => (
+                  <button
+                    key={p.name}
+                    onClick={() => { setParticleSize(p.size); setWavelength(p.λ) }}
+                    className="px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </ControlPanel>
+
+          {/* 计算结果 */}
+          <ControlPanel title="物理参数">
+            <div className="space-y-3">
+              <div className="p-3 bg-slate-900/50 rounded-lg">
+                <div className="text-xs text-gray-500 mb-1">尺寸参数公式</div>
+                <div className="font-mono text-sm text-white">
+                  x = 2πr/λ = 2π × {particleSize.toFixed(3)} × 1000 / {wavelength}
+                </div>
+                <div className={`font-mono text-lg text-${scatterInfo.color}-400 mt-1`}>
+                  x = {sizeParameter.toFixed(4)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2 bg-slate-900/50 rounded-lg">
+                  <div className="text-gray-500">粒径/波长</div>
+                  <div className="text-cyan-400 font-mono">{((particleSize * 1000) / wavelength).toFixed(3)}</div>
+                </div>
+                <div className="p-2 bg-slate-900/50 rounded-lg">
+                  <div className="text-gray-500">散射效率</div>
+                  <div className="text-pink-400 font-mono">{mieIntensity(sizeParameter).toFixed(2)}</div>
+                </div>
+              </div>
+            </div>
+          </ControlPanel>
+
+          {/* 尺寸参数效应图 */}
+          <ControlPanel title="散射区域划分">
+            <SizeParameterChart currentSize={particleSize} wavelength={wavelength} />
+            <div className="flex justify-center gap-4 mt-2 text-xs">
+              <span className="text-cyan-400">x&lt;0.1 瑞利</span>
+              <span className="text-pink-400">0.1≤x≤10 米氏</span>
+              <span className="text-orange-400">x&gt;10 几何</span>
+            </div>
+          </ControlPanel>
+
+          {/* 散射特征 */}
+          <ControlPanel title="米氏散射特征">
+            <ul className="text-xs text-gray-300 space-y-2">
+              <li className="flex items-start gap-2">
+                <span className="text-pink-400">•</span>
+                <span>前向散射增强：大粒子的散射光主要集中在前进方向</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-pink-400">•</span>
+                <span>散射与波长弱相关：云和雾呈白色（各波长散射相近）</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-pink-400">•</span>
+                <span>散射图案复杂：存在多个散射瓣和干涉效应</span>
+              </li>
+            </ul>
+          </ControlPanel>
+        </div>
+      </div>
+
+      {/* 知识卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <InfoCard title="米氏散射理论" color="pink">
+          <p className="text-xs text-gray-300">
+            由Gustav Mie在1908年发展，完整描述球形粒子对电磁波的散射。适用于粒径与波长可比的情况(x≈1-10)。
+          </p>
+        </InfoCard>
+        <InfoCard title="前向散射" color="cyan">
+          <p className="text-xs text-gray-300">
+            米氏散射的显著特征是前向散射增强。粒子越大，散射越集中在前进方向，形成尖锐的前向散射峰。
+          </p>
+        </InfoCard>
+        <InfoCard title="自然现象" color="orange">
+          <ul className="text-xs text-gray-300 space-y-1">
+            <li>• 云和雾的白色</li>
+            <li>• 牛奶的乳白色</li>
+            <li>• 日晕和虹</li>
+          </ul>
+        </InfoCard>
       </div>
     </div>
   )
