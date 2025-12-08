@@ -1,0 +1,559 @@
+{
+  "common": {
+    "game": "Game",
+    "course": "Course",
+    "home": "Home",
+    "back": "Back",
+    "loading": "Loading...",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "language": "Language",
+    "english": "English",
+    "chinese": "Chinese"
+  },
+  "home": {
+    "title": "PolarCraft",
+    "subtitle": "Polarized Light Physics Puzzle Game",
+    "description": "An educational voxel puzzle game based on real polarization physics principles. Explore Malus's Law, birefringence, interference and more through interactive 3D puzzles.",
+    "playGame": "Play Game",
+    "startCourse": "Start Course",
+    "gameDescription": "Solve puzzles using polarized light beams and optical components",
+    "courseDescription": "Learn polarization physics through interactive demonstrations"
+  },
+  "game": {
+    "level": "Level",
+    "sandbox": "Sandbox",
+    "goal": "Goal",
+    "sensors": "Sensors",
+    "activated": "Activated",
+    "levelComplete": "Level Complete!",
+    "controls": "Controls",
+    "help": "Help",
+    "visionMode": "Vision Mode",
+    "normal": "Normal",
+    "polarized": "Polarized",
+    "cameraMode": "Camera Mode",
+    "firstPerson": "First Person",
+    "isometric": "Isometric",
+    "topDown": "Top Down",
+    "blocks": {
+      "emitter": "Emitter",
+      "polarizer": "Polarizer",
+      "rotator": "Rotator",
+      "splitter": "Splitter",
+      "sensor": "Sensor",
+      "mirror": "Mirror",
+      "solid": "Solid"
+    },
+    "hints": {
+      "rotate": "Press R to rotate block",
+      "place": "Left click to place block",
+      "delete": "Right click to delete block",
+      "vision": "Press V to toggle polarized vision",
+      "camera": "Press C to change camera mode"
+    },
+    "tutorials": {
+      "0": {
+        "name": "Light and Gate",
+        "description": "Match the emitter's polarization angle with the sensor to activate it",
+        "hints": [
+          "Press R to rotate the emitter's polarization angle",
+          "Match the emitter's polarization with the sensor (both 0°)",
+          "The sensor activates when light with matching polarization reaches it"
+        ]
+      },
+      "1": {
+        "name": "Polarizer",
+        "description": "Use the polarizer to filter light and activate the sensor",
+        "hints": [
+          "Place a polarizer between the emitter and sensor",
+          "Malus's Law: I = I₀ × cos²(θ)",
+          "Try different angles to see how intensity changes"
+        ]
+      },
+      "2": {
+        "name": "Malus's Law",
+        "description": "Use two polarizers to control light intensity",
+        "hints": [
+          "Two perpendicular polarizers block all light",
+          "Add a third polarizer at 45° in between to let some light through",
+          "This demonstrates the principle of polarization rotation"
+        ]
+      },
+      "3": {
+        "name": "Wave Plate",
+        "description": "Use the rotator to change polarization direction without losing intensity",
+        "hints": [
+          "The rotator changes polarization angle by 45° or 90°",
+          "Press R to switch between rotation amounts",
+          "Unlike polarizers, rotators preserve light intensity"
+        ]
+      },
+      "4": {
+        "name": "Birefringence",
+        "description": "Use the splitter to create two beams with different polarizations",
+        "hints": [
+          "The splitter (calcite) creates o-ray (0°) and e-ray (90°)",
+          "Both sensors need to be activated to complete the level",
+          "Birefringence is used in many optical instruments"
+        ]
+      }
+    }
+  },
+  "course": {
+    "title": "Polarization Physics Course",
+    "interactionGuide": "Interaction Guide",
+    "dragToRotate": "Drag to rotate 3D view",
+    "scrollToZoom": "Scroll to zoom",
+    "slidersAdjust": "Use sliders to adjust parameters",
+    "units": {
+      "basics": {
+        "title": "Optical Basics",
+        "description": "Fundamental concepts of light and waves"
+      },
+      "1": {
+        "title": "Polarization Modulation & Measurement",
+        "description": "Understanding polarization states and their manipulation"
+      },
+      "2": {
+        "title": "Interface Reflection Polarization",
+        "description": "How polarization changes at material interfaces"
+      },
+      "3": {
+        "title": "Transparent Media Polarization",
+        "description": "Polarization effects in transparent materials"
+      },
+      "4": {
+        "title": "Turbid Media Polarization",
+        "description": "Light scattering and polarization in turbid media"
+      },
+      "5": {
+        "title": "Full Polarimetry",
+        "description": "Complete mathematical description of polarization"
+      }
+    },
+    "cards": {
+      "physics": "Physical Principle",
+      "experiment": "Experimental Application",
+      "frontier": "Frontier Application"
+    }
+  },
+  "demos": {
+    "polarizationState": {
+      "title": "Polarization State & Wave Synthesis",
+      "description": "Wave synthesis produces different polarization states: linear, circular, elliptical",
+      "physics": {
+        "principle": "Polarization state is determined by the amplitude ratio and phase difference of two orthogonal electric field components",
+        "formula": "E = Ex·cos(ωt) x̂ + Ey·cos(ωt+δ) ŷ",
+        "details": [
+          "When δ=0° or 180°, it is linearly polarized",
+          "When δ=90° and Ex=Ey, it is circularly polarized",
+          "Other cases are elliptically polarized"
+        ]
+      },
+      "experiment": {
+        "title": "Polarization State Conversion Experiment",
+        "example": "Using wave plates to convert linear polarization to circular polarization",
+        "details": [
+          "Quarter-wave plate converts 45° linear polarization to circular",
+          "Half-wave plate rotates linear polarization direction",
+          "Liquid crystals can electrically control polarization conversion"
+        ]
+      },
+      "frontier": {
+        "title": "Quantum Optics & Communication",
+        "example": "BB84 Quantum Key Distribution Protocol",
+        "details": [
+          "Polarization states encode quantum bits",
+          "Single photon polarization for quantum communication",
+          "Polarization entanglement enables quantum teleportation"
+        ]
+      }
+    },
+    "malus": {
+      "title": "Malus's Law",
+      "description": "Intensity change when polarized light passes through a polarizer: I = I₀ × cos²(θ)",
+      "physics": {
+        "principle": "Malus's Law describes the intensity change when polarized light passes through a polarizer",
+        "formula": "I = I₀ × cos²(θ)",
+        "details": [
+          "θ is the angle between light polarization and polarizer axis",
+          "Maximum transmission when parallel (θ=0°)",
+          "Complete blocking when perpendicular (θ=90°)"
+        ]
+      },
+      "experiment": {
+        "title": "Polarizer Combination Experiment",
+        "example": "Two polarizers to verify Malus's Law",
+        "details": [
+          "Rotate analyzer to measure transmitted intensity",
+          "Use photodetector for quantitative measurement",
+          "Verify the cos² relationship curve"
+        ]
+      },
+      "frontier": {
+        "title": "LCD Display Technology",
+        "example": "How liquid crystal displays work",
+        "details": [
+          "Liquid crystal molecules control polarization rotation",
+          "Combined with polarizers to modulate brightness",
+          "Widely used in phones, TVs, and monitors"
+        ]
+      }
+    },
+    "birefringence": {
+      "title": "Birefringence Effect",
+      "description": "Crystals like calcite split one beam into ordinary (o) and extraordinary (e) rays",
+      "physics": {
+        "principle": "Birefringent crystals split incident light into ordinary ray (o-ray) and extraordinary ray (e-ray)",
+        "formula": "Io = I₀·cos²(θ), Ie = I₀·sin²(θ)",
+        "details": [
+          "O-ray and e-ray have perpendicular polarization directions",
+          "Different propagation speeds cause phase difference",
+          "Calcite is a typical birefringent material"
+        ]
+      },
+      "experiment": {
+        "title": "Calcite Double Image Observation",
+        "example": "Viewing text through calcite produces double images",
+        "details": [
+          "Rotating the crystal: one image stays fixed, one rotates",
+          "Polarizers can eliminate either image individually",
+          "Can measure the birefringence of the crystal"
+        ]
+      },
+      "frontier": {
+        "title": "Polarization Optical Components",
+        "example": "Wollaston prism beam splitting",
+        "details": [
+          "Used to make high-precision polarizing beam splitters",
+          "Polarization multiplexing in optical communications",
+          "Polarization interferometry instruments"
+        ]
+      }
+    },
+    "waveplate": {
+      "title": "Wave Plate Principle",
+      "description": "Quarter-wave and half-wave plates' effect on polarization states",
+      "physics": {
+        "principle": "Wave plates introduce controlled phase delay using birefringence",
+        "formula": "δ = 2π(ne-no)d/λ",
+        "details": [
+          "Quarter-wave plate: δ = π/2 (90°)",
+          "Half-wave plate: δ = π (180°)",
+          "Can convert linear to circular polarization or rotate polarization direction"
+        ]
+      },
+      "experiment": {
+        "title": "Wave Plate Polarization Conversion",
+        "example": "Using wave plates to produce different polarization states",
+        "details": [
+          "45° linear + λ/4 plate = circular polarization",
+          "λ/2 plate rotates polarization direction by 2θ",
+          "Combined wave plates can produce any polarization state"
+        ]
+      },
+      "frontier": {
+        "title": "3D Movies & VR Displays",
+        "example": "RealD 3D circular polarization technology",
+        "details": [
+          "Left and right eye images use opposite circular polarizations",
+          "Circular polarizing glasses separate left/right images",
+          "Tilting head doesn't affect 3D effect"
+        ]
+      }
+    },
+    "fresnel": {
+      "title": "Fresnel Equations",
+      "description": "Reflection/transmission coefficients for s and p polarizations vs incident angle",
+      "physics": {
+        "principle": "Fresnel equations describe reflection and transmission coefficients at interfaces",
+        "formula": "rs = (n₁cosθᵢ-n₂cosθₜ)/(n₁cosθᵢ+n₂cosθₜ)",
+        "details": [
+          "S and p polarizations have different reflectances",
+          "Total internal reflection critical angle exists",
+          "At Brewster's angle, p-polarization reflection is zero"
+        ]
+      },
+      "experiment": {
+        "title": "Interface Reflection Polarization Measurement",
+        "example": "Measuring polarized reflection from glass surface",
+        "details": [
+          "Use rotating analyzer to measure reflection polarization degree",
+          "Verify Brewster's angle is about 56.3° for glass",
+          "Can precisely determine material refractive index"
+        ]
+      },
+      "frontier": {
+        "title": "Anti-Reflection Coatings",
+        "example": "Multi-layer coatings on camera lenses",
+        "details": [
+          "Use interference to reduce surface reflection",
+          "Improve optical system transmittance",
+          "Applied to glasses, solar cells, etc."
+        ]
+      }
+    },
+    "brewster": {
+      "title": "Brewster's Angle",
+      "description": "The special incident angle where p-polarization reflectance is zero: tan(θB) = n₂/n₁",
+      "physics": {
+        "principle": "Brewster's angle is the incident angle where p-polarization reflectance is zero",
+        "formula": "tan(θB) = n₂/n₁",
+        "details": [
+          "At this angle, reflected light is completely s-polarized",
+          "Refracted and reflected rays are perpendicular",
+          "For glass, Brewster's angle is about 56.3°"
+        ]
+      },
+      "experiment": {
+        "title": "Brewster's Angle Polarization Experiment",
+        "example": "Observing polarized reflection from water surface",
+        "details": [
+          "Water's Brewster angle is about 53°",
+          "Polarizing filter can eliminate water surface glare",
+          "Photographers often use polarizing filters"
+        ]
+      },
+      "frontier": {
+        "title": "Polarization Photography",
+        "example": "Polarizing filter to eliminate reflections",
+        "details": [
+          "Eliminate glass window reflections",
+          "Enhance sky blue color contrast",
+          "Underwater photography to reduce surface reflection"
+        ]
+      }
+    },
+    "chromatic": {
+      "title": "Chromatic Polarization",
+      "description": "Colored interference effect of white light in birefringent materials",
+      "physics": {
+        "principle": "Different wavelengths have different phase delays in birefringent materials",
+        "formula": "δ(λ) = 2π(ne-no)d/λ",
+        "details": [
+          "White light produces colored interference",
+          "Color depends on material thickness and birefringence",
+          "Crossed polarizers show complementary colors"
+        ]
+      },
+      "experiment": {
+        "title": "Polarization Microscope Observation",
+        "example": "Observing stress distribution in transparent tape",
+        "details": [
+          "Transparent plastic shows rainbow color bands",
+          "Stress birefringence reveals stress distribution",
+          "Can detect internal material defects"
+        ]
+      },
+      "frontier": {
+        "title": "Photoelastic Stress Analysis",
+        "example": "Engineering structure stress detection",
+        "details": [
+          "Create transparent models to study stress distribution",
+          "Aerospace structure design verification",
+          "Building structure safety assessment"
+        ]
+      }
+    },
+    "opticalRotation": {
+      "title": "Optical Rotation",
+      "description": "Chiral substances like sugar solutions rotate the polarization plane",
+      "physics": {
+        "principle": "Chiral molecules rotate the polarization plane of linearly polarized light",
+        "formula": "α = [α]·l·c",
+        "details": [
+          "[α] is specific rotation (characteristic of chiral molecule)",
+          "l is sample path length",
+          "c is solution concentration"
+        ]
+      },
+      "experiment": {
+        "title": "Polarimeter Sugar Concentration Measurement",
+        "example": "Using polarimeter to determine sugar content",
+        "details": [
+          "Glucose is dextrorotatory (+52.7°)",
+          "Fructose is levorotatory (-92°)",
+          "Food industry commonly uses this for sugar measurement"
+        ]
+      },
+      "frontier": {
+        "title": "Chiral Drug Detection",
+        "example": "Drug enantiomer analysis",
+        "details": [
+          "Many drugs have two enantiomeric forms",
+          "Different enantiomers may have different effects/toxicity",
+          "Pharmaceutical industry must distinguish enantiomers"
+        ]
+      }
+    },
+    "mieScattering": {
+      "title": "Mie Scattering",
+      "description": "Scattering characteristics when particle size is comparable to wavelength (white cloud effect)",
+      "physics": {
+        "principle": "When particle size is comparable to wavelength, scattering intensity has complex wavelength dependence",
+        "formula": "Scattering efficiency Qsca ≈ 2 (large particle limit)",
+        "details": [
+          "Scattered spectrum is relatively flat",
+          "White clouds appear white due to Mie scattering",
+          "Forward scattering is dominant"
+        ]
+      },
+      "experiment": {
+        "title": "Milk Dilution Scattering Experiment",
+        "example": "Observing milk scattering phenomenon",
+        "details": [
+          "Diluted milk appears light blue (Rayleigh)",
+          "Concentrated milk appears white (Mie)",
+          "Can observe scattering color change"
+        ]
+      },
+      "frontier": {
+        "title": "Atmospheric Aerosol Monitoring",
+        "example": "Lidar measurement of PM2.5",
+        "details": [
+          "Atmospheric particulates exhibit Mie scattering",
+          "Lidar retrieves particle concentration",
+          "Real-time air quality monitoring"
+        ]
+      }
+    },
+    "rayleigh": {
+      "title": "Rayleigh Scattering",
+      "description": "Scattering characteristics when particle size is much smaller than wavelength (blue sky effect)",
+      "physics": {
+        "principle": "When particle size is much smaller than wavelength, scattering intensity is proportional to λ⁻⁴",
+        "formula": "I ∝ 1/λ⁴",
+        "details": [
+          "Short wavelength (blue light) scatters more strongly",
+          "This is why the sky appears blue",
+          "Red sunset is because blue light is scattered away"
+        ]
+      },
+      "experiment": {
+        "title": "Blue Sky Experiment",
+        "example": "Adding small amount of milk to water to simulate",
+        "details": [
+          "Side view appears light blue",
+          "Transmitted light appears orange-red",
+          "Simulates sunset sky colors"
+        ]
+      },
+      "frontier": {
+        "title": "Remote Sensing Atmospheric Correction",
+        "example": "Satellite image atmospheric correction",
+        "details": [
+          "Remove atmospheric scattering effects",
+          "Obtain true surface reflectance",
+          "Improve remote sensing image quality"
+        ]
+      }
+    },
+    "stokes": {
+      "title": "Stokes Vector",
+      "description": "Four parameters to completely describe light's polarization state",
+      "physics": {
+        "principle": "Stokes vector uses four parameters to completely describe polarization state",
+        "formula": "S = [S₀, S₁, S₂, S₃]ᵀ",
+        "details": [
+          "S₀: Total intensity",
+          "S₁: Horizontal vs vertical polarization",
+          "S₂: +45° vs -45° polarization",
+          "S₃: Right vs left circular polarization"
+        ]
+      },
+      "experiment": {
+        "title": "Stokes Parameter Measurement",
+        "example": "Four measurements to determine polarization state",
+        "details": [
+          "Use rotating analyzer for measurement",
+          "Combined with wave plate to measure circular component",
+          "Can measure any polarization state"
+        ]
+      },
+      "frontier": {
+        "title": "Polarization Remote Sensing",
+        "example": "Satellite polarization imaging",
+        "details": [
+          "Measure surface polarization characteristics",
+          "Distinguish water, vegetation, buildings",
+          "Atmospheric aerosol retrieval"
+        ]
+      }
+    },
+    "mueller": {
+      "title": "Mueller Matrix",
+      "description": "4×4 matrix describing optical element's transformation of polarization state",
+      "physics": {
+        "principle": "Mueller matrix describes an optical element's transformation of polarization state",
+        "formula": "S' = M · S",
+        "details": [
+          "4×4 matrix describes linear transformation",
+          "Can cascade multiple optical elements",
+          "Contains 16 independent parameters"
+        ]
+      },
+      "experiment": {
+        "title": "Optical Element Mueller Matrix Measurement",
+        "example": "Measuring Mueller matrix of a polarizer",
+        "details": [
+          "Use polarization state generator",
+          "Measure multiple input-output pairs",
+          "Retrieve Mueller matrix"
+        ]
+      },
+      "frontier": {
+        "title": "Biomedical Imaging",
+        "example": "Mueller matrix polarization imaging",
+        "details": [
+          "Early skin cancer screening",
+          "Retinal lesion detection",
+          "Quantitative tissue structure analysis"
+        ]
+      }
+    }
+  },
+  "basics": {
+    "title": "Optical Basics",
+    "description": "Fundamental concepts of light and electromagnetic waves",
+    "demos": {
+      "lightWave": {
+        "title": "Light as Electromagnetic Wave",
+        "description": "Understanding light as transverse electromagnetic waves",
+        "physics": {
+          "principle": "Light is a transverse electromagnetic wave with oscillating electric and magnetic fields perpendicular to propagation direction",
+          "formula": "E = E₀ sin(kx - ωt)",
+          "details": [
+            "Electric and magnetic fields oscillate perpendicular to each other",
+            "Light travels at c = 3×10⁸ m/s in vacuum",
+            "Wavelength determines color (400-700nm for visible light)"
+          ]
+        }
+      },
+      "polarizationIntro": {
+        "title": "What is Polarization?",
+        "description": "Introduction to the concept of light polarization",
+        "physics": {
+          "principle": "Polarization describes the orientation of the electric field oscillation in a light wave",
+          "details": [
+            "Unpolarized light has random electric field orientations",
+            "Polarized light has a definite oscillation pattern",
+            "Types: linear, circular, and elliptical polarization"
+          ]
+        }
+      },
+      "polarizationTypes": {
+        "title": "Types of Polarization",
+        "description": "Linear, circular, and elliptical polarization explained",
+        "physics": {
+          "principle": "Different polarization types arise from the phase and amplitude relationship of orthogonal field components",
+          "details": [
+            "Linear: E-field oscillates in a single plane",
+            "Circular: E-field rotates with constant magnitude",
+            "Elliptical: E-field traces an ellipse (most general case)"
+          ]
+        }
+      }
+    }
+  }
+}
