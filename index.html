@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PolarCraft - 偏振光体素解谜游戏</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+      background: #0a0a0f;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #fff;
+    }
+
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas {
+      display: block;
+    }
+
+    /* HUD Overlay */
+    #hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+    }
+
+    #hud > * {
+      pointer-events: auto;
+    }
+
+    /* Top Info Bar */
+    #info-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(100, 200, 255, 0.3);
+    }
+
+    #info-bar h2 {
+      font-size: 14px;
+      color: #64c8ff;
+      margin-bottom: 8px;
+    }
+
+    #info-bar p {
+      font-size: 12px;
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    /* Vision Mode Indicator */
+    #vision-mode {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(100, 200, 255, 0.3);
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    #vision-mode.polarized {
+      border-color: rgba(255, 100, 100, 0.5);
+      background: rgba(50, 0, 0, 0.7);
+    }
+
+    /* Block Selector */
+    #block-selector {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(100, 200, 255, 0.3);
+    }
+
+    .block-slot {
+      width: 56px;
+      height: 56px;
+      background: rgba(50, 50, 70, 0.6);
+      border: 2px solid rgba(100, 100, 120, 0.5);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .block-slot:hover {
+      border-color: rgba(100, 200, 255, 0.8);
+      background: rgba(60, 60, 90, 0.8);
+    }
+
+    .block-slot.selected {
+      border-color: #64c8ff;
+      box-shadow: 0 0 15px rgba(100, 200, 255, 0.5);
+    }
+
+    .block-slot .icon {
+      font-size: 24px;
+      margin-bottom: 2px;
+    }
+
+    .block-slot .label {
+      font-size: 9px;
+      color: #aaa;
+      text-align: center;
+    }
+
+    .block-slot .key {
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      font-size: 10px;
+      color: #666;
+    }
+
+    /* Crosshair */
+    #crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+    }
+
+    #crosshair::before,
+    #crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    #crosshair::before {
+      width: 2px;
+      height: 20px;
+      left: 9px;
+      top: 0;
+    }
+
+    #crosshair::after {
+      width: 20px;
+      height: 2px;
+      left: 0;
+      top: 9px;
+    }
+
+    /* Selected Block Info */
+    #selected-info {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      text-align: center;
+      display: none;
+    }
+
+    #selected-info.visible {
+      display: block;
+    }
+
+    /* Help Panel */
+    #help-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(10, 10, 20, 0.95);
+      padding: 30px 40px;
+      border-radius: 12px;
+      border: 1px solid rgba(100, 200, 255, 0.3);
+      max-width: 600px;
+      display: none;
+    }
+
+    #help-panel.visible {
+      display: block;
+    }
+
+    #help-panel h2 {
+      color: #64c8ff;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    #help-panel h3 {
+      color: #fff;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    #help-panel p, #help-panel li {
+      color: #aaa;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    #help-panel ul {
+      padding-left: 20px;
+    }
+
+    #help-panel .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    #help-panel .close-btn:hover {
+      color: #fff;
+    }
+
+    /* Light Legend */
+    .light-legend {
+      margin-top: 15px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* Loading Screen */
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #0a0a0f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    #loading h1 {
+      font-size: 48px;
+      color: #64c8ff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 30px rgba(100, 200, 255, 0.5);
+    }
+
+    #loading p {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(100, 200, 255, 0.2);
+      border-top-color: #64c8ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-top: 30px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <h1>⟡ PolarCraft</h1>
+    <p>偏振光体素解谜游戏</p>
+    <div class="spinner"></div>
+  </div>
+
+  <div id="game-container">
+    <canvas id="canvas"></canvas>
+
+    <div id="hud">
+      <div id="crosshair"></div>
+
+      <div id="info-bar">
+        <h2>⟡ PolarCraft</h2>
+        <p>WASD 移动 | 空格 跳跃 | 左键 放置 | 右键 删除<br>
+        R 旋转方块 | V 切换视角模式 | H 帮助</p>
+      </div>
+
+      <div id="vision-mode">
+        👁 普通视角
+      </div>
+
+      <div id="block-selector">
+        <div class="block-slot selected" data-block="emitter">
+          <span class="key">1</span>
+          <span class="icon">💡</span>
+          <span class="label">光源</span>
+        </div>
+        <div class="block-slot" data-block="polarizer">
+          <span class="key">2</span>
+          <span class="icon">▤</span>
+          <span class="label">偏振片</span>
+        </div>
+        <div class="block-slot" data-block="rotator">
+          <span class="key">3</span>
+          <span class="icon">↻</span>
+          <span class="label">波片</span>
+        </div>
+        <div class="block-slot" data-block="splitter">
+          <span class="key">4</span>
+          <span class="icon">◇</span>
+          <span class="label">方解石</span>
+        </div>
+        <div class="block-slot" data-block="sensor">
+          <span class="key">5</span>
+          <span class="icon">◎</span>
+          <span class="label">感应器</span>
+        </div>
+        <div class="block-slot" data-block="mirror">
+          <span class="key">6</span>
+          <span class="icon">▯</span>
+          <span class="label">反射镜</span>
+        </div>
+        <div class="block-slot" data-block="solid">
+          <span class="key">7</span>
+          <span class="icon">■</span>
+          <span class="label">实体块</span>
+        </div>
+      </div>
+
+      <div id="selected-info"></div>
+    </div>
+
+    <div id="help-panel">
+      <button class="close-btn" onclick="toggleHelp()">×</button>
+      <h2>⟡ PolarCraft 游戏指南</h2>
+
+      <h3>🎮 基本操作</h3>
+      <ul>
+        <li><strong>WASD</strong> - 移动</li>
+        <li><strong>空格</strong> - 跳跃</li>
+        <li><strong>鼠标</strong> - 视角控制</li>
+        <li><strong>左键</strong> - 放置方块</li>
+        <li><strong>右键</strong> - 删除方块</li>
+        <li><strong>R</strong> - 旋转方块（改变朝向/角度）</li>
+        <li><strong>V</strong> - 切换偏振视角模式</li>
+        <li><strong>1-7</strong> - 选择方块类型</li>
+      </ul>
+
+      <h3>⚡ 偏振光四大公理</h3>
+      <ul>
+        <li><strong>正交不干涉</strong>：0°和90°的光可以共存互不影响</li>
+        <li><strong>马吕斯定律</strong>：光通过偏振片时，强度 = 原强度 × cos²(角度差)</li>
+        <li><strong>双折射</strong>：方解石将光分裂成两束垂直的光</li>
+        <li><strong>干涉叠加</strong>：同相叠加变亮，反相抵消变暗</li>
+      </ul>
+
+      <h3>🔷 方块说明</h3>
+      <ul>
+        <li><strong>光源</strong> - 发射偏振光束（强度15，可调角度）</li>
+        <li><strong>偏振片</strong> - 只允许特定角度的光通过</li>
+        <li><strong>波片</strong> - 旋转通过的光的偏振角度</li>
+        <li><strong>方解石</strong> - 将光分裂为两束垂直光</li>
+        <li><strong>感应器</strong> - 检测光线，可设置所需角度阈值</li>
+        <li><strong>反射镜</strong> - 反射光线方向</li>
+      </ul>
+
+      <h3>👁 偏振视角模式下的颜色</h3>
+      <div class="light-legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ff4444;"></div>
+          <span>0° 水平</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ffaa00;"></div>
+          <span>45° 斜向</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #44ff44;"></div>
+          <span>90° 垂直</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #4444ff;"></div>
+          <span>135° 斜向</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
