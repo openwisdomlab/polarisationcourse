@@ -79,6 +79,12 @@ export function DemoCanvas({
         enableRotate={true}
         minDistance={2}
         maxDistance={20}
+        enableDamping
+        dampingFactor={0.08}
+        rotateSpeed={0.8}
+        panSpeed={0.8}
+        zoomSpeed={1.2}
+        screenSpacePanning
       />
     </Canvas>
   )

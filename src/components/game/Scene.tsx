@@ -150,11 +150,28 @@ export function Scene() {
       ) : (
         <OrbitControls
           enableDamping
-          dampingFactor={0.05}
+          dampingFactor={0.08}
+          rotateSpeed={0.8}
+          panSpeed={0.8}
+          zoomSpeed={1.2}
           enablePan={cameraMode === 'isometric' || cameraMode === 'top-down'}
           enableRotate={cameraMode === 'isometric'}
           maxPolarAngle={cameraMode === 'top-down' ? 0.1 : Math.PI / 2}
-          minPolarAngle={cameraMode === 'top-down' ? 0 : 0}
+          minPolarAngle={cameraMode === 'top-down' ? 0.1 : 0.1}
+          minDistance={5}
+          maxDistance={50}
+          // 使触控板更流畅
+          enableZoom
+          screenSpacePanning
+          mouseButtons={{
+            LEFT: THREE.MOUSE.ROTATE,
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: THREE.MOUSE.PAN
+          }}
+          touches={{
+            ONE: THREE.TOUCH.ROTATE,
+            TWO: THREE.TOUCH.DOLLY_PAN
+          }}
         />
       )}
     </>
