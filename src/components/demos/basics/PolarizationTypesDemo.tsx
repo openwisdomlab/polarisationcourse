@@ -4,11 +4,13 @@
  */
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 type PolarizationType = 'linear' | 'circular' | 'elliptical'
 
 export function PolarizationTypesDemo() {
+  const { t } = useTranslation()
   const [polarizationType, setPolarizationType] = useState<PolarizationType>('linear')
   const [linearAngle, setLinearAngle] = useState(45)
   const [ellipseRatio, setEllipseRatio] = useState(0.5)
@@ -95,10 +97,14 @@ export function PolarizationTypesDemo() {
     }
   }, [polarizationType, linearAngle, ellipseRatio])
 
-  const typeLabels: Record<PolarizationType, { title: string; en: string }> = {
-    linear: { title: '线偏振', en: 'Linear Polarization' },
-    circular: { title: circularDirection === 'right' ? '右旋圆偏振' : '左旋圆偏振', en: circularDirection === 'right' ? 'Right-Circular' : 'Left-Circular' },
-    elliptical: { title: '椭圆偏振', en: 'Elliptical Polarization' },
+  const getTypeLabel = (type: PolarizationType) => {
+    if (type === 'linear') {
+      return t('demoUi.common.linearPolarization')
+    } else if (type === 'circular') {
+      return circularDirection === 'right' ? t('demoUi.common.rightCircularPol') : t('demoUi.common.leftCircularPol')
+    } else {
+      return t('demoUi.common.ellipticalPolarization')
+    }
   }
 
   return (
@@ -190,8 +196,7 @@ export function PolarizationTypesDemo() {
               <circle cx="200" cy="200" r="4" fill="#9ca3af" />
 
               {/* 类型标签 */}
-              <text x="20" y="30" fill="#9ca3af" fontSize="14">{typeLabels[polarizationType].title}</text>
-              <text x="20" y="48" fill="#6b7280" fontSize="11">{typeLabels[polarizationType].en}</text>
+              <text x="20" y="30" fill="#9ca3af" fontSize="14">{getTypeLabel(polarizationType)}</text>
 
               {/* 相位显示 */}
               <text x="320" y="30" fill="#6b7280" fontSize="12">
@@ -202,7 +207,7 @@ export function PolarizationTypesDemo() {
 
           {/* 类型选择器 */}
           <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-            <h4 className="text-sm font-semibold text-gray-300 mb-3">偏振类型</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-3">{t('demoUi.common.polarizationType')}</h4>
             <div className="grid grid-cols-3 gap-2">
               {(['linear', 'circular', 'elliptical'] as PolarizationType[]).map((type) => {
                 const colors = {
@@ -210,7 +215,11 @@ export function PolarizationTypesDemo() {
                   circular: { active: 'bg-green-400/20 border-green-400/50 text-green-400', inactive: 'hover:border-green-400/30' },
                   elliptical: { active: 'bg-purple-400/20 border-purple-400/50 text-purple-400', inactive: 'hover:border-purple-400/30' },
                 }
-                const labels = { linear: '线偏振 Linear', circular: '圆偏振 Circular', elliptical: '椭圆 Elliptical' }
+                const labels = {
+                  linear: t('demoUi.common.linearPolarization'),
+                  circular: t('demoUi.common.circularPolarization'),
+                  elliptical: t('demoUi.common.ellipticalPolarization')
+                }
 
                 return (
                   <motion.button
@@ -233,11 +242,11 @@ export function PolarizationTypesDemo() {
         </div>
 
         {/* 控制面板 */}
-        <ControlPanel title="偏振参数" className="w-full lg:w-72">
+        <ControlPanel title={t('demoUi.common.parameters')} className="w-full lg:w-72">
           {/* 条件控件 */}
           {polarizationType === 'linear' && (
             <SliderControl
-              label="偏振角 Polarization Angle"
+              label={t('demoUi.common.polarizationAngle')}
               value={linearAngle}
               min={0}
               max={180}
@@ -250,7 +259,7 @@ export function PolarizationTypesDemo() {
 
           {(polarizationType === 'circular' || polarizationType === 'elliptical') && (
             <div className="space-y-2">
-              <span className="text-xs text-gray-400">旋转方向 Rotation Direction</span>
+              <span className="text-xs text-gray-400">{t('demoUi.common.rotationDirection')}</span>
               <div className="grid grid-cols-2 gap-2">
                 <motion.button
                   className={`py-2 rounded-lg text-sm font-medium border transition-all ${
@@ -262,7 +271,7 @@ export function PolarizationTypesDemo() {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setCircularDirection('right')}
                 >
-                  右旋 (CW)
+                  {t('demoUi.common.rightRotation')}
                 </motion.button>
                 <motion.button
                   className={`py-2 rounded-lg text-sm font-medium border transition-all ${
@@ -274,7 +283,7 @@ export function PolarizationTypesDemo() {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setCircularDirection('left')}
                 >
-                  左旋 (CCW)
+                  {t('demoUi.common.leftRotation')}
                 </motion.button>
               </div>
             </div>
@@ -282,7 +291,7 @@ export function PolarizationTypesDemo() {
 
           {polarizationType === 'elliptical' && (
             <SliderControl
-              label="椭圆比 Ellipse Ratio (b/a)"
+              label={t('demoUi.common.ellipseRatio')}
               value={ellipseRatio}
               min={0.1}
               max={0.9}
@@ -293,7 +302,7 @@ export function PolarizationTypesDemo() {
           )}
 
           <SliderControl
-            label="动画速度 Animation Speed"
+            label={t('demoUi.common.animationSpeed')}
             value={animationSpeed}
             min={0}
             max={2}
@@ -310,7 +319,7 @@ export function PolarizationTypesDemo() {
                 onChange={(e) => setShowTrail(e.target.checked)}
                 className="rounded border-gray-600 bg-slate-700 text-cyan-400"
               />
-              <span className="text-sm text-gray-300">显示轨迹</span>
+              <span className="text-sm text-gray-300">{t('demoUi.common.showTrail')}</span>
             </label>
           </div>
 
@@ -324,21 +333,21 @@ export function PolarizationTypesDemo() {
             whileTap={{ scale: 0.98 }}
             onClick={() => setIsPlaying(!isPlaying)}
           >
-            {isPlaying ? '暂停 Pause' : '播放 Play'}
+            {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
           </motion.button>
 
           {/* 物理意义 */}
           <div className="pt-4 border-t border-slate-700 space-y-2">
-            <h4 className="text-sm font-semibold text-gray-300">物理意义</h4>
+            <h4 className="text-sm font-semibold text-gray-300">{t('demoUi.common.physicalMeaning')}</h4>
             <div className="text-xs text-gray-400 space-y-1">
               {polarizationType === 'linear' && (
-                <p>Ex 和 Ey 同相位振动，相位差 δ = 0° 或 180°</p>
+                <p>{t('demoUi.polarizationTypes.linearPhysics')}</p>
               )}
               {polarizationType === 'circular' && (
-                <p>Ex 和 Ey 振幅相等，相位差 δ = ±90°</p>
+                <p>{t('demoUi.polarizationTypes.circularPhysics')}</p>
               )}
               {polarizationType === 'elliptical' && (
-                <p>Ex 和 Ey 振幅不等或相位差任意</p>
+                <p>{t('demoUi.polarizationTypes.ellipticalPhysics')}</p>
               )}
             </div>
           </div>
@@ -348,27 +357,27 @@ export function PolarizationTypesDemo() {
       {/* 信息卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard
-          title="线偏振 Linear"
+          title={t('demoUi.common.linearPolarization')}
           color={polarizationType === 'linear' ? 'orange' : 'cyan'}
         >
           <p className="text-xs text-gray-300">
-            电场沿直线振动，相位差 δ = 0° 或 180°。最常见的偏振类型。
+            {t('demoUi.polarizationTypes.linearDesc')}
           </p>
         </InfoCard>
         <InfoCard
-          title="圆偏振 Circular"
+          title={t('demoUi.common.circularPolarization')}
           color={polarizationType === 'circular' ? 'green' : 'cyan'}
         >
           <p className="text-xs text-gray-300">
-            电场沿圆轨迹旋转，δ = ±90° 且 Ex = Ey。右旋和左旋两种。
+            {t('demoUi.polarizationTypes.circularDesc')}
           </p>
         </InfoCard>
         <InfoCard
-          title="椭圆偏振 Elliptical"
+          title={t('demoUi.common.ellipticalPolarization')}
           color={polarizationType === 'elliptical' ? 'purple' : 'cyan'}
         >
           <p className="text-xs text-gray-300">
-            电场沿椭圆轨迹旋转，是最一般的偏振态。任意相位和振幅组合。
+            {t('demoUi.polarizationTypes.ellipticalDesc')}
           </p>
         </InfoCard>
       </div>

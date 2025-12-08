@@ -4,9 +4,11 @@
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard } from '../DemoControls'
 
 export function LightWaveDemo() {
+  const { t } = useTranslation()
   const [wavelength, setWavelength] = useState(550) // nm
   const [amplitude, setAmplitude] = useState(50)
   const [speed, setSpeed] = useState(0.5)
@@ -176,7 +178,7 @@ export function LightWaveDemo() {
 
           {/* 可见光谱 */}
           <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">可见光谱 Visible Light Spectrum</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-2">{t('demoUi.common.visibleSpectrum')}</h4>
             <div
               className="h-8 rounded cursor-pointer relative"
               style={{
@@ -198,17 +200,17 @@ export function LightWaveDemo() {
               />
             </div>
             <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>380 nm (紫)</span>
-              <span>550 nm (绿)</span>
-              <span>700 nm (红)</span>
+              <span>380 nm ({t('demoUi.common.violet')})</span>
+              <span>550 nm ({t('demoUi.common.green')})</span>
+              <span>700 nm ({t('demoUi.common.red')})</span>
             </div>
           </div>
         </div>
 
         {/* 控制面板 */}
-        <ControlPanel title="波参数 Wave Parameters" className="w-full lg:w-72">
+        <ControlPanel title={t('demoUi.lightWave.waveParameters')} className="w-full lg:w-72">
           <SliderControl
-            label="波长 Wavelength (λ)"
+            label={t('demoUi.common.wavelength')}
             value={wavelength}
             min={380}
             max={700}
@@ -218,7 +220,7 @@ export function LightWaveDemo() {
             color="cyan"
           />
           <SliderControl
-            label="振幅 Amplitude"
+            label={t('demoUi.common.amplitude')}
             value={amplitude}
             min={20}
             max={80}
@@ -227,7 +229,7 @@ export function LightWaveDemo() {
             color="green"
           />
           <SliderControl
-            label="动画速度 Speed"
+            label={t('demoUi.common.animationSpeed')}
             value={speed}
             min={0}
             max={2}
@@ -238,7 +240,7 @@ export function LightWaveDemo() {
 
           <div className="flex items-center gap-4 pt-2">
             <Toggle
-              label="显示磁场 B"
+              label={t('demoUi.common.showBField')}
               checked={showBField}
               onChange={setShowBField}
             />
@@ -254,32 +256,30 @@ export function LightWaveDemo() {
             whileTap={{ scale: 0.98 }}
             onClick={() => setIsPlaying(!isPlaying)}
           >
-            {isPlaying ? '暂停 Pause' : '播放 Play'}
+            {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
           </motion.button>
 
           <div className="pt-2 border-t border-slate-700">
-            <ValueDisplay label="颜色 Color" value={waveColor} />
-            <ValueDisplay label="频率 Frequency" value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
+            <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
+            <ValueDisplay label={t('demoUi.common.frequency')} value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
           </div>
         </ControlPanel>
       </div>
 
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InfoCard title="电磁波特性" color="cyan">
+        <InfoCard title={t('demoUi.lightWave.emWaveFeatures')} color="cyan">
           <ul className="text-xs text-gray-300 space-y-1.5">
-            <li>• 光是电磁波，由振荡的电场 (E) 和磁场 (B) 组成</li>
-            <li>• E 和 B 相互垂直，且都垂直于传播方向</li>
-            <li>• 在真空中以光速 c = 3×10⁸ m/s 传播</li>
-            <li>• 波长 λ 和频率 f 的关系：c = λ × f</li>
+            {(t('demoUi.lightWave.emWaveDetails', { returnObjects: true }) as string[]).map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </InfoCard>
-        <InfoCard title="横波特性" color="purple">
+        <InfoCard title={t('demoUi.lightWave.transverseFeatures')} color="purple">
           <ul className="text-xs text-gray-300 space-y-1.5">
-            <li>• 横波：振动方向垂直于传播方向</li>
-            <li>• 电场矢量 E 的振动方向定义了偏振方向</li>
-            <li>• 自然光的 E 矢量在各方向随机振动</li>
-            <li>• 偏振光的 E 矢量在特定平面内振动</li>
+            {(t('demoUi.lightWave.transverseDetails', { returnObjects: true }) as string[]).map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </InfoCard>
       </div>

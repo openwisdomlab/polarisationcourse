@@ -5,6 +5,7 @@
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 计算布儒斯特角和反射率
@@ -90,10 +91,25 @@ function BrewsterDiagram({
   incidentAngle,
   n1,
   n2,
+  labels,
 }: {
   incidentAngle: number
   n1: number
   n2: number
+  labels: {
+    air: string
+    medium: string
+    normal: string
+    naturalLight: string
+    fullSPol: string
+    partialPol: string
+    richPPol: string
+    refractedLight: string
+    polarizationStates: string
+    sPol: string
+    pPol: string
+    brewsterAngle: string
+  }
 }) {
   const result = calculateBrewster(incidentAngle, n1, n2)
   const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
@@ -161,18 +177,18 @@ function BrewsterDiagram({
 
       {/* 空气层 */}
       <rect x="30" y="20" width="540" height="180" fill="url(#airGradient)" rx="8" />
-      <text x="60" y="50" fill="#60a5fa" fontSize="13">空气 n₁ = {n1.toFixed(2)}</text>
+      <text x="60" y="50" fill="#60a5fa" fontSize="13">{labels.air} n₁ = {n1.toFixed(2)}</text>
 
       {/* 玻璃/介质层 */}
       <rect x="30" y="200" width="540" height="180" fill="url(#glassGradient)" rx="8" />
-      <text x="60" y="360" fill="#2dd4bf" fontSize="13">介质 n₂ = {n2.toFixed(2)}</text>
+      <text x="60" y="360" fill="#2dd4bf" fontSize="13">{labels.medium} n₂ = {n2.toFixed(2)}</text>
 
       {/* 界面 */}
       <line x1="30" y1="200" x2="570" y2="200" stroke="#67e8f9" strokeWidth="2" />
 
       {/* 法线 */}
       <line x1={cx} y1="30" x2={cx} y2="370" stroke="#94a3b8" strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
-      <text x={cx + 8} y="45" fill="#94a3b8" fontSize="11">法线</text>
+      <text x={cx + 8} y="45" fill="#94a3b8" fontSize="11">{labels.normal}</text>
 
       {/* 光源 */}
       <motion.circle
@@ -206,7 +222,7 @@ function BrewsterDiagram({
         color="#fbbf24"
       />
       <text x={incidentStart.x - 60} y={incidentStart.y - 5} fill="#fbbf24" fontSize="12" fontWeight="500">
-        自然光
+        {labels.naturalLight}
       </text>
 
       {/* 反射光 */}
@@ -237,7 +253,7 @@ function BrewsterDiagram({
         fontSize="12"
         fontWeight="500"
       >
-        {isAtBrewster ? '完全s偏振' : '部分偏振'}
+        {isAtBrewster ? labels.fullSPol : labels.partialPol}
       </text>
 
       {/* 折射光 */}
@@ -268,7 +284,7 @@ function BrewsterDiagram({
             fontSize="12"
             fontWeight="500"
           >
-            {isAtBrewster ? '富含p偏振' : '折射光'}
+            {isAtBrewster ? labels.richPPol : labels.refractedLight}
           </text>
         </>
       )}
@@ -310,7 +326,7 @@ function BrewsterDiagram({
         >
           <rect x={cx - 80} y="8" width="160" height="30" rx="6" fill="rgba(34,211,238,0.2)" stroke="#22d3ee" strokeWidth="1" />
           <text x={cx} y="28" textAnchor="middle" fill="#22d3ee" fontSize="14" fontWeight="bold">
-            布儒斯特角 θB = {brewsterAngle.toFixed(1)}°
+            {labels.brewsterAngle} θB = {brewsterAngle.toFixed(1)}°
           </text>
         </motion.g>
       )}
@@ -333,13 +349,13 @@ function BrewsterDiagram({
       {/* 图例 */}
       <g transform="translate(450, 30)">
         <rect x="0" y="0" width="110" height="90" fill="rgba(30,41,59,0.9)" rx="6" stroke="#475569" strokeWidth="1" />
-        <text x="10" y="18" fill="#94a3b8" fontSize="10">偏振状态</text>
+        <text x="10" y="18" fill="#94a3b8" fontSize="10">{labels.polarizationStates}</text>
         <PolarizationIndicator type="unpolarized" x={25} y={35} size={16} color="#fbbf24" />
-        <text x="45" y="39" fill="#fbbf24" fontSize="10">自然光</text>
+        <text x="45" y="39" fill="#fbbf24" fontSize="10">{labels.naturalLight}</text>
         <PolarizationIndicator type="s" x={25} y={55} size={16} color="#22d3ee" />
-        <text x="45" y="59" fill="#22d3ee" fontSize="10">s偏振</text>
+        <text x="45" y="59" fill="#22d3ee" fontSize="10">{labels.sPol}</text>
         <PolarizationIndicator type="p" x={25} y={75} size={16} color="#f472b6" />
-        <text x="45" y="79" fill="#f472b6" fontSize="10">p偏振</text>
+        <text x="45" y="79" fill="#f472b6" fontSize="10">{labels.pPol}</text>
       </g>
     </svg>
   )
@@ -459,24 +475,14 @@ function PolarizationDegreeChart({
       />
 
       {/* 轴标签 */}
-      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="11">θ (度)</text>
-      <text x="8" y="18" fill="#a78bfa" fontSize="10">偏振度</text>
-
-      {/* 图例 */}
-      <g transform="translate(200, 35)">
-        <line x1="0" y1="0" x2="15" y2="0" stroke="#a78bfa" strokeWidth="2" />
-        <text x="20" y="4" fill="#a78bfa" fontSize="9">偏振度</text>
-        <line x1="0" y1="12" x2="15" y2="12" stroke="#22d3ee" strokeWidth="1.5" opacity="0.5" />
-        <text x="20" y="16" fill="#22d3ee" fontSize="9">Rs</text>
-        <line x1="0" y1="24" x2="15" y2="24" stroke="#f472b6" strokeWidth="1.5" opacity="0.5" />
-        <text x="20" y="28" fill="#f472b6" fontSize="9">Rp</text>
-      </g>
+      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="11">θ</text>
     </svg>
   )
 }
 
 // 主演示组件
 export function BrewsterDemo() {
+  const { t } = useTranslation()
   const [incidentAngle, setIncidentAngle] = useState(56)
   const [n2, setN2] = useState(1.5)
   const n1 = 1.0 // 空气
@@ -488,21 +494,37 @@ export function BrewsterDemo() {
 
   // 常见材料预设
   const materials = [
-    { name: '玻璃', n: 1.5, brewster: 56.3 },
-    { name: '水', n: 1.33, brewster: 53.1 },
-    { name: '钻石', n: 2.42, brewster: 67.5 },
-    { name: '冰', n: 1.31, brewster: 52.6 },
+    { nameKey: 'demoUi.brewster.glass', n: 1.5, brewster: 56.3 },
+    { nameKey: 'demoUi.brewster.water', n: 1.33, brewster: 53.1 },
+    { nameKey: 'demoUi.brewster.diamond', n: 2.42, brewster: 67.5 },
+    { nameKey: 'demoUi.brewster.ice', n: 1.31, brewster: 52.6 },
   ]
+
+  // 图表标签翻译
+  const diagramLabels = {
+    air: t('demoUi.brewster.air'),
+    medium: t('demoUi.brewster.medium'),
+    normal: t('demoUi.brewster.normal'),
+    naturalLight: t('demoUi.brewster.naturalLight'),
+    fullSPol: t('demoUi.brewster.fullSPol'),
+    partialPol: t('demoUi.brewster.partialPol'),
+    richPPol: t('demoUi.brewster.richPPol'),
+    refractedLight: t('demoUi.brewster.refractedLight'),
+    polarizationStates: t('demoUi.brewster.polarizationStates'),
+    sPol: t('demoUi.brewster.sPol'),
+    pPol: t('demoUi.brewster.pPol'),
+    brewsterAngle: t('demoUi.brewster.brewsterTitle'),
+  }
 
   return (
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
         <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
-          布儒斯特角交互演示
+          {t('demoUi.brewster.title')}
         </h2>
         <p className="text-gray-400 mt-1">
-          tan(θB) = n₂/n₁ —— 在此角度入射时，反射光为完全s偏振
+          {t('demoUi.brewster.subtitle')}
         </p>
       </div>
 
@@ -511,7 +533,7 @@ export function BrewsterDemo() {
         {/* 左侧：可视化 */}
         <div className="space-y-4">
           <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
-            <BrewsterDiagram incidentAngle={incidentAngle} n1={n1} n2={n2} />
+            <BrewsterDiagram incidentAngle={incidentAngle} n1={n1} n2={n2} labels={diagramLabels} />
           </div>
 
           {/* 状态指示 */}
@@ -519,20 +541,20 @@ export function BrewsterDemo() {
             <div className="flex items-center justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400">当前入射角:</span>
+                  <span className="text-sm text-gray-400">{t('demoUi.brewster.currentIncidentAngle')}</span>
                   <span className="font-mono text-lg text-orange-400">{incidentAngle}°</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400">布儒斯特角:</span>
+                  <span className="text-sm text-gray-400">{t('demoUi.brewster.brewsterAngle')}</span>
                   <span className="font-mono text-lg text-cyan-400">{brewsterAngle.toFixed(1)}°</span>
                 </div>
               </div>
               <div className="text-right">
                 <div className={`text-2xl font-bold ${isAtBrewster ? 'text-green-400' : 'text-gray-500'}`}>
-                  {isAtBrewster ? '匹配!' : `差 ${Math.abs(incidentAngle - brewsterAngle).toFixed(1)}°`}
+                  {isAtBrewster ? t('demoUi.brewster.match') : `${t('demoUi.brewster.difference')} ${Math.abs(incidentAngle - brewsterAngle).toFixed(1)}°`}
                 </div>
                 <div className="text-sm text-gray-500">
-                  偏振度: <span className="text-purple-400 font-mono">{(polarizationDegree * 100).toFixed(0)}%</span>
+                  {t('demoUi.brewster.polarizationDegree')} <span className="text-purple-400 font-mono">{(polarizationDegree * 100).toFixed(0)}%</span>
                 </div>
               </div>
             </div>
@@ -558,9 +580,9 @@ export function BrewsterDemo() {
         {/* 右侧：控制与学习 */}
         <div className="space-y-4">
           {/* 参数控制 */}
-          <ControlPanel title="参数控制">
+          <ControlPanel title={t('demoUi.common.controlPanel')}>
             <SliderControl
-              label="入射角 θ"
+              label={t('demoUi.brewster.incidentAngle')}
               value={incidentAngle}
               min={0}
               max={89}
@@ -570,7 +592,7 @@ export function BrewsterDemo() {
               color="orange"
             />
             <SliderControl
-              label="介质折射率 n₂"
+              label={t('demoUi.brewster.mediumRefractiveIndex')}
               value={n2}
               min={1.1}
               max={2.5}
@@ -582,15 +604,15 @@ export function BrewsterDemo() {
 
             {/* 材料预设 */}
             <div className="pt-2">
-              <div className="text-xs text-gray-500 mb-2">常见材料</div>
+              <div className="text-xs text-gray-500 mb-2">{t('demoUi.brewster.commonMaterials')}</div>
               <div className="grid grid-cols-2 gap-2">
                 {materials.map((m) => (
                   <button
-                    key={m.name}
+                    key={m.nameKey}
                     onClick={() => { setN2(m.n); setIncidentAngle(Math.round(m.brewster)) }}
                     className="px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
                   >
-                    {m.name} (θB≈{m.brewster.toFixed(0)}°)
+                    {t(m.nameKey)} (θB≈{m.brewster.toFixed(0)}°)
                   </button>
                 ))}
               </div>
@@ -603,25 +625,25 @@ export function BrewsterDemo() {
               whileTap={{ scale: 0.98 }}
               onClick={() => setIncidentAngle(Math.round(brewsterAngle))}
             >
-              跳转到布儒斯特角
+              {t('demoUi.brewster.jumpToBrewster')}
             </motion.button>
           </ControlPanel>
 
           {/* 计算结果 */}
-          <ControlPanel title="计算结果">
+          <ControlPanel title={t('demoUi.common.calculationResult')}>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="p-2 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs">s偏振反射率 Rs</div>
+                <div className="text-gray-500 text-xs">{t('demoUi.brewster.sPolReflectance')}</div>
                 <div className="text-cyan-400 font-mono text-lg">{(result.Rs * 100).toFixed(1)}%</div>
               </div>
               <div className="p-2 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs">p偏振反射率 Rp</div>
+                <div className="text-gray-500 text-xs">{t('demoUi.brewster.pPolReflectance')}</div>
                 <div className={`font-mono text-lg ${result.Rp < 0.01 ? 'text-green-400' : 'text-pink-400'}`}>
                   {(result.Rp * 100).toFixed(1)}%
                 </div>
               </div>
               <div className="p-2 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs">折射角 θ₂</div>
+                <div className="text-gray-500 text-xs">{t('demoUi.brewster.refractionAngle')}</div>
                 <div className="text-green-400 font-mono text-lg">{result.theta2.toFixed(1)}°</div>
               </div>
               <div className="p-2 bg-slate-900/50 rounded-lg">
@@ -641,10 +663,10 @@ export function BrewsterDemo() {
           </ControlPanel>
 
           {/* 偏振度曲线 */}
-          <ControlPanel title="反射光偏振度">
+          <ControlPanel title={t('demoUi.brewster.reflectedPolDegree')}>
             <PolarizationDegreeChart n1={n1} n2={n2} currentAngle={incidentAngle} />
             <p className="text-xs text-gray-400 mt-2">
-              在布儒斯特角处，Rp=0，反射光偏振度达到100%（完全s偏振）。
+              {t('demoUi.brewster.chartDesc')}
             </p>
           </ControlPanel>
         </div>
@@ -652,21 +674,21 @@ export function BrewsterDemo() {
 
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="布儒斯特角" color="cyan">
+        <InfoCard title={t('demoUi.brewster.brewsterTitle')} color="cyan">
           <p className="text-xs text-gray-300">
-            当入射角等于布儒斯特角时，反射光与折射光垂直（θ₁+θ₂=90°），p偏振反射率为零，反射光成为完全s偏振。
+            {t('demoUi.brewster.brewsterDesc')}
           </p>
         </InfoCard>
-        <InfoCard title="物理解释" color="purple">
+        <InfoCard title={t('demoUi.brewster.physicalExplanation')} color="purple">
           <p className="text-xs text-gray-300">
-            在布儒斯特角，折射光中的振动电荷（p偏振方向）与反射方向平行，无法有效辐射能量到反射方向。
+            {t('demoUi.brewster.physicalDesc')}
           </p>
         </InfoCard>
-        <InfoCard title="应用场景" color="orange">
+        <InfoCard title={t('demoUi.brewster.applicationsTitle')} color="orange">
           <ul className="text-xs text-gray-300 space-y-1">
-            <li>• 偏振镜片减少眩光</li>
-            <li>• 激光器布儒斯特窗</li>
-            <li>• 摄影偏振滤镜</li>
+            {(t('demoUi.brewster.applicationsList', { returnObjects: true }) as string[]).map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </InfoCard>
       </div>

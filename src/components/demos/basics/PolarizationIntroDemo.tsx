@@ -4,6 +4,7 @@
  */
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 电场矢量组件
@@ -81,12 +82,14 @@ function PolarizedPanel({
   isUnpolarized,
   polarizationAngle,
   animationSpeed,
+  propagationText,
 }: {
   title: string
   subtitle: string
   isUnpolarized: boolean
   polarizationAngle: number
   animationSpeed: number
+  propagationText: string
 }) {
   // 非偏振光的随机角度
   const randomAngles = [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350]
@@ -158,7 +161,7 @@ function PolarizedPanel({
           <circle cx="12" cy="12" r="3" fill="currentColor" />
           <circle cx="12" cy="12" r="8" />
         </svg>
-        <span>k (传播方向，垂直纸面向外)</span>
+        <span>{propagationText}</span>
       </div>
 
       {/* 偏振角显示 */}
@@ -177,6 +180,7 @@ function PolarizedPanel({
 }
 
 export function PolarizationIntroDemo() {
+  const { t } = useTranslation()
   const [polarizationAngle, setPolarizationAngle] = useState(0)
   const [animationSpeed, setAnimationSpeed] = useState(0.5)
   const [showComparison, setShowComparison] = useState(true)
@@ -195,29 +199,31 @@ export function PolarizationIntroDemo() {
                 exit={{ opacity: 0, x: -20 }}
               >
                 <PolarizedPanel
-                  title="非偏振光"
+                  title={t('demoUi.polarizationIntro.unpolarizedLight')}
                   subtitle="Unpolarized Light"
                   isUnpolarized={true}
                   polarizationAngle={0}
                   animationSpeed={animationSpeed}
+                  propagationText={t('demoUi.polarizationIntro.propagationDirection')}
                 />
               </motion.div>
             )}
           </AnimatePresence>
 
           <PolarizedPanel
-            title="偏振光"
+            title={t('demoUi.polarizationIntro.polarizedLight')}
             subtitle="Polarized Light"
             isUnpolarized={false}
             polarizationAngle={polarizationAngle}
             animationSpeed={animationSpeed}
+            propagationText={t('demoUi.polarizationIntro.propagationDirection')}
           />
         </div>
 
         {/* 控制面板 */}
-        <ControlPanel title="参数控制" className="w-full lg:w-64">
+        <ControlPanel title={t('demoUi.common.controlPanel')} className="w-full lg:w-64">
           <SliderControl
-            label="偏振角 Polarization Angle"
+            label={t('demoUi.common.polarizationAngle')}
             value={polarizationAngle}
             min={0}
             max={180}
@@ -227,7 +233,7 @@ export function PolarizationIntroDemo() {
             color="cyan"
           />
           <SliderControl
-            label="动画速度 Animation Speed"
+            label={t('demoUi.common.animationSpeed')}
             value={animationSpeed}
             min={0}
             max={2}
@@ -238,7 +244,7 @@ export function PolarizationIntroDemo() {
 
           {/* 预设角度按钮 */}
           <div className="space-y-2">
-            <span className="text-xs text-gray-400">快速选择 Quick Select</span>
+            <span className="text-xs text-gray-400">{t('demoUi.common.quickSelect')}</span>
             <div className="grid grid-cols-4 gap-1">
               {[0, 45, 90, 135].map((angle) => (
                 <motion.button
@@ -265,20 +271,20 @@ export function PolarizationIntroDemo() {
               onChange={(e) => setShowComparison(e.target.checked)}
               className="rounded border-gray-600 bg-slate-700 text-cyan-400"
             />
-            <span className="text-sm text-gray-300">显示对比 Show Comparison</span>
+            <span className="text-sm text-gray-300">{t('demoUi.common.showComparison')}</span>
           </label>
 
           {/* 关键概念 */}
           <div className="mt-4 pt-4 border-t border-slate-700 space-y-2">
-            <h4 className="text-sm font-semibold text-gray-300">关键概念</h4>
+            <h4 className="text-sm font-semibold text-gray-300">{t('demoUi.common.keyConcepts')}</h4>
             <div className="text-xs text-gray-400 space-y-1.5">
               <p className="flex items-start gap-2">
                 <span className="w-2 h-2 rounded-full bg-yellow-400 mt-1 flex-shrink-0" />
-                <span><strong className="text-yellow-400">非偏振光：</strong>电场 E 在各方向随机振动</span>
+                <span><strong className="text-yellow-400">{t('demoUi.polarizationIntro.unpolarizedLight')}:</strong> {t('demoUi.polarizationIntro.unpolarizedDesc')}</span>
               </p>
               <p className="flex items-start gap-2">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 mt-1 flex-shrink-0" />
-                <span><strong className="text-cyan-400">偏振光：</strong>电场 E 在单一平面内振动</span>
+                <span><strong className="text-cyan-400">{t('demoUi.polarizationIntro.polarizedLight')}:</strong> {t('demoUi.polarizationIntro.polarizedDesc')}</span>
               </p>
             </div>
           </div>
@@ -287,34 +293,32 @@ export function PolarizationIntroDemo() {
 
       {/* 信息卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InfoCard title="非偏振光 Unpolarized Light" color="orange">
+        <InfoCard title={t('demoUi.polarizationIntro.unpolarizedLight')} color="orange">
           <ul className="text-xs text-gray-300 space-y-1.5">
-            <li>• 电场方向随时间随机变化</li>
-            <li>• 太阳光、白炽灯等自然光源发出的光</li>
-            <li>• 没有优先的振动方向</li>
-            <li>• 可用偏振片转化为偏振光</li>
+            {(t('demoUi.polarizationIntro.unpolarizedDetails', { returnObjects: true }) as string[]).map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </InfoCard>
-        <InfoCard title="偏振光 Polarized Light" color="cyan">
+        <InfoCard title={t('demoUi.polarizationIntro.polarizedLight')} color="cyan">
           <ul className="text-xs text-gray-300 space-y-1.5">
-            <li>• 电场在单一平面内振动</li>
-            <li>• 可通过偏振片、反射、散射产生</li>
-            <li>• 偏振角度定义了振动平面的方向</li>
-            <li>• LCD屏幕、3D眼镜都利用偏振光</li>
+            {(t('demoUi.polarizationIntro.polarizedDetails', { returnObjects: true }) as string[]).map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </InfoCard>
       </div>
 
       {/* 偏振方向颜色编码 */}
       <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-        <h4 className="text-sm font-semibold text-gray-300 mb-3">偏振角度颜色编码</h4>
+        <h4 className="text-sm font-semibold text-gray-300 mb-3">{t('demoUi.polarizationIntro.colorCode')}</h4>
         <div className="flex gap-4 justify-center flex-wrap">
           {[
-            { angle: 0, color: '#ef4444', label: '0° 水平' },
-            { angle: 45, color: '#f97316', label: '45° 斜向' },
-            { angle: 90, color: '#22c55e', label: '90° 垂直' },
-            { angle: 135, color: '#3b82f6', label: '135° 斜向' },
-          ].map(({ angle, color, label }) => (
+            { angle: 0, color: '#ef4444', labelKey: 'demoUi.polarizationIntro.horizontal' },
+            { angle: 45, color: '#f97316', labelKey: 'demoUi.polarizationIntro.diagonal45' },
+            { angle: 90, color: '#22c55e', labelKey: 'demoUi.polarizationIntro.vertical' },
+            { angle: 135, color: '#3b82f6', labelKey: 'demoUi.polarizationIntro.diagonal135' },
+          ].map(({ angle, color, labelKey }) => (
             <motion.button
               key={angle}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
@@ -330,7 +334,7 @@ export function PolarizationIntroDemo() {
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
               />
-              <span className="text-sm text-gray-300">{label}</span>
+              <span className="text-sm text-gray-300">{t(labelKey)}</span>
             </motion.button>
           ))}
         </div>

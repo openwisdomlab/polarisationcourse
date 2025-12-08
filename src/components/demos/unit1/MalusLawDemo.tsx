@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 光强条组件
@@ -13,11 +14,13 @@ function LightBar({
   intensity,
   color,
   showValue = true,
+  valueText,
 }: {
   label: string
   intensity: number
   color: 'blue' | 'orange'
   showValue?: boolean
+  valueText?: string
 }) {
   const colors = {
     blue: {
@@ -52,9 +55,9 @@ function LightBar({
           />
         </div>
       </div>
-      {showValue && (
+      {showValue && valueText && (
         <div className="text-xs text-gray-400 ml-11">
-          {color === 'orange' ? `透射光强 I ≈ ${intensity.toFixed(3)}（相对值）` : ''}
+          {valueText}
         </div>
       )}
     </div>
@@ -194,7 +197,7 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
 
       {/* 轴标题 */}
       <text x="155" y="158" textAnchor="middle" fill="#f0f3ff" fontSize="11">
-        θ（度）
+        θ
       </text>
       <text
         x="12"
@@ -210,22 +213,9 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
   )
 }
 
-// 解释文本生成
-function getExplanation(angle: number): string {
-  if (Math.abs(angle) < 5 || Math.abs(angle - 180) < 5) {
-    return '两个偏振片几乎平行，透射光强几乎等于 I₀，几乎没有损失。'
-  }
-  if (Math.abs(angle - 90) < 5) {
-    return '两个偏振片接近正交（90°），理论上透射光强趋近 0，几乎看不到光。'
-  }
-  if (Math.abs(angle - 45) < 5) {
-    return '当 θ≈45° 时，cos²θ ≈ 0.5，透射光强大约是一半 I₀。'
-  }
-  return '随着 θ 增大，从 0°→90°，透射光强单调减小；再从 90°→180° 又逐渐回升。'
-}
-
 // 主组件
 export function MalusLawDemo() {
+  const { t } = useTranslation()
   const [angle, setAngle] = useState(30)
   const [incidentIntensity, setIncidentIntensity] = useState(1)
   const [autoPlay, setAutoPlay] = useState(false)
@@ -235,6 +225,20 @@ export function MalusLawDemo() {
   const cosTheta = Math.cos((angle * Math.PI) / 180)
   const cos2Theta = cosTheta * cosTheta
   const transmittedIntensity = incidentIntensity * cos2Theta
+
+  // 解释文本生成
+  const getExplanation = (angle: number): string => {
+    if (Math.abs(angle) < 5 || Math.abs(angle - 180) < 5) {
+      return t('demoUi.malus.explanation0')
+    }
+    if (Math.abs(angle - 90) < 5) {
+      return t('demoUi.malus.explanation90')
+    }
+    if (Math.abs(angle - 45) < 5) {
+      return t('demoUi.malus.explanation45')
+    }
+    return t('demoUi.malus.explanationOther')
+  }
 
   // 自动旋转
   useEffect(() => {
@@ -256,10 +260,10 @@ export function MalusLawDemo() {
       {/* 头部标题 */}
       <div className="text-center">
         <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-          马吕斯定律交互演示
+          {t('demoUi.malus.title')}
         </h2>
         <p className="text-gray-400 mt-1">
-          I = I₀ · cos²θ —— 线偏振光通过理想偏振片时，透射光强与夹角 θ 的关系
+          {t('demoUi.malus.subtitle')}
         </p>
       </div>
 
@@ -267,7 +271,7 @@ export function MalusLawDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-blue-950/90 border border-blue-500/30 p-5 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
-          <h3 className="text-lg font-semibold text-white mb-4">偏振片与光束可视化</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t('demoUi.malus.visualization')}</h3>
 
           {/* 光学装置 */}
           <div className="rounded-lg bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-blue-400/30 p-4 space-y-4">
@@ -278,8 +282,8 @@ export function MalusLawDemo() {
             <div className="flex justify-around items-center py-4">
               <PolarizerCircle
                 angle={0}
-                label="第一个偏振片"
-                sublabel="（起偏器，参考方向）"
+                label={t('demoUi.malus.firstPolarizer')}
+                sublabel={t('demoUi.malus.polarizerBase')}
                 isBase
               />
               <div className="flex flex-col items-center text-gray-500">
@@ -288,22 +292,28 @@ export function MalusLawDemo() {
                   animate={{ opacity: [0.3, 1, 0.3] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
-                <span className="text-xs mt-1">偏振光</span>
+                <span className="text-xs mt-1">{t('demoUi.malus.polarizedBeam')}</span>
               </div>
               <PolarizerCircle
                 angle={angle}
-                label="第二个偏振片"
-                sublabel="（检偏器，旋转）"
+                label={t('demoUi.malus.secondPolarizer')}
+                sublabel={t('demoUi.malus.analyzerRotate')}
               />
             </div>
 
             {/* 透射光 */}
-            <LightBar label="I" intensity={transmittedIntensity} color="orange" showValue />
+            <LightBar
+              label="I"
+              intensity={transmittedIntensity}
+              color="orange"
+              showValue
+              valueText={`${t('demoUi.malus.transmittedIntensity')} ${transmittedIntensity.toFixed(3)} ${t('demoUi.malus.relativeValue')}`}
+            />
           </div>
 
           {/* 解释框 */}
           <div className="mt-4 p-4 rounded-lg bg-slate-800/70 border border-blue-400/20">
-            <h4 className="text-sm font-semibold text-white mb-2">当前物理意义</h4>
+            <h4 className="text-sm font-semibold text-white mb-2">{t('demoUi.malus.currentMeaning')}</h4>
             <motion.p
               className="text-sm text-gray-300"
               key={Math.floor(angle / 10)}
@@ -313,7 +323,7 @@ export function MalusLawDemo() {
               {getExplanation(angle)}
             </motion.p>
             <p className="text-xs text-gray-500 mt-2">
-              这里假设入射光已经是完全线偏振光，且偏振片理想、无吸收。
+              {t('demoUi.malus.assumption')}
             </p>
           </div>
         </div>
@@ -321,9 +331,9 @@ export function MalusLawDemo() {
         {/* 右侧：控制与学习 */}
         <div className="space-y-4">
           {/* 控件 */}
-          <ControlPanel title="交互控制">
+          <ControlPanel title={t('demoUi.common.interactiveControl')}>
             <SliderControl
-              label="偏振片夹角 θ"
+              label={t('demoUi.malus.angleLabel')}
               value={angle}
               min={0}
               max={180}
@@ -334,7 +344,7 @@ export function MalusLawDemo() {
             />
 
             <SliderControl
-              label="入射光强 I₀（相对值）"
+              label={t('demoUi.malus.incidentIntensityLabel')}
               value={incidentIntensity}
               min={0.1}
               max={1}
@@ -354,17 +364,17 @@ export function MalusLawDemo() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setAutoPlay(!autoPlay)}
               >
-                {autoPlay ? '暂停自动旋转' : '开始自动旋转'}
+                {autoPlay ? t('demoUi.malus.stopAutoRotate') : t('demoUi.malus.startAutoRotate')}
               </motion.button>
 
               <div className="flex-1">
                 <SliderControl
-                  label="旋转速度"
+                  label={t('demoUi.malus.rotationSpeed')}
                   value={speed}
                   min={0.1}
                   max={2}
                   step={0.1}
-                  unit="°/帧"
+                  unit={t('demoUi.malus.perFrame')}
                   onChange={setSpeed}
                   color="orange"
                 />
@@ -373,7 +383,7 @@ export function MalusLawDemo() {
           </ControlPanel>
 
           {/* 公式与实时计算 */}
-          <ControlPanel title="马吕斯定律公式 & 实时计算">
+          <ControlPanel title={t('demoUi.malus.formulaTitle')}>
             <div className="text-center py-2">
               <span className="font-mono text-lg bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
                 I = I₀ · cos²θ
@@ -400,17 +410,17 @@ export function MalusLawDemo() {
                 </span>
               </div>
               <div className="col-span-2 text-gray-400">
-                透射比 I/I₀ = cos²θ ≈{' '}
+                I/I₀ = cos²θ ≈{' '}
                 <span className="text-orange-400 font-mono font-semibold">{cos2Theta.toFixed(4)}</span>
               </div>
             </div>
           </ControlPanel>
 
           {/* 曲线图 */}
-          <ControlPanel title="函数曲线：I/I₀ = cos²θ">
+          <ControlPanel title={t('demoUi.malus.curveTitle')}>
             <MalusCurveChart currentAngle={angle} intensity={cos2Theta} />
             <p className="text-xs text-gray-400 mt-2">
-              横轴为角度 θ（0°–180°），纵轴为透射比 I/I₀。红点表示当前 θ 所对应的瞬时光强位置。
+              {t('demoUi.malus.curveDesc')}
             </p>
           </ControlPanel>
         </div>
@@ -419,30 +429,30 @@ export function MalusLawDemo() {
       {/* 底部提示 */}
       <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
         <p className="text-sm text-gray-400">
-          <strong className="text-cyan-400">学习提示：</strong>
-          可以先猜测 θ=0°、45°、90° 时的透射光强，再通过拖动滑块验证，并观察曲线形状，加深对 cos²θ 关系的理解。
+          <strong className="text-cyan-400">{t('demoUi.common.learningTip')}：</strong>
+          {t('demoUi.malus.tip')}
         </p>
       </div>
 
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="马吕斯定律" color="cyan">
+        <InfoCard title={t('demoUi.malus.malusLaw')} color="cyan">
           <p className="text-xs text-gray-300">
-            当线偏振光通过偏振片时，透射光强 I = I₀cos²θ，其中 θ 为偏振方向与透光轴的夹角。
+            {t('demoUi.malus.malusDesc')}
           </p>
         </InfoCard>
-        <InfoCard title="应用场景" color="purple">
+        <InfoCard title={t('demoUi.malus.applications')} color="purple">
           <ul className="text-xs text-gray-300 space-y-1">
-            <li>• 偏光太阳镜减少眩光</li>
-            <li>• LCD显示器的亮度控制</li>
-            <li>• 摄影中的偏振滤镜</li>
+            {(t('demoUi.malus.appList', { returnObjects: true }) as string[]).map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </InfoCard>
-        <InfoCard title="特殊角度" color="orange">
+        <InfoCard title={t('demoUi.malus.specialAngles')} color="orange">
           <ul className="text-xs text-gray-300 space-y-1">
-            <li>• θ = 0°: I = I₀ (完全透过)</li>
-            <li>• θ = 45°: I = I₀/2 (半透过)</li>
-            <li>• θ = 90°: I = 0 (完全阻挡)</li>
+            {(t('demoUi.malus.angleList', { returnObjects: true }) as string[]).map((item, i) => (
+              <li key={i}>• {item}</li>
+            ))}
           </ul>
         </InfoCard>
       </div>
