@@ -14,7 +14,7 @@ export function PolarizationTypesDemo() {
   const [linearAngle, setLinearAngle] = useState(45)
   const [ellipseRatio, setEllipseRatio] = useState(0.5) // ratio of minor to major axis
   const [circularDirection, setCircularDirection] = useState<'right' | 'left'>('right')
-  const [animationSpeed, setAnimationSpeed] = useState(1)
+  const [animationSpeed, setAnimationSpeed] = useState(0.5)
   const [time, setTime] = useState(0)
   const [showTrail, setShowTrail] = useState(true)
 

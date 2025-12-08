@@ -10,7 +10,7 @@ export function LightWaveDemo() {
   const animationRef = useRef<number>(0)
   const [wavelength, setWavelength] = useState(550) // nm
   const [amplitude, setAmplitude] = useState(50)
-  const [speed, setSpeed] = useState(1)
+  const [speed, setSpeed] = useState(0.5)
   const [showBField, setShowBField] = useState(true)
   const [phase, setPhase] = useState(0)
 

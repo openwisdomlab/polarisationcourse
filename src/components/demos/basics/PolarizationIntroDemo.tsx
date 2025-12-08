@@ -9,7 +9,7 @@ export function PolarizationIntroDemo() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number>(0)
   const [polarizationAngle, setPolarizationAngle] = useState(0)
-  const [animationSpeed, setAnimationSpeed] = useState(1)
+  const [animationSpeed, setAnimationSpeed] = useState(0.5)
   const [time, setTime] = useState(0)
 
   useEffect(() => {
