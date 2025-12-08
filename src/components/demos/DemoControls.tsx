@@ -346,7 +346,8 @@ export function InfoCard({
   children,
   className,
 }: InfoCardProps) {
-  const colors = infoCardColors[color]
+  // 使用默认颜色作为回退，防止无效颜色值导致崩溃
+  const colors = infoCardColors[color] || infoCardColors.cyan
 
   return (
     <div

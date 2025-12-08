@@ -537,7 +537,7 @@ export function MieScatteringDemo() {
 
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="米氏散射理论" color="pink">
+        <InfoCard title="米氏散射理论" color="purple">
           <p className="text-xs text-gray-300">
             由Gustav Mie在1908年发展，完整描述球形粒子对电磁波的散射。适用于粒径与波长可比的情况(x≈1-10)。
           </p>

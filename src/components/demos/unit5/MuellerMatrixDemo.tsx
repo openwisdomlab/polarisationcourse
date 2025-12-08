@@ -584,7 +584,7 @@ export function MuellerMatrixDemo() {
           </ul>
         </InfoCard>
 
-        <InfoCard title="常见穆勒矩阵" color="pink">
+        <InfoCard title="常见穆勒矩阵" color="purple">
           <ul className="text-sm space-y-1 text-gray-300">
             <li>• <strong>偏振片 P：</strong>产生线偏振光，强度减半</li>
             <li>• <strong>λ/2 波片 H：</strong>反转偏振方向，改变旋向</li>
