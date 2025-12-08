@@ -396,53 +396,76 @@
     <div class="main-container">
         <aside class="sidebar">
             <div class="sidebar-section">
-                <h3>基础概念</h3>
+                <h3>第一单元：偏振态调制与测量</h3>
                 <ul class="demo-list">
-                    <li><a href="#demo1" class="active" data-demo="demo1">
-                        <span class="demo-num">1</span>
+                    <li><a href="#demo3" class="active" data-demo="demo3">
+                        <span class="demo-num">1.1</span>
+                        偏振态与相位
+                    </a></li>
+                    <li><a href="#demo1" data-demo="demo1">
+                        <span class="demo-num">1.2</span>
                         马吕斯定律
                     </a></li>
-                    <li><a href="#demo2" data-demo="demo2">
-                        <span class="demo-num">2</span>
-                        游戏原型演示
+                    <li><a href="#demo4" data-demo="demo4">
+                        <span class="demo-num">1.3</span>
+                        双折射晶体
                     </a></li>
-                    <li><a href="#demo3" data-demo="demo3">
-                        <span class="demo-num">3</span>
-                        偏振态与相位
+                    <li><a href="#demo5" data-demo="demo5">
+                        <span class="demo-num">1.4</span>
+                        波片效应
                     </a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
-                <h3>光学元件</h3>
+                <h3>第二单元：界面反射偏振</h3>
                 <ul class="demo-list">
-                    <li><a href="#demo4" data-demo="demo4">
-                        <span class="demo-num">4</span>
-                        双折射晶体
-                    </a></li>
-                    <li><a href="#demo5" data-demo="demo5">
-                        <span class="demo-num">5</span>
-                        波片效应
-                    </a></li>
                     <li><a href="#demo6" data-demo="demo6">
-                        <span class="demo-num">6</span>
+                        <span class="demo-num">2.1</span>
                         布儒斯特角
                     </a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
-                <h3>高级应用</h3>
+                <h3>第三单元：透明介质偏振</h3>
                 <ul class="demo-list">
                     <li><a href="#demo7" data-demo="demo7">
-                        <span class="demo-num">7</span>
-                        偏振光干涉
+                        <span class="demo-num">3.1</span>
+                        色偏振与干涉
                     </a></li>
                     <li><a href="#demo8" data-demo="demo8">
-                        <span class="demo-num">8</span>
+                        <span class="demo-num">3.2</span>
                         旋光性
                     </a></li>
                     <li><a href="#demo9" data-demo="demo9">
-                        <span class="demo-num">9</span>
+                        <span class="demo-num">3.3</span>
                         光弹性效应
+                    </a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>第四单元：浑浊介质散射</h3>
+                <ul class="demo-list">
+                    <li><a href="#demo10" data-demo="demo10">
+                        <span class="demo-num">4.1</span>
+                        瑞利与米氏散射
+                    </a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>第五单元：全偏振技术</h3>
+                <ul class="demo-list">
+                    <li><a href="#demo11" data-demo="demo11">
+                        <span class="demo-num">5.1</span>
+                        Stokes矢量与Mueller矩阵
+                    </a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>游戏探索</h3>
+                <ul class="demo-list">
+                    <li><a href="#demo2" data-demo="demo2">
+                        <span class="demo-num">⚡</span>
+                        PolarCraft 游戏原型
                     </a></li>
                 </ul>
             </div>
@@ -450,7 +473,7 @@
 
         <main class="content">
             <!-- Demo 1: Malus's Law -->
-            <section id="demo1" class="demo-section active">
+            <section id="demo1" class="demo-section">
                 <div class="demo-header">
                     <h1>马吕斯定律</h1>
                     <p class="subtitle">Malus's Law - 偏振光通过检偏器的强度变化</p>
@@ -529,7 +552,7 @@
             </section>
 
             <!-- Demo 3: Polarization States -->
-            <section id="demo3" class="demo-section">
+            <section id="demo3" class="demo-section active">
                 <div class="demo-header">
                     <h1>偏振态与相位差</h1>
                     <p class="subtitle">Polarization States - 线偏振、圆偏振与椭圆偏振</p>
@@ -756,9 +779,9 @@
             <!-- Demo 7: Interference -->
             <section id="demo7" class="demo-section">
                 <div class="demo-header">
-                    <h1>偏振光干涉</h1>
-                    <p class="subtitle">Polarized Light Interference - 相干叠加与相消</p>
-                    <p>两束偏振光的干涉结果取决于它们的偏振方向、相位差和振幅。正交偏振的光不发生干涉，平行偏振的光干涉最强。</p>
+                    <h1>色偏振与干涉</h1>
+                    <p class="subtitle">Chromatic Polarization - 双折射介质的彩色效应</p>
+                    <p>当白光通过双折射介质并经过检偏器时，由于不同波长的光经历不同的相位延迟，会产生美丽的干涉色彩。这就是色偏振现象，广泛应用于应力分析、材料检测等领域。</p>
                 </div>
                 <div class="demo-container">
                     <div class="demo-canvas-area">
@@ -899,6 +922,119 @@
                     <p><strong>等色线（Isochromatic）：</strong>相同颜色的线连接了主应力差相等的点。</p>
                     <p><strong>等倾线（Isoclinic）：</strong>黑色条纹出现在主应力方向与偏振器轴平行或垂直的位置。</p>
                     <p>光弹性分析被广泛应用于工程结构应力分析、断裂力学研究等领域。</p>
+                </div>
+            </section>
+
+            <!-- Demo 10: Scattering -->
+            <section id="demo10" class="demo-section">
+                <div class="demo-header">
+                    <h1>瑞利与米氏散射</h1>
+                    <p class="subtitle">Rayleigh & Mie Scattering - 颗粒物散射的光谱与偏振特征</p>
+                    <p>光被颗粒物散射时，散射强度和偏振特征与颗粒物的粒径、形状和折射率密切相关。瑞利散射解释蓝天，米氏散射解释白云和红霞。</p>
+                </div>
+                <div class="demo-container">
+                    <div class="demo-canvas-area">
+                        <canvas id="canvas10" width="700" height="400"></canvas>
+                    </div>
+                    <div class="demo-controls">
+                        <div class="control-row">
+                            <label>颗粒粒径 (nm):</label>
+                            <input type="range" id="particleSize10" min="10" max="2000" value="100" step="10">
+                            <span class="value" id="particleSize10Val">100nm</span>
+                        </div>
+                        <div class="control-row">
+                            <label>观察角度:</label>
+                            <input type="range" id="observeAngle10" min="0" max="180" value="90">
+                            <span class="value" id="observeAngle10Val">90°</span>
+                        </div>
+                        <div class="control-row">
+                            <label style="min-width: 140px;">快速预设:</label>
+                            <div class="preset-buttons">
+                                <button class="preset-btn" onclick="setScatterPreset('sky')">蓝天 (瑞利)</button>
+                                <button class="preset-btn" onclick="setScatterPreset('cloud')">白云 (米氏)</button>
+                                <button class="preset-btn" onclick="setScatterPreset('sunset')">红霞</button>
+                                <button class="preset-btn" onclick="setScatterPreset('milk')">牛奶散射</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-panel">
+                    <h3>物理原理</h3>
+                    <p><strong>瑞利散射（Rayleigh Scattering）：</strong>当颗粒粒径远小于光波长时（d << λ），散射强度与波长的四次方成反比：</p>
+                    <div class="formula">I ∝ 1/λ⁴</div>
+                    <p>这解释了为什么天空是蓝色的——短波长（蓝光）比长波长（红光）散射更强。</p>
+                    <p><strong>米氏散射（Mie Scattering）：</strong>当颗粒粒径与光波长相当时（d ≈ λ），散射变得复杂，各波长散射接近，因此云呈现白色。</p>
+                    <p><strong>散射偏振：</strong>侧向散射光（90°）偏振度最高，前向和后向散射偏振度较低。</p>
+                    <div class="status-display">
+                        <div class="status-item">
+                            <div class="label">散射类型</div>
+                            <div class="value" id="scatterType10">瑞利散射</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="label">偏振度</div>
+                            <div class="value" id="polarDegree10">85%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demo 11: Mueller Matrix -->
+            <section id="demo11" class="demo-section">
+                <div class="demo-header">
+                    <h1>Stokes矢量与Mueller矩阵</h1>
+                    <p class="subtitle">Full Polarimetry - 偏振光学的完备表征</p>
+                    <p>Stokes矢量完整描述光的偏振态，Mueller矩阵完整描述光学元件对偏振态的变换。两者结合构成全偏振光学测量的数学基础。</p>
+                </div>
+                <div class="demo-container">
+                    <div class="demo-canvas-area">
+                        <canvas id="canvas11" width="700" height="450"></canvas>
+                    </div>
+                    <div class="demo-controls">
+                        <div class="control-row">
+                            <label>入射光类型:</label>
+                            <div class="preset-buttons">
+                                <button class="preset-btn" onclick="setStokesInput('horizontal')">水平偏振</button>
+                                <button class="preset-btn" onclick="setStokesInput('vertical')">垂直偏振</button>
+                                <button class="preset-btn" onclick="setStokesInput('diagonal')">45°偏振</button>
+                                <button class="preset-btn" onclick="setStokesInput('circular_r')">右旋圆偏振</button>
+                                <button class="preset-btn" onclick="setStokesInput('circular_l')">左旋圆偏振</button>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <label>光学元件:</label>
+                            <div class="preset-buttons">
+                                <button class="preset-btn" onclick="setMuellerElement('polarizer_h')">水平偏振片</button>
+                                <button class="preset-btn" onclick="setMuellerElement('polarizer_45')">45°偏振片</button>
+                                <button class="preset-btn" onclick="setMuellerElement('qwp')">四分之一波片</button>
+                                <button class="preset-btn" onclick="setMuellerElement('hwp')">二分之一波片</button>
+                                <button class="preset-btn" onclick="setMuellerElement('depolarizer')">退偏器</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-panel">
+                    <h3>物理原理</h3>
+                    <p><strong>Stokes矢量：</strong>用四个可测量的参数完整描述光的偏振态：</p>
+                    <div class="formula">S = [S₀, S₁, S₂, S₃]ᵀ</div>
+                    <ul style="margin: 15px 0; padding-left: 20px; color: #aab;">
+                        <li>S₀: 总光强</li>
+                        <li>S₁: 水平偏振 - 垂直偏振</li>
+                        <li>S₂: +45°偏振 - -45°偏振</li>
+                        <li>S₃: 右旋圆偏振 - 左旋圆偏振</li>
+                    </ul>
+                    <p><strong>Mueller矩阵：</strong>4×4矩阵，完整描述光学元件对偏振态的变换：</p>
+                    <div class="formula">S' = M · S</div>
+                    <p>Mueller矩阵是样本偏振光学特征的完备表征，包含极其丰富的光学性质和微观结构几何特征信息，在海洋探测、生物医学、材料检测、自动驾驶等领域有广泛应用。</p>
+                    <div class="status-display">
+                        <div class="status-item">
+                            <div class="label">入射Stokes</div>
+                            <div class="value" id="stokesIn11">[1,1,0,0]</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="label">出射Stokes</div>
+                            <div class="value" id="stokesOut11">[0.5,0.5,0,0]</div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -2048,6 +2184,408 @@
         document.getElementById('analyzerAngle9').addEventListener('input', updateDemo9);
         updateDemo9();
         drawDemo9();
+
+        // ============ DEMO 10: Rayleigh & Mie Scattering ============
+        const canvas10 = document.getElementById('canvas10');
+        const ctx10 = canvas10.getContext('2d');
+        let particleSize10 = 100;
+        let observeAngle10 = 90;
+        let time10 = 0;
+
+        function setScatterPreset(preset) {
+            const presets = {
+                'sky': { size: 20, angle: 90 },
+                'cloud': { size: 1000, angle: 45 },
+                'sunset': { size: 50, angle: 10 },
+                'milk': { size: 300, angle: 90 }
+            };
+            const p = presets[preset];
+            document.getElementById('particleSize10').value = p.size;
+            document.getElementById('observeAngle10').value = p.angle;
+            updateDemo10();
+        }
+
+        function updateDemo10() {
+            particleSize10 = parseInt(document.getElementById('particleSize10').value);
+            observeAngle10 = parseInt(document.getElementById('observeAngle10').value);
+
+            document.getElementById('particleSize10Val').textContent = particleSize10 + 'nm';
+            document.getElementById('observeAngle10Val').textContent = observeAngle10 + '°';
+
+            // Determine scattering type
+            const sizeParameter = particleSize10 / 500; // normalized to wavelength
+            let scatterType = '瑞利散射';
+            if (sizeParameter > 0.5) scatterType = '过渡区';
+            if (sizeParameter > 1) scatterType = '米氏散射';
+            document.getElementById('scatterType10').textContent = scatterType;
+
+            // Polarization degree (simplified model)
+            const polarDeg = Math.sin(toRad(observeAngle10)) * (1 - sizeParameter * 0.3);
+            document.getElementById('polarDegree10').textContent = Math.round(Math.max(0, Math.min(100, polarDeg * 100))) + '%';
+        }
+
+        function drawDemo10() {
+            const w = canvas10.width;
+            const h = canvas10.height;
+            ctx10.clearRect(0, 0, w, h);
+
+            // Background gradient simulating sky color based on particle size
+            const sizeParam = particleSize10 / 500;
+            let skyR = 50 + sizeParam * 150;
+            let skyG = 100 + sizeParam * 100;
+            let skyB = 255 - sizeParam * 50;
+
+            // Adjust for observation angle (sunset effect)
+            const sunsetFactor = Math.max(0, 1 - observeAngle10 / 90);
+            skyR = Math.min(255, skyR + sunsetFactor * 200);
+            skyG = Math.min(255, skyG * (1 - sunsetFactor * 0.5));
+            skyB = Math.max(50, skyB * (1 - sunsetFactor));
+
+            const grad = ctx10.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, `rgb(${Math.round(skyR)}, ${Math.round(skyG)}, ${Math.round(skyB)})`);
+            grad.addColorStop(1, `rgb(${Math.round(skyR * 0.3)}, ${Math.round(skyG * 0.3)}, ${Math.round(skyB * 0.4)})`);
+            ctx10.fillStyle = grad;
+            ctx10.fillRect(0, 0, w, h);
+
+            // Draw sun
+            const sunX = w * 0.8;
+            const sunY = h * 0.2 + (90 - observeAngle10) * 2;
+            const sunGrad = ctx10.createRadialGradient(sunX, sunY, 0, sunX, sunY, 60);
+            sunGrad.addColorStop(0, 'rgba(255, 255, 200, 1)');
+            sunGrad.addColorStop(0.3, 'rgba(255, 220, 100, 0.8)');
+            sunGrad.addColorStop(1, 'rgba(255, 150, 50, 0)');
+            ctx10.fillStyle = sunGrad;
+            ctx10.beginPath();
+            ctx10.arc(sunX, sunY, 60, 0, Math.PI * 2);
+            ctx10.fill();
+
+            // Draw particles
+            const numParticles = Math.min(200, 50 + particleSize10 / 10);
+            for (let i = 0; i < numParticles; i++) {
+                const px = Math.random() * w;
+                const py = Math.random() * h;
+                const pSize = Math.max(1, particleSize10 / 300 + Math.random() * 2);
+
+                // Color depends on size (Rayleigh = blue scatter, Mie = white)
+                const blueShift = Math.max(0, 1 - sizeParam);
+                const alpha = 0.3 + Math.random() * 0.4;
+                ctx10.fillStyle = `rgba(${200 + blueShift * 55}, ${220 + blueShift * 35}, 255, ${alpha})`;
+                ctx10.beginPath();
+                ctx10.arc(px, py, pSize, 0, Math.PI * 2);
+                ctx10.fill();
+            }
+
+            // Draw scattering diagram (polar plot)
+            const diagramX = 150;
+            const diagramY = h - 120;
+            const diagramR = 80;
+
+            // Background circle
+            ctx10.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx10.beginPath();
+            ctx10.arc(diagramX, diagramY, diagramR + 10, 0, Math.PI * 2);
+            ctx10.fill();
+
+            ctx10.strokeStyle = '#444';
+            ctx10.lineWidth = 1;
+            ctx10.beginPath();
+            ctx10.arc(diagramX, diagramY, diagramR, 0, Math.PI * 2);
+            ctx10.stroke();
+
+            // Draw scattering pattern
+            ctx10.strokeStyle = '#00ff88';
+            ctx10.lineWidth = 2;
+            ctx10.beginPath();
+            for (let angle = 0; angle <= 360; angle += 2) {
+                const rad = toRad(angle);
+                // Simplified scattering function
+                let intensity;
+                if (sizeParam < 0.3) {
+                    // Rayleigh: (1 + cos²θ) pattern
+                    intensity = (1 + Math.pow(Math.cos(rad), 2)) / 2;
+                } else {
+                    // Mie: forward-peaked pattern
+                    const forwardPeak = Math.exp(-Math.pow(angle - 0, 2) / (2000 * sizeParam));
+                    intensity = 0.3 + forwardPeak * 0.7;
+                }
+                const r = diagramR * intensity;
+                const x = diagramX + r * Math.cos(rad);
+                const y = diagramY - r * Math.sin(rad);
+                if (angle === 0) ctx10.moveTo(x, y);
+                else ctx10.lineTo(x, y);
+            }
+            ctx10.closePath();
+            ctx10.stroke();
+
+            // Observation angle indicator
+            const obsRad = toRad(observeAngle10);
+            ctx10.strokeStyle = '#ff6644';
+            ctx10.lineWidth = 2;
+            ctx10.beginPath();
+            ctx10.moveTo(diagramX, diagramY);
+            ctx10.lineTo(diagramX + (diagramR + 20) * Math.cos(obsRad), diagramY - (diagramR + 20) * Math.sin(obsRad));
+            ctx10.stroke();
+
+            // Labels
+            ctx10.fillStyle = '#fff';
+            ctx10.font = '12px Arial';
+            ctx10.textAlign = 'center';
+            ctx10.fillText('散射强度分布', diagramX, diagramY + diagramR + 25);
+            ctx10.fillText(`观察角: ${observeAngle10}°`, diagramX, diagramY + diagramR + 40);
+
+            // Legend
+            ctx10.fillStyle = '#64c8ff';
+            ctx10.font = '14px Arial';
+            ctx10.textAlign = 'left';
+            ctx10.fillText(`粒径: ${particleSize10}nm`, 20, 30);
+            ctx10.fillText(`λ/d ≈ ${(500 / particleSize10).toFixed(1)}`, 20, 50);
+
+            time10++;
+            requestAnimationFrame(drawDemo10);
+        }
+
+        document.getElementById('particleSize10').addEventListener('input', updateDemo10);
+        document.getElementById('observeAngle10').addEventListener('input', updateDemo10);
+        updateDemo10();
+        drawDemo10();
+
+        // ============ DEMO 11: Stokes & Mueller ============
+        const canvas11 = document.getElementById('canvas11');
+        const ctx11 = canvas11.getContext('2d');
+
+        // Stokes vectors for different polarization states
+        const stokesVectors = {
+            'horizontal': [1, 1, 0, 0],
+            'vertical': [1, -1, 0, 0],
+            'diagonal': [1, 0, 1, 0],
+            'antidiagonal': [1, 0, -1, 0],
+            'circular_r': [1, 0, 0, 1],
+            'circular_l': [1, 0, 0, -1],
+            'unpolarized': [1, 0, 0, 0]
+        };
+
+        // Mueller matrices for optical elements
+        const muellerMatrices = {
+            'polarizer_h': [[0.5, 0.5, 0, 0], [0.5, 0.5, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+            'polarizer_v': [[0.5, -0.5, 0, 0], [-0.5, 0.5, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+            'polarizer_45': [[0.5, 0, 0.5, 0], [0, 0, 0, 0], [0.5, 0, 0.5, 0], [0, 0, 0, 0]],
+            'qwp': [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, -1], [0, 0, 1, 0]],
+            'hwp': [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, -1]],
+            'depolarizer': [[1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+            'identity': [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        };
+
+        let currentStokes = 'horizontal';
+        let currentMueller = 'polarizer_h';
+        let time11 = 0;
+
+        function setStokesInput(type) {
+            currentStokes = type;
+            updateDemo11();
+        }
+
+        function setMuellerElement(type) {
+            currentMueller = type;
+            updateDemo11();
+        }
+
+        function multiplyMuellerStokes(M, S) {
+            const result = [0, 0, 0, 0];
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    result[i] += M[i][j] * S[j];
+                }
+            }
+            return result;
+        }
+
+        function updateDemo11() {
+            const Sin = stokesVectors[currentStokes];
+            const M = muellerMatrices[currentMueller];
+            const Sout = multiplyMuellerStokes(M, Sin);
+
+            document.getElementById('stokesIn11').textContent = `[${Sin.map(v => v.toFixed(1)).join(', ')}]`;
+            document.getElementById('stokesOut11').textContent = `[${Sout.map(v => v.toFixed(2)).join(', ')}]`;
+        }
+
+        function drawDemo11() {
+            const w = canvas11.width;
+            const h = canvas11.height;
+            ctx11.clearRect(0, 0, w, h);
+
+            const Sin = stokesVectors[currentStokes];
+            const M = muellerMatrices[currentMueller];
+            const Sout = multiplyMuellerStokes(M, Sin);
+
+            // Draw input polarization (Poincaré sphere projection)
+            const sphereX1 = 150;
+            const sphereY = h / 2;
+            const sphereR = 80;
+
+            // Draw Poincaré sphere (simplified 2D projection)
+            ctx11.strokeStyle = '#333';
+            ctx11.lineWidth = 1;
+            ctx11.beginPath();
+            ctx11.arc(sphereX1, sphereY, sphereR, 0, Math.PI * 2);
+            ctx11.stroke();
+
+            // Axes
+            ctx11.strokeStyle = '#444';
+            ctx11.beginPath();
+            ctx11.moveTo(sphereX1 - sphereR, sphereY);
+            ctx11.lineTo(sphereX1 + sphereR, sphereY);
+            ctx11.moveTo(sphereX1, sphereY - sphereR);
+            ctx11.lineTo(sphereX1, sphereY + sphereR);
+            ctx11.stroke();
+
+            // Input state point
+            const inX = sphereX1 + Sin[1] * sphereR * 0.9;
+            const inY = sphereY - Sin[2] * sphereR * 0.9;
+            ctx11.fillStyle = '#00ccff';
+            ctx11.beginPath();
+            ctx11.arc(inX, inY, 10, 0, Math.PI * 2);
+            ctx11.fill();
+
+            // Draw input wave animation
+            ctx11.strokeStyle = '#00ccff';
+            ctx11.lineWidth = 2;
+            ctx11.beginPath();
+            for (let i = 0; i < 60; i++) {
+                const t = (i - time11 * 0.1) * 0.1;
+                const ex = Sin[0] > 0 ? (Sin[1] >= 0 ? 1 : -1) * Math.sqrt((1 + Sin[1]) / 2) : 0;
+                const ey = Sin[0] > 0 ? Math.sqrt((1 - Sin[1]) / 2) : 0;
+                const phase = Sin[3] > 0 ? Math.PI / 2 : (Sin[3] < 0 ? -Math.PI / 2 : 0);
+
+                const px = 50 + i * 2;
+                const py = sphereY - 120 + Math.sin(t) * 20 * ex;
+                if (i === 0) ctx11.moveTo(px, py);
+                else ctx11.lineTo(px, py);
+            }
+            ctx11.stroke();
+
+            // Labels for input
+            ctx11.fillStyle = '#00ccff';
+            ctx11.font = '16px Arial';
+            ctx11.textAlign = 'center';
+            ctx11.fillText('入射偏振态', sphereX1, sphereY + sphereR + 30);
+            ctx11.font = '12px Arial';
+            ctx11.fillText(`S = [${Sin.join(', ')}]`, sphereX1, sphereY + sphereR + 50);
+
+            // Draw Mueller matrix (center)
+            const matrixX = w / 2;
+            const matrixY = sphereY;
+            const cellSize = 35;
+
+            ctx11.fillStyle = 'rgba(100, 200, 255, 0.1)';
+            ctx11.fillRect(matrixX - cellSize * 2, matrixY - cellSize * 2, cellSize * 4, cellSize * 4);
+
+            ctx11.strokeStyle = '#64c8ff';
+            ctx11.lineWidth = 2;
+            ctx11.strokeRect(matrixX - cellSize * 2, matrixY - cellSize * 2, cellSize * 4, cellSize * 4);
+
+            ctx11.fillStyle = '#fff';
+            ctx11.font = '12px monospace';
+            ctx11.textAlign = 'center';
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const val = M[i][j];
+                    const x = matrixX - cellSize * 1.5 + j * cellSize;
+                    const y = matrixY - cellSize * 1.5 + i * cellSize + 5;
+                    ctx11.fillText(val.toFixed(1), x, y);
+                }
+            }
+
+            ctx11.fillStyle = '#ffcc00';
+            ctx11.font = '14px Arial';
+            ctx11.fillText('Mueller矩阵', matrixX, matrixY - cellSize * 2 - 10);
+
+            // Draw output polarization
+            const sphereX2 = w - 150;
+
+            ctx11.strokeStyle = '#333';
+            ctx11.lineWidth = 1;
+            ctx11.beginPath();
+            ctx11.arc(sphereX2, sphereY, sphereR, 0, Math.PI * 2);
+            ctx11.stroke();
+
+            ctx11.strokeStyle = '#444';
+            ctx11.beginPath();
+            ctx11.moveTo(sphereX2 - sphereR, sphereY);
+            ctx11.lineTo(sphereX2 + sphereR, sphereY);
+            ctx11.moveTo(sphereX2, sphereY - sphereR);
+            ctx11.lineTo(sphereX2, sphereY + sphereR);
+            ctx11.stroke();
+
+            // Output state point
+            if (Sout[0] > 0.01) {
+                const outX = sphereX2 + (Sout[1] / Sout[0]) * sphereR * 0.9;
+                const outY = sphereY - (Sout[2] / Sout[0]) * sphereR * 0.9;
+                ctx11.fillStyle = '#ffcc00';
+                ctx11.beginPath();
+                ctx11.arc(outX, outY, 10, 0, Math.PI * 2);
+                ctx11.fill();
+            }
+
+            // Draw output wave
+            ctx11.strokeStyle = `rgba(255, 204, 0, ${Sout[0]})`;
+            ctx11.lineWidth = 2;
+            ctx11.beginPath();
+            for (let i = 0; i < 60; i++) {
+                const t = (i - time11 * 0.1) * 0.1;
+                const amp = Math.sqrt(Sout[0]) * 20;
+                const px = sphereX2 - 60 + i * 2;
+                const py = sphereY - 120 + Math.sin(t) * amp * (Sout[0] > 0 ? (Sout[1] >= 0 ? 1 : -1) : 0);
+                if (i === 0) ctx11.moveTo(px, py);
+                else ctx11.lineTo(px, py);
+            }
+            ctx11.stroke();
+
+            // Labels for output
+            ctx11.fillStyle = '#ffcc00';
+            ctx11.font = '16px Arial';
+            ctx11.textAlign = 'center';
+            ctx11.fillText('出射偏振态', sphereX2, sphereY + sphereR + 30);
+            ctx11.font = '12px Arial';
+            ctx11.fillText(`S' = [${Sout.map(v => v.toFixed(2)).join(', ')}]`, sphereX2, sphereY + sphereR + 50);
+
+            // Intensity bar
+            ctx11.fillStyle = '#333';
+            ctx11.fillRect(sphereX2 - 50, sphereY + sphereR + 70, 100, 15);
+            ctx11.fillStyle = '#ffcc00';
+            ctx11.fillRect(sphereX2 - 50, sphereY + sphereR + 70, 100 * Sout[0], 15);
+            ctx11.fillStyle = '#fff';
+            ctx11.font = '10px Arial';
+            ctx11.fillText(`透射率: ${(Sout[0] * 100).toFixed(0)}%`, sphereX2, sphereY + sphereR + 100);
+
+            // Arrows
+            ctx11.strokeStyle = '#666';
+            ctx11.lineWidth = 2;
+            ctx11.beginPath();
+            ctx11.moveTo(sphereX1 + sphereR + 20, sphereY);
+            ctx11.lineTo(matrixX - cellSize * 2 - 20, sphereY);
+            ctx11.moveTo(matrixX + cellSize * 2 + 20, sphereY);
+            ctx11.lineTo(sphereX2 - sphereR - 20, sphereY);
+            ctx11.stroke();
+
+            // Arrow heads
+            ctx11.fillStyle = '#666';
+            ctx11.beginPath();
+            ctx11.moveTo(matrixX - cellSize * 2 - 20, sphereY);
+            ctx11.lineTo(matrixX - cellSize * 2 - 30, sphereY - 5);
+            ctx11.lineTo(matrixX - cellSize * 2 - 30, sphereY + 5);
+            ctx11.fill();
+            ctx11.beginPath();
+            ctx11.moveTo(sphereX2 - sphereR - 20, sphereY);
+            ctx11.lineTo(sphereX2 - sphereR - 30, sphereY - 5);
+            ctx11.lineTo(sphereX2 - sphereR - 30, sphereY + 5);
+            ctx11.fill();
+
+            time11++;
+            requestAnimationFrame(drawDemo11);
+        }
+
+        updateDemo11();
+        drawDemo11();
 
     </script>
 </body>
