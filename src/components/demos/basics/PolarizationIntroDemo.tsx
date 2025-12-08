@@ -2,7 +2,7 @@
  * Polarization Introduction Demo - 偏振光入门演示
  * 使用 DOM + Framer Motion 对比非偏振光和偏振光
  */
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 

@@ -1,299 +1,419 @@
 /**
  * 波片原理演示 - Unit 1
  * 演示四分之一波片和二分之一波片对偏振态的影响
+ * 重构版本：使用清晰的2D Canvas + SVG + Framer Motion
  */
-import { useState, useRef, useMemo } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Line, Text, Ring } from '@react-three/drei'
-import * as THREE from 'three'
-import { SliderControl, ControlPanel, ValueDisplay, ButtonGroup, InfoPanel, Formula } from '../DemoControls'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { motion } from 'framer-motion'
+import {
+  SliderControl,
+  ControlPanel,
+  ValueDisplay,
+  InfoCard,
+  Formula,
+} from '../DemoControls'
 
-// 波片组件
-function Waveplate({
-  position,
-  fastAxisAngle,
-  type,
-}: {
-  position: [number, number, number]
-  fastAxisAngle: number
-  type: 'quarter' | 'half'
-}) {
-  const color = type === 'quarter' ? '#a78bfa' : '#f472b6'
-  const label = type === 'quarter' ? 'λ/4 波片' : 'λ/2 波片'
+// 波片类型
+type WaveplateType = 'quarter' | 'half'
 
-  return (
-    <group position={position}>
-      {/* 波片本体 */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.8, 0.8, 0.1, 32]} />
-        <meshStandardMaterial color={color} transparent opacity={0.5} />
-      </mesh>
-      {/* 快轴指示 */}
-      <Line
-        points={[
-          [0, -1, 0],
-          [0, 1, 0],
-        ]}
-        color="#fbbf24"
-        lineWidth={3}
-        rotation={[0, 0, (fastAxisAngle * Math.PI) / 180]}
-      />
-      <Text
-        position={[0, 1.3, 0]}
-        fontSize={0.15}
-        color="#fbbf24"
-        rotation={[0, 0, (fastAxisAngle * Math.PI) / 180]}
-      >
-        快轴
-      </Text>
-      {/* 慢轴指示 */}
-      <Line
-        points={[
-          [-1, 0, 0],
-          [1, 0, 0],
-        ]}
-        color="#60a5fa"
-        lineWidth={2}
-        rotation={[0, 0, (fastAxisAngle * Math.PI) / 180]}
-        dashed
-        dashSize={0.1}
-        gapSize={0.05}
-      />
-      <Text position={[0, -1.5, 0]} fontSize={0.2} color="#94a3b8">
-        {label}
-      </Text>
-    </group>
-  )
-}
+// 偏振态类型
+type PolarizationState = 'linear' | 'circular-r' | 'circular-l' | 'elliptical'
 
-// 偏振态可视化
-function PolarizationState({
-  position,
-  polarizationType,
-  angle,
-  label,
-}: {
-  position: [number, number, number]
-  polarizationType: 'linear' | 'circular-r' | 'circular-l' | 'elliptical'
-  angle: number
-  label: string
-}) {
-  const groupRef = useRef<THREE.Group>(null)
-  const timeRef = useRef(0)
-
-  useFrame((_, delta) => {
-    if (!groupRef.current) return
-    timeRef.current += delta
-  })
-
-  const color =
-    polarizationType === 'linear'
-      ? '#ffaa00'
-      : polarizationType === 'circular-r'
-        ? '#22d3ee'
-        : polarizationType === 'circular-l'
-          ? '#f472b6'
-          : '#a78bfa'
-
-  return (
-    <group position={position} ref={groupRef}>
-      {polarizationType === 'linear' ? (
-        // 线偏振 - 双向箭头
-        <Line
-          points={[
-            [-0.6, 0, 0],
-            [0.6, 0, 0],
-          ]}
-          color={color}
-          lineWidth={4}
-          rotation={[0, 0, (angle * Math.PI) / 180]}
-        />
-      ) : polarizationType === 'circular-r' || polarizationType === 'circular-l' ? (
-        // 圆偏振 - 圆环
-        <Ring args={[0.4, 0.5, 32]}>
-          <meshBasicMaterial color={color} side={THREE.DoubleSide} />
-        </Ring>
-      ) : (
-        // 椭圆偏振
-        <mesh rotation={[0, 0, (angle * Math.PI) / 180]}>
-          <torusGeometry args={[0.4, 0.05, 8, 32]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-      )}
-      <Text position={[0, -1, 0]} fontSize={0.2} color="#94a3b8">
-        {label}
-      </Text>
-    </group>
-  )
-}
-
-// 光束与偏振演示
-function AnimatedPolarizationBeam({
-  start,
-  end,
-  inputType,
-}: {
-  start: [number, number, number]
-  end: [number, number, number]
-  inputType: 'linear' | 'circular-r' | 'circular-l' | 'elliptical'
-  outputType: 'linear' | 'circular-r' | 'circular-l' | 'elliptical'
-  inputAngle: number
-  outputAngle: number
-}) {
-  const groupRef = useRef<THREE.Group>(null)
-  const timeRef = useRef(0)
-
-  useFrame((_, delta) => {
-    timeRef.current += delta
-  })
-
-  const getColor = (type: string) => {
-    switch (type) {
-      case 'linear':
-        return '#ffaa00'
-      case 'circular-r':
-        return '#22d3ee'
-      case 'circular-l':
-        return '#f472b6'
-      default:
-        return '#a78bfa'
-    }
-  }
-
-  return (
-    <group ref={groupRef}>
-      <Line
-        points={[start, end]}
-        color={getColor(inputType)}
-        lineWidth={2}
-        transparent
-        opacity={0.5}
-      />
-    </group>
-  )
-}
-
-// 3D场景
-function WaveplateScene({
+// 波片光路演示Canvas
+function WaveplateCanvas({
   waveplateType,
   inputAngle,
   fastAxisAngle,
+  animate,
 }: {
-  waveplateType: 'quarter' | 'half'
+  waveplateType: WaveplateType
   inputAngle: number
   fastAxisAngle: number
+  animate: boolean
 }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const timeRef = useRef(0)
+  const animationRef = useRef<number | undefined>(undefined)
+
   // 计算输出偏振态
-  const calculateOutput = () => {
-    const relativeAngle = inputAngle - fastAxisAngle
-    const normalizedAngle = ((relativeAngle % 180) + 180) % 180
+  const outputState = useMemo(() => {
+    const relativeAngle = ((inputAngle - fastAxisAngle) % 180 + 180) % 180
 
     if (waveplateType === 'quarter') {
-      // λ/4 波片
-      if (normalizedAngle === 45 || normalizedAngle === 135) {
-        return { type: 'circular-r' as const, angle: 0 }
-      } else if (normalizedAngle === 0 || normalizedAngle === 90) {
-        return { type: 'linear' as const, angle: inputAngle }
+      if (Math.abs(relativeAngle - 45) < 5 || Math.abs(relativeAngle - 135) < 5) {
+        return { type: 'circular-r' as PolarizationState, angle: 0 }
+      } else if (relativeAngle < 5 || Math.abs(relativeAngle - 90) < 5 || Math.abs(relativeAngle - 180) < 5) {
+        return { type: 'linear' as PolarizationState, angle: inputAngle }
       } else {
-        return { type: 'elliptical' as const, angle: inputAngle }
+        return { type: 'elliptical' as PolarizationState, angle: inputAngle }
       }
     } else {
-      // λ/2 波片：偏振面旋转 2θ
-      const outputAngle = 2 * fastAxisAngle - inputAngle
-      return { type: 'linear' as const, angle: outputAngle }
+      const outputAngle = ((2 * fastAxisAngle - inputAngle) % 180 + 180) % 180
+      return { type: 'linear' as PolarizationState, angle: outputAngle }
     }
-  }
+  }, [waveplateType, inputAngle, fastAxisAngle])
 
-  const output = calculateOutput()
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const width = 700
+    const height = 300
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+    ctx.scale(dpr, dpr)
+
+    const centerY = height / 2
+    const sourceX = 50
+    const waveplateX = 280
+    const waveplateWidth = 80
+    const screenX = 650
+
+    const draw = () => {
+      // 清除画布
+      ctx.fillStyle = '#0f172a'
+      ctx.fillRect(0, 0, width, height)
+
+      const t = timeRef.current * 0.05
+
+      // 绘制光源
+      const gradient = ctx.createRadialGradient(sourceX, centerY, 0, sourceX, centerY, 25)
+      gradient.addColorStop(0, 'rgba(251, 191, 36, 1)')
+      gradient.addColorStop(1, 'rgba(251, 191, 36, 0)')
+      ctx.beginPath()
+      ctx.fillStyle = gradient
+      ctx.arc(sourceX, centerY, 25, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.fillStyle = '#fbbf24'
+      ctx.beginPath()
+      ctx.arc(sourceX, centerY, 12, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.fillStyle = '#94a3b8'
+      ctx.font = '11px sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('线偏振光源', sourceX, centerY + 50)
+
+      // 入射光束（带偏振方向指示）
+      drawAnimatedBeam(ctx, sourceX + 20, centerY, waveplateX - 10, centerY, '#ffaa00', 1, t)
+
+      // 入射偏振态指示
+      drawPolarizationIndicator(ctx, 150, centerY, inputAngle, 'linear', '#ffaa00', t)
+      ctx.fillStyle = '#ffaa00'
+      ctx.font = '10px sans-serif'
+      ctx.fillText(`输入: ${inputAngle}°`, 150, centerY + 40)
+
+      // 绘制波片
+      drawWaveplate(ctx, waveplateX, centerY - 60, waveplateWidth, 120, fastAxisAngle, waveplateType)
+
+      // 输出光束
+      const outputColor = outputState.type === 'circular-r' || outputState.type === 'circular-l'
+        ? '#22d3ee'
+        : outputState.type === 'elliptical'
+          ? '#a78bfa'
+          : '#44ff44'
+
+      drawAnimatedBeam(ctx, waveplateX + waveplateWidth + 10, centerY, screenX - 20, centerY, outputColor, 1, t)
+
+      // 输出偏振态指示
+      drawPolarizationIndicator(ctx, 500, centerY, outputState.angle, outputState.type, outputColor, t)
+
+      const outputLabel = outputState.type === 'linear'
+        ? `输出: ${outputState.angle.toFixed(0)}°`
+        : outputState.type === 'circular-r'
+          ? '右旋圆偏振'
+          : outputState.type === 'circular-l'
+            ? '左旋圆偏振'
+            : '椭圆偏振'
+
+      ctx.fillStyle = outputColor
+      ctx.font = '10px sans-serif'
+      ctx.fillText(outputLabel, 500, centerY + 40)
+
+      // 绘制屏幕
+      ctx.fillStyle = '#1e293b'
+      ctx.fillRect(screenX - 5, centerY - 80, 20, 160)
+
+      // 屏幕上的光斑
+      drawScreenSpot(ctx, screenX, centerY, outputState.type, outputColor, t)
+
+      ctx.fillStyle = '#94a3b8'
+      ctx.fillText('观察屏', screenX, centerY + 100)
+
+      if (animate) {
+        timeRef.current += 1
+      }
+      animationRef.current = requestAnimationFrame(draw)
+    }
+
+    draw()
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [waveplateType, inputAngle, fastAxisAngle, animate, outputState])
 
   return (
-    <>
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[5, 5, 5]} intensity={0.8} />
-
-      {/* 光源 */}
-      <group position={[-4, 0, 0]}>
-        <mesh>
-          <sphereGeometry args={[0.3, 16, 16]} />
-          <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={0.5} />
-        </mesh>
-        <Text position={[0, -0.8, 0]} fontSize={0.2} color="#94a3b8">
-          线偏振光源
-        </Text>
-      </group>
-
-      {/* 输入偏振态 */}
-      <PolarizationState
-        position={[-2.5, 0, 0]}
-        polarizationType="linear"
-        angle={inputAngle}
-        label={`输入: ${inputAngle}°`}
-      />
-
-      {/* 输入光束 */}
-      <AnimatedPolarizationBeam
-        start={[-3.5, 0, 0]}
-        end={[-1.2, 0, 0]}
-        inputType="linear"
-        outputType="linear"
-        inputAngle={inputAngle}
-        outputAngle={inputAngle}
-      />
-
-      {/* 波片 */}
-      <Waveplate position={[0, 0, 0]} fastAxisAngle={fastAxisAngle} type={waveplateType} />
-
-      {/* 输出光束 */}
-      <AnimatedPolarizationBeam
-        start={[1.2, 0, 0]}
-        end={[3.5, 0, 0]}
-        inputType={output.type}
-        outputType={output.type}
-        inputAngle={output.angle}
-        outputAngle={output.angle}
-      />
-
-      {/* 输出偏振态 */}
-      <PolarizationState
-        position={[2.5, 0, 0]}
-        polarizationType={output.type}
-        angle={output.angle}
-        label={
-          output.type === 'linear'
-            ? `输出: ${((output.angle % 180) + 180) % 180}°`
-            : output.type === 'circular-r'
-              ? '右旋圆偏振'
-              : '椭圆偏振'
-        }
-      />
-
-      {/* 屏幕 */}
-      <group position={[5, 0, 0]}>
-        <mesh>
-          <planeGeometry args={[1.5, 2]} />
-          <meshStandardMaterial color="#1e293b" side={THREE.DoubleSide} />
-        </mesh>
-        <Text position={[0, -1.3, 0]} fontSize={0.2} color="#94a3b8">
-          观察屏
-        </Text>
-      </group>
-
-      <OrbitControls enablePan={true} enableZoom={true} />
-    </>
+    <canvas
+      ref={canvasRef}
+      className="rounded-lg border border-cyan-400/20 w-full"
+      style={{ maxWidth: 700, height: 300 }}
+    />
   )
+}
+
+// 绘制动画光束
+function drawAnimatedBeam(
+  ctx: CanvasRenderingContext2D,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  color: string,
+  intensity: number,
+  time: number
+) {
+  const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+  const particleSpacing = 25
+  const numParticles = Math.floor(length / particleSpacing)
+
+  // 主光束线
+  ctx.beginPath()
+  ctx.strokeStyle = color
+  ctx.globalAlpha = 0.4 + intensity * 0.3
+  ctx.lineWidth = 2
+  ctx.moveTo(x1, y1)
+  ctx.lineTo(x2, y2)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+
+  // 动画粒子
+  for (let i = 0; i < numParticles; i++) {
+    const progress = ((i * particleSpacing + time * 4) % length) / length
+    const px = x1 + (x2 - x1) * progress
+    const py = y1 + (y2 - y1) * progress
+
+    ctx.beginPath()
+    ctx.fillStyle = color
+    ctx.globalAlpha = 0.7
+    ctx.arc(px, py, 2.5, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.globalAlpha = 1
+  }
+}
+
+// 绘制波片
+function drawWaveplate(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  fastAxisAngle: number,
+  type: WaveplateType
+) {
+  const centerX = x + width / 2
+  const centerY = y + height / 2
+  const color = type === 'quarter' ? '#a78bfa' : '#f472b6'
+  const label = type === 'quarter' ? 'λ/4 波片' : 'λ/2 波片'
+
+  // 波片外形
+  ctx.fillStyle = type === 'quarter' ? 'rgba(167, 139, 250, 0.2)' : 'rgba(244, 114, 182, 0.2)'
+  ctx.strokeStyle = color
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.ellipse(centerX, centerY, width / 2, height / 2, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.stroke()
+
+  // 快轴指示
+  ctx.save()
+  ctx.translate(centerX, centerY)
+  ctx.rotate((fastAxisAngle * Math.PI) / 180)
+
+  ctx.beginPath()
+  ctx.strokeStyle = '#fbbf24'
+  ctx.lineWidth = 3
+  ctx.moveTo(0, -height / 2 + 10)
+  ctx.lineTo(0, height / 2 - 10)
+  ctx.stroke()
+
+  // 快轴箭头
+  ctx.beginPath()
+  ctx.fillStyle = '#fbbf24'
+  ctx.moveTo(0, -height / 2 + 10)
+  ctx.lineTo(-6, -height / 2 + 22)
+  ctx.lineTo(6, -height / 2 + 22)
+  ctx.closePath()
+  ctx.fill()
+
+  ctx.restore()
+
+  // 慢轴指示（垂直于快轴）
+  ctx.save()
+  ctx.translate(centerX, centerY)
+  ctx.rotate(((fastAxisAngle + 90) * Math.PI) / 180)
+
+  ctx.beginPath()
+  ctx.strokeStyle = '#60a5fa'
+  ctx.lineWidth = 2
+  ctx.setLineDash([4, 4])
+  ctx.moveTo(0, -height / 2 + 15)
+  ctx.lineTo(0, height / 2 - 15)
+  ctx.stroke()
+  ctx.setLineDash([])
+
+  ctx.restore()
+
+  // 标签
+  ctx.fillStyle = color
+  ctx.font = '12px sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(label, centerX, y + height + 20)
+
+  // 图例
+  ctx.fillStyle = '#fbbf24'
+  ctx.font = '9px sans-serif'
+  ctx.fillText('快轴', centerX - 25, y - 8)
+  ctx.fillStyle = '#60a5fa'
+  ctx.fillText('慢轴', centerX + 25, y - 8)
+}
+
+// 绘制偏振态指示器
+function drawPolarizationIndicator(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  angle: number,
+  type: PolarizationState,
+  color: string,
+  time: number
+) {
+  const size = 20
+
+  ctx.save()
+  ctx.translate(x, y)
+
+  if (type === 'linear') {
+    // 线偏振 - 振动的双向箭头
+    const oscillation = Math.sin(time * 0.2) * 0.5 + 0.5
+    ctx.rotate((angle * Math.PI) / 180)
+    ctx.beginPath()
+    ctx.strokeStyle = color
+    ctx.lineWidth = 3
+    const lineSize = size * (0.5 + oscillation * 0.5)
+    ctx.moveTo(-lineSize, 0)
+    ctx.lineTo(lineSize, 0)
+    ctx.stroke()
+
+    // 箭头
+    ctx.beginPath()
+    ctx.fillStyle = color
+    ctx.moveTo(lineSize, 0)
+    ctx.lineTo(lineSize - 6, -4)
+    ctx.lineTo(lineSize - 6, 4)
+    ctx.closePath()
+    ctx.fill()
+  } else if (type === 'circular-r' || type === 'circular-l') {
+    // 圆偏振 - 旋转的圆
+    ctx.beginPath()
+    ctx.strokeStyle = color
+    ctx.lineWidth = 2
+    ctx.arc(0, 0, size, 0, Math.PI * 2)
+    ctx.stroke()
+
+    // 旋转指示点
+    const direction = type === 'circular-r' ? 1 : -1
+    const pointAngle = time * 0.15 * direction
+    const px = Math.cos(pointAngle) * size
+    const py = Math.sin(pointAngle) * size
+
+    ctx.beginPath()
+    ctx.fillStyle = color
+    ctx.arc(px, py, 4, 0, Math.PI * 2)
+    ctx.fill()
+
+    // 旋转方向箭头
+    ctx.beginPath()
+    ctx.strokeStyle = color
+    ctx.lineWidth = 1
+    const arrowAngle = pointAngle + Math.PI / 2 * direction
+    ctx.moveTo(px, py)
+    ctx.lineTo(px + Math.cos(arrowAngle) * 8, py + Math.sin(arrowAngle) * 8)
+    ctx.stroke()
+  } else {
+    // 椭圆偏振
+    ctx.beginPath()
+    ctx.strokeStyle = color
+    ctx.lineWidth = 2
+    ctx.ellipse(0, 0, size, size * 0.5, (angle * Math.PI) / 180, 0, Math.PI * 2)
+    ctx.stroke()
+
+    // 旋转指示点
+    const pointAngle = time * 0.15
+    const px = Math.cos(pointAngle) * size
+    const py = Math.sin(pointAngle) * size * 0.5
+
+    ctx.save()
+    ctx.rotate((angle * Math.PI) / 180)
+    ctx.beginPath()
+    ctx.fillStyle = color
+    ctx.arc(px, py, 3, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
+  }
+
+  ctx.restore()
+}
+
+// 绘制屏幕光斑
+function drawScreenSpot(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  _type: PolarizationState,
+  color: string,
+  _time: number
+) {
+  const radius = 25
+
+  // 发光效果
+  const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius * 1.5)
+  gradient.addColorStop(0, color)
+  gradient.addColorStop(1, 'transparent')
+
+  ctx.beginPath()
+  ctx.fillStyle = gradient
+  ctx.arc(x, y, radius * 1.5, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 主光斑
+  ctx.beginPath()
+  ctx.fillStyle = color
+  ctx.globalAlpha = 0.8
+  ctx.arc(x, y, radius, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalAlpha = 1
 }
 
 // 相位延迟图
 function PhaseRetardationDiagram({
   waveplateType,
-  relativeAngle,
 }: {
-  waveplateType: 'quarter' | 'half'
-  relativeAngle: number
+  waveplateType: WaveplateType
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  useMemo(() => {
+  useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -301,7 +421,7 @@ function PhaseRetardationDiagram({
     if (!ctx) return
 
     const width = 280
-    const height = 160
+    const height = 140
     const dpr = window.devicePixelRatio || 1
     canvas.width = width * dpr
     canvas.height = height * dpr
@@ -315,112 +435,199 @@ function PhaseRetardationDiagram({
 
     const centerY = height / 2
     const wavelength = 60
-
-    // 绘制两个正弦波
-    const amplitude = 40
+    const amplitude = 35
     const phase = waveplateType === 'quarter' ? Math.PI / 2 : Math.PI
 
-    // 快轴分量
+    // 快轴分量（黄色）
     ctx.strokeStyle = '#fbbf24'
     ctx.lineWidth = 2
     ctx.beginPath()
     for (let x = 0; x < width; x++) {
-      const y = centerY + amplitude * 0.5 * Math.sin((2 * Math.PI * x) / wavelength)
+      const y = centerY + amplitude * Math.sin((2 * Math.PI * x) / wavelength)
       if (x === 0) ctx.moveTo(x, y)
       else ctx.lineTo(x, y)
     }
     ctx.stroke()
 
-    // 慢轴分量（延迟）
+    // 慢轴分量（蓝色，带相位延迟）
     ctx.strokeStyle = '#60a5fa'
     ctx.lineWidth = 2
     ctx.beginPath()
     for (let x = 0; x < width; x++) {
-      const y = centerY - amplitude * 0.5 * Math.sin((2 * Math.PI * x) / wavelength + phase)
+      const y = centerY - amplitude * Math.sin((2 * Math.PI * x) / wavelength + phase)
       if (x === 0) ctx.moveTo(x, y)
       else ctx.lineTo(x, y)
     }
     ctx.stroke()
 
     // 相位差标注
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = '11px sans-serif'
-    ctx.fillText('快轴', 10, 30)
     ctx.fillStyle = '#fbbf24'
-    ctx.fillText('—', 35, 30)
-    ctx.fillStyle = '#94a3b8'
-    ctx.fillText('慢轴', 10, height - 20)
+    ctx.font = '10px sans-serif'
+    ctx.fillText('快轴 ──', 10, 20)
     ctx.fillStyle = '#60a5fa'
-    ctx.fillText('—', 35, height - 20)
+    ctx.fillText('慢轴 ──', 10, height - 10)
 
     const phaseText = waveplateType === 'quarter' ? 'Δφ = π/2 (λ/4)' : 'Δφ = π (λ/2)'
     ctx.fillStyle = '#94a3b8'
-    ctx.fillText(phaseText, width - 90, 20)
-  }, [waveplateType, relativeAngle])
+    ctx.textAlign = 'right'
+    ctx.fillText(phaseText, width - 10, 20)
+  }, [waveplateType])
 
   return (
     <canvas
       ref={canvasRef}
       className="w-full rounded-lg"
-      style={{ width: 280, height: 160 }}
+      style={{ width: 280, height: 140 }}
     />
+  )
+}
+
+// 预设按钮组件
+function PresetButton({
+  label,
+  isActive,
+  onClick,
+  color,
+}: {
+  label: string
+  isActive: boolean
+  onClick: () => void
+  color: string
+}) {
+  return (
+    <motion.button
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+        isActive
+          ? 'bg-opacity-20 border-opacity-50'
+          : 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+      }`}
+      style={{
+        backgroundColor: isActive ? `${color}20` : undefined,
+        borderColor: isActive ? `${color}80` : undefined,
+        color: isActive ? color : undefined,
+      }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+    >
+      {label}
+    </motion.button>
   )
 }
 
 // 主演示组件
 export function WaveplateDemo() {
-  const [waveplateType, setWaveplateType] = useState<'quarter' | 'half'>('quarter')
+  const [waveplateType, setWaveplateType] = useState<WaveplateType>('quarter')
   const [inputAngle, setInputAngle] = useState(45)
   const [fastAxisAngle, setFastAxisAngle] = useState(0)
+  const [animate, setAnimate] = useState(true)
 
   const relativeAngle = ((inputAngle - fastAxisAngle) % 180 + 180) % 180
 
   // 计算输出偏振态描述
   const getOutputDescription = () => {
     if (waveplateType === 'quarter') {
-      if (relativeAngle === 45 || relativeAngle === 135) {
-        return '圆偏振光'
-      } else if (relativeAngle === 0 || relativeAngle === 90) {
-        return '线偏振光（不变）'
+      if (Math.abs(relativeAngle - 45) < 5 || Math.abs(relativeAngle - 135) < 5) {
+        return { text: '圆偏振光', color: '#22d3ee' }
+      } else if (relativeAngle < 5 || Math.abs(relativeAngle - 90) < 5) {
+        return { text: '线偏振光（不变）', color: '#44ff44' }
       } else {
-        return '椭圆偏振光'
+        return { text: '椭圆偏振光', color: '#a78bfa' }
       }
     } else {
       const outputAngle = ((2 * fastAxisAngle - inputAngle) % 180 + 180) % 180
-      return `线偏振光 (${outputAngle.toFixed(0)}°)`
+      return { text: `线偏振光 (${outputAngle.toFixed(0)}°)`, color: '#44ff44' }
     }
   }
 
+  const outputDesc = getOutputDescription()
+
+  // 常用配置预设
+  const presets = waveplateType === 'quarter'
+    ? [
+        { label: '45°→圆', inputAngle: 45, fastAxisAngle: 0 },
+        { label: '0°→不变', inputAngle: 0, fastAxisAngle: 0 },
+        { label: '30°→椭圆', inputAngle: 30, fastAxisAngle: 0 },
+      ]
+    : [
+        { label: '45°→90°', inputAngle: 45, fastAxisAngle: 67.5 },
+        { label: '0°→90°', inputAngle: 0, fastAxisAngle: 45 },
+        { label: '45°→0°', inputAngle: 45, fastAxisAngle: 22.5 },
+      ]
+
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-full">
-      {/* 3D 可视化 */}
-      <div className="flex-1 bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden min-h-[400px]">
-        <Canvas
-          camera={{ position: [0, 5, 10], fov: 50 }}
-          gl={{ antialias: true }}
+    <div className="flex flex-col gap-6 h-full">
+      {/* 标题 */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+          波片原理
+        </h2>
+        <p className="text-gray-400 mt-1">
+          λ/4和λ/2波片如何改变光的偏振态
+        </p>
+      </div>
+
+      {/* 波片类型选择 */}
+      <div className="flex justify-center gap-4">
+        <motion.button
+          className={`px-6 py-3 rounded-xl text-sm font-medium border-2 transition-all ${
+            waveplateType === 'quarter'
+              ? 'bg-purple-500/20 text-purple-400 border-purple-400/50'
+              : 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+          }`}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setWaveplateType('quarter')}
         >
-          <WaveplateScene
+          λ/4 四分之一波片
+        </motion.button>
+        <motion.button
+          className={`px-6 py-3 rounded-xl text-sm font-medium border-2 transition-all ${
+            waveplateType === 'half'
+              ? 'bg-pink-500/20 text-pink-400 border-pink-400/50'
+              : 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+          }`}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setWaveplateType('half')}
+        >
+          λ/2 二分之一波片
+        </motion.button>
+      </div>
+
+      {/* 可视化面板 */}
+      <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden">
+        <div className="px-4 py-3 border-b border-cyan-400/10 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-white">光路演示</h3>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">快速预设:</span>
+            {presets.map((preset) => (
+              <PresetButton
+                key={preset.label}
+                label={preset.label}
+                isActive={inputAngle === preset.inputAngle && fastAxisAngle === preset.fastAxisAngle}
+                onClick={() => {
+                  setInputAngle(preset.inputAngle)
+                  setFastAxisAngle(preset.fastAxisAngle)
+                }}
+                color={waveplateType === 'quarter' ? '#a78bfa' : '#f472b6'}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="p-4 flex justify-center">
+          <WaveplateCanvas
             waveplateType={waveplateType}
             inputAngle={inputAngle}
             fastAxisAngle={fastAxisAngle}
+            animate={animate}
           />
-        </Canvas>
+        </div>
       </div>
 
-      {/* 控制面板 */}
-      <div className="w-full lg:w-80 space-y-4">
-        <ControlPanel title="波片类型">
-          <ButtonGroup
-            label=""
-            options={[
-              { value: 'quarter', label: 'λ/4 波片' },
-              { value: 'half', label: 'λ/2 波片' },
-            ]}
-            value={waveplateType}
-            onChange={(v) => setWaveplateType(v as 'quarter' | 'half')}
-          />
-        </ControlPanel>
-
+      {/* 控制和信息面板 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* 参数控制 */}
         <ControlPanel title="参数控制">
           <SliderControl
             label="入射偏振角度"
@@ -430,6 +637,7 @@ export function WaveplateDemo() {
             step={5}
             unit="°"
             onChange={setInputAngle}
+            color="orange"
           />
           <SliderControl
             label="快轴方向"
@@ -439,43 +647,88 @@ export function WaveplateDemo() {
             step={5}
             unit="°"
             onChange={setFastAxisAngle}
+            color="cyan"
           />
+          <motion.button
+            onClick={() => setAnimate(!animate)}
+            className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              animate
+                ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
+                : 'bg-slate-700/50 text-gray-400 border border-slate-600'
+            }`}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {animate ? '⏸ 暂停动画' : '▶ 播放动画'}
+          </motion.button>
         </ControlPanel>
 
+        {/* 计算结果 */}
         <ControlPanel title="计算结果">
           <ValueDisplay label="相对角度" value={relativeAngle.toFixed(0)} unit="°" />
-          <ValueDisplay label="输出偏振态" value={getOutputDescription()} />
+          <ValueDisplay label="输出偏振态" value={outputDesc.text} color={outputDesc.color === '#22d3ee' ? 'cyan' : outputDesc.color === '#a78bfa' ? 'purple' : 'green'} />
           {waveplateType === 'half' && (
-            <Formula>θ_out = 2θ_fast - θ_in</Formula>
+            <div className="pt-2 border-t border-slate-700">
+              <Formula>θ_out = 2θ_fast - θ_in</Formula>
+            </div>
+          )}
+          {waveplateType === 'quarter' && (
+            <div className="pt-2 border-t border-slate-700 text-xs text-gray-500">
+              当相对角度为45°时产生圆偏振
+            </div>
           )}
         </ControlPanel>
 
-        <ControlPanel title="相位延迟">
-          <PhaseRetardationDiagram
-            waveplateType={waveplateType}
-            relativeAngle={relativeAngle}
-          />
-        </ControlPanel>
-
-        <InfoPanel title="波片功能">
-          <div className="space-y-2 text-xs">
-            {waveplateType === 'quarter' ? (
-              <>
-                <p><strong>四分之一波片 (λ/4):</strong></p>
-                <p>• 相位延迟: π/2 (90°)</p>
-                <p>• 45°线偏振 → 圆偏振</p>
-                <p>• 0°/90°线偏振 → 不变</p>
-              </>
-            ) : (
-              <>
-                <p><strong>二分之一波片 (λ/2):</strong></p>
-                <p>• 相位延迟: π (180°)</p>
-                <p>• 旋转线偏振方向</p>
-                <p>• 旋转角度 = 2×快轴角度</p>
-              </>
-            )}
+        {/* 相位延迟图 */}
+        <ControlPanel title="相位延迟示意">
+          <PhaseRetardationDiagram waveplateType={waveplateType} />
+          <div className="text-xs text-gray-500 mt-2">
+            {waveplateType === 'quarter'
+              ? '快轴与慢轴相位差为 π/2 (90°)'
+              : '快轴与慢轴相位差为 π (180°)'}
           </div>
-        </InfoPanel>
+        </ControlPanel>
+      </div>
+
+      {/* 波片功能说明 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={`p-4 rounded-xl border ${waveplateType === 'quarter' ? 'bg-purple-500/10 border-purple-400/30' : 'bg-slate-800/50 border-slate-700/50'}`}>
+          <h4 className="font-semibold text-purple-400 mb-2">λ/4 四分之一波片</h4>
+          <ul className="text-xs text-gray-300 space-y-1">
+            <li>• 相位延迟: π/2 (90°)</li>
+            <li>• 45°线偏振 → 圆偏振</li>
+            <li>• 0°/90°线偏振 → 保持不变</li>
+            <li>• 其他角度 → 椭圆偏振</li>
+          </ul>
+        </div>
+        <div className={`p-4 rounded-xl border ${waveplateType === 'half' ? 'bg-pink-500/10 border-pink-400/30' : 'bg-slate-800/50 border-slate-700/50'}`}>
+          <h4 className="font-semibold text-pink-400 mb-2">λ/2 二分之一波片</h4>
+          <ul className="text-xs text-gray-300 space-y-1">
+            <li>• 相位延迟: π (180°)</li>
+            <li>• 线偏振方向旋转</li>
+            <li>• 旋转角度 = 2 × 快轴角度</li>
+            <li>• 可实现任意线偏振角度转换</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* 现实应用场景 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <InfoCard title="📸 相机滤镜" color="cyan">
+          <p className="text-xs text-gray-300">
+            摄影中的圆偏振滤镜(CPL)使用λ/4波片，消除玻璃反射和水面眩光，增强蓝天对比度。
+          </p>
+        </InfoCard>
+        <InfoCard title="🔒 光学隔离器" color="purple">
+          <p className="text-xs text-gray-300">
+            激光系统中使用波片组合防止反射光返回，保护激光器稳定工作。
+          </p>
+        </InfoCard>
+        <InfoCard title="📱 3D显示" color="orange">
+          <p className="text-xs text-gray-300">
+            主动式3D眼镜使用快速切换的波片，交替显示左右眼图像实现立体显示。
+          </p>
+        </InfoCard>
       </div>
     </div>
   )
