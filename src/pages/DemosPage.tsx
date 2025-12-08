@@ -1,13 +1,17 @@
 /**
- * 演示页面 - 五个单元的交互式演示
- * 增强版 - 包含详细的物理原理、实验应用和前沿应用
+ * Demos Page - Interactive physics demonstrations for 5 units + Optical Basics
+ * Enhanced with i18n, theme support, and improved interactivity indicators
  */
 import { useState, Suspense, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { InfoCard, ListItem } from '@/components/demos/DemoControls'
+import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
+import { Home, Gamepad2, BookOpen, Box, BarChart2 } from 'lucide-react'
 
-// 演示组件
+// Demo components
 import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
 import { BirefringenceDemo } from '@/components/demos/unit1/BirefringenceDemo'
 import { WaveplateDemo } from '@/components/demos/unit1/WaveplateDemo'
@@ -21,7 +25,12 @@ import { RayleighScatteringDemo } from '@/components/demos/unit4/RayleighScatter
 import { StokesVectorDemo } from '@/components/demos/unit5/StokesVectorDemo'
 import { MuellerMatrixDemo } from '@/components/demos/unit5/MuellerMatrixDemo'
 
-// 图标组件
+// Optical Basics demos
+import { LightWaveDemo } from '@/components/demos/basics/LightWaveDemo'
+import { PolarizationIntroDemo } from '@/components/demos/basics/PolarizationIntroDemo'
+import { PolarizationTypesDemo } from '@/components/demos/basics/PolarizationTypesDemo'
+
+// Icon components
 function PhysicsIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
@@ -53,7 +62,7 @@ function FrontierIcon() {
   )
 }
 
-// SVG 示意图组件
+// SVG Diagrams
 function MalusDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
@@ -63,26 +72,13 @@ function MalusDiagram() {
           <stop offset="100%" stopColor="#22d3ee" />
         </linearGradient>
       </defs>
-      {/* 光源 */}
       <circle cx="20" cy="40" r="12" fill="#fbbf24" opacity="0.8" />
-      <text x="20" y="65" textAnchor="middle" fill="#94a3b8" fontSize="8">光源</text>
-      {/* 光束 */}
       <rect x="35" y="38" width="40" height="4" fill="url(#beamGrad)" />
-      {/* 偏振片 */}
       <rect x="78" y="25" width="4" height="30" fill="#22d3ee" rx="1" />
-      <line x1="80" y1="20" x2="80" y2="60" stroke="#22d3ee" strokeWidth="1" strokeDasharray="2" />
-      <text x="80" y="72" textAnchor="middle" fill="#94a3b8" fontSize="8">偏振片</text>
-      {/* 光束 */}
       <rect x="85" y="38" width="40" height="4" fill="#22d3ee" opacity="0.8" />
-      {/* 检偏器 */}
       <rect x="128" y="25" width="4" height="30" fill="#a78bfa" rx="1" />
-      <line x1="130" y1="22" x2="130" y2="58" stroke="#a78bfa" strokeWidth="1" strokeDasharray="2" transform="rotate(45 130 40)" />
-      <text x="130" y="72" textAnchor="middle" fill="#94a3b8" fontSize="8">检偏器</text>
-      {/* 出射光 */}
       <rect x="135" y="38" width="30" height="4" fill="#a78bfa" opacity="0.5" />
-      {/* 屏幕 */}
       <rect x="168" y="28" width="6" height="24" fill="#64748b" rx="1" />
-      <text x="171" y="65" textAnchor="middle" fill="#94a3b8" fontSize="8">屏幕</text>
     </svg>
   )
 }
@@ -90,20 +86,13 @@ function MalusDiagram() {
 function BirefringenceDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 入射光 */}
       <line x1="20" y1="40" x2="70" y2="40" stroke="#fbbf24" strokeWidth="3" />
       <polygon points="70,40 64,36 64,44" fill="#fbbf24" />
-      {/* 方解石晶体 */}
       <path d="M80,20 L120,20 L130,60 L90,60 Z" fill="#22d3ee" opacity="0.3" stroke="#22d3ee" strokeWidth="1" />
-      <text x="105" y="75" textAnchor="middle" fill="#94a3b8" fontSize="8">方解石</text>
-      {/* o光 */}
       <line x1="130" y1="35" x2="180" y2="30" stroke="#ff4444" strokeWidth="2" />
-      <polygon points="180,30 174,27 174,33" fill="#ff4444" />
-      <text x="175" y="22" fill="#ff4444" fontSize="8">o光</text>
-      {/* e光 */}
+      <text x="175" y="22" fill="#ff4444" fontSize="8">o</text>
       <line x1="130" y1="45" x2="180" y2="55" stroke="#44ff44" strokeWidth="2" />
-      <polygon points="180,55 174,52 174,58" fill="#44ff44" />
-      <text x="175" y="68" fill="#44ff44" fontSize="8">e光</text>
+      <text x="175" y="68" fill="#44ff44" fontSize="8">e</text>
     </svg>
   )
 }
@@ -111,19 +100,11 @@ function BirefringenceDiagram() {
 function WaveplateDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 入射线偏振光 */}
       <line x1="15" y1="40" x2="55" y2="40" stroke="#fbbf24" strokeWidth="2" />
       <line x1="35" y1="30" x2="35" y2="50" stroke="#fbbf24" strokeWidth="2" strokeDasharray="3" />
-      <text x="35" y="65" textAnchor="middle" fill="#94a3b8" fontSize="7">线偏振</text>
-      {/* 波片 */}
       <rect x="60" y="25" width="30" height="30" fill="#a78bfa" opacity="0.3" stroke="#a78bfa" strokeWidth="1" />
-      <line x1="65" y1="28" x2="85" y2="52" stroke="#a78bfa" strokeWidth="1" strokeDasharray="2" />
-      <text x="75" y="68" textAnchor="middle" fill="#94a3b8" fontSize="7">λ/4波片</text>
-      {/* 出射圆偏振光 */}
       <ellipse cx="130" cy="40" rx="15" ry="15" fill="none" stroke="#22d3ee" strokeWidth="2" />
       <polygon points="145,40 140,35 140,45" fill="#22d3ee" />
-      <text x="130" y="68" textAnchor="middle" fill="#94a3b8" fontSize="7">圆偏振</text>
-      {/* 连接线 */}
       <line x1="90" y1="40" x2="112" y2="40" stroke="#22d3ee" strokeWidth="2" strokeDasharray="3" />
     </svg>
   )
@@ -132,17 +113,11 @@ function WaveplateDiagram() {
 function PolarizationStateDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 线偏振 */}
       <line x1="25" y1="25" x2="25" y2="55" stroke="#ffaa00" strokeWidth="2" />
       <circle cx="25" cy="40" r="15" fill="none" stroke="#64748b" strokeWidth="1" strokeDasharray="2" />
-      <text x="25" y="75" textAnchor="middle" fill="#94a3b8" fontSize="7">线偏振</text>
-      {/* 圆偏振 */}
       <circle cx="100" cy="40" r="15" fill="none" stroke="#44ff44" strokeWidth="2" />
       <polygon points="115,40 110,35 110,45" fill="#44ff44" />
-      <text x="100" y="75" textAnchor="middle" fill="#94a3b8" fontSize="7">圆偏振</text>
-      {/* 椭圆偏振 */}
       <ellipse cx="175" cy="40" rx="18" ry="10" fill="none" stroke="#a78bfa" strokeWidth="2" transform="rotate(-30 175 40)" />
-      <text x="175" y="75" textAnchor="middle" fill="#94a3b8" fontSize="7">椭圆偏振</text>
     </svg>
   )
 }
@@ -150,19 +125,10 @@ function PolarizationStateDiagram() {
 function FresnelDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 界面 */}
       <line x1="30" y1="50" x2="170" y2="50" stroke="#64748b" strokeWidth="2" />
-      <text x="100" y="72" textAnchor="middle" fill="#64748b" fontSize="8">n₁ | n₂</text>
-      {/* 入射光 */}
       <line x1="50" y1="15" x2="100" y2="50" stroke="#fbbf24" strokeWidth="2" />
-      <polygon points="100,50 92,42 88,48" fill="#fbbf24" />
-      {/* 反射光 */}
       <line x1="100" y1="50" x2="150" y2="15" stroke="#22d3ee" strokeWidth="2" />
-      <polygon points="150,15 142,19 146,25" fill="#22d3ee" />
-      {/* 折射光 */}
       <line x1="100" y1="50" x2="140" y2="78" stroke="#44ff44" strokeWidth="2" opacity="0.7" />
-      <text x="60" y="22" fill="#fbbf24" fontSize="8">入射</text>
-      <text x="145" y="10" fill="#22d3ee" fontSize="8">反射</text>
     </svg>
   )
 }
@@ -170,61 +136,13 @@ function FresnelDiagram() {
 function BrewsterDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 界面 */}
       <line x1="30" y1="50" x2="170" y2="50" stroke="#64748b" strokeWidth="2" />
-      {/* 入射光 - 布儒斯特角 */}
       <line x1="40" y1="10" x2="100" y2="50" stroke="#fbbf24" strokeWidth="2" />
-      <polygon points="100,50 90,42 86,50" fill="#fbbf24" />
-      {/* 反射光 - 完全s偏振 */}
       <line x1="100" y1="50" x2="160" y2="10" stroke="#22d3ee" strokeWidth="2" />
-      {/* s偏振符号 */}
       <circle cx="130" cy="30" r="4" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
       <circle cx="130" cy="30" r="1" fill="#22d3ee" />
-      {/* 角度标注 */}
       <path d="M100,50 L100,35" stroke="#a78bfa" strokeWidth="1" strokeDasharray="2" />
       <text x="108" y="38" fill="#a78bfa" fontSize="8">θB</text>
-      <text x="100" y="72" textAnchor="middle" fill="#94a3b8" fontSize="8">tan(θB)=n₂/n₁</text>
-    </svg>
-  )
-}
-
-function ChromaticDiagram() {
-  return (
-    <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 白光 */}
-      <line x1="20" y1="40" x2="50" y2="40" stroke="#ffffff" strokeWidth="3" />
-      {/* 偏振片 */}
-      <rect x="55" y="28" width="4" height="24" fill="#22d3ee" />
-      {/* 双折射材料 */}
-      <rect x="70" y="25" width="40" height="30" fill="#a78bfa" opacity="0.3" stroke="#a78bfa" />
-      <text x="90" y="70" textAnchor="middle" fill="#94a3b8" fontSize="7">双折射材料</text>
-      {/* 检偏器 */}
-      <rect x="120" y="28" width="4" height="24" fill="#22d3ee" />
-      {/* 彩色光谱 */}
-      <rect x="135" y="35" width="8" height="10" fill="#ff0000" />
-      <rect x="145" y="35" width="8" height="10" fill="#ffaa00" />
-      <rect x="155" y="35" width="8" height="10" fill="#00ff00" />
-      <rect x="165" y="35" width="8" height="10" fill="#0066ff" />
-      <rect x="175" y="35" width="8" height="10" fill="#9900ff" />
-    </svg>
-  )
-}
-
-function OpticalRotationDiagram() {
-  return (
-    <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 入射偏振光 */}
-      <line x1="20" y1="40" x2="50" y2="40" stroke="#fbbf24" strokeWidth="2" />
-      <line x1="35" y1="30" x2="35" y2="50" stroke="#fbbf24" strokeWidth="2" />
-      {/* 旋光物质 */}
-      <ellipse cx="100" cy="40" rx="35" ry="20" fill="#44ff44" opacity="0.2" stroke="#44ff44" />
-      <text x="100" y="42" textAnchor="middle" fill="#44ff44" fontSize="8">糖溶液</text>
-      {/* 出射旋转后的偏振光 */}
-      <line x1="150" y1="40" x2="180" y2="40" stroke="#a78bfa" strokeWidth="2" />
-      <line x1="165" y1="28" x2="165" y2="52" stroke="#a78bfa" strokeWidth="2" transform="rotate(30 165 40)" />
-      {/* 旋转角度标注 */}
-      <path d="M55,30 Q75,25 95,30" fill="none" stroke="#64748b" strokeWidth="1" strokeDasharray="2" />
-      <text x="75" y="22" fill="#64748b" fontSize="7">α</text>
     </svg>
   )
 }
@@ -232,18 +150,13 @@ function OpticalRotationDiagram() {
 function ScatteringDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 入射光 */}
       <line x1="20" y1="40" x2="70" y2="40" stroke="#fbbf24" strokeWidth="2" />
       <polygon points="70,40 64,36 64,44" fill="#fbbf24" />
-      {/* 散射粒子 */}
       <circle cx="100" cy="40" r="15" fill="#64748b" opacity="0.3" stroke="#64748b" />
-      {/* 散射光线 */}
       <line x1="115" y1="40" x2="160" y2="40" stroke="#22d3ee" strokeWidth="1.5" />
       <line x1="110" y1="28" x2="145" y2="10" stroke="#22d3ee" strokeWidth="1.5" opacity="0.7" />
       <line x1="110" y1="52" x2="145" y2="70" stroke="#22d3ee" strokeWidth="1.5" opacity="0.7" />
       <line x1="100" y1="25" x2="100" y2="5" stroke="#4444ff" strokeWidth="1.5" opacity="0.8" />
-      <line x1="90" y1="52" x2="75" y2="70" stroke="#4444ff" strokeWidth="1.5" opacity="0.5" />
-      <text x="100" y="75" textAnchor="middle" fill="#94a3b8" fontSize="8">散射</text>
     </svg>
   )
 }
@@ -251,20 +164,14 @@ function ScatteringDiagram() {
 function StokesDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* Poincaré球简化 */}
       <circle cx="100" cy="40" r="30" fill="none" stroke="#64748b" strokeWidth="1" />
       <ellipse cx="100" cy="40" rx="30" ry="10" fill="none" stroke="#64748b" strokeWidth="1" strokeDasharray="2" />
-      {/* S1轴 */}
       <line x1="65" y1="40" x2="135" y2="40" stroke="#ff4444" strokeWidth="1.5" />
       <text x="140" y="43" fill="#ff4444" fontSize="8">S₁</text>
-      {/* S2轴 */}
       <line x1="100" y1="55" x2="100" y2="5" stroke="#44ff44" strokeWidth="1.5" />
       <text x="105" y="10" fill="#44ff44" fontSize="8">S₃</text>
-      {/* 偏振态点 */}
       <circle cx="120" cy="30" r="4" fill="#ffff00" />
-      {/* 矢量 */}
       <line x1="100" y1="40" x2="120" y2="30" stroke="#ffff00" strokeWidth="1.5" />
-      <text x="165" y="40" fill="#94a3b8" fontSize="7">S = [S₀,S₁,S₂,S₃]</text>
     </svg>
   )
 }
@@ -272,27 +179,34 @@ function StokesDiagram() {
 function MuellerDiagram() {
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      {/* 输入斯托克斯矢量 */}
       <rect x="15" y="25" width="35" height="30" fill="#22d3ee" opacity="0.2" stroke="#22d3ee" rx="3" />
       <text x="32" y="43" textAnchor="middle" fill="#22d3ee" fontSize="10">S</text>
-      {/* 穆勒矩阵 */}
       <rect x="70" y="15" width="50" height="50" fill="#a78bfa" opacity="0.2" stroke="#a78bfa" rx="3" />
       <text x="95" y="35" textAnchor="middle" fill="#a78bfa" fontSize="8">M</text>
       <text x="95" y="48" textAnchor="middle" fill="#a78bfa" fontSize="7">4×4</text>
-      {/* 输出斯托克斯矢量 */}
       <rect x="140" y="25" width="35" height="30" fill="#44ff44" opacity="0.2" stroke="#44ff44" rx="3" />
       <text x="157" y="43" textAnchor="middle" fill="#44ff44" fontSize="10">S'</text>
-      {/* 箭头 */}
       <line x1="52" y1="40" x2="68" y2="40" stroke="#64748b" strokeWidth="1.5" />
       <polygon points="68,40 63,37 63,43" fill="#64748b" />
       <line x1="122" y1="40" x2="138" y2="40" stroke="#64748b" strokeWidth="1.5" />
       <polygon points="138,40 133,37 133,43" fill="#64748b" />
-      <text x="95" y="75" textAnchor="middle" fill="#94a3b8" fontSize="8">S' = M · S</text>
     </svg>
   )
 }
 
-// 演示信息数据类型
+function LightWaveDiagram() {
+  return (
+    <svg viewBox="0 0 200 80" className="w-full h-auto">
+      <path d="M10,40 Q30,20 50,40 T90,40 T130,40 T170,40" fill="none" stroke="#fbbf24" strokeWidth="2" />
+      <path d="M10,40 Q30,60 50,40 T90,40 T130,40 T170,40" fill="none" stroke="#22d3ee" strokeWidth="2" strokeDasharray="4" />
+      <line x1="180" y1="40" x2="195" y2="40" stroke="#64748b" strokeWidth="2" />
+      <polygon points="195,40 188,36 188,44" fill="#64748b" />
+      <text x="100" y="75" textAnchor="middle" fill="#94a3b8" fontSize="8">λ</text>
+    </svg>
+  )
+}
+
+// Demo info interface
 interface DemoInfo {
   physics: {
     principle: string
@@ -310,528 +224,736 @@ interface DemoInfo {
     details: string[]
   }
   diagram?: ReactNode
+  visualType: '2D' | '3D' // Indicates whether demo uses 2D or 3D visualization
 }
 
-// 每个演示的详细信息
-const DEMO_INFO: Record<string, DemoInfo> = {
-  'polarization-state': {
+// Demo info data - using i18n keys
+const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
+  'light-wave': {
     physics: {
-      principle: '偏振态由两个正交电场分量的振幅比和相位差决定',
-      formula: 'E = Ex·cos(ωt) x̂ + Ey·cos(ωt+δ) ŷ',
+      principle: t('basics.demos.lightWave.physics.principle'),
+      formula: t('basics.demos.lightWave.physics.formula'),
       details: [
-        '当 δ=0° 或 180° 时为线偏振',
-        '当 δ=90° 且 Ex=Ey 时为圆偏振',
-        '其他情况为椭圆偏振',
+        t('basics.demos.lightWave.physics.details.0'),
+        t('basics.demos.lightWave.physics.details.1'),
+        t('basics.demos.lightWave.physics.details.2'),
       ],
     },
     experiment: {
-      title: '偏振态转换实验',
-      example: '使用波片将线偏振转为圆偏振',
+      title: t('basics.demos.lightWave.title'),
+      example: t('basics.demos.lightWave.description'),
+      details: [],
+    },
+    frontier: {
+      title: t('basics.demos.lightWave.title'),
+      example: t('basics.demos.lightWave.description'),
+      details: [],
+    },
+    diagram: <LightWaveDiagram />,
+    visualType: '2D',
+  },
+  'polarization-intro': {
+    physics: {
+      principle: t('basics.demos.polarizationIntro.physics.principle'),
       details: [
-        '四分之一波片可将45°线偏振转为圆偏振',
-        '二分之一波片可旋转线偏振方向',
-        '液晶可电控偏振态变换',
+        t('basics.demos.polarizationIntro.physics.details.0'),
+        t('basics.demos.polarizationIntro.physics.details.1'),
+        t('basics.demos.polarizationIntro.physics.details.2'),
+      ],
+    },
+    experiment: {
+      title: t('basics.demos.polarizationIntro.title'),
+      example: t('basics.demos.polarizationIntro.description'),
+      details: [],
+    },
+    frontier: {
+      title: t('basics.demos.polarizationIntro.title'),
+      example: t('basics.demos.polarizationIntro.description'),
+      details: [],
+    },
+    visualType: '2D',
+  },
+  'polarization-types': {
+    physics: {
+      principle: t('basics.demos.polarizationTypes.physics.principle'),
+      details: [
+        t('basics.demos.polarizationTypes.physics.details.0'),
+        t('basics.demos.polarizationTypes.physics.details.1'),
+        t('basics.demos.polarizationTypes.physics.details.2'),
+      ],
+    },
+    experiment: {
+      title: t('basics.demos.polarizationTypes.title'),
+      example: t('basics.demos.polarizationTypes.description'),
+      details: [],
+    },
+    frontier: {
+      title: t('basics.demos.polarizationTypes.title'),
+      example: t('basics.demos.polarizationTypes.description'),
+      details: [],
+    },
+    diagram: <PolarizationStateDiagram />,
+    visualType: '2D',
+  },
+  'polarization-state': {
+    physics: {
+      principle: t('demos.polarizationState.physics.principle'),
+      formula: t('demos.polarizationState.physics.formula'),
+      details: [
+        t('demos.polarizationState.physics.details.0'),
+        t('demos.polarizationState.physics.details.1'),
+        t('demos.polarizationState.physics.details.2'),
+      ],
+    },
+    experiment: {
+      title: t('demos.polarizationState.experiment.title'),
+      example: t('demos.polarizationState.experiment.example'),
+      details: [
+        t('demos.polarizationState.experiment.details.0'),
+        t('demos.polarizationState.experiment.details.1'),
+        t('demos.polarizationState.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '量子光学与通信',
-      example: 'BB84量子密钥分发协议',
+      title: t('demos.polarizationState.frontier.title'),
+      example: t('demos.polarizationState.frontier.example'),
       details: [
-        '偏振态编码量子比特',
-        '单光子偏振用于量子通信',
-        '偏振纠缠态实现量子隐形传态',
+        t('demos.polarizationState.frontier.details.0'),
+        t('demos.polarizationState.frontier.details.1'),
+        t('demos.polarizationState.frontier.details.2'),
       ],
     },
     diagram: <PolarizationStateDiagram />,
+    visualType: '3D',
   },
   malus: {
     physics: {
-      principle: '偏振光通过偏振片时的强度变化遵循马吕斯定律',
-      formula: 'I = I₀ × cos²(θ)',
+      principle: t('demos.malus.physics.principle'),
+      formula: t('demos.malus.physics.formula'),
       details: [
-        'θ 为光偏振方向与偏振片透光轴夹角',
-        '平行时(θ=0°)透过率最大',
-        '垂直时(θ=90°)完全阻挡',
+        t('demos.malus.physics.details.0'),
+        t('demos.malus.physics.details.1'),
+        t('demos.malus.physics.details.2'),
       ],
     },
     experiment: {
-      title: '偏振片组合实验',
-      example: '两块偏振片验证马吕斯定律',
+      title: t('demos.malus.experiment.title'),
+      example: t('demos.malus.experiment.example'),
       details: [
-        '旋转检偏器测量透射光强',
-        '使用光电探测器定量测量',
-        '可验证 cos² 关系曲线',
+        t('demos.malus.experiment.details.0'),
+        t('demos.malus.experiment.details.1'),
+        t('demos.malus.experiment.details.2'),
       ],
     },
     frontier: {
-      title: 'LCD 显示技术',
-      example: '液晶显示器的工作原理',
+      title: t('demos.malus.frontier.title'),
+      example: t('demos.malus.frontier.example'),
       details: [
-        '液晶分子控制偏振态旋转',
-        '配合偏振片实现亮度调制',
-        '广泛应用于手机、电视屏幕',
+        t('demos.malus.frontier.details.0'),
+        t('demos.malus.frontier.details.1'),
+        t('demos.malus.frontier.details.2'),
       ],
     },
     diagram: <MalusDiagram />,
+    visualType: '2D',
   },
   birefringence: {
     physics: {
-      principle: '双折射晶体将入射光分裂为寻常光(o光)和非寻常光(e光)',
-      formula: 'Io = I₀·cos²(θ), Ie = I₀·sin²(θ)',
+      principle: t('demos.birefringence.physics.principle'),
+      formula: t('demos.birefringence.physics.formula'),
       details: [
-        'o光和e光的偏振方向互相垂直',
-        '两光传播速度不同造成相位差',
-        '方解石是典型的双折射材料',
+        t('demos.birefringence.physics.details.0'),
+        t('demos.birefringence.physics.details.1'),
+        t('demos.birefringence.physics.details.2'),
       ],
     },
     experiment: {
-      title: '方解石双像观察',
-      example: '透过方解石观察文字产生双像',
+      title: t('demos.birefringence.experiment.title'),
+      example: t('demos.birefringence.experiment.example'),
       details: [
-        '旋转晶体可看到一个像不动一个像旋转',
-        '用偏振片可分别消除两个像',
-        '可测量晶体的双折射率差',
+        t('demos.birefringence.experiment.details.0'),
+        t('demos.birefringence.experiment.details.1'),
+        t('demos.birefringence.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '偏振光学元件',
-      example: '渥拉斯顿棱镜分光',
+      title: t('demos.birefringence.frontier.title'),
+      example: t('demos.birefringence.frontier.example'),
       details: [
-        '用于制作高精度偏振分束器',
-        '光通信中的偏振复用技术',
-        '偏振干涉测量仪器',
+        t('demos.birefringence.frontier.details.0'),
+        t('demos.birefringence.frontier.details.1'),
+        t('demos.birefringence.frontier.details.2'),
       ],
     },
     diagram: <BirefringenceDiagram />,
+    visualType: '3D',
   },
   waveplate: {
     physics: {
-      principle: '波片利用双折射效应引入可控的相位延迟',
-      formula: 'δ = 2π(ne-no)d/λ',
+      principle: t('demos.waveplate.physics.principle'),
+      formula: t('demos.waveplate.physics.formula'),
       details: [
-        '四分之一波片：δ = π/2 (90°)',
-        '二分之一波片：δ = π (180°)',
-        '可将线偏振转换为圆偏振或旋转偏振方向',
+        t('demos.waveplate.physics.details.0'),
+        t('demos.waveplate.physics.details.1'),
+        t('demos.waveplate.physics.details.2'),
       ],
     },
     experiment: {
-      title: '波片偏振态转换',
-      example: '使用波片产生不同偏振态',
+      title: t('demos.waveplate.experiment.title'),
+      example: t('demos.waveplate.experiment.example'),
       details: [
-        '45°线偏振 + λ/4波片 = 圆偏振',
-        'λ/2波片可将偏振方向旋转2θ',
-        '组合波片可产生任意偏振态',
+        t('demos.waveplate.experiment.details.0'),
+        t('demos.waveplate.experiment.details.1'),
+        t('demos.waveplate.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '3D电影与VR显示',
-      example: 'RealD 3D圆偏振技术',
+      title: t('demos.waveplate.frontier.title'),
+      example: t('demos.waveplate.frontier.example'),
       details: [
-        '左右眼图像使用不同旋向圆偏振',
-        '圆偏振眼镜分离左右图像',
-        '倾斜头部不影响3D效果',
+        t('demos.waveplate.frontier.details.0'),
+        t('demos.waveplate.frontier.details.1'),
+        t('demos.waveplate.frontier.details.2'),
       ],
     },
     diagram: <WaveplateDiagram />,
+    visualType: '3D',
   },
   fresnel: {
     physics: {
-      principle: '菲涅尔方程描述光在界面的反射和透射系数',
-      formula: 'rs = (n₁cosθᵢ-n₂cosθₜ)/(n₁cosθᵢ+n₂cosθₜ)',
+      principle: t('demos.fresnel.physics.principle'),
+      formula: t('demos.fresnel.physics.formula'),
       details: [
-        's偏振和p偏振的反射率不同',
-        '存在全内反射临界角',
-        '布儒斯特角时p偏振反射为零',
+        t('demos.fresnel.physics.details.0'),
+        t('demos.fresnel.physics.details.1'),
+        t('demos.fresnel.physics.details.2'),
       ],
     },
     experiment: {
-      title: '界面反射偏振测量',
-      example: '测量玻璃表面的偏振反射',
+      title: t('demos.fresnel.experiment.title'),
+      example: t('demos.fresnel.experiment.example'),
       details: [
-        '使用旋转检偏器测量反射偏振度',
-        '验证布儒斯特角约为56.3°(玻璃)',
-        '可精确测定材料折射率',
+        t('demos.fresnel.experiment.details.0'),
+        t('demos.fresnel.experiment.details.1'),
+        t('demos.fresnel.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '减反射涂层',
-      example: '相机镜头多层镀膜',
+      title: t('demos.fresnel.frontier.title'),
+      example: t('demos.fresnel.frontier.example'),
       details: [
-        '利用干涉减少表面反射',
-        '提高光学系统透过率',
-        '应用于眼镜、太阳能电池',
+        t('demos.fresnel.frontier.details.0'),
+        t('demos.fresnel.frontier.details.1'),
+        t('demos.fresnel.frontier.details.2'),
       ],
     },
     diagram: <FresnelDiagram />,
+    visualType: '2D',
   },
   brewster: {
     physics: {
-      principle: '布儒斯特角是p偏振反射率为零的入射角',
-      formula: 'tan(θB) = n₂/n₁',
+      principle: t('demos.brewster.physics.principle'),
+      formula: t('demos.brewster.physics.formula'),
       details: [
-        '此角度下反射光为完全s偏振',
-        '折射光和反射光垂直',
-        '玻璃的布儒斯特角约56.3°',
+        t('demos.brewster.physics.details.0'),
+        t('demos.brewster.physics.details.1'),
+        t('demos.brewster.physics.details.2'),
       ],
     },
     experiment: {
-      title: '布儒斯特角偏振实验',
-      example: '观察水面的偏振反射',
+      title: t('demos.brewster.experiment.title'),
+      example: t('demos.brewster.experiment.example'),
       details: [
-        '水面布儒斯特角约53°',
-        '可用偏振片消除水面反光',
-        '摄影师常用偏振滤镜',
+        t('demos.brewster.experiment.details.0'),
+        t('demos.brewster.experiment.details.1'),
+        t('demos.brewster.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '偏振摄影',
-      example: '偏振滤镜消除反光',
+      title: t('demos.brewster.frontier.title'),
+      example: t('demos.brewster.frontier.example'),
       details: [
-        '消除玻璃橱窗反光',
-        '增强天空蓝色对比度',
-        '水下摄影减少水面反射',
+        t('demos.brewster.frontier.details.0'),
+        t('demos.brewster.frontier.details.1'),
+        t('demos.brewster.frontier.details.2'),
       ],
     },
     diagram: <BrewsterDiagram />,
+    visualType: '2D',
   },
   chromatic: {
     physics: {
-      principle: '双折射材料中不同波长光的相位延迟不同',
-      formula: 'δ(λ) = 2π(ne-no)d/λ',
+      principle: t('demos.chromatic.physics.principle'),
+      formula: t('demos.chromatic.physics.formula'),
       details: [
-        '白光经过会产生彩色干涉',
-        '颜色取决于材料厚度和双折射率',
-        '正交偏振片间显示互补色',
+        t('demos.chromatic.physics.details.0'),
+        t('demos.chromatic.physics.details.1'),
+        t('demos.chromatic.physics.details.2'),
       ],
     },
     experiment: {
-      title: '偏光显微镜观察',
-      example: '观察透明胶带的应力分布',
+      title: t('demos.chromatic.experiment.title'),
+      example: t('demos.chromatic.experiment.example'),
       details: [
-        '透明塑料片呈现彩虹色带',
-        '应力双折射显示应力分布',
-        '可检测材料内部缺陷',
+        t('demos.chromatic.experiment.details.0'),
+        t('demos.chromatic.experiment.details.1'),
+        t('demos.chromatic.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '光弹性应力分析',
-      example: '工程结构应力检测',
+      title: t('demos.chromatic.frontier.title'),
+      example: t('demos.chromatic.frontier.example'),
       details: [
-        '制作透明模型研究应力分布',
-        '航空航天结构设计验证',
-        '建筑结构安全评估',
+        t('demos.chromatic.frontier.details.0'),
+        t('demos.chromatic.frontier.details.1'),
+        t('demos.chromatic.frontier.details.2'),
       ],
     },
-    diagram: <ChromaticDiagram />,
+    visualType: '2D',
   },
   'optical-rotation': {
     physics: {
-      principle: '手性分子使线偏振光的偏振面旋转',
-      formula: 'α = [α]·l·c',
+      principle: t('demos.opticalRotation.physics.principle'),
+      formula: t('demos.opticalRotation.physics.formula'),
       details: [
-        '[α]为比旋光度(手性分子特性)',
-        'l为样品路径长度',
-        'c为溶液浓度',
+        t('demos.opticalRotation.physics.details.0'),
+        t('demos.opticalRotation.physics.details.1'),
+        t('demos.opticalRotation.physics.details.2'),
       ],
     },
     experiment: {
-      title: '旋光仪测量糖浓度',
-      example: '使用旋光仪测定糖度',
+      title: t('demos.opticalRotation.experiment.title'),
+      example: t('demos.opticalRotation.experiment.example'),
       details: [
-        '葡萄糖为右旋糖(+52.7°)',
-        '果糖为左旋糖(-92°)',
-        '食品工业常用糖度测量',
+        t('demos.opticalRotation.experiment.details.0'),
+        t('demos.opticalRotation.experiment.details.1'),
+        t('demos.opticalRotation.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '手性药物检测',
-      example: '药物对映体分析',
+      title: t('demos.opticalRotation.frontier.title'),
+      example: t('demos.opticalRotation.frontier.example'),
       details: [
-        '许多药物有左旋右旋两种形式',
-        '不同旋向可能有不同药效/毒性',
-        '制药行业必须区分对映体',
+        t('demos.opticalRotation.frontier.details.0'),
+        t('demos.opticalRotation.frontier.details.1'),
+        t('demos.opticalRotation.frontier.details.2'),
       ],
     },
-    diagram: <OpticalRotationDiagram />,
+    visualType: '2D',
   },
   'mie-scattering': {
     physics: {
-      principle: '粒径与波长相当时的散射，散射强度与波长关系复杂',
-      formula: '散射效率 Qsca ≈ 2 (大粒子极限)',
+      principle: t('demos.mieScattering.physics.principle'),
+      formula: t('demos.mieScattering.physics.formula'),
       details: [
-        '散射光谱较平坦',
-        '白云呈白色是米氏散射结果',
-        '前向散射占主导',
+        t('demos.mieScattering.physics.details.0'),
+        t('demos.mieScattering.physics.details.1'),
+        t('demos.mieScattering.physics.details.2'),
       ],
     },
     experiment: {
-      title: '牛奶稀释散射实验',
-      example: '观察牛奶的散射现象',
+      title: t('demos.mieScattering.experiment.title'),
+      example: t('demos.mieScattering.experiment.example'),
       details: [
-        '稀释牛奶呈现淡蓝色(瑞利)',
-        '浓牛奶呈白色(米氏)',
-        '可观察散射颜色变化',
+        t('demos.mieScattering.experiment.details.0'),
+        t('demos.mieScattering.experiment.details.1'),
+        t('demos.mieScattering.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '大气气溶胶监测',
-      example: '激光雷达测量PM2.5',
+      title: t('demos.mieScattering.frontier.title'),
+      example: t('demos.mieScattering.frontier.example'),
       details: [
-        '大气颗粒物属于米氏散射',
-        '激光雷达反演粒子浓度',
-        '空气质量实时监测',
+        t('demos.mieScattering.frontier.details.0'),
+        t('demos.mieScattering.frontier.details.1'),
+        t('demos.mieScattering.frontier.details.2'),
       ],
     },
     diagram: <ScatteringDiagram />,
+    visualType: '2D',
   },
   rayleigh: {
     physics: {
-      principle: '粒径远小于波长时的散射，强度与λ⁻⁴成正比',
-      formula: 'I ∝ 1/λ⁴',
+      principle: t('demos.rayleigh.physics.principle'),
+      formula: t('demos.rayleigh.physics.formula'),
       details: [
-        '短波长(蓝光)散射更强',
-        '这是天空呈蓝色的原因',
-        '日落时红色是因蓝光被散射掉',
+        t('demos.rayleigh.physics.details.0'),
+        t('demos.rayleigh.physics.details.1'),
+        t('demos.rayleigh.physics.details.2'),
       ],
     },
     experiment: {
-      title: '天空蓝色实验',
-      example: '水中加入少量牛奶模拟',
+      title: t('demos.rayleigh.experiment.title'),
+      example: t('demos.rayleigh.experiment.example'),
       details: [
-        '侧向观察呈淡蓝色',
-        '透射光呈橙红色',
-        '模拟日落天空颜色',
+        t('demos.rayleigh.experiment.details.0'),
+        t('demos.rayleigh.experiment.details.1'),
+        t('demos.rayleigh.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '遥感大气校正',
-      example: '卫星图像大气校正',
+      title: t('demos.rayleigh.frontier.title'),
+      example: t('demos.rayleigh.frontier.example'),
       details: [
-        '去除大气散射影响',
-        '获得地表真实反射率',
-        '提高遥感图像质量',
+        t('demos.rayleigh.frontier.details.0'),
+        t('demos.rayleigh.frontier.details.1'),
+        t('demos.rayleigh.frontier.details.2'),
       ],
     },
     diagram: <ScatteringDiagram />,
+    visualType: '2D',
   },
   stokes: {
     physics: {
-      principle: '斯托克斯矢量用四个参数完整描述偏振态',
-      formula: 'S = [S₀, S₁, S₂, S₃]ᵀ',
+      principle: t('demos.stokes.physics.principle'),
+      formula: t('demos.stokes.physics.formula'),
       details: [
-        'S₀: 总光强',
-        'S₁: 水平vs垂直偏振',
-        'S₂: +45°vs-45°偏振',
-        'S₃: 右旋vs左旋圆偏振',
+        t('demos.stokes.physics.details.0'),
+        t('demos.stokes.physics.details.1'),
+        t('demos.stokes.physics.details.2'),
+        t('demos.stokes.physics.details.3'),
       ],
     },
     experiment: {
-      title: '斯托克斯参数测量',
-      example: '四次测量确定偏振态',
+      title: t('demos.stokes.experiment.title'),
+      example: t('demos.stokes.experiment.example'),
       details: [
-        '使用旋转检偏器测量',
-        '配合波片测量圆偏振分量',
-        '可测量任意偏振态',
+        t('demos.stokes.experiment.details.0'),
+        t('demos.stokes.experiment.details.1'),
+        t('demos.stokes.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '偏振遥感',
-      example: '卫星偏振成像',
+      title: t('demos.stokes.frontier.title'),
+      example: t('demos.stokes.frontier.example'),
       details: [
-        '测量地表偏振特性',
-        '区分水体、植被、建筑',
-        '大气气溶胶反演',
+        t('demos.stokes.frontier.details.0'),
+        t('demos.stokes.frontier.details.1'),
+        t('demos.stokes.frontier.details.2'),
       ],
     },
     diagram: <StokesDiagram />,
+    visualType: '3D',
   },
   mueller: {
     physics: {
-      principle: '穆勒矩阵描述光学元件对偏振态的变换',
-      formula: "S' = M · S",
+      principle: t('demos.mueller.physics.principle'),
+      formula: t('demos.mueller.physics.formula'),
       details: [
-        '4×4矩阵描述线性变换',
-        '可级联多个光学元件',
-        '包含16个独立参数',
+        t('demos.mueller.physics.details.0'),
+        t('demos.mueller.physics.details.1'),
+        t('demos.mueller.physics.details.2'),
       ],
     },
     experiment: {
-      title: '光学元件穆勒矩阵测量',
-      example: '测量偏振片的穆勒矩阵',
+      title: t('demos.mueller.experiment.title'),
+      example: t('demos.mueller.experiment.example'),
       details: [
-        '使用偏振态发生器',
-        '测量多组输入输出',
-        '反演得到穆勒矩阵',
+        t('demos.mueller.experiment.details.0'),
+        t('demos.mueller.experiment.details.1'),
+        t('demos.mueller.experiment.details.2'),
       ],
     },
     frontier: {
-      title: '生物医学成像',
-      example: '穆勒矩阵偏振成像',
+      title: t('demos.mueller.frontier.title'),
+      example: t('demos.mueller.frontier.example'),
       details: [
-        '皮肤癌早期筛查',
-        '眼底病变检测',
-        '组织结构定量分析',
+        t('demos.mueller.frontier.details.0'),
+        t('demos.mueller.frontier.details.1'),
+        t('demos.mueller.frontier.details.2'),
       ],
     },
     diagram: <MuellerDiagram />,
+    visualType: '2D',
   },
-}
+})
 
 interface DemoItem {
   id: string
-  title: string
-  unit: number
+  titleKey: string
+  unit: number // 0 = basics
   component: React.ComponentType
-  description: string
+  descriptionKey: string
+  visualType: '2D' | '3D'
 }
 
 const DEMOS: DemoItem[] = [
+  // Unit 0 - Optical Basics
+  {
+    id: 'light-wave',
+    titleKey: 'basics.demos.lightWave.title',
+    unit: 0,
+    component: LightWaveDemo,
+    descriptionKey: 'basics.demos.lightWave.description',
+    visualType: '2D',
+  },
+  {
+    id: 'polarization-intro',
+    titleKey: 'basics.demos.polarizationIntro.title',
+    unit: 0,
+    component: PolarizationIntroDemo,
+    descriptionKey: 'basics.demos.polarizationIntro.description',
+    visualType: '2D',
+  },
+  {
+    id: 'polarization-types',
+    titleKey: 'basics.demos.polarizationTypes.title',
+    unit: 0,
+    component: PolarizationTypesDemo,
+    descriptionKey: 'basics.demos.polarizationTypes.description',
+    visualType: '2D',
+  },
+  // Unit 1
   {
     id: 'polarization-state',
-    title: '偏振态与波合成',
+    titleKey: 'demos.polarizationState.title',
     unit: 1,
     component: PolarizationStateDemo,
-    description: '光波合成产生不同偏振态：线偏振、圆偏振、椭圆偏振',
+    descriptionKey: 'demos.polarizationState.description',
+    visualType: '3D',
   },
   {
     id: 'malus',
-    title: '马吕斯定律',
+    titleKey: 'demos.malus.title',
     unit: 1,
     component: MalusLawDemo,
-    description: '偏振光通过偏振片时的强度变化规律：I = I₀ × cos²(θ)',
+    descriptionKey: 'demos.malus.description',
+    visualType: '2D',
   },
   {
     id: 'birefringence',
-    title: '双折射效应',
+    titleKey: 'demos.birefringence.title',
     unit: 1,
     component: BirefringenceDemo,
-    description: '方解石等晶体将一束光分裂为o光和e光的现象',
+    descriptionKey: 'demos.birefringence.description',
+    visualType: '3D',
   },
   {
     id: 'waveplate',
-    title: '波片原理',
+    titleKey: 'demos.waveplate.title',
     unit: 1,
     component: WaveplateDemo,
-    description: '四分之一波片和二分之一波片对偏振态的影响',
+    descriptionKey: 'demos.waveplate.description',
+    visualType: '3D',
   },
+  // Unit 2
   {
     id: 'fresnel',
-    title: '菲涅尔方程',
+    titleKey: 'demos.fresnel.title',
     unit: 2,
     component: FresnelDemo,
-    description: 's偏振和p偏振的反射/透射系数随入射角的变化',
+    descriptionKey: 'demos.fresnel.description',
+    visualType: '2D',
   },
   {
     id: 'brewster',
-    title: '布儒斯特角',
+    titleKey: 'demos.brewster.title',
     unit: 2,
     component: BrewsterDemo,
-    description: '反射光为完全s偏振的特殊入射角：tan(θB) = n₂/n₁',
+    descriptionKey: 'demos.brewster.description',
+    visualType: '2D',
   },
+  // Unit 3
   {
     id: 'chromatic',
-    title: '色偏振',
+    titleKey: 'demos.chromatic.title',
     unit: 3,
     component: ChromaticDemo,
-    description: '双折射材料中白光的彩色干涉效应',
+    descriptionKey: 'demos.chromatic.description',
+    visualType: '2D',
   },
   {
     id: 'optical-rotation',
-    title: '旋光性',
+    titleKey: 'demos.opticalRotation.title',
     unit: 3,
     component: OpticalRotationDemo,
-    description: '糖溶液等手性物质使偏振面旋转的现象',
+    descriptionKey: 'demos.opticalRotation.description',
+    visualType: '2D',
   },
+  // Unit 4
   {
     id: 'mie-scattering',
-    title: '米氏散射',
+    titleKey: 'demos.mieScattering.title',
     unit: 4,
     component: MieScatteringDemo,
-    description: '粒径与波长相当时的散射特性（白云效应）',
+    descriptionKey: 'demos.mieScattering.description',
+    visualType: '2D',
   },
   {
     id: 'rayleigh',
-    title: '瑞利散射',
+    titleKey: 'demos.rayleigh.title',
     unit: 4,
     component: RayleighScatteringDemo,
-    description: '粒径远小于波长时的散射特性（蓝天效应）',
+    descriptionKey: 'demos.rayleigh.description',
+    visualType: '2D',
   },
+  // Unit 5
   {
     id: 'stokes',
-    title: '斯托克斯矢量',
+    titleKey: 'demos.stokes.title',
     unit: 5,
     component: StokesVectorDemo,
-    description: '用四个参数完整描述光的偏振状态',
+    descriptionKey: 'demos.stokes.description',
+    visualType: '3D',
   },
   {
     id: 'mueller',
-    title: '穆勒矩阵',
+    titleKey: 'demos.mueller.title',
     unit: 5,
     component: MuellerMatrixDemo,
-    description: '4×4矩阵描述光学元件对偏振态的变换',
+    descriptionKey: 'demos.mueller.description',
+    visualType: '2D',
   },
 ]
 
-const UNITS = [
-  { num: 1, title: '偏振态调制与测量', color: 'cyan' },
-  { num: 2, title: '界面反射偏振特征', color: 'purple' },
-  { num: 3, title: '透明介质的偏振', color: 'green' },
-  { num: 4, title: '浑浊介质的偏振', color: 'orange' },
-  { num: 5, title: '全偏振技术', color: 'pink' },
+interface UnitInfo {
+  num: number
+  titleKey: string
+  color: string
+}
+
+const UNITS: UnitInfo[] = [
+  { num: 0, titleKey: 'course.units.basics.title', color: 'yellow' },
+  { num: 1, titleKey: 'course.units.1.title', color: 'cyan' },
+  { num: 2, titleKey: 'course.units.2.title', color: 'purple' },
+  { num: 3, titleKey: 'course.units.3.title', color: 'green' },
+  { num: 4, titleKey: 'course.units.4.title', color: 'orange' },
+  { num: 5, titleKey: 'course.units.5.title', color: 'pink' },
 ]
 
-// 加载占位组件
 function DemoLoading() {
+  const { t } = useTranslation()
   return (
     <div className="flex items-center justify-center h-full min-h-[400px]">
       <div className="text-center">
         <div className="animate-spin w-12 h-12 border-4 border-cyan-400/30 border-t-cyan-400 rounded-full mx-auto mb-4" />
-        <p className="text-gray-400">加载演示中...</p>
+        <p className="text-gray-400">{t('common.loading')}</p>
       </div>
     </div>
   )
 }
 
+// Visual type badge component
+function VisualTypeBadge({ type }: { type: '2D' | '3D' }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium',
+        type === '3D'
+          ? 'bg-purple-400/20 text-purple-400 border border-purple-400/30'
+          : 'bg-green-400/20 text-green-400 border border-green-400/30'
+      )}
+    >
+      {type === '3D' ? <Box className="w-3 h-3" /> : <BarChart2 className="w-3 h-3" />}
+      {type}
+    </span>
+  )
+}
+
 export function DemosPage() {
-  const [activeDemo, setActiveDemo] = useState<string>('polarization-state')
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const [activeDemo, setActiveDemo] = useState<string>('light-wave')
 
   const currentDemo = DEMOS.find((d) => d.id === activeDemo)
   const DemoComponent = currentDemo?.component
-  const demoInfo = DEMO_INFO[activeDemo]
+  const demoInfo = getDemoInfo(t)[activeDemo]
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-gray-200">
+    <div
+      className={cn(
+        'min-h-screen',
+        theme === 'dark' ? 'bg-[#0a0a0f] text-gray-200' : 'bg-[#f8fafc] text-gray-800'
+      )}
+    >
       {/* Navigation Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 border-b border-cyan-400/20 px-6 py-3 flex items-center justify-between backdrop-blur-sm">
-        <Link
-          to="/"
-          className="flex items-center gap-3 text-cyan-400 hover:text-cyan-300 transition-colors"
-        >
-          <span className="text-2xl">⟡</span>
-          <span className="text-xl font-bold">PolarCraft</span>
-        </Link>
-        <nav className="flex gap-4">
+      <header
+        className={cn(
+          'fixed top-0 left-0 right-0 z-50 px-6 py-3 flex items-center justify-between backdrop-blur-sm',
+          theme === 'dark'
+            ? 'bg-slate-900/95 border-b border-cyan-400/20'
+            : 'bg-white/95 border-b border-cyan-500/20'
+        )}
+      >
+        <div className="flex items-center gap-4">
+          <Link
+            to="/"
+            className={cn(
+              'flex items-center gap-2 transition-colors',
+              theme === 'dark'
+                ? 'text-cyan-400 hover:text-cyan-300'
+                : 'text-cyan-600 hover:text-cyan-500'
+            )}
+          >
+            <Home className="w-5 h-5" />
+          </Link>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">⟡</span>
+            <span
+              className={cn(
+                'text-xl font-bold',
+                theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+              )}
+            >
+              PolarCraft
+            </span>
+          </div>
+        </div>
+
+        <nav className="flex items-center gap-4">
           <Link
             to="/game"
-            className="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-cyan-400/10 transition-all"
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-lg transition-all',
+              theme === 'dark'
+                ? 'text-gray-400 hover:text-white hover:bg-cyan-400/10'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-cyan-100'
+            )}
           >
-            游戏
+            <Gamepad2 className="w-4 h-4" />
+            <span>{t('common.game')}</span>
           </Link>
-          <Link to="/demos" className="px-4 py-2 rounded-lg text-cyan-400 bg-cyan-400/15">
-            课程
+          <Link
+            to="/demos"
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-lg',
+              theme === 'dark' ? 'text-cyan-400 bg-cyan-400/15' : 'text-cyan-600 bg-cyan-100'
+            )}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>{t('common.course')}</span>
           </Link>
+          <LanguageThemeSwitcher />
         </nav>
       </header>
 
       {/* Main Container */}
       <div className="flex pt-[60px]">
         {/* Sidebar */}
-        <aside className="w-64 fixed left-0 top-[60px] bottom-0 bg-slate-900/90 border-r border-cyan-400/10 overflow-y-auto">
+        <aside
+          className={cn(
+            'w-64 fixed left-0 top-[60px] bottom-0 border-r overflow-y-auto',
+            theme === 'dark'
+              ? 'bg-slate-900/90 border-cyan-400/10'
+              : 'bg-white/90 border-cyan-200'
+          )}
+        >
           <div className="p-4">
             {UNITS.map((unit) => (
               <div key={unit.num} className="mb-5">
-                <h3 className="text-[10px] uppercase tracking-wider text-gray-500 mb-2 px-2 font-semibold">
-                  单元 {unit.num} · {unit.title}
+                <h3
+                  className={cn(
+                    'text-[10px] uppercase tracking-wider mb-2 px-2 font-semibold flex items-center gap-2',
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  )}
+                >
+                  {unit.num === 0 ? (
+                    <span className="text-yellow-400">★</span>
+                  ) : (
+                    <span className={`text-${unit.color}-400`}>●</span>
+                  )}
+                  {unit.num === 0 ? t('basics.title') : `${t('game.level')} ${unit.num}`} ·{' '}
+                  {t(unit.titleKey)}
                 </h3>
                 <ul className="space-y-0.5">
                   {DEMOS.filter((d) => d.unit === unit.num).map((demo) => (
@@ -841,21 +963,30 @@ export function DemosPage() {
                         className={cn(
                           'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all',
                           activeDemo === demo.id
-                            ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
-                            : 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
+                            ? theme === 'dark'
+                              ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
+                              : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
+                            : theme === 'dark'
+                              ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
+                              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                         )}
                       >
                         <span
                           className={cn(
                             'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0',
                             activeDemo === demo.id
-                              ? 'bg-cyan-400 text-black'
-                              : 'bg-slate-700 text-gray-400'
+                              ? theme === 'dark'
+                                ? 'bg-cyan-400 text-black'
+                                : 'bg-cyan-500 text-white'
+                              : theme === 'dark'
+                                ? 'bg-slate-700 text-gray-400'
+                                : 'bg-gray-200 text-gray-500'
                           )}
                         >
                           {DEMOS.filter((d) => d.unit === demo.unit).indexOf(demo) + 1}
                         </span>
-                        <span className="truncate">{demo.title}</span>
+                        <span className="truncate flex-1">{t(demo.titleKey)}</span>
+                        <VisualTypeBadge type={demo.visualType} />
                       </button>
                     </li>
                   ))}
@@ -864,22 +995,46 @@ export function DemosPage() {
             ))}
           </div>
 
-          {/* 底部说明 */}
-          <div className="p-4 border-t border-slate-800">
-            <div className="p-3 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-lg border border-slate-700/50">
-              <h4 className="text-xs font-semibold text-cyan-400 mb-2">交互说明</h4>
-              <ul className="text-[11px] text-gray-500 space-y-1.5">
+          {/* Interaction guide */}
+          <div
+            className={cn(
+              'p-4 border-t',
+              theme === 'dark' ? 'border-slate-800' : 'border-gray-200'
+            )}
+          >
+            <div
+              className={cn(
+                'p-3 rounded-lg border',
+                theme === 'dark'
+                  ? 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50'
+                  : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
+              )}
+            >
+              <h4
+                className={cn(
+                  'text-xs font-semibold mb-2',
+                  theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                )}
+              >
+                {t('course.interactionGuide')}
+              </h4>
+              <ul
+                className={cn(
+                  'text-[11px] space-y-1.5',
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                )}
+              >
                 <li className="flex items-center gap-2">
-                  <span className="text-cyan-400">◎</span>
-                  拖拽旋转3D视图
+                  <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
+                  {t('course.dragToRotate')}
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-cyan-400">◎</span>
-                  滚轮缩放画面
+                  <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
+                  {t('course.scrollToZoom')}
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-cyan-400">◎</span>
-                  滑块调整参数
+                  <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
+                  {t('course.slidersAdjust')}
                 </li>
               </ul>
             </div>
@@ -889,19 +1044,45 @@ export function DemosPage() {
         {/* Main Content */}
         <main className="ml-64 flex-1 p-6">
           <div className="max-w-[1400px] mx-auto">
-            {/* 标题和描述 */}
+            {/* Title and description */}
             <div className="mb-5">
               <div className="flex items-center gap-3 mb-2">
-                <span className="px-2.5 py-1 text-xs bg-gradient-to-r from-cyan-400/20 to-blue-400/20 text-cyan-400 rounded-lg border border-cyan-400/30">
-                  单元 {currentDemo?.unit}
+                <span
+                  className={cn(
+                    'px-2.5 py-1 text-xs rounded-lg border',
+                    theme === 'dark'
+                      ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/20 text-cyan-400 border-cyan-400/30'
+                      : 'bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 border-cyan-300'
+                  )}
+                >
+                  {currentDemo?.unit === 0
+                    ? t('basics.title')
+                    : `${t('game.level')} ${currentDemo?.unit}`}
                 </span>
-                <h1 className="text-2xl font-bold text-white">{currentDemo?.title}</h1>
+                <VisualTypeBadge type={currentDemo?.visualType || '2D'} />
+                <h1
+                  className={cn(
+                    'text-2xl font-bold',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}
+                >
+                  {t(currentDemo?.titleKey || '')}
+                </h1>
               </div>
-              <p className="text-gray-400 text-sm">{currentDemo?.description}</p>
+              <p className={theme === 'dark' ? 'text-gray-400 text-sm' : 'text-gray-600 text-sm'}>
+                {t(currentDemo?.descriptionKey || '')}
+              </p>
             </div>
 
-            {/* 演示区域 */}
-            <div className="bg-gradient-to-br from-slate-900/80 to-slate-800/50 rounded-2xl border border-cyan-400/20 overflow-hidden shadow-[0_0_40px_rgba(34,211,238,0.1)]">
+            {/* Demo area */}
+            <div
+              className={cn(
+                'rounded-2xl border overflow-hidden',
+                theme === 'dark'
+                  ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/50 border-cyan-400/20 shadow-[0_0_40px_rgba(34,211,238,0.1)]'
+                  : 'bg-gradient-to-br from-white to-gray-50 border-cyan-200 shadow-lg'
+              )}
+            >
               <div className="p-5 min-h-[550px]">
                 <Suspense fallback={<DemoLoading />}>
                   {DemoComponent && <DemoComponent />}
@@ -909,29 +1090,44 @@ export function DemosPage() {
               </div>
             </div>
 
-            {/* 底部信息卡片 - 三列布局 */}
+            {/* Info cards - three column layout */}
             {demoInfo && (
               <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
-                {/* 物理原理 */}
-                <InfoCard title="物理原理" icon={<PhysicsIcon />} color="cyan">
+                {/* Physics principle */}
+                <InfoCard title={t('course.cards.physics')} icon={<PhysicsIcon />} color="cyan">
                   <div className="space-y-4">
-                    {/* 示意图 */}
                     {demoInfo.diagram && (
-                      <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
+                      <div
+                        className={cn(
+                          'rounded-lg p-3 border',
+                          theme === 'dark'
+                            ? 'bg-slate-900/50 border-slate-700/50'
+                            : 'bg-gray-50 border-gray-200'
+                        )}
+                      >
                         {demoInfo.diagram}
                       </div>
                     )}
-                    {/* 原理说明 */}
-                    <p className="text-sm text-gray-300 leading-relaxed">
+                    <p
+                      className={cn(
+                        'text-sm leading-relaxed',
+                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      )}
+                    >
                       {demoInfo.physics.principle}
                     </p>
-                    {/* 公式 */}
                     {demoInfo.physics.formula && (
-                      <div className="font-mono text-cyan-400 bg-slate-900/70 px-3 py-2 rounded-lg text-center text-sm border border-cyan-400/20">
+                      <div
+                        className={cn(
+                          'font-mono px-3 py-2 rounded-lg text-center text-sm border',
+                          theme === 'dark'
+                            ? 'text-cyan-400 bg-slate-900/70 border-cyan-400/20'
+                            : 'text-cyan-700 bg-cyan-50 border-cyan-200'
+                        )}
+                      >
                         {demoInfo.physics.formula}
                       </div>
                     )}
-                    {/* 详细说明 */}
                     <div className="space-y-2">
                       {demoInfo.physics.details.map((detail, i) => (
                         <ListItem key={i} icon="•">
@@ -942,20 +1138,44 @@ export function DemosPage() {
                   </div>
                 </InfoCard>
 
-                {/* 实验应用 */}
-                <InfoCard title="实验应用" icon={<ExperimentIcon />} color="green">
+                {/* Experimental application */}
+                <InfoCard title={t('course.cards.experiment')} icon={<ExperimentIcon />} color="green">
                   <div className="space-y-4">
-                    {/* 实验标题 */}
-                    <div className="bg-green-400/10 rounded-lg px-3 py-2 border border-green-400/20">
-                      <h5 className="text-green-400 font-semibold text-sm">
+                    <div
+                      className={cn(
+                        'rounded-lg px-3 py-2 border',
+                        theme === 'dark'
+                          ? 'bg-green-400/10 border-green-400/20'
+                          : 'bg-green-50 border-green-200'
+                      )}
+                    >
+                      <h5
+                        className={cn(
+                          'font-semibold text-sm',
+                          theme === 'dark' ? 'text-green-400' : 'text-green-700'
+                        )}
+                      >
                         {demoInfo.experiment.title}
                       </h5>
-                      <p className="text-xs text-gray-400 mt-1">{demoInfo.experiment.example}</p>
+                      <p
+                        className={cn(
+                          'text-xs mt-1',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                        )}
+                      >
+                        {demoInfo.experiment.example}
+                      </p>
                     </div>
-                    {/* 实验步骤/说明 */}
                     <div className="space-y-2">
                       {demoInfo.experiment.details.map((detail, i) => (
-                        <ListItem key={i} icon={<span className="text-green-400">✓</span>}>
+                        <ListItem
+                          key={i}
+                          icon={
+                            <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>
+                              ✓
+                            </span>
+                          }
+                        >
                           {detail}
                         </ListItem>
                       ))}
@@ -963,20 +1183,44 @@ export function DemosPage() {
                   </div>
                 </InfoCard>
 
-                {/* 前沿应用 */}
-                <InfoCard title="前沿应用" icon={<FrontierIcon />} color="purple">
+                {/* Frontier application */}
+                <InfoCard title={t('course.cards.frontier')} icon={<FrontierIcon />} color="purple">
                   <div className="space-y-4">
-                    {/* 应用标题 */}
-                    <div className="bg-purple-400/10 rounded-lg px-3 py-2 border border-purple-400/20">
-                      <h5 className="text-purple-400 font-semibold text-sm">
+                    <div
+                      className={cn(
+                        'rounded-lg px-3 py-2 border',
+                        theme === 'dark'
+                          ? 'bg-purple-400/10 border-purple-400/20'
+                          : 'bg-purple-50 border-purple-200'
+                      )}
+                    >
+                      <h5
+                        className={cn(
+                          'font-semibold text-sm',
+                          theme === 'dark' ? 'text-purple-400' : 'text-purple-700'
+                        )}
+                      >
                         {demoInfo.frontier.title}
                       </h5>
-                      <p className="text-xs text-gray-400 mt-1">{demoInfo.frontier.example}</p>
+                      <p
+                        className={cn(
+                          'text-xs mt-1',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                        )}
+                      >
+                        {demoInfo.frontier.example}
+                      </p>
                     </div>
-                    {/* 前沿细节 */}
                     <div className="space-y-2">
                       {demoInfo.frontier.details.map((detail, i) => (
-                        <ListItem key={i} icon={<span className="text-purple-400">→</span>}>
+                        <ListItem
+                          key={i}
+                          icon={
+                            <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>
+                              →
+                            </span>
+                          }
+                        >
                           {detail}
                         </ListItem>
                       ))}
