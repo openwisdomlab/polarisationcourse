@@ -4,7 +4,7 @@
  */
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { SliderControl, ControlPanel, InfoCard, PresetButtons } from '../DemoControls'
+import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 type PolarizationType = 'linear' | 'circular' | 'elliptical'
 

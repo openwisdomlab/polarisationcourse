@@ -4,7 +4,7 @@
  * 参考设计：高级玻璃态UI风格
  */
 import { useState, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 光强条组件
