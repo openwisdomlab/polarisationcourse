@@ -326,4 +326,219 @@ export class LightPhysics {
   static getIntensityBrightness(intensity: number): number {
     return intensity / 15;
   }
+
+  // ============== 高级方块物理处理 ==============
+
+  /**
+   * 处理光通过吸收器
+   * 吸收器按比例降低光强度
+   */
+  static processAbsorberBlock(input: LightPacket, blockState: BlockState): LightPacket | null {
+    const absorptionRate = blockState.absorptionRate ?? 0.5;
+    const transmittedIntensity = Math.floor(input.intensity * (1 - absorptionRate));
+
+    if (transmittedIntensity <= 0) {
+      return null;
+    }
+
+    return {
+      direction: input.direction,
+      intensity: transmittedIntensity,
+      polarization: input.polarization,
+      phase: input.phase
+    };
+  }
+
+  /**
+   * 处理光通过相位调制器
+   * 改变光的相位（用于干涉）
+   */
+  static processPhaseShifterBlock(input: LightPacket, blockState: BlockState): LightPacket {
+    const phaseShift = blockState.phaseShift ?? 0;
+
+    // 相位偏移：0° = 无变化，180° = 反相
+    // 简化模型：90°和270°暂时不改变相位（更精确的模型需要复数表示）
+    let newPhase = input.phase;
+    if (phaseShift === 180) {
+      newPhase = input.phase === 1 ? -1 : 1;
+    }
+
+    return {
+      direction: input.direction,
+      intensity: input.intensity,
+      polarization: input.polarization,
+      phase: newPhase
+    };
+  }
+
+  /**
+   * 处理光通过分束器
+   * 将光分成两束：一束透射，一束反射
+   */
+  static processBeamSplitterBlock(
+    input: LightPacket,
+    blockState: BlockState
+  ): LightPacket[] {
+    const splitRatio = blockState.splitRatio ?? 0.5;
+
+    // 透射光（继续原方向）
+    const transmittedIntensity = Math.floor(input.intensity * splitRatio);
+    // 反射光（垂直方向）
+    const reflectedIntensity = Math.floor(input.intensity * (1 - splitRatio));
+
+    const result: LightPacket[] = [];
+
+    if (transmittedIntensity > 0) {
+      result.push({
+        direction: input.direction,
+        intensity: transmittedIntensity,
+        polarization: input.polarization,
+        phase: input.phase
+      });
+    }
+
+    if (reflectedIntensity > 0) {
+      // 反射光方向：垂直于入射方向
+      const reflectedDirection = this.getPerpendicularDirection(input.direction);
+      result.push({
+        direction: reflectedDirection,
+        intensity: reflectedIntensity,
+        polarization: input.polarization,
+        phase: input.phase
+      });
+    }
+
+    return result;
+  }
+
+  /**
+   * 处理光通过四分之一波片
+   * 将线偏振光转换为圆偏振光（简化模型：旋转45度）
+   */
+  static processQuarterWaveBlock(input: LightPacket, _blockState: BlockState): LightPacket {
+    // 四分之一波片引入90度相位差
+    // 简化模型：旋转偏振角45度
+    const newAngle = this.normalizeAngle(input.polarization + 45);
+
+    return {
+      direction: input.direction,
+      intensity: input.intensity,
+      polarization: newAngle as PolarizationAngle,
+      phase: input.phase
+    };
+  }
+
+  /**
+   * 处理光通过二分之一波片
+   * 翻转偏振方向（镜像关于快轴）
+   */
+  static processHalfWaveBlock(input: LightPacket, _blockState: BlockState): LightPacket {
+    // 二分之一波片：偏振角关于快轴镜像
+    // 简化模型：旋转90度（相当于翻转）
+    const newAngle = this.normalizeAngle(input.polarization + 90);
+
+    return {
+      direction: input.direction,
+      intensity: input.intensity,
+      polarization: newAngle as PolarizationAngle,
+      phase: input.phase
+    };
+  }
+
+  /**
+   * 处理光通过棱镜
+   * 折射并可选择性地产生色散效果
+   * 简化模型：改变光的方向（向facing方向偏折）
+   */
+  static processPrismBlock(input: LightPacket, blockState: BlockState): LightPacket {
+    // 棱镜折射：光线向棱镜朝向方向偏折
+    const prismFacing = blockState.facing;
+    let newDirection = input.direction;
+
+    // 如果光线与棱镜朝向垂直，则偏折
+    if (this.areDirectionsPerpendicular(input.direction, prismFacing)) {
+      newDirection = prismFacing;
+    }
+
+    return {
+      direction: newDirection,
+      intensity: input.intensity,
+      polarization: input.polarization,
+      phase: input.phase
+    };
+  }
+
+  /**
+   * 处理光通过透镜
+   * 聚焦（正焦距）或发散（负焦距）光线
+   * 简化模型：正焦距保持方向，负焦距可能发散
+   */
+  static processLensBlock(input: LightPacket, blockState: BlockState): LightPacket[] {
+    const focalLength = blockState.focalLength ?? 2;
+    const isConverging = focalLength > 0;
+
+    if (isConverging) {
+      // 聚焦透镜：光继续原方向（简化模型）
+      return [{
+        direction: input.direction,
+        intensity: input.intensity,
+        polarization: input.polarization,
+        phase: input.phase
+      }];
+    } else {
+      // 发散透镜：光分成多个方向（简化为两束）
+      const intensity1 = Math.floor(input.intensity * 0.5);
+      const intensity2 = input.intensity - intensity1;
+
+      const result: LightPacket[] = [];
+
+      if (intensity1 > 0) {
+        result.push({
+          direction: input.direction,
+          intensity: intensity1,
+          polarization: input.polarization,
+          phase: input.phase
+        });
+      }
+
+      if (intensity2 > 0) {
+        result.push({
+          direction: this.getPerpendicularDirection(input.direction),
+          intensity: intensity2,
+          polarization: input.polarization,
+          phase: input.phase
+        });
+      }
+
+      return result;
+    }
+  }
+
+  /**
+   * 检查两个方向是否垂直
+   */
+  private static areDirectionsPerpendicular(dir1: Direction, dir2: Direction): boolean {
+    const horizontal: Direction[] = ['north', 'south', 'east', 'west'];
+    const vertical: Direction[] = ['up', 'down'];
+
+    // 水平和垂直方向互相垂直
+    if ((horizontal.includes(dir1) && vertical.includes(dir2)) ||
+        (vertical.includes(dir1) && horizontal.includes(dir2))) {
+      return true;
+    }
+
+    // 水平方向中的垂直关系
+    const perpPairs: [Direction, Direction][] = [
+      ['north', 'east'], ['north', 'west'],
+      ['south', 'east'], ['south', 'west']
+    ];
+
+    for (const [a, b] of perpPairs) {
+      if ((dir1 === a && dir2 === b) || (dir1 === b && dir2 === a)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

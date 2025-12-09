@@ -10,6 +10,12 @@ import { Line, Float, Html } from '@react-three/drei'
 import { World } from '@/core/World'
 import { BlockState, BlockPosition, POLARIZATION_COLORS } from '@/core/types'
 import { VisionMode } from '@/stores/gameStore'
+import {
+  BlockComponentProps,
+  PolarizationIndicator,
+  PolarizationGridLines,
+  SpiralDecoration
+} from './blocks'
 
 interface BlocksProps {
   world: World
@@ -256,15 +262,6 @@ function Block({ position, state, visionMode, onBlockClick, onBlockHover }: Bloc
   }
 }
 
-// Shared props for block components
-interface BlockComponentProps {
-  position: BlockPosition
-  rotationY: number
-  onPointerDown: (e: ThreeEvent<PointerEvent>) => void
-  onPointerEnter: (e: ThreeEvent<PointerEvent>) => void
-  onPointerLeave: () => void
-}
-
 // Solid Block - Monument Valley inspired architectural blocks
 // 纪念碑谷风格的建筑方块 - 柔和色彩、优雅几何、微妙阴影
 function SolidBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
@@ -272,10 +269,6 @@ function SolidBlock({ position, rotationY, onPointerDown, onPointerEnter, onPoin
 
   // Monument Valley 风格的柔和配色
   // 根据位置生成微妙的颜色变化，增加视觉层次
-  const baseHue = useMemo(() => {
-    const hash = (position.x * 7 + position.z * 13) % 100
-    return hash / 100
-  }, [position.x, position.z])
 
   const groundColors = useMemo(() => {
     // 地面使用柔和的石板灰/米色调
@@ -894,107 +887,7 @@ function MirrorBlock({ position, rotationY, onPointerDown, onPointerEnter, onPoi
   )
 }
 
-// Helper components
-
-interface PolarizationIndicatorProps {
-  angle: number
-  rotation: number
-  offset?: number
-}
-
-function PolarizationIndicator({ angle, rotation, offset = 0.06 }: PolarizationIndicatorProps) {
-  const color = POLARIZATION_COLORS[angle as keyof typeof POLARIZATION_COLORS] || 0xffffff
-  const radians = (angle * Math.PI) / 180
-  const length = 0.35
-
-  const points: [number, number, number][] = [
-    [-Math.cos(radians) * length, -Math.sin(radians) * length, offset],
-    [Math.cos(radians) * length, Math.sin(radians) * length, offset],
-  ]
-
-  return (
-    <group rotation={[0, rotation, 0]}>
-      <Line points={points} color={color} lineWidth={3} />
-      {/* Arrow head */}
-      <mesh position={[Math.cos(radians) * length, Math.sin(radians) * length, offset + 0.02]}>
-        <sphereGeometry args={[0.06, 12, 12]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-    </group>
-  )
-}
-
-interface PolarizationGridLinesProps {
-  angle: number
-  rotation: number
-}
-
-function PolarizationGridLines({ angle, rotation }: PolarizationGridLinesProps) {
-  const radians = (angle * Math.PI) / 180
-  const lineCount = 7
-
-  const lines = useMemo(() => {
-    const result: Array<[number, number, number][]> = []
-    for (let i = 0; i < lineCount; i++) {
-      const offset = (i - (lineCount - 1) / 2) * 0.12
-      const perpX = -Math.sin(radians) * offset
-      const perpY = Math.cos(radians) * offset
-
-      result.push([
-        [perpX - Math.cos(radians) * 0.4, perpY - Math.sin(radians) * 0.4, 0],
-        [perpX + Math.cos(radians) * 0.4, perpY + Math.sin(radians) * 0.4, 0],
-      ])
-    }
-    return result
-  }, [angle, radians])
-
-  const color = POLARIZATION_COLORS[angle as keyof typeof POLARIZATION_COLORS] || 0x00aaff
-
-  return (
-    <group rotation={[0, rotation, 0]}>
-      {lines.map((points, i) => (
-        <Line key={i} points={points} color={color} lineWidth={1} transparent opacity={0.6} />
-      ))}
-    </group>
-  )
-}
-
-interface SpiralDecorationProps {
-  rotation: number
-  is90: boolean
-}
-
-function SpiralDecoration({ rotation, is90 }: SpiralDecorationProps) {
-  const spiralPoints = useMemo(() => {
-    const points: [number, number, number][] = []
-    const turns = is90 ? 0.5 : 0.25
-    const segments = 20
-
-    for (let i = 0; i <= segments; i++) {
-      const t = i / segments
-      const angle = t * turns * Math.PI * 2
-      const r = 0.1 + t * 0.25
-      points.push([
-        Math.cos(angle) * r,
-        t * 0.2 - 0.1,
-        Math.sin(angle) * r,
-      ])
-    }
-    return points
-  }, [is90])
-
-  return (
-    <group rotation={[0, rotation, 0]}>
-      <Line
-        points={spiralPoints}
-        color={is90 ? 0xcc00ff : 0xff66ff}
-        lineWidth={2}
-      />
-    </group>
-  )
-}
-
-// ============== NEW BLOCK TYPES - Monument Valley Aesthetic ==============
+// ============== ADVANCED BLOCK TYPES - Monument Valley Aesthetic ==============
 
 // Prism Block - 棱镜，三角形晶体设计
 function PrismBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {

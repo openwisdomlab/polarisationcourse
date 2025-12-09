@@ -254,6 +254,40 @@ export class World {
       case 'emitter':
         // 光源方块阻挡光线（避免干扰）
         break;
+
+      // ============== 高级方块类型 ==============
+
+      case 'absorber':
+        this.handleAbsorberBlock(nextPos, light, block, depth);
+        break;
+
+      case 'phaseShifter':
+        this.handlePhaseShifterBlock(nextPos, light, block, depth);
+        break;
+
+      case 'beamSplitter':
+        this.handleBeamSplitterBlock(nextPos, light, block, depth);
+        break;
+
+      case 'quarterWave':
+        this.handleQuarterWaveBlock(nextPos, light, block, depth);
+        break;
+
+      case 'halfWave':
+        this.handleHalfWaveBlock(nextPos, light, block, depth);
+        break;
+
+      case 'prism':
+        this.handlePrismBlock(nextPos, light, block, depth);
+        break;
+
+      case 'lens':
+        this.handleLensBlock(nextPos, light, block, depth);
+        break;
+
+      case 'portal':
+        this.handlePortalBlock(nextPos, light, block, depth);
+        break;
     }
   }
 
@@ -318,6 +352,153 @@ export class World {
     if (result && result.intensity > 0) {
       this.propagateLight(position, result, depth + 1);
     }
+  }
+
+  // ============== 高级方块处理方法 ==============
+
+  /**
+   * 处理吸收器
+   */
+  private handleAbsorberBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const result = LightPhysics.processAbsorberBlock(light, block);
+
+    if (result && result.intensity > 0) {
+      this.propagateLight(position, result, depth + 1);
+    }
+  }
+
+  /**
+   * 处理相位调制器
+   */
+  private handlePhaseShifterBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const result = LightPhysics.processPhaseShifterBlock(light, block);
+    this.propagateLight(position, result, depth + 1);
+  }
+
+  /**
+   * 处理分束器
+   */
+  private handleBeamSplitterBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const results = LightPhysics.processBeamSplitterBlock(light, block);
+
+    for (const resultLight of results) {
+      if (resultLight.intensity > 0) {
+        this.propagateLight(position, resultLight, depth + 1);
+      }
+    }
+  }
+
+  /**
+   * 处理四分之一波片
+   */
+  private handleQuarterWaveBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const result = LightPhysics.processQuarterWaveBlock(light, block);
+    this.propagateLight(position, result, depth + 1);
+  }
+
+  /**
+   * 处理二分之一波片
+   */
+  private handleHalfWaveBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const result = LightPhysics.processHalfWaveBlock(light, block);
+    this.propagateLight(position, result, depth + 1);
+  }
+
+  /**
+   * 处理棱镜
+   */
+  private handlePrismBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const result = LightPhysics.processPrismBlock(light, block);
+    this.propagateLight(position, result, depth + 1);
+  }
+
+  /**
+   * 处理透镜
+   */
+  private handleLensBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const results = LightPhysics.processLensBlock(light, block);
+
+    for (const resultLight of results) {
+      if (resultLight.intensity > 0) {
+        this.propagateLight(position, resultLight, depth + 1);
+      }
+    }
+  }
+
+  /**
+   * 处理传送门
+   * 将光传送到链接的传送门位置
+   */
+  private handlePortalBlock(
+    position: BlockPosition,
+    light: LightPacket,
+    block: BlockState,
+    depth: number
+  ): void {
+    const linkedId = block.linkedPortalId;
+
+    if (!linkedId) {
+      // 未链接的传送门，光线直接穿过
+      this.propagateLight(position, light, depth + 1);
+      return;
+    }
+
+    // 查找链接的传送门
+    const linkedPortal = this.findPortalById(linkedId);
+
+    if (linkedPortal) {
+      // 从链接传送门的位置继续传播光线
+      this.propagateLight(linkedPortal.position, light, depth + 1);
+    }
+  }
+
+  /**
+   * 根据ID查找传送门
+   */
+  private findPortalById(portalId: string): { position: BlockPosition; state: BlockState } | null {
+    for (const [key, state] of this.blocks) {
+      if (state.type === 'portal' && state.linkedPortalId === portalId) {
+        // 避免找到同一个传送门（需要找配对的那个）
+        const position = parseKey(key);
+        return { position, state };
+      }
+    }
+    return null;
   }
 
   /**

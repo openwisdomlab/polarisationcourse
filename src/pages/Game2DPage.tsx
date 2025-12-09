@@ -52,14 +52,6 @@ const directionVectors: Record<Direction2D, { dx: number; dy: number }> = {
   right: { dx: 1, dy: 0 },
 }
 
-// Opposite direction
-const oppositeDirection: Record<Direction2D, Direction2D> = {
-  up: 'down',
-  down: 'up',
-  left: 'right',
-  right: 'left',
-}
-
 // Mirror reflection based on mirror angle
 function getMirrorReflection(incomingDir: Direction2D, mirrorAngle: number): Direction2D | null {
   // Mirror at 45° reflects: right<->up, left<->down
