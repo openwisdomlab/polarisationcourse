@@ -166,6 +166,91 @@ function Block({ position, state, visionMode, onBlockClick, onBlockHover }: Bloc
           onPointerLeave={handlePointerLeave}
         />
       )
+    case 'prism':
+      return (
+        <PrismBlock
+          position={position}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
+    case 'lens':
+      return (
+        <LensBlock
+          position={position}
+          state={state}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
+    case 'beamSplitter':
+      return (
+        <BeamSplitterBlock
+          position={position}
+          state={state}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
+    case 'quarterWave':
+      return (
+        <QuarterWaveBlock
+          position={position}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
+    case 'halfWave':
+      return (
+        <HalfWaveBlock
+          position={position}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
+    case 'absorber':
+      return (
+        <AbsorberBlock
+          position={position}
+          state={state}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
+    case 'phaseShifter':
+      return (
+        <PhaseShifterBlock
+          position={position}
+          state={state}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
+    case 'portal':
+      return (
+        <PortalBlock
+          position={position}
+          state={state}
+          rotationY={rotationY}
+          onPointerDown={handlePointerDown}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
+        />
+      )
     default:
       return null
   }
@@ -851,6 +936,596 @@ function SpiralDecoration({ rotation, is90 }: SpiralDecorationProps) {
         points={spiralPoints}
         color={is90 ? 0xcc00ff : 0xff66ff}
         lineWidth={2}
+      />
+    </group>
+  )
+}
+
+// ============== NEW BLOCK TYPES - Monument Valley Aesthetic ==============
+
+// Prism Block - 棱镜，三角形晶体设计
+function PrismBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+  const prismRef = useRef<THREE.Group>(null)
+
+  useFrame(({ clock }) => {
+    if (prismRef.current) {
+      prismRef.current.rotation.y = rotationY + Math.sin(clock.getElapsedTime() * 0.3) * 0.05
+    }
+  })
+
+  // 彩虹色散效果的颜色
+  const rainbowColors = [0xff6b6b, 0xffa94d, 0xffd93d, 0x6bcf7f, 0x4da6ff, 0x9b6bff]
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 底座 */}
+      <mesh position={[0, -0.42, 0]}>
+        <cylinderGeometry args={[0.3, 0.35, 0.08, 3]} />
+        <meshStandardMaterial color={0x3d3d5c} metalness={0.7} roughness={0.3} />
+      </mesh>
+
+      <Float speed={1} rotationIntensity={0} floatIntensity={0.1}>
+        <group ref={prismRef}>
+          {/* 主棱镜 - 三角柱 */}
+          <mesh
+            rotation={[Math.PI / 2, 0, rotationY]}
+            onPointerDown={onPointerDown}
+            onPointerEnter={onPointerEnter}
+            onPointerLeave={onPointerLeave}
+            castShadow
+          >
+            <cylinderGeometry args={[0.4, 0.4, 0.6, 3]} />
+            <meshStandardMaterial
+              color={0xffffff}
+              transparent
+              opacity={0.85}
+              roughness={0.02}
+              metalness={0.3}
+            />
+          </mesh>
+
+          {/* 内部彩虹折射效果 */}
+          {rainbowColors.map((color, i) => (
+            <mesh key={i} position={[0.15 + i * 0.08, -0.15 + i * 0.05, 0.35]} rotation={[0, rotationY, 0]}>
+              <sphereGeometry args={[0.03, 8, 8]} />
+              <meshBasicMaterial color={color} transparent opacity={0.8} />
+            </mesh>
+          ))}
+
+          {/* 边缘发光 */}
+          <lineSegments rotation={[Math.PI / 2, 0, rotationY]}>
+            <edgesGeometry args={[new THREE.CylinderGeometry(0.4, 0.4, 0.6, 3)]} />
+            <lineBasicMaterial color={0x88ffff} transparent opacity={0.8} />
+          </lineSegments>
+        </group>
+      </Float>
+
+      {/* 标签 */}
+      <Html position={[0, 0.6, 0]} center>
+        <div className="text-[10px] font-bold text-white bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 px-2 py-0.5 rounded-full whitespace-nowrap">
+          棱镜
+        </div>
+      </Html>
+
+      <pointLight color={0xffffff} intensity={0.3} distance={2} />
+    </group>
+  )
+}
+
+// Lens Block - 透镜，优雅的双凸/双凹设计
+interface LensBlockProps extends BlockComponentProps {
+  state: BlockState
+}
+
+function LensBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: LensBlockProps) {
+  const isConverging = (state.focalLength ?? 2) > 0
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 支架 */}
+      <mesh position={[0, -0.38, 0]} rotation={[0, rotationY, 0]}>
+        <boxGeometry args={[0.12, 0.15, 0.5]} />
+        <meshStandardMaterial color={0x4a4a6e} metalness={0.6} roughness={0.4} />
+      </mesh>
+
+      {/* 透镜主体 */}
+      <mesh
+        rotation={[0, rotationY, 0]}
+        onPointerDown={onPointerDown}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        castShadow
+      >
+        <sphereGeometry args={[0.4, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial
+          color={isConverging ? 0x88ddff : 0xffdd88}
+          transparent
+          opacity={0.6}
+          roughness={0.05}
+          metalness={0.2}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      <mesh rotation={[Math.PI, rotationY, 0]}>
+        <sphereGeometry args={[0.4, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial
+          color={isConverging ? 0x88ddff : 0xffdd88}
+          transparent
+          opacity={0.6}
+          roughness={0.05}
+          metalness={0.2}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* 边框环 */}
+      <mesh rotation={[Math.PI / 2, 0, rotationY]}>
+        <torusGeometry args={[0.42, 0.04, 8, 32]} />
+        <meshStandardMaterial color={0x6a6a8e} metalness={0.8} roughness={0.3} />
+      </mesh>
+
+      {/* 聚焦/发散指示线 */}
+      <group rotation={[0, rotationY, 0]}>
+        {isConverging ? (
+          // 聚焦线
+          <>
+            <Line points={[[-0.5, 0.2, 0], [0, 0, 0], [0.5, 0, 0]]} color={0x88ddff} lineWidth={2} />
+            <Line points={[[-0.5, -0.2, 0], [0, 0, 0], [0.5, 0, 0]]} color={0x88ddff} lineWidth={2} />
+          </>
+        ) : (
+          // 发散线
+          <>
+            <Line points={[[0, 0, 0], [0.5, 0.2, 0]]} color={0xffdd88} lineWidth={2} />
+            <Line points={[[0, 0, 0], [0.5, -0.2, 0]]} color={0xffdd88} lineWidth={2} />
+          </>
+        )}
+      </group>
+
+      {/* 标签 */}
+      <Html position={[0, 0.55, 0]} center>
+        <div className={`text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${
+          isConverging ? 'bg-blue-500/80 text-white' : 'bg-amber-500/80 text-white'
+        }`}>
+          {isConverging ? '凸透镜' : '凹透镜'}
+        </div>
+      </Html>
+
+      <pointLight color={isConverging ? 0x88ddff : 0xffdd88} intensity={0.2} distance={2} />
+    </group>
+  )
+}
+
+// BeamSplitter Block - 分束器，立方体设计
+interface BeamSplitterBlockProps extends BlockComponentProps {
+  state: BlockState
+}
+
+function BeamSplitterBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BeamSplitterBlockProps) {
+  const ratio = state.splitRatio ?? 0.5
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 底座 */}
+      <mesh position={[0, -0.4, 0]}>
+        <boxGeometry args={[0.5, 0.1, 0.5]} />
+        <meshStandardMaterial color={0x3a3a5e} metalness={0.7} roughness={0.3} />
+      </mesh>
+
+      {/* 立方体分束器 */}
+      <mesh
+        rotation={[0, rotationY + Math.PI / 4, 0]}
+        onPointerDown={onPointerDown}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        castShadow
+      >
+        <boxGeometry args={[0.55, 0.55, 0.55]} />
+        <meshStandardMaterial
+          color={0xaaddff}
+          transparent
+          opacity={0.7}
+          roughness={0.05}
+          metalness={0.4}
+        />
+      </mesh>
+
+      {/* 内部分光面（对角线） */}
+      <mesh rotation={[0, rotationY + Math.PI / 4, Math.PI / 4]} position={[0, 0, 0]}>
+        <planeGeometry args={[0.75, 0.75]} />
+        <meshStandardMaterial
+          color={0x66aaff}
+          transparent
+          opacity={0.4}
+          roughness={0.0}
+          metalness={0.8}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* 边缘 */}
+      <lineSegments rotation={[0, rotationY + Math.PI / 4, 0]}>
+        <edgesGeometry args={[new THREE.BoxGeometry(0.55, 0.55, 0.55)]} />
+        <lineBasicMaterial color={0x88ccff} transparent opacity={0.9} />
+      </lineSegments>
+
+      {/* 分光比例指示 */}
+      <Html position={[0, 0.55, 0]} center>
+        <div className="text-[10px] font-bold text-cyan-300 bg-slate-800/80 px-2 py-0.5 rounded whitespace-nowrap">
+          分束器 {Math.round(ratio * 100)}:{Math.round((1 - ratio) * 100)}
+        </div>
+      </Html>
+
+      <pointLight color={0x88ccff} intensity={0.3} distance={2} />
+    </group>
+  )
+}
+
+// QuarterWave Block - 四分之一波片，薄片晶体设计
+function QuarterWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+  const waveRef = useRef<THREE.Mesh>(null)
+
+  useFrame(({ clock }) => {
+    if (waveRef.current) {
+      waveRef.current.rotation.z = Math.sin(clock.getElapsedTime() * 2) * 0.1
+    }
+  })
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 框架 */}
+      <mesh rotation={[Math.PI / 2, 0, rotationY]}>
+        <torusGeometry args={[0.38, 0.06, 6, 32]} />
+        <meshStandardMaterial color={0x5a4a7e} metalness={0.7} roughness={0.3} />
+      </mesh>
+
+      {/* 波片主体 */}
+      <mesh
+        ref={waveRef}
+        rotation={[Math.PI / 2, 0, rotationY]}
+        onPointerDown={onPointerDown}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+      >
+        <circleGeometry args={[0.35, 32]} />
+        <meshStandardMaterial
+          color={0xaa88ff}
+          transparent
+          opacity={0.5}
+          roughness={0.1}
+          metalness={0.3}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* 光轴指示（快轴/慢轴） */}
+      <group rotation={[0, rotationY, 0]}>
+        <Line points={[[-0.3, 0, 0.05], [0.3, 0, 0.05]]} color={0xff8888} lineWidth={2} />
+        <Line points={[[0, -0.3, 0.05], [0, 0.3, 0.05]]} color={0x88ff88} lineWidth={2} />
+      </group>
+
+      {/* 支架 */}
+      <mesh position={[0, -0.4, 0]}>
+        <cylinderGeometry args={[0.15, 0.2, 0.12, 8]} />
+        <meshStandardMaterial color={0x4a4a6e} metalness={0.6} roughness={0.4} />
+      </mesh>
+
+      {/* 标签 */}
+      <Html position={[0, 0.5, 0]} center>
+        <div className="text-[10px] font-bold text-purple-300 bg-purple-900/80 px-2 py-0.5 rounded whitespace-nowrap">
+          λ/4 波片
+        </div>
+      </Html>
+
+      <pointLight color={0xaa88ff} intensity={0.2} distance={2} />
+    </group>
+  )
+}
+
+// HalfWave Block - 二分之一波片
+function HalfWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+  const waveRef = useRef<THREE.Mesh>(null)
+
+  useFrame(({ clock }) => {
+    if (waveRef.current) {
+      waveRef.current.rotation.z = Math.sin(clock.getElapsedTime() * 1.5) * 0.15
+    }
+  })
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 双层框架 */}
+      <mesh rotation={[Math.PI / 2, 0, rotationY]}>
+        <torusGeometry args={[0.4, 0.05, 6, 32]} />
+        <meshStandardMaterial color={0x7a5a8e} metalness={0.7} roughness={0.3} />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, rotationY]} position={[0, 0.08, 0]}>
+        <torusGeometry args={[0.38, 0.03, 6, 32]} />
+        <meshStandardMaterial color={0x6a4a7e} metalness={0.6} roughness={0.3} />
+      </mesh>
+
+      {/* 波片主体 - 双层 */}
+      <mesh
+        ref={waveRef}
+        rotation={[Math.PI / 2, 0, rotationY]}
+        onPointerDown={onPointerDown}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+      >
+        <circleGeometry args={[0.36, 32]} />
+        <meshStandardMaterial
+          color={0xff88ff}
+          transparent
+          opacity={0.6}
+          roughness={0.1}
+          metalness={0.3}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* 双箭头指示方向翻转 */}
+      <group rotation={[0, rotationY, 0]}>
+        <Line points={[[-0.25, 0.15, 0.05], [0.25, -0.15, 0.05]]} color={0xff66ff} lineWidth={3} />
+        <Line points={[[-0.25, -0.15, 0.05], [0.25, 0.15, 0.05]]} color={0xff66ff} lineWidth={3} />
+      </group>
+
+      {/* 支架 */}
+      <mesh position={[0, -0.4, 0]}>
+        <cylinderGeometry args={[0.15, 0.2, 0.12, 8]} />
+        <meshStandardMaterial color={0x5a4a7e} metalness={0.6} roughness={0.4} />
+      </mesh>
+
+      {/* 标签 */}
+      <Html position={[0, 0.55, 0]} center>
+        <div className="text-[10px] font-bold text-pink-300 bg-pink-900/80 px-2 py-0.5 rounded whitespace-nowrap">
+          λ/2 波片
+        </div>
+      </Html>
+
+      <pointLight color={0xff88ff} intensity={0.25} distance={2} />
+    </group>
+  )
+}
+
+// Absorber Block - 吸收器，深色哑光设计
+interface AbsorberBlockProps extends BlockComponentProps {
+  state: BlockState
+}
+
+function AbsorberBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: AbsorberBlockProps) {
+  const absorptionRate = state.absorptionRate ?? 0.5
+  const darkness = 0.1 + (1 - absorptionRate) * 0.4
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 底座 */}
+      <mesh position={[0, -0.4, 0]}>
+        <boxGeometry args={[0.5, 0.1, 0.5]} />
+        <meshStandardMaterial color={0x2a2a3e} metalness={0.3} roughness={0.9} />
+      </mesh>
+
+      {/* 吸收体主体 - 多层结构 */}
+      <mesh
+        rotation={[0, rotationY, 0]}
+        onPointerDown={onPointerDown}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        castShadow
+      >
+        <boxGeometry args={[0.6, 0.5, 0.2]} />
+        <meshStandardMaterial
+          color={new THREE.Color(darkness, darkness, darkness + 0.1)}
+          roughness={0.95}
+          metalness={0.1}
+        />
+      </mesh>
+
+      {/* 吸收层纹理 */}
+      {[...Array(5)].map((_, i) => (
+        <mesh key={i} position={[0, -0.15 + i * 0.08, 0.12]} rotation={[0, rotationY, 0]}>
+          <boxGeometry args={[0.55, 0.02, 0.01]} />
+          <meshStandardMaterial color={0x1a1a2e} roughness={1} />
+        </mesh>
+      ))}
+
+      {/* 吸收率指示 */}
+      <Html position={[0, 0.45, 0]} center>
+        <div className="text-[10px] font-bold text-gray-300 bg-gray-800/90 px-2 py-0.5 rounded whitespace-nowrap">
+          吸收 {Math.round(absorptionRate * 100)}%
+        </div>
+      </Html>
+    </group>
+  )
+}
+
+// PhaseShifter Block - 相位调制器，环形设计
+interface PhaseShifterBlockProps extends BlockComponentProps {
+  state: BlockState
+}
+
+function PhaseShifterBlock({ position, state, rotationY: _rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PhaseShifterBlockProps) {
+  const phaseShift = state.phaseShift ?? 90
+  const ringRef = useRef<THREE.Group>(null)
+
+  useFrame(({ clock }) => {
+    if (ringRef.current) {
+      ringRef.current.rotation.z = clock.getElapsedTime() * 0.5
+    }
+  })
+
+  // 根据相位偏移选择颜色
+  const phaseColors: Record<number, number> = {
+    0: 0x88ff88,
+    90: 0x88ffff,
+    180: 0xff8888,
+    270: 0xffff88,
+  }
+  const color = phaseColors[phaseShift] || 0x88ffff
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 底座 */}
+      <mesh position={[0, -0.4, 0]}>
+        <cylinderGeometry args={[0.25, 0.3, 0.1, 16]} />
+        <meshStandardMaterial color={0x3a4a5e} metalness={0.7} roughness={0.3} />
+      </mesh>
+
+      {/* 旋转环系统 */}
+      <group ref={ringRef}>
+        {/* 外环 */}
+        <mesh
+          rotation={[Math.PI / 2, 0, 0]}
+          onPointerDown={onPointerDown}
+          onPointerEnter={onPointerEnter}
+          onPointerLeave={onPointerLeave}
+        >
+          <torusGeometry args={[0.35, 0.06, 16, 32]} />
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={0.3}
+            metalness={0.5}
+            roughness={0.2}
+          />
+        </mesh>
+
+        {/* 内环 */}
+        <mesh rotation={[Math.PI / 2, 0, Math.PI / 4]}>
+          <torusGeometry args={[0.25, 0.04, 12, 24]} />
+          <meshStandardMaterial
+            color={color}
+            transparent
+            opacity={0.7}
+            metalness={0.4}
+            roughness={0.3}
+          />
+        </mesh>
+
+        {/* 中心球 */}
+        <mesh>
+          <sphereGeometry args={[0.12, 16, 16]} />
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={0.5}
+          />
+        </mesh>
+      </group>
+
+      {/* 相位刻度 */}
+      {[0, 90, 180, 270].map((deg) => (
+        <mesh key={deg} position={[
+          Math.cos(deg * Math.PI / 180) * 0.45,
+          0,
+          Math.sin(deg * Math.PI / 180) * 0.45
+        ]}>
+          <sphereGeometry args={[0.03, 8, 8]} />
+          <meshBasicMaterial color={deg === phaseShift ? 0xffffff : 0x666666} />
+        </mesh>
+      ))}
+
+      {/* 标签 */}
+      <Html position={[0, 0.5, 0]} center>
+        <div className="text-[10px] font-bold bg-slate-800/90 px-2 py-0.5 rounded whitespace-nowrap"
+             style={{ color: `#${color.toString(16).padStart(6, '0')}` }}>
+          相位 {phaseShift}°
+        </div>
+      </Html>
+
+      <pointLight color={color} intensity={0.4} distance={2.5} />
+    </group>
+  )
+}
+
+// Portal Block - 传送门，神秘的环形设计
+interface PortalBlockProps extends BlockComponentProps {
+  state: BlockState
+}
+
+function PortalBlock({ position, state, rotationY: _rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PortalBlockProps) {
+  const portalRef = useRef<THREE.Group>(null)
+  const isLinked = !!state.linkedPortalId
+
+  useFrame(({ clock }) => {
+    if (portalRef.current) {
+      portalRef.current.rotation.z = clock.getElapsedTime() * 0.8
+    }
+  })
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* 底座支柱 */}
+      <mesh position={[0, -0.3, 0]}>
+        <cylinderGeometry args={[0.08, 0.12, 0.35, 8]} />
+        <meshStandardMaterial color={0x4a3a6e} metalness={0.6} roughness={0.4} />
+      </mesh>
+
+      <Float speed={2} rotationIntensity={0.1} floatIntensity={0.2}>
+        <group ref={portalRef}>
+          {/* 外环 */}
+          <mesh
+            rotation={[Math.PI / 2, 0, 0]}
+            onPointerDown={onPointerDown}
+            onPointerEnter={onPointerEnter}
+            onPointerLeave={onPointerLeave}
+          >
+            <torusGeometry args={[0.4, 0.08, 16, 32]} />
+            <meshStandardMaterial
+              color={isLinked ? 0x44ff88 : 0xff8844}
+              emissive={isLinked ? 0x22aa44 : 0xaa4422}
+              emissiveIntensity={0.5}
+              metalness={0.6}
+              roughness={0.2}
+            />
+          </mesh>
+
+          {/* 内部漩涡 */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[0.1, 0.35, 32, 3]} />
+            <meshStandardMaterial
+              color={isLinked ? 0x88ffaa : 0xffaa88}
+              transparent
+              opacity={0.6}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+
+          {/* 符文环 */}
+          {[...Array(6)].map((_, i) => {
+            const angle = (i / 6) * Math.PI * 2
+            return (
+              <mesh key={i} position={[
+                Math.cos(angle) * 0.32,
+                Math.sin(angle) * 0.32,
+                0.05
+              ]}>
+                <boxGeometry args={[0.06, 0.06, 0.02]} />
+                <meshStandardMaterial
+                  color={isLinked ? 0x88ffcc : 0xffcc88}
+                  emissive={isLinked ? 0x44aa66 : 0xaa6644}
+                  emissiveIntensity={0.8}
+                />
+              </mesh>
+            )
+          })}
+        </group>
+      </Float>
+
+      {/* 标签 */}
+      <Html position={[0, 0.6, 0]} center>
+        <div className={`text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap ${
+          isLinked
+            ? 'bg-green-500/80 text-white'
+            : 'bg-orange-500/80 text-white'
+        }`}>
+          {isLinked ? '传送门 ✓' : '传送门 ○'}
+        </div>
+      </Html>
+
+      <pointLight
+        color={isLinked ? 0x44ff88 : 0xff8844}
+        intensity={0.6}
+        distance={3}
       />
     </group>
   )

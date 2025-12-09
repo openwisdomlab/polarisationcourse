@@ -14,9 +14,14 @@
   "home": {
     "title": "PolarCraft",
     "subtitle": "偏振光物理益智游戏",
-    "description": "一款基于真实偏振物理原理的教育体素益智游戏。通过交互式3D谜题探索马吕斯定律、双折射、干涉等光学现象。",
-    "playGame": "开始游戏",
+    "description": "一款基于真实偏振物理原理的教育益智游戏。通过交互式谜题探索马吕斯定律、双折射、干涉等光学现象。",
+    "playGame": "玩 3D",
+    "play2D": "玩 2D",
     "startCourse": "进入课程",
+    "game3d": "3D 游戏",
+    "game3dDescription": "使用偏振光束和光学元件解决3D谜题",
+    "game2d": "2D 游戏",
+    "game2dDescription": "演示马吕斯定律的交互式2D谜题",
     "gameDescription": "使用偏振光束和光学元件解决谜题",
     "courseDescription": "通过交互式演示学习偏振光物理"
   },
@@ -51,7 +56,15 @@
       "splitter": "方解石",
       "sensor": "感应器",
       "mirror": "反射镜",
-      "solid": "实体块"
+      "solid": "实体块",
+      "prism": "棱镜",
+      "lens": "透镜",
+      "beamSplitter": "分束器",
+      "quarterWave": "λ/4波片",
+      "halfWave": "λ/2波片",
+      "absorber": "吸收器",
+      "phaseShifter": "相位器",
+      "portal": "传送门"
     },
     "hints": {
       "rotate": "按 R 旋转方块",

@@ -57,11 +57,11 @@ export function HomePage() {
       </header>
 
       {/* Navigation Cards */}
-      <nav className="flex flex-wrap justify-center gap-10 max-w-4xl relative z-10">
-        {/* Game Card */}
+      <nav className="flex flex-wrap justify-center gap-8 max-w-5xl relative z-10">
+        {/* 3D Game Card */}
         <Link
           to="/game"
-          className={`group relative rounded-2xl p-10 w-96 text-center
+          className={`group relative rounded-2xl p-8 w-80 text-center
                      transition-all duration-400 hover:-translate-y-2.5 hover:scale-[1.02] ${
             theme === 'dark'
               ? 'bg-slate-900/80 border-2 border-orange-400/30 hover:border-orange-400/60 hover:shadow-[0_20px_60px_rgba(255,180,100,0.3)]'
@@ -69,26 +69,53 @@ export function HomePage() {
           }`}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-orange-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-          <span className="text-7xl mb-6 block drop-shadow-[0_0_40px_rgba(255,180,100,0.6)]">
+          <span className="text-6xl mb-4 block drop-shadow-[0_0_40px_rgba(255,180,100,0.6)]">
             🎮
           </span>
-          <h2 className="text-2xl font-bold text-orange-400 mb-4">{t('common.game')}</h2>
-          <p className={`text-sm mb-6 leading-relaxed ${
+          <h2 className="text-xl font-bold text-orange-400 mb-2">{t('home.game3d')}</h2>
+          <p className={`text-sm mb-4 leading-relaxed ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
-            {t('home.gameDescription')}
+            {t('home.game3dDescription')}
           </p>
-          <span className="inline-block px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider
+          <span className="inline-block px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider
                           bg-gradient-to-r from-orange-400 to-orange-500 text-black
                           group-hover:scale-110 group-hover:shadow-lg transition-transform">
             {t('home.playGame')}
           </span>
         </Link>
 
+        {/* 2D Game Card */}
+        <Link
+          to="/game2d"
+          className={`group relative rounded-2xl p-8 w-80 text-center
+                     transition-all duration-400 hover:-translate-y-2.5 hover:scale-[1.02] ${
+            theme === 'dark'
+              ? 'bg-slate-900/80 border-2 border-purple-400/30 hover:border-purple-400/60 hover:shadow-[0_20px_60px_rgba(180,100,255,0.3)]'
+              : 'bg-white/90 border-2 border-purple-400/40 hover:border-purple-400/70 hover:shadow-[0_20px_60px_rgba(180,100,255,0.2)]'
+          }`}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+          <span className="text-6xl mb-4 block drop-shadow-[0_0_40px_rgba(180,100,255,0.6)]">
+            🔬
+          </span>
+          <h2 className="text-xl font-bold text-purple-400 mb-2">{t('home.game2d')}</h2>
+          <p className={`text-sm mb-4 leading-relaxed ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            {t('home.game2dDescription')}
+          </p>
+          <span className="inline-block px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider
+                          bg-gradient-to-r from-purple-400 to-purple-500 text-white
+                          group-hover:scale-110 group-hover:shadow-lg transition-transform">
+            {t('home.play2D')}
+          </span>
+        </Link>
+
         {/* Course Card */}
         <Link
           to="/demos"
-          className={`group relative rounded-2xl p-10 w-96 text-center
+          className={`group relative rounded-2xl p-8 w-80 text-center
                      transition-all duration-400 hover:-translate-y-2.5 hover:scale-[1.02] ${
             theme === 'dark'
               ? 'bg-slate-900/80 border-2 border-cyan-400/30 hover:border-cyan-400/60 hover:shadow-[0_20px_60px_rgba(100,200,255,0.3)]'
@@ -96,20 +123,20 @@ export function HomePage() {
           }`}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-          <span className="text-7xl mb-6 block drop-shadow-[0_0_40px_rgba(100,200,255,0.6)]">
+          <span className="text-6xl mb-4 block drop-shadow-[0_0_40px_rgba(100,200,255,0.6)]">
             📚
           </span>
-          <h2 className={`text-2xl font-bold mb-4 ${
+          <h2 className={`text-xl font-bold mb-2 ${
             theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
           }`}>
             {t('common.course')}
           </h2>
-          <p className={`text-sm mb-6 leading-relaxed ${
+          <p className={`text-sm mb-4 leading-relaxed ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
             {t('home.courseDescription')}
           </p>
-          <span className={`inline-block px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider
+          <span className={`inline-block px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider
                           bg-gradient-to-r from-cyan-400 to-blue-500 text-black
                           group-hover:scale-110 group-hover:shadow-lg transition-transform`}>
             {t('home.startCourse')}

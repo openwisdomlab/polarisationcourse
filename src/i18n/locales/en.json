@@ -14,9 +14,14 @@
   "home": {
     "title": "PolarCraft",
     "subtitle": "Polarized Light Physics Puzzle Game",
-    "description": "An educational voxel puzzle game based on real polarization physics principles. Explore Malus's Law, birefringence, interference and more through interactive 3D puzzles.",
-    "playGame": "Play Game",
+    "description": "An educational voxel puzzle game based on real polarization physics principles. Explore Malus's Law, birefringence, interference and more through interactive puzzles.",
+    "playGame": "Play 3D",
+    "play2D": "Play 2D",
     "startCourse": "Start Course",
+    "game3d": "3D Game",
+    "game3dDescription": "Solve 3D puzzles with polarized light beams and optical components",
+    "game2d": "2D Game",
+    "game2dDescription": "Interactive 2D puzzles demonstrating Malus's Law",
     "gameDescription": "Solve puzzles using polarized light beams and optical components",
     "courseDescription": "Learn polarization physics through interactive demonstrations"
   },
@@ -51,7 +56,15 @@
       "splitter": "Splitter",
       "sensor": "Sensor",
       "mirror": "Mirror",
-      "solid": "Solid"
+      "solid": "Solid",
+      "prism": "Prism",
+      "lens": "Lens",
+      "beamSplitter": "Beam Splitter",
+      "quarterWave": "λ/4 Plate",
+      "halfWave": "λ/2 Plate",
+      "absorber": "Absorber",
+      "phaseShifter": "Phase Shifter",
+      "portal": "Portal"
     },
     "hints": {
       "rotate": "Press R to rotate block",

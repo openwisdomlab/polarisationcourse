@@ -19,26 +19,41 @@ export interface LightPacket {
   phase: Phase;
 }
 
-// 方块类型
+// 方块类型 - 扩展版
 export type BlockType =
   | 'air'
   | 'solid'
-  | 'emitter'      // 光源
-  | 'polarizer'    // 偏振片
-  | 'rotator'      // 波片（旋光器）
-  | 'splitter'     // 方解石（双折射晶体）
-  | 'sensor'       // 光感应器
-  | 'mirror';      // 反射镜
+  | 'emitter'        // 光源 - 发射偏振光
+  | 'polarizer'      // 偏振片 - 马吕斯定律过滤
+  | 'rotator'        // 波片（旋光器）- 旋转偏振角度
+  | 'splitter'       // 方解石（双折射晶体）- 分裂o光和e光
+  | 'sensor'         // 光感应器 - 检测光强
+  | 'mirror'         // 反射镜 - 反射光线
+  | 'prism'          // 棱镜 - 折射并分散光线（色散效果）
+  | 'lens'           // 透镜 - 聚焦或发散光线
+  | 'beamSplitter'   // 分束器 - 50/50分光
+  | 'quarterWave'    // 四分之一波片 - 线偏振转圆偏振
+  | 'halfWave'       // 二分之一波片 - 翻转偏振方向
+  | 'absorber'       // 吸收器 - 部分吸收光强
+  | 'phaseShifter'   // 相位调制器 - 改变相位
+  | 'portal';        // 传送门 - 传送光线到另一位置
 
-// 方块状态
+// 方块状态 - 扩展版
 export interface BlockState {
   type: BlockType;
-  rotation: number;           // 方块朝向（0, 90, 180, 270度）
+  rotation: number;              // 方块朝向（0, 90, 180, 270度）
   polarizationAngle: PolarizationAngle;  // 对于偏振片/光源：偏振角度
-  rotationAmount: number;     // 对于波片：旋转量（45或90度）
-  activated: boolean;         // 对于感应器：是否被激活
-  requiredIntensity: number;  // 对于感应器：所需强度阈值
-  facing: Direction;          // 方块面向的方向
+  rotationAmount: number;        // 对于波片：旋转量（45或90度）
+  activated: boolean;            // 对于感应器：是否被激活
+  requiredIntensity: number;     // 对于感应器：所需强度阈值
+  facing: Direction;             // 方块面向的方向
+  // 新增属性
+  absorptionRate: number;        // 对于吸收器：吸收率 (0-1)
+  phaseShift: number;            // 对于相位调制器：相位偏移 (0, 90, 180, 270)
+  linkedPortalId: string | null; // 对于传送门：链接的传送门ID
+  splitRatio: number;            // 对于分束器：分光比例 (0-1，默认0.5)
+  focalLength: number;           // 对于透镜：焦距（正数聚焦，负数发散）
+  dispersive: boolean;           // 对于棱镜：是否产生色散效果
 }
 
 // 方块在世界中的位置
@@ -96,15 +111,43 @@ export const POLARIZATION_COLORS: Record<PolarizationAngle, number> = {
 
 // 默认方块状态
 export function createDefaultBlockState(type: BlockType): BlockState {
-  return {
+  const baseState: BlockState = {
     type,
     rotation: 0,
     polarizationAngle: 0,
     rotationAmount: 45,
     activated: false,
     requiredIntensity: 8,
-    facing: 'north'
+    facing: 'north',
+    // 新增属性默认值
+    absorptionRate: 0.5,
+    phaseShift: 0,
+    linkedPortalId: null,
+    splitRatio: 0.5,
+    focalLength: 2,
+    dispersive: false,
   };
+
+  // 根据类型设置特定默认值
+  switch (type) {
+    case 'quarterWave':
+      baseState.rotationAmount = 90;
+      break;
+    case 'halfWave':
+      baseState.rotationAmount = 180;
+      break;
+    case 'prism':
+      baseState.dispersive = true;
+      break;
+    case 'absorber':
+      baseState.absorptionRate = 0.3;
+      break;
+    case 'phaseShifter':
+      baseState.phaseShift = 90;
+      break;
+  }
+
+  return baseState;
 }
 
 // 游戏配置
