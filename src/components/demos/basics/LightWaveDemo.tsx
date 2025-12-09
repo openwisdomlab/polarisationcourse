@@ -39,44 +39,44 @@ export function LightWaveDemo() {
     return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`
   }
 
-  // 生成波形路径
-  const generateWavePath = (
-    phaseOffset: number,
-    amplitudeScale: number,
-    isVertical: boolean = false
-  ) => {
-    const width = 600
-    const centerY = 150
-    const points: string[] = []
-    const pixelsPerWavelength = 80 + (wavelength - 400) / 4
-
-    for (let x = 0; x <= width; x += 2) {
-      const waveX = (x + phaseOffset) / pixelsPerWavelength * 2 * Math.PI
-      const y = isVertical
-        ? centerY + amplitude * amplitudeScale * Math.cos(waveX)
-        : centerY - amplitude * amplitudeScale * Math.sin(waveX)
-      points.push(`${x + 50},${y}`)
-    }
-
-    return `M ${points.join(' L ')}`
-  }
-
   const waveColor = wavelengthToRGB(wavelength)
 
   // 动画持续时间基于速度
   const animationDuration = speed > 0 ? 4 / speed : 1000
 
   // 波形数据（用于SVG路径）
+  // 将 generateWavePath 移入 useMemo 内部，确保闭包值正确
   const wavePaths = useMemo(() => {
+    const generatePath = (
+      phaseOffset: number,
+      amplitudeScale: number,
+      isVertical: boolean = false
+    ) => {
+      const width = 600
+      const centerY = 150
+      const points: string[] = []
+      const pixelsPerWavelength = 80 + (wavelength - 400) / 4
+
+      for (let x = 0; x <= width; x += 2) {
+        const waveX = (x + phaseOffset) / pixelsPerWavelength * 2 * Math.PI
+        const y = isVertical
+          ? centerY + amplitude * amplitudeScale * Math.cos(waveX)
+          : centerY - amplitude * amplitudeScale * Math.sin(waveX)
+        points.push(`${x + 50},${y}`)
+      }
+
+      return `M ${points.join(' L ')}`
+    }
+
     const paths = []
     for (let phase = 0; phase <= 200; phase += 10) {
       paths.push({
         phase,
-        ePath: generateWavePath(phase, 1, false),
-        bPath: generateWavePath(phase, 0.3, true),
+        ePath: generatePath(phase, 1, false),
+        bPath: generatePath(phase, 0.3, true),
       })
     }
-    return paths
+    return { paths, generatePath }
   }, [wavelength, amplitude])
 
   return (
@@ -123,13 +123,13 @@ export function LightWaveDemo() {
 
               {/* E场波形 - 动画 */}
               <motion.path
-                d={generateWavePath(0, 1, false)}
+                d={wavePaths.generatePath(0, 1, false)}
                 fill="none"
                 stroke={waveColor}
                 strokeWidth="3"
                 filter="url(#glow)"
-                animate={isPlaying ? {
-                  d: wavePaths.map(p => p.ePath),
+                animate={isPlaying && wavePaths.paths.length > 0 ? {
+                  d: wavePaths.paths.map(p => p.ePath),
                 } : {}}
                 transition={{
                   duration: animationDuration,
@@ -141,14 +141,14 @@ export function LightWaveDemo() {
               {/* B场波形 - 虚线动画 */}
               {showBField && (
                 <motion.path
-                  d={generateWavePath(0, 0.3, true)}
+                  d={wavePaths.generatePath(0, 0.3, true)}
                   fill="none"
                   stroke="#60a5fa"
                   strokeWidth="2"
                   strokeDasharray="8 4"
                   opacity="0.8"
-                  animate={isPlaying ? {
-                    d: wavePaths.map(p => p.bPath),
+                  animate={isPlaying && wavePaths.paths.length > 0 ? {
+                    d: wavePaths.paths.map(p => p.bPath),
                   } : {}}
                   transition={{
                     duration: animationDuration,
