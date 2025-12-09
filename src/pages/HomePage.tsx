@@ -149,7 +149,7 @@ export function HomePage() {
         theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
       }`}>
         <p>
-          PolarCraft | PSRT · ESRT · ORIC
+          PolarCraft
         </p>
       </footer>
     </div>

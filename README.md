@@ -15,8 +15,6 @@
 
 A beautifully crafted puzzle game that transforms the invisible geometry of polarized light into elegant, tangible challenges. Manipulate light beams, rotate polarizers, and unlock sensors through clever optical arrangements.
 
-**Inspired by:** Monument Valley, Shadowmatic, The Witness
-
 ### Features
 
 - **3D Voxel Puzzles** - Solve optical challenges in immersive 3D environments using real physics principles
@@ -226,8 +224,6 @@ MIT License
 > 一款光学解谜游戏体验
 
 一款精心打造的解谜游戏，将偏振光的隐形几何转化为优雅而具体的挑战。操控光束、旋转偏振片，通过巧妙的光学布局解锁传感器。
-
-**灵感来源：** 纪念碑谷、Shadowmatic、见证者
 
 ### 特性
 
