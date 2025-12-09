@@ -16,11 +16,12 @@ PolarCraft is an educational voxel puzzle game based on polarized light physics.
 - **Backend** (planned): NestJS + Colyseus for real-time multiplayer
 
 **Key Features:**
-- Interactive 3D puzzle game with 5 tutorial levels
+- Interactive 3D voxel puzzle game with 5 tutorial levels
+- **NEW**: 2D puzzle game with 11 levels across 4 difficulty tiers (easy/medium/hard/expert)
 - Educational course platform with 15 interactive physics demos across 6 units
 - Multi-language support (English/Chinese)
 - Dark/Light theme switching
-- Three camera modes (first-person, isometric, top-down)
+- Three camera modes in 3D game (first-person, isometric, top-down)
 
 ## Quick Commands
 
@@ -59,7 +60,8 @@ polarisation/
 │   │
 │   ├── pages/                    # Page components
 │   │   ├── HomePage.tsx          # Landing page with navigation
-│   │   ├── GamePage.tsx          # Full game with HUD
+│   │   ├── GamePage.tsx          # Full 3D game with HUD
+│   │   ├── Game2DPage.tsx        # 2D CSS/SVG-based puzzle game
 │   │   ├── DemosPage.tsx         # Interactive physics demos
 │   │   └── index.ts              # Barrel export
 │   │
@@ -78,6 +80,7 @@ polarisation/
 │   │   │   ├── LevelGoal.tsx     # Sensor activation progress
 │   │   │   ├── TutorialHint.tsx  # Hint display
 │   │   │   ├── HelpPanel.tsx     # Controls guide (Dialog)
+│   │   │   ├── ControlHints.tsx  # On-screen control hints
 │   │   │   ├── Crosshair.tsx     # FPS crosshair
 │   │   │   ├── VisionModeIndicator.tsx
 │   │   │   └── CameraModeIndicator.tsx
@@ -133,6 +136,7 @@ polarisation/
 ├── vite.config.ts
 ├── tsconfig.json
 ├── postcss.config.js
+├── tailwind.config.js            # Tailwind CSS configuration
 ├── components.json               # shadcn/ui config
 ├── CLAUDE.md                     # This file
 ├── COURSE.md                     # Course curriculum
@@ -144,7 +148,8 @@ polarisation/
 | Route | Component | Purpose |
 |-------|-----------|---------|
 | `/` | `HomePage` | Landing page with game/course navigation |
-| `/game` | `GamePage` | Full 3D puzzle game with HUD |
+| `/game` | `GamePage` | Full 3D voxel puzzle game with HUD |
+| `/game2d` | `Game2DPage` | 2D SVG-based puzzle game (Monument Valley-style) |
 | `/demos` | `DemosPage` | Interactive physics demos and course content |
 
 ### Core Components
@@ -156,6 +161,7 @@ polarisation/
 | `src/core/LightPhysics.ts` | Static physics methods (four optical axioms) |
 | `src/stores/gameStore.ts` | Global game state, actions, subscriptions |
 | `src/components/game/Scene.tsx` | R3F scene composition, controls, lighting |
+| `src/pages/Game2DPage.tsx` | 2D puzzle game logic, SVG rendering, level definitions |
 | `src/pages/DemosPage.tsx` | Demo navigation, info cards, SVG diagrams |
 
 ## Key Concepts
@@ -178,19 +184,42 @@ interface LightPacket {
   phase: Phase;                   // 1|-1
 }
 
-// Block state
+// Block types - expanded for advanced puzzles
+type BlockType =
+  | 'air' | 'solid' | 'emitter' | 'polarizer' | 'rotator'
+  | 'splitter' | 'sensor' | 'mirror'
+  // Advanced optical components
+  | 'prism'          // Dispersive refraction
+  | 'lens'           // Focus/defocus light
+  | 'beamSplitter'   // 50/50 split
+  | 'quarterWave'    // Linear → circular polarization
+  | 'halfWave'       // Flip polarization direction
+  | 'absorber'       // Partial absorption
+  | 'phaseShifter'   // Phase modulation
+  | 'portal'         // Teleport light
+
+// Block state - extended with advanced properties
 interface BlockState {
-  type: BlockType;               // 'air'|'solid'|'emitter'|'polarizer'|'rotator'|'splitter'|'sensor'|'mirror'
+  type: BlockType;
   rotation: number;              // 0, 90, 180, 270
   polarizationAngle: PolarizationAngle;
   rotationAmount: number;        // For rotator: 45 or 90
   activated: boolean;            // For sensor
   requiredIntensity: number;     // For sensor
   facing: Direction;
+  // Extended properties
+  absorptionRate: number;        // For absorber: 0-1
+  phaseShift: number;            // For phaseShifter: 0, 90, 180, 270
+  linkedPortalId: string | null; // For portal: linked portal ID
+  splitRatio: number;            // For beamSplitter: 0-1 (default 0.5)
+  focalLength: number;           // For lens: positive=convex, negative=concave
+  dispersive: boolean;           // For prism: enable dispersion effect
 }
 ```
 
 ### Block Types
+
+**Core Blocks:**
 
 | Type | Purpose | Key State |
 |------|---------|-----------|
@@ -201,6 +230,19 @@ interface BlockState {
 | `sensor` | Detects light, triggers activation | `polarizationAngle`, `requiredIntensity`, `activated` |
 | `mirror` | Reflects light | `facing` |
 | `solid` | Blocks light | - |
+
+**Advanced Blocks (extended system):**
+
+| Type | Purpose | Key State |
+|------|---------|-----------|
+| `prism` | Refracts and disperses light | `dispersive` |
+| `lens` | Focuses or diverges light | `focalLength` |
+| `beamSplitter` | Splits beam 50/50 | `splitRatio` |
+| `quarterWave` | Converts linear ↔ circular polarization | `rotationAmount` (90) |
+| `halfWave` | Flips polarization direction | `rotationAmount` (180) |
+| `absorber` | Partially absorbs light intensity | `absorptionRate` |
+| `phaseShifter` | Shifts light phase | `phaseShift` |
+| `portal` | Teleports light to linked portal | `linkedPortalId` |
 
 ## State Management (Zustand)
 
@@ -271,7 +313,7 @@ function MyComponent() {
 | H | Show/hide help | Same |
 | 1-7 | Select block type | Same |
 
-## Tutorial Levels
+## Tutorial Levels (3D Game)
 
 | Level | Name | Concept |
 |-------|------|---------|
@@ -280,6 +322,45 @@ function MyComponent() {
 | 2 | Malus's Law | Two polarizers, 90° blocking |
 | 3 | Rotator | Wave plate rotates polarization losslessly |
 | 4 | Birefringence | Calcite splitter creates two beams |
+
+## 2D Puzzle Game
+
+The 2D game (`/game2d`) offers a simplified, more accessible puzzle experience using SVG-based visuals inspired by Monument Valley and Shadowmatic aesthetics.
+
+### 2D Game Features
+
+- **SVG-based rendering** with animated light beams
+- **Real-time light path calculation** using recursive ray tracing
+- **Polarization color visualization** toggle
+- **Keyboard controls** for component rotation (Arrow keys when selected)
+- **Open-ended puzzles** - many levels have multiple valid solutions
+
+### 2D Level Difficulty
+
+| Difficulty | Levels | Complexity |
+|------------|--------|------------|
+| Easy | 0-2 | Basic polarizer/mirror mechanics |
+| Medium | 3-5 | Rotators, splitters, L-shaped paths |
+| Hard | 6-8 | Multiple sensors, maze navigation |
+| Expert | 9-10 | Multiple light sources, complex routing |
+
+### 2D Component Types
+
+| Component | Interaction | Behavior |
+|-----------|-------------|----------|
+| Emitter | Locked (view only) | Emits polarized light in one direction |
+| Polarizer | Click to select, rotate with ±15° | Filters light by Malus's Law |
+| Mirror | Click to select, rotate 45°/135° | Reflects light at specified angle |
+| Splitter | Locked (view only) | Creates o-ray (0°) and e-ray (90°) |
+| Rotator | Click to toggle 45°/90° | Rotates polarization without intensity loss |
+| Sensor | Locked (view only) | Activates when intensity/polarization match |
+
+### 2D Controls
+
+- **Click** - Select unlocked component
+- **Arrow Left/Right** - Rotate selected component
+- **Eye button** - Toggle polarization color display
+- **Reset** - Restore level to initial state
 
 ## Course Structure (Interactive Demos)
 
@@ -369,7 +450,7 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
 5. Add translations to `src/i18n/locales/en.json` and `zh.json`
 6. Export from `src/components/demos/index.ts`
 
-### Adding a New Block Type
+### Adding a New Block Type (3D Game)
 
 1. Add type to `BlockType` union in `src/core/types.ts`
 2. Add default handling in `createDefaultBlockState()`
@@ -377,6 +458,37 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
 4. Add case in `World.propagateLight()` switch statement
 5. Add mesh rendering in `Blocks.tsx`
 6. Update `BlockSelector.tsx` UI
+
+### Adding a New 2D Level
+
+All 2D levels are defined in `src/pages/Game2DPage.tsx` in the `LEVELS` array:
+
+```typescript
+{
+  id: 11,                           // Unique level ID
+  name: 'Level Name',               // English name
+  nameZh: '关卡名称',                // Chinese name
+  description: 'Level description', // English description
+  descriptionZh: '关卡描述',         // Chinese description
+  hint: 'Optional hint',            // English hint (optional)
+  hintZh: '可选提示',                // Chinese hint (optional)
+  difficulty: 'medium',             // 'easy'|'medium'|'hard'|'expert'
+  gridSize: { width: 100, height: 100 },
+  openEnded: true,                  // Multiple solutions possible
+  components: [
+    { id: 'e1', type: 'emitter', x: 15, y: 50, angle: 0,
+      polarizationAngle: 0, direction: 'right', locked: true },
+    { id: 'p1', type: 'polarizer', x: 50, y: 50, angle: 0,
+      polarizationAngle: 45, locked: false },
+    { id: 's1', type: 'sensor', x: 85, y: 50, angle: 0,
+      requiredIntensity: 50, requiredPolarization: 45, locked: true },
+  ],
+}
+```
+
+**Component Position**: `x` and `y` are percentages (0-100) of the grid area.
+
+**Locked Components**: Set `locked: true` for components players cannot modify.
 
 ### Adding Translations
 
