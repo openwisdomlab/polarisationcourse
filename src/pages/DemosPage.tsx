@@ -210,6 +210,7 @@ function LightWaveDiagram() {
 
 // Demo info interface
 interface DemoQuestions {
+  leading?: string  // Main leading question - the most engaging question
   guided: string[]
   openEnded: string[]
 }
@@ -238,6 +239,8 @@ interface DemoInfo {
 // Helper to get questions array from translations
 const getQuestions = (t: (key: string) => string, basePath: string): DemoQuestions | undefined => {
   try {
+    const leading = t(`${basePath}.questions.leading`)
+    const hasLeading = leading && !leading.includes('.questions.')
     const guided = [
       t(`${basePath}.questions.guided.0`),
       t(`${basePath}.questions.guided.1`),
@@ -246,8 +249,12 @@ const getQuestions = (t: (key: string) => string, basePath: string): DemoQuestio
       t(`${basePath}.questions.openEnded.0`),
       t(`${basePath}.questions.openEnded.1`),
     ].filter(q => q && !q.includes('.questions.'))
-    if (guided.length > 0 || openEnded.length > 0) {
-      return { guided, openEnded }
+    if (hasLeading || guided.length > 0 || openEnded.length > 0) {
+      return {
+        leading: hasLeading ? leading : undefined,
+        guided,
+        openEnded
+      }
     }
   } catch {
     return undefined
@@ -901,7 +908,7 @@ function VisualTypeBadge({ type }: { type: '2D' | '3D' }) {
   )
 }
 
-// Collapsible card component
+// Collapsible card component with enhanced interactions
 function CollapsibleCard({
   title,
   icon,
@@ -921,16 +928,25 @@ function CollapsibleCard({
 
   const colorClasses = {
     cyan: {
-      header: theme === 'dark' ? 'bg-cyan-400/10 border-cyan-400/30 hover:bg-cyan-400/15' : 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100',
+      header: theme === 'dark'
+        ? 'bg-cyan-400/10 border-cyan-400/30 hover:bg-cyan-400/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.15)]'
+        : 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100 hover:shadow-md',
       icon: theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600',
+      expandedBorder: theme === 'dark' ? 'border-cyan-400/50' : 'border-cyan-300',
     },
     green: {
-      header: theme === 'dark' ? 'bg-green-400/10 border-green-400/30 hover:bg-green-400/15' : 'bg-green-50 border-green-200 hover:bg-green-100',
+      header: theme === 'dark'
+        ? 'bg-green-400/10 border-green-400/30 hover:bg-green-400/20 hover:shadow-[0_0_15px_rgba(74,222,128,0.15)]'
+        : 'bg-green-50 border-green-200 hover:bg-green-100 hover:shadow-md',
       icon: theme === 'dark' ? 'text-green-400' : 'text-green-600',
+      expandedBorder: theme === 'dark' ? 'border-green-400/50' : 'border-green-300',
     },
     purple: {
-      header: theme === 'dark' ? 'bg-purple-400/10 border-purple-400/30 hover:bg-purple-400/15' : 'bg-purple-50 border-purple-200 hover:bg-purple-100',
+      header: theme === 'dark'
+        ? 'bg-purple-400/10 border-purple-400/30 hover:bg-purple-400/20 hover:shadow-[0_0_15px_rgba(167,139,250,0.15)]'
+        : 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:shadow-md',
       icon: theme === 'dark' ? 'text-purple-400' : 'text-purple-600',
+      expandedBorder: theme === 'dark' ? 'border-purple-400/50' : 'border-purple-300',
     },
   }
 
@@ -939,19 +955,22 @@ function CollapsibleCard({
   return (
     <div className={cn(
       'rounded-xl border overflow-hidden transition-all duration-300',
-      theme === 'dark' ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-gray-200'
+      theme === 'dark' ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-gray-200',
+      isExpanded && colors.expandedBorder,
+      isExpanded && (theme === 'dark' ? 'shadow-lg' : 'shadow-md')
     )}>
       <button
         onClick={onToggle}
         className={cn(
-          'w-full flex items-center justify-between px-4 py-3 border-b transition-colors cursor-pointer',
+          'w-full flex items-center justify-between px-4 py-3 border-b transition-all duration-200 cursor-pointer',
+          'active:scale-[0.99]',
           colors.header
         )}
       >
         <div className="flex items-center gap-2">
-          <span className={colors.icon}>{icon}</span>
+          <span className={cn(colors.icon, 'transition-transform duration-200', isExpanded && 'scale-110')}>{icon}</span>
           <span className={cn(
-            'font-semibold text-sm',
+            'font-semibold text-sm transition-colors',
             theme === 'dark' ? 'text-white' : 'text-gray-800'
           )}>
             {title}
@@ -964,7 +983,7 @@ function CollapsibleCard({
         )} />
       </button>
       <div className={cn(
-        'transition-all duration-300 overflow-hidden',
+        'transition-all duration-300 ease-in-out overflow-hidden',
         isExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
       )}>
         <div className="p-4">
@@ -987,6 +1006,22 @@ export function DemosPage() {
     experiment: false,
     frontier: false,
   })
+
+  // Reset card states when switching demos - cards should be collapsed on first visit to each demo
+  const [visitedDemos, setVisitedDemos] = useState<Set<string>>(new Set())
+
+  const handleDemoChange = (demoId: string) => {
+    setActiveDemo(demoId)
+    // Reset cards to collapsed when switching to a new (not previously visited) demo
+    if (!visitedDemos.has(demoId)) {
+      setExpandedCards({
+        physics: false,
+        experiment: false,
+        frontier: false,
+      })
+      setVisitedDemos(prev => new Set(prev).add(demoId))
+    }
+  }
 
   const toggleCard = (card: string) => {
     setExpandedCards(prev => ({ ...prev, [card]: !prev[card] }))
@@ -1114,8 +1149,9 @@ export function DemosPage() {
                     onClick={() => isCompact && setExpandedUnit(expandedUnit === unit.num ? null : unit.num)}
                     className={cn(
                       'w-full text-[10px] uppercase tracking-wider mb-2 px-2 font-semibold flex items-center gap-2',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400',
-                      isCompact && 'hover:text-cyan-400 transition-colors'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
+                      isCompact && (theme === 'dark' ? 'hover:text-cyan-400' : 'hover:text-cyan-600'),
+                      'transition-colors'
                     )}
                   >
                     {unit.num === 0 ? (
@@ -1140,11 +1176,12 @@ export function DemosPage() {
                         <li key={demo.id}>
                           <button
                             onClick={() => {
-                              setActiveDemo(demo.id)
+                              handleDemoChange(demo.id)
                               if (isCompact) setShowMobileSidebar(false)
                             }}
                             className={cn(
-                              'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all',
+                              'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all duration-200',
+                              'hover:translate-x-1 active:scale-[0.98]',
                               activeDemo === demo.id
                                 ? theme === 'dark'
                                   ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
@@ -1207,7 +1244,7 @@ export function DemosPage() {
                 <ul
                   className={cn(
                     'text-[11px] space-y-1.5',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
                   )}
                 >
                   <li className="flex items-center gap-2">
@@ -1267,13 +1304,13 @@ export function DemosPage() {
                   {t(currentDemo?.titleKey || '')}
                 </h1>
               </div>
-              <p className={theme === 'dark' ? 'text-gray-400 text-sm' : 'text-gray-600 text-sm'}>
+              <p className={theme === 'dark' ? 'text-gray-400 text-sm' : 'text-gray-700 text-sm'}>
                 {t(currentDemo?.descriptionKey || '')}
               </p>
             </div>
 
             {/* Thinking Questions Section - Before Demo */}
-            {demoInfo?.questions && (demoInfo.questions.guided.length > 0 || demoInfo.questions.openEnded.length > 0) && (
+            {demoInfo?.questions && (demoInfo.questions.leading || demoInfo.questions.guided.length > 0 || demoInfo.questions.openEnded.length > 0) && (
               <div
                 className={cn(
                   'mb-5 rounded-xl border p-4',
@@ -1294,6 +1331,31 @@ export function DemosPage() {
                     {t('course.questions.title')}
                   </h3>
                 </div>
+                {/* Leading Question - Main engaging question */}
+                {demoInfo.questions.leading && (
+                  <div
+                    className={cn(
+                      'mb-4 p-4 rounded-lg border-2 border-dashed transition-all duration-300',
+                      'hover:scale-[1.01] hover:shadow-lg cursor-default',
+                      theme === 'dark'
+                        ? 'bg-gradient-to-r from-amber-400/10 to-orange-400/10 border-amber-400/40 hover:border-amber-400/60'
+                        : 'bg-gradient-to-r from-amber-100/80 to-orange-100/80 border-amber-400 hover:border-amber-500'
+                    )}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className={cn(
+                        'text-2xl flex-shrink-0 animate-pulse',
+                        theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                      )}>?</span>
+                      <p className={cn(
+                        'text-base font-medium leading-relaxed',
+                        theme === 'dark' ? 'text-amber-200' : 'text-amber-900'
+                      )}>
+                        {demoInfo.questions.leading}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 <div className={cn(
                   'grid gap-4',
                   isCompact ? 'grid-cols-1' : 'grid-cols-2'
@@ -1318,10 +1380,11 @@ export function DemosPage() {
                           <li
                             key={i}
                             className={cn(
-                              'text-sm pl-3 border-l-2',
+                              'text-sm pl-3 border-l-2 py-1 transition-all duration-200',
+                              'hover:pl-4 hover:border-l-4 cursor-default',
                               theme === 'dark'
-                                ? 'text-gray-300 border-cyan-400/40'
-                                : 'text-gray-700 border-cyan-400'
+                                ? 'text-gray-300 border-cyan-400/40 hover:border-cyan-400 hover:text-cyan-100'
+                                : 'text-gray-800 border-cyan-500 hover:border-cyan-600 hover:bg-cyan-50/50'
                             )}
                           >
                             {q}
@@ -1350,10 +1413,11 @@ export function DemosPage() {
                           <li
                             key={i}
                             className={cn(
-                              'text-sm pl-3 border-l-2',
+                              'text-sm pl-3 border-l-2 py-1 transition-all duration-200',
+                              'hover:pl-4 hover:border-l-4 cursor-default',
                               theme === 'dark'
-                                ? 'text-gray-300 border-purple-400/40'
-                                : 'text-gray-700 border-purple-400'
+                                ? 'text-gray-300 border-purple-400/40 hover:border-purple-400 hover:text-purple-100'
+                                : 'text-gray-800 border-purple-500 hover:border-purple-600 hover:bg-purple-50/50'
                             )}
                           >
                             {q}
@@ -1412,7 +1476,7 @@ export function DemosPage() {
                     <p
                       className={cn(
                         'text-sm leading-relaxed',
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        theme === 'dark' ? 'text-gray-300' : 'text-gray-800'
                       )}
                     >
                       {demoInfo.physics.principle}
@@ -1467,7 +1531,7 @@ export function DemosPage() {
                       <p
                         className={cn(
                           'text-xs mt-1',
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
                         )}
                       >
                         {demoInfo.experiment.example}
@@ -1518,7 +1582,7 @@ export function DemosPage() {
                       <p
                         className={cn(
                           'text-xs mt-1',
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
                         )}
                       >
                         {demoInfo.frontier.example}

@@ -479,7 +479,7 @@ export function ListItem({ icon, children, className }: ListItemProps) {
   return (
     <div className={cn(
       'flex items-start gap-3 text-sm',
-      theme === 'dark' ? 'text-gray-300' : 'text-gray-600',
+      theme === 'dark' ? 'text-gray-300' : 'text-gray-700',
       className
     )}>
       {icon && <span className={cn('mt-0.5 flex-shrink-0', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')}>{icon}</span>}

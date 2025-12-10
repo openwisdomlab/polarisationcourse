@@ -229,6 +229,7 @@
     },
     "questions": {
       "title": "Think Before You Explore",
+      "leading": "Core Question",
       "guided": "Guided Questions",
       "openEnded": "Open-ended Questions"
     }
@@ -238,6 +239,7 @@
       "title": "Polarization State & Wave Synthesis",
       "description": "Wave synthesis produces different polarization states: linear, circular, elliptical",
       "questions": {
+        "leading": "How can combining two simple waves create light that spirals through space like a corkscrew?",
         "guided": [
           "What two parameters determine the polarization state of light?",
           "When does the superposition of two waves produce circular polarization?"
@@ -279,6 +281,7 @@
       "title": "Malus's Law",
       "description": "Intensity change when polarized light passes through a polarizer: I = I₀ × cos²(θ)",
       "questions": {
+        "leading": "Why does rotating a polarizer make light gradually disappear instead of instantly blocking it?",
         "guided": [
           "What happens to light intensity when polarizer angle is 45° from the polarization direction?",
           "Why does intensity follow a cos² relationship instead of linear?"
@@ -320,6 +323,7 @@
       "title": "Birefringence Effect",
       "description": "Crystals like calcite split one beam into ordinary (o) and extraordinary (e) rays",
       "questions": {
+        "leading": "How can a single crystal make you see double - and why are the two images polarized differently?",
         "guided": [
           "Why does calcite produce two images when viewing text through it?",
           "What is the polarization relationship between the o-ray and e-ray?"
@@ -361,6 +365,7 @@
       "title": "Wave Plate Principle",
       "description": "Quarter-wave and half-wave plates' effect on polarization states",
       "questions": {
+        "leading": "What happens when you slow down one component of light relative to another - and why does this create 'spinning' light?",
         "guided": [
           "What is the difference between quarter-wave and half-wave plates?",
           "What input polarization is needed to produce circular polarization with a quarter-wave plate?"
@@ -402,6 +407,7 @@
       "title": "Fresnel Equations",
       "description": "Reflection/transmission coefficients for s and p polarizations vs incident angle",
       "questions": {
+        "leading": "Why does a calm lake act like a perfect mirror at sunset but let you see the bottom when the sun is overhead?",
         "guided": [
           "Why do s and p polarizations reflect differently at interfaces?",
           "What happens to light at angles greater than the critical angle?"
@@ -443,6 +449,7 @@
       "title": "Brewster's Angle",
       "description": "The special incident angle where p-polarization reflectance is zero: tan(θB) = n₂/n₁",
       "questions": {
+        "leading": "Is there a 'magic angle' where one type of polarization completely refuses to reflect?",
         "guided": [
           "Why is the reflected light completely s-polarized at Brewster's angle?",
           "How can you calculate Brewster's angle for any material?"
@@ -484,6 +491,7 @@
       "title": "Chromatic Polarization",
       "description": "Colored interference effect of white light in birefringent materials",
       "questions": {
+        "leading": "Why does clear plastic tape suddenly burst into rainbow colors when viewed between two polarizers?",
         "guided": [
           "Why do different wavelengths experience different phase delays?",
           "How does material thickness affect the observed colors?"
@@ -525,6 +533,7 @@
       "title": "Optical Rotation",
       "description": "Chiral substances like sugar solutions rotate the polarization plane",
       "questions": {
+        "leading": "How can sugar water twist light - and how do scientists use this to measure sweetness?",
         "guided": [
           "What makes a molecule 'chiral' and able to rotate polarization?",
           "How does concentration affect the rotation angle?"
@@ -566,6 +575,7 @@
       "title": "Mie Scattering",
       "description": "Scattering characteristics when particle size is comparable to wavelength (white cloud effect)",
       "questions": {
+        "leading": "Why are clouds white but the sky is blue - what's the difference in how they scatter light?",
         "guided": [
           "Why do clouds appear white while the sky is blue?",
           "How does particle size affect scattering color and direction?"
@@ -607,6 +617,7 @@
       "title": "Rayleigh Scattering",
       "description": "Scattering characteristics when particle size is much smaller than wavelength (blue sky effect)",
       "questions": {
+        "leading": "Why is the sky blue during the day but turns red and orange at sunset?",
         "guided": [
           "Why does blue light scatter more than red light in the atmosphere?",
           "What causes the sky to appear red/orange during sunset?"
@@ -650,6 +661,7 @@
       "demoTitle": "Stokes Vector Demo",
       "demoSubtitle": "Stokes Vector - Complete Mathematical Description of Polarization State",
       "questions": {
+        "leading": "How can just four numbers tell us everything about light's polarization state - including partially polarized light?",
         "guided": [
           "What does each of the four Stokes parameters represent?",
           "How can you measure the Stokes parameters experimentally?"
@@ -749,6 +761,7 @@
       "demoTitle": "Mueller Matrix Demo",
       "demoSubtitle": "Mueller Matrix - Polarization Transformation of Optical Elements",
       "questions": {
+        "leading": "How can a simple 4×4 matrix predict exactly what any optical element will do to light's polarization?",
         "guided": [
           "How does the Mueller matrix relate input and output polarization states?",
           "What is the advantage of using matrices to describe optical systems?"
@@ -853,6 +866,7 @@
           ]
         },
         "questions": {
+          "leading": "What exactly is 'waving' when we call light a wave - and what determines its color?",
           "guided": [
             "What relationship exists between the electric and magnetic fields in light?",
             "How does changing wavelength affect what we see?"
@@ -875,6 +889,7 @@
           ]
         },
         "questions": {
+          "leading": "What hidden property of light do polarized sunglasses reveal - and why does it help reduce glare?",
           "guided": [
             "What is the difference between polarized and unpolarized light?",
             "Which direction does the electric field vibrate in polarized light?"
@@ -897,6 +912,7 @@
           ]
         },
         "questions": {
+          "leading": "Can light vibrate in a straight line, spin in a circle, or trace an ellipse - and what determines which pattern it follows?",
           "guided": [
             "What determines whether light is linearly, circularly, or elliptically polarized?",
             "How do the two orthogonal field components combine to create different polarization states?"
@@ -919,6 +935,7 @@
           ]
         },
         "questions": {
+          "leading": "What happens when you place two polarizers at right angles - and can you let light through by adding a third one?",
           "guided": [
             "What happens to light intensity when polarization angle differs from the polarizer axis?",
             "At what angle difference does light get completely blocked?"
