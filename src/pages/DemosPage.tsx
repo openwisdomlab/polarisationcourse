@@ -295,19 +295,52 @@ const getDifficultyContent = (
   return { principle, details }
 }
 
-// Helper to get questions array from translations
-const getQuestions = (t: (key: string) => string, basePath: string): DemoQuestions | undefined => {
+// Helper to get questions array from translations with difficulty level support
+const getQuestions = (
+  t: (key: string) => string,
+  basePath: string,
+  difficultyLevel?: DifficultyLevel
+): DemoQuestions | undefined => {
   try {
-    const leading = t(`${basePath}.questions.leading`)
+    // Get the difficulty suffix for questions
+    const suffix = difficultyLevel === 'beginner' ? '_beginner' :
+                   difficultyLevel === 'advanced' ? '_advanced' : ''
+
+    // Try to get difficulty-specific leading question first, fallback to default
+    let leading = t(`${basePath}.questions.leading${suffix}`)
+    if (leading.includes('.questions.')) {
+      leading = t(`${basePath}.questions.leading`)
+    }
     const hasLeading = leading && !leading.includes('.questions.')
-    const guided = [
-      t(`${basePath}.questions.guided.0`),
-      t(`${basePath}.questions.guided.1`),
+
+    // Get difficulty-specific guided questions or fallback
+    let guided = [
+      t(`${basePath}.questions.guided${suffix}.0`),
+      t(`${basePath}.questions.guided${suffix}.1`),
     ].filter(q => q && !q.includes('.questions.'))
-    const openEnded = [
-      t(`${basePath}.questions.openEnded.0`),
-      t(`${basePath}.questions.openEnded.1`),
+
+    // Fallback to default if no difficulty-specific content
+    if (guided.length === 0) {
+      guided = [
+        t(`${basePath}.questions.guided.0`),
+        t(`${basePath}.questions.guided.1`),
+      ].filter(q => q && !q.includes('.questions.'))
+    }
+
+    // Get difficulty-specific open-ended questions or fallback
+    let openEnded = [
+      t(`${basePath}.questions.openEnded${suffix}.0`),
+      t(`${basePath}.questions.openEnded${suffix}.1`),
     ].filter(q => q && !q.includes('.questions.'))
+
+    // Fallback to default if no difficulty-specific content
+    if (openEnded.length === 0) {
+      openEnded = [
+        t(`${basePath}.questions.openEnded.0`),
+        t(`${basePath}.questions.openEnded.1`),
+      ].filter(q => q && !q.includes('.questions.'))
+    }
+
     if (hasLeading || guided.length > 0 || openEnded.length > 0) {
       return {
         leading: hasLeading ? leading : undefined,
@@ -321,20 +354,48 @@ const getQuestions = (t: (key: string) => string, basePath: string): DemoQuestio
   return undefined
 }
 
-// Helper to get lifeScene data from translations
-const getLifeScene = (t: (key: string) => string, basePath: string): DemoInfo['lifeScene'] | undefined => {
+// Helper to get lifeScene data from translations with difficulty level support
+const getLifeScene = (
+  t: (key: string) => string,
+  basePath: string,
+  difficultyLevel?: DifficultyLevel
+): DemoInfo['lifeScene'] | undefined => {
   try {
-    const title = t(`${basePath}.lifeScene.title`)
+    // Get the difficulty suffix
+    const suffix = difficultyLevel === 'beginner' ? '_beginner' :
+                   difficultyLevel === 'advanced' ? '_advanced' : ''
+
+    // Try difficulty-specific title first, fallback to default
+    let title = t(`${basePath}.lifeScene.title${suffix}`)
+    if (title.includes('.lifeScene.')) {
+      title = t(`${basePath}.lifeScene.title`)
+    }
     const hasTitle = title && !title.includes('.lifeScene.')
     if (!hasTitle) return undefined
 
     const imageAlt = t(`${basePath}.lifeScene.imageAlt`)
-    const hook = t(`${basePath}.lifeScene.hook`)
-    const facts = [
-      t(`${basePath}.lifeScene.facts.0`),
-      t(`${basePath}.lifeScene.facts.1`),
-      t(`${basePath}.lifeScene.facts.2`),
+
+    // Try difficulty-specific hook first, fallback to default
+    let hook = t(`${basePath}.lifeScene.hook${suffix}`)
+    if (hook.includes('.lifeScene.')) {
+      hook = t(`${basePath}.lifeScene.hook`)
+    }
+
+    // Try difficulty-specific facts first, fallback to default
+    let facts = [
+      t(`${basePath}.lifeScene.facts${suffix}.0`),
+      t(`${basePath}.lifeScene.facts${suffix}.1`),
+      t(`${basePath}.lifeScene.facts${suffix}.2`),
     ].filter(f => f && !f.includes('.lifeScene.'))
+
+    // Fallback to default facts if no difficulty-specific content
+    if (facts.length === 0) {
+      facts = [
+        t(`${basePath}.lifeScene.facts.0`),
+        t(`${basePath}.lifeScene.facts.1`),
+        t(`${basePath}.lifeScene.facts.2`),
+      ].filter(f => f && !f.includes('.lifeScene.'))
+    }
 
     return {
       title,
@@ -381,11 +442,11 @@ const getDiy = (t: (key: string) => string, basePath: string): DemoInfo['diy'] |
   }
 }
 
-// Demo info data - using i18n keys
-const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
+// Demo info data - using i18n keys with optional difficulty level
+const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLevel): Record<string, DemoInfo> => ({
   'light-wave': {
-    questions: getQuestions(t, 'basics.demos.lightWave'),
-    lifeScene: getLifeScene(t, 'basics.demos.lightWave'),
+    questions: getQuestions(t, 'basics.demos.lightWave', difficultyLevel),
+    lifeScene: getLifeScene(t, 'basics.demos.lightWave', difficultyLevel),
     physics: {
       principle: t('basics.demos.lightWave.physics.principle'),
       formula: t('basics.demos.lightWave.physics.formula'),
@@ -410,8 +471,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   'polarization-intro': {
-    questions: getQuestions(t, 'basics.demos.polarizationIntro'),
-    lifeScene: getLifeScene(t, 'basics.demos.polarizationIntro'),
+    questions: getQuestions(t, 'basics.demos.polarizationIntro', difficultyLevel),
+    lifeScene: getLifeScene(t, 'basics.demos.polarizationIntro', difficultyLevel),
     physics: {
       principle: t('basics.demos.polarizationIntro.physics.principle'),
       details: [
@@ -434,8 +495,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   'polarization-types': {
-    questions: getQuestions(t, 'basics.demos.polarizationTypes'),
-    lifeScene: getLifeScene(t, 'basics.demos.polarizationTypes'),
+    questions: getQuestions(t, 'basics.demos.polarizationTypes', difficultyLevel),
+    lifeScene: getLifeScene(t, 'basics.demos.polarizationTypes', difficultyLevel),
     physics: {
       principle: t('basics.demos.polarizationTypes.physics.principle'),
       details: [
@@ -459,8 +520,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   'optical-bench': {
-    questions: getQuestions(t, 'basics.demos.opticalBench'),
-    lifeScene: getLifeScene(t, 'basics.demos.opticalBench'),
+    questions: getQuestions(t, 'basics.demos.opticalBench', difficultyLevel),
+    lifeScene: getLifeScene(t, 'basics.demos.opticalBench', difficultyLevel),
     physics: {
       principle: t('basics.demos.opticalBench.physics.principle'),
       details: [
@@ -483,8 +544,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   'polarization-state': {
-    questions: getQuestions(t, 'demos.polarizationState'),
-    lifeScene: getLifeScene(t, 'demos.polarizationState'),
+    questions: getQuestions(t, 'demos.polarizationState', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.polarizationState', difficultyLevel),
     physics: {
       principle: t('demos.polarizationState.physics.principle'),
       formula: t('demos.polarizationState.physics.formula'),
@@ -517,8 +578,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '3D',
   },
   malus: {
-    questions: getQuestions(t, 'demos.malus'),
-    lifeScene: getLifeScene(t, 'demos.malus'),
+    questions: getQuestions(t, 'demos.malus', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.malus', difficultyLevel),
     physics: {
       principle: t('demos.malus.physics.principle'),
       formula: t('demos.malus.physics.formula'),
@@ -551,8 +612,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   birefringence: {
-    questions: getQuestions(t, 'demos.birefringence'),
-    lifeScene: getLifeScene(t, 'demos.birefringence'),
+    questions: getQuestions(t, 'demos.birefringence', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.birefringence', difficultyLevel),
     physics: {
       principle: t('demos.birefringence.physics.principle'),
       formula: t('demos.birefringence.physics.formula'),
@@ -585,8 +646,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '3D',
   },
   waveplate: {
-    questions: getQuestions(t, 'demos.waveplate'),
-    lifeScene: getLifeScene(t, 'demos.waveplate'),
+    questions: getQuestions(t, 'demos.waveplate', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.waveplate', difficultyLevel),
     physics: {
       principle: t('demos.waveplate.physics.principle'),
       formula: t('demos.waveplate.physics.formula'),
@@ -619,8 +680,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '3D',
   },
   fresnel: {
-    questions: getQuestions(t, 'demos.fresnel'),
-    lifeScene: getLifeScene(t, 'demos.fresnel'),
+    questions: getQuestions(t, 'demos.fresnel', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.fresnel', difficultyLevel),
     physics: {
       principle: t('demos.fresnel.physics.principle'),
       formula: t('demos.fresnel.physics.formula'),
@@ -653,8 +714,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   brewster: {
-    questions: getQuestions(t, 'demos.brewster'),
-    lifeScene: getLifeScene(t, 'demos.brewster'),
+    questions: getQuestions(t, 'demos.brewster', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.brewster', difficultyLevel),
     physics: {
       principle: t('demos.brewster.physics.principle'),
       formula: t('demos.brewster.physics.formula'),
@@ -687,8 +748,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   chromatic: {
-    questions: getQuestions(t, 'demos.chromatic'),
-    lifeScene: getLifeScene(t, 'demos.chromatic'),
+    questions: getQuestions(t, 'demos.chromatic', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.chromatic', difficultyLevel),
     physics: {
       principle: t('demos.chromatic.physics.principle'),
       formula: t('demos.chromatic.physics.formula'),
@@ -720,8 +781,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   'optical-rotation': {
-    questions: getQuestions(t, 'demos.opticalRotation'),
-    lifeScene: getLifeScene(t, 'demos.opticalRotation'),
+    questions: getQuestions(t, 'demos.opticalRotation', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.opticalRotation', difficultyLevel),
     physics: {
       principle: t('demos.opticalRotation.physics.principle'),
       formula: t('demos.opticalRotation.physics.formula'),
@@ -753,8 +814,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   anisotropy: {
-    questions: getQuestions(t, 'demos.anisotropy'),
-    lifeScene: getLifeScene(t, 'demos.anisotropy'),
+    questions: getQuestions(t, 'demos.anisotropy', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.anisotropy', difficultyLevel),
     physics: {
       principle: t('demos.anisotropy.physics.principle'),
       formula: t('demos.anisotropy.physics.formula'),
@@ -786,8 +847,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   'mie-scattering': {
-    questions: getQuestions(t, 'demos.mieScattering'),
-    lifeScene: getLifeScene(t, 'demos.mieScattering'),
+    questions: getQuestions(t, 'demos.mieScattering', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.mieScattering', difficultyLevel),
     physics: {
       principle: t('demos.mieScattering.physics.principle'),
       formula: t('demos.mieScattering.physics.formula'),
@@ -820,8 +881,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   rayleigh: {
-    questions: getQuestions(t, 'demos.rayleigh'),
-    lifeScene: getLifeScene(t, 'demos.rayleigh'),
+    questions: getQuestions(t, 'demos.rayleigh', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.rayleigh', difficultyLevel),
     physics: {
       principle: t('demos.rayleigh.physics.principle'),
       formula: t('demos.rayleigh.physics.formula'),
@@ -854,8 +915,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '2D',
   },
   stokes: {
-    questions: getQuestions(t, 'demos.stokes'),
-    lifeScene: getLifeScene(t, 'demos.stokes'),
+    questions: getQuestions(t, 'demos.stokes', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.stokes', difficultyLevel),
     physics: {
       principle: t('demos.stokes.physics.principle'),
       formula: t('demos.stokes.physics.formula'),
@@ -889,8 +950,8 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
     visualType: '3D',
   },
   mueller: {
-    questions: getQuestions(t, 'demos.mueller'),
-    lifeScene: getLifeScene(t, 'demos.mueller'),
+    questions: getQuestions(t, 'demos.mueller', difficultyLevel),
+    lifeScene: getLifeScene(t, 'demos.mueller', difficultyLevel),
     physics: {
       principle: t('demos.mueller.physics.principle'),
       formula: t('demos.mueller.physics.formula'),
@@ -1450,7 +1511,7 @@ export function DemosPage() {
   const isCompact = isMobile || isTablet
   const currentDemo = DEMOS.find((d) => d.id === activeDemo)
   const DemoComponent = currentDemo?.component
-  const demoInfo = getDemoInfo(t)[activeDemo]
+  const demoInfo = getDemoInfo(t, difficultyLevel)[activeDemo]
 
   return (
     <div
@@ -1750,6 +1811,37 @@ export function DemosPage() {
           "flex-1",
           isCompact ? "ml-0 p-3" : "ml-64 p-6"
         )}>
+          {/* Sticky Difficulty Selector Bar */}
+          <div className={cn(
+            'sticky z-30 mb-4 -mx-3 px-3 py-3 border-b backdrop-blur-md',
+            isCompact ? 'top-[52px]' : 'top-[60px] -mx-6 px-6',
+            theme === 'dark'
+              ? 'bg-[#0a0a0f]/90 border-slate-800/50'
+              : 'bg-[#f8fafc]/90 border-gray-200/50'
+          )}>
+            <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <GraduationCap className={cn(
+                  'w-5 h-5',
+                  difficultyLevel === 'beginner' ? 'text-green-400' :
+                  difficultyLevel === 'advanced' ? 'text-purple-400' : 'text-cyan-400'
+                )} />
+                <span className={cn(
+                  'text-sm font-medium',
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                )}>
+                  {t('course.difficulty.label') || '难度等级'}
+                </span>
+              </div>
+              <DifficultySelector
+                value={difficultyLevel}
+                onChange={setDifficultyLevel}
+                theme={theme}
+                t={t}
+              />
+            </div>
+          </div>
+
           <div className="max-w-[1400px] mx-auto">
             {/* Title and description */}
             <div className="mb-5">
@@ -1776,26 +1868,11 @@ export function DemosPage() {
                   {t(currentDemo?.titleKey || '')}
                 </h1>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <p className={cn(
-                  'flex-1',
-                  theme === 'dark' ? 'text-gray-400 text-sm' : 'text-gray-700 text-sm'
-                )}>
-                  {t(currentDemo?.descriptionKey || '')}
-                </p>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <GraduationCap className={cn(
-                    'w-4 h-4',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                  )} />
-                  <DifficultySelector
-                    value={difficultyLevel}
-                    onChange={setDifficultyLevel}
-                    theme={theme}
-                    t={t}
-                  />
-                </div>
-              </div>
+              <p className={cn(
+                theme === 'dark' ? 'text-gray-400 text-sm' : 'text-gray-700 text-sm'
+              )}>
+                {t(currentDemo?.descriptionKey || '')}
+              </p>
             </div>
 
             {/* Thinking Questions Section - Before Demo */}

@@ -235,12 +235,13 @@
       "diy": "Try It Yourself"
     },
     "difficulty": {
+      "label": "Difficulty Level",
       "beginner": "Explorer",
       "intermediate": "Practitioner",
       "advanced": "Master",
-      "beginnerDesc": "Discover light's mysteries in simple terms",
-      "intermediateDesc": "Hands-on experiments, deeper understanding",
-      "advancedDesc": "Rigorous academic treatment, research perspective",
+      "beginnerDesc": "Discover light's mysteries in simple terms - no formulas needed!",
+      "intermediateDesc": "Hands-on experiments with key formulas and concepts",
+      "advancedDesc": "Rigorous academic treatment with research perspective",
       "formulaHidden": "Want formulas? Switch to Practitioner or Master mode"
     },
     "questions": {
@@ -256,13 +257,31 @@
       "description": "Wave synthesis produces different polarization states: linear, circular, elliptical",
       "questions": {
         "leading": "How can combining two simple waves create light that spirals through space like a corkscrew?",
+        "leading_beginner": "Can light actually spin in circles as it travels? Like a tiny spinning top flying through the air?",
+        "leading_advanced": "How does the Jones calculus describe the unitary transformation between polarization bases on the Poincaré sphere?",
         "guided": [
           "What two parameters determine the polarization state of light?",
           "When does the superposition of two waves produce circular polarization?"
         ],
+        "guided_beginner": [
+          "What happens when two jump ropes swing at different times?",
+          "Can you imagine light moving like a corkscrew - spiraling as it goes?"
+        ],
+        "guided_advanced": [
+          "How are Jones vectors related to spinor representations in SU(2)?",
+          "What determines whether elliptical polarization is right-handed or left-handed?"
+        ],
         "openEnded": [
           "Why might quantum communication prefer polarization encoding over other methods?",
           "How could controlling polarization state benefit optical data transmission?"
+        ],
+        "openEnded_beginner": [
+          "Why might spinning light be useful for sending secret messages?",
+          "Can you think of animals that might see polarized light differently than we do?"
+        ],
+        "openEnded_advanced": [
+          "Compare the information capacity of polarization versus orbital angular momentum encoding",
+          "How do decoherence mechanisms affect polarization-encoded quantum states?"
         ]
       },
       "physics": {
@@ -306,12 +325,26 @@
       },
       "lifeScene": {
         "title": "How 3D Glasses Really Work",
+        "title_beginner": "The Magic Behind 3D Movies!",
+        "title_advanced": "Chiral Photon States in Stereoscopic Imaging",
         "imageAlt": "Cross-section showing 3D movie glasses with circular polarizers, one for left eye rotating clockwise, right eye counter-clockwise",
         "hook": "Your 3D movie glasses aren't just dark plastic - they contain sophisticated polarization technology that gives each eye a different image!",
+        "hook_beginner": "Ever wonder how movies seem to jump out at you in 3D? It's all about special spinning light - and those funny glasses are the key!",
+        "hook_advanced": "Modern stereoscopic displays exploit the orthogonality of left- and right-handed circular polarization states, utilizing quarter-wave retarders to encode independent visual channels.",
         "facts": [
           "Modern 3D glasses use circular polarization - left eye sees clockwise, right eye sees counter-clockwise",
           "The projector rapidly switches between two circularly polarized images",
           "This is why you can tilt your head in 3D movies - circular polarization doesn't depend on angle"
+        ],
+        "facts_beginner": [
+          "Each lens in 3D glasses only lets spinning light from one direction through",
+          "Your left eye sees one picture, your right eye sees another - your brain puts them together for 3D!",
+          "Try tilting your head in a 3D movie - it still works because the light is spinning, not just wiggling"
+        ],
+        "facts_advanced": [
+          "RealD uses a Z-screen with alternating quarter-wave retardation at 144Hz refresh rate",
+          "Circular polarization eliminates ghost images caused by viewer head tilt (unlike linear polarization)",
+          "The handedness convention follows the right-hand rule applied to the wave propagation vector"
         ]
       },
       "diy": {
@@ -335,23 +368,55 @@
       "description": "Intensity change when polarized light passes through a polarizer: I = I₀ × cos²(θ)",
       "questions": {
         "leading": "Why does rotating a polarizer make light gradually disappear instead of instantly blocking it?",
+        "leading_beginner": "Have you ever worn sunglasses and tilted your head while looking at a phone screen? Why does it sometimes go dark?",
+        "leading_advanced": "How does the projection of the electric field vector onto the polarizer axis give rise to the cos²θ intensity dependence?",
         "guided": [
           "What happens to light intensity when polarizer angle is 45° from the polarization direction?",
           "Why does intensity follow a cos² relationship instead of linear?"
         ],
+        "guided_beginner": [
+          "When you stack two sunglasses and rotate one, what happens to the brightness?",
+          "At what angle do you think the sunglasses block the most light?"
+        ],
+        "guided_advanced": [
+          "How does the polarizer's Mueller matrix transform the input Stokes vector?",
+          "What is the extinction ratio of an ideal polarizer and how does it affect measurements?"
+        ],
         "openEnded": [
           "How do LCD screens use Malus's Law to control pixel brightness?",
           "Could you design a variable light dimmer using polarizers? How?"
+        ],
+        "openEnded_beginner": [
+          "What other things around you might use polarized light?",
+          "Why do you think photographers use special filters on their cameras?"
+        ],
+        "openEnded_advanced": [
+          "How would you account for non-ideal polarizers with finite extinction ratios in precision measurements?",
+          "Derive the intensity transmission for N cascaded polarizers at equal angular intervals."
         ]
       },
       "lifeScene": {
         "title": "Your Phone Screen Uses This Physics",
+        "title_beginner": "The Disappearing Screen Magic Trick!",
+        "title_advanced": "Electromagnetic Wave Projection in Anisotropic Media",
         "imageAlt": "Person wearing polarized sunglasses looking at smartphone screen, showing how tilting the phone causes screen to darken",
         "hook": "You spend 5+ hours daily looking at screens. Have you noticed your phone goes dark when you tilt it while wearing sunglasses?",
+        "hook_beginner": "Want to see a magic trick? Grab some sunglasses and your phone - you can make the screen disappear just by tilting it!",
+        "hook_advanced": "The intensity modulation in LCD displays represents a practical application of electromagnetic wave vector projection, governed by Malus's Law which describes photon absorption probability in dichroic media.",
         "facts": [
           "Every LCD screen has two polarizers - without them, you'd see nothing but white light",
           "Try wearing polarized sunglasses and rotating your phone 90° - the screen will go black!",
           "Photographers use polarizing filters based on this same law to eliminate reflections"
+        ],
+        "facts_beginner": [
+          "Your phone screen is like a light sandwich with special filters on each side",
+          "Sunglasses + phone = cool magic trick! Rotate and watch the screen go dark",
+          "This same trick is why 3D movies work and why some people can see through water glare"
+        ],
+        "facts_advanced": [
+          "LCD extinction ratio typically exceeds 1000:1 due to precision alignment of polarizer axes",
+          "Crossed polarizers achieve near-perfect extinction, limited only by birefringent stress in the glass",
+          "Modern IPS panels use 178° viewing angles by optimizing the liquid crystal molecular twist"
         ]
       },
       "physics": {
