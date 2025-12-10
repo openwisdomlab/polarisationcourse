@@ -1429,6 +1429,14 @@ export function DemosPage() {
   })
   const [searchQuery, setSearchQuery] = useState('')
   const [difficultyLevel, setDifficultyLevel] = useState<DifficultyLevel>('intermediate')
+  const [showDifficultyChange, setShowDifficultyChange] = useState(false)
+
+  // Show visual feedback when difficulty changes
+  const handleDifficultyChange = (level: DifficultyLevel) => {
+    setDifficultyLevel(level)
+    setShowDifficultyChange(true)
+    setTimeout(() => setShowDifficultyChange(false), 1500)
+  }
 
   // Get difficulty config
   const difficultyConfig = DIFFICULTY_CONFIG[difficultyLevel]
@@ -1835,10 +1843,24 @@ export function DemosPage() {
               </div>
               <DifficultySelector
                 value={difficultyLevel}
-                onChange={setDifficultyLevel}
+                onChange={handleDifficultyChange}
                 theme={theme}
                 t={t}
               />
+              {/* Difficulty change notification */}
+              {showDifficultyChange && (
+                <div className={cn(
+                  'absolute right-4 top-full mt-2 px-4 py-2 rounded-lg text-sm font-medium shadow-lg z-50',
+                  'animate-in fade-in slide-in-from-top-2 duration-300',
+                  difficultyLevel === 'beginner'
+                    ? 'bg-green-500/90 text-white'
+                    : difficultyLevel === 'advanced'
+                    ? 'bg-purple-500/90 text-white'
+                    : 'bg-cyan-500/90 text-white'
+                )}>
+                  {DIFFICULTY_CONFIG[difficultyLevel].icon} {t(`course.difficulty.${difficultyLevel}`)}
+                </div>
+              )}
             </div>
           </div>
 

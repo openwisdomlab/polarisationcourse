@@ -21,6 +21,9 @@ const useColors = () => {
   }
 }
 
+// 统一的SVG容器样式 - 更紧凑的尺寸
+const svgContainerClass = "w-full max-w-[280px] mx-auto h-auto cursor-pointer transition-transform hover:scale-[1.01]"
+
 // ==================== 新增插图 ====================
 
 // 电磁波传播 - 用于光波演示
@@ -30,8 +33,8 @@ export function LightWaveIllustration() {
 
   return (
     <svg
-      viewBox="0 0 320 160"
-      className="w-full h-auto cursor-pointer transition-transform hover:scale-[1.02]"
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -50,81 +53,80 @@ export function LightWaveIllustration() {
 
       {/* 背景网格 */}
       <g opacity="0.1">
-        {[...Array(16)].map((_, i) => (
-          <line key={`v${i}`} x1={20 + i * 20} y1="20" x2={20 + i * 20} y2="140" stroke={colors.text} strokeWidth="0.5" />
+        {[...Array(14)].map((_, i) => (
+          <line key={`v${i}`} x1={15 + i * 18} y1="15" x2={15 + i * 18} y2="105" stroke={colors.text} strokeWidth="0.5" />
         ))}
-        {[...Array(6)].map((_, i) => (
-          <line key={`h${i}`} x1="20" y1={30 + i * 25} x2="300" y2={30 + i * 25} stroke={colors.text} strokeWidth="0.5" />
+        {[...Array(5)].map((_, i) => (
+          <line key={`h${i}`} x1="15" y1={20 + i * 20} x2="265" y2={20 + i * 20} stroke={colors.text} strokeWidth="0.5" />
         ))}
       </g>
 
       {/* 传播方向箭头 */}
-      <line x1="20" y1="80" x2="300" y2="80" stroke={colors.muted} strokeWidth="1.5" strokeDasharray="4,2" />
-      <polygon points="300,80 290,76 290,84" fill={colors.muted} />
-      <text x="310" y="84" fill={colors.muted} fontSize="8" fontWeight="bold">k</text>
+      <line x1="15" y1="60" x2="265" y2="60" stroke={colors.muted} strokeWidth="1.5" strokeDasharray="4,2" />
+      <polygon points="265,60 255,56 255,64" fill={colors.muted} />
+      <text x="272" y="63" fill={colors.muted} fontSize="8" fontWeight="bold">k</text>
 
       {/* 电场波 (E) - 垂直平面 */}
       <path
-        d={`M 30,80
-            Q 50,${hover ? 35 : 45} 70,80
-            T 110,80 T 150,80 T 190,80 T 230,80 T 270,80`}
+        d={`M 25,60
+            Q 45,${hover ? 30 : 38} 65,60
+            T 105,60 T 145,60 T 185,60 T 225,60`}
         fill="none"
         stroke="url(#wave-e-grad)"
-        strokeWidth="3"
+        strokeWidth="2.5"
         className="transition-all duration-500"
       />
 
       {/* 磁场波 (B) - 水平平面 (透视效果) */}
       <path
-        d={`M 30,80
-            Q 50,80 70,${hover ? 55 : 60}
-            Q 90,80 110,${hover ? 105 : 100}
-            Q 130,80 150,${hover ? 55 : 60}
-            Q 170,80 190,${hover ? 105 : 100}
-            Q 210,80 230,${hover ? 55 : 60}
-            Q 250,80 270,${hover ? 105 : 100}`}
+        d={`M 25,60
+            Q 45,60 65,${hover ? 45 : 50}
+            Q 85,60 105,${hover ? 75 : 70}
+            Q 125,60 145,${hover ? 45 : 50}
+            Q 165,60 185,${hover ? 75 : 70}
+            Q 205,60 225,${hover ? 45 : 50}`}
         fill="none"
         stroke="url(#wave-b-grad)"
-        strokeWidth="2.5"
-        strokeDasharray={hover ? "none" : "8,4"}
+        strokeWidth="2"
+        strokeDasharray={hover ? "none" : "6,3"}
         className="transition-all duration-500"
       />
 
       {/* 电场矢量指示 */}
-      <g transform="translate(70, 80)">
-        <line x1="0" y1="0" x2="0" y2="-25" stroke="#fbbf24" strokeWidth="2" />
-        <polygon points="0,-25 -4,-18 4,-18" fill="#fbbf24" />
+      <g transform="translate(65, 60)">
+        <line x1="0" y1="0" x2="0" y2="-18" stroke="#fbbf24" strokeWidth="2" />
+        <polygon points="0,-18 -3,-12 3,-12" fill="#fbbf24" />
       </g>
 
       {/* 磁场矢量指示 */}
-      <g transform="translate(110, 80)">
-        <line x1="0" y1="0" x2="12" y2="8" stroke="#8b5cf6" strokeWidth="2" />
-        <polygon points="12,8 4,6 8,12" fill="#8b5cf6" />
+      <g transform="translate(105, 60)">
+        <line x1="0" y1="0" x2="10" y2="6" stroke="#8b5cf6" strokeWidth="2" />
+        <polygon points="10,6 3,4 6,10" fill="#8b5cf6" />
       </g>
 
       {/* 标签 */}
-      <text x="75" y="35" textAnchor="middle" fill="#fbbf24" fontSize="10" fontWeight="bold">E</text>
-      <text x="130" y="120" textAnchor="middle" fill="#8b5cf6" fontSize="10" fontWeight="bold">B</text>
+      <text x="70" y="30" textAnchor="middle" fill="#fbbf24" fontSize="9" fontWeight="bold">E</text>
+      <text x="120" y="88" textAnchor="middle" fill="#8b5cf6" fontSize="9" fontWeight="bold">B</text>
 
       {/* 波长标注 */}
-      <g transform="translate(145, 140)">
-        <line x1="0" y1="0" x2="80" y2="0" stroke={colors.text} strokeWidth="1" />
+      <g transform="translate(130, 105)">
+        <line x1="0" y1="0" x2="60" y2="0" stroke={colors.text} strokeWidth="1" />
         <line x1="0" y1="-3" x2="0" y2="3" stroke={colors.text} strokeWidth="1" />
-        <line x1="80" y1="-3" x2="80" y2="3" stroke={colors.text} strokeWidth="1" />
-        <text x="40" y="12" textAnchor="middle" fill={colors.text} fontSize="9">λ</text>
+        <line x1="60" y1="-3" x2="60" y2="3" stroke={colors.text} strokeWidth="1" />
+        <text x="30" y="10" textAnchor="middle" fill={colors.text} fontSize="8">λ</text>
       </g>
 
       {/* 光源 */}
-      <g transform="translate(10, 80)">
-        <circle cx="0" cy="0" r="8" fill={colors.accent} opacity="0.8" />
-        <circle cx="0" cy="0" r="4" fill="white" />
+      <g transform="translate(10, 60)">
+        <circle cx="0" cy="0" r="6" fill={colors.accent} opacity="0.8" />
+        <circle cx="0" cy="0" r="3" fill="white" />
         {[...Array(8)].map((_, i) => (
           <line
             key={i}
-            x1={10 * Math.cos(i * Math.PI / 4)}
-            y1={10 * Math.sin(i * Math.PI / 4)}
-            x2={14 * Math.cos(i * Math.PI / 4)}
-            y2={14 * Math.sin(i * Math.PI / 4)}
+            x1={8 * Math.cos(i * Math.PI / 4)}
+            y1={8 * Math.sin(i * Math.PI / 4)}
+            x2={11 * Math.cos(i * Math.PI / 4)}
+            y2={11 * Math.sin(i * Math.PI / 4)}
             stroke={colors.accent}
             strokeWidth="1.5"
             opacity={hover ? 1 : 0.6}
@@ -135,7 +137,7 @@ export function LightWaveIllustration() {
 
       {/* 悬停提示 */}
       {hover && (
-        <text x="160" y="20" textAnchor="middle" fill={colors.text} fontSize="9" opacity="0.8">
+        <text x="140" y="15" textAnchor="middle" fill={colors.text} fontSize="8" opacity="0.8">
           E ⊥ B ⊥ k (相互垂直)
         </text>
       )}
@@ -149,72 +151,72 @@ export function PolarizationTypesIllustration() {
   const [activeType, setActiveType] = useState<'linear' | 'circular' | 'elliptical' | null>(null)
 
   return (
-    <svg viewBox="0 0 320 140" className="w-full h-auto">
+    <svg viewBox="0 0 280 110" className={svgContainerClass}>
       {/* 线偏振 */}
       <g
-        transform="translate(55, 70)"
+        transform="translate(47, 55)"
         onMouseEnter={() => setActiveType('linear')}
         onMouseLeave={() => setActiveType(null)}
         className="cursor-pointer"
       >
-        <circle cx="0" cy="0" r="35" fill="none" stroke={colors.muted} strokeWidth="1" strokeDasharray="2" />
-        <line x1="0" y1="-30" x2="0" y2="30" stroke="#fbbf24" strokeWidth={activeType === 'linear' ? 4 : 3}
+        <circle cx="0" cy="0" r="28" fill="none" stroke={colors.muted} strokeWidth="1" strokeDasharray="2" />
+        <line x1="0" y1="-23" x2="0" y2="23" stroke="#fbbf24" strokeWidth={activeType === 'linear' ? 3.5 : 2.5}
           className="transition-all duration-200" />
-        <polygon points="0,-30 -5,-22 5,-22" fill="#fbbf24" />
-        <polygon points="0,30 -5,22 5,22" fill="#fbbf24" />
-        <text x="0" y="55" textAnchor="middle" fill={colors.text} fontSize="10" fontWeight={activeType === 'linear' ? 'bold' : 'normal'}>
+        <polygon points="0,-23 -4,-17 4,-17" fill="#fbbf24" />
+        <polygon points="0,23 -4,17 4,17" fill="#fbbf24" />
+        <text x="0" y="42" textAnchor="middle" fill={colors.text} fontSize="9" fontWeight={activeType === 'linear' ? 'bold' : 'normal'}>
           Linear
         </text>
-        <text x="0" y="68" textAnchor="middle" fill={colors.muted} fontSize="8">δ = 0°</text>
+        <text x="0" y="52" textAnchor="middle" fill={colors.muted} fontSize="7">δ = 0°</text>
         {activeType === 'linear' && (
-          <circle cx="0" cy="0" r="38" fill="none" stroke="#fbbf24" strokeWidth="2" opacity="0.5" />
+          <circle cx="0" cy="0" r="30" fill="none" stroke="#fbbf24" strokeWidth="2" opacity="0.5" />
         )}
       </g>
 
       {/* 圆偏振 */}
       <g
-        transform="translate(160, 70)"
+        transform="translate(140, 55)"
         onMouseEnter={() => setActiveType('circular')}
         onMouseLeave={() => setActiveType(null)}
         className="cursor-pointer"
       >
-        <circle cx="0" cy="0" r="25" fill="none" stroke="#22c55e" strokeWidth={activeType === 'circular' ? 4 : 3}
+        <circle cx="0" cy="0" r="20" fill="none" stroke="#22c55e" strokeWidth={activeType === 'circular' ? 3.5 : 2.5}
           className="transition-all duration-200" />
         {/* 旋转箭头 */}
-        <path d="M 25,0 A 25,25 0 0,1 17,17" fill="none" stroke="#22c55e" strokeWidth="2" />
-        <polygon points="17,17 14,10 22,13" fill="#22c55e" />
-        <text x="0" y="55" textAnchor="middle" fill={colors.text} fontSize="10" fontWeight={activeType === 'circular' ? 'bold' : 'normal'}>
+        <path d="M 20,0 A 20,20 0 0,1 14,14" fill="none" stroke="#22c55e" strokeWidth="2" />
+        <polygon points="14,14 11,8 17,10" fill="#22c55e" />
+        <text x="0" y="42" textAnchor="middle" fill={colors.text} fontSize="9" fontWeight={activeType === 'circular' ? 'bold' : 'normal'}>
           Circular
         </text>
-        <text x="0" y="68" textAnchor="middle" fill={colors.muted} fontSize="8">δ = 90°, Ex=Ey</text>
+        <text x="0" y="52" textAnchor="middle" fill={colors.muted} fontSize="7">δ = 90°</text>
         {activeType === 'circular' && (
-          <circle cx="0" cy="0" r="38" fill="none" stroke="#22c55e" strokeWidth="2" opacity="0.5" />
+          <circle cx="0" cy="0" r="30" fill="none" stroke="#22c55e" strokeWidth="2" opacity="0.5" />
         )}
       </g>
 
       {/* 椭圆偏振 */}
       <g
-        transform="translate(265, 70)"
+        transform="translate(233, 55)"
         onMouseEnter={() => setActiveType('elliptical')}
         onMouseLeave={() => setActiveType(null)}
         className="cursor-pointer"
       >
-        <ellipse cx="0" cy="0" rx="30" ry="18" fill="none" stroke="#a855f7" strokeWidth={activeType === 'elliptical' ? 4 : 3}
+        <ellipse cx="0" cy="0" rx="24" ry="14" fill="none" stroke="#a855f7" strokeWidth={activeType === 'elliptical' ? 3.5 : 2.5}
           transform="rotate(-30)" className="transition-all duration-200" />
         {/* 旋转箭头 */}
-        <path d="M 22,-12 A 30,18 -30 0,1 26,5" fill="none" stroke="#a855f7" strokeWidth="2" />
-        <polygon points="26,5 20,1 24,9" fill="#a855f7" />
-        <text x="0" y="55" textAnchor="middle" fill={colors.text} fontSize="10" fontWeight={activeType === 'elliptical' ? 'bold' : 'normal'}>
+        <path d="M 18,-10 A 24,14 -30 0,1 21,4" fill="none" stroke="#a855f7" strokeWidth="2" />
+        <polygon points="21,4 16,1 19,8" fill="#a855f7" />
+        <text x="0" y="42" textAnchor="middle" fill={colors.text} fontSize="9" fontWeight={activeType === 'elliptical' ? 'bold' : 'normal'}>
           Elliptical
         </text>
-        <text x="0" y="68" textAnchor="middle" fill={colors.muted} fontSize="8">δ = any</text>
+        <text x="0" y="52" textAnchor="middle" fill={colors.muted} fontSize="7">δ = any</text>
         {activeType === 'elliptical' && (
-          <circle cx="0" cy="0" r="38" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.5" />
+          <circle cx="0" cy="0" r="30" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.5" />
         )}
       </g>
 
       {/* 顶部标题 */}
-      <text x="160" y="15" textAnchor="middle" fill={colors.text} fontSize="11" fontWeight="bold">
+      <text x="140" y="12" textAnchor="middle" fill={colors.text} fontSize="10" fontWeight="bold">
         Polarization States
       </text>
     </svg>
@@ -227,113 +229,113 @@ export function OpticalBenchIllustration() {
   const [hoveredComponent, setHoveredComponent] = useState<string | null>(null)
 
   return (
-    <svg viewBox="0 0 320 140" className="w-full h-auto">
+    <svg viewBox="0 0 280 110" className={svgContainerClass}>
       {/* 光学平台底座 */}
-      <rect x="10" y="100" width="300" height="20" rx="3" fill={colors.bg} stroke={colors.muted} strokeWidth="2" />
-      <line x1="10" y1="108" x2="310" y2="108" stroke={colors.muted} strokeWidth="1" strokeDasharray="10,5" />
+      <rect x="10" y="85" width="260" height="15" rx="3" fill={colors.bg} stroke={colors.muted} strokeWidth="1.5" />
+      <line x1="10" y1="92" x2="270" y2="92" stroke={colors.muted} strokeWidth="1" strokeDasharray="8,4" />
 
       {/* 刻度 */}
-      {[...Array(15)].map((_, i) => (
-        <g key={i} transform={`translate(${25 + i * 20}, 105)`}>
-          <line x1="0" y1="0" x2="0" y2="5" stroke={colors.muted} strokeWidth="1" />
-          <text x="0" y="15" textAnchor="middle" fill={colors.muted} fontSize="6">{i * 2}</text>
+      {[...Array(13)].map((_, i) => (
+        <g key={i} transform={`translate(${20 + i * 18}, 88)`}>
+          <line x1="0" y1="0" x2="0" y2="4" stroke={colors.muted} strokeWidth="1" />
+          <text x="0" y="12" textAnchor="middle" fill={colors.muted} fontSize="5">{i * 2}</text>
         </g>
       ))}
 
       {/* 激光器 */}
       <g
-        transform="translate(25, 65)"
+        transform="translate(22, 52)"
         onMouseEnter={() => setHoveredComponent('laser')}
         onMouseLeave={() => setHoveredComponent(null)}
         className="cursor-pointer"
       >
-        <rect x="-15" y="-20" width="35" height="40" rx="3" fill={colors.text} />
-        <rect x="20" y="-5" width="10" height="10" rx="1" fill={colors.danger} />
-        <circle cx="30" cy="0" r="6" fill={colors.danger} opacity="0.8" />
+        <rect x="-12" y="-15" width="28" height="30" rx="2" fill={colors.text} />
+        <rect x="16" y="-4" width="8" height="8" rx="1" fill={colors.danger} />
+        <circle cx="24" cy="0" r="5" fill={colors.danger} opacity="0.8" />
         {hoveredComponent === 'laser' && (
           <>
-            <rect x="-17" y="-22" width="60" height="44" rx="5" fill="none" stroke={colors.accent} strokeWidth="2" />
-            <text x="10" y="-28" textAnchor="middle" fill={colors.accent} fontSize="8">HeNe Laser</text>
+            <rect x="-14" y="-17" width="50" height="34" rx="4" fill="none" stroke={colors.accent} strokeWidth="1.5" />
+            <text x="8" y="-22" textAnchor="middle" fill={colors.accent} fontSize="7">Laser</text>
           </>
         )}
       </g>
 
       {/* 光束 */}
-      <line x1="55" y1="65" x2="300" y2="65" stroke={colors.danger} strokeWidth="3" opacity="0.8" />
-      <line x1="55" y1="65" x2="300" y2="65" stroke="white" strokeWidth="1" opacity="0.5" />
+      <line x1="45" y1="52" x2="260" y2="52" stroke={colors.danger} strokeWidth="2.5" opacity="0.8" />
+      <line x1="45" y1="52" x2="260" y2="52" stroke="white" strokeWidth="1" opacity="0.5" />
 
       {/* 偏振片1 */}
       <g
-        transform="translate(100, 65)"
+        transform="translate(85, 52)"
         onMouseEnter={() => setHoveredComponent('polarizer1')}
         onMouseLeave={() => setHoveredComponent(null)}
         className="cursor-pointer"
       >
-        <rect x="-3" y="-30" width="6" height="60" fill={colors.primary} opacity="0.6" stroke={colors.primary} strokeWidth="1" />
-        <line x1="0" y1="-25" x2="0" y2="25" stroke={colors.primary} strokeWidth="2" />
+        <rect x="-2" y="-22" width="4" height="44" fill={colors.primary} opacity="0.6" stroke={colors.primary} strokeWidth="1" />
+        <line x1="0" y1="-18" x2="0" y2="18" stroke={colors.primary} strokeWidth="2" />
         {hoveredComponent === 'polarizer1' && (
           <>
-            <circle cx="0" cy="0" r="35" fill="none" stroke={colors.accent} strokeWidth="2" />
-            <text x="0" y="-38" textAnchor="middle" fill={colors.accent} fontSize="8">Polarizer</text>
+            <circle cx="0" cy="0" r="26" fill="none" stroke={colors.accent} strokeWidth="1.5" />
+            <text x="0" y="-30" textAnchor="middle" fill={colors.accent} fontSize="7">Polarizer</text>
           </>
         )}
       </g>
 
       {/* 样品位置 */}
       <g
-        transform="translate(170, 65)"
+        transform="translate(145, 52)"
         onMouseEnter={() => setHoveredComponent('sample')}
         onMouseLeave={() => setHoveredComponent(null)}
         className="cursor-pointer"
       >
-        <rect x="-15" y="-25" width="30" height="50" rx="2" fill={colors.secondary} opacity="0.3" stroke={colors.secondary} strokeWidth="2" />
-        <text x="0" y="5" textAnchor="middle" fill={colors.secondary} fontSize="8">?</text>
+        <rect x="-12" y="-18" width="24" height="36" rx="2" fill={colors.secondary} opacity="0.3" stroke={colors.secondary} strokeWidth="1.5" />
+        <text x="0" y="4" textAnchor="middle" fill={colors.secondary} fontSize="8">?</text>
         {hoveredComponent === 'sample' && (
           <>
-            <rect x="-17" y="-27" width="34" height="54" rx="4" fill="none" stroke={colors.accent} strokeWidth="2" />
-            <text x="0" y="-32" textAnchor="middle" fill={colors.accent} fontSize="8">Sample</text>
+            <rect x="-14" y="-20" width="28" height="40" rx="3" fill="none" stroke={colors.accent} strokeWidth="1.5" />
+            <text x="0" y="-25" textAnchor="middle" fill={colors.accent} fontSize="7">Sample</text>
           </>
         )}
       </g>
 
       {/* 偏振片2 (检偏器) */}
       <g
-        transform="translate(230, 65)"
+        transform="translate(200, 52)"
         onMouseEnter={() => setHoveredComponent('analyzer')}
         onMouseLeave={() => setHoveredComponent(null)}
         className="cursor-pointer"
       >
-        <rect x="-3" y="-30" width="6" height="60" fill={colors.success} opacity="0.6" stroke={colors.success} strokeWidth="1" />
-        <line x1="-20" y1="0" x2="20" y2="0" stroke={colors.success} strokeWidth="2" />
+        <rect x="-2" y="-22" width="4" height="44" fill={colors.success} opacity="0.6" stroke={colors.success} strokeWidth="1" />
+        <line x1="-15" y1="0" x2="15" y2="0" stroke={colors.success} strokeWidth="2" />
         {/* 旋转刻度盘 */}
-        <circle cx="0" cy="0" r="22" fill="none" stroke={colors.muted} strokeWidth="1" strokeDasharray="2" />
+        <circle cx="0" cy="0" r="16" fill="none" stroke={colors.muted} strokeWidth="1" strokeDasharray="2" />
         {hoveredComponent === 'analyzer' && (
           <>
-            <circle cx="0" cy="0" r="35" fill="none" stroke={colors.accent} strokeWidth="2" />
-            <text x="0" y="-38" textAnchor="middle" fill={colors.accent} fontSize="8">Analyzer</text>
+            <circle cx="0" cy="0" r="26" fill="none" stroke={colors.accent} strokeWidth="1.5" />
+            <text x="0" y="-30" textAnchor="middle" fill={colors.accent} fontSize="7">Analyzer</text>
           </>
         )}
       </g>
 
       {/* 探测器 */}
       <g
-        transform="translate(285, 65)"
+        transform="translate(250, 52)"
         onMouseEnter={() => setHoveredComponent('detector')}
         onMouseLeave={() => setHoveredComponent(null)}
         className="cursor-pointer"
       >
-        <rect x="-10" y="-20" width="25" height="40" rx="3" fill={colors.text} />
-        <rect x="-7" y="-15" width="8" height="30" fill={colors.bg} />
+        <rect x="-8" y="-15" width="20" height="30" rx="2" fill={colors.text} />
+        <rect x="-5" y="-11" width="6" height="22" fill={colors.bg} />
         {hoveredComponent === 'detector' && (
           <>
-            <rect x="-12" y="-22" width="29" height="44" rx="5" fill="none" stroke={colors.accent} strokeWidth="2" />
-            <text x="3" y="-28" textAnchor="middle" fill={colors.accent} fontSize="8">Detector</text>
+            <rect x="-10" y="-17" width="24" height="34" rx="4" fill="none" stroke={colors.accent} strokeWidth="1.5" />
+            <text x="2" y="-22" textAnchor="middle" fill={colors.accent} fontSize="7">Detector</text>
           </>
         )}
       </g>
 
       {/* 标题 */}
-      <text x="160" y="15" textAnchor="middle" fill={colors.text} fontSize="10" fontWeight="bold">
+      <text x="140" y="12" textAnchor="middle" fill={colors.text} fontSize="9" fontWeight="bold">
         Optical Bench Setup
       </text>
     </svg>
@@ -347,8 +349,8 @@ export function OpticalRotationIllustration() {
 
   return (
     <svg
-      viewBox="0 0 320 160"
-      className="w-full h-auto cursor-pointer"
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
       onClick={() => setConcentration(c => c === 3 ? 1 : c + 1)}
     >
       {/* 背景 */}
@@ -461,7 +463,7 @@ export function StokesPoincareSphereIllustration() {
   const [highlightedAxis, setHighlightedAxis] = useState<'s1' | 's2' | 's3' | null>(null)
 
   return (
-    <svg viewBox="0 0 320 160" className="w-full h-auto">
+    <svg viewBox="0 0 280 120" className={svgContainerClass}>
       <defs>
         <radialGradient id="sphere-grad" cx="35%" cy="35%">
           <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.4" />
@@ -572,7 +574,7 @@ export function MuellerMatrixIllustration() {
   }
 
   return (
-    <svg viewBox="0 0 320 160" className="w-full h-auto">
+    <svg viewBox="0 0 280 120" className={svgContainerClass}>
       {/* 输入Stokes矢量 */}
       <g transform="translate(30, 80)">
         <rect x="-20" y="-35" width="40" height="70" rx="3" fill={colors.primary} opacity="0.2" stroke={colors.primary} strokeWidth="2" />
@@ -665,8 +667,8 @@ export function ThreeGlassesIllustration() {
 
   return (
     <svg
-      viewBox="0 0 320 160"
-      className="w-full h-auto cursor-pointer"
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
       onClick={() => setShowDetail(!showDetail)}
     >
       <defs>
@@ -751,8 +753,8 @@ export function PolarizedFishingIllustration() {
 
   return (
     <svg
-      viewBox="0 0 320 160"
-      className="w-full h-auto cursor-pointer"
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
       onClick={() => setWithPolarizer(!withPolarizer)}
     >
       {/* 天空 */}
@@ -863,8 +865,8 @@ export function PhonePolarizerIllustration() {
 
   return (
     <svg
-      viewBox="0 0 320 160"
-      className="w-full h-auto cursor-pointer"
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
       onClick={() => setAngle(a => (a + 45) % 135)}
     >
       {/* 手机 */}
@@ -942,8 +944,8 @@ export function CalciteIllustration() {
 
   return (
     <svg
-      viewBox="0 0 320 160"
-      className="w-full h-auto cursor-pointer"
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
       onClick={() => setShowRays(!showRays)}
     >
       {/* 背景纸张 */}
@@ -1029,7 +1031,7 @@ export function SunsetLakeIllustration() {
   const colors = useColors()
 
   return (
-    <svg viewBox="0 0 320 160" className="w-full h-auto">
+    <svg viewBox="0 0 280 120" className={svgContainerClass}>
       <defs>
         <linearGradient id="noon-sky" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#60a5fa" />
@@ -1121,7 +1123,7 @@ export function WindowPhotographyIllustration() {
   const colors = useColors()
 
   return (
-    <svg viewBox="0 0 320 160" className="w-full h-auto">
+    <svg viewBox="0 0 280 120" className={svgContainerClass}>
       {/* 左边：有反光 */}
       <g>
         <rect x="10" y="20" width="130" height="95" fill={colors.bg} stroke={colors.text} strokeWidth="2" />
@@ -1180,7 +1182,7 @@ export function PhotoelasticityIllustration() {
   const colors = useColors()
 
   return (
-    <svg viewBox="0 0 320 160" className="w-full h-auto">
+    <svg viewBox="0 0 280 120" className={svgContainerClass}>
       {/* 光源 */}
       <circle cx="12" cy="80" r="6" fill={colors.accent} />
       <line x1="18" y1="80" x2="30" y2="80" stroke={colors.accent} strokeWidth="2" />
@@ -1243,7 +1245,7 @@ export function SkyScatteringIllustration() {
   const colors = useColors()
 
   return (
-    <svg viewBox="0 0 320 160" className="w-full h-auto">
+    <svg viewBox="0 0 280 120" className={svgContainerClass}>
       <defs>
         <linearGradient id="blue-sky-grad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#1e3a8a" />
@@ -1329,7 +1331,7 @@ export function CloudsVsSkyIllustration() {
   const colors = useColors()
 
   return (
-    <svg viewBox="0 0 320 160" className="w-full h-auto">
+    <svg viewBox="0 0 280 120" className={svgContainerClass}>
       {/* 蓝天背景 */}
       <rect x="0" y="0" width="320" height="160" fill="#60a5fa" />
 
