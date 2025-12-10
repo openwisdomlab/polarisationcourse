@@ -4,6 +4,7 @@ import { useGameStore } from '@/stores/gameStore'
 import { BlockType } from '@/core/types'
 import { cn } from '@/lib/utils'
 import { ChevronUp, ChevronDown } from 'lucide-react'
+import { useIsMobile } from '@/hooks/useIsMobile'
 
 // 方块分类
 const BASIC_BLOCKS: Array<{
@@ -58,11 +59,18 @@ export function BlockSelector() {
   const { t } = useTranslation()
   const { selectedBlockType, setSelectedBlockType } = useGameStore()
   const [showAdvanced, setShowAdvanced] = useState(false)
+  const { isMobile, isTablet } = useIsMobile()
 
   const currentBlocks = showAdvanced ? ADVANCED_BLOCKS : BASIC_BLOCKS
 
+  // On mobile, show fewer blocks per row with scrolling
+  const isCompact = isMobile || isTablet
+
   return (
-    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+    <div className={cn(
+      "absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-2",
+      isCompact ? "bottom-2 w-[calc(100%-16px)] max-w-md" : "bottom-5"
+    )}>
       {/* 展开/收起按钮 */}
       <button
         onClick={() => setShowAdvanced(!showAdvanced)}
@@ -70,7 +78,8 @@ export function BlockSelector() {
           "px-3 py-1 rounded-lg text-xs font-bold transition-all",
           "bg-slate-800/80 border border-slate-600/50",
           "hover:bg-slate-700/80 hover:border-cyan-400/50",
-          "flex items-center gap-1"
+          "flex items-center gap-1",
+          isCompact && "text-[10px] px-2"
         )}
       >
         {showAdvanced ? (
@@ -86,8 +95,13 @@ export function BlockSelector() {
         )}
       </button>
 
-      {/* 方块选择器 */}
-      <div className="flex gap-1.5 bg-black/80 p-2.5 rounded-xl border border-cyan-400/30">
+      {/* 方块选择器 - 移动端可横向滚动 */}
+      <div className={cn(
+        "bg-black/80 rounded-xl border border-cyan-400/30",
+        isCompact
+          ? "flex gap-1 p-1.5 overflow-x-auto max-w-full scrollbar-hide"
+          : "flex gap-1.5 p-2.5"
+      )}>
         {currentBlocks.map(({ type, key, icon, labelKey, color }) => {
           const colors = COLOR_CLASSES[color] || COLOR_CLASSES.cyan
           return (
@@ -95,24 +109,36 @@ export function BlockSelector() {
               key={type}
               onClick={() => setSelectedBlockType(type)}
               className={cn(
-                "relative w-12 h-12 flex flex-col items-center justify-center",
+                "relative flex flex-col items-center justify-center flex-shrink-0",
                 "bg-slate-700/60 border-2 border-slate-600/50 rounded-lg",
-                "transition-all duration-200 cursor-pointer",
+                "transition-all duration-200 cursor-pointer active:scale-95",
                 "hover:border-cyan-400/80 hover:bg-slate-600/80",
-                selectedBlockType === type && [colors.border, colors.shadow]
+                selectedBlockType === type && [colors.border, colors.shadow],
+                isCompact ? "w-10 h-10" : "w-12 h-12"
               )}
             >
-              <span className="absolute top-0.5 left-1 text-[8px] text-gray-500">
-                {key}
-              </span>
-              <span className="text-lg mb-0.5">{icon}</span>
-              <span className="text-[7px] text-gray-400 truncate max-w-[40px]">
-                {t(labelKey)}
-              </span>
+              {!isCompact && (
+                <span className="absolute top-0.5 left-1 text-[8px] text-gray-500">
+                  {key}
+                </span>
+              )}
+              <span className={cn("mb-0.5", isCompact ? "text-base" : "text-lg")}>{icon}</span>
+              {!isCompact && (
+                <span className="text-[7px] text-gray-400 truncate max-w-[40px]">
+                  {t(labelKey)}
+                </span>
+              )}
             </button>
           )
         })}
       </div>
+
+      {/* 移动端显示选中方块名称 */}
+      {isCompact && selectedBlockType && (
+        <div className="text-[10px] text-cyan-400 bg-black/60 px-2 py-0.5 rounded">
+          {t(`game.blocks.${selectedBlockType}`)}
+        </div>
+      )}
     </div>
   )
 }

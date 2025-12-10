@@ -39,6 +39,19 @@ npm run start:dev    # Start NestJS server in watch mode
 npm run build        # Build for production
 ```
 
+## Git Workflow
+
+**Branch Strategy:**
+- All development work should be merged to `main` branch after completion
+- Create feature branches from `main` for new features or fixes
+- After code review/testing, merge feature branches directly to `main`
+- Keep `main` branch always deployable
+
+**Commit Guidelines:**
+- Use conventional commit format: `feat:`, `fix:`, `chore:`, `docs:`, etc.
+- Write clear, concise commit messages in English
+- Reference issue numbers when applicable
+
 ## Architecture
 
 ### Directory Structure

@@ -9,7 +9,8 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { InfoCard, ListItem } from '@/components/demos/DemoControls'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Home, Gamepad2, BookOpen, Box, BarChart2 } from 'lucide-react'
+import { Home, Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown } from 'lucide-react'
+import { useIsMobile } from '@/hooks/useIsMobile'
 
 // Demo components
 import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
@@ -862,8 +863,12 @@ function VisualTypeBadge({ type }: { type: '2D' | '3D' }) {
 export function DemosPage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const { isMobile, isTablet } = useIsMobile()
   const [activeDemo, setActiveDemo] = useState<string>('light-wave')
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
+  const [expandedUnit, setExpandedUnit] = useState<number | null>(0)
 
+  const isCompact = isMobile || isTablet
   const currentDemo = DEMOS.find((d) => d.id === activeDemo)
   const DemoComponent = currentDemo?.component
   const demoInfo = getDemoInfo(t)[activeDemo]
@@ -878,13 +883,28 @@ export function DemosPage() {
       {/* Navigation Header */}
       <header
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 px-6 py-3 flex items-center justify-between backdrop-blur-sm',
+          'fixed top-0 left-0 right-0 z-50 flex items-center justify-between backdrop-blur-sm',
+          isCompact ? 'px-3 py-2' : 'px-6 py-3',
           theme === 'dark'
             ? 'bg-slate-900/95 border-b border-cyan-400/20'
             : 'bg-white/95 border-b border-cyan-500/20'
         )}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Mobile menu button */}
+          {isCompact && (
+            <button
+              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+              className={cn(
+                'p-2 rounded-lg transition-colors',
+                theme === 'dark'
+                  ? 'text-cyan-400 hover:bg-cyan-400/10'
+                  : 'text-cyan-600 hover:bg-cyan-100'
+              )}
+            >
+              {showMobileSidebar ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          )}
           <Link
             to="/"
             className={cn(
@@ -894,13 +914,14 @@ export function DemosPage() {
                 : 'text-cyan-600 hover:text-cyan-500'
             )}
           >
-            <Home className="w-5 h-5" />
+            <Home className={cn(isCompact ? 'w-4 h-4' : 'w-5 h-5')} />
           </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">⟡</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className={cn(isCompact ? 'text-xl' : 'text-2xl')}>⟡</span>
             <span
               className={cn(
-                'text-xl font-bold',
+                'font-bold',
+                isCompact ? 'text-base' : 'text-xl',
                 theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
               )}
             >
@@ -909,149 +930,193 @@ export function DemosPage() {
           </div>
         </div>
 
-        <nav className="flex items-center gap-4">
-          <Link
-            to="/game"
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-lg transition-all',
-              theme === 'dark'
-                ? 'text-gray-400 hover:text-white hover:bg-cyan-400/10'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-cyan-100'
-            )}
-          >
-            <Gamepad2 className="w-4 h-4" />
-            <span>{t('common.game')}</span>
-          </Link>
-          <Link
-            to="/demos"
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-lg',
-              theme === 'dark' ? 'text-cyan-400 bg-cyan-400/15' : 'text-cyan-600 bg-cyan-100'
-            )}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>{t('common.course')}</span>
-          </Link>
+        <nav className="flex items-center gap-2 sm:gap-4">
+          {!isCompact && (
+            <>
+              <Link
+                to="/game"
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-lg transition-all',
+                  theme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-cyan-400/10'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-cyan-100'
+                )}
+              >
+                <Gamepad2 className="w-4 h-4" />
+                <span>{t('common.game')}</span>
+              </Link>
+              <Link
+                to="/demos"
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-lg',
+                  theme === 'dark' ? 'text-cyan-400 bg-cyan-400/15' : 'text-cyan-600 bg-cyan-100'
+                )}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>{t('common.course')}</span>
+              </Link>
+            </>
+          )}
           <LanguageThemeSwitcher />
         </nav>
       </header>
 
       {/* Main Container */}
-      <div className="flex pt-[60px]">
-        {/* Sidebar */}
+      <div className={cn("flex", isCompact ? "pt-[52px]" : "pt-[60px]")}>
+        {/* Sidebar - Desktop always visible, Mobile slide-in */}
         <aside
           className={cn(
-            'w-64 fixed left-0 top-[60px] bottom-0 border-r overflow-y-auto',
+            'fixed top-0 bottom-0 border-r overflow-y-auto transition-transform duration-300 z-40',
+            isCompact
+              ? cn(
+                  'w-72 left-0',
+                  showMobileSidebar ? 'translate-x-0' : '-translate-x-full',
+                  'pt-14'
+                )
+              : 'w-64 left-0 top-[60px]',
             theme === 'dark'
-              ? 'bg-slate-900/90 border-cyan-400/10'
-              : 'bg-white/90 border-cyan-200'
+              ? 'bg-slate-900/95 border-cyan-400/10'
+              : 'bg-white/95 border-cyan-200'
           )}
         >
           <div className="p-4">
-            {UNITS.map((unit) => (
-              <div key={unit.num} className="mb-5">
-                <h3
-                  className={cn(
-                    'text-[10px] uppercase tracking-wider mb-2 px-2 font-semibold flex items-center gap-2',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            {UNITS.map((unit) => {
+              const unitDemos = DEMOS.filter((d) => d.unit === unit.num)
+              const isExpanded = !isCompact || expandedUnit === unit.num
+
+              return (
+                <div key={unit.num} className="mb-3">
+                  <button
+                    onClick={() => isCompact && setExpandedUnit(expandedUnit === unit.num ? null : unit.num)}
+                    className={cn(
+                      'w-full text-[10px] uppercase tracking-wider mb-2 px-2 font-semibold flex items-center gap-2',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400',
+                      isCompact && 'hover:text-cyan-400 transition-colors'
+                    )}
+                  >
+                    {unit.num === 0 ? (
+                      <span className="text-yellow-400">★</span>
+                    ) : (
+                      <span className={`text-${unit.color}-400`}>●</span>
+                    )}
+                    <span className="flex-1 text-left">
+                      {unit.num === 0 ? t('basics.title') : `${t('game.level')} ${unit.num}`} ·{' '}
+                      {t(unit.titleKey)}
+                    </span>
+                    {isCompact && (
+                      <ChevronDown className={cn(
+                        "w-3 h-3 transition-transform",
+                        isExpanded && "rotate-180"
+                      )} />
+                    )}
+                  </button>
+                  {isExpanded && (
+                    <ul className="space-y-0.5">
+                      {unitDemos.map((demo) => (
+                        <li key={demo.id}>
+                          <button
+                            onClick={() => {
+                              setActiveDemo(demo.id)
+                              if (isCompact) setShowMobileSidebar(false)
+                            }}
+                            className={cn(
+                              'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all',
+                              activeDemo === demo.id
+                                ? theme === 'dark'
+                                  ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
+                                  : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
+                                : theme === 'dark'
+                                  ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
+                                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0',
+                                activeDemo === demo.id
+                                  ? theme === 'dark'
+                                    ? 'bg-cyan-400 text-black'
+                                    : 'bg-cyan-500 text-white'
+                                  : theme === 'dark'
+                                    ? 'bg-slate-700 text-gray-400'
+                                    : 'bg-gray-200 text-gray-500'
+                              )}
+                            >
+                              {unitDemos.indexOf(demo) + 1}
+                            </span>
+                            <span className="truncate flex-1">{t(demo.titleKey)}</span>
+                            <VisualTypeBadge type={demo.visualType} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
                   )}
-                >
-                  {unit.num === 0 ? (
-                    <span className="text-yellow-400">★</span>
-                  ) : (
-                    <span className={`text-${unit.color}-400`}>●</span>
-                  )}
-                  {unit.num === 0 ? t('basics.title') : `${t('game.level')} ${unit.num}`} ·{' '}
-                  {t(unit.titleKey)}
-                </h3>
-                <ul className="space-y-0.5">
-                  {DEMOS.filter((d) => d.unit === unit.num).map((demo) => (
-                    <li key={demo.id}>
-                      <button
-                        onClick={() => setActiveDemo(demo.id)}
-                        className={cn(
-                          'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all',
-                          activeDemo === demo.id
-                            ? theme === 'dark'
-                              ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
-                              : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
-                            : theme === 'dark'
-                              ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
-                              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0',
-                            activeDemo === demo.id
-                              ? theme === 'dark'
-                                ? 'bg-cyan-400 text-black'
-                                : 'bg-cyan-500 text-white'
-                              : theme === 'dark'
-                                ? 'bg-slate-700 text-gray-400'
-                                : 'bg-gray-200 text-gray-500'
-                          )}
-                        >
-                          {DEMOS.filter((d) => d.unit === demo.unit).indexOf(demo) + 1}
-                        </span>
-                        <span className="truncate flex-1">{t(demo.titleKey)}</span>
-                        <VisualTypeBadge type={demo.visualType} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+                </div>
+              )
+            })}
           </div>
 
-          {/* Interaction guide */}
-          <div
-            className={cn(
-              'p-4 border-t',
-              theme === 'dark' ? 'border-slate-800' : 'border-gray-200'
-            )}
-          >
+          {/* Interaction guide - hide on mobile to save space */}
+          {!isCompact && (
             <div
               className={cn(
-                'p-3 rounded-lg border',
-                theme === 'dark'
-                  ? 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50'
-                  : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
+                'p-4 border-t',
+                theme === 'dark' ? 'border-slate-800' : 'border-gray-200'
               )}
             >
-              <h4
+              <div
                 className={cn(
-                  'text-xs font-semibold mb-2',
-                  theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                  'p-3 rounded-lg border',
+                  theme === 'dark'
+                    ? 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50'
+                    : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
                 )}
               >
-                {t('course.interactionGuide')}
-              </h4>
-              <ul
-                className={cn(
-                  'text-[11px] space-y-1.5',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-                )}
-              >
-                <li className="flex items-center gap-2">
-                  <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
-                  {t('course.dragToRotate')}
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
-                  {t('course.scrollToZoom')}
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
-                  {t('course.slidersAdjust')}
-                </li>
-              </ul>
+                <h4
+                  className={cn(
+                    'text-xs font-semibold mb-2',
+                    theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                  )}
+                >
+                  {t('course.interactionGuide')}
+                </h4>
+                <ul
+                  className={cn(
+                    'text-[11px] space-y-1.5',
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                  )}
+                >
+                  <li className="flex items-center gap-2">
+                    <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
+                    {t('course.dragToRotate')}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
+                    {t('course.scrollToZoom')}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
+                    {t('course.slidersAdjust')}
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
+          )}
         </aside>
 
+        {/* Mobile sidebar overlay */}
+        {isCompact && showMobileSidebar && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30"
+            onClick={() => setShowMobileSidebar(false)}
+          />
+        )}
+
         {/* Main Content */}
-        <main className="ml-64 flex-1 p-6">
+        <main className={cn(
+          "flex-1",
+          isCompact ? "ml-0 p-3" : "ml-64 p-6"
+        )}>
           <div className="max-w-[1400px] mx-auto">
             {/* Title and description */}
             <div className="mb-5">
@@ -1099,9 +1164,12 @@ export function DemosPage() {
               </div>
             </div>
 
-            {/* Info cards - three column layout */}
+            {/* Info cards - responsive grid layout */}
             {demoInfo && (
-              <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <div className={cn(
+                "grid gap-4",
+                isCompact ? "mt-4 grid-cols-1" : "mt-6 grid-cols-1 lg:grid-cols-3 gap-5"
+              )}>
                 {/* Physics principle */}
                 <InfoCard title={t('course.cards.physics')} icon={<PhysicsIcon />} color="cyan">
                   <div className="space-y-4">

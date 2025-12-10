@@ -23,10 +23,13 @@ import {
   Eye,
   Zap,
   Settings2,
+  RotateCw,
+  X,
 } from 'lucide-react'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/useIsMobile'
 
 // 导入共享模块
 import { getPolarizationColor, POLARIZATION_DISPLAY_CONFIG } from '@/lib/polarization'
@@ -263,7 +266,9 @@ export function Game2DPage() {
   const { t, i18n } = useTranslation()
   void t
   const { theme } = useTheme()
+  const { isMobile, isTablet } = useIsMobile()
   const isZh = i18n.language === 'zh'
+  const isCompact = isMobile || isTablet
 
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0)
   const [componentStates, setComponentStates] = useState<Record<string, Partial<OpticalComponent>>>({})
@@ -272,6 +277,7 @@ export function Game2DPage() {
   const [showHint, setShowHint] = useState(false)
   const [isAnimating, setIsAnimating] = useState(true)
   const [showPolarization, setShowPolarization] = useState(true)
+  const [showMobileInfo, setShowMobileInfo] = useState(false)
 
   const currentLevel = LEVELS[currentLevelIndex]
   const isDark = theme === 'dark'
@@ -400,11 +406,12 @@ export function Game2DPage() {
       {/* Header */}
       <header
         className={cn(
-          'flex items-center justify-between p-4 border-b',
+          'flex items-center justify-between border-b',
+          isCompact ? 'p-2' : 'p-4',
           isDark ? 'border-slate-700/50 bg-slate-900/50' : 'border-slate-200 bg-white/80'
         )}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             to="/"
             className={cn(
@@ -412,40 +419,66 @@ export function Game2DPage() {
               isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-200 text-slate-600'
             )}
           >
-            <Home className="w-5 h-5" />
+            <Home className={cn(isCompact ? 'w-4 h-4' : 'w-5 h-5')} />
           </Link>
-          <Link
-            to="/game"
-            className={cn(
-              'p-2 rounded-lg transition-colors',
-              isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-200 text-slate-600'
-            )}
-          >
-            <Zap className="w-5 h-5" />
-          </Link>
-          <Link
-            to="/demos"
-            className={cn(
-              'p-2 rounded-lg transition-colors',
-              isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-200 text-slate-600'
-            )}
-          >
-            <BookOpen className="w-5 h-5" />
-          </Link>
-          <div className="h-6 w-px bg-slate-500/30 mx-2" />
-          <h1 className={cn('text-xl font-bold', isDark ? 'text-cyan-400' : 'text-cyan-600')}>
+          {!isCompact && (
+            <>
+              <Link
+                to="/game"
+                className={cn(
+                  'p-2 rounded-lg transition-colors',
+                  isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-200 text-slate-600'
+                )}
+              >
+                <Zap className="w-5 h-5" />
+              </Link>
+              <Link
+                to="/demos"
+                className={cn(
+                  'p-2 rounded-lg transition-colors',
+                  isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-200 text-slate-600'
+                )}
+              >
+                <BookOpen className="w-5 h-5" />
+              </Link>
+              <div className="h-6 w-px bg-slate-500/30 mx-2" />
+            </>
+          )}
+          <h1 className={cn(
+            'font-bold',
+            isCompact ? 'text-base' : 'text-xl',
+            isDark ? 'text-cyan-400' : 'text-cyan-600'
+          )}>
             PolarCraft 2D
           </h1>
         </div>
-        <LanguageThemeSwitcher />
+        <div className="flex items-center gap-2">
+          {isCompact && (
+            <button
+              onClick={() => setShowMobileInfo(!showMobileInfo)}
+              className={cn(
+                'p-2 rounded-lg transition-colors',
+                showMobileInfo
+                  ? isDark ? 'bg-cyan-400/20 text-cyan-400' : 'bg-cyan-100 text-cyan-600'
+                  : isDark ? 'text-slate-300' : 'text-slate-600'
+              )}
+            >
+              <Info className="w-4 h-4" />
+            </button>
+          )}
+          <LanguageThemeSwitcher />
+        </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col lg:flex-row gap-6 p-4 lg:p-6 overflow-hidden">
+      <main className={cn(
+        "flex-1 flex flex-col lg:flex-row overflow-hidden",
+        isCompact ? "gap-2 p-2" : "gap-6 p-4 lg:p-6"
+      )}>
         {/* Game Area */}
         <div className="flex-1 flex flex-col items-center">
           {/* Level Info */}
-          <div className="text-center mb-4">
+          <div className={cn("text-center", isCompact ? "mb-2" : "mb-4")}>
             <div className="flex items-center justify-center gap-4 mb-2">
               <button
                 onClick={goToPrevLevel}
@@ -686,36 +719,94 @@ export function Game2DPage() {
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-3 mt-4 flex-wrap justify-center">
+          <div className={cn(
+            "flex items-center flex-wrap justify-center",
+            isCompact ? "gap-2 mt-2" : "gap-3 mt-4"
+          )}>
+            {/* Mobile rotation controls - show when component is selected */}
+            {isCompact && selectedComponent && (() => {
+              const component = currentLevel.components.find((c) => c.id === selectedComponent)
+              if (!component || component.locked) return null
+
+              const isRotator = component.type === 'rotator'
+              const isMirror = component.type === 'mirror'
+
+              return (
+                <div className={cn(
+                  "flex items-center gap-1 px-2 py-1 rounded-lg",
+                  isDark ? 'bg-cyan-500/20 border border-cyan-500/30' : 'bg-cyan-100 border border-cyan-300'
+                )}>
+                  <span className={cn("text-xs mr-1", isDark ? 'text-cyan-400' : 'text-cyan-600')}>
+                    {isZh ? '旋转' : 'Rotate'}:
+                  </span>
+                  {isRotator ? (
+                    <button
+                      onClick={() => handleRotate(selectedComponent, 0, 'rotationAmount')}
+                      className={cn(
+                        "px-2 py-1 rounded text-xs font-medium",
+                        isDark ? 'bg-cyan-400/30 text-cyan-300' : 'bg-cyan-200 text-cyan-700'
+                      )}
+                    >
+                      {getComponentState(component).rotationAmount === 45 ? '45° → 90°' : '90° → 45°'}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleRotate(selectedComponent, isMirror ? -45 : -15, isMirror ? 'angle' : 'polarizationAngle')}
+                        className={cn(
+                          "p-1.5 rounded",
+                          isDark ? 'bg-cyan-400/30 text-cyan-300' : 'bg-cyan-200 text-cyan-700'
+                        )}
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleRotate(selectedComponent, isMirror ? 45 : 15, isMirror ? 'angle' : 'polarizationAngle')}
+                        className={cn(
+                          "p-1.5 rounded",
+                          isDark ? 'bg-cyan-400/30 text-cyan-300' : 'bg-cyan-200 text-cyan-700'
+                        )}
+                      >
+                        <RotateCw className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              )
+            })()}
+
             <button
               onClick={handleReset}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
+                'flex items-center gap-2 rounded-lg transition-colors',
+                isCompact ? 'px-3 py-1.5 text-sm' : 'px-4 py-2',
                 isDark
                   ? 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                   : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
               )}
             >
-              <RotateCcw className="w-4 h-4" />
-              {isZh ? '重置' : 'Reset'}
+              <RotateCcw className={cn(isCompact ? "w-3 h-3" : "w-4 h-4")} />
+              {!isCompact && (isZh ? '重置' : 'Reset')}
             </button>
             <button
               onClick={() => setIsAnimating(!isAnimating)}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
+                'flex items-center gap-2 rounded-lg transition-colors',
+                isCompact ? 'px-3 py-1.5 text-sm' : 'px-4 py-2',
                 isDark
                   ? 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                   : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
               )}
             >
-              {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {isAnimating ? (isZh ? '暂停' : 'Pause') : isZh ? '播放' : 'Play'}
+              {isAnimating ? <Pause className={cn(isCompact ? "w-3 h-3" : "w-4 h-4")} /> : <Play className={cn(isCompact ? "w-3 h-3" : "w-4 h-4")} />}
+              {!isCompact && (isAnimating ? (isZh ? '暂停' : 'Pause') : isZh ? '播放' : 'Play')}
             </button>
             {currentLevel.hint && (
               <button
                 onClick={() => setShowHint(!showHint)}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
+                  'flex items-center gap-2 rounded-lg transition-colors',
+                  isCompact ? 'px-3 py-1.5 text-sm' : 'px-4 py-2',
                   showHint
                     ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                     : isDark
@@ -723,8 +814,8 @@ export function Game2DPage() {
                       : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
                 )}
               >
-                <Lightbulb className="w-4 h-4" />
-                {isZh ? '提示' : 'Hint'}
+                <Lightbulb className={cn(isCompact ? "w-3 h-3" : "w-4 h-4")} />
+                {!isCompact && (isZh ? '提示' : 'Hint')}
               </button>
             )}
           </div>
@@ -742,15 +833,32 @@ export function Game2DPage() {
           )}
         </div>
 
-        {/* Info Panel */}
+        {/* Info Panel - Desktop always visible, Mobile toggle */}
         <div
           className={cn(
-            'w-full lg:w-80 rounded-2xl p-4 lg:p-6 lg:max-h-[calc(100vh-120px)] overflow-y-auto',
+            'rounded-2xl overflow-y-auto',
+            isCompact
+              ? showMobileInfo
+                ? 'fixed inset-x-2 top-16 bottom-2 z-50 p-3'
+                : 'hidden'
+              : 'w-full lg:w-80 p-4 lg:p-6 lg:max-h-[calc(100vh-120px)]',
             isDark
-              ? 'bg-slate-900/60 border border-slate-700/50'
-              : 'bg-white/80 border border-slate-200'
+              ? 'bg-slate-900/95 border border-slate-700/50'
+              : 'bg-white/95 border border-slate-200'
           )}
         >
+          {/* Close button for mobile */}
+          {isCompact && showMobileInfo && (
+            <button
+              onClick={() => setShowMobileInfo(false)}
+              className={cn(
+                "absolute top-2 right-2 p-1 rounded-lg",
+                isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-200'
+              )}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
           {/* Component Guide */}
           <div className="mb-6">
             <h3

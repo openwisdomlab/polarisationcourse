@@ -2,11 +2,55 @@ import { useTranslation } from 'react-i18next'
 import { useGameStore } from '@/stores/gameStore'
 import { TUTORIAL_LEVELS } from '@/core/World'
 import { cn } from '@/lib/utils'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-export function LevelSelector() {
+interface LevelSelectorProps {
+  compact?: boolean
+}
+
+export function LevelSelector({ compact = false }: LevelSelectorProps) {
   const { t } = useTranslation()
   const { currentLevelIndex, loadLevel } = useGameStore()
 
+  // Compact mode for mobile - shows current level with prev/next buttons
+  if (compact) {
+    const canGoPrev = currentLevelIndex > 0
+    const canGoNext = currentLevelIndex < TUTORIAL_LEVELS.length - 1
+
+    return (
+      <div className="flex items-center justify-center gap-2">
+        <button
+          onClick={() => canGoPrev && loadLevel(currentLevelIndex - 1)}
+          disabled={!canGoPrev}
+          className={cn(
+            "p-1 rounded transition-all",
+            canGoPrev
+              ? "text-cyan-400 hover:bg-cyan-400/20"
+              : "text-gray-600 cursor-not-allowed"
+          )}
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <span className="text-xs text-cyan-400 min-w-[80px] text-center">
+          {t('game.level')} {currentLevelIndex + 1}/{TUTORIAL_LEVELS.length}
+        </span>
+        <button
+          onClick={() => canGoNext && loadLevel(currentLevelIndex + 1)}
+          disabled={!canGoNext}
+          className={cn(
+            "p-1 rounded transition-all",
+            canGoNext
+              ? "text-cyan-400 hover:bg-cyan-400/20"
+              : "text-gray-600 cursor-not-allowed"
+          )}
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    )
+  }
+
+  // Desktop mode - original layout
   return (
     <div className="flex gap-1.5">
       {TUTORIAL_LEVELS.map((_, index) => (
