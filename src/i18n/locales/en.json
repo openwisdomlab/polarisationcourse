@@ -195,7 +195,12 @@
     "search": {
       "placeholder": "Search demos...",
       "results": "{{count}} result(s) found",
-      "noResults": "No matching demos found"
+      "noResults": "No matching demos found",
+      "moreMatches": "more matches",
+      "section": {
+        "title": "Title",
+        "description": "Description"
+      }
     },
     "interactionGuide": "Interaction Guide",
     "dragToRotate": "Drag to rotate 3D view",

@@ -994,6 +994,59 @@ interface DemoItem {
   visualType: '2D' | '3D'
 }
 
+// 搜索匹配结果接口 - 包含匹配位置信息
+type SearchSection = 'title' | 'description' | 'physics' | 'lifeScene' | 'experiment' | 'frontier' | 'diy' | 'questions'
+
+interface SearchMatch {
+  demo: DemoItem
+  matches: Array<{
+    section: SearchSection
+    sectionLabel: string
+    text: string
+    highlightedText: string
+  }>
+}
+
+// 搜索结果分区标签映射
+const getSectionLabel = (section: SearchSection, t: (key: string) => string): string => {
+  const labels: Record<SearchSection, string> = {
+    title: t('course.search.section.title') || '标题',
+    description: t('course.search.section.description') || '描述',
+    physics: t('course.cards.physics') || '物理原理',
+    lifeScene: t('course.cards.lifeScene') || '生活中的偏振',
+    experiment: t('course.cards.experiment') || '实验应用',
+    frontier: t('course.cards.frontier') || '前沿应用',
+    diy: t('course.cards.diy') || '动手试试',
+    questions: t('course.questions.title') || '探索前的思考'
+  }
+  return labels[section]
+}
+
+// 高亮匹配文本
+const highlightText = (text: string, query: string): string => {
+  if (!query) return text
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  return text.replace(regex, '**$1**')
+}
+
+// 截取匹配上下文
+const getMatchContext = (text: string, query: string, contextLength: number = 50): string => {
+  const lowerText = text.toLowerCase()
+  const lowerQuery = query.toLowerCase()
+  const index = lowerText.indexOf(lowerQuery)
+
+  if (index === -1) return text.substring(0, contextLength * 2)
+
+  const start = Math.max(0, index - contextLength)
+  const end = Math.min(text.length, index + query.length + contextLength)
+
+  let result = text.substring(start, end)
+  if (start > 0) result = '...' + result
+  if (end < text.length) result = result + '...'
+
+  return result
+}
+
 // 难度级别类型
 type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced'
 
@@ -1441,58 +1494,200 @@ export function DemosPage() {
   // Get difficulty config
   const difficultyConfig = DIFFICULTY_CONFIG[difficultyLevel]
 
-  // Search function to filter demos based on query
-  const getFilteredDemos = () => {
-    if (!searchQuery.trim()) return DEMOS
+  // Enhanced search function that returns demos with match location details
+  const getSearchResults = (): { demos: DemoItem[], matches: Map<string, SearchMatch> } => {
+    if (!searchQuery.trim()) {
+      return { demos: DEMOS, matches: new Map() }
+    }
 
     const query = searchQuery.toLowerCase().trim()
     const demoInfoMap = getDemoInfo(t)
+    const matchesMap = new Map<string, SearchMatch>()
 
-    return DEMOS.filter(demo => {
+    const matchedDemos = DEMOS.filter(demo => {
+      const matches: SearchMatch['matches'] = []
+
       // Search in title
-      const title = t(demo.titleKey).toLowerCase()
-      if (title.includes(query)) return true
+      const title = t(demo.titleKey)
+      if (title.toLowerCase().includes(query)) {
+        matches.push({
+          section: 'title',
+          sectionLabel: getSectionLabel('title', t),
+          text: getMatchContext(title, query),
+          highlightedText: highlightText(getMatchContext(title, query), query)
+        })
+      }
 
       // Search in description
-      const description = t(demo.descriptionKey).toLowerCase()
-      if (description.includes(query)) return true
+      const description = t(demo.descriptionKey)
+      if (description.toLowerCase().includes(query)) {
+        matches.push({
+          section: 'description',
+          sectionLabel: getSectionLabel('description', t),
+          text: getMatchContext(description, query),
+          highlightedText: highlightText(getMatchContext(description, query), query)
+        })
+      }
 
       // Search in demo info content
       const info = demoInfoMap[demo.id]
       if (info) {
         // Physics principle and formula
-        if (info.physics.principle.toLowerCase().includes(query)) return true
-        if (info.physics.formula?.toLowerCase().includes(query)) return true
-        if (info.physics.details.some(d => d.toLowerCase().includes(query))) return true
+        if (info.physics.principle.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'physics',
+            sectionLabel: getSectionLabel('physics', t),
+            text: getMatchContext(info.physics.principle, query),
+            highlightedText: highlightText(getMatchContext(info.physics.principle, query), query)
+          })
+        }
+        if (info.physics.formula?.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'physics',
+            sectionLabel: getSectionLabel('physics', t) + ' - 公式',
+            text: info.physics.formula,
+            highlightedText: highlightText(info.physics.formula, query)
+          })
+        }
+        info.physics.details.forEach((d, i) => {
+          if (d.toLowerCase().includes(query)) {
+            matches.push({
+              section: 'physics',
+              sectionLabel: getSectionLabel('physics', t) + ` [${i + 1}]`,
+              text: getMatchContext(d, query),
+              highlightedText: highlightText(getMatchContext(d, query), query)
+            })
+          }
+        })
 
         // Life scene
-        if (info.lifeScene?.title.toLowerCase().includes(query)) return true
-        if (info.lifeScene?.hook.toLowerCase().includes(query)) return true
-        if (info.lifeScene?.facts.some(f => f.toLowerCase().includes(query))) return true
+        if (info.lifeScene?.title.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'lifeScene',
+            sectionLabel: getSectionLabel('lifeScene', t) + ' - 标题',
+            text: getMatchContext(info.lifeScene.title, query),
+            highlightedText: highlightText(getMatchContext(info.lifeScene.title, query), query)
+          })
+        }
+        if (info.lifeScene?.hook.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'lifeScene',
+            sectionLabel: getSectionLabel('lifeScene', t) + ' - 引言',
+            text: getMatchContext(info.lifeScene.hook, query),
+            highlightedText: highlightText(getMatchContext(info.lifeScene.hook, query), query)
+          })
+        }
+        info.lifeScene?.facts.forEach((f, i) => {
+          if (f.toLowerCase().includes(query)) {
+            matches.push({
+              section: 'lifeScene',
+              sectionLabel: getSectionLabel('lifeScene', t) + ` - 事实${i + 1}`,
+              text: getMatchContext(f, query),
+              highlightedText: highlightText(getMatchContext(f, query), query)
+            })
+          }
+        })
 
         // Experiment
-        if (info.experiment.title.toLowerCase().includes(query)) return true
-        if (info.experiment.example.toLowerCase().includes(query)) return true
+        if (info.experiment.title.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'experiment',
+            sectionLabel: getSectionLabel('experiment', t),
+            text: getMatchContext(info.experiment.title, query),
+            highlightedText: highlightText(getMatchContext(info.experiment.title, query), query)
+          })
+        }
+        if (info.experiment.example.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'experiment',
+            sectionLabel: getSectionLabel('experiment', t) + ' - 示例',
+            text: getMatchContext(info.experiment.example, query),
+            highlightedText: highlightText(getMatchContext(info.experiment.example, query), query)
+          })
+        }
 
         // Frontier
-        if (info.frontier.title.toLowerCase().includes(query)) return true
-        if (info.frontier.example.toLowerCase().includes(query)) return true
+        if (info.frontier.title.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'frontier',
+            sectionLabel: getSectionLabel('frontier', t),
+            text: getMatchContext(info.frontier.title, query),
+            highlightedText: highlightText(getMatchContext(info.frontier.title, query), query)
+          })
+        }
+        if (info.frontier.example.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'frontier',
+            sectionLabel: getSectionLabel('frontier', t) + ' - 示例',
+            text: getMatchContext(info.frontier.example, query),
+            highlightedText: highlightText(getMatchContext(info.frontier.example, query), query)
+          })
+        }
 
         // DIY
-        if (info.diy?.title.toLowerCase().includes(query)) return true
-        if (info.diy?.materials.some(m => m.toLowerCase().includes(query))) return true
+        if (info.diy?.title.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'diy',
+            sectionLabel: getSectionLabel('diy', t),
+            text: getMatchContext(info.diy.title, query),
+            highlightedText: highlightText(getMatchContext(info.diy.title, query), query)
+          })
+        }
+        info.diy?.materials.forEach((m, i) => {
+          if (m.toLowerCase().includes(query)) {
+            matches.push({
+              section: 'diy',
+              sectionLabel: getSectionLabel('diy', t) + ` - 材料${i + 1}`,
+              text: getMatchContext(m, query),
+              highlightedText: highlightText(getMatchContext(m, query), query)
+            })
+          }
+        })
 
         // Questions
-        if (info.questions?.leading?.toLowerCase().includes(query)) return true
-        if (info.questions?.guided.some(q => q.toLowerCase().includes(query))) return true
-        if (info.questions?.openEnded.some(q => q.toLowerCase().includes(query))) return true
+        if (info.questions?.leading?.toLowerCase().includes(query)) {
+          matches.push({
+            section: 'questions',
+            sectionLabel: getSectionLabel('questions', t) + ' - 核心问题',
+            text: getMatchContext(info.questions.leading, query),
+            highlightedText: highlightText(getMatchContext(info.questions.leading, query), query)
+          })
+        }
+        info.questions?.guided.forEach((q, i) => {
+          if (q.toLowerCase().includes(query)) {
+            matches.push({
+              section: 'questions',
+              sectionLabel: getSectionLabel('questions', t) + ` - 引导${i + 1}`,
+              text: getMatchContext(q, query),
+              highlightedText: highlightText(getMatchContext(q, query), query)
+            })
+          }
+        })
+        info.questions?.openEnded.forEach((q, i) => {
+          if (q.toLowerCase().includes(query)) {
+            matches.push({
+              section: 'questions',
+              sectionLabel: getSectionLabel('questions', t) + ` - 开放${i + 1}`,
+              text: getMatchContext(q, query),
+              highlightedText: highlightText(getMatchContext(q, query), query)
+            })
+          }
+        })
       }
 
+      if (matches.length > 0) {
+        matchesMap.set(demo.id, { demo, matches })
+        return true
+      }
       return false
     })
+
+    return { demos: matchedDemos, matches: matchesMap }
   }
 
-  const filteredDemos = getFilteredDemos()
+  const searchResults = getSearchResults()
+  const filteredDemos = searchResults.demos
+  const searchMatches = searchResults.matches
 
   // Reset card states when switching demos - cards should be collapsed on first visit to each demo
   const [visitedDemos, setVisitedDemos] = useState<Set<string>>(new Set())
@@ -1519,7 +1714,9 @@ export function DemosPage() {
   const isCompact = isMobile || isTablet
   const currentDemo = DEMOS.find((d) => d.id === activeDemo)
   const DemoComponent = currentDemo?.component
-  const demoInfo = getDemoInfo(t, difficultyLevel)[activeDemo]
+  // For Unit 0 (Optical Basics), don't apply difficulty-based content variations
+  const effectiveDifficultyLevel = currentDemo?.unit === 0 ? undefined : difficultyLevel
+  const demoInfo = getDemoInfo(t, effectiveDifficultyLevel)[activeDemo]
 
   return (
     <div
@@ -1701,8 +1898,9 @@ export function DemosPage() {
                       <span className={`text-${unit.color}-400`}>●</span>
                     )}
                     <span className="flex-1 text-left">
-                      {unit.num === 0 ? t('basics.title') : `${t('game.level')} ${unit.num}`} ·{' '}
-                      {t(unit.titleKey)}
+                      {unit.num === 0
+                        ? t('basics.title')  // 光学基础不重复显示
+                        : `${t('game.level')} ${unit.num} · ${t(unit.titleKey)}`}
                     </span>
                     {isCompact && (
                       <ChevronDown className={cn(
@@ -1713,44 +1911,85 @@ export function DemosPage() {
                   </button>
                   {isExpanded && (
                     <ul className="space-y-0.5">
-                      {unitDemos.map((demo) => (
-                        <li key={demo.id}>
-                          <button
-                            onClick={() => {
-                              handleDemoChange(demo.id)
-                              if (isCompact) setShowMobileSidebar(false)
-                            }}
-                            className={cn(
-                              'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all duration-200',
-                              'hover:translate-x-1 active:scale-[0.98]',
-                              activeDemo === demo.id
-                                ? theme === 'dark'
-                                  ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
-                                  : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
-                                : theme === 'dark'
-                                  ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
-                                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                            )}
-                          >
-                            <span
+                      {unitDemos.map((demo) => {
+                        const demoMatches = searchQuery ? searchMatches.get(demo.id) : null
+                        return (
+                          <li key={demo.id}>
+                            <button
+                              onClick={() => {
+                                handleDemoChange(demo.id)
+                                if (isCompact) setShowMobileSidebar(false)
+                              }}
                               className={cn(
-                                'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0',
+                                'w-full flex flex-col gap-1 px-3 py-2 rounded-lg text-sm text-left transition-all duration-200',
+                                'hover:translate-x-1 active:scale-[0.98]',
                                 activeDemo === demo.id
                                   ? theme === 'dark'
-                                    ? 'bg-cyan-400 text-black'
-                                    : 'bg-cyan-500 text-white'
+                                    ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
+                                    : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
                                   : theme === 'dark'
-                                    ? 'bg-slate-700 text-gray-400'
-                                    : 'bg-gray-200 text-gray-500'
+                                    ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
+                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                               )}
                             >
-                              {unitDemos.indexOf(demo) + 1}
-                            </span>
-                            <span className="truncate flex-1">{t(demo.titleKey)}</span>
-                            <VisualTypeBadge type={demo.visualType} />
-                          </button>
-                        </li>
-                      ))}
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={cn(
+                                    'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0',
+                                    activeDemo === demo.id
+                                      ? theme === 'dark'
+                                        ? 'bg-cyan-400 text-black'
+                                        : 'bg-cyan-500 text-white'
+                                      : theme === 'dark'
+                                        ? 'bg-slate-700 text-gray-400'
+                                        : 'bg-gray-200 text-gray-500'
+                                  )}
+                                >
+                                  {unitDemos.indexOf(demo) + 1}
+                                </span>
+                                <span className="truncate flex-1">{t(demo.titleKey)}</span>
+                                <VisualTypeBadge type={demo.visualType} />
+                              </div>
+                              {/* Search match details */}
+                              {demoMatches && demoMatches.matches.length > 0 && (
+                                <div className={cn(
+                                  'ml-7 mt-1 text-xs space-y-1 border-l-2 pl-2',
+                                  theme === 'dark'
+                                    ? 'border-amber-400/40 text-gray-500'
+                                    : 'border-amber-500/40 text-gray-500'
+                                )}>
+                                  {demoMatches.matches.slice(0, 3).map((match, idx) => (
+                                    <div key={idx} className="flex flex-col">
+                                      <span className={cn(
+                                        'text-[10px] font-medium',
+                                        theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                                      )}>
+                                        {match.sectionLabel}
+                                      </span>
+                                      <span
+                                        className="truncate"
+                                        dangerouslySetInnerHTML={{
+                                          __html: match.highlightedText
+                                            .replace(/\*\*([^*]+)\*\*/g,
+                                              `<mark class="${theme === 'dark' ? 'bg-amber-400/30 text-amber-200' : 'bg-amber-200 text-amber-900'} px-0.5 rounded">\$1</mark>`)
+                                        }}
+                                      />
+                                    </div>
+                                  ))}
+                                  {demoMatches.matches.length > 3 && (
+                                    <span className={cn(
+                                      'text-[10px]',
+                                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                                    )}>
+                                      +{demoMatches.matches.length - 3} {t('course.search.moreMatches') || '更多匹配'}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </button>
+                          </li>
+                        )
+                      })}
                     </ul>
                   )}
                 </div>
@@ -1819,50 +2058,52 @@ export function DemosPage() {
           "flex-1",
           isCompact ? "ml-0 p-3" : "ml-64 p-6"
         )}>
-          {/* Sticky Difficulty Selector Bar */}
-          <div className={cn(
-            'sticky z-30 mb-4 -mx-3 px-3 py-3 border-b backdrop-blur-md',
-            isCompact ? 'top-[52px]' : 'top-[60px] -mx-6 px-6',
-            theme === 'dark'
-              ? 'bg-[#0a0a0f]/90 border-slate-800/50'
-              : 'bg-[#f8fafc]/90 border-gray-200/50'
-          )}>
-            <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <GraduationCap className={cn(
-                  'w-5 h-5',
-                  difficultyLevel === 'beginner' ? 'text-green-400' :
-                  difficultyLevel === 'advanced' ? 'text-purple-400' : 'text-cyan-400'
-                )} />
-                <span className={cn(
-                  'text-sm font-medium',
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                )}>
-                  {t('course.difficulty.label') || '难度等级'}
-                </span>
-              </div>
-              <DifficultySelector
-                value={difficultyLevel}
-                onChange={handleDifficultyChange}
-                theme={theme}
-                t={t}
-              />
-              {/* Difficulty change notification */}
-              {showDifficultyChange && (
-                <div className={cn(
-                  'absolute right-4 top-full mt-2 px-4 py-2 rounded-lg text-sm font-medium shadow-lg z-50',
-                  'animate-in fade-in slide-in-from-top-2 duration-300',
-                  difficultyLevel === 'beginner'
-                    ? 'bg-green-500/90 text-white'
-                    : difficultyLevel === 'advanced'
-                    ? 'bg-purple-500/90 text-white'
-                    : 'bg-cyan-500/90 text-white'
-                )}>
-                  {DIFFICULTY_CONFIG[difficultyLevel].icon} {t(`course.difficulty.${difficultyLevel}`)}
+          {/* Sticky Difficulty Selector Bar - Only show for Units 1-5, not for Unit 0 (Optical Basics) */}
+          {currentDemo?.unit !== 0 && (
+            <div className={cn(
+              'sticky z-30 mb-4 -mx-3 px-3 py-3 border-b backdrop-blur-md',
+              isCompact ? 'top-[52px]' : 'top-[60px] -mx-6 px-6',
+              theme === 'dark'
+                ? 'bg-[#0a0a0f]/90 border-slate-800/50'
+                : 'bg-[#f8fafc]/90 border-gray-200/50'
+            )}>
+              <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <GraduationCap className={cn(
+                    'w-5 h-5',
+                    difficultyLevel === 'beginner' ? 'text-green-400' :
+                    difficultyLevel === 'advanced' ? 'text-purple-400' : 'text-cyan-400'
+                  )} />
+                  <span className={cn(
+                    'text-sm font-medium',
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  )}>
+                    {t('course.difficulty.label') || '难度等级'}
+                  </span>
                 </div>
-              )}
+                <DifficultySelector
+                  value={difficultyLevel}
+                  onChange={handleDifficultyChange}
+                  theme={theme}
+                  t={t}
+                />
+                {/* Difficulty change notification */}
+                {showDifficultyChange && (
+                  <div className={cn(
+                    'absolute right-4 top-full mt-2 px-4 py-2 rounded-lg text-sm font-medium shadow-lg z-50',
+                    'animate-in fade-in slide-in-from-top-2 duration-300',
+                    difficultyLevel === 'beginner'
+                      ? 'bg-green-500/90 text-white'
+                      : difficultyLevel === 'advanced'
+                      ? 'bg-purple-500/90 text-white'
+                      : 'bg-cyan-500/90 text-white'
+                  )}>
+                    {DIFFICULTY_CONFIG[difficultyLevel].icon} {t(`course.difficulty.${difficultyLevel}`)}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="max-w-[1400px] mx-auto">
             {/* Title and description */}
