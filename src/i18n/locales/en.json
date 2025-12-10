@@ -223,9 +223,11 @@
       }
     },
     "cards": {
+      "lifeScene": "Real-World Connection",
       "physics": "Physical Principle",
       "experiment": "Experimental Application",
-      "frontier": "Frontier Application"
+      "frontier": "Frontier Application",
+      "diy": "Try It Yourself"
     },
     "questions": {
       "title": "Think Before You Explore",
@@ -275,6 +277,31 @@
           "Single photon polarization for quantum communication",
           "Polarization entanglement enables quantum teleportation"
         ]
+      },
+      "lifeScene": {
+        "title": "How 3D Glasses Really Work",
+        "imageAlt": "Cross-section showing 3D movie glasses with circular polarizers, one for left eye rotating clockwise, right eye counter-clockwise",
+        "hook": "Your 3D movie glasses aren't just dark plastic - they contain sophisticated polarization technology that gives each eye a different image!",
+        "facts": [
+          "Modern 3D glasses use circular polarization - left eye sees clockwise, right eye sees counter-clockwise",
+          "The projector rapidly switches between two circularly polarized images",
+          "This is why you can tilt your head in 3D movies - circular polarization doesn't depend on angle"
+        ]
+      },
+      "diy": {
+        "title": "See the Spin in 3D Glasses",
+        "materials": [
+          "RealD 3D glasses from a movie theater",
+          "A mirror",
+          "A bright LCD screen (phone or computer)"
+        ],
+        "steps": [
+          "Look at the LCD screen through one lens - it looks normal",
+          "Now look at the REFLECTION of the screen in the mirror through the SAME lens",
+          "The screen should appear black or very dark!",
+          "Try the other lens - same effect but original screen is dark instead"
+        ],
+        "observation": "Reflection reverses the circular polarization direction! Right-circular becomes left-circular. Each lens only passes one type, proving the glasses use circular polarization."
       }
     },
     "malus": {
@@ -289,6 +316,16 @@
         "openEnded": [
           "How do LCD screens use Malus's Law to control pixel brightness?",
           "Could you design a variable light dimmer using polarizers? How?"
+        ]
+      },
+      "lifeScene": {
+        "title": "Your Phone Screen Uses This Physics",
+        "imageAlt": "Person wearing polarized sunglasses looking at smartphone screen, showing how tilting the phone causes screen to darken",
+        "hook": "You spend 5+ hours daily looking at screens. Have you noticed your phone goes dark when you tilt it while wearing sunglasses?",
+        "facts": [
+          "Every LCD screen has two polarizers - without them, you'd see nothing but white light",
+          "Try wearing polarized sunglasses and rotating your phone 90° - the screen will go black!",
+          "Photographers use polarizing filters based on this same law to eliminate reflections"
         ]
       },
       "physics": {
@@ -317,6 +354,21 @@
           "Combined with polarizers to modulate brightness",
           "Widely used in phones, TVs, and monitors"
         ]
+      },
+      "diy": {
+        "title": "Two-Sunglasses Experiment",
+        "materials": [
+          "Two pairs of polarized sunglasses (or polarizing film from old 3D glasses)",
+          "A bright light source (lamp or phone flashlight)",
+          "Optional: old LCD monitor to take apart (with adult help)"
+        ],
+        "steps": [
+          "Hold one pair of sunglasses up to the light - note the brightness",
+          "Now hold the second pair behind the first, aligned the same way - similar brightness",
+          "Slowly rotate one pair 90° - watch the light completely disappear!",
+          "Try angles in between (30°, 45°, 60°) and notice the gradual change"
+        ],
+        "observation": "At 45° rotation, light is reduced to 50% - exactly as Malus's Law predicts (cos²45° = 0.5)"
       }
     },
     "birefringence": {
@@ -331,6 +383,16 @@
         "openEnded": [
           "How might birefringence be used to measure stress in transparent materials?",
           "Why do some minerals show beautiful colors under polarized light microscopes?"
+        ]
+      },
+      "lifeScene": {
+        "title": "Vikings' Secret Navigation Crystal",
+        "imageAlt": "Clear calcite crystal placed on text showing double image effect, with Viking ship silhouette in background",
+        "hook": "How did Vikings navigate the open ocean on cloudy days? Legend speaks of 'sunstones' - and scientists believe they were calcite crystals!",
+        "facts": [
+          "Calcite is called 'Iceland spar' - abundant in Iceland where Vikings sailed from",
+          "The crystal can locate the sun's position even through clouds by analyzing sky polarization",
+          "Modern stress analysis in engineering uses the same birefringent property in plastic models"
         ]
       },
       "physics": {
@@ -359,6 +421,21 @@
           "Polarization multiplexing in optical communications",
           "Polarization interferometry instruments"
         ]
+      },
+      "diy": {
+        "title": "Stress Patterns in Plastic",
+        "materials": [
+          "Clear plastic ruler, protractor, or CD case",
+          "Two polarizing filters (from 3D glasses or old LCD)",
+          "Bright light source (phone flashlight works great)"
+        ],
+        "steps": [
+          "Place one polarizer on the light source",
+          "Put the clear plastic item on top",
+          "Hold the second polarizer above and look through",
+          "Bend or press the plastic while watching - beautiful colors appear!"
+        ],
+        "observation": "Rainbow-colored stress patterns reveal where the plastic is under strain - engineers use this exact technique to test structures!"
       }
     },
     "waveplate": {
@@ -373,6 +450,16 @@
         "openEnded": [
           "Why do 3D movie glasses use circular polarization instead of linear?",
           "How could wave plates be combined to create any desired polarization state?"
+        ]
+      },
+      "lifeScene": {
+        "title": "Why You Can Tilt Your Head in 3D Movies",
+        "imageAlt": "Person watching 3D movie with circular polarized glasses, tilting head without losing the 3D effect",
+        "hook": "Ever noticed you can tilt your head in modern 3D movies without ruining the effect? Old 3D movies using linear polarization failed when you tilted!",
+        "facts": [
+          "RealD 3D glasses use circular polarization created by wave plates",
+          "Your left eye sees clockwise-spinning light, right eye sees counter-clockwise",
+          "This is why modern 3D is comfortable - no need to keep your head perfectly level"
         ]
       },
       "physics": {
@@ -401,6 +488,22 @@
           "Circular polarizing glasses separate left/right images",
           "Tilting head doesn't affect 3D effect"
         ]
+      },
+      "diy": {
+        "title": "Cellophane Tape Rainbow",
+        "materials": [
+          "Clear cellophane tape (not plastic packing tape)",
+          "A glass or plastic surface",
+          "Two polarizers (from 3D glasses)",
+          "White light source"
+        ],
+        "steps": [
+          "Stick multiple overlapping layers of cellophane on the surface",
+          "Place one polarizer below and one above",
+          "Rotate the top polarizer and watch the tape layers change colors!",
+          "Different thicknesses create different colors"
+        ],
+        "observation": "Cellophane acts like a wave plate! Each layer adds a phase delay, creating interference colors when viewed between crossed polarizers."
       }
     },
     "fresnel": {
@@ -415,6 +518,16 @@
         "openEnded": [
           "How does understanding Fresnel equations help in designing anti-reflective coatings?",
           "Why does water reflect more at grazing angles than at normal incidence?"
+        ]
+      },
+      "lifeScene": {
+        "title": "The Lake at Sunset Mystery",
+        "imageAlt": "Split comparison: lakeside view at noon showing visible fish vs same lake at sunset showing perfect mirror reflection",
+        "hook": "Why can you see fish clearly when looking straight down into water, but at sunset the lake becomes a perfect mirror?",
+        "facts": [
+          "At steep angles, water reflects only ~2% of light - you see through clearly",
+          "At shallow angles (sunset view), water reflects over 50% - it becomes mirror-like",
+          "This is why sunset photos over water create stunning reflections"
         ]
       },
       "physics": {
@@ -443,6 +556,22 @@
           "Improve optical system transmittance",
           "Applied to glasses, solar cells, etc."
         ]
+      },
+      "diy": {
+        "title": "Angle-Dependent Reflection",
+        "materials": [
+          "A glass of water or clear glass panel",
+          "A bright flashlight",
+          "Dark background",
+          "Protractor (optional)"
+        ],
+        "steps": [
+          "Shine light straight down onto water - notice weak reflection",
+          "Gradually decrease the angle (more grazing)",
+          "At very shallow angles, the reflection becomes much stronger!",
+          "Try to find the angle where reflection is strongest"
+        ],
+        "observation": "Near-horizontal angles (80-85°) show dramatic reflections while looking straight down shows almost none - exactly as Fresnel equations predict."
       }
     },
     "brewster": {
@@ -457,6 +586,16 @@
         "openEnded": [
           "Why do photographers use polarizing filters when shooting through windows?",
           "How do laser systems use Brewster windows to reduce reflection losses?"
+        ]
+      },
+      "lifeScene": {
+        "title": "How Photographers Eliminate Reflections",
+        "imageAlt": "Before/after comparison of window photography: with glare vs clean shot through glass using polarizing filter",
+        "hook": "Ever tried to photograph something through a window and got nothing but glare? Professional photographers have a simple solution - the polarizing filter!",
+        "facts": [
+          "At Brewster's angle (~53° for water, ~56° for glass), reflected light is 100% polarized",
+          "A simple polarizing filter can completely eliminate this glare",
+          "This is why polarized sunglasses reduce water glare so effectively when fishing"
         ]
       },
       "physics": {
@@ -485,6 +624,22 @@
           "Enhance sky blue color contrast",
           "Underwater photography to reduce surface reflection"
         ]
+      },
+      "diy": {
+        "title": "Eliminate Water Glare",
+        "materials": [
+          "Polarized sunglasses",
+          "A bowl or tray of water",
+          "Small objects to place at the bottom",
+          "Desk lamp for lighting"
+        ],
+        "steps": [
+          "Place objects at the bottom of the water container",
+          "Position the lamp to create glare on the water surface",
+          "View from different angles - find where glare is strongest (~53° from vertical)",
+          "Put on polarized sunglasses and rotate your head - watch the glare vanish!"
+        ],
+        "observation": "At Brewster's angle, the glare is completely polarized. Your polarized sunglasses block this exact polarization, revealing the objects below!"
       }
     },
     "chromatic": {
@@ -499,6 +654,16 @@
         "openEnded": [
           "Why does transparent tape show colors between crossed polarizers?",
           "How is chromatic polarization used to analyze stress in engineering structures?"
+        ]
+      },
+      "lifeScene": {
+        "title": "Hidden Art in Your Tape Dispenser",
+        "imageAlt": "Ordinary clear tape viewed between polarizers revealing stunning rainbow colors and patterns",
+        "hook": "That boring clear tape on your desk holds a secret - between two polarizers, it transforms into vibrant rainbow art!",
+        "facts": [
+          "The tape is made of stretched plastic, which creates birefringence",
+          "Overlapping layers create different colors - like a hidden painting",
+          "Engineers use this same effect to find stress and cracks in airplane parts"
         ]
       },
       "physics": {
@@ -527,6 +692,22 @@
           "Aerospace structure design verification",
           "Building structure safety assessment"
         ]
+      },
+      "diy": {
+        "title": "Tape Art Gallery",
+        "materials": [
+          "Clear cellophane tape (multiple layers work best)",
+          "Glass or acrylic sheet",
+          "Two polarizing filters",
+          "White light source (phone screen works)"
+        ],
+        "steps": [
+          "Stick tape on the glass in overlapping patterns and shapes",
+          "Place the glass between two polarizers",
+          "Shine white light through and observe the rainbow colors",
+          "Rotate one polarizer to see colors shift and change!"
+        ],
+        "observation": "Each layer of tape adds a phase delay, creating different interference colors. More layers = different colors. Artists actually create stunning works using this technique!"
       }
     },
     "opticalRotation": {
@@ -541,6 +722,16 @@
         "openEnded": [
           "Why is it important to distinguish between left-handed and right-handed drug molecules?",
           "How do polarimeters help in food industry quality control?"
+        ]
+      },
+      "lifeScene": {
+        "title": "How Sweet Is Your Drink?",
+        "imageAlt": "Polarimeter device measuring sugar concentration in a tube of honey solution with digital readout",
+        "hook": "How do food scientists quickly measure sugar content without tasting? They shine polarized light through it!",
+        "facts": [
+          "Sugar molecules are 'handed' - they twist light in a specific direction",
+          "More sugar = more twist. Scientists measure the angle to calculate concentration",
+          "This is how honey authenticity is verified - fake honey has the wrong rotation!"
         ]
       },
       "physics": {
@@ -569,6 +760,22 @@
           "Different enantiomers may have different effects/toxicity",
           "Pharmaceutical industry must distinguish enantiomers"
         ]
+      },
+      "diy": {
+        "title": "Sugar Solution Light Twister",
+        "materials": [
+          "Clear corn syrup or concentrated sugar water",
+          "A clear glass or tube",
+          "Two polarizing filters",
+          "White light source"
+        ],
+        "steps": [
+          "Set up polarizers on each side of the container",
+          "Fill with water first - adjust polarizers to block light (crossed)",
+          "Replace with corn syrup or sugar solution",
+          "Light now passes through! The sugar rotated the polarization."
+        ],
+        "observation": "Sugar molecules are chiral (like your hands - mirror images that aren't identical). They rotate light's polarization plane, letting it pass through the second polarizer."
       }
     },
     "mieScattering": {
@@ -583,6 +790,16 @@
         "openEnded": [
           "How could Mie scattering be used to detect air pollution levels?",
           "Why do fog and mist make visibility poor in all colors equally?"
+        ]
+      },
+      "lifeScene": {
+        "title": "Why Clouds Are White, Not Blue",
+        "imageAlt": "Fluffy white clouds against bright blue sky, illustrating the contrast between Mie and Rayleigh scattering",
+        "hook": "If the sky is blue because of scattering, why aren't clouds blue too? The answer lies in water droplet size!",
+        "facts": [
+          "Cloud droplets are much larger than air molecules - they scatter all colors equally",
+          "This equal scattering produces white (all colors combined)",
+          "Fog, mist, and haze work the same way - that's why visibility is reduced in all colors"
         ]
       },
       "physics": {
@@ -611,6 +828,22 @@
           "Lidar retrieves particle concentration",
           "Real-time air quality monitoring"
         ]
+      },
+      "diy": {
+        "title": "Kitchen Cloud Maker",
+        "materials": [
+          "Clear glass of water",
+          "Milk (just a few drops)",
+          "Bright flashlight",
+          "Dark room"
+        ],
+        "steps": [
+          "Start with pure water - shine light through from the side",
+          "Add ONE drop of milk, stir - notice bluish scattered light (Rayleigh)",
+          "Add more milk gradually - the color shifts toward white",
+          "With enough milk, the water looks 'cloudy' white - just like real clouds!"
+        ],
+        "observation": "Few milk fat globules = blue scattering (like sky). Many globules = white scattering (like clouds). You've created both atmospheric effects in a glass!"
       }
     },
     "rayleigh": {
@@ -625,6 +858,16 @@
         "openEnded": [
           "If Earth had a different atmosphere composition, what color might our sky be?",
           "How does Rayleigh scattering affect satellite imaging and remote sensing?"
+        ]
+      },
+      "lifeScene": {
+        "title": "The Sunset Mystery Solved",
+        "imageAlt": "Beautiful orange-red sunset with sun on horizon, showing how light passes through more atmosphere",
+        "hook": "Why does the sky change from blue to orange and red as the sun sets? It's all about how far light travels through the atmosphere!",
+        "facts": [
+          "Blue light scatters ~10x more than red light (that's the 1/λ⁴ law)",
+          "At sunset, light travels through more atmosphere, scattering away all the blue",
+          "Mars has a different atmosphere - its sky is butterscotch colored and sunsets are blue!"
         ]
       },
       "physics": {
@@ -653,6 +896,22 @@
           "Obtain true surface reflectance",
           "Improve remote sensing image quality"
         ]
+      },
+      "diy": {
+        "title": "Sunset in a Glass",
+        "materials": [
+          "Large clear container or fish tank",
+          "Water",
+          "Few drops of milk or a pinch of flour",
+          "Strong flashlight (phone flashlight works)"
+        ],
+        "steps": [
+          "Fill container with water, add tiny amount of milk (very little!)",
+          "Shine light from one end",
+          "Look from the side - the water glows blue!",
+          "Look from the far end (through the water) - the light appears orange-red, just like sunset!"
+        ],
+        "observation": "You've created an atmospheric model! Blue scatters sideways (daytime sky), while red passes through (sunset effect). The longer the path, the redder it gets."
       }
     },
     "stokes": {
@@ -698,6 +957,31 @@
           "Distinguish water, vegetation, buildings",
           "Atmospheric aerosol retrieval"
         ]
+      },
+      "lifeScene": {
+        "title": "How NASA Sees Through Haze",
+        "imageAlt": "Satellite polarization image showing clear distinction between water, vegetation, and urban areas despite atmospheric haze",
+        "hook": "Satellites can see through haze and smog to map the Earth's surface - but only with polarization! Just four numbers reveal everything.",
+        "facts": [
+          "The Stokes vector is the 'fingerprint' of light - it completely describes its polarization",
+          "Different surfaces (water, leaves, concrete) have unique polarization signatures",
+          "Astronomers use Stokes vectors to study magnetic fields in distant stars"
+        ]
+      },
+      "diy": {
+        "title": "Polarization State Detective",
+        "materials": [
+          "Polarizing filter (from 3D glasses)",
+          "Light source (phone screen with white background)",
+          "Piece of paper to record angles"
+        ],
+        "steps": [
+          "Hold the polarizer to the light and rotate it slowly",
+          "Note the angle where light is brightest - this tells you about S₁",
+          "For S₃ (circular), you'd need a quarter-wave plate before the polarizer",
+          "Different light sources have different 'signatures'!"
+        ],
+        "observation": "By measuring at 0°, 45°, 90°, and with a wave plate, you can determine all four Stokes parameters. This is exactly how professional polarimeters work!"
       },
       "ui": {
         "poincareSphere": "Poincaré Sphere (Top View: S₁-S₂ Plane)",
@@ -798,6 +1082,32 @@
           "Quantitative tissue structure analysis"
         ]
       },
+      "lifeScene": {
+        "title": "Detecting Cancer with Light",
+        "imageAlt": "Medical polarization imaging showing healthy tissue vs cancerous tissue with different Mueller matrix signatures",
+        "hook": "Doctors are now using polarized light to detect skin cancer earlier than ever before - by measuring how tissue changes light's polarization!",
+        "facts": [
+          "Healthy and cancerous tissues have different Mueller matrices - they transform light differently",
+          "This non-invasive technique can spot cancer that's invisible to the naked eye",
+          "The same math is used in designing camera lenses and fiber optic systems"
+        ]
+      },
+      "diy": {
+        "title": "Build a Polarization System",
+        "materials": [
+          "Multiple polarizing filters (3+)",
+          "Quarter-wave plate (from 3D glasses if circular)",
+          "Flashlight and white paper",
+          "Calculator for matrix math"
+        ],
+        "steps": [
+          "Stack polarizers at different angles and predict output using matrices",
+          "A polarizer at 0° has a specific 4×4 matrix you can look up",
+          "Multiply the matrices in reverse order: light hits the last element first!",
+          "Compare your calculation with what you observe"
+        ],
+        "observation": "Matrix multiplication correctly predicts the output! This is how optical engineers design complex systems - they simulate before building."
+      },
       "ui": {
         "lightSource": "Light Source",
         "inputPolarization": "Input Pol.",
@@ -856,6 +1166,16 @@
       "lightWave": {
         "title": "Light as Electromagnetic Wave",
         "description": "Understanding light as transverse electromagnetic waves",
+        "lifeScene": {
+          "title": "The Wave That Needs Nothing to Ripple",
+          "imageAlt": "Comparison of water waves needing water vs light waves traveling through empty space from the sun",
+          "hook": "Water waves need water. Sound waves need air. But light travels through 150 million km of empty space from the sun to your eyes. How?",
+          "facts": [
+            "Light is electromagnetic - it creates the medium it travels through by oscillating electric and magnetic fields",
+            "Different wavelengths (colors) are produced by different oscillation frequencies",
+            "Your microwave, WiFi, and X-rays are all light - just invisible wavelengths!"
+          ]
+        },
         "physics": {
           "principle": "Light is a transverse electromagnetic wave with oscillating electric and magnetic fields perpendicular to propagation direction",
           "formula": "E = E₀ sin(kx - ωt)",
@@ -875,11 +1195,36 @@
             "Why do you think light can travel through vacuum while sound cannot?",
             "How might the wave nature of light explain phenomena like rainbows?"
           ]
+        },
+        "diy": {
+          "title": "See the Wave Nature of Light",
+          "materials": [
+            "CD or DVD (old scratched ones work great)",
+            "Bright light source (sunlight or flashlight)",
+            "Dark room for best effect"
+          ],
+          "steps": [
+            "Hold the CD at an angle to the light source",
+            "Observe the rainbow patterns on the surface",
+            "Tilt the CD and watch colors shift and move",
+            "Notice how different angles show different colors"
+          ],
+          "observation": "The tiny grooves on the CD act like a diffraction grating, spreading light into colors based on wavelength. This proves light is a wave - only waves diffract!"
         }
       },
       "polarizationIntro": {
         "title": "What is Polarization?",
         "description": "Introduction to the concept of light polarization",
+        "lifeScene": {
+          "title": "The Secret of Polarized Sunglasses",
+          "imageAlt": "Split view of fishing scene: left side with regular glasses showing water glare, right side with polarized glasses showing fish clearly",
+          "hook": "Ever wonder why some sunglasses let you see fish beneath water's surface while others just make everything darker?",
+          "facts": [
+            "Light from the sun vibrates in all directions - it's 'unpolarized'",
+            "When it reflects off water, it becomes mostly horizontally polarized",
+            "Polarized sunglasses block horizontal vibrations - eliminating glare while letting other light through!"
+          ]
+        },
         "physics": {
           "principle": "Polarization describes the orientation of the electric field oscillation in a light wave",
           "details": [
@@ -898,11 +1243,36 @@
             "Why do polarized sunglasses reduce glare better than regular sunglasses?",
             "Where might you encounter polarized light in daily life?"
           ]
+        },
+        "diy": {
+          "title": "Test Your Sunglasses",
+          "materials": [
+            "Your sunglasses (to test if they're polarized)",
+            "A computer or phone screen (LCD type)",
+            "A reflective surface like a car hood or water"
+          ],
+          "steps": [
+            "Look at your phone screen through the glasses normally",
+            "Tilt your head (rotate the glasses) 90 degrees while looking",
+            "If the screen goes dark when tilted, your glasses are polarized!",
+            "Bonus: Look at water glare through them and rotate - watch glare vanish"
+          ],
+          "observation": "LCD screens emit polarized light. Polarized sunglasses only pass one orientation - that's why tilting makes it dark. Cheap sunglasses are just tinted, so tilting doesn't change anything."
         }
       },
       "polarizationTypes": {
         "title": "Types of Polarization",
         "description": "Linear, circular, and elliptical polarization explained",
+        "lifeScene": {
+          "title": "Why Modern 3D Beats Old 3D",
+          "imageAlt": "Comparison of old red-blue anaglyph 3D glasses vs modern circular polarization 3D glasses at a movie theater",
+          "hook": "Remember those old red-blue 3D glasses that gave headaches? Modern 3D uses 'spinning' light instead - and that's why it looks so much better!",
+          "facts": [
+            "Old 3D used color filters - that's why you saw weird colors and got eye strain",
+            "Modern 3D uses circular polarization - left eye gets clockwise-spinning light, right eye gets counter-clockwise",
+            "Satellite communications also use circular polarization - rain doesn't disrupt it like linear would"
+          ]
+        },
         "physics": {
           "principle": "Different polarization types arise from the phase and amplitude relationship of orthogonal field components",
           "details": [
@@ -921,11 +1291,35 @@
             "Why might circular polarization be useful for 3D movies?",
             "Can you think of a real-world application that benefits from elliptical polarization?"
           ]
+        },
+        "diy": {
+          "title": "Identify Circular vs Linear",
+          "materials": [
+            "RealD 3D glasses from a movie theater",
+            "Linear polarizer (from old LCD screen or cheap sunglasses)",
+            "Mirror"
+          ],
+          "steps": [
+            "Look at a reflection through the linear polarizer and rotate it - reflection dims and brightens",
+            "Now look at the same reflection through 3D glasses - rotating doesn't change brightness much!",
+            "This is because 3D glasses use circular polarization, which isn't blocked by rotation"
+          ],
+          "observation": "Linear polarization has an 'up-down' direction that rotating polarizers can block. Circular polarization 'spins', so there's no fixed direction to block - that's why head tilting doesn't ruin 3D movies!"
         }
       },
       "opticalBench": {
         "title": "Interactive Optical Bench",
         "description": "Hands-on exploration of light propagation through optical components",
+        "lifeScene": {
+          "title": "The Mysterious Third Polarizer",
+          "imageAlt": "Diagram showing two crossed polarizers blocking all light, then a third polarizer at 45° in between allowing light through",
+          "hook": "Two polarizers at 90° block ALL light. But add a third polarizer in between and suddenly light gets through! How is that possible?",
+          "facts": [
+            "This seems to break the rules - blocked light magically passes through!",
+            "The secret: the middle polarizer 'rotates' the polarization in two steps instead of one blocked jump",
+            "This 'paradox' is actually how some privacy screens on ATMs work"
+          ]
+        },
         "physics": {
           "principle": "Explore how light interacts with polarizers following Malus's Law",
           "details": [
@@ -944,6 +1338,21 @@
             "How could you use multiple polarizers to control light intensity precisely?",
             "What practical devices use this principle of polarization filtering?"
           ]
+        },
+        "diy": {
+          "title": "The Three-Polarizer Trick",
+          "materials": [
+            "Three polarizing filters (from multiple pairs of 3D glasses)",
+            "Bright light source",
+            "Dark background for contrast"
+          ],
+          "steps": [
+            "Align two polarizers parallel - light passes through",
+            "Rotate one to 90° - light is completely blocked (crossed polarizers)",
+            "Now insert the third polarizer between them at 45°",
+            "Light magically appears! Try other angles too."
+          ],
+          "observation": "At 45°, 25% of light gets through (cos²45° × cos²45° = 0.25). The middle filter doesn't 'unblock' - it rotates the polarization partway, letting some through each filter!"
         }
       }
     }

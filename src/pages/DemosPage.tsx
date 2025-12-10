@@ -64,6 +64,24 @@ function FrontierIcon() {
   )
 }
 
+function LifeSceneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+      <path d="M2 12h20" />
+    </svg>
+  )
+}
+
+function DIYIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  )
+}
+
 // SVG Diagrams
 function MalusDiagram() {
   return (
@@ -217,6 +235,12 @@ interface DemoQuestions {
 
 interface DemoInfo {
   questions?: DemoQuestions
+  lifeScene?: {
+    title: string
+    imageAlt: string  // Description for AI-generated image placeholder
+    hook: string      // Engaging question or statement
+    facts: string[]   // Interesting facts connecting to daily life
+  }
   physics: {
     principle: string
     formula?: string
@@ -231,6 +255,12 @@ interface DemoInfo {
     title: string
     example: string
     details: string[]
+  }
+  diy?: {
+    title: string
+    materials: string[]
+    steps: string[]
+    observation: string
   }
   diagram?: ReactNode
   visualType: '2D' | '3D' // Indicates whether demo uses 2D or 3D visualization
@@ -262,10 +292,71 @@ const getQuestions = (t: (key: string) => string, basePath: string): DemoQuestio
   return undefined
 }
 
+// Helper to get lifeScene data from translations
+const getLifeScene = (t: (key: string) => string, basePath: string): DemoInfo['lifeScene'] | undefined => {
+  try {
+    const title = t(`${basePath}.lifeScene.title`)
+    const hasTitle = title && !title.includes('.lifeScene.')
+    if (!hasTitle) return undefined
+
+    const imageAlt = t(`${basePath}.lifeScene.imageAlt`)
+    const hook = t(`${basePath}.lifeScene.hook`)
+    const facts = [
+      t(`${basePath}.lifeScene.facts.0`),
+      t(`${basePath}.lifeScene.facts.1`),
+      t(`${basePath}.lifeScene.facts.2`),
+    ].filter(f => f && !f.includes('.lifeScene.'))
+
+    return {
+      title,
+      imageAlt: imageAlt && !imageAlt.includes('.lifeScene.') ? imageAlt : '',
+      hook: hook && !hook.includes('.lifeScene.') ? hook : '',
+      facts
+    }
+  } catch {
+    return undefined
+  }
+}
+
+// Helper to get DIY data from translations
+const getDiy = (t: (key: string) => string, basePath: string): DemoInfo['diy'] | undefined => {
+  try {
+    const title = t(`${basePath}.diy.title`)
+    const hasTitle = title && !title.includes('.diy.')
+    if (!hasTitle) return undefined
+
+    const materials = [
+      t(`${basePath}.diy.materials.0`),
+      t(`${basePath}.diy.materials.1`),
+      t(`${basePath}.diy.materials.2`),
+      t(`${basePath}.diy.materials.3`),
+    ].filter(m => m && !m.includes('.diy.'))
+
+    const steps = [
+      t(`${basePath}.diy.steps.0`),
+      t(`${basePath}.diy.steps.1`),
+      t(`${basePath}.diy.steps.2`),
+      t(`${basePath}.diy.steps.3`),
+    ].filter(s => s && !s.includes('.diy.'))
+
+    const observation = t(`${basePath}.diy.observation`)
+
+    return {
+      title,
+      materials,
+      steps,
+      observation: observation && !observation.includes('.diy.') ? observation : ''
+    }
+  } catch {
+    return undefined
+  }
+}
+
 // Demo info data - using i18n keys
 const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
   'light-wave': {
     questions: getQuestions(t, 'basics.demos.lightWave'),
+    lifeScene: getLifeScene(t, 'basics.demos.lightWave'),
     physics: {
       principle: t('basics.demos.lightWave.physics.principle'),
       formula: t('basics.demos.lightWave.physics.formula'),
@@ -285,11 +376,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
       example: t('basics.demos.lightWave.description'),
       details: [],
     },
+    diy: getDiy(t, 'basics.demos.lightWave'),
     diagram: <LightWaveDiagram />,
     visualType: '2D',
   },
   'polarization-intro': {
     questions: getQuestions(t, 'basics.demos.polarizationIntro'),
+    lifeScene: getLifeScene(t, 'basics.demos.polarizationIntro'),
     physics: {
       principle: t('basics.demos.polarizationIntro.physics.principle'),
       details: [
@@ -308,10 +401,12 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
       example: t('basics.demos.polarizationIntro.description'),
       details: [],
     },
+    diy: getDiy(t, 'basics.demos.polarizationIntro'),
     visualType: '2D',
   },
   'polarization-types': {
     questions: getQuestions(t, 'basics.demos.polarizationTypes'),
+    lifeScene: getLifeScene(t, 'basics.demos.polarizationTypes'),
     physics: {
       principle: t('basics.demos.polarizationTypes.physics.principle'),
       details: [
@@ -330,11 +425,37 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
       example: t('basics.demos.polarizationTypes.description'),
       details: [],
     },
+    diy: getDiy(t, 'basics.demos.polarizationTypes'),
     diagram: <PolarizationStateDiagram />,
+    visualType: '2D',
+  },
+  'optical-bench': {
+    questions: getQuestions(t, 'basics.demos.opticalBench'),
+    lifeScene: getLifeScene(t, 'basics.demos.opticalBench'),
+    physics: {
+      principle: t('basics.demos.opticalBench.physics.principle'),
+      details: [
+        t('basics.demos.opticalBench.physics.details.0'),
+        t('basics.demos.opticalBench.physics.details.1'),
+        t('basics.demos.opticalBench.physics.details.2'),
+      ],
+    },
+    experiment: {
+      title: t('basics.demos.opticalBench.title'),
+      example: t('basics.demos.opticalBench.description'),
+      details: [],
+    },
+    frontier: {
+      title: t('basics.demos.opticalBench.title'),
+      example: t('basics.demos.opticalBench.description'),
+      details: [],
+    },
+    diy: getDiy(t, 'basics.demos.opticalBench'),
     visualType: '2D',
   },
   'polarization-state': {
     questions: getQuestions(t, 'demos.polarizationState'),
+    lifeScene: getLifeScene(t, 'demos.polarizationState'),
     physics: {
       principle: t('demos.polarizationState.physics.principle'),
       formula: t('demos.polarizationState.physics.formula'),
@@ -362,11 +483,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.polarizationState.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.polarizationState'),
     diagram: <PolarizationStateDiagram />,
     visualType: '3D',
   },
   malus: {
     questions: getQuestions(t, 'demos.malus'),
+    lifeScene: getLifeScene(t, 'demos.malus'),
     physics: {
       principle: t('demos.malus.physics.principle'),
       formula: t('demos.malus.physics.formula'),
@@ -394,11 +517,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.malus.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.malus'),
     diagram: <MalusDiagram />,
     visualType: '2D',
   },
   birefringence: {
     questions: getQuestions(t, 'demos.birefringence'),
+    lifeScene: getLifeScene(t, 'demos.birefringence'),
     physics: {
       principle: t('demos.birefringence.physics.principle'),
       formula: t('demos.birefringence.physics.formula'),
@@ -426,11 +551,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.birefringence.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.birefringence'),
     diagram: <BirefringenceDiagram />,
     visualType: '3D',
   },
   waveplate: {
     questions: getQuestions(t, 'demos.waveplate'),
+    lifeScene: getLifeScene(t, 'demos.waveplate'),
     physics: {
       principle: t('demos.waveplate.physics.principle'),
       formula: t('demos.waveplate.physics.formula'),
@@ -458,11 +585,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.waveplate.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.waveplate'),
     diagram: <WaveplateDiagram />,
     visualType: '3D',
   },
   fresnel: {
     questions: getQuestions(t, 'demos.fresnel'),
+    lifeScene: getLifeScene(t, 'demos.fresnel'),
     physics: {
       principle: t('demos.fresnel.physics.principle'),
       formula: t('demos.fresnel.physics.formula'),
@@ -490,11 +619,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.fresnel.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.fresnel'),
     diagram: <FresnelDiagram />,
     visualType: '2D',
   },
   brewster: {
     questions: getQuestions(t, 'demos.brewster'),
+    lifeScene: getLifeScene(t, 'demos.brewster'),
     physics: {
       principle: t('demos.brewster.physics.principle'),
       formula: t('demos.brewster.physics.formula'),
@@ -522,11 +653,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.brewster.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.brewster'),
     diagram: <BrewsterDiagram />,
     visualType: '2D',
   },
   chromatic: {
     questions: getQuestions(t, 'demos.chromatic'),
+    lifeScene: getLifeScene(t, 'demos.chromatic'),
     physics: {
       principle: t('demos.chromatic.physics.principle'),
       formula: t('demos.chromatic.physics.formula'),
@@ -554,10 +687,12 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.chromatic.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.chromatic'),
     visualType: '2D',
   },
   'optical-rotation': {
     questions: getQuestions(t, 'demos.opticalRotation'),
+    lifeScene: getLifeScene(t, 'demos.opticalRotation'),
     physics: {
       principle: t('demos.opticalRotation.physics.principle'),
       formula: t('demos.opticalRotation.physics.formula'),
@@ -585,10 +720,12 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.opticalRotation.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.opticalRotation'),
     visualType: '2D',
   },
   'mie-scattering': {
     questions: getQuestions(t, 'demos.mieScattering'),
+    lifeScene: getLifeScene(t, 'demos.mieScattering'),
     physics: {
       principle: t('demos.mieScattering.physics.principle'),
       formula: t('demos.mieScattering.physics.formula'),
@@ -616,11 +753,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.mieScattering.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.mieScattering'),
     diagram: <ScatteringDiagram />,
     visualType: '2D',
   },
   rayleigh: {
     questions: getQuestions(t, 'demos.rayleigh'),
+    lifeScene: getLifeScene(t, 'demos.rayleigh'),
     physics: {
       principle: t('demos.rayleigh.physics.principle'),
       formula: t('demos.rayleigh.physics.formula'),
@@ -648,11 +787,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.rayleigh.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.rayleigh'),
     diagram: <ScatteringDiagram />,
     visualType: '2D',
   },
   stokes: {
     questions: getQuestions(t, 'demos.stokes'),
+    lifeScene: getLifeScene(t, 'demos.stokes'),
     physics: {
       principle: t('demos.stokes.physics.principle'),
       formula: t('demos.stokes.physics.formula'),
@@ -681,11 +822,13 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.stokes.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.stokes'),
     diagram: <StokesDiagram />,
     visualType: '3D',
   },
   mueller: {
     questions: getQuestions(t, 'demos.mueller'),
+    lifeScene: getLifeScene(t, 'demos.mueller'),
     physics: {
       principle: t('demos.mueller.physics.principle'),
       formula: t('demos.mueller.physics.formula'),
@@ -713,6 +856,7 @@ const getDemoInfo = (t: (key: string) => string): Record<string, DemoInfo> => ({
         t('demos.mueller.frontier.details.2'),
       ],
     },
+    diy: getDiy(t, 'demos.mueller'),
     diagram: <MuellerDiagram />,
     visualType: '2D',
   },
@@ -927,6 +1071,13 @@ function CollapsibleCard({
   const { theme } = useTheme()
 
   const colorClasses = {
+    orange: {
+      header: theme === 'dark'
+        ? 'bg-orange-400/10 border-orange-400/30 hover:bg-orange-400/20 hover:shadow-[0_0_15px_rgba(251,146,60,0.15)]'
+        : 'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:shadow-md',
+      icon: theme === 'dark' ? 'text-orange-400' : 'text-orange-600',
+      expandedBorder: theme === 'dark' ? 'border-orange-400/50' : 'border-orange-300',
+    },
     cyan: {
       header: theme === 'dark'
         ? 'bg-cyan-400/10 border-cyan-400/30 hover:bg-cyan-400/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.15)]'
@@ -947,6 +1098,13 @@ function CollapsibleCard({
         : 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:shadow-md',
       icon: theme === 'dark' ? 'text-purple-400' : 'text-purple-600',
       expandedBorder: theme === 'dark' ? 'border-purple-400/50' : 'border-purple-300',
+    },
+    yellow: {
+      header: theme === 'dark'
+        ? 'bg-yellow-400/10 border-yellow-400/30 hover:bg-yellow-400/20 hover:shadow-[0_0_15px_rgba(250,204,21,0.15)]'
+        : 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100 hover:shadow-md',
+      icon: theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600',
+      expandedBorder: theme === 'dark' ? 'border-yellow-400/50' : 'border-yellow-300',
     },
   }
 
@@ -1002,9 +1160,11 @@ export function DemosPage() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   const [expandedUnit, setExpandedUnit] = useState<number | null>(0)
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({
+    lifeScene: true,  // Life scene card expanded by default
     physics: false,
     experiment: false,
     frontier: false,
+    diy: false,
   })
 
   // Reset card states when switching demos - cards should be collapsed on first visit to each demo
@@ -1015,9 +1175,11 @@ export function DemosPage() {
     // Reset cards to collapsed when switching to a new (not previously visited) demo
     if (!visitedDemos.has(demoId)) {
       setExpandedCards({
+        lifeScene: true,  // Life scene card expanded by default
         physics: false,
         experiment: false,
         frontier: false,
+        diy: false,
       })
       setVisitedDemos(prev => new Set(prev).add(demoId))
     }
@@ -1448,10 +1610,74 @@ export function DemosPage() {
 
             {/* Collapsible Info cards - responsive grid layout */}
             {demoInfo && (
-              <div className={cn(
-                "grid gap-3",
-                isCompact ? "mt-4 grid-cols-1" : "mt-5 grid-cols-1 lg:grid-cols-3 gap-4"
-              )}>
+              <div className="mt-5 space-y-4">
+                {/* Life Scene card - full width, at top */}
+                {demoInfo.lifeScene && (
+                  <CollapsibleCard
+                    title={t('course.cards.lifeScene')}
+                    icon={<LifeSceneIcon />}
+                    color="orange"
+                    isExpanded={expandedCards.lifeScene}
+                    onToggle={() => toggleCard('lifeScene')}
+                  >
+                    <div className="space-y-4">
+                      {/* Image placeholder */}
+                      <div
+                        className={cn(
+                          'rounded-lg p-4 border-2 border-dashed flex items-center justify-center min-h-[120px]',
+                          theme === 'dark'
+                            ? 'bg-orange-400/5 border-orange-400/30'
+                            : 'bg-orange-50 border-orange-300'
+                        )}
+                      >
+                        <div className="text-center">
+                          <div className={cn(
+                            'text-4xl mb-2',
+                            theme === 'dark' ? 'text-orange-400/50' : 'text-orange-400'
+                          )}>
+                            🖼️
+                          </div>
+                          <p className={cn(
+                            'text-xs italic',
+                            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                          )}>
+                            {demoInfo.lifeScene.imageAlt}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Hook question/statement */}
+                      <p className={cn(
+                        'text-base font-medium leading-relaxed',
+                        theme === 'dark' ? 'text-orange-200' : 'text-orange-900'
+                      )}>
+                        {demoInfo.lifeScene.hook}
+                      </p>
+
+                      {/* Facts list */}
+                      <div className="space-y-2">
+                        {demoInfo.lifeScene.facts.map((fact, i) => (
+                          <ListItem
+                            key={i}
+                            icon={
+                              <span className={theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}>
+                                ★
+                              </span>
+                            }
+                          >
+                            {fact}
+                          </ListItem>
+                        ))}
+                      </div>
+                    </div>
+                  </CollapsibleCard>
+                )}
+
+                {/* Physics, Experiment, Frontier cards in a grid */}
+                <div className={cn(
+                  "grid gap-3",
+                  isCompact ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3 gap-4"
+                )}>
                 {/* Physics principle */}
                 <CollapsibleCard
                   title={t('course.cards.physics')}
@@ -1604,6 +1830,113 @@ export function DemosPage() {
                     </div>
                   </div>
                 </CollapsibleCard>
+                </div>
+
+                {/* DIY card - full width, at bottom */}
+                {demoInfo.diy && (
+                  <CollapsibleCard
+                    title={t('course.cards.diy')}
+                    icon={<DIYIcon />}
+                    color="yellow"
+                    isExpanded={expandedCards.diy}
+                    onToggle={() => toggleCard('diy')}
+                  >
+                    <div className="space-y-4">
+                      {/* Materials list */}
+                      <div
+                        className={cn(
+                          'rounded-lg px-4 py-3 border',
+                          theme === 'dark'
+                            ? 'bg-yellow-400/5 border-yellow-400/20'
+                            : 'bg-yellow-50 border-yellow-200'
+                        )}
+                      >
+                        <h5
+                          className={cn(
+                            'font-semibold text-sm mb-2 flex items-center gap-2',
+                            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'
+                          )}
+                        >
+                          📦 Materials
+                        </h5>
+                        <ul className="space-y-1">
+                          {demoInfo.diy.materials.map((material, i) => (
+                            <li
+                              key={i}
+                              className={cn(
+                                'text-sm flex items-center gap-2',
+                                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                              )}
+                            >
+                              <span className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>•</span>
+                              {material}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Steps */}
+                      <div>
+                        <h5
+                          className={cn(
+                            'font-semibold text-sm mb-2 flex items-center gap-2',
+                            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'
+                          )}
+                        >
+                          📝 Steps
+                        </h5>
+                        <ol className="space-y-2">
+                          {demoInfo.diy.steps.map((step, i) => (
+                            <li
+                              key={i}
+                              className={cn(
+                                'text-sm flex items-start gap-3',
+                                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  'flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
+                                  theme === 'dark'
+                                    ? 'bg-yellow-400/20 text-yellow-400'
+                                    : 'bg-yellow-200 text-yellow-800'
+                                )}
+                              >
+                                {i + 1}
+                              </span>
+                              {step}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+
+                      {/* Observation */}
+                      <div
+                        className={cn(
+                          'rounded-lg px-4 py-3 border-2 border-dashed',
+                          theme === 'dark'
+                            ? 'bg-yellow-400/5 border-yellow-400/40'
+                            : 'bg-yellow-100/50 border-yellow-400'
+                        )}
+                      >
+                        <h5
+                          className={cn(
+                            'font-semibold text-sm mb-1 flex items-center gap-2',
+                            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'
+                          )}
+                        >
+                          💡 What you'll observe
+                        </h5>
+                        <p className={cn(
+                          'text-sm',
+                          theme === 'dark' ? 'text-yellow-200' : 'text-yellow-900'
+                        )}>
+                          {demoInfo.diy.observation}
+                        </p>
+                      </div>
+                    </div>
+                  </CollapsibleCard>
+                )}
               </div>
             )}
           </div>
