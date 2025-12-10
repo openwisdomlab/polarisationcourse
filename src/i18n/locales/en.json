@@ -235,10 +235,13 @@
       "diy": "Try It Yourself"
     },
     "difficulty": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced",
-      "formulaHidden": "Switch to intermediate or advanced level to see formulas"
+      "beginner": "Explorer",
+      "intermediate": "Practitioner",
+      "advanced": "Master",
+      "beginnerDesc": "Discover light's mysteries in simple terms",
+      "intermediateDesc": "Hands-on experiments, deeper understanding",
+      "advancedDesc": "Rigorous academic treatment, research perspective",
+      "formulaHidden": "Want formulas? Switch to Practitioner or Master mode"
     },
     "questions": {
       "title": "Think Before You Explore",
@@ -264,11 +267,23 @@
       },
       "physics": {
         "principle": "Polarization state is determined by the amplitude ratio and phase difference of two orthogonal electric field components",
+        "principle_beginner": "Imagine light is jumping rope - it can jump up and down (linear), spin in circles (circular), or draw ovals (elliptical). How it 'jumps' depends on how two waves combine - like two people coordinating a dance!",
+        "principle_advanced": "Any fully polarized state is precisely described by the Jones vector J = [Ex·e^(iδx), Ey·e^(iδy)]^T. The state's position on the Poincaré sphere is uniquely determined by Stokes parameters (S₁, S₂, S₃), satisfying S₀² = S₁² + S₂² + S₃².",
         "formula": "E = Ex·cos(ωt) x̂ + Ey·cos(ωt+δ) ŷ",
         "details": [
           "When δ=0° or 180°, it is linearly polarized",
           "When δ=90° and Ex=Ey, it is circularly polarized",
           "Other cases are elliptically polarized"
+        ],
+        "details_beginner": [
+          "Linear: Light vibrates in one direction, like a guitar string",
+          "Circular: Light spirals as it travels, like a corkscrew",
+          "3D movies use circular polarization so tilting your head doesn't break the effect"
+        ],
+        "details_advanced": [
+          "The Poincaré sphere maps all polarization states to a 2-sphere surface",
+          "Orthogonal polarization states are antipodal points on the sphere",
+          "Polarization evolution through optical elements corresponds to rotations on the sphere"
         ]
       },
       "experiment": {
@@ -341,11 +356,23 @@
       },
       "physics": {
         "principle": "Malus's Law describes the intensity change when polarized light passes through a polarizer",
+        "principle_beginner": "A polarizer is like a fence with vertical slats - if light 'wiggles' vertically, it passes through; if it wiggles horizontally, it gets blocked. At an angle? Some gets through, some doesn't!",
+        "principle_advanced": "Malus's Law is a macroscopic manifestation of electromagnetic wave propagation in anisotropic media. From quantum electrodynamics, the photon polarization state projects onto the detector eigenstate, with detection probability |⟨ψ_detector|ψ_photon⟩|² = cos²θ.",
         "formula": "I = I₀ × cos²(θ)",
         "details": [
           "θ is the angle between light polarization and polarizer axis",
           "Maximum transmission when parallel (θ=0°)",
           "Complete blocking when perpendicular (θ=90°)"
+        ],
+        "details_beginner": [
+          "At 45°, exactly half the light gets through (cos²45° = 0.5)",
+          "Two crossed polarizers (90° apart) block all light",
+          "This is how LCD screens control brightness - pixel by pixel!"
+        ],
+        "details_advanced": [
+          "The cos² dependence arises from projecting the electric field vector onto the polarizer axis",
+          "Sequential polarizers follow multiplicative intensity reduction",
+          "Quantum mechanically, a single photon either passes or is absorbed - cos²θ is the probability"
         ]
       },
       "experiment": {

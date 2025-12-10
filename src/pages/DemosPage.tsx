@@ -245,8 +245,12 @@ interface DemoInfo {
   }
   physics: {
     principle: string
+    principle_beginner?: string  // 探索者模式：简单易懂的描述
+    principle_advanced?: string  // 大师模式：学术严谨的描述
     formula?: string
     details: string[]
+    details_beginner?: string[]  // 探索者模式：简化的细节
+    details_advanced?: string[]  // 大师模式：专业的细节
   }
   experiment: {
     title: string
@@ -266,6 +270,29 @@ interface DemoInfo {
   }
   diagram?: ReactNode
   visualType: '2D' | '3D' // Indicates whether demo uses 2D or 3D visualization
+}
+
+// 根据难度级别获取适当的内容
+const getDifficultyContent = (
+  info: DemoInfo['physics'],
+  difficultyLevel: DifficultyLevel
+): { principle: string; details: string[] } => {
+  let principle = info.principle
+  let details = info.details
+
+  if (difficultyLevel === 'beginner' && info.principle_beginner) {
+    principle = info.principle_beginner
+  } else if (difficultyLevel === 'advanced' && info.principle_advanced) {
+    principle = info.principle_advanced
+  }
+
+  if (difficultyLevel === 'beginner' && info.details_beginner) {
+    details = info.details_beginner
+  } else if (difficultyLevel === 'advanced' && info.details_advanced) {
+    details = info.details_advanced
+  }
+
+  return { principle, details }
 }
 
 // Helper to get questions array from translations
@@ -909,23 +936,31 @@ interface DemoItem {
 // 难度级别类型
 type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced'
 
-// 难度级别配置
+// 难度级别配置 - 更有趣的命名和明显的内容差异
 const DIFFICULTY_CONFIG = {
   beginner: {
     color: 'green',
-    icon: '🌱',
+    icon: '🔭',
     showFormula: false,
     showAdvancedDetails: false,
     maxPhysicsDetails: 2,
     maxFrontierDetails: 1,
+    // 初中生都能懂的语言
+    contentStyle: 'simple',
+    showMathSymbols: false,
+    showDerivedFormulas: false,
   },
   intermediate: {
     color: 'cyan',
-    icon: '📚',
+    icon: '🔬',
     showFormula: true,
     showAdvancedDetails: false,
     maxPhysicsDetails: 3,
     maxFrontierDetails: 2,
+    // 高中/大学本科水平
+    contentStyle: 'standard',
+    showMathSymbols: true,
+    showDerivedFormulas: false,
   },
   advanced: {
     color: 'purple',
@@ -934,10 +969,14 @@ const DIFFICULTY_CONFIG = {
     showAdvancedDetails: true,
     maxPhysicsDetails: 4,
     maxFrontierDetails: 3,
+    // 研究者/科学家水平的严谨表述
+    contentStyle: 'academic',
+    showMathSymbols: true,
+    showDerivedFormulas: true,
   },
 }
 
-// 难度选择器组件
+// 难度选择器组件 - 带悬停提示和动画
 function DifficultySelector({
   value,
   onChange,
@@ -950,48 +989,76 @@ function DifficultySelector({
   t: (key: string) => string
 }) {
   const levels: DifficultyLevel[] = ['beginner', 'intermediate', 'advanced']
+  const [hoveredLevel, setHoveredLevel] = useState<DifficultyLevel | null>(null)
 
   return (
-    <div className={cn(
-      'flex items-center gap-1 p-1 rounded-lg',
-      theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100'
-    )}>
-      {levels.map((level) => {
-        const config = DIFFICULTY_CONFIG[level]
-        const isActive = value === level
+    <div className="relative">
+      <div className={cn(
+        'flex items-center gap-1 p-1 rounded-lg',
+        theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100'
+      )}>
+        {levels.map((level) => {
+          const config = DIFFICULTY_CONFIG[level]
+          const isActive = value === level
 
-        return (
-          <button
-            key={level}
-            onClick={() => onChange(level)}
-            className={cn(
-              'px-2 py-1 rounded-md text-xs font-medium transition-all duration-200 flex items-center gap-1',
-              isActive
-                ? theme === 'dark'
-                  ? `bg-${config.color}-400/20 text-${config.color}-400 border border-${config.color}-400/30`
-                  : `bg-${config.color}-100 text-${config.color}-700 border border-${config.color}-300`
-                : theme === 'dark'
-                  ? 'text-gray-500 hover:text-gray-300 hover:bg-slate-700/50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-            )}
-            style={isActive ? {
-              backgroundColor: theme === 'dark'
-                ? config.color === 'green' ? 'rgba(74, 222, 128, 0.2)' : config.color === 'cyan' ? 'rgba(34, 211, 238, 0.2)' : 'rgba(167, 139, 250, 0.2)'
-                : config.color === 'green' ? 'rgba(220, 252, 231, 1)' : config.color === 'cyan' ? 'rgba(207, 250, 254, 1)' : 'rgba(243, 232, 255, 1)',
-              color: theme === 'dark'
-                ? config.color === 'green' ? '#4ade80' : config.color === 'cyan' ? '#22d3ee' : '#a78bfa'
-                : config.color === 'green' ? '#15803d' : config.color === 'cyan' ? '#0e7490' : '#7c3aed',
-              borderColor: theme === 'dark'
-                ? config.color === 'green' ? 'rgba(74, 222, 128, 0.3)' : config.color === 'cyan' ? 'rgba(34, 211, 238, 0.3)' : 'rgba(167, 139, 250, 0.3)'
-                : config.color === 'green' ? '#86efac' : config.color === 'cyan' ? '#67e8f9' : '#c4b5fd',
-              borderWidth: '1px',
-            } : {}}
-          >
-            <span>{config.icon}</span>
-            <span className="hidden sm:inline">{t(`course.difficulty.${level}`)}</span>
-          </button>
-        )
-      })}
+          return (
+            <button
+              key={level}
+              onClick={() => onChange(level)}
+              onMouseEnter={() => setHoveredLevel(level)}
+              onMouseLeave={() => setHoveredLevel(null)}
+              className={cn(
+                'px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center gap-1.5 relative',
+                'hover:scale-105 active:scale-95',
+                isActive
+                  ? theme === 'dark'
+                    ? `bg-${config.color}-400/20 text-${config.color}-400 border border-${config.color}-400/30`
+                    : `bg-${config.color}-100 text-${config.color}-700 border border-${config.color}-300`
+                  : theme === 'dark'
+                    ? 'text-gray-500 hover:text-gray-300 hover:bg-slate-700/50'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+              )}
+              style={isActive ? {
+                backgroundColor: theme === 'dark'
+                  ? config.color === 'green' ? 'rgba(74, 222, 128, 0.2)' : config.color === 'cyan' ? 'rgba(34, 211, 238, 0.2)' : 'rgba(167, 139, 250, 0.2)'
+                  : config.color === 'green' ? 'rgba(220, 252, 231, 1)' : config.color === 'cyan' ? 'rgba(207, 250, 254, 1)' : 'rgba(243, 232, 255, 1)',
+                color: theme === 'dark'
+                  ? config.color === 'green' ? '#4ade80' : config.color === 'cyan' ? '#22d3ee' : '#a78bfa'
+                  : config.color === 'green' ? '#15803d' : config.color === 'cyan' ? '#0e7490' : '#7c3aed',
+                borderColor: theme === 'dark'
+                  ? config.color === 'green' ? 'rgba(74, 222, 128, 0.3)' : config.color === 'cyan' ? 'rgba(34, 211, 238, 0.3)' : 'rgba(167, 139, 250, 0.3)'
+                  : config.color === 'green' ? '#86efac' : config.color === 'cyan' ? '#67e8f9' : '#c4b5fd',
+                borderWidth: '1px',
+              } : {}}
+              title={t(`course.difficulty.${level}Desc`)}
+            >
+              <span className="text-base">{config.icon}</span>
+              <span className="hidden sm:inline">{t(`course.difficulty.${level}`)}</span>
+              {/* 活动指示器 */}
+              {isActive && (
+                <span className={cn(
+                  'absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full',
+                  config.color === 'green' ? 'bg-green-400' : config.color === 'cyan' ? 'bg-cyan-400' : 'bg-purple-400'
+                )} />
+              )}
+            </button>
+          )
+        })}
+      </div>
+      {/* 悬停提示气泡 */}
+      {hoveredLevel && (
+        <div className={cn(
+          'absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap z-50',
+          'animate-in fade-in slide-in-from-top-1 duration-200',
+          theme === 'dark' ? 'bg-slate-700 text-gray-200' : 'bg-gray-800 text-white'
+        )}>
+          {t(`course.difficulty.${hoveredLevel}Desc`)}
+          <div className={cn(
+            'absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45',
+            theme === 'dark' ? 'bg-slate-700' : 'bg-gray-800'
+          )} />
+        </div>
+      )}
     </div>
   )
 }
@@ -1975,35 +2042,42 @@ export function DemosPage() {
                         {demoInfo.diagram}
                       </div>
                     )}
-                    <p
-                      className={cn(
-                        'text-sm leading-relaxed',
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-800'
-                      )}
-                    >
-                      {demoInfo.physics.principle}
-                    </p>
-                    {/* Formula - shown based on difficulty */}
-                    {demoInfo.physics.formula && difficultyConfig.showFormula && (
-                      <div
-                        className={cn(
-                          'font-mono px-3 py-2 rounded-lg text-center text-sm border',
-                          theme === 'dark'
-                            ? 'text-cyan-400 bg-slate-900/70 border-cyan-400/20'
-                            : 'text-cyan-700 bg-cyan-50 border-cyan-200'
-                        )}
-                      >
-                        {demoInfo.physics.formula}
-                      </div>
-                    )}
-                    {/* Details - limited based on difficulty */}
-                    <div className="space-y-2">
-                      {demoInfo.physics.details.slice(0, difficultyConfig.maxPhysicsDetails).map((detail, i) => (
-                        <ListItem key={i} icon="•">
-                          {detail}
-                        </ListItem>
-                      ))}
-                    </div>
+                    {(() => {
+                      const { principle, details } = getDifficultyContent(demoInfo.physics, difficultyLevel)
+                      return (
+                        <>
+                          <p
+                            className={cn(
+                              'text-sm leading-relaxed',
+                              theme === 'dark' ? 'text-gray-300' : 'text-gray-800'
+                            )}
+                          >
+                            {principle}
+                          </p>
+                          {/* Formula - shown based on difficulty */}
+                          {demoInfo.physics.formula && difficultyConfig.showFormula && (
+                            <div
+                              className={cn(
+                                'font-mono px-3 py-2 rounded-lg text-center text-sm border',
+                                theme === 'dark'
+                                  ? 'text-cyan-400 bg-slate-900/70 border-cyan-400/20'
+                                  : 'text-cyan-700 bg-cyan-50 border-cyan-200'
+                              )}
+                            >
+                              {demoInfo.physics.formula}
+                            </div>
+                          )}
+                          {/* Details - limited based on difficulty */}
+                          <div className="space-y-2">
+                            {details.slice(0, difficultyConfig.maxPhysicsDetails).map((detail, i) => (
+                              <ListItem key={i} icon="•">
+                                {detail}
+                              </ListItem>
+                            ))}
+                          </div>
+                        </>
+                      )
+                    })()}
                     {/* Beginner mode hint */}
                     {difficultyLevel === 'beginner' && demoInfo.physics.formula && (
                       <p className={cn(
