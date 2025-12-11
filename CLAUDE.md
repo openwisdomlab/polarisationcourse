@@ -390,6 +390,68 @@ The demos use two visualization approaches:
 | 4 | Turbid Media | Mie Scattering, Rayleigh Scattering | 2D |
 | 5 | Full Polarimetry | Stokes Vectors (3D), Mueller Matrices (2D) | Mixed |
 
+### Course Difficulty Levels
+
+The course implements a **3-tier difficulty system** based on research-oriented learning philosophy from COURSE.md:
+
+| Difficulty Level | Icon | Target Audience | Learning Mode | Content Focus |
+|------------------|------|----------------|---------------|---------------|
+| **Foundation** (基础层) | 🌱 | Beginners, early undergraduates | PSRT: Problem-driven research introduction | Discover phenomena through simple explanations. No formulas required! Emphasizes "why" over "how to calculate" |
+| **Application** (应用层) | 🔬 | Learners with basic knowledge | ESRT: Rotational research training | Hands-on experiments with quantitative formulas. Focus on measurement principles and experimental design |
+| **Research** (研究层) | 🚀 | Advanced learners, graduate students | ORIC/SURF: Independent original research | Frontier research methods with rigorous academic treatment. Advanced theory and research perspective |
+
+**Content Adaptation by Difficulty:**
+
+Each demo adapts its content based on the selected difficulty level:
+
+- **Foundation Level:**
+  - Hides mathematical formulas
+  - Uses simplified language and everyday analogies
+  - Focuses on visual understanding and life scene connections
+  - Maximum 2 physics details, 1 frontier application
+  - Questions emphasize observation ("What do you see?")
+
+- **Application Level:**
+  - Shows key formulas (e.g., Malus's Law: I = I₀ × cos²θ)
+  - Includes mathematical symbols and quantitative relationships
+  - Emphasizes experimental design and measurement techniques
+  - Maximum 3 physics details, 2 frontier applications
+  - Questions emphasize design ("How can we measure?")
+
+- **Research Level:**
+  - Shows complete formula derivations
+  - Uses rigorous academic terminology
+  - Includes advanced concepts (Mueller matrices, Stokes vectors)
+  - Maximum 4 physics details, 3 frontier applications
+  - Questions emphasize exploration ("What if? How to improve?")
+
+**Demo Difficulty Distribution:**
+
+| Demo | Difficulty | Unit | Rationale |
+|------|-----------|------|-----------|
+| Light Wave | Foundation | 0 | Basic wave concepts, visual phenomena |
+| Polarization Intro | Foundation | 0 | Introduction to polarization through life scenes |
+| Polarization Types | Application | 0 | Quantitative distinction of three polarization states |
+| Interactive Optical Bench | Application | 0 | Interactive experimental design |
+| Polarization State | Foundation | 1 | 3D visualization for intuitive understanding |
+| Malus's Law | Application | 1 | Quantitative measurement with cos² formula |
+| Birefringence | Application | 1 | Calcite experiment phenomena and principles |
+| Waveplate | Research | 1 | Phase retardation theory and calculations |
+| Fresnel Equations | Research | 2 | Complex Fresnel formula derivation |
+| Brewster's Angle | Application | 2 | Brewster angle measurement experiment |
+| Anisotropy (Stress) | Foundation | 3 | Chromatic polarization in everyday stress visualization |
+| Chromatic Polarization | Application | 3 | Experimental chromatic polarization and measurement |
+| Optical Rotation | Application | 3 | Optical rotation experiment and sugar concentration |
+| Rayleigh Scattering | Foundation | 4 | Natural phenomena: blue sky and white clouds |
+| Mie Scattering | Research | 4 | Complex Mie scattering theory |
+| Stokes Vector | Research | 5 | Mathematical representation of Stokes vectors |
+| Mueller Matrix | Research | 5 | Complete characterization using Mueller matrices |
+
+**Distribution Statistics:**
+- Foundation: 5 demos (29%)
+- Application: 7 demos (41%)
+- Research: 5 demos (29%)
+
 ### Demo Controls Components
 
 The `DemoControls.tsx` file provides shared UI components for all demos:
