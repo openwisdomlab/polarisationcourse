@@ -484,32 +484,76 @@
       "description": "Crystals like calcite split one beam into ordinary (o) and extraordinary (e) rays",
       "questions": {
         "leading": "How can a single crystal make you see double - and why are the two images polarized differently?",
+        "leading_beginner": "Have you ever looked through a clear crystal and seen TWO of everything? How can one rock make double vision?",
+        "leading_advanced": "How does the index ellipsoid geometry determine the walk-off angle between ordinary and extraordinary rays in uniaxial crystals?",
         "guided": [
           "Why does calcite produce two images when viewing text through it?",
           "What is the polarization relationship between the o-ray and e-ray?"
         ],
+        "guided_beginner": [
+          "If you rotate a calcite crystal, what happens to the two images?",
+          "Can you make one of the double images disappear using sunglasses?"
+        ],
+        "guided_advanced": [
+          "How does the extraordinary ray direction depend on the optic axis orientation?",
+          "Derive the phase retardation for light propagating at angle θ to the optic axis."
+        ],
         "openEnded": [
           "How might birefringence be used to measure stress in transparent materials?",
           "Why do some minerals show beautiful colors under polarized light microscopes?"
+        ],
+        "openEnded_beginner": [
+          "What other transparent things around you might split light like this?",
+          "Why would ancient sailors want a crystal that shows where the sun is?"
+        ],
+        "openEnded_advanced": [
+          "Design an experiment to measure the birefringence of an unknown crystal sample.",
+          "How do compensators use birefringence to measure optical path differences?"
         ]
       },
       "lifeScene": {
         "title": "Vikings' Secret Navigation Crystal",
+        "title_beginner": "The Magic Double-Vision Rock!",
+        "title_advanced": "Anisotropic Optical Indicatrix in Historical Navigation",
         "imageAlt": "Clear calcite crystal placed on text showing double image effect, with Viking ship silhouette in background",
         "hook": "How did Vikings navigate the open ocean on cloudy days? Legend speaks of 'sunstones' - and scientists believe they were calcite crystals!",
+        "hook_beginner": "Imagine finding a magic rock that makes you see double! Vikings used these 'sunstones' to find the sun even when clouds hid it completely.",
+        "hook_advanced": "The Viking sunstone hypothesis gained credibility when researchers demonstrated that calcite's birefringence can detect sky polarization patterns with sufficient accuracy for maritime navigation at latitudes above 60°N.",
         "facts": [
           "Calcite is called 'Iceland spar' - abundant in Iceland where Vikings sailed from",
           "The crystal can locate the sun's position even through clouds by analyzing sky polarization",
           "Modern stress analysis in engineering uses the same birefringent property in plastic models"
+        ],
+        "facts_beginner": [
+          "This crystal is called 'Iceland spar' - Vikings found lots of it!",
+          "Look at a dot through the crystal - you see two dots. Rotate it - one dot spins around the other!",
+          "Engineers still use this double-image trick to find hidden cracks in airplane parts"
+        ],
+        "facts_advanced": [
+          "Calcite's birefringence (Δn = 0.172) is among the highest of natural minerals",
+          "The e-ray index varies from nₑ=1.486 to nₒ=1.658 depending on propagation direction",
+          "Wollaston and Nomarski prisms exploit this effect for precision polarization beam splitting"
         ]
       },
       "physics": {
         "principle": "Birefringent crystals split incident light into ordinary ray (o-ray) and extraordinary ray (e-ray)",
+        "principle_beginner": "Some crystals are like a Y-shaped road for light - one beam goes straight, the other takes a detour. The two beams wiggle in different directions, so you see two separate images!",
+        "principle_advanced": "In uniaxial crystals, the dielectric tensor is diagonal with εₓₓ = εᵧᵧ = nₒ² and εᵤᵤ = nₑ². The ordinary ray obeys Snell's law with index nₒ, while the extraordinary ray experiences an effective index n(θ) = nₒnₑ/√(nₒ²sin²θ + nₑ²cos²θ), causing angular separation (walk-off) between the two beams.",
         "formula": "Io = I₀·cos²(θ), Ie = I₀·sin²(θ)",
         "details": [
           "O-ray and e-ray have perpendicular polarization directions",
           "Different propagation speeds cause phase difference",
           "Calcite is a typical birefringent material"
+        ],
+        "details_beginner": [
+          "One image stays still, the other moves when you rotate the crystal",
+          "The two images have 'opposite' polarization - like vertical vs horizontal",
+          "Polarized sunglasses can block one image but not the other!"
+        ],
+        "details_advanced": [
+          "The ordinary ray has polarization ⊥ to the optic axis plane, extraordinary ∥ to it",
+          "Walk-off angle ρ = arctan[(nₑ²-nₒ²)sinθcosθ/(nₒ²sin²θ+nₑ²cos²θ)]",
+          "Conoscopic interference patterns reveal the optic axis orientation and sign"
         ]
       },
       "experiment": {
@@ -551,32 +595,76 @@
       "description": "Quarter-wave and half-wave plates' effect on polarization states",
       "questions": {
         "leading": "What happens when you slow down one component of light relative to another - and why does this create 'spinning' light?",
+        "leading_beginner": "How can a thin piece of crystal turn straight-wiggling light into spinning light?",
+        "leading_advanced": "How does the Jones matrix formalism describe the unitary transformation of polarization states through retarders?",
         "guided": [
           "What is the difference between quarter-wave and half-wave plates?",
           "What input polarization is needed to produce circular polarization with a quarter-wave plate?"
         ],
+        "guided_beginner": [
+          "What happens to light when you put it through a quarter-wave plate?",
+          "Why does tilting your head ruin old-style 3D but not modern 3D?"
+        ],
+        "guided_advanced": [
+          "Derive the Jones matrix for a general retarder with fast axis at angle θ.",
+          "How does wavelength dependence affect achromatic wave plate design?"
+        ],
         "openEnded": [
           "Why do 3D movie glasses use circular polarization instead of linear?",
           "How could wave plates be combined to create any desired polarization state?"
+        ],
+        "openEnded_beginner": [
+          "What else might use spinning light besides 3D movies?",
+          "Could you make a wave plate at home? What materials might work?"
+        ],
+        "openEnded_advanced": [
+          "Design a sequence of wave plates to convert any polarization state to horizontal linear.",
+          "How are zero-order and multi-order wave plates different in temperature sensitivity?"
         ]
       },
       "lifeScene": {
         "title": "Why You Can Tilt Your Head in 3D Movies",
+        "title_beginner": "The 3D Movie Head-Tilt Test!",
+        "title_advanced": "Retardation Optics in Stereoscopic Display Engineering",
         "imageAlt": "Person watching 3D movie with circular polarized glasses, tilting head without losing the 3D effect",
         "hook": "Ever noticed you can tilt your head in modern 3D movies without ruining the effect? Old 3D movies using linear polarization failed when you tilted!",
+        "hook_beginner": "Try this at a 3D movie: tilt your head sideways. The 3D still works! Now imagine if you had to hold your head perfectly straight for 2 hours - ouch!",
+        "hook_advanced": "RealD technology uses polymer retarders switching at 144Hz to alternate between left-handed and right-handed circular polarization, achieving >99% separation with passive circular analyzer glasses.",
         "facts": [
           "RealD 3D glasses use circular polarization created by wave plates",
           "Your left eye sees clockwise-spinning light, right eye sees counter-clockwise",
           "This is why modern 3D is comfortable - no need to keep your head perfectly level"
+        ],
+        "facts_beginner": [
+          "3D glasses have special crystals that make light spin in circles",
+          "Your left eye gets clockwise-spinning light, right eye gets counter-clockwise",
+          "Old 3D with straight-wiggling light got ruined when you tilted your head"
+        ],
+        "facts_advanced": [
+          "A λ/4 plate at 45° to linear polarization produces circular polarization with handedness determined by fast/slow axis orientation",
+          "Achromatic retarders use stacked plates of different materials (e.g., quartz + MgF₂) to minimize wavelength dependence",
+          "LC-based active retarders enable rapid polarization switching for temporal multiplexed 3D systems"
         ]
       },
       "physics": {
         "principle": "Wave plates introduce controlled phase delay using birefringence",
+        "principle_beginner": "A wave plate is like a speed bump for one direction of wiggling light. Part of the light slows down while the other part doesn't - this turns straight wiggling into spinning!",
+        "principle_advanced": "Wave plates are characterized by retardance Γ = 2πΔn·d/λ where Δn = nₑ-nₒ. The Jones matrix for a retarder with fast axis at angle θ is: J = R(-θ)·diag(1, e^(iΓ))·R(θ), representing rotation to the principal axis frame, phase delay, and rotation back.",
         "formula": "δ = 2π(ne-no)d/λ",
         "details": [
           "Quarter-wave plate: δ = π/2 (90°)",
           "Half-wave plate: δ = π (180°)",
           "Can convert linear to circular polarization or rotate polarization direction"
+        ],
+        "details_beginner": [
+          "Quarter-wave: delays one part by a quarter turn - makes light spin in circles",
+          "Half-wave: delays by half a turn - flips the wiggle direction around",
+          "Combine them like building blocks to make any type of wiggle you want"
+        ],
+        "details_advanced": [
+          "λ/4 plate converts 45° linear → circular; circular → linear at ±45°",
+          "λ/2 plate rotates linear polarization by 2θ where θ is the angle to fast axis",
+          "Arbitrary polarization transformation requires a general retarder + rotator (Poincaré sphere rotation)"
         ]
       },
       "experiment": {
@@ -619,32 +707,76 @@
       "description": "Reflection/transmission coefficients for s and p polarizations vs incident angle",
       "questions": {
         "leading": "Why does a calm lake act like a perfect mirror at sunset but let you see the bottom when the sun is overhead?",
+        "leading_beginner": "Why can you see fish in a lake at noon, but the same lake turns into a mirror at sunset?",
+        "leading_advanced": "How do the boundary conditions on E and H fields at dielectric interfaces give rise to the Fresnel amplitude coefficients?",
         "guided": [
           "Why do s and p polarizations reflect differently at interfaces?",
           "What happens to light at angles greater than the critical angle?"
         ],
+        "guided_beginner": [
+          "Does a flat lake reflect more at midday or at sunset? Why?",
+          "What happens to light that doesn't get reflected - where does it go?"
+        ],
+        "guided_advanced": [
+          "Derive the reflectance coefficients using electromagnetic boundary conditions.",
+          "How does the complex refractive index modify Fresnel equations for absorbing media?"
+        ],
         "openEnded": [
           "How does understanding Fresnel equations help in designing anti-reflective coatings?",
           "Why does water reflect more at grazing angles than at normal incidence?"
+        ],
+        "openEnded_beginner": [
+          "Why are sunset photos over lakes so beautiful?",
+          "How might fishermen use this knowledge about reflection?"
+        ],
+        "openEnded_advanced": [
+          "Design a multi-layer anti-reflection coating for visible wavelengths.",
+          "How do evanescent waves in total internal reflection enable applications like TIRF microscopy?"
         ]
       },
       "lifeScene": {
         "title": "The Lake at Sunset Mystery",
+        "title_beginner": "The Disappearing Fish Trick!",
+        "title_advanced": "Angle-Dependent Electromagnetic Boundary Conditions",
         "imageAlt": "Split comparison: lakeside view at noon showing visible fish vs same lake at sunset showing perfect mirror reflection",
         "hook": "Why can you see fish clearly when looking straight down into water, but at sunset the lake becomes a perfect mirror?",
+        "hook_beginner": "At noon, you can spot fish swimming below. But at sunset, the same lake becomes a giant mirror - and the fish seem to vanish! What's the magic?",
+        "hook_advanced": "The angle-dependent partition of electromagnetic energy at dielectric boundaries, described by Fresnel equations, explains why reflectivity increases from ~2% at normal incidence to >50% at grazing angles for air-water interfaces.",
         "facts": [
           "At steep angles, water reflects only ~2% of light - you see through clearly",
           "At shallow angles (sunset view), water reflects over 50% - it becomes mirror-like",
           "This is why sunset photos over water create stunning reflections"
+        ],
+        "facts_beginner": [
+          "Looking straight down at water: only 2 out of 100 light rays bounce back",
+          "Looking at a low angle (like at sunset): more than 50 rays bounce back!",
+          "That's why fishermen wear polarized glasses - to cut through the reflection"
+        ],
+        "facts_advanced": [
+          "Fresnel reflectance for air-water: R₀ = 2% (normal), R₈₀° = 35% (s-pol), R₈₅° > 50%",
+          "At the critical angle (48.6° for water), total internal reflection begins",
+          "Thin-film interference coatings exploit Fresnel equations to achieve R < 0.1%"
         ]
       },
       "physics": {
         "principle": "Fresnel equations describe reflection and transmission coefficients at interfaces",
+        "principle_beginner": "When light hits water or glass, some bounces back (reflection) and some goes through (transmission). The steeper you look, the more goes through. The shallower you look, the more bounces back - like skipping stones!",
+        "principle_advanced": "Fresnel equations derive from Maxwell's boundary conditions requiring continuity of tangential E and H components. For s-polarization: rs = (n₁cosθᵢ - n₂cosθₜ)/(n₁cosθᵢ + n₂cosθₜ). For p-polarization: rp = (n₂cosθᵢ - n₁cosθₜ)/(n₂cosθᵢ + n₁cosθₜ). The asymmetric response leads to preferential s-polarization in reflected light.",
         "formula": "rs = (n₁cosθᵢ-n₂cosθₜ)/(n₁cosθᵢ+n₂cosθₜ)",
         "details": [
           "S and p polarizations have different reflectances",
           "Total internal reflection critical angle exists",
           "At Brewster's angle, p-polarization reflection is zero"
+        ],
+        "details_beginner": [
+          "Light bouncing up-down (s) reflects differently than light bouncing side-to-side (p)",
+          "At steep angles, most light goes through - water looks clear",
+          "At shallow angles, most light bounces - water looks like a mirror"
+        ],
+        "details_advanced": [
+          "R_s monotonically increases with angle; R_p has minimum at Brewster's angle",
+          "Phase shifts differ: reflected s-wave always π-shifted; p-wave flips sign at Brewster's angle",
+          "Ellipsometry exploits the differential response to measure film thickness with nm precision"
         ]
       },
       "experiment": {
@@ -687,32 +819,76 @@
       "description": "The special incident angle where p-polarization reflectance is zero: tan(θB) = n₂/n₁",
       "questions": {
         "leading": "Is there a 'magic angle' where one type of polarization completely refuses to reflect?",
+        "leading_beginner": "Is there a special angle where window glare completely disappears?",
+        "leading_advanced": "Why does the dipole radiation pattern of induced surface charges lead to zero p-polarization reflectance at Brewster's angle?",
         "guided": [
           "Why is the reflected light completely s-polarized at Brewster's angle?",
           "How can you calculate Brewster's angle for any material?"
         ],
+        "guided_beginner": [
+          "At what angle does a polarizer work best to remove window reflections?",
+          "Why do polarized sunglasses help fishermen see through water glare?"
+        ],
+        "guided_advanced": [
+          "Show that θ_Brewster + θ_refracted = 90° and explain its physical significance.",
+          "How does Brewster's angle change for a complex refractive index (absorbing media)?"
+        ],
         "openEnded": [
           "Why do photographers use polarizing filters when shooting through windows?",
           "How do laser systems use Brewster windows to reduce reflection losses?"
+        ],
+        "openEnded_beginner": [
+          "How could you use Brewster's angle to take better photos through car windows?",
+          "Why is the angle different for water versus glass?"
+        ],
+        "openEnded_advanced": [
+          "Design a Brewster-window laser cavity and analyze its polarization selectivity.",
+          "How does pseudo-Brewster angle arise in reflection from metals?"
         ]
       },
       "lifeScene": {
         "title": "How Photographers Eliminate Reflections",
+        "title_beginner": "The Window Glare Vanishing Trick!",
+        "title_advanced": "Polarization Selectivity at the Brewster Condition",
         "imageAlt": "Before/after comparison of window photography: with glare vs clean shot through glass using polarizing filter",
         "hook": "Ever tried to photograph something through a window and got nothing but glare? Professional photographers have a simple solution - the polarizing filter!",
+        "hook_beginner": "Trying to take a photo through a window but all you see is reflection? There's a magic angle where the glare completely vanishes - and photographers know this trick!",
+        "hook_advanced": "At Brewster's angle, the reflected and transmitted rays are perpendicular (θᵢ + θₜ = 90°). Since oscillating dipoles cannot radiate along their oscillation axis, p-polarized light has zero reflection - a principle exploited in laser Brewster windows achieving losses < 0.01% per surface.",
         "facts": [
           "At Brewster's angle (~53° for water, ~56° for glass), reflected light is 100% polarized",
           "A simple polarizing filter can completely eliminate this glare",
           "This is why polarized sunglasses reduce water glare so effectively when fishing"
+        ],
+        "facts_beginner": [
+          "For water, the magic angle is about 53° - look at that angle and use polarized sunglasses!",
+          "For glass windows, it's about 56° - photographers position themselves at this angle",
+          "All the reflected glare wiggles in one direction, so a polarizer can block it all"
+        ],
+        "facts_advanced": [
+          "Brewster's angle satisfies tan(θB) = n₂/n₁, yielding θB = 53.1° for water (n=1.33) and 56.3° for glass (n=1.5)",
+          "At θB, the reflection coefficient rp vanishes exactly; rs remains finite",
+          "Brewster windows in lasers provide polarization control with essentially zero insertion loss"
         ]
       },
       "physics": {
         "principle": "Brewster's angle is the incident angle where p-polarization reflectance is zero",
+        "principle_beginner": "At a special 'magic angle', light that wiggles side-to-side (p-polarization) refuses to bounce back - it all goes into the glass! Only the up-down wiggling light (s) reflects. A polarizer can block this, removing all glare.",
+        "principle_advanced": "At Brewster's angle, the refracted ray direction coincides with the would-be reflected p-polarization oscillation direction. Since dipoles don't radiate along their axis, rp = 0. Mathematically: tan(θB) = n₂/n₁ emerges from setting the Fresnel rp coefficient numerator (n₂cosθᵢ - n₁cosθₜ) to zero with θᵢ + θₜ = 90°.",
         "formula": "tan(θB) = n₂/n₁",
         "details": [
           "At this angle, reflected light is completely s-polarized",
           "Refracted and reflected rays are perpendicular",
           "For glass, Brewster's angle is about 56.3°"
+        ],
+        "details_beginner": [
+          "The reflected light is 100% polarized in one direction - easy to block with a filter!",
+          "The reflected and bent rays make a perfect 90° angle to each other",
+          "Different materials have different magic angles - glass ~56°, water ~53°"
+        ],
+        "details_advanced": [
+          "The condition θᵢ + θₜ = 90° combined with Snell's law gives tan(θB) = n₂/n₁",
+          "Degree of polarization of reflected light: P = (Rs-Rp)/(Rs+Rp) → 1 as θ → θB",
+          "Internal Brewster angle exists for n₁ > n₂ (e.g., glass-to-air interface)"
         ]
       },
       "experiment": {
@@ -755,32 +931,76 @@
       "description": "Colored interference effect of white light in birefringent materials",
       "questions": {
         "leading": "Why does clear plastic tape suddenly burst into rainbow colors when viewed between two polarizers?",
+        "leading_beginner": "How can boring clear tape turn into rainbow art just by looking at it through special filters?",
+        "leading_advanced": "How does wavelength-dependent retardation in birefringent media produce the Michel-Lévy color sequence?",
         "guided": [
           "Why do different wavelengths experience different phase delays?",
           "How does material thickness affect the observed colors?"
         ],
+        "guided_beginner": [
+          "What happens when you stack more layers of tape on top of each other?",
+          "Why do different thicknesses of tape show different colors?"
+        ],
+        "guided_advanced": [
+          "Derive the spectral transmittance function for a birefringent plate between crossed polarizers.",
+          "How does the Michel-Lévy chart relate interference order to observed colors?"
+        ],
         "openEnded": [
           "Why does transparent tape show colors between crossed polarizers?",
           "How is chromatic polarization used to analyze stress in engineering structures?"
+        ],
+        "openEnded_beginner": [
+          "What other clear plastic items might show hidden rainbow colors?",
+          "How could artists use this technique to create cool art?"
+        ],
+        "openEnded_advanced": [
+          "Design a photoelastic experiment to visualize stress concentration around a hole in a loaded plate.",
+          "How do compensators use chromatic effects to measure precise retardation values?"
         ]
       },
       "lifeScene": {
         "title": "Hidden Art in Your Tape Dispenser",
+        "title_beginner": "Rainbow Magic in Clear Tape!",
+        "title_advanced": "Wavelength-Dependent Phase Retardation and Interference Spectroscopy",
         "imageAlt": "Ordinary clear tape viewed between polarizers revealing stunning rainbow colors and patterns",
         "hook": "That boring clear tape on your desk holds a secret - between two polarizers, it transforms into vibrant rainbow art!",
+        "hook_beginner": "Grab some clear tape and two polarized lenses (from old 3D glasses). Stick tape on glass, put it between the lenses - WOW! Rainbow colors appear from nowhere!",
+        "hook_advanced": "Cellophane tape is uniaxially-stretched polymer with birefringence ~0.01. Between crossed polarizers, the wavelength-dependent transmittance T(λ) = sin²(πΔn·d/λ) produces vivid interference colors following the Michel-Lévy sequence.",
         "facts": [
           "The tape is made of stretched plastic, which creates birefringence",
           "Overlapping layers create different colors - like a hidden painting",
           "Engineers use this same effect to find stress and cracks in airplane parts"
+        ],
+        "facts_beginner": [
+          "Clear tape is made by stretching plastic - this gives it hidden rainbow powers",
+          "More layers = different colors. You can 'paint' by stacking tape!",
+          "Real artists make beautiful tape art - Google 'polarized tape art' to see!"
+        ],
+        "facts_advanced": [
+          "Phase retardation δ(λ) = 2πΔn·d/λ varies inversely with wavelength",
+          "At first-order retardation (~550nm), the complement of green gives magenta/red",
+          "Quantitative photoelasticity uses compensation to map stress fields with sub-wavelength resolution"
         ]
       },
       "physics": {
         "principle": "Different wavelengths have different phase delays in birefringent materials",
+        "principle_beginner": "Clear tape has a hidden structure - it's stretched! This makes different colors of light travel at different speeds. Between polarizers, some colors get through while others are blocked - creating a rainbow from invisible differences!",
+        "principle_advanced": "Chromatic polarization arises from the wavelength dependence of retardation δ(λ) = 2πΔn(λ)d/λ. Between crossed polarizers, the transmission spectrum T(λ) = sin²(δ(λ)/2) selectively transmits certain wavelengths. The Michel-Lévy chart maps retardation (in nm) to interference order and observed color, enabling quantitative birefringence measurement.",
         "formula": "δ(λ) = 2π(ne-no)d/λ",
         "details": [
           "White light produces colored interference",
           "Color depends on material thickness and birefringence",
           "Crossed polarizers show complementary colors"
+        ],
+        "details_beginner": [
+          "White light is all colors mixed. The tape lets some through, blocks others - you see what's left!",
+          "Thicker tape (more layers) = different colors. It's like a secret color code",
+          "Rotate the polarizers and watch the colors shift - it's like magic!"
+        ],
+        "details_advanced": [
+          "First-order colors (0-550nm retardation) range from gray through yellow to red",
+          "Second-order (550-1100nm) shows blue, green, yellow, red sequence",
+          "Higher orders have decreasing saturation as more wavelengths simultaneously satisfy interference conditions"
         ]
       },
       "experiment": {
@@ -823,32 +1043,76 @@
       "description": "Chiral substances like sugar solutions rotate the polarization plane",
       "questions": {
         "leading": "How can sugar water twist light - and how do scientists use this to measure sweetness?",
+        "leading_beginner": "Can shining light through sugar water tell you how sweet it is?",
+        "leading_advanced": "How does the differential circular birefringence of chiral media arise from the molecular helical structure?",
         "guided": [
           "What makes a molecule 'chiral' and able to rotate polarization?",
           "How does concentration affect the rotation angle?"
         ],
+        "guided_beginner": [
+          "What happens to polarized light when it passes through sugar water?",
+          "How can you tell if honey is real or fake using light?"
+        ],
+        "guided_advanced": [
+          "Explain the relationship between circular birefringence and optical rotation.",
+          "How do Cotton effects in ORD spectra relate to molecular electronic transitions?"
+        ],
         "openEnded": [
           "Why is it important to distinguish between left-handed and right-handed drug molecules?",
           "How do polarimeters help in food industry quality control?"
+        ],
+        "openEnded_beginner": [
+          "What other sweet foods might twist light?",
+          "Why does it matter if a drug molecule is left-handed or right-handed?"
+        ],
+        "openEnded_advanced": [
+          "Design a polarimetric method to determine enantiomeric excess in a pharmaceutical synthesis.",
+          "How does induced circular dichroism reveal binding interactions in biochemistry?"
         ]
       },
       "lifeScene": {
         "title": "How Sweet Is Your Drink?",
+        "title_beginner": "The Light-Twisting Sugar Test!",
+        "title_advanced": "Chirality-Induced Circular Birefringence in Quality Control",
         "imageAlt": "Polarimeter device measuring sugar concentration in a tube of honey solution with digital readout",
         "hook": "How do food scientists quickly measure sugar content without tasting? They shine polarized light through it!",
+        "hook_beginner": "Is that honey real or fake? Scientists don't taste it - they shine special light through it! Real honey twists the light in a unique way that fakes can't copy.",
+        "hook_advanced": "Industrial polarimeters measure optical rotation to ±0.001° precision, enabling quantitative determination of sugar concentration in beverages, pharmaceuticals, and essential oils through the relationship α = [α]²⁰_D × l × c.",
         "facts": [
           "Sugar molecules are 'handed' - they twist light in a specific direction",
           "More sugar = more twist. Scientists measure the angle to calculate concentration",
           "This is how honey authenticity is verified - fake honey has the wrong rotation!"
+        ],
+        "facts_beginner": [
+          "Sugar molecules are like hands - there's a left and right version!",
+          "More sugar = bigger twist. Double the sugar, double the angle!",
+          "Fake honey uses different sugars that twist light the wrong way - busted!"
+        ],
+        "facts_advanced": [
+          "D-glucose: [α]²⁰_D = +52.7°; L-fructose: [α]²⁰_D = -92° (opposite handedness)",
+          "Mutarotation occurs as anomers equilibrate - α-D-glucose (+112°) → equilibrium (+52.7°)",
+          "CD spectroscopy extends this to measure secondary structure in proteins"
         ]
       },
       "physics": {
         "principle": "Chiral molecules rotate the polarization plane of linearly polarized light",
+        "principle_beginner": "Some molecules are like your hands - you can't make your left hand match your right hand by flipping it. These 'handed' molecules twist polarized light like a spiral staircase - left-handed sugars twist one way, right-handed sugars twist the opposite way!",
+        "principle_advanced": "Optical activity arises from circular birefringence: chiral media have different refractive indices for left- and right-circularly polarized light (nL ≠ nR). Linearly polarized light decomposes into counter-rotating circular components that accumulate phase difference Δφ = (nL-nR)ωL/c, rotating the plane of polarization by α = Δφ/2. The Drude model and quantum mechanical rotational strength tensors explain the molecular origin.",
         "formula": "α = [α]·l·c",
         "details": [
           "[α] is specific rotation (characteristic of chiral molecule)",
           "l is sample path length",
           "c is solution concentration"
+        ],
+        "details_beginner": [
+          "Each type of sugar has its own 'twist signature' - like a fingerprint",
+          "Longer tube of sugar water = bigger twist (more molecules to pass through)",
+          "Scientists can identify mystery sugars just by how they twist light!"
+        ],
+        "details_advanced": [
+          "Specific rotation [α] depends on wavelength (ORD) and temperature",
+          "Anomeric mixtures show time-dependent rotation due to mutarotation",
+          "Verdet constant relates to Faraday rotation in magnetic-field-induced optical activity"
         ]
       },
       "experiment": {
@@ -891,32 +1155,76 @@
       "description": "How optical properties vary with direction in crystals and stressed materials",
       "questions": {
         "leading": "Why do crystals show double images and why do engineers use plastic models under stress to 'see' invisible forces?",
+        "leading_beginner": "How can a transparent plastic ruler show you where invisible forces are pushing and pulling?",
+        "leading_advanced": "How does the stress-optic tensor relate mechanical strain to induced birefringence in photoelastic materials?",
         "guided": [
           "What determines whether a material is optically isotropic or anisotropic?",
           "How does the angle between light and the optic axis affect the effective refractive index?"
         ],
+        "guided_beginner": [
+          "Why does bending a clear ruler make rainbow colors appear between polarizers?",
+          "What's the difference between glass (same in all directions) and crystals (different in different directions)?"
+        ],
+        "guided_advanced": [
+          "Derive the index ellipsoid equation for a uniaxial crystal.",
+          "How do the photoelastic constants C₁ and C₂ relate stress tensor components to birefringence?"
+        ],
         "openEnded": [
           "How can LCD screens control polarization using liquid crystal anisotropy?",
           "Why are crystal optic axes important for laser applications?"
+        ],
+        "openEnded_beginner": [
+          "What clear objects in your house might show stress colors?",
+          "How could this help find weak spots in a plastic toy before it breaks?"
+        ],
+        "openEnded_advanced": [
+          "Design a photoelastic coating system for monitoring stress in real engineering structures.",
+          "How do electro-optic and acousto-optic effects induce controllable anisotropy?"
         ]
       },
       "lifeScene": {
         "title": "The Secret Engineering Tool: Photoelasticity",
+        "title_beginner": "X-Ray Vision for Forces!",
+        "title_advanced": "Stress-Induced Birefringence in Structural Analysis",
         "imageAlt": "Transparent plastic model of a bridge under stress showing rainbow-colored stress patterns between crossed polarizers",
         "hook": "How do engineers 'see' invisible forces inside structures? They make plastic models and use polarized light to reveal stress!",
+        "hook_beginner": "Engineers have secret 'force-vision goggles'! They make plastic copies of bridges and planes, then use special light to see where the invisible pushes and pulls are strongest. Rainbow colors = big forces!",
+        "hook_advanced": "Photoelasticity exploits stress-induced birefringence where Δn = C·(σ₁-σ₂). Between crossed polarizers, isoclinic lines reveal principal stress directions while isochromatic fringes map stress magnitude contours with resolution limited only by fringe order determination.",
         "facts": [
           "Stress makes normally isotropic plastic become birefringent - it creates different refractive indices in different directions",
           "The rainbow patterns you see show where stress is concentrated in the material",
           "This technique helped design everything from aircraft wings to prosthetic limbs"
+        ],
+        "facts_beginner": [
+          "Normal plastic treats light the same in all directions. Stressed plastic doesn't!",
+          "More rainbow bands = more stress. Engineers count the bands to find dangerous spots",
+          "This helped design safer airplanes, bridges, and even artificial hip joints!"
+        ],
+        "facts_advanced": [
+          "The stress-optic law: Δn = C·(σ₁-σ₂) where C is the stress-optic coefficient (~10⁻¹¹ Pa⁻¹)",
+          "Full-field stress analysis requires separating isoclinics (direction) and isochromatics (magnitude)",
+          "Digital photoelasticity uses phase-stepping and color analysis for automated fringe counting"
         ]
       },
       "physics": {
         "principle": "Anisotropic materials have refractive indices that depend on the direction of light propagation and polarization",
+        "principle_beginner": "Most materials are the same in all directions - glass, water, air. But some special materials (crystals, stressed plastic) are different depending on which way light goes through. It's like a street that's faster to drive north than east!",
+        "principle_advanced": "The optical indicatrix describes index variation via an ellipsoid: x²/nₓ² + y²/nᵧ² + z²/nᵤ² = 1. For uniaxial crystals (nₓ = nᵧ = nₒ, nᵤ = nₑ), light propagating at angle θ to the optic axis experiences effective extraordinary index n(θ) = nₒnₑ/√(nₒ²sin²θ + nₑ²cos²θ). Stress-induced anisotropy follows the piezo-optic tensor relationship Δ(1/n²)ᵢⱼ = πᵢⱼₖₗσₖₗ.",
         "formula": "n(θ) = no·ne / √(no²sin²θ + ne²cos²θ)",
         "details": [
           "Isotropic materials: same properties in all directions (glass, water)",
           "Uniaxial crystals: one optic axis, two principal indices (calcite, quartz)",
           "Biaxial crystals: two optic axes, three principal indices (mica)"
+        ],
+        "details_beginner": [
+          "Glass = same everywhere (isotropic). Crystal = different directions = different speeds",
+          "Calcite has one 'special direction' (optic axis) - light acts weird near it",
+          "When you stress plastic, you create a temporary 'crystal' with rainbow colors!"
+        ],
+        "details_advanced": [
+          "Uniaxial positive (nₑ > nₒ): quartz. Uniaxial negative (nₑ < nₒ): calcite",
+          "The optic axis direction shows zero birefringence; maximum at 45°",
+          "Conoscopic figures (isogyre patterns) distinguish uniaxial from biaxial and determine sign"
         ]
       },
       "experiment": {
@@ -959,32 +1267,76 @@
       "description": "Scattering characteristics when particle size is comparable to wavelength (white cloud effect)",
       "questions": {
         "leading": "Why are clouds white but the sky is blue - what's the difference in how they scatter light?",
+        "leading_beginner": "If the blue sky comes from scattering light, why are clouds white instead of super-blue?",
+        "leading_advanced": "How does the size parameter x = 2πr/λ determine the transition from Rayleigh to Mie scattering regimes?",
         "guided": [
           "Why do clouds appear white while the sky is blue?",
           "How does particle size affect scattering color and direction?"
         ],
+        "guided_beginner": [
+          "What's the difference between fog (white) and blue sky?",
+          "Why can't you see through fog but you can see through clear air?"
+        ],
+        "guided_advanced": [
+          "How do Mie resonances affect scattering efficiency for specific size parameters?",
+          "Explain the asymmetry parameter and forward scattering dominance in Mie theory."
+        ],
         "openEnded": [
           "How could Mie scattering be used to detect air pollution levels?",
           "Why do fog and mist make visibility poor in all colors equally?"
+        ],
+        "openEnded_beginner": [
+          "What other white things in nature might scatter light like clouds?",
+          "Why is milk white instead of blue?"
+        ],
+        "openEnded_advanced": [
+          "Design a lidar system to distinguish water droplets from ice crystals in clouds.",
+          "How do glory and corona optical phenomena arise from Mie scattering theory?"
         ]
       },
       "lifeScene": {
         "title": "Why Clouds Are White, Not Blue",
+        "title_beginner": "The Cloud Color Mystery!",
+        "title_advanced": "Size-Dependent Scattering and Atmospheric Optics",
         "imageAlt": "Fluffy white clouds against bright blue sky, illustrating the contrast between Mie and Rayleigh scattering",
         "hook": "If the sky is blue because of scattering, why aren't clouds blue too? The answer lies in water droplet size!",
+        "hook_beginner": "The sky is blue because tiny air molecules scatter blue light best. But cloud droplets are HUGE compared to those molecules - they scatter all colors the same, making white!",
+        "hook_advanced": "Cloud droplets (r ~ 10μm) have size parameter x = 2πr/λ >> 1, placing them firmly in the Mie regime where scattering efficiency approaches the geometric limit Qsca → 2 and becomes wavelength-independent, producing the achromatic appearance of clouds.",
         "facts": [
           "Cloud droplets are much larger than air molecules - they scatter all colors equally",
           "This equal scattering produces white (all colors combined)",
           "Fog, mist, and haze work the same way - that's why visibility is reduced in all colors"
+        ],
+        "facts_beginner": [
+          "Air molecules are super tiny - they like blue light best (sky is blue)",
+          "Cloud droplets are giants compared to air molecules - they treat all colors equally (white)",
+          "Milk looks white for the same reason - fat droplets scatter all colors!"
+        ],
+        "facts_advanced": [
+          "Mie scattering phase function shows strong forward peak with asymmetry parameter g ~ 0.85",
+          "Multiple scattering in clouds produces diffuse, isotropic radiance distribution",
+          "Polarization from single Mie scattering creates rainbow and glory phenomena"
         ]
       },
       "physics": {
         "principle": "When particle size is comparable to wavelength, scattering intensity has complex wavelength dependence",
+        "principle_beginner": "Big particles (like water droplets in clouds) scatter all colors equally - that's why clouds are white! Small particles (like air molecules) prefer blue light - that's why the sky is blue. Size matters for scattering!",
+        "principle_advanced": "Mie theory solves Maxwell's equations for a sphere of arbitrary size, giving scattering efficiency as infinite series of electric and magnetic multipoles. For x >> 1, Qsca → 2 (extinction paradox), phase function becomes strongly peaked forward, and wavelength dependence vanishes, yielding achromatic scattering.",
         "formula": "Scattering efficiency Qsca ≈ 2 (large particle limit)",
         "details": [
           "Scattered spectrum is relatively flat",
           "White clouds appear white due to Mie scattering",
           "Forward scattering is dominant"
+        ],
+        "details_beginner": [
+          "Large droplets = all colors scatter the same = white",
+          "That's why clouds, fog, and milk all look white",
+          "Large particles also scatter mostly forward (not sideways)"
+        ],
+        "details_advanced": [
+          "Size parameter x = 2πr/λ determines scattering regime: x << 1 (Rayleigh), x ~ 1 (resonant), x >> 1 (geometric)",
+          "Mie efficiency oscillates around Qsca = 2 due to interference between surface and transmitted waves",
+          "Depolarization ratio provides information about particle shape and composition"
         ]
       },
       "experiment": {
@@ -1027,32 +1379,76 @@
       "description": "Scattering characteristics when particle size is much smaller than wavelength (blue sky effect)",
       "questions": {
         "leading": "Why is the sky blue during the day but turns red and orange at sunset?",
+        "leading_beginner": "Why does the sky change from blue to orange and red when the sun goes down?",
+        "leading_advanced": "How does the λ⁻⁴ wavelength dependence of Rayleigh scattering arise from the oscillating dipole model?",
         "guided": [
           "Why does blue light scatter more than red light in the atmosphere?",
           "What causes the sky to appear red/orange during sunset?"
         ],
+        "guided_beginner": [
+          "Why is blue light scattered more than red light?",
+          "Why does the sun look bigger and redder at sunset?"
+        ],
+        "guided_advanced": [
+          "Derive the Rayleigh scattering cross-section from classical electromagnetic theory.",
+          "How does molecular anisotropy (depolarization factor) modify the Rayleigh formula?"
+        ],
         "openEnded": [
           "If Earth had a different atmosphere composition, what color might our sky be?",
           "How does Rayleigh scattering affect satellite imaging and remote sensing?"
+        ],
+        "openEnded_beginner": [
+          "What color is the sky on Mars? Why is it different from Earth?",
+          "Why are some sunsets more colorful than others?"
+        ],
+        "openEnded_advanced": [
+          "Design an atmospheric correction algorithm for satellite imagery based on Rayleigh scattering.",
+          "How do aerosol size distributions affect the apparent color of the horizon sky?"
         ]
       },
       "lifeScene": {
         "title": "The Sunset Mystery Solved",
+        "title_beginner": "Why Sunsets Are Red and Skies Are Blue!",
+        "title_advanced": "Wavelength-Dependent Dipole Scattering in Atmospheric Radiative Transfer",
         "imageAlt": "Beautiful orange-red sunset with sun on horizon, showing how light passes through more atmosphere",
         "hook": "Why does the sky change from blue to orange and red as the sun sets? It's all about how far light travels through the atmosphere!",
+        "hook_beginner": "The sky is blue because tiny air molecules scatter blue light everywhere - it bounces around until it reaches your eyes! At sunset, that blue gets scattered away on the long trip through the atmosphere, leaving orange and red.",
+        "hook_advanced": "Rayleigh scattering intensity I ∝ λ⁻⁴ means blue light (450nm) scatters ~5.5× more than red (700nm). At sunset, the optical path through atmosphere increases by ~40×, exponentially depleting short wavelengths and revealing the red/orange spectral tail.",
         "facts": [
           "Blue light scatters ~10x more than red light (that's the 1/λ⁴ law)",
           "At sunset, light travels through more atmosphere, scattering away all the blue",
           "Mars has a different atmosphere - its sky is butterscotch colored and sunsets are blue!"
+        ],
+        "facts_beginner": [
+          "Blue light is a 'pinball' - it bounces around 10× more than red light",
+          "At noon: short path → blue scattered to you. At sunset: long path → blue scattered away",
+          "Mars has dust, not air molecules - its sky is tan/pink and sunsets are blue!"
+        ],
+        "facts_advanced": [
+          "Rayleigh cross-section σ = (8π/3)(πα²/ε₀λ⁴) where α is molecular polarizability",
+          "The sky isn't violet (shorter λ) because solar spectrum peaks around 500nm and eye sensitivity favors blue",
+          "Atmospheric optical depth: τ ≈ 0.1 at zenith (550nm), increasing to ~3 at horizon"
         ]
       },
       "physics": {
         "principle": "When particle size is much smaller than wavelength, scattering intensity is proportional to λ⁻⁴",
+        "principle_beginner": "Tiny air molecules act like tiny bells that ring when light hits them. Blue light makes them ring much louder than red light (10× louder!). So blue light bounces around the sky while red light goes straight through.",
+        "principle_advanced": "Rayleigh scattering occurs when particles are much smaller than wavelength (x << 1). The induced dipole moment p = αE oscillates and radiates as an antenna. Radiated power scales as ω⁴ ∝ λ⁻⁴, giving the characteristic wavelength dependence. The scattering phase function is symmetric (1 + cos²θ), producing equal forward and backward scattering.",
         "formula": "I ∝ 1/λ⁴",
         "details": [
           "Short wavelength (blue light) scatters more strongly",
           "This is why the sky appears blue",
           "Red sunset is because blue light is scattered away"
+        ],
+        "details_beginner": [
+          "Small particles + short wavelength = lots of scattering (blue wins)",
+          "Blue light scatters in all directions → sky looks blue everywhere",
+          "Long sunset path → blue scattered out → red gets through to your eyes"
+        ],
+        "details_advanced": [
+          "λ⁻⁴ dependence: ratio of 450nm to 700nm scattering is (700/450)⁴ ≈ 5.5",
+          "Rayleigh scattering produces partially polarized light; maximum at 90° from sun",
+          "Multiple scattering dilutes polarization but enables indirect sky illumination"
         ]
       },
       "experiment": {
@@ -1344,32 +1740,76 @@
         "description": "Understanding light as transverse electromagnetic waves",
         "lifeScene": {
           "title": "The Wave That Needs Nothing to Ripple",
+          "title_beginner": "Sunlight's 150 Million Kilometer Journey!",
+          "title_advanced": "Self-Propagating Coupled E and B Field Oscillations",
           "imageAlt": "Comparison of water waves needing water vs light waves traveling through empty space from the sun",
           "hook": "Water waves need water. Sound waves need air. But light travels through 150 million km of empty space from the sun to your eyes. How?",
+          "hook_beginner": "Drop a stone in a pond - waves spread out through the water. Shout - sound waves travel through air. But what about light from the sun? There's no air or water in space! How does it get here?",
+          "hook_advanced": "Maxwell's equations predict self-sustaining electromagnetic disturbances: a time-varying E-field induces a B-field (Faraday's law), which in turn induces an E-field (Ampère-Maxwell law), propagating at c = 1/√(μ₀ε₀) through vacuum.",
           "facts": [
             "Light is electromagnetic - it creates the medium it travels through by oscillating electric and magnetic fields",
             "Different wavelengths (colors) are produced by different oscillation frequencies",
             "Your microwave, WiFi, and X-rays are all light - just invisible wavelengths!"
+          ],
+          "facts_beginner": [
+            "Light makes its own 'medium' - electric and magnetic fields that wiggle together",
+            "Red light wiggles slowly (~430 trillion times per second). Violet wiggles fast (~750 trillion/s)!",
+            "WiFi, phone signals, and X-rays are all light - just colors your eyes can't see"
+          ],
+          "facts_advanced": [
+            "EM waves satisfy the wave equation ∇²E = μ₀ε₀∂²E/∂t², yielding vacuum propagation at c = 299,792,458 m/s exactly",
+            "The Poynting vector S = E×H gives energy flux; intensity I = |S| = ε₀c|E|²/2",
+            "Photon energy E = hf quantizes the classical wave, bridging wave-particle duality"
           ]
         },
         "physics": {
           "principle": "Light is a transverse electromagnetic wave with oscillating electric and magnetic fields perpendicular to propagation direction",
+          "principle_beginner": "Light is like a magic jump rope that doesn't need anyone to hold it! Electric and magnetic fields take turns 'pushing' each other, creating a wave that zooms through space at super speed.",
+          "principle_advanced": "Electromagnetic waves emerge from Maxwell's equations: ∇×E = -∂B/∂t and ∇×B = μ₀ε₀∂E/∂t couple the fields. In vacuum, plane wave solutions E = E₀exp[i(k·r-ωt)] satisfy the dispersion relation ω = ck, with E ⊥ B ⊥ k and |B| = |E|/c.",
           "formula": "E = E₀ sin(kx - ωt)",
           "details": [
             "Electric and magnetic fields oscillate perpendicular to each other",
             "Light travels at c = 3×10⁸ m/s in vacuum",
             "Wavelength determines color (400-700nm for visible light)"
+          ],
+          "details_beginner": [
+            "E-field wiggles up-down, B-field wiggles left-right, and they travel forward together",
+            "Light is the fastest thing in the universe - nothing beats 300,000 km per second!",
+            "Wavelength = color. Long wavelengths = red. Short wavelengths = blue/violet"
+          ],
+          "details_advanced": [
+            "Transversality: ∇·E = 0 in vacuum implies E ⊥ k (no longitudinal component)",
+            "Energy density u = ε₀E²/2 + B²/(2μ₀) = ε₀E² (equipartition between E and B)",
+            "Polarization is defined by the E-field direction; B follows according to B = k×E/(ω)"
           ]
         },
         "questions": {
           "leading": "What exactly is 'waving' when we call light a wave - and what determines its color?",
+          "leading_beginner": "What is actually moving up and down when light travels? And why do different 'wiggles' look like different colors?",
+          "leading_advanced": "How do Maxwell's equations predict the existence of self-propagating electromagnetic disturbances in vacuum?",
           "guided": [
             "What relationship exists between the electric and magnetic fields in light?",
             "How does changing wavelength affect what we see?"
           ],
+          "guided_beginner": [
+            "If light is a wave, what is actually waving (hint: not water or air)?",
+            "Why does red light feel warm and blue light feel cool?"
+          ],
+          "guided_advanced": [
+            "Derive the wave equation for E from Maxwell's equations in vacuum.",
+            "Show that the phase velocity of EM waves in vacuum equals 1/√(μ₀ε₀) = c."
+          ],
           "openEnded": [
             "Why do you think light can travel through vacuum while sound cannot?",
             "How might the wave nature of light explain phenomena like rainbows?"
+          ],
+          "openEnded_beginner": [
+            "If you were in space with no air, could you hear the sun? Could you see it? Why the difference?",
+            "What other 'invisible light' might be all around you right now?"
+          ],
+          "openEnded_advanced": [
+            "How did Maxwell's prediction of c from electromagnetic theory support the wave nature of light?",
+            "What modifications to plane wave solutions account for focused or diverging beams?"
           ]
         },
         "diy": {
@@ -1393,31 +1833,75 @@
         "description": "Introduction to the concept of light polarization",
         "lifeScene": {
           "title": "The Secret of Polarized Sunglasses",
+          "title_beginner": "Magic Sunglasses That See Through Glare!",
+          "title_advanced": "Electric Field Orientation and Reflective Polarization Selection",
           "imageAlt": "Split view of fishing scene: left side with regular glasses showing water glare, right side with polarized glasses showing fish clearly",
           "hook": "Ever wonder why some sunglasses let you see fish beneath water's surface while others just make everything darker?",
+          "hook_beginner": "Some sunglasses have a superpower - they can see through the bright glare on water! Fishermen use them to spot fish that others can't see. What's the magic trick?",
+          "hook_advanced": "Specular reflection from dielectric surfaces preferentially reflects s-polarized light (E-field parallel to surface). Polarizing filters oriented to block this horizontal component selectively attenuate glare while transmitting the unpolarized diffuse component carrying scene information.",
           "facts": [
             "Light from the sun vibrates in all directions - it's 'unpolarized'",
             "When it reflects off water, it becomes mostly horizontally polarized",
             "Polarized sunglasses block horizontal vibrations - eliminating glare while letting other light through!"
+          ],
+          "facts_beginner": [
+            "Sunlight is like spaghetti thrown at a fence - it wiggles every which way",
+            "Water acts like a filter - reflected glare wiggles mostly side-to-side (horizontal)",
+            "Polarized sunglasses have invisible 'slots' that block side-to-side wiggles but let up-down through!"
+          ],
+          "facts_advanced": [
+            "Fresnel equations show reflectance ratio Rs/Rp > 1 at all angles for air-water interfaces",
+            "At Brewster's angle (53° for water), reflected light is 100% s-polarized",
+            "Dichroic polarizers achieve extinction ratios >10,000:1 through selective absorption"
           ]
         },
         "physics": {
           "principle": "Polarization describes the orientation of the electric field oscillation in a light wave",
+          "principle_beginner": "Imagine light as a jump rope. Sunlight wiggles in all directions at once (unpolarized). But you can make it wiggle just up-and-down, or just left-and-right - that's polarization! A polarizer is like a fence that only lets one direction through.",
+          "principle_advanced": "Polarization describes the time-evolution of the E-field vector in the plane transverse to propagation. For fully polarized light, the tip of E traces a definite curve (line, circle, or ellipse). The Stokes parameters or Jones vector completely specify the polarization state, including partial polarization and coherence properties.",
           "details": [
             "Unpolarized light has random electric field orientations",
             "Polarized light has a definite oscillation pattern",
             "Types: linear, circular, and elliptical polarization"
+          ],
+          "details_beginner": [
+            "Unpolarized = wiggles in random directions. Polarized = wiggles in one pattern",
+            "A polarizer is like a slot that only lets matching wiggles through",
+            "Sunlight is unpolarized. Reflected light from water is polarized. Your LCD screen is polarized!"
+          ],
+          "details_advanced": [
+            "Degree of polarization (DOP) ranges from 0 (natural light) to 1 (fully polarized)",
+            "Stokes vector [S₀, S₁, S₂, S₃] provides complete polarization characterization",
+            "Partial polarization arises from incoherent superposition of polarized and unpolarized components"
           ]
         },
         "questions": {
           "leading": "What hidden property of light do polarized sunglasses reveal - and why does it help reduce glare?",
+          "leading_beginner": "Why can special sunglasses let you see fish through bright water glare when regular sunglasses can't?",
+          "leading_advanced": "How does the Stokes formalism describe the degree and orientation of partial polarization in reflected light from natural surfaces?",
           "guided": [
             "What is the difference between polarized and unpolarized light?",
             "Which direction does the electric field vibrate in polarized light?"
           ],
+          "guided_beginner": [
+            "How is polarized light different from regular sunlight?",
+            "Why does water glare 'wiggle' mostly side-to-side?"
+          ],
+          "guided_advanced": [
+            "How can Stokes parameters distinguish between unpolarized and depolarized light?",
+            "What determines the degree of polarization in reflected light from a rough surface?"
+          ],
           "openEnded": [
             "Why do polarized sunglasses reduce glare better than regular sunglasses?",
             "Where might you encounter polarized light in daily life?"
+          ],
+          "openEnded_beginner": [
+            "What other shiny surfaces might have polarized reflections that special glasses could reduce?",
+            "Why don't all sunglasses have this glare-blocking power?"
+          ],
+          "openEnded_advanced": [
+            "How might polarimetric imaging reveal information invisible to intensity-only sensors?",
+            "Design a simple experiment to measure the DOP of sky light at different angles from the sun."
           ]
         },
         "diy": {
@@ -1441,31 +1925,75 @@
         "description": "Linear, circular, and elliptical polarization explained",
         "lifeScene": {
           "title": "Why Modern 3D Beats Old 3D",
+          "title_beginner": "From Headache Glasses to Awesome 3D!",
+          "title_advanced": "Orthogonal Circular States in Stereoscopic Encoding",
           "imageAlt": "Comparison of old red-blue anaglyph 3D glasses vs modern circular polarization 3D glasses at a movie theater",
           "hook": "Remember those old red-blue 3D glasses that gave headaches? Modern 3D uses 'spinning' light instead - and that's why it looks so much better!",
+          "hook_beginner": "Old 3D movies with red-blue glasses looked weird and hurt your eyes. Now 3D is amazing! The secret? Instead of filtering colors, they use light that spins left or right!",
+          "hook_advanced": "Anaglyph 3D relies on spectral filtering, causing color distortion and interocular crosstalk. Modern stereoscopic systems use orthogonal circular polarization states - RealD alternates RHCP and LHCP at 144Hz with passive circular analyzers achieving >200:1 channel separation without head-tilt sensitivity.",
           "facts": [
             "Old 3D used color filters - that's why you saw weird colors and got eye strain",
             "Modern 3D uses circular polarization - left eye gets clockwise-spinning light, right eye gets counter-clockwise",
             "Satellite communications also use circular polarization - rain doesn't disrupt it like linear would"
+          ],
+          "facts_beginner": [
+            "Red-blue glasses worked by color - but then everything looked weird and your eyes got tired",
+            "New 3D uses spinning light - left eye = clockwise, right eye = counter-clockwise",
+            "GPS and satellite TV also use spinning light - rain can't mess it up!"
+          ],
+          "facts_advanced": [
+            "Circular polarization handedness is invariant under rotation - no head-tilt ghosting",
+            "RHCP and LHCP are orthogonal eigenstates of the S₃ component in Stokes space",
+            "Circularly polarized antennas reject multipath interference from odd-bounce reflections"
           ]
         },
         "physics": {
           "principle": "Different polarization types arise from the phase and amplitude relationship of orthogonal field components",
+          "principle_beginner": "Light can wiggle in different patterns: straight lines (linear), perfect circles (circular), or squished circles (elliptical). It's like drawing with a Spirograph - the same wave, but different patterns depending on how the parts combine!",
+          "principle_advanced": "Polarization state is determined by the amplitude ratio and phase difference of orthogonal E-field components: E = [Ex, Ey·e^(iδ)]. For δ = 0 → linear; δ = ±π/2, |Ex| = |Ey| → circular (RH/LH); general case → elliptical. The Poincaré sphere maps all pure states to a unit sphere with poles as circular and equator as linear.",
           "details": [
             "Linear: E-field oscillates in a single plane",
             "Circular: E-field rotates with constant magnitude",
             "Elliptical: E-field traces an ellipse (most general case)"
+          ],
+          "details_beginner": [
+            "Linear = straight wiggle (like a ruler sliding back and forth)",
+            "Circular = spinning wiggle (like a corkscrew or spiral staircase)",
+            "Elliptical = squished circle wiggle (like an oval race track)"
+          ],
+          "details_advanced": [
+            "On Poincaré sphere: latitude ↔ ellipticity, longitude ↔ orientation angle",
+            "Linear states lie on equator (S₃ = 0); circular at poles (S₃ = ±S₀)",
+            "Any polarization state is decomposable into two orthogonal basis states"
           ]
         },
         "questions": {
           "leading": "Can light vibrate in a straight line, spin in a circle, or trace an ellipse - and what determines which pattern it follows?",
+          "leading_beginner": "Can light wiggle in different shapes - straight lines, circles, or ovals? What decides which pattern it makes?",
+          "leading_advanced": "How does the relative phase between orthogonal E-field components map to points on the Poincaré sphere?",
           "guided": [
             "What determines whether light is linearly, circularly, or elliptically polarized?",
             "How do the two orthogonal field components combine to create different polarization states?"
           ],
+          "guided_beginner": [
+            "What makes linear polarization different from circular polarization?",
+            "Why is circular polarization better for 3D movies than linear?"
+          ],
+          "guided_advanced": [
+            "Show how a λ/4 plate at 45° converts linear to circular polarization.",
+            "What is the relationship between Jones vector components and Stokes parameters?"
+          ],
           "openEnded": [
             "Why might circular polarization be useful for 3D movies?",
             "Can you think of a real-world application that benefits from elliptical polarization?"
+          ],
+          "openEnded_beginner": [
+            "Why doesn't tilting your head mess up modern 3D movies like it would with linear polarization?",
+            "What other gadgets might use spinning light?"
+          ],
+          "openEnded_advanced": [
+            "Design a system to generate arbitrary polarization states using only linear retarders.",
+            "How do biological structures like beetle shells produce selective circular polarization reflection?"
           ]
         },
         "diy": {
@@ -1488,31 +2016,75 @@
         "description": "Hands-on exploration of light propagation through optical components",
         "lifeScene": {
           "title": "The Mysterious Third Polarizer",
+          "title_beginner": "The Magic Trick That 'Unblocks' Light!",
+          "title_advanced": "Non-Commutative Polarization State Projection",
           "imageAlt": "Diagram showing two crossed polarizers blocking all light, then a third polarizer at 45° in between allowing light through",
           "hook": "Two polarizers at 90° block ALL light. But add a third polarizer in between and suddenly light gets through! How is that possible?",
+          "hook_beginner": "Cross two polarizers at 90° - darkness! No light gets through. Now slide a third polarizer between them... and light appears! It's like 'unblocking' blocked light - how?!",
+          "hook_advanced": "Crossed polarizers project onto orthogonal states with zero overlap. An intermediate analyzer at 45° performs sequential projections: the input state projects onto the intermediate axis (50% transmission), then that state projects onto the output axis (50% again), yielding 25% total - versus 0% direct transmission. This demonstrates the non-commutative nature of projection operators in quantum mechanics.",
           "facts": [
             "This seems to break the rules - blocked light magically passes through!",
             "The secret: the middle polarizer 'rotates' the polarization in two steps instead of one blocked jump",
             "This 'paradox' is actually how some privacy screens on ATMs work"
+          ],
+          "facts_beginner": [
+            "It looks like magic, but it's really math - the middle polarizer 'rotates' the light!",
+            "Two 45° turns = light gets through. One 90° turn = blocked",
+            "ATM privacy screens use stacked polarizers so only the person in front can see"
+          ],
+          "facts_advanced": [
+            "Maximum transmission with intermediate polarizer at θ = 45° gives I = I₀cos²(45°)cos²(45°) = 0.25I₀",
+            "N polarizers at incremental angles approach 100% as N → ∞ (cos²(π/2N))^N → 1",
+            "This is analogous to quantum Zeno effect - frequent measurements 'rotate' the state without collapse"
           ]
         },
         "physics": {
           "principle": "Explore how light interacts with polarizers following Malus's Law",
+          "principle_beginner": "Light through one polarizer drops to 50%. Through a second at 90°? Zero! But through the second at 45°, then a third at 90°? Some gets through! It's like turning a corner in two steps instead of trying to make one sharp turn.",
+          "principle_advanced": "Sequential projection operators do not commute: P₉₀P₀ = 0 (no transmission), but P₉₀P₄₅P₀ ≠ 0. Each polarizer projects onto its axis, with intensity following Malus's Law: I = I₀cos²θ for each stage. This exemplifies the role of measurement sequence in determining outcome, with direct analogy to quantum state projection.",
           "details": [
             "Adjust emitter polarization angle",
             "Rotate polarizer to observe intensity changes",
             "Real-time visualization of transmitted light"
+          ],
+          "details_beginner": [
+            "First polarizer: cuts out half the light (50% through)",
+            "Second polarizer at 90°: blocks everything (0% through)",
+            "Add middle polarizer at 45°: now 25% gets through - step by step!"
+          ],
+          "details_advanced": [
+            "For crossed polarizers: I = I₀cos²(90°) = 0",
+            "With intermediate at 45°: I = I₀cos²(45°)cos²(45°) = I₀/4",
+            "Multiple intermediate polarizers at angles θ, 2θ, ... approach lossless rotation as N → ∞"
           ]
         },
         "questions": {
           "leading": "What happens when you place two polarizers at right angles - and can you let light through by adding a third one?",
+          "leading_beginner": "Two filters block all light. Add a third filter between them and light appears! Is this magic or math?",
+          "leading_advanced": "Why do sequential polarizer projections yield non-zero transmission when direct projection gives zero? How does this relate to non-commutativity of operators?",
           "guided": [
             "What happens to light intensity when polarization angle differs from the polarizer axis?",
             "At what angle difference does light get completely blocked?"
           ],
+          "guided_beginner": [
+            "What percentage of light gets through one polarizer?",
+            "Why does adding a filter INCREASE the amount of light that gets through?"
+          ],
+          "guided_advanced": [
+            "Calculate the transmission through N equally-spaced polarizers spanning 90° as N increases.",
+            "How does this sequential projection relate to adiabatic state rotation in quantum mechanics?"
+          ],
           "openEnded": [
             "How could you use multiple polarizers to control light intensity precisely?",
             "What practical devices use this principle of polarization filtering?"
+          ],
+          "openEnded_beginner": [
+            "What would happen with FOUR polarizers at 0°, 30°, 60°, and 90°? More or less light?",
+            "Where might you find this 'trick' used in real life?"
+          ],
+          "openEnded_advanced": [
+            "Design a polarization rotator using only linear polarizers with specified efficiency and purity.",
+            "Compare the three-polarizer result to quantum Zeno effect and adiabatic quantum computation."
           ]
         },
         "diy": {

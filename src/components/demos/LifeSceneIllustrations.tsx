@@ -1383,10 +1383,236 @@ export function CloudsVsSkyIllustration() {
   )
 }
 
+// ==================== 新增插图: 胶带艺术 ====================
+
+// 胶带艺术 - 用于色偏振演示 (chromatic)
+export function TapeArtIllustration() {
+  const colors = useColors()
+  const [showColors, setShowColors] = useState(true)
+
+  return (
+    <svg
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
+      onClick={() => setShowColors(!showColors)}
+    >
+      {/* 背景 */}
+      <rect x="0" y="0" width="280" height="120" fill={colors.bg} rx="5" />
+
+      {/* 标题 */}
+      <text x="140" y="14" textAnchor="middle" fill={colors.text} fontSize="9" fontWeight="bold">
+        Tape Art Between Polarizers
+      </text>
+
+      {/* 左侧偏振片 */}
+      <g transform="translate(25, 60)">
+        <rect x="-5" y="-35" width="10" height="70" fill={colors.primary} opacity="0.5" stroke={colors.primary} strokeWidth="2" rx="2" />
+        <line x1="0" y1="-30" x2="0" y2="30" stroke={colors.primary} strokeWidth="2.5" />
+        <text x="0" y="45" textAnchor="middle" fill={colors.muted} fontSize="7">P₁</text>
+      </g>
+
+      {/* 胶带艺术区域 - 玻璃片上的胶带 */}
+      <g transform="translate(55, 25)">
+        {/* 玻璃片背景 */}
+        <rect x="0" y="0" width="130" height="70" rx="4" fill="white" opacity="0.1" stroke={colors.muted} strokeWidth="1" />
+
+        {/* 胶带条 - 显示彩色或透明 */}
+        {showColors ? (
+          <>
+            {/* 彩色胶带条纹 */}
+            <rect x="10" y="10" width="35" height="12" rx="1" fill="#ef4444" opacity="0.7" />
+            <rect x="20" y="18" width="45" height="10" rx="1" fill="#f97316" opacity="0.7" />
+            <rect x="15" y="25" width="40" height="15" rx="1" fill="#fbbf24" opacity="0.7" />
+            <rect x="55" y="8" width="30" height="25" rx="1" fill="#22c55e" opacity="0.7" />
+            <rect x="30" y="38" width="50" height="12" rx="1" fill="#3b82f6" opacity="0.7" />
+            <rect x="80" y="20" width="35" height="18" rx="1" fill="#8b5cf6" opacity="0.7" />
+            <rect x="70" y="40" width="45" height="14" rx="1" fill="#ec4899" opacity="0.7" />
+            <rect x="95" y="10" width="25" height="28" rx="1" fill="#06b6d4" opacity="0.7" />
+            {/* 重叠区域创建新颜色 */}
+            <rect x="55" y="25" width="25" height="10" rx="1" fill="#84cc16" opacity="0.6" />
+            <rect x="70" y="35" width="20" height="8" rx="1" fill="#f472b6" opacity="0.6" />
+          </>
+        ) : (
+          <>
+            {/* 透明胶带条纹 */}
+            <rect x="10" y="10" width="35" height="12" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+            <rect x="20" y="18" width="45" height="10" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+            <rect x="15" y="25" width="40" height="15" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+            <rect x="55" y="8" width="30" height="25" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+            <rect x="30" y="38" width="50" height="12" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+            <rect x="80" y="20" width="35" height="18" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+            <rect x="70" y="40" width="45" height="14" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+            <rect x="95" y="10" width="25" height="28" rx="1" fill={colors.text} opacity="0.05" stroke={colors.muted} strokeWidth="0.5" />
+          </>
+        )}
+
+        {/* 胶带卷图标 */}
+        <g transform="translate(115, 55)">
+          <circle cx="0" cy="0" r="10" fill={colors.muted} opacity="0.3" />
+          <circle cx="0" cy="0" r="4" fill={colors.bg} />
+        </g>
+      </g>
+
+      {/* 右侧偏振片 (检偏器) */}
+      <g transform="translate(210, 60)">
+        <rect x="-5" y="-35" width="10" height="70" fill={colors.secondary} opacity="0.5" stroke={colors.secondary} strokeWidth="2" rx="2" />
+        <line x1="-25" y1="0" x2="25" y2="0" stroke={colors.secondary} strokeWidth="2.5" />
+        <text x="0" y="45" textAnchor="middle" fill={colors.muted} fontSize="7">P₂</text>
+      </g>
+
+      {/* 光源 */}
+      <g transform="translate(8, 60)">
+        <circle cx="0" cy="0" r="6" fill={colors.accent} />
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+          <line
+            key={angle}
+            x1={8 * Math.cos(angle * Math.PI / 180)}
+            y1={8 * Math.sin(angle * Math.PI / 180)}
+            x2={10 * Math.cos(angle * Math.PI / 180)}
+            y2={10 * Math.sin(angle * Math.PI / 180)}
+            stroke={colors.accent}
+            strokeWidth="1.5"
+          />
+        ))}
+      </g>
+
+      {/* 观察者眼睛 */}
+      <g transform="translate(260, 60)">
+        <ellipse cx="0" cy="0" rx="12" ry="8" fill={colors.bg} stroke={colors.text} strokeWidth="2" />
+        <circle cx="0" cy="0" r="4" fill={colors.text} />
+      </g>
+
+      {/* 状态提示 */}
+      <g transform="translate(140, 108)">
+        <rect x="-55" y="-10" width="110" height="18" rx="4"
+          fill={showColors ? colors.accent : colors.muted} opacity="0.2" />
+        <text x="0" y="2" textAnchor="middle"
+          fill={showColors ? colors.accent : colors.muted} fontSize="8" fontWeight="bold">
+          {showColors ? '✨ Rainbow colors!' : 'Just clear tape...'}
+        </text>
+      </g>
+
+      {/* 点击提示 */}
+      <text x="260" y="108" textAnchor="middle" fill={colors.muted} fontSize="6">
+        Click to toggle
+      </text>
+    </svg>
+  )
+}
+
+// ==================== 新增插图: 电磁波穿越太空 ====================
+
+// 电磁波穿越太空对比 - 用于光波演示 (light-wave)
+export function WaveTravelIllustration() {
+  const colors = useColors()
+  const [showSpace, setShowSpace] = useState(true)
+
+  return (
+    <svg
+      viewBox="0 0 280 120"
+      className={svgContainerClass}
+      onClick={() => setShowSpace(!showSpace)}
+    >
+      {/* 左侧: 水波需要水 */}
+      <g>
+        {/* 标签 */}
+        <text x="70" y="12" textAnchor="middle" fill={colors.text} fontSize="8" fontWeight="bold">
+          Water Waves
+        </text>
+
+        {/* 水面 */}
+        <rect x="10" y="50" width="120" height="55" fill="#3b82f6" opacity="0.4" rx="3" />
+
+        {/* 水波纹 */}
+        <path d="M 15,65 Q 35,55 55,65 T 95,65 T 125,65" fill="none" stroke="#60a5fa" strokeWidth="2" />
+        <path d="M 15,80 Q 35,70 55,80 T 95,80 T 125,80" fill="none" stroke="#60a5fa" strokeWidth="2" />
+        <path d="M 15,95 Q 35,85 55,95 T 95,95 T 125,95" fill="none" stroke="#60a5fa" strokeWidth="2" />
+
+        {/* 石子落水点 */}
+        <circle cx="30" cy="55" r="4" fill={colors.muted} />
+        <circle cx="30" cy="55" r="8" fill="none" stroke="#60a5fa" strokeWidth="1" opacity="0.5" />
+        <circle cx="30" cy="55" r="15" fill="none" stroke="#60a5fa" strokeWidth="1" opacity="0.3" />
+
+        {/* 说明 */}
+        <text x="70" y="115" textAnchor="middle" fill={colors.muted} fontSize="7">
+          Needs water! 💧
+        </text>
+      </g>
+
+      {/* 分隔线 */}
+      <line x1="140" y1="20" x2="140" y2="105" stroke={colors.muted} strokeWidth="1" strokeDasharray="3" />
+
+      {/* 右侧: 光波穿越太空 */}
+      <g transform="translate(140, 0)">
+        {/* 标签 */}
+        <text x="70" y="12" textAnchor="middle" fill={colors.text} fontSize="8" fontWeight="bold">
+          Light Waves
+        </text>
+
+        {/* 太空背景 */}
+        <rect x="10" y="25" width="120" height="80" fill="#0f172a" rx="3" />
+
+        {/* 星星 */}
+        {[[25, 35], [50, 45], [80, 30], [105, 50], [35, 75], [90, 85], [115, 40], [60, 90]].map(([x, y], i) => (
+          <circle key={i} cx={x} cy={y} r="1" fill="white" opacity="0.7" />
+        ))}
+
+        {/* 太阳 */}
+        <g transform="translate(25, 65)">
+          <circle cx="0" cy="0" r="12" fill="#fbbf24" />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+            <line
+              key={angle}
+              x1={14 * Math.cos(angle * Math.PI / 180)}
+              y1={14 * Math.sin(angle * Math.PI / 180)}
+              x2={18 * Math.cos(angle * Math.PI / 180)}
+              y2={18 * Math.sin(angle * Math.PI / 180)}
+              stroke="#fbbf24"
+              strokeWidth="2"
+            />
+          ))}
+        </g>
+
+        {/* 光波传播 (波浪线) */}
+        <path
+          d="M 45,65 Q 55,55 65,65 T 85,65 T 105,65"
+          fill="none"
+          stroke="#fbbf24"
+          strokeWidth="2"
+          opacity="0.8"
+        />
+
+        {/* 地球 */}
+        <g transform="translate(115, 65)">
+          <circle cx="0" cy="0" r="10" fill="#3b82f6" />
+          <ellipse cx="-2" cy="-2" rx="4" ry="3" fill="#22c55e" opacity="0.7" />
+          <ellipse cx="3" cy="3" rx="3" ry="2" fill="#22c55e" opacity="0.7" />
+        </g>
+
+        {/* 距离标注 */}
+        <text x="70" y="95" textAnchor="middle" fill="white" fontSize="6" opacity="0.8">
+          150 million km of vacuum!
+        </text>
+
+        {/* 说明 */}
+        <text x="70" y="115" textAnchor="middle" fill={colors.success} fontSize="7">
+          No medium needed! ⚡
+        </text>
+      </g>
+
+      {/* 底部对比说明 */}
+      <rect x="80" y="108" width="120" height="14" rx="3" fill={colors.primary} opacity="0.1" />
+      <text x="140" y="118" textAnchor="middle" fill={colors.primary} fontSize="7" fontWeight="bold">
+        EM waves create their own 'medium'
+      </text>
+    </svg>
+  )
+}
+
 // 导出所有插图映射
 export const LIFE_SCENE_ILLUSTRATIONS: Record<string, React.ComponentType> = {
   // 新增插图
-  'light-wave': LightWaveIllustration,
+  'light-wave': WaveTravelIllustration, // 改用太空对比图，区分于演示动画
   'polarization-types': PolarizationTypesIllustration,
   'optical-bench': OpticalBenchIllustration,
   'optical-rotation': OpticalRotationIllustration,
@@ -1402,7 +1628,7 @@ export const LIFE_SCENE_ILLUSTRATIONS: Record<string, React.ComponentType> = {
   'fresnel': SunsetLakeIllustration,
   'brewster': WindowPhotographyIllustration,
   'anisotropy': PhotoelasticityIllustration,
-  'chromatic': PhotoelasticityIllustration,
+  'chromatic': TapeArtIllustration, // 改用胶带艺术图，更贴合生活场景
   'rayleigh': SkyScatteringIllustration,
   'mie-scattering': CloudsVsSkyIllustration,
 }
