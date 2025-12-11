@@ -1177,65 +1177,92 @@ export function WindowPhotographyIllustration() {
   )
 }
 
-// 应力光弹性 - 增强版
+// 桥梁应力光弹性分析 - 展示拱桥模型的应力分布
 export function PhotoelasticityIllustration() {
   const colors = useColors()
 
   return (
-    <svg viewBox="0 0 280 120" className={svgContainerClass}>
+    <svg viewBox="0 0 280 140" className={svgContainerClass}>
       {/* 光源 */}
-      <circle cx="12" cy="80" r="6" fill={colors.accent} />
-      <line x1="18" y1="80" x2="30" y2="80" stroke={colors.accent} strokeWidth="2" />
+      <circle cx="10" cy="70" r="6" fill={colors.accent} />
+      <line x1="16" y1="70" x2="26" y2="70" stroke={colors.accent} strokeWidth="2" />
 
-      {/* 偏振片1 */}
-      <g transform="translate(40, 80)">
-        <rect x="-5" y="-35" width="10" height="70" fill={colors.primary} opacity="0.4" stroke={colors.primary} strokeWidth="1" />
-        <line x1="0" y1="-30" x2="0" y2="30" stroke={colors.primary} strokeWidth="2" />
-        <text x="0" y="-40" textAnchor="middle" fill={colors.muted} fontSize="7">P</text>
+      {/* 偏振片1 (起偏器) */}
+      <g transform="translate(35, 70)">
+        <rect x="-4" y="-30" width="8" height="60" fill={colors.primary} opacity="0.4" stroke={colors.primary} strokeWidth="1" />
+        <line x1="0" y1="-25" x2="0" y2="25" stroke={colors.primary} strokeWidth="2" />
+        <text x="0" y="-35" textAnchor="middle" fill={colors.muted} fontSize="7">P</text>
       </g>
 
-      {/* 塑料模型 */}
-      <g transform="translate(75, 45)">
-        <path d="M 0,35 L 35,0 L 120,0 L 155,35 L 155,70 L 120,70 L 80,50 L 35,70 L 0,70 Z"
-              fill="none" stroke={colors.text} strokeWidth="2" />
+      {/* 桥梁模型 */}
+      <g transform="translate(55, 30)">
+        {/* 桥面 */}
+        <rect x="0" y="35" width="160" height="8" fill="none" stroke={colors.text} strokeWidth="2" rx="1" />
 
-        {/* 应力彩色条纹 - 更丰富 */}
-        <path d="M 15,55 Q 40,40 65,55" fill="none" stroke="#ef4444" strokeWidth="3" />
-        <path d="M 18,50 Q 43,35 68,50" fill="none" stroke="#f97316" strokeWidth="3" />
-        <path d="M 21,45 Q 46,30 71,45" fill="none" stroke="#fbbf24" strokeWidth="3" />
-        <path d="M 24,40 Q 49,25 74,40" fill="none" stroke="#84cc16" strokeWidth="3" />
-        <path d="M 27,35 Q 52,20 77,35" fill="none" stroke="#22c55e" strokeWidth="3" />
-        <path d="M 30,30 Q 55,15 80,30" fill="none" stroke="#06b6d4" strokeWidth="3" />
+        {/* 拱形结构 */}
+        <path d="M 10,43 Q 80,0 150,43" fill="none" stroke={colors.text} strokeWidth="2" />
 
-        <path d="M 95,20 Q 120,35 95,50" fill="none" stroke="#3b82f6" strokeWidth="3" />
-        <path d="M 100,18 Q 125,33 100,48" fill="none" stroke="#8b5cf6" strokeWidth="3" />
-        <path d="M 105,16 Q 130,31 105,46" fill="none" stroke="#d946ef" strokeWidth="3" />
-        <path d="M 110,14 Q 135,29 110,44" fill="none" stroke="#ec4899" strokeWidth="3" />
+        {/* 桥墩 */}
+        <rect x="5" y="43" width="12" height="35" fill="none" stroke={colors.text} strokeWidth="2" />
+        <rect x="143" y="43" width="12" height="35" fill="none" stroke={colors.text} strokeWidth="2" />
 
-        {/* 应力箭头 */}
-        <polygon points="0,35 -12,28 -12,42" fill={colors.danger} />
-        <polygon points="155,35 167,28 167,42" fill={colors.danger} />
+        {/* 拱桥上的应力条纹 - 彩虹色渐变 */}
+        {/* 左侧桥墩区域 - 高应力 */}
+        <path d="M 12,50 L 12,70" stroke="#ef4444" strokeWidth="2" />
+        <path d="M 15,48 L 15,72" stroke="#f97316" strokeWidth="2" />
 
-        <text x="77" y="82" textAnchor="middle" fill={colors.muted} fontSize="7">Stressed plastic</text>
+        {/* 拱顶区域 - 中等应力 */}
+        <path d="M 55,25 Q 80,12 105,25" fill="none" stroke="#22c55e" strokeWidth="2" />
+        <path d="M 50,30 Q 80,15 110,30" fill="none" stroke="#84cc16" strokeWidth="2" />
+        <path d="M 45,35 Q 80,18 115,35" fill="none" stroke="#fbbf24" strokeWidth="2" />
+
+        {/* 拱的过渡区域 - 左侧 */}
+        <path d="M 20,40 Q 35,28 50,35" fill="none" stroke="#f97316" strokeWidth="2" />
+        <path d="M 25,38 Q 40,26 55,33" fill="none" stroke="#ef4444" strokeWidth="2" />
+
+        {/* 拱的过渡区域 - 右侧 */}
+        <path d="M 110,35 Q 125,28 140,40" fill="none" stroke="#f97316" strokeWidth="2" />
+        <path d="M 105,33 Q 120,26 135,38" fill="none" stroke="#ef4444" strokeWidth="2" />
+
+        {/* 右侧桥墩区域 - 高应力 */}
+        <path d="M 148,50 L 148,70" stroke="#ef4444" strokeWidth="2" />
+        <path d="M 145,48 L 145,72" stroke="#f97316" strokeWidth="2" />
+
+        {/* 桥面上的应力 */}
+        <path d="M 20,38 L 140,38" stroke="#3b82f6" strokeWidth="1.5" opacity="0.7" />
+        <path d="M 25,41 L 135,41" stroke="#8b5cf6" strokeWidth="1.5" opacity="0.7" />
+
+        {/* 负载箭头 - 向下 */}
+        <polygon points="80,25 75,15 85,15" fill={colors.danger} />
+        <line x1="80" y1="15" x2="80" y2="5" stroke={colors.danger} strokeWidth="2" />
+
+        {/* 地面支撑力箭头 */}
+        <polygon points="11,85 6,90 16,90" fill={colors.success} transform="rotate(180, 11, 87)" />
+        <polygon points="149,85 144,90 154,90" fill={colors.success} transform="rotate(180, 149, 87)" />
       </g>
 
-      {/* 偏振片2 */}
-      <g transform="translate(250, 80)">
-        <rect x="-5" y="-35" width="10" height="70" fill={colors.secondary} opacity="0.4" stroke={colors.secondary} strokeWidth="1" />
-        <line x1="-25" y1="0" x2="25" y2="0" stroke={colors.secondary} strokeWidth="2" />
-        <text x="0" y="-40" textAnchor="middle" fill={colors.muted} fontSize="7">A</text>
+      {/* 偏振片2 (检偏器) */}
+      <g transform="translate(230, 70)">
+        <rect x="-4" y="-30" width="8" height="60" fill={colors.secondary} opacity="0.4" stroke={colors.secondary} strokeWidth="1" />
+        <line x1="-20" y1="0" x2="20" y2="0" stroke={colors.secondary} strokeWidth="2" />
+        <text x="0" y="-35" textAnchor="middle" fill={colors.muted} fontSize="7">A</text>
       </g>
 
-      {/* 观察者 */}
-      <g transform="translate(285, 80)">
-        <ellipse cx="0" cy="0" rx="10" ry="7" fill={colors.bg} stroke={colors.text} strokeWidth="2" />
-        <circle cx="0" cy="0" r="3" fill={colors.text} />
+      {/* 观察者眼睛 */}
+      <g transform="translate(255, 70)">
+        <ellipse cx="0" cy="0" rx="8" ry="6" fill={colors.bg} stroke={colors.text} strokeWidth="1.5" />
+        <circle cx="0" cy="0" r="2.5" fill={colors.text} />
       </g>
 
-      {/* 底部说明 */}
-      <text x="160" y="150" textAnchor="middle" fill={colors.text} fontSize="8">
-        Stress patterns reveal force distribution
-      </text>
+      {/* 图例说明 */}
+      <g transform="translate(55, 125)">
+        <rect x="0" y="0" width="8" height="4" fill="#ef4444" />
+        <text x="12" y="4" fill={colors.muted} fontSize="6">High stress</text>
+        <rect x="55" y="0" width="8" height="4" fill="#22c55e" />
+        <text x="67" y="4" fill={colors.muted} fontSize="6">Low stress</text>
+        <rect x="110" y="0" width="8" height="4" fill="#3b82f6" />
+        <text x="122" y="4" fill={colors.muted} fontSize="6">Tension</text>
+      </g>
     </svg>
   )
 }
