@@ -245,12 +245,12 @@ interface DemoInfo {
   }
   physics: {
     principle: string
-    principle_beginner?: string  // 探索者模式：简单易懂的描述
-    principle_advanced?: string  // 大师模式：学术严谨的描述
+    principle_foundation?: string  // 基础层：简单易懂的描述
+    principle_research?: string  // 研究层：学术严谨的描述
     formula?: string
     details: string[]
-    details_beginner?: string[]  // 探索者模式：简化的细节
-    details_advanced?: string[]  // 大师模式：专业的细节
+    details_foundation?: string[]  // 基础层：简化的细节
+    details_research?: string[]  // 研究层：专业的细节
   }
   experiment: {
     title: string
@@ -280,16 +280,16 @@ const getDifficultyContent = (
   let principle = info.principle
   let details = info.details
 
-  if (difficultyLevel === 'beginner' && info.principle_beginner) {
-    principle = info.principle_beginner
-  } else if (difficultyLevel === 'advanced' && info.principle_advanced) {
-    principle = info.principle_advanced
+  if (difficultyLevel === 'foundation' && info.principle_foundation) {
+    principle = info.principle_foundation
+  } else if (difficultyLevel === 'research' && info.principle_research) {
+    principle = info.principle_research
   }
 
-  if (difficultyLevel === 'beginner' && info.details_beginner) {
-    details = info.details_beginner
-  } else if (difficultyLevel === 'advanced' && info.details_advanced) {
-    details = info.details_advanced
+  if (difficultyLevel === 'foundation' && info.details_foundation) {
+    details = info.details_foundation
+  } else if (difficultyLevel === 'research' && info.details_research) {
+    details = info.details_research
   }
 
   return { principle, details }
@@ -303,8 +303,8 @@ const getQuestions = (
 ): DemoQuestions | undefined => {
   try {
     // Get the difficulty suffix for questions
-    const suffix = difficultyLevel === 'beginner' ? '_beginner' :
-                   difficultyLevel === 'advanced' ? '_advanced' : ''
+    const suffix = difficultyLevel === 'foundation' ? '_foundation' :
+                   difficultyLevel === 'research' ? '_research' : ''
 
     // Try to get difficulty-specific leading question first, fallback to default
     let leading = t(`${basePath}.questions.leading${suffix}`)
@@ -362,8 +362,8 @@ const getLifeScene = (
 ): DemoInfo['lifeScene'] | undefined => {
   try {
     // Get the difficulty suffix
-    const suffix = difficultyLevel === 'beginner' ? '_beginner' :
-                   difficultyLevel === 'advanced' ? '_advanced' : ''
+    const suffix = difficultyLevel === 'foundation' ? '_foundation' :
+                   difficultyLevel === 'research' ? '_research' : ''
 
     // Try difficulty-specific title first, fallback to default
     let title = t(`${basePath}.lifeScene.title${suffix}`)
@@ -985,6 +985,9 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
 })
 
+// 课程难度层级类型
+export type DifficultyLevel = 'foundation' | 'application' | 'research'
+
 interface DemoItem {
   id: string
   titleKey: string
@@ -992,6 +995,7 @@ interface DemoItem {
   component: React.ComponentType
   descriptionKey: string
   visualType: '2D' | '3D'
+  difficulty: DifficultyLevel // 课程难度层级
 }
 
 // 搜索匹配结果接口 - 包含匹配位置信息
@@ -1047,43 +1051,50 @@ const getMatchContext = (text: string, query: string, contextLength: number = 50
   return result
 }
 
-// 难度级别类型
-type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced'
-
-// 难度级别配置 - 更有趣的命名和明显的内容差异
-const DIFFICULTY_CONFIG = {
-  beginner: {
+// 难度级别配置 - 基于研究型学习模式的三层体系
+const DIFFICULTY_CONFIG: Record<DifficultyLevel, {
+  color: string
+  icon: string
+  showFormula: boolean
+  showAdvancedDetails: boolean
+  maxPhysicsDetails: number
+  maxFrontierDetails: number
+  contentStyle: 'simple' | 'standard' | 'academic'
+  showMathSymbols: boolean
+  showDerivedFormulas: boolean
+}> = {
+  foundation: {
     color: 'green',
-    icon: '🔭',
+    icon: '🌱', // 基础层 - 发芽成长
     showFormula: false,
     showAdvancedDetails: false,
     maxPhysicsDetails: 2,
     maxFrontierDetails: 1,
-    // 初中生都能懂的语言
+    // PSRT: 问题驱动科研入门 - 激发兴趣,建立直觉
     contentStyle: 'simple',
     showMathSymbols: false,
     showDerivedFormulas: false,
   },
-  intermediate: {
+  application: {
     color: 'cyan',
-    icon: '🔬',
+    icon: '🔬', // 应用层 - 实验探索
     showFormula: true,
     showAdvancedDetails: false,
     maxPhysicsDetails: 3,
     maxFrontierDetails: 2,
-    // 高中/大学本科水平
+    // ESRT: 轮转研究训练 - 动手实践,理解应用
     contentStyle: 'standard',
     showMathSymbols: true,
     showDerivedFormulas: false,
   },
-  advanced: {
+  research: {
     color: 'purple',
-    icon: '🎓',
+    icon: '🚀', // 研究层 - 前沿探索
     showFormula: true,
     showAdvancedDetails: true,
     maxPhysicsDetails: 4,
     maxFrontierDetails: 3,
-    // 研究者/科学家水平的严谨表述
+    // ORIC/SURF: 自主原创研究 - 深入前沿,自主创新
     contentStyle: 'academic',
     showMathSymbols: true,
     showDerivedFormulas: true,
@@ -1102,7 +1113,7 @@ function DifficultySelector({
   theme: string
   t: (key: string) => string
 }) {
-  const levels: DifficultyLevel[] = ['beginner', 'intermediate', 'advanced']
+  const levels: DifficultyLevel[] = ['foundation', 'application', 'research']
   const [hoveredLevel, setHoveredLevel] = useState<DifficultyLevel | null>(null)
 
   return (
@@ -1186,6 +1197,7 @@ const DEMOS: DemoItem[] = [
     component: LightWaveDemo,
     descriptionKey: 'basics.demos.lightWave.description',
     visualType: '2D',
+    difficulty: 'foundation', // 基础概念,波动现象可视化
   },
   {
     id: 'polarization-intro',
@@ -1194,6 +1206,7 @@ const DEMOS: DemoItem[] = [
     component: PolarizationIntroDemo,
     descriptionKey: 'basics.demos.polarizationIntro.description',
     visualType: '2D',
+    difficulty: 'foundation', // 初步认识偏振,生活场景引入
   },
   {
     id: 'polarization-types',
@@ -1202,6 +1215,7 @@ const DEMOS: DemoItem[] = [
     component: PolarizationTypesDemo,
     descriptionKey: 'basics.demos.polarizationTypes.description',
     visualType: '2D',
+    difficulty: 'application', // 三种偏振态的定量区分
   },
   {
     id: 'optical-bench',
@@ -1210,6 +1224,7 @@ const DEMOS: DemoItem[] = [
     component: InteractiveOpticalBenchDemo,
     descriptionKey: 'basics.demos.opticalBench.description',
     visualType: '2D',
+    difficulty: 'application', // 交互式实验设计
   },
   // Unit 1
   {
@@ -1219,6 +1234,7 @@ const DEMOS: DemoItem[] = [
     component: PolarizationStateDemo,
     descriptionKey: 'demos.polarizationState.description',
     visualType: '3D',
+    difficulty: 'foundation', // 3D可视化偏振态,直观理解
   },
   {
     id: 'malus',
@@ -1227,6 +1243,7 @@ const DEMOS: DemoItem[] = [
     component: MalusLawDemo,
     descriptionKey: 'demos.malus.description',
     visualType: '2D',
+    difficulty: 'application', // 定量测量,cos²公式应用
   },
   {
     id: 'birefringence',
@@ -1235,6 +1252,7 @@ const DEMOS: DemoItem[] = [
     component: BirefringenceDemo,
     descriptionKey: 'demos.birefringence.description',
     visualType: '3D',
+    difficulty: 'application', // 冰洲石实验现象和原理
   },
   {
     id: 'waveplate',
@@ -1243,6 +1261,7 @@ const DEMOS: DemoItem[] = [
     component: WaveplateDemo,
     descriptionKey: 'demos.waveplate.description',
     visualType: '3D',
+    difficulty: 'research', // 波片调制原理,相位差计算
   },
   // Unit 2
   {
@@ -1252,6 +1271,7 @@ const DEMOS: DemoItem[] = [
     component: FresnelDemo,
     descriptionKey: 'demos.fresnel.description',
     visualType: '2D',
+    difficulty: 'research', // 复杂的菲涅尔公式推导
   },
   {
     id: 'brewster',
@@ -1260,6 +1280,7 @@ const DEMOS: DemoItem[] = [
     component: BrewsterDemo,
     descriptionKey: 'demos.brewster.description',
     visualType: '2D',
+    difficulty: 'application', // 布儒斯特角测量实验
   },
   // Unit 3
   {
@@ -1269,6 +1290,7 @@ const DEMOS: DemoItem[] = [
     component: AnisotropyDemo,
     descriptionKey: 'demos.anisotropy.description',
     visualType: '2D',
+    difficulty: 'foundation', // 色偏振生活应用(应力显示)
   },
   {
     id: 'chromatic',
@@ -1277,6 +1299,7 @@ const DEMOS: DemoItem[] = [
     component: ChromaticDemo,
     descriptionKey: 'demos.chromatic.description',
     visualType: '2D',
+    difficulty: 'application', // 色偏振实验和测量
   },
   {
     id: 'optical-rotation',
@@ -1285,6 +1308,7 @@ const DEMOS: DemoItem[] = [
     component: OpticalRotationDemo,
     descriptionKey: 'demos.opticalRotation.description',
     visualType: '2D',
+    difficulty: 'application', // 旋光实验和糖浓度测量
   },
   // Unit 4
   {
@@ -1294,6 +1318,7 @@ const DEMOS: DemoItem[] = [
     component: MieScatteringDemo,
     descriptionKey: 'demos.mieScattering.description',
     visualType: '2D',
+    difficulty: 'research', // 复杂的米氏散射理论
   },
   {
     id: 'rayleigh',
@@ -1302,6 +1327,7 @@ const DEMOS: DemoItem[] = [
     component: RayleighScatteringDemo,
     descriptionKey: 'demos.rayleigh.description',
     visualType: '2D',
+    difficulty: 'foundation', // 蓝天白云的自然现象解释
   },
   // Unit 5
   {
@@ -1311,6 +1337,7 @@ const DEMOS: DemoItem[] = [
     component: StokesVectorDemo,
     descriptionKey: 'demos.stokes.description',
     visualType: '3D',
+    difficulty: 'research', // 斯托克斯矢量的数学表示
   },
   {
     id: 'mueller',
@@ -1319,6 +1346,7 @@ const DEMOS: DemoItem[] = [
     component: MuellerMatrixDemo,
     descriptionKey: 'demos.mueller.description',
     visualType: '2D',
+    difficulty: 'research', // 缪勒矩阵的完备表征
   },
 ]
 
@@ -1481,7 +1509,7 @@ export function DemosPage() {
     diy: false,
   })
   const [searchQuery, setSearchQuery] = useState('')
-  const [difficultyLevel, setDifficultyLevel] = useState<DifficultyLevel>('intermediate')
+  const [difficultyLevel, setDifficultyLevel] = useState<DifficultyLevel>('application')
   const [showDifficultyChange, setShowDifficultyChange] = useState(false)
 
   // Show visual feedback when difficulty changes
@@ -2071,8 +2099,8 @@ export function DemosPage() {
                 <div className="flex items-center gap-3">
                   <GraduationCap className={cn(
                     'w-5 h-5',
-                    difficultyLevel === 'beginner' ? 'text-green-400' :
-                    difficultyLevel === 'advanced' ? 'text-purple-400' : 'text-cyan-400'
+                    difficultyLevel === 'foundation' ? 'text-green-400' :
+                    difficultyLevel === 'research' ? 'text-purple-400' : 'text-cyan-400'
                   )} />
                   <span className={cn(
                     'text-sm font-medium',
@@ -2092,9 +2120,9 @@ export function DemosPage() {
                   <div className={cn(
                     'absolute right-4 top-full mt-2 px-4 py-2 rounded-lg text-sm font-medium shadow-lg z-50',
                     'animate-in fade-in slide-in-from-top-2 duration-300',
-                    difficultyLevel === 'beginner'
+                    difficultyLevel === 'foundation'
                       ? 'bg-green-500/90 text-white'
-                      : difficultyLevel === 'advanced'
+                      : difficultyLevel === 'research'
                       ? 'bg-purple-500/90 text-white'
                       : 'bg-cyan-500/90 text-white'
                   )}>
@@ -2419,7 +2447,7 @@ export function DemosPage() {
                       )
                     })()}
                     {/* Beginner mode hint */}
-                    {difficultyLevel === 'beginner' && demoInfo.physics.formula && (
+                    {difficultyLevel === 'foundation' && demoInfo.physics.formula && (
                       <p className={cn(
                         'text-xs italic mt-2',
                         theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
