@@ -1493,23 +1493,54 @@
       "demoSubtitle": "Stokes Vector - Complete Mathematical Description of Polarization State",
       "questions": {
         "leading": "How can just four numbers tell us everything about light's polarization state - including partially polarized light?",
+        "leading_beginner": "Can light's 'wiggling pattern' be described by just four numbers? What does each number mean?",
+        "leading_advanced": "As physical observables of the second-order coherence matrix of electric field, how do Stokes parameters uniquely determine polarization state trajectories on the Poincaré sphere?",
         "guided": [
           "What does each of the four Stokes parameters represent?",
           "How can you measure the Stokes parameters experimentally?"
         ],
+        "guided_beginner": [
+          "If one of the four light parameters is zero, what does that mean?",
+          "How can you 'ask' light its secrets using polarizers?"
+        ],
+        "guided_advanced": [
+          "Derive Stokes vector expressions for unpolarized, linearly polarized, and circularly polarized light",
+          "How can all Stokes parameters be determined from four intensity measurements?"
+        ],
         "openEnded": [
           "Why is a mathematical description like Stokes vectors important for polarization analysis?",
           "How might Stokes parameters be used in astronomical observations?"
+        ],
+        "openEnded_beginner": [
+          "What's the benefit of describing light with four numbers?",
+          "Can you think of other things in life that need several numbers to be fully described?"
+        ],
+        "openEnded_advanced": [
+          "Analyze systematic error sources in rotating wave plate Stokes parameter measurement",
+          "Design an optical scheme for a rapid Stokes parameter imaging system"
         ]
       },
       "physics": {
         "principle": "Stokes vector uses four parameters to completely describe polarization state",
+        "principle_beginner": "Imagine you need to fully describe how light 'wiggles'. You just need four numbers: how bright? Horizontal or vertical bias? +45° or -45° bias? Clockwise or counterclockwise spin? That's the Stokes vector!",
+        "principle_advanced": "The Stokes vector S = [S₀, S₁, S₂, S₃]ᵀ is defined by time-averaged second-order statistics of the electric field: S₀ = <|Ex|²> + <|Ey|²>, S₁ = <|Ex|²> - <|Ey|²>, S₂ = 2Re<ExEy*>, S₃ = 2Im<ExEy*>. Degree of polarization DOP = √(S₁² + S₂² + S₃²)/S₀ ≤ 1, equals 1 for fully polarized states. Normalized coordinates (S₁, S₂, S₃) on the Poincaré sphere uniquely correspond to a polarization state.",
         "formula": "S = [S₀, S₁, S₂, S₃]ᵀ",
         "details": [
           "S₀: Total intensity",
           "S₁: Horizontal vs vertical polarization",
           "S₂: +45° vs -45° polarization",
           "S₃: Right vs left circular polarization"
+        ],
+        "details_beginner": [
+          "S₀ tells you how bright the light is",
+          "S₁ tells you if it leans toward '↔' or '↕'",
+          "S₂ tells you if it leans toward '↗' or '↖'",
+          "S₃ tells you if light is 'spinning clockwise' or 'counterclockwise'"
+        ],
+        "details_advanced": [
+          "Partially polarized light decomposes into fully polarized and fully unpolarized components",
+          "Mueller matrix acts on Stokes vector: S_out = M·S_in",
+          "Polarization state evolution on Poincaré sphere corresponds to SO(3) rotation group operations"
         ]
       },
       "experiment": {
@@ -1532,12 +1563,26 @@
       },
       "lifeScene": {
         "title": "How NASA Sees Through Haze",
+        "title_beginner": "Polarization Eyes in Space!",
+        "title_advanced": "Stokes Parameter Imaging and Atmospheric Correction in Polarization Remote Sensing",
         "imageAlt": "Satellite polarization image showing clear distinction between water, vegetation, and urban areas despite atmospheric haze",
         "hook": "Satellites can see through haze and smog to map the Earth's surface - but only with polarization! Just four numbers reveal everything.",
+        "hook_beginner": "How can satellites take clear pictures of Earth through haze? The secret: they don't just look at color, they look at how light 'wiggles'! Four numbers tell the whole story.",
+        "hook_advanced": "Multi-angle polarization sensors (e.g., POLDER, MISR) achieve atmospheric aerosol optical depth retrieval by measuring complete Stokes parameters of targets, with accuracy far exceeding pure radiometric intensity measurements.",
         "facts": [
           "The Stokes vector is the 'fingerprint' of light - it completely describes its polarization",
           "Different surfaces (water, leaves, concrete) have unique polarization signatures",
           "Astronomers use Stokes vectors to study magnetic fields in distant stars"
+        ],
+        "facts_beginner": [
+          "Four numbers = light's 'ID card'; different materials have different 'ID numbers'",
+          "Water, leaves, and buildings each have unique polarization signatures - satellites can easily tell them apart",
+          "Scientists can even study magnetic fields in stars hundreds of light-years away using polarized light!"
+        ],
+        "facts_advanced": [
+          "Polarization difference imaging (PDI) eliminates unpolarized background noise by subtracting Stokes components",
+          "MODIS-P mode measures polarized radiance in shortwave and near-infrared bands for aerosol retrieval",
+          "Coronagraphs use Stokes V component to measure Zeeman splitting, quantitatively studying solar magnetic field structure"
         ]
       },
       "diy": {
@@ -1618,22 +1663,52 @@
       "demoSubtitle": "Mueller Matrix - Polarization Transformation of Optical Elements",
       "questions": {
         "leading": "How can a simple 4×4 matrix predict exactly what any optical element will do to light's polarization?",
+        "leading_beginner": "Why can a table tell us how polarizers or wave plates will change light?",
+        "leading_advanced": "How does the Lu-Chipman decomposition of Mueller matrices separate the complex actions of polarization elements into three independent physical processes: depolarization, retardation, and diattenuation?",
         "guided": [
           "How does the Mueller matrix relate input and output polarization states?",
           "What is the advantage of using matrices to describe optical systems?"
         ],
+        "guided_beginner": [
+          "When you put two optical elements in series, how do you calculate the Mueller matrix?",
+          "How is the 'table' for a polarizer different from that of a wave plate?"
+        ],
+        "guided_advanced": [
+          "Under what conditions is a Mueller matrix physically realizable? How to verify?",
+          "Explain the relationship between Mueller matrices of non-depolarizers and Jones matrices"
+        ],
         "openEnded": [
           "How is Mueller matrix imaging used in medical diagnostics?",
           "Could you predict the output of a complex optical system by multiplying Mueller matrices?"
+        ],
+        "openEnded_beginner": [
+          "What diseases can doctors detect with 'Mueller matrix pictures'?",
+          "What else can this matrix method be used for?"
+        ],
+        "openEnded_advanced": [
+          "Design a Mueller matrix polarization imaging system to measure microstructure of biological tissue",
+          "Analyze the correspondence between Cloude-Pottier decomposition parameters and scattering medium microstructure"
         ]
       },
       "physics": {
         "principle": "Mueller matrix describes an optical element's transformation of polarization state",
+        "principle_beginner": "Each optical element is like a 'transformer' - light goes in, polarization state changes coming out. The Mueller matrix is this transformer's 'manual' - a 4×4 table telling you what input gives what output.",
+        "principle_advanced": "The Mueller matrix M is a 4×4 real matrix acting on Stokes space: S_out = M·S_in. Physical realizability requires M to map all physical Stokes vectors to physical Stokes vectors (non-negative intensity, DOP ≤ 1). Lu-Chipman decomposition factorizes M into three matrices: M = MΔ·MR·MD, representing depolarization, retardation, and diattenuation respectively, a standard tool for polarization state analysis.",
         "formula": "S' = M · S",
         "details": [
           "4×4 matrix describes linear transformation",
           "Can cascade multiple optical elements",
           "Contains 16 independent parameters"
+        ],
+        "details_beginner": [
+          "Matrix multiplication is like chaining transformers - light passes through the first, then the second",
+          "Polarizers, wave plates, mirrors... each has its unique Mueller matrix",
+          "Doctors use this principle to distinguish healthy tissue from diseased tissue"
+        ],
+        "details_advanced": [
+          "Ideal polarizer Mueller matrices have rank 2; ideal retarders are orthogonal matrices with determinant ±1",
+          "Depolarization index DI = (Tr(M^T·M) - m₀₀²)/(3m₀₀²) quantifies depolarization degree",
+          "Cloude-Pottier decomposition provides parameters correlated with scattering medium microstructure"
         ]
       },
       "experiment": {
@@ -1656,12 +1731,26 @@
       },
       "lifeScene": {
         "title": "Detecting Cancer with Light",
+        "title_beginner": "Light's Superpower Catches Bad Guys!",
+        "title_advanced": "Mueller Matrix Imaging for Microstructural Analysis in Cancer Diagnosis",
         "imageAlt": "Medical polarization imaging showing healthy tissue vs cancerous tissue with different Mueller matrix signatures",
         "hook": "Doctors are now using polarized light to detect skin cancer earlier than ever before - by measuring how tissue changes light's polarization!",
+        "hook_beginner": "Scan skin with a special beam of light and you can find hidden cancer cells! Way more sensitive than the naked eye - that's polarized light's superpower.",
+        "hook_advanced": "Mueller matrix polarization imaging utilizes decomposed parameters like depolarization index and retardance to characterize microstructural changes in tissue, such as collagen fiber disarray and nuclear morphology abnormalities, enabling non-invasive early cancer screening.",
         "facts": [
           "Healthy and cancerous tissues have different Mueller matrices - they transform light differently",
           "This non-invasive technique can spot cancer that's invisible to the naked eye",
           "The same math is used in designing camera lenses and fiber optic systems"
+        ],
+        "facts_beginner": [
+          "Healthy tissue and cancer have different 'light transformation tables' - they change light differently",
+          "This painless method can find tiny cancers invisible to doctors' eyes",
+          "The same mathematical tricks are used to design smartphone cameras and internet fiber cables!"
+        ],
+        "facts_advanced": [
+          "Mueller matrix decomposition parameters (retardance, depolarization) correlate with collagen orientation and cellular disorder",
+          "Polarimetric contrast enhancement enables detection of early dysplastic changes in epithelial tissues",
+          "Automated Mueller matrix microscopy combined with machine learning achieves tissue classification accuracy >95%"
         ]
       },
       "diy": {
