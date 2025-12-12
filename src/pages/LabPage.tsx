@@ -19,7 +19,7 @@ import {
   Clock, Lock, ChevronRight, Lightbulb,
   GraduationCap, Beaker, Microscope,
   BarChart3, Sparkles, Newspaper, Calculator,
-  TrendingUp, ExternalLink, Puzzle
+  TrendingUp, Puzzle
 } from 'lucide-react'
 
 // Research tasks data

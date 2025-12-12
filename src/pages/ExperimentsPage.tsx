@@ -18,8 +18,8 @@ import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Badge } from '@/components/shared'
 import {
   Home, Beaker, Clock, DollarSign, AlertTriangle, ChevronRight,
-  CheckCircle2, Circle, Star, Lightbulb, Camera, X,
-  Smartphone, Scissors, ShoppingBag, Eye, Sparkles, GraduationCap
+  CheckCircle2, Star, Lightbulb, Camera, X,
+  ShoppingBag, Eye, GraduationCap
 } from 'lucide-react'
 
 // Experiment difficulty and cost levels
@@ -935,7 +935,7 @@ function ExperimentDetailModal({
 }
 
 export function ExperimentsPage() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 

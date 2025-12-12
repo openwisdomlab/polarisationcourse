@@ -17,10 +17,10 @@ import { cn } from '@/lib/utils'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Tabs, Badge } from '@/components/shared'
 import {
-  Home, Play, Pause, RotateCcw, Save, Share2, Download,
-  ChevronRight, Plus, Trash2, Move, Eye, EyeOff,
-  Lightbulb, Target, Layers, Settings, HelpCircle,
-  Zap, Box, ExternalLink, ArrowRight, Lock, Unlock
+  Home, Play, Pause, RotateCcw,
+  ChevronRight, Trash2, Eye, EyeOff,
+  Lightbulb, Layers, HelpCircle,
+  Box, ExternalLink
 } from 'lucide-react'
 
 // Component types for the optical bench
@@ -349,7 +349,7 @@ function UC2Panel({
                   </p>
                 </div>
               </div>
-              <Badge color="emerald">×{count}</Badge>
+              <Badge color="green">×{count}</Badge>
             </div>
           )
         })}
@@ -383,7 +383,7 @@ const PAGE_TABS = [
 ]
 
 export function BenchPage() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
@@ -516,7 +516,7 @@ export function BenchPage() {
               label: isZh ? tab.labelZh : tab.labelEn,
             }))}
             activeTab={activeTab}
-            onTabChange={(id) => setActiveTab(id as 'classic' | 'free')}
+            onChange={(id: string) => setActiveTab(id as 'classic' | 'free')}
             className="p-3"
           />
 
