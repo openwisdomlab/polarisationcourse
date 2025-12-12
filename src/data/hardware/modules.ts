@@ -285,6 +285,96 @@ export const UC2_MODULES: UC2Module[] = [
     imageType: 'generated'
   },
 
+  // ===== PolarCraft@UC2 偏振实验模块 =====
+  // 专为教学游戏化设计的偏振显微成像模块
+  {
+    id: 'pol-illum',
+    name: 'POL-Illum (Polarizer Cube)',
+    nameZh: 'POL-Illum 起偏器立方',
+    category: 'optical',
+    description: 'Illumination path polarizer cube with rotating mount. Converts natural light to linearly polarized light. Features removable ring frame with 0-180° graduation.',
+    descriptionZh: '照明光路起偏器立方，带旋转安装座。将自然光转换为线偏振光。采用可拔插环形框架，配有0-180°刻度环。',
+    specifications: {
+      extinction: '≥500:1（建议更高）',
+      dimensions: '适配UC2 50mm系统',
+      rotationRange: '0-180° 连续可调',
+      mounting: '可拔插环形框架'
+    },
+    compatibleWith: ['uc2-cube', 'pol-analy'],
+    difficulty: 'beginner',
+    safetyNotes: 'Handle polarizer film by edges only.',
+    safetyNotesZh: '仅握住偏振片边缘操作。',
+    imageType: 'generated'
+  },
+  {
+    id: 'pol-analy',
+    name: 'POL-Analy (Analyzer Cube)',
+    nameZh: 'POL-Analy 检偏器立方',
+    category: 'optical',
+    description: 'Imaging path analyzer cube for analyzing polarization state after sample. Features 90° alignment mark and repeatable positioning structure (snap-fit/locating holes).',
+    descriptionZh: '成像端检偏器立方，用于分析透过样品后的偏振状态。带90°对位标记和可重复定位结构（卡扣/定位孔）。',
+    specifications: {
+      extinction: '≥500:1',
+      alignment: '90° 对位标记',
+      positioning: '卡扣/定位孔',
+      mounting: '可独立旋转'
+    },
+    compatibleWith: ['uc2-cube', 'pol-illum'],
+    difficulty: 'beginner',
+    imageType: 'generated'
+  },
+  {
+    id: 'pol-stage',
+    name: 'POL-Stage (Rotating Sample Stage)',
+    nameZh: 'POL-Stage 旋转载物台',
+    category: 'mechanical',
+    description: '360° graduated rotation stage supporting quick sample box exchange. Can be upgraded with motor drive for automated scanning. Recommended: build angle/direction intuition with manual scale first.',
+    descriptionZh: '0-360°刻度旋转载物台，支持快速换"神秘样品盒"。可后续升级电机驱动用于扫描。建议先用手动刻度建立"角度/方向"的直觉，再引入电机自动扫描。',
+    specifications: {
+      rotationRange: '0-360° 连续',
+      graduation: '1° 刻度',
+      sampleMount: '快速换样品盒设计',
+      upgradeOption: '可升级电机驱动'
+    },
+    compatibleWith: ['uc2-cube', 'pol-rotator'],
+    difficulty: 'beginner',
+    imageType: 'generated'
+  },
+  {
+    id: 'pol-slider',
+    name: 'POL-Slider (Compensator Slider)',
+    nameZh: 'POL-Slider 补偿片滑块',
+    category: 'optical',
+    description: 'Multi-slot slider for inserting compensators like cellophane, tape layers, or mica sheets. Creates interference colors and reveals "hidden patterns". DIY material retardation varies with wavelength/thickness.',
+    descriptionZh: '多槽位滑块，可插入玻璃纸、胶带叠层、云母片等补偿材料，产生干涉色与"解密图案"。注意：DIY材料的相位延迟随波长/厚度变化很大，教学上可以"现象优先"，定量上需标定。',
+    specifications: {
+      slots: '多槽位设计',
+      materials: '玻璃纸/胶带叠层/云母片',
+      effect: '产生干涉色彩',
+      calibration: '定量测量需标定'
+    },
+    compatibleWith: ['uc2-cube', 'pol-illum', 'pol-analy'],
+    difficulty: 'intermediate',
+    imageType: 'generated'
+  },
+  {
+    id: 'pol-rotator',
+    name: 'POL-Rotator (Motorized Rotation Unit)',
+    nameZh: 'POL-Rotator 电动旋转单元',
+    category: 'electronic',
+    description: 'Stepper motor + gear ring driven polarizer rotation unit. ESP32 controlled with serial/WiFi interface. Supports automated angle scanning for quantitative polarimetry.',
+    descriptionZh: '步进电机+齿轮环驱动偏振片旋转，配合ESP32做角度扫描，支持串口/Wi-Fi控制。工程要点：回零（home）/限位、角度标定、机械回差补偿、稳定等待时间（settle time）。',
+    specifications: {
+      motor: '28BYJ-48 步进电机',
+      driver: 'ULN2003驱动板',
+      controller: 'ESP32 (串口/Wi-Fi)',
+      features: '回零/限位/角度标定/回差补偿'
+    },
+    compatibleWith: ['uc2-cube', 'pol-stage', 'controller-esp32'],
+    difficulty: 'advanced',
+    imageType: 'generated'
+  },
+
   // ===== 样品模块 Sample Modules =====
   {
     id: 'sample-stress-ruler',
