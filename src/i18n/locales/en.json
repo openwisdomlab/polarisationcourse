@@ -17,58 +17,57 @@
     "description": "An educational platform based on real polarization physics. From stories to simulations, from puzzles to experiments — explore the fascinating world of polarized light.",
     "chronicles": {
       "title": "Chronicles of Light",
-      "subtitle": "History × Discovery",
-      "description": "From Huygens to Malus, from chance discoveries to systematic theory — journey through the history of polarized light.",
-      "cta": "Explore History",
-      "link1": "Discovery Timeline",
-      "link2": "Scientist Stories",
-      "link3": "Key Experiments"
+      "subtitle": "Stories × Experiments",
+      "description": "Start with stories, build intuition with experiments—trace polarization through history and step into an interactive lab.",
+      "cta": "Explore",
+      "link1": "Read a Story",
+      "link2": "Do an Experiment",
+      "link3": "Follow a Path"
     },
     "workshop": {
-      "title": "Polarization Workshop",
-      "subtitle": "Components × Light Paths",
-      "description": "Treat components as building blocks, light paths as circuits — build to understand.",
-      "cta": "Enter Workshop",
-      "link1": "Component Library",
-      "link2": "Light Path Recipes",
-      "link3": "Hardware Modules"
+      "title": "Optics Playground",
+      "subtitle": "Devices × Light Paths",
+      "description": "Learn polarization devices, build light paths, and watch outcomes change—snap optics together like LEGO.",
+      "cta": "Enter Playground",
+      "link1": "Meet a Device",
+      "link2": "Build a Light Path",
+      "link3": "See Real Hardware"
     },
     "formulaLab": {
-      "title": "Optics Simulator",
-      "subtitle": "Theory × Interactive Simulation",
-      "description": "Formulas aren't just symbols — they're the language of light. Adjust parameters and watch how light behaves.",
+      "title": "Theory Foundation",
+      "subtitle": "Theory × Simulation",
+      "description": "Turn laws into tools—learn the theory, run calculators, and simulate what you can prove and see.",
       "cta": "Start Simulation",
-      "link1": "Core Formulas",
-      "link2": "Calculator",
-      "link3": "Interactive Labs"
+      "link1": "Understand a Concept",
+      "link2": "Run a Calculation",
+      "link3": "Simulate & Verify"
     },
     "polarquest": {
-      "title": "PolarQuest",
-      "subtitle": "Puzzles × Cards × Escape Room",
-      "description": "Learn physics in puzzles, solve puzzles with physics — four games, one world.",
+      "title": "PolarQuest: The Light Chamber",
+      "subtitle": "Puzzles × Strategy",
+      "description": "Solve puzzles in 2D light paths and a 3D voxel world—turn polarization into playable strategy.",
       "cta": "Play Now",
       "link1": "2D Puzzles",
       "link2": "3D Voxel",
-      "link3": "Card Battle",
-      "link4": "Escape Room"
+      "link3": "Challenge Mode"
     },
     "gallery": {
-      "title": "Polar Art Gallery",
-      "subtitle": "Art × Merchandise",
-      "description": "Turn invisible polarization into visible beauty.",
-      "cta": "Browse Gallery",
-      "link1": "Art Shop",
-      "link2": "Art Collection",
-      "link3": "Pattern Generator"
+      "title": "PolarCraft Studio",
+      "subtitle": "Artworks × Merch",
+      "description": "Make with polarization—artworks, merch, and visual storytelling inspired by light's hidden structure.",
+      "cta": "Browse Studio",
+      "link1": "View Gallery",
+      "link2": "Behind the Design",
+      "link3": "Enter Shop"
     },
     "labGroup": {
-      "title": "Virtual Lab Group",
-      "subtitle": "Tasks × Discussion × Research",
-      "description": "Learn polarization like a graduate student: take on tasks, run experiments, write reports, produce results.",
-      "cta": "Join Lab",
-      "link1": "Research Tasks",
-      "link2": "Study Groups",
-      "link3": "Showcase"
+      "title": "Light Research Guild",
+      "subtitle": "Quests × Tools × Showcase",
+      "description": "Learn by doing research—quests, discussions, tools, and a showcase to turn knowledge into real projects.",
+      "cta": "Join Guild",
+      "link1": "Get Weekly Quest",
+      "link2": "Use Toolbox",
+      "link3": "Submit & Showcase"
     }
   },
   "game": {
