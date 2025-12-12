@@ -17,7 +17,9 @@ import {
   Home, FlaskConical, Users, Target, Award,
   BookOpen, CheckCircle2,
   Clock, Lock, ChevronRight, Lightbulb,
-  GraduationCap, Beaker, Microscope
+  GraduationCap, Beaker, Microscope,
+  BarChart3, Sparkles, Newspaper, Calculator,
+  TrendingUp, ExternalLink, Puzzle
 } from 'lucide-react'
 
 // Research tasks data
@@ -200,8 +202,185 @@ const STUDY_GROUPS: StudyGroup[] = [
 // Tabs configuration
 const TABS = [
   { id: 'tasks', label: 'Research Tasks', labelZh: '研究任务', icon: <Target className="w-4 h-4" /> },
+  { id: 'analysis', label: 'Data Workbench', labelZh: '数据分析工作台', icon: <BarChart3 className="w-4 h-4" /> },
+  { id: 'frontier', label: 'Research Frontier', labelZh: '科研前沿', icon: <TrendingUp className="w-4 h-4" /> },
+  { id: 'workshop', label: 'Creative Workshop', labelZh: '创意工坊', icon: <Puzzle className="w-4 h-4" /> },
   { id: 'groups', label: 'Study Groups', labelZh: '学习小组', icon: <Users className="w-4 h-4" /> },
   { id: 'showcase', label: 'Showcase', labelZh: '成果展示', icon: <Award className="w-4 h-4" /> },
+]
+
+// Research frontier data (科研前沿)
+interface ResearchNews {
+  id: string
+  titleEn: string
+  titleZh: string
+  summaryEn: string
+  summaryZh: string
+  year: number
+  category: 'breakthrough' | 'application' | 'method'
+  sourceUrl?: string
+}
+
+const RESEARCH_FRONTIER: ResearchNews[] = [
+  {
+    id: 'quantum-polarimetry-2024',
+    titleEn: 'Quantum-Enhanced Polarimetric Sensing',
+    titleZh: '量子增强偏振传感技术',
+    summaryEn: 'Researchers demonstrated quantum-enhanced polarimetry that surpasses classical sensitivity limits, enabling detection of ultrasmall optical activity changes.',
+    summaryZh: '研究人员展示了超越经典灵敏度极限的量子增强偏振测量技术，能够检测超小光学活性变化。',
+    year: 2024,
+    category: 'breakthrough',
+  },
+  {
+    id: 'polarimetric-ai-2024',
+    titleEn: 'AI-Powered Mueller Matrix Imaging',
+    titleZh: 'AI驱动的穆勒矩阵成像',
+    summaryEn: 'Deep learning methods now enable real-time Mueller matrix decomposition and tissue characterization from polarimetric images.',
+    summaryZh: '深度学习方法现已能够从偏振成像中实现实时穆勒矩阵分解和组织表征。',
+    year: 2024,
+    category: 'method',
+  },
+  {
+    id: 'cancer-detection-2023',
+    titleEn: 'Early Cancer Detection via Polarimetry',
+    titleZh: '偏振光学早期癌症检测',
+    summaryEn: 'Clinical trials show polarimetric imaging can detect cancerous tissue changes before they become visible under conventional microscopy.',
+    summaryZh: '临床试验表明，偏振成像能够在传统显微镜下可见之前检测到癌变组织的变化。',
+    year: 2023,
+    category: 'application',
+  },
+  {
+    id: 'atmospheric-2023',
+    titleEn: 'Polarimetric Aerosol Characterization',
+    titleZh: '偏振大气气溶胶表征',
+    summaryEn: 'New satellite-based polarimeters provide unprecedented detail on aerosol composition and climate effects.',
+    summaryZh: '新型卫星偏振仪提供了前所未有的气溶胶成分和气候效应细节。',
+    year: 2023,
+    category: 'application',
+  },
+  {
+    id: 'metamaterial-2024',
+    titleEn: 'Metasurface Polarization Control',
+    titleZh: '超表面偏振调控',
+    summaryEn: 'Programmable metasurfaces enable dynamic, pixel-level control of light polarization for next-generation displays.',
+    summaryZh: '可编程超表面实现了下一代显示器的动态像素级偏振控制。',
+    year: 2024,
+    category: 'breakthrough',
+  },
+]
+
+// Creative workshop challenges (创意工坊)
+interface Challenge {
+  id: string
+  titleEn: string
+  titleZh: string
+  descriptionEn: string
+  descriptionZh: string
+  difficulty: 'open' | 'guided' | 'research'
+  tags: string[]
+  status: 'active' | 'completed' | 'coming-soon'
+}
+
+const CHALLENGES: Challenge[] = [
+  {
+    id: 'underwater-vision',
+    titleEn: 'Underwater Polarization Camera',
+    titleZh: '水下偏振相机设计',
+    descriptionEn: 'Design a polarimetric system to improve underwater visibility by removing scattered light.',
+    descriptionZh: '设计一个偏振系统，通过去除散射光来提高水下能见度。',
+    difficulty: 'guided',
+    tags: ['imaging', 'scattering', 'application'],
+    status: 'active',
+  },
+  {
+    id: 'stress-visualization',
+    titleEn: 'Stress Visualization App',
+    titleZh: '应力可视化应用',
+    descriptionEn: 'Create a smartphone app that uses the phone\'s screen and camera to visualize stress patterns in transparent materials.',
+    descriptionZh: '创建一个智能手机应用，使用手机屏幕和摄像头来可视化透明材料中的应力图案。',
+    difficulty: 'open',
+    tags: ['photoelasticity', 'mobile', 'DIY'],
+    status: 'active',
+  },
+  {
+    id: 'polarimeter-design',
+    titleEn: 'Low-Cost Polarimeter',
+    titleZh: '低成本偏振仪设计',
+    descriptionEn: 'Build a Stokes polarimeter using inexpensive components that can measure all four Stokes parameters.',
+    descriptionZh: '使用低成本组件构建一个能测量全部四个斯托克斯参数的偏振仪。',
+    difficulty: 'research',
+    tags: ['instrumentation', 'Stokes', 'measurement'],
+    status: 'active',
+  },
+  {
+    id: 'bee-simulation',
+    titleEn: 'Bee Navigation Simulator',
+    titleZh: '蜜蜂导航模拟器',
+    descriptionEn: 'Create a simulation of how bees use sky polarization patterns for navigation.',
+    descriptionZh: '创建一个模拟蜜蜂如何利用天空偏振图案进行导航的仿真系统。',
+    difficulty: 'guided',
+    tags: ['biomimetics', 'simulation', 'nature'],
+    status: 'coming-soon',
+  },
+]
+
+// Analysis tools data (数据分析工作台)
+interface AnalysisTool {
+  id: string
+  nameEn: string
+  nameZh: string
+  descriptionEn: string
+  descriptionZh: string
+  icon: React.ReactNode
+  available: boolean
+}
+
+const ANALYSIS_TOOLS: AnalysisTool[] = [
+  {
+    id: 'stokes-calc',
+    nameEn: 'Stokes Calculator',
+    nameZh: '斯托克斯计算器',
+    descriptionEn: 'Calculate and visualize Stokes parameters from intensity measurements.',
+    descriptionZh: '从强度测量计算和可视化斯托克斯参数。',
+    icon: <Calculator className="w-5 h-5" />,
+    available: true,
+  },
+  {
+    id: 'mueller-sim',
+    nameEn: 'Mueller Matrix Simulator',
+    nameZh: '穆勒矩阵模拟器',
+    descriptionEn: 'Simulate light propagation through optical elements using Mueller calculus.',
+    descriptionZh: '使用穆勒矩阵模拟光通过光学元件的传播。',
+    icon: <BarChart3 className="w-5 h-5" />,
+    available: true,
+  },
+  {
+    id: 'jones-calc',
+    nameEn: 'Jones Vector Calculator',
+    nameZh: '琼斯向量计算器',
+    descriptionEn: 'Compute Jones vector transformations for fully polarized light.',
+    descriptionZh: '计算完全偏振光的琼斯向量变换。',
+    icon: <Calculator className="w-5 h-5" />,
+    available: true,
+  },
+  {
+    id: 'data-fitting',
+    nameEn: 'Malus\'s Law Fitting',
+    nameZh: '马吕斯定律拟合',
+    descriptionEn: 'Fit experimental data to Malus\'s Law and extract extinction ratio.',
+    descriptionZh: '将实验数据拟合到马吕斯定律并提取消光比。',
+    icon: <TrendingUp className="w-5 h-5" />,
+    available: true,
+  },
+  {
+    id: 'poincare',
+    nameEn: 'Poincaré Sphere Viewer',
+    nameZh: '庞加莱球可视化',
+    descriptionEn: 'Visualize polarization states on the Poincaré sphere.',
+    descriptionZh: '在庞加莱球上可视化偏振态。',
+    icon: <Sparkles className="w-5 h-5" />,
+    available: false,
+  },
 ]
 
 // Task card component
@@ -537,6 +716,250 @@ export function LabPage() {
               ))}
             </div>
           </>
+        )}
+
+        {/* Data Analysis Workbench Tab */}
+        {activeTab === 'analysis' && (
+          <div className="space-y-6">
+            {/* Tools Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {ANALYSIS_TOOLS.map(tool => (
+                <div
+                  key={tool.id}
+                  className={cn(
+                    'p-4 rounded-xl border transition-all',
+                    tool.available
+                      ? theme === 'dark'
+                        ? 'bg-slate-800/70 border-slate-700 hover:border-yellow-500/50 cursor-pointer'
+                        : 'bg-white border-gray-200 hover:border-yellow-400 cursor-pointer'
+                      : theme === 'dark'
+                        ? 'bg-slate-800/30 border-slate-700/50 opacity-60'
+                        : 'bg-gray-50 border-gray-200 opacity-60'
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      'p-2 rounded-lg',
+                      theme === 'dark' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-yellow-100 text-yellow-600'
+                    )}>
+                      {tool.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h3 className={cn(
+                          'font-semibold',
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        )}>
+                          {isZh ? tool.nameZh : tool.nameEn}
+                        </h3>
+                        {!tool.available && (
+                          <span className={cn(
+                            'text-xs px-2 py-0.5 rounded-full',
+                            theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-200 text-gray-500'
+                          )}>
+                            {isZh ? '即将推出' : 'Coming Soon'}
+                          </span>
+                        )}
+                      </div>
+                      <p className={cn(
+                        'text-sm mt-1',
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      )}>
+                        {isZh ? tool.descriptionZh : tool.descriptionEn}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Info Box */}
+            <div className={cn(
+              'p-4 rounded-xl border',
+              theme === 'dark' ? 'bg-cyan-900/20 border-cyan-700/30' : 'bg-cyan-50 border-cyan-200'
+            )}>
+              <div className="flex items-start gap-3">
+                <BarChart3 className={cn(
+                  'w-5 h-5 mt-0.5',
+                  theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                )} />
+                <div>
+                  <h4 className={cn(
+                    'font-semibold',
+                    theme === 'dark' ? 'text-cyan-300' : 'text-cyan-800'
+                  )}>
+                    {isZh ? '数据分析工作台' : 'Data Analysis Workbench'}
+                  </h4>
+                  <p className={cn(
+                    'text-sm mt-1',
+                    theme === 'dark' ? 'text-cyan-200/70' : 'text-cyan-700'
+                  )}>
+                    {isZh
+                      ? '这里提供偏振光学计算和数据分析工具，帮助你处理实验数据、验证理论公式。'
+                      : 'Tools for polarization optics calculations and data analysis, helping you process experimental data and verify theoretical formulas.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Research Frontier Tab */}
+        {activeTab === 'frontier' && (
+          <div className="space-y-4">
+            {RESEARCH_FRONTIER.map(news => (
+              <div
+                key={news.id}
+                className={cn(
+                  'p-4 rounded-xl border transition-all hover:-translate-y-0.5',
+                  theme === 'dark'
+                    ? 'bg-slate-800/70 border-slate-700 hover:border-yellow-500/30'
+                    : 'bg-white border-gray-200 hover:border-yellow-300'
+                )}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={cn(
+                    'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0',
+                    news.category === 'breakthrough' && (theme === 'dark' ? 'bg-yellow-500/10' : 'bg-yellow-100'),
+                    news.category === 'application' && (theme === 'dark' ? 'bg-green-500/10' : 'bg-green-100'),
+                    news.category === 'method' && (theme === 'dark' ? 'bg-blue-500/10' : 'bg-blue-100')
+                  )}>
+                    <Newspaper className={cn(
+                      'w-5 h-5',
+                      news.category === 'breakthrough' && (theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'),
+                      news.category === 'application' && (theme === 'dark' ? 'text-green-400' : 'text-green-600'),
+                      news.category === 'method' && (theme === 'dark' ? 'text-blue-400' : 'text-blue-600')
+                    )} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className={cn(
+                        'font-semibold',
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      )}>
+                        {isZh ? news.titleZh : news.titleEn}
+                      </h3>
+                      <span className={cn(
+                        'text-xs px-2 py-0.5 rounded-full',
+                        theme === 'dark' ? 'bg-slate-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                      )}>
+                        {news.year}
+                      </span>
+                    </div>
+                    <p className={cn(
+                      'text-sm',
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    )}>
+                      {isZh ? news.summaryZh : news.summaryEn}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Creative Workshop Tab */}
+        {activeTab === 'workshop' && (
+          <div className="space-y-6">
+            {/* Intro */}
+            <div className={cn(
+              'p-4 rounded-xl border',
+              theme === 'dark' ? 'bg-purple-900/20 border-purple-700/30' : 'bg-purple-50 border-purple-200'
+            )}>
+              <div className="flex items-start gap-3">
+                <Puzzle className={cn(
+                  'w-5 h-5 mt-0.5',
+                  theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
+                )} />
+                <div>
+                  <h4 className={cn(
+                    'font-semibold',
+                    theme === 'dark' ? 'text-purple-300' : 'text-purple-800'
+                  )}>
+                    {isZh ? '创意工坊：开放问题 × 社区挑战' : 'Creative Workshop: Open Problems × Community Challenges'}
+                  </h4>
+                  <p className={cn(
+                    'text-sm mt-1',
+                    theme === 'dark' ? 'text-purple-200/70' : 'text-purple-700'
+                  )}>
+                    {isZh
+                      ? '探索开放性问题，参与社区挑战，将理论知识应用到实际项目中。'
+                      : 'Explore open problems, participate in community challenges, and apply theoretical knowledge to real projects.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Challenges Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {CHALLENGES.map(challenge => (
+                <div
+                  key={challenge.id}
+                  className={cn(
+                    'p-4 rounded-xl border transition-all',
+                    challenge.status === 'active'
+                      ? theme === 'dark'
+                        ? 'bg-slate-800/70 border-slate-700 hover:border-purple-500/50'
+                        : 'bg-white border-gray-200 hover:border-purple-300'
+                      : theme === 'dark'
+                        ? 'bg-slate-800/30 border-slate-700/50'
+                        : 'bg-gray-50 border-gray-200'
+                  )}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className={cn(
+                      'font-semibold',
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    )}>
+                      {isZh ? challenge.titleZh : challenge.titleEn}
+                    </h3>
+                    <span className={cn(
+                      'text-xs px-2 py-0.5 rounded-full',
+                      challenge.status === 'active'
+                        ? 'bg-green-500/10 text-green-500'
+                        : challenge.status === 'coming-soon'
+                          ? 'bg-yellow-500/10 text-yellow-500'
+                          : 'bg-gray-500/10 text-gray-500'
+                    )}>
+                      {challenge.status === 'active' ? (isZh ? '进行中' : 'Active')
+                        : challenge.status === 'coming-soon' ? (isZh ? '即将开始' : 'Coming Soon')
+                          : (isZh ? '已完成' : 'Completed')}
+                    </span>
+                  </div>
+                  <p className={cn(
+                    'text-sm mb-3',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {isZh ? challenge.descriptionZh : challenge.descriptionEn}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {challenge.tags.map(tag => (
+                      <span
+                        key={tag}
+                        className={cn(
+                          'text-xs px-2 py-0.5 rounded-full',
+                          theme === 'dark' ? 'bg-slate-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                        )}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    <span className={cn(
+                      'text-xs px-2 py-0.5 rounded-full',
+                      challenge.difficulty === 'open' && (theme === 'dark' ? 'bg-green-500/10 text-green-400' : 'bg-green-100 text-green-700'),
+                      challenge.difficulty === 'guided' && (theme === 'dark' ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-100 text-blue-700'),
+                      challenge.difficulty === 'research' && (theme === 'dark' ? 'bg-purple-500/10 text-purple-400' : 'bg-purple-100 text-purple-700')
+                    )}>
+                      {challenge.difficulty === 'open' ? (isZh ? '开放式' : 'Open')
+                        : challenge.difficulty === 'guided' ? (isZh ? '引导式' : 'Guided')
+                          : (isZh ? '研究级' : 'Research')}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {activeTab === 'groups' && (

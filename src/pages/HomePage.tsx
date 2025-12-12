@@ -27,47 +27,47 @@ const MODULES: ModuleConfig[] = [
   {
     // 光的编年史：历史故事 × 动手实验 (Chronicles of Light)
     key: 'chronicles',
-    icon: '📜',
+    icon: '⏳', // Hourglass - represents history and time
     colorTheme: {
-      border: 'cyan-soft', // Soft Cyan #22C7D6
-      borderHover: 'cyan-soft',
-      shadow: 'rgba(34,199,214,0.25)',
-      text: 'cyan-soft',
-      gradientFrom: 'cyan-soft',
-      gradientTo: 'cyan-600',
+      border: 'amber-warm', // Warm Amber #C9A227 (parchment/historical feel)
+      borderHover: 'amber-warm',
+      shadow: 'rgba(201,162,39,0.25)',
+      text: 'amber-warm',
+      gradientFrom: 'amber-warm',
+      gradientTo: 'amber-700',
       buttonText: 'black',
     },
     mainRoute: '/chronicles',
     quickLinks: [
-      { labelKey: 'link1', route: '/chronicles' },
-      { labelKey: 'link2', route: '/demos' },
-      { labelKey: 'link3', route: '/chronicles' },
+      { labelKey: 'link1', route: '/chronicles?event=1808' }, // Malus discovery
+      { labelKey: 'link2', route: '/demos?demo=malus-law' }, // Direct to Malus law demo
+      { labelKey: 'link3', route: '/chronicles?track=polarization' },
     ],
   },
   {
     // 偏振器件库：器件原理 × 分类图鉴 (Polarization Device Library)
     key: 'deviceLibrary',
-    icon: '🔬',
+    icon: '◈', // Diamond with dot - represents optical crystal/prism
     colorTheme: {
-      border: 'indigo-soft', // Soft Indigo #5B6EE1
-      borderHover: 'indigo-soft',
-      shadow: 'rgba(91,110,225,0.25)',
-      text: 'indigo-soft',
-      gradientFrom: 'indigo-soft',
-      gradientTo: 'indigo-600',
+      border: 'sapphire-soft', // Sapphire Blue #4169E1
+      borderHover: 'sapphire-soft',
+      shadow: 'rgba(65,105,225,0.25)',
+      text: 'sapphire-soft',
+      gradientFrom: 'sapphire-soft',
+      gradientTo: 'blue-700',
       buttonText: 'white',
     },
     mainRoute: '/devices',
     quickLinks: [
-      { labelKey: 'link1', route: '/devices/polarizers' },
-      { labelKey: 'link2', route: '/devices/waveplates' },
-      { labelKey: 'link3', route: '/devices/splitters' },
+      { labelKey: 'link1', route: '/devices?category=polarizers' },
+      { labelKey: 'link2', route: '/devices?category=waveplates' },
+      { labelKey: 'link3', route: '/devices?category=splitters' },
     ],
   },
   {
     // 光路设计室：搭建光路 × 模拟验证 (Optical Path Designer)
     key: 'opticalBench',
-    icon: '🔧',
+    icon: '⟠', // Circled cross - represents optical alignment/bench
     colorTheme: {
       border: 'violet-soft', // Soft Violet #8B5CF6
       borderHover: 'violet-soft',
@@ -79,55 +79,55 @@ const MODULES: ModuleConfig[] = [
     },
     mainRoute: '/bench',
     quickLinks: [
-      { labelKey: 'link1', route: '/bench/classic' },
-      { labelKey: 'link2', route: '/bench/free' },
-      { labelKey: 'link3', route: '/bench/hardware' },
+      { labelKey: 'link1', route: '/bench?setup=malus-law' },
+      { labelKey: 'link2', route: '/bench?mode=free' },
+      { labelKey: 'link3', route: '/devices?category=uc2' },
     ],
   },
   {
-    // 理论基石：基础理论 × 计算模拟 (Theory Cornerstone)
+    // 偏振演示馆：可视化演示 × 交互模拟 (Polarization Demo Gallery - renamed from 理论基石)
     key: 'formulaLab',
-    icon: '📐',
+    icon: '◐', // Half-filled circle - represents polarizer
     colorTheme: {
-      border: 'slate-soft', // Soft Slate-Blue #6B7A99
-      borderHover: 'slate-soft',
-      shadow: 'rgba(107,122,153,0.25)',
-      text: 'slate-soft',
-      gradientFrom: 'slate-soft',
-      gradientTo: 'slate-600',
+      border: 'cyan-deep', // Deep Cyan #0891B2
+      borderHover: 'cyan-deep',
+      shadow: 'rgba(8,145,178,0.25)',
+      text: 'cyan-deep',
+      gradientFrom: 'cyan-deep',
+      gradientTo: 'cyan-700',
       buttonText: 'white',
     },
     mainRoute: '/demos',
     quickLinks: [
-      { labelKey: 'link1', route: '/demos' },
-      { labelKey: 'link2', route: '/demos' },
-      { labelKey: 'link3', route: '/demos' },
+      { labelKey: 'link1', route: '/demos?demo=malus-law' },
+      { labelKey: 'link2', route: '/demos?demo=birefringence' },
+      { labelKey: 'link3', route: '/demos?demo=stokes-vector' },
     ],
   },
   {
     // 偏振探秘：光之密室 (PolarQuest: The Light Chamber)
     key: 'polarquest',
-    icon: '🎮',
+    icon: '⬢', // Hexagon - represents game/puzzle block
     colorTheme: {
-      border: 'amber-soft', // Soft Amber #D9A441
-      borderHover: 'amber-soft',
-      shadow: 'rgba(217,164,65,0.25)',
-      text: 'amber-soft',
-      gradientFrom: 'amber-soft',
+      border: 'gold-soft', // Soft Gold #DAA520
+      borderHover: 'gold-soft',
+      shadow: 'rgba(218,165,32,0.25)',
+      text: 'gold-soft',
+      gradientFrom: 'gold-soft',
       gradientTo: 'amber-600',
       buttonText: 'black',
     },
     mainRoute: '/games',
     quickLinks: [
-      { labelKey: 'link1', route: '/games/2d' },
-      { labelKey: 'link2', route: '/games/3d' },
-      { labelKey: 'link3', route: '/games' },
+      { labelKey: 'link1', route: '/game2d?level=0' },
+      { labelKey: 'link2', route: '/game?level=0' },
+      { labelKey: 'link3', route: '/games?mode=challenge' },
     ],
   },
   {
     // 偏振造物局：文创与作品 (PolarCraft Studio)
     key: 'gallery',
-    icon: '🎨',
+    icon: '✧', // Sparkle - represents art and creativity
     colorTheme: {
       border: 'rose-soft', // Soft Rose #D97A8A
       borderHover: 'rose-soft',
@@ -139,15 +139,15 @@ const MODULES: ModuleConfig[] = [
     },
     mainRoute: '/merchandise',
     quickLinks: [
-      { labelKey: 'link1', route: '/merchandise' },
-      { labelKey: 'link2', route: '/merchandise' },
-      { labelKey: 'link3', route: '/merchandise' },
+      { labelKey: 'link1', route: '/merchandise?tab=gallery' },
+      { labelKey: 'link2', route: '/merchandise?tab=generator' },
+      { labelKey: 'link3', route: '/merchandise?tab=products' },
     ],
   },
   {
     // 虚拟课题组：光研社 (Virtual Lab Group: Light Research Guild)
     key: 'labGroup',
-    icon: '🧑‍🔬',
+    icon: '⚗', // Alembic - represents research/lab
     colorTheme: {
       border: 'emerald-soft', // Soft Emerald #3AAE8C
       borderHover: 'emerald-soft',
@@ -159,35 +159,35 @@ const MODULES: ModuleConfig[] = [
     },
     mainRoute: '/lab',
     quickLinks: [
-      { labelKey: 'link1', route: '/lab' },
-      { labelKey: 'link2', route: '/lab' },
-      { labelKey: 'link3', route: '/lab' },
+      { labelKey: 'link1', route: '/lab?tab=tasks' },
+      { labelKey: 'link2', route: '/lab?tab=analysis' },
+      { labelKey: 'link3', route: '/lab?tab=frontier' },
     ],
   },
   {
     // 偏振应用图鉴：现实场景 × 原理解析 (Polarization Applications Gallery)
     key: 'applications',
-    icon: '🌍',
+    icon: '⊛', // Circled asterisk - represents applications/branching
     colorTheme: {
-      border: 'orange-soft', // Soft Orange #E8884A
-      borderHover: 'orange-soft',
-      shadow: 'rgba(232,136,74,0.25)',
-      text: 'orange-soft',
-      gradientFrom: 'orange-soft',
-      gradientTo: 'orange-600',
+      border: 'coral-soft', // Soft Coral #E57373
+      borderHover: 'coral-soft',
+      shadow: 'rgba(229,115,115,0.25)',
+      text: 'coral-soft',
+      gradientFrom: 'coral-soft',
+      gradientTo: 'red-500',
       buttonText: 'white',
     },
     mainRoute: '/applications',
     quickLinks: [
-      { labelKey: 'link1', route: '/applications?category=photography' },
-      { labelKey: 'link2', route: '/applications?category=nature' },
-      { labelKey: 'link3', route: '/applications?category=industry' },
+      { labelKey: 'link1', route: '/applications?id=lcd-display' },
+      { labelKey: 'link2', route: '/applications?category=nature&id=bee-navigation' },
+      { labelKey: 'link3', route: '/applications?category=medical' },
     ],
   },
   {
     // 偏振实验手册：DIY × 家庭实验 (DIY Experiments Handbook)
     key: 'experiments',
-    icon: '🧪',
+    icon: '⚡', // Lightning - represents hands-on experiments
     colorTheme: {
       border: 'teal-soft', // Soft Teal #2AA198
       borderHover: 'teal-soft',
@@ -199,8 +199,8 @@ const MODULES: ModuleConfig[] = [
     },
     mainRoute: '/experiments',
     quickLinks: [
-      { labelKey: 'link1', route: '/experiments?difficulty=easy' },
-      { labelKey: 'link2', route: '/experiments?difficulty=medium' },
+      { labelKey: 'link1', route: '/experiments?id=phone-screen-test' },
+      { labelKey: 'link2', route: '/experiments?id=tape-art' },
       { labelKey: 'link3', route: '/experiments' },
     ],
   },
@@ -210,17 +210,17 @@ const MODULES: ModuleConfig[] = [
 const getColorClasses = (module: ModuleConfig, theme: 'dark' | 'light') => {
   // Soft color palette for reduced eye strain
   const colorMap: Record<string, { dark: string; light: string; shadow: string }> = {
-    // Soft Cyan #22C7D6 - Chronicles of Light
-    'cyan-soft': {
-      dark: 'border-[#22C7D6]/30 hover:border-[#22C7D6]/60',
-      light: 'border-[#22C7D6]/40 hover:border-[#22C7D6]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(34,199,214,0.25)]',
+    // Warm Amber #C9A227 - Chronicles of Light (historical parchment feel)
+    'amber-warm': {
+      dark: 'border-[#C9A227]/30 hover:border-[#C9A227]/60',
+      light: 'border-[#C9A227]/40 hover:border-[#C9A227]/70',
+      shadow: 'hover:shadow-[0_15px_40px_rgba(201,162,39,0.25)]',
     },
-    // Soft Indigo #5B6EE1 - Device Library
-    'indigo-soft': {
-      dark: 'border-[#5B6EE1]/30 hover:border-[#5B6EE1]/60',
-      light: 'border-[#5B6EE1]/40 hover:border-[#5B6EE1]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(91,110,225,0.25)]',
+    // Sapphire Blue #4169E1 - Device Library (crystal/prism blue)
+    'sapphire-soft': {
+      dark: 'border-[#4169E1]/30 hover:border-[#4169E1]/60',
+      light: 'border-[#4169E1]/40 hover:border-[#4169E1]/70',
+      shadow: 'hover:shadow-[0_15px_40px_rgba(65,105,225,0.25)]',
     },
     // Soft Violet #8B5CF6 - Optical Bench
     'violet-soft': {
@@ -228,17 +228,17 @@ const getColorClasses = (module: ModuleConfig, theme: 'dark' | 'light') => {
       light: 'border-[#8B5CF6]/40 hover:border-[#8B5CF6]/70',
       shadow: 'hover:shadow-[0_15px_40px_rgba(139,92,246,0.25)]',
     },
-    // Soft Slate-Blue #6B7A99 - Theory Cornerstone
-    'slate-soft': {
-      dark: 'border-[#6B7A99]/30 hover:border-[#6B7A99]/60',
-      light: 'border-[#6B7A99]/40 hover:border-[#6B7A99]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(107,122,153,0.25)]',
+    // Deep Cyan #0891B2 - Demo Gallery (scientific/technical)
+    'cyan-deep': {
+      dark: 'border-[#0891B2]/30 hover:border-[#0891B2]/60',
+      light: 'border-[#0891B2]/40 hover:border-[#0891B2]/70',
+      shadow: 'hover:shadow-[0_15px_40px_rgba(8,145,178,0.25)]',
     },
-    // Soft Amber #D9A441 - PolarQuest
-    'amber-soft': {
-      dark: 'border-[#D9A441]/30 hover:border-[#D9A441]/60',
-      light: 'border-[#D9A441]/40 hover:border-[#D9A441]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(217,164,65,0.25)]',
+    // Soft Gold #DAA520 - PolarQuest (gaming gold)
+    'gold-soft': {
+      dark: 'border-[#DAA520]/30 hover:border-[#DAA520]/60',
+      light: 'border-[#DAA520]/40 hover:border-[#DAA520]/70',
+      shadow: 'hover:shadow-[0_15px_40px_rgba(218,165,32,0.25)]',
     },
     // Soft Rose #D97A8A - PolarCraft Studio
     'rose-soft': {
@@ -252,11 +252,11 @@ const getColorClasses = (module: ModuleConfig, theme: 'dark' | 'light') => {
       light: 'border-[#3AAE8C]/40 hover:border-[#3AAE8C]/70',
       shadow: 'hover:shadow-[0_15px_40px_rgba(58,174,140,0.25)]',
     },
-    // Soft Orange #E8884A - Applications Gallery
-    'orange-soft': {
-      dark: 'border-[#E8884A]/30 hover:border-[#E8884A]/60',
-      light: 'border-[#E8884A]/40 hover:border-[#E8884A]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(232,136,74,0.25)]',
+    // Soft Coral #E57373 - Applications Gallery (warm/inviting)
+    'coral-soft': {
+      dark: 'border-[#E57373]/30 hover:border-[#E57373]/60',
+      light: 'border-[#E57373]/40 hover:border-[#E57373]/70',
+      shadow: 'hover:shadow-[0_15px_40px_rgba(229,115,115,0.25)]',
     },
     // Soft Teal #2AA198 - DIY Experiments
     'teal-soft': {
@@ -276,14 +276,14 @@ const getColorClasses = (module: ModuleConfig, theme: 'dark' | 'light') => {
 const getTextColorClass = (color: string, theme: 'dark' | 'light') => {
   // Soft color text classes
   const textMap: Record<string, { dark: string; light: string }> = {
-    'cyan-soft': { dark: 'text-[#22C7D6]', light: 'text-[#1BA3AD]' },
-    'indigo-soft': { dark: 'text-[#5B6EE1]', light: 'text-[#4A5CC9]' },
+    'amber-warm': { dark: 'text-[#C9A227]', light: 'text-[#A68620]' },
+    'sapphire-soft': { dark: 'text-[#4169E1]', light: 'text-[#3558C4]' },
     'violet-soft': { dark: 'text-[#8B5CF6]', light: 'text-[#7C3AED]' },
-    'slate-soft': { dark: 'text-[#6B7A99]', light: 'text-[#5A6882]' },
-    'amber-soft': { dark: 'text-[#D9A441]', light: 'text-[#B88A35]' },
+    'cyan-deep': { dark: 'text-[#0891B2]', light: 'text-[#067B96]' },
+    'gold-soft': { dark: 'text-[#DAA520]', light: 'text-[#B8891A]' },
     'rose-soft': { dark: 'text-[#D97A8A]', light: 'text-[#C06575]' },
     'emerald-soft': { dark: 'text-[#3AAE8C]', light: 'text-[#2E9375]' },
-    'orange-soft': { dark: 'text-[#E8884A]', light: 'text-[#D0703A]' },
+    'coral-soft': { dark: 'text-[#E57373]', light: 'text-[#C75050]' },
     'teal-soft': { dark: 'text-[#2AA198]', light: 'text-[#238B83]' },
   }
   return theme === 'dark' ? textMap[color].dark : textMap[color].light
@@ -292,14 +292,14 @@ const getTextColorClass = (color: string, theme: 'dark' | 'light') => {
 const getGradientClass = (from: string, to: string) => {
   // Soft gradient classes
   const gradientMap: Record<string, string> = {
-    'cyan-soft-cyan-600': 'from-[#22C7D6] to-[#0891B2]',
-    'indigo-soft-indigo-600': 'from-[#5B6EE1] to-[#4F46E5]',
+    'amber-warm-amber-700': 'from-[#C9A227] to-[#92650F]',
+    'sapphire-soft-blue-700': 'from-[#4169E1] to-[#1D4ED8]',
     'violet-soft-violet-600': 'from-[#8B5CF6] to-[#7C3AED]',
-    'slate-soft-slate-600': 'from-[#6B7A99] to-[#475569]',
-    'amber-soft-amber-600': 'from-[#D9A441] to-[#D97706]',
+    'cyan-deep-cyan-700': 'from-[#0891B2] to-[#0E7490]',
+    'gold-soft-amber-600': 'from-[#DAA520] to-[#D97706]',
     'rose-soft-rose-600': 'from-[#D97A8A] to-[#E11D48]',
     'emerald-soft-emerald-600': 'from-[#3AAE8C] to-[#059669]',
-    'orange-soft-orange-600': 'from-[#E8884A] to-[#EA580C]',
+    'coral-soft-red-500': 'from-[#E57373] to-[#EF4444]',
     'teal-soft-teal-600': 'from-[#2AA198] to-[#0D9488]',
   }
   return gradientMap[`${from}-${to}`] || 'from-gray-400 to-gray-500'

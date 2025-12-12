@@ -20,9 +20,9 @@
       "subtitle": "Historical Stories × Hands-on Experiments",
       "description": "Dual narrative: left traces core discoveries in optics history, right follows the polarized light journey—ignite curiosity with stories, verify intuition with experiments.",
       "cta": "Explore",
-      "link1": "Read a Story",
-      "link2": "Do an Experiment",
-      "link3": "Follow a Path"
+      "link1": "Malus's Discovery",
+      "link2": "Recreate Malus's Law",
+      "link3": "Polarization Journey"
     },
     "deviceLibrary": {
       "title": "Polarization Device Library",
@@ -38,26 +38,26 @@
       "subtitle": "Build Light Paths × Simulate Results",
       "description": "Assemble optical systems like LEGO: from classic experiments to creative designs, watch light paths evolve in real-time, verify your optical intuition.",
       "cta": "Start Building",
-      "link1": "Recreate Classic Setups",
+      "link1": "Malus's Law Setup",
       "link2": "Free Design Mode",
-      "link3": "See Real Hardware"
+      "link3": "UC2 Modular Hardware"
     },
     "formulaLab": {
-      "title": "Theory Cornerstone",
-      "subtitle": "Basic Theory × Computational Simulation",
-      "description": "Turn laws into tools—from Maxwell's equations to Jones matrices, understand the principles, calculate the results, visualize the physics.",
-      "cta": "Start Learning",
-      "link1": "Understand a Concept",
-      "link2": "Run a Calculation",
-      "link3": "Simulate & Verify"
+      "title": "Polarization Demo Gallery",
+      "subtitle": "Visual Demos × Interactive Simulation",
+      "description": "Turn laws into visible experiments—from Malus's Law to birefringence, see it, interact with it, remember it.",
+      "cta": "Start Exploring",
+      "link1": "Malus's Law Demo",
+      "link2": "Birefringence Crystal",
+      "link3": "Stokes Vector"
     },
     "polarquest": {
       "title": "PolarQuest: The Light Chamber",
       "subtitle": "Puzzles × Strategy",
       "description": "Solve puzzles in 2D light paths and a 3D voxel world—turn polarization into playable strategy.",
       "cta": "Play Now",
-      "link1": "2D Puzzles",
-      "link2": "3D Voxel",
+      "link1": "2D Beginner Level",
+      "link2": "3D Voxel Level",
       "link3": "Challenge Mode"
     },
     "gallery": {
@@ -65,35 +65,35 @@
       "subtitle": "Artworks × Creative Products",
       "description": "Make with polarization—art installations, science posters, creative merchandise—bring the beauty of optics into everyday life.",
       "cta": "Browse Studio",
-      "link1": "View Gallery",
-      "link2": "Behind the Design",
-      "link3": "Enter Shop"
+      "link1": "Polarization Art Gallery",
+      "link2": "Art Generator",
+      "link3": "Creative Products"
     },
     "labGroup": {
       "title": "Light Research Guild",
       "subtitle": "Quests × Tools × Showcase",
       "description": "Learn by doing research—quests, discussions, tools, and a showcase to turn knowledge into real projects.",
       "cta": "Join Guild",
-      "link1": "Get Weekly Quest",
-      "link2": "Use Toolbox",
-      "link3": "Submit & Showcase"
+      "link1": "Research Tasks",
+      "link2": "Data Analysis Workbench",
+      "link3": "Research Frontier"
     },
     "applications": {
       "title": "Polarization Applications",
       "subtitle": "Real-World Scenes × Principle Analysis",
       "description": "Explore polarization in photography, displays, medicine, remote sensing, and discover polarization wonders in nature.",
       "cta": "Explore Applications",
-      "link1": "Photography & Imaging",
-      "link2": "Polarization in Nature",
-      "link3": "Industrial Applications"
+      "link1": "LCD Display Technology",
+      "link2": "Bee Navigation",
+      "link3": "Medical Diagnostics"
     },
     "experiments": {
       "title": "DIY Experiments",
       "subtitle": "Hands-on × Home Experiments",
       "description": "Experience the magic of polarized light using phones, tape, plastic and other everyday items—no expensive equipment needed.",
       "cta": "Start Experimenting",
-      "link1": "Easy Experiments",
-      "link2": "Medium Experiments",
+      "link1": "Phone Screen Test",
+      "link2": "Tape Birefringence Art",
       "link3": "All Experiments"
     }
   },
