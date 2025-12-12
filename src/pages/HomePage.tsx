@@ -36,11 +36,11 @@ const MODULES: ModuleConfig[] = [
       gradientTo: 'orange-500',
       buttonText: 'black',
     },
-    mainRoute: '/demos',
+    mainRoute: '/chronicles',
     quickLinks: [
-      { labelKey: 'link1', route: '/demos' },
-      { labelKey: 'link2', route: '/demos' },
-      { labelKey: 'link3', route: '/demos' },
+      { labelKey: 'link1', route: '/chronicles' },
+      { labelKey: 'link2', route: '/chronicles' },
+      { labelKey: 'link3', route: '/chronicles' },
     ],
   },
   {
@@ -97,7 +97,8 @@ const MODULES: ModuleConfig[] = [
     quickLinks: [
       { labelKey: 'link1', route: '/game2d' },
       { labelKey: 'link2', route: '/game' },
-      { labelKey: 'link3', route: '/game2d' },
+      { labelKey: 'link3', route: '/cardgame' },
+      { labelKey: 'link4', route: '/escape' },
     ],
   },
   {
@@ -131,11 +132,11 @@ const MODULES: ModuleConfig[] = [
       gradientTo: 'amber-500',
       buttonText: 'black',
     },
-    mainRoute: '/cardgame',
+    mainRoute: '/lab',
     quickLinks: [
-      { labelKey: 'link1', route: '/cardgame' },
-      { labelKey: 'link2', route: '/cardgame' },
-      { labelKey: 'link3', route: '/cardgame' },
+      { labelKey: 'link1', route: '/lab' },
+      { labelKey: 'link2', route: '/lab' },
+      { labelKey: 'link3', route: '/lab' },
     ],
   },
 ]
