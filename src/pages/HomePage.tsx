@@ -56,31 +56,29 @@ export function HomePage() {
         </p>
       </header>
 
-      {/* Navigation Cards */}
-      <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-5xl relative z-10 w-full px-2">
+      {/* Navigation Cards - Row 1: Games & Course */}
+      <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-6xl relative z-10 w-full px-2">
         {/* 3D Game Card */}
         <Link
           to="/game"
-          className={`group relative rounded-2xl p-5 sm:p-6 md:p-8 text-center
-                     transition-all duration-400 hover:-translate-y-2.5 hover:scale-[1.02] ${
+          className={`group relative rounded-2xl p-4 sm:p-5 text-center
+                     transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] ${
             theme === 'dark'
-              ? 'bg-slate-900/80 border-2 border-orange-400/30 hover:border-orange-400/60 hover:shadow-[0_20px_60px_rgba(255,180,100,0.3)]'
-              : 'bg-white/90 border-2 border-orange-400/40 hover:border-orange-400/70 hover:shadow-[0_20px_60px_rgba(255,180,100,0.2)]'
+              ? 'bg-slate-900/80 border-2 border-orange-400/30 hover:border-orange-400/60 hover:shadow-[0_15px_40px_rgba(255,180,100,0.3)]'
+              : 'bg-white/90 border-2 border-orange-400/40 hover:border-orange-400/70 hover:shadow-[0_15px_40px_rgba(255,180,100,0.2)]'
           }`}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-orange-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-          <span className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4 block drop-shadow-[0_0_40px_rgba(255,180,100,0.6)]">
-            🎮
-          </span>
-          <h2 className="text-lg sm:text-xl font-bold text-orange-400 mb-2">{t('home.game3d')}</h2>
-          <p className={`text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed ${
+          <span className="text-3xl sm:text-4xl mb-2 block drop-shadow-[0_0_30px_rgba(255,180,100,0.6)]">🎮</span>
+          <h2 className="text-base sm:text-lg font-bold text-orange-400 mb-1">{t('home.game3d')}</h2>
+          <p className={`text-xs mb-2 leading-relaxed line-clamp-2 ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
             {t('home.game3dDescription')}
           </p>
-          <span className="inline-block px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
                           bg-gradient-to-r from-orange-400 to-orange-500 text-black
-                          group-hover:scale-110 group-hover:shadow-lg transition-transform">
+                          group-hover:scale-105 transition-transform">
             {t('home.playGame')}
           </span>
         </Link>
@@ -88,26 +86,24 @@ export function HomePage() {
         {/* 2D Game Card */}
         <Link
           to="/game2d"
-          className={`group relative rounded-2xl p-5 sm:p-6 md:p-8 text-center
-                     transition-all duration-400 hover:-translate-y-2.5 hover:scale-[1.02] ${
+          className={`group relative rounded-2xl p-4 sm:p-5 text-center
+                     transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] ${
             theme === 'dark'
-              ? 'bg-slate-900/80 border-2 border-purple-400/30 hover:border-purple-400/60 hover:shadow-[0_20px_60px_rgba(180,100,255,0.3)]'
-              : 'bg-white/90 border-2 border-purple-400/40 hover:border-purple-400/70 hover:shadow-[0_20px_60px_rgba(180,100,255,0.2)]'
+              ? 'bg-slate-900/80 border-2 border-purple-400/30 hover:border-purple-400/60 hover:shadow-[0_15px_40px_rgba(180,100,255,0.3)]'
+              : 'bg-white/90 border-2 border-purple-400/40 hover:border-purple-400/70 hover:shadow-[0_15px_40px_rgba(180,100,255,0.2)]'
           }`}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-          <span className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4 block drop-shadow-[0_0_40px_rgba(180,100,255,0.6)]">
-            🔬
-          </span>
-          <h2 className="text-lg sm:text-xl font-bold text-purple-400 mb-2">{t('home.game2d')}</h2>
-          <p className={`text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed ${
+          <span className="text-3xl sm:text-4xl mb-2 block drop-shadow-[0_0_30px_rgba(180,100,255,0.6)]">🔬</span>
+          <h2 className="text-base sm:text-lg font-bold text-purple-400 mb-1">{t('home.game2d')}</h2>
+          <p className={`text-xs mb-2 leading-relaxed line-clamp-2 ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
             {t('home.game2dDescription')}
           </p>
-          <span className="inline-block px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
                           bg-gradient-to-r from-purple-400 to-purple-500 text-white
-                          group-hover:scale-110 group-hover:shadow-lg transition-transform">
+                          group-hover:scale-105 transition-transform">
             {t('home.play2D')}
           </span>
         </Link>
@@ -115,31 +111,104 @@ export function HomePage() {
         {/* Course Card */}
         <Link
           to="/demos"
-          className={`group relative rounded-2xl p-5 sm:p-6 md:p-8 text-center sm:col-span-2 lg:col-span-1
-                     transition-all duration-400 hover:-translate-y-2.5 hover:scale-[1.02] ${
+          className={`group relative rounded-2xl p-4 sm:p-5 text-center
+                     transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] ${
             theme === 'dark'
-              ? 'bg-slate-900/80 border-2 border-cyan-400/30 hover:border-cyan-400/60 hover:shadow-[0_20px_60px_rgba(100,200,255,0.3)]'
-              : 'bg-white/90 border-2 border-cyan-500/40 hover:border-cyan-500/70 hover:shadow-[0_20px_60px_rgba(6,182,212,0.2)]'
+              ? 'bg-slate-900/80 border-2 border-cyan-400/30 hover:border-cyan-400/60 hover:shadow-[0_15px_40px_rgba(100,200,255,0.3)]'
+              : 'bg-white/90 border-2 border-cyan-500/40 hover:border-cyan-500/70 hover:shadow-[0_15px_40px_rgba(6,182,212,0.2)]'
           }`}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-          <span className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4 block drop-shadow-[0_0_40px_rgba(100,200,255,0.6)]">
-            📚
-          </span>
-          <h2 className={`text-lg sm:text-xl font-bold mb-2 ${
+          <span className="text-3xl sm:text-4xl mb-2 block drop-shadow-[0_0_30px_rgba(100,200,255,0.6)]">📚</span>
+          <h2 className={`text-base sm:text-lg font-bold mb-1 ${
             theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
           }`}>
             {t('common.course')}
           </h2>
-          <p className={`text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed ${
+          <p className={`text-xs mb-2 leading-relaxed line-clamp-2 ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
             {t('home.courseDescription')}
           </p>
-          <span className={`inline-block px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
                           bg-gradient-to-r from-cyan-400 to-blue-500 text-black
-                          group-hover:scale-110 group-hover:shadow-lg transition-transform`}>
+                          group-hover:scale-105 transition-transform">
             {t('home.startCourse')}
+          </span>
+        </Link>
+
+        {/* Hardware UC2 Card */}
+        <Link
+          to="/hardware"
+          className={`group relative rounded-2xl p-4 sm:p-5 text-center
+                     transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] ${
+            theme === 'dark'
+              ? 'bg-slate-900/80 border-2 border-green-400/30 hover:border-green-400/60 hover:shadow-[0_15px_40px_rgba(100,255,150,0.3)]'
+              : 'bg-white/90 border-2 border-green-500/40 hover:border-green-500/70 hover:shadow-[0_15px_40px_rgba(34,197,94,0.2)]'
+          }`}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+          <span className="text-3xl sm:text-4xl mb-2 block drop-shadow-[0_0_30px_rgba(100,255,150,0.6)]">🔧</span>
+          <h2 className="text-base sm:text-lg font-bold text-green-400 mb-1">{t('home.hardware')}</h2>
+          <p className={`text-xs mb-2 leading-relaxed line-clamp-2 ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            {t('home.hardwareDescription')}
+          </p>
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
+                          bg-gradient-to-r from-green-400 to-emerald-500 text-black
+                          group-hover:scale-105 transition-transform">
+            {t('home.exploreHardware')}
+          </span>
+        </Link>
+
+        {/* Card Game */}
+        <Link
+          to="/cardgame"
+          className={`group relative rounded-2xl p-4 sm:p-5 text-center
+                     transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] ${
+            theme === 'dark'
+              ? 'bg-slate-900/80 border-2 border-yellow-400/30 hover:border-yellow-400/60 hover:shadow-[0_15px_40px_rgba(255,220,100,0.3)]'
+              : 'bg-white/90 border-2 border-yellow-500/40 hover:border-yellow-500/70 hover:shadow-[0_15px_40px_rgba(234,179,8,0.2)]'
+          }`}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+          <span className="text-3xl sm:text-4xl mb-2 block drop-shadow-[0_0_30px_rgba(255,220,100,0.6)]">🎴</span>
+          <h2 className="text-base sm:text-lg font-bold text-yellow-400 mb-1">{t('home.cardGame')}</h2>
+          <p className={`text-xs mb-2 leading-relaxed line-clamp-2 ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            {t('home.cardGameDescription')}
+          </p>
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
+                          bg-gradient-to-r from-yellow-400 to-amber-500 text-black
+                          group-hover:scale-105 transition-transform">
+            {t('home.playCardGame')}
+          </span>
+        </Link>
+
+        {/* Merchandise */}
+        <Link
+          to="/merchandise"
+          className={`group relative rounded-2xl p-4 sm:p-5 text-center
+                     transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] ${
+            theme === 'dark'
+              ? 'bg-slate-900/80 border-2 border-pink-400/30 hover:border-pink-400/60 hover:shadow-[0_15px_40px_rgba(255,100,180,0.3)]'
+              : 'bg-white/90 border-2 border-pink-400/40 hover:border-pink-400/70 hover:shadow-[0_15px_40px_rgba(236,72,153,0.2)]'
+          }`}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+          <span className="text-3xl sm:text-4xl mb-2 block drop-shadow-[0_0_30px_rgba(255,100,180,0.6)]">🎨</span>
+          <h2 className="text-base sm:text-lg font-bold text-pink-400 mb-1">{t('home.merchandise')}</h2>
+          <p className={`text-xs mb-2 leading-relaxed line-clamp-2 ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            {t('home.merchandiseDescription')}
+          </p>
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
+                          bg-gradient-to-r from-pink-400 to-rose-500 text-white
+                          group-hover:scale-105 transition-transform">
+            {t('home.browseMerch')}
           </span>
         </Link>
       </nav>
