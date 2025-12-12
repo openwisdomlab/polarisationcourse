@@ -315,22 +315,6 @@ const getGradientClass = (from: string, to: string) => {
   return gradientMap[`${from}-${to}`] || 'from-gray-400 to-gray-500'
 }
 
-const getHoverGradientClass = (from: string) => {
-  // Soft hover gradient classes
-  const hoverMap: Record<string, string> = {
-    'cyan-soft': 'from-[#22C7D6]/10',
-    'indigo-soft': 'from-[#5B6EE1]/10',
-    'violet-soft': 'from-[#8B5CF6]/10',
-    'slate-soft': 'from-[#6B7A99]/10',
-    'amber-soft': 'from-[#D9A441]/10',
-    'rose-soft': 'from-[#D97A8A]/10',
-    'emerald-soft': 'from-[#3AAE8C]/10',
-    'orange-soft': 'from-[#E8884A]/10',
-    'teal-soft': 'from-[#2AA198]/10',
-  }
-  return hoverMap[from] || 'from-gray-400/10'
-}
-
 const getGlowClass = (from: string) => {
   // Softer glow effects for reduced eye strain
   const glowMap: Record<string, string> = {

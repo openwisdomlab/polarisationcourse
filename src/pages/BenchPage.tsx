@@ -37,7 +37,7 @@ interface BenchComponent {
   x: number
   y: number
   rotation: number
-  properties: Record<string, number | string>
+  properties: Record<string, number | string | boolean>
 }
 
 interface ClassicExperiment {

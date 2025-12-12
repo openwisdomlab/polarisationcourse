@@ -461,8 +461,7 @@ function generateRotation(
     const x = cx - tubeLength / 2 + tubeLength * progress
     const angle = progress * totalRotation * (Math.PI / 180)
 
-    // Polarization direction vector
-    const dx = Math.cos(angle) * vectorLength
+    // Polarization direction vector (only vertical component used for this visualization)
     const dy = Math.sin(angle) * vectorLength
 
     // Color based on polarization angle
