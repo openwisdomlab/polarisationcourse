@@ -349,12 +349,13 @@ const ANALYSIS_TOOLS: AnalysisTool[] = [
   },
   {
     id: 'mueller-sim',
-    nameEn: 'Mueller Matrix Simulator',
-    nameZh: '穆勒矩阵模拟器',
-    descriptionEn: 'Simulate light propagation through optical elements using Mueller calculus.',
-    descriptionZh: '使用穆勒矩阵模拟光通过光学元件的传播。',
+    nameEn: 'Mueller Matrix Calculator',
+    nameZh: '穆勒矩阵计算器',
+    descriptionEn: 'Calculate Stokes vector transformations using Mueller matrix calculus. Supports partially polarized light.',
+    descriptionZh: '使用穆勒矩阵计算斯托克斯矢量变换，支持部分偏振光。',
     icon: <BarChart3 className="w-5 h-5" />,
     available: true,
+    link: '/lab/mueller',
   },
   {
     id: 'jones-calc',
