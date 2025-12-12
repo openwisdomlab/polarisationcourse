@@ -118,7 +118,7 @@ const EXPERIMENTS: Experiment[] = [
       ],
     },
     tags: ['malus-law', 'lcd', 'beginner-friendly'],
-    relatedDemo: 'malus-law',
+    relatedDemo: 'malus',
     photoIdeas: {
       en: [
         'Capture the screen at different rotation angles',
@@ -190,7 +190,7 @@ const EXPERIMENTS: Experiment[] = [
       ],
     },
     tags: ['birefringence', 'art', 'beginner-friendly'],
-    relatedDemo: 'chromatic-polarization',
+    relatedDemo: 'chromatic',
     photoIdeas: {
       en: [
         'Create abstract geometric patterns',
@@ -342,7 +342,7 @@ const EXPERIMENTS: Experiment[] = [
       zh: ['弯曲时注意不要折断塑料物品'],
     },
     tags: ['stress', 'birefringence', 'engineering'],
-    relatedDemo: 'stress-birefringence',
+    relatedDemo: 'anisotropy',
     photoIdeas: {
       en: [
         'Document stress rainbow in CD cases',
@@ -414,7 +414,7 @@ const EXPERIMENTS: Experiment[] = [
       ],
     },
     tags: ['rayleigh', 'nature', 'navigation'],
-    relatedDemo: 'rayleigh-scattering',
+    relatedDemo: 'rayleigh',
     photoIdeas: {
       en: [
         'Take photos of sky with and without polarizer',
@@ -488,7 +488,7 @@ const EXPERIMENTS: Experiment[] = [
       ],
     },
     tags: ['brewster', 'reflection', 'optics'],
-    relatedDemo: 'brewster-angle',
+    relatedDemo: 'brewster',
     photoIdeas: {
       en: [
         'Show reflection before and after at Brewster\'s angle',

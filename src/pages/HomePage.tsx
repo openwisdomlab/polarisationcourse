@@ -1,8 +1,17 @@
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ModuleIconMap, type ModuleIconKey } from '@/components/icons'
+
+// Polarization angle colors for visual effect (based on polarization physics)
+const POLARIZATION_COLORS = [
+  'rgba(255, 68, 68, 0.15)',   // 0° - Red
+  'rgba(255, 170, 0, 0.15)',   // 45° - Orange
+  'rgba(68, 255, 68, 0.15)',   // 90° - Green
+  'rgba(68, 68, 255, 0.15)',   // 135° - Blue
+]
 
 // Module configuration for the 9 creative hubs
 interface ModuleConfig {
@@ -26,7 +35,7 @@ interface ModuleConfig {
 
 const MODULES: ModuleConfig[] = [
   {
-    // 光的编年史：历史故事 × 动手实验 (Chronicles of Light)
+    // 光的编年史：历史故事 × 经典实验 (Chronicles of Light)
     key: 'chronicles',
     icon: '⏳', // Hourglass - represents history and time
     colorTheme: {
@@ -338,15 +347,54 @@ const getGlowClass = (from: string) => {
   return glowMap[from] || ''
 }
 
-function ModuleCard({ module }: { module: ModuleConfig }) {
+function ModuleCard({ module, index }: { module: ModuleConfig; index: number }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const [isHovered, setIsHovered] = useState(false)
+  const [polarAngle, setPolarAngle] = useState(0)
+  const animationRef = useRef<number | null>(null)
 
   const colorClasses = getColorClasses(module, theme)
   const textColorClass = getTextColorClass(module.colorTheme.text, theme)
   const gradientClass = getGradientClass(module.colorTheme.gradientFrom, module.colorTheme.gradientTo)
-  const hoverGradientClass = getHoverGradientClass(module.colorTheme.gradientFrom)
   const glowClass = getGlowClass(module.colorTheme.gradientFrom)
+
+  // Animate polarization angle on hover - simulates rotating polarizer
+  useEffect(() => {
+    if (isHovered) {
+      const startTime = Date.now()
+      const animate = () => {
+        const elapsed = Date.now() - startTime
+        // Slow rotation: 360° in 4 seconds
+        const angle = (elapsed / 4000) * 360 % 360
+        setPolarAngle(angle)
+        animationRef.current = requestAnimationFrame(animate)
+      }
+      animationRef.current = requestAnimationFrame(animate)
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+      // Reset to initial angle based on module index
+      setPolarAngle(index * 40 % 180)
+    }
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [isHovered, index])
+
+  // Calculate Malus's Law intensity: I = I₀ × cos²(θ)
+  // This creates the "polarizer rotation" effect where brightness varies
+  const malusIntensity = Math.pow(Math.cos((polarAngle * Math.PI) / 180), 2)
+
+  // Get current polarization color based on angle quadrant
+  const colorIndex = Math.floor((polarAngle / 45) % 4)
+  const polarizationColor = POLARIZATION_COLORS[colorIndex]
+
+  // Calculate overlay opacity based on Malus's Law (inverted for visibility effect)
+  const overlayOpacity = isHovered ? 0.3 + 0.4 * (1 - malusIntensity) : 0
 
   return (
     <div
@@ -356,50 +404,104 @@ function ModuleCard({ module }: { module: ModuleConfig }) {
           ? `bg-slate-900/80 border-2 ${colorClasses.border} ${colorClasses.shadow}`
           : `bg-white/90 border-2 ${colorClasses.border} ${colorClasses.shadow}`
       }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        // Add subtle brightness variation based on Malus's Law
+        filter: isHovered ? `brightness(${0.9 + 0.2 * malusIntensity})` : 'none',
+      }}
     >
-      {/* Hover gradient overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${hoverGradientClass} to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl`} />
+      {/* Polarization rotating overlay - simulates viewing through rotating polarizer */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-200"
+        style={{
+          background: isHovered
+            ? `linear-gradient(${polarAngle}deg, ${polarizationColor} 0%, transparent 50%, ${polarizationColor} 100%)`
+            : 'none',
+          opacity: overlayOpacity,
+        }}
+      />
 
-      {/* Icon */}
-      <div className="mb-2 flex justify-center">
+      {/* Polarization cross-hatch pattern overlay - visible on hover */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none overflow-hidden"
+        style={{
+          opacity: isHovered ? 0.08 : 0,
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `repeating-linear-gradient(
+              ${polarAngle}deg,
+              transparent,
+              transparent 2px,
+              ${theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)'} 2px,
+              ${theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)'} 4px
+            )`,
+          }}
+        />
+      </div>
+
+      {/* Icon with rotation effect */}
+      <div className="mb-2 flex justify-center relative z-10">
         {(() => {
           const IconComponent = ModuleIconMap[module.key as ModuleIconKey]
           if (IconComponent) {
             return (
-              <IconComponent
-                size={48}
-                className={`group-hover:scale-110 transition-transform duration-300 ${glowClass}`}
-              />
+              <div
+                style={{
+                  transform: isHovered ? `rotate(${polarAngle * 0.1}deg)` : 'none',
+                  transition: isHovered ? 'none' : 'transform 0.3s ease',
+                }}
+              >
+                <IconComponent
+                  size={48}
+                  className={`transition-transform duration-300 ${isHovered ? 'scale-110' : ''} ${glowClass}`}
+                />
+              </div>
             )
           }
-          return <span className={`text-3xl sm:text-4xl ${glowClass}`}>{module.icon}</span>
+          return (
+            <span
+              className={`text-3xl sm:text-4xl ${glowClass}`}
+              style={{
+                transform: isHovered ? `rotate(${polarAngle * 0.1}deg)` : 'none',
+                transition: isHovered ? 'none' : 'transform 0.3s ease',
+                display: 'inline-block',
+              }}
+            >
+              {module.icon}
+            </span>
+          )
         })()}
       </div>
 
       {/* Title */}
-      <h2 className={`text-base sm:text-lg font-bold ${textColorClass} mb-0.5`}>
+      <h2 className={`text-base sm:text-lg font-bold ${textColorClass} mb-0.5 relative z-10`}>
         {t(`home.${module.key}.title`)}
       </h2>
 
       {/* Subtitle */}
-      <p className={`text-xs font-medium mb-1.5 ${
+      <p className={`text-xs font-medium mb-1.5 relative z-10 ${
         theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
       }`}>
         {t(`home.${module.key}.subtitle`)}
       </p>
 
       {/* Description */}
-      <p className={`text-xs mb-3 leading-relaxed line-clamp-2 ${
+      <p className={`text-xs mb-3 leading-relaxed line-clamp-2 relative z-10 ${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
       }`}>
         {t(`home.${module.key}.description`)}
       </p>
 
       {/* Quick Links */}
-      <div className="flex flex-wrap justify-center gap-1.5 mb-3">
-        {module.quickLinks.map((link, index) => (
+      <div className="flex flex-wrap justify-center gap-1.5 mb-3 relative z-10">
+        {module.quickLinks.map((link, linkIndex) => (
           <Link
-            key={index}
+            key={linkIndex}
             to={link.route}
             className={`text-[10px] px-2 py-0.5 rounded-full transition-all
                        hover:scale-105 ${
@@ -416,12 +518,24 @@ function ModuleCard({ module }: { module: ModuleConfig }) {
       {/* Main CTA Button */}
       <Link
         to={module.mainRoute}
-        className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider
+        className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider relative z-10
                    bg-gradient-to-r ${gradientClass} text-${module.colorTheme.buttonText}
-                   group-hover:scale-105 transition-transform`}
+                   transition-transform ${isHovered ? 'scale-105' : ''}`}
       >
         {t(`home.${module.key}.cta`)}
       </Link>
+
+      {/* Polarization angle indicator (subtle, only on hover) */}
+      {isHovered && (
+        <div
+          className={`absolute top-2 right-2 text-[8px] px-1.5 py-0.5 rounded-full z-20 ${
+            theme === 'dark' ? 'bg-slate-800/80 text-cyan-400' : 'bg-white/80 text-cyan-600'
+          }`}
+          style={{ fontFamily: 'monospace' }}
+        >
+          {Math.round(polarAngle)}°
+        </div>
+      )}
     </div>
   )
 }
@@ -479,10 +593,10 @@ export function HomePage() {
         </p>
       </header>
 
-      {/* Navigation Cards - 6 Creative Modules */}
+      {/* Navigation Cards - 9 Creative Modules with polarization effects */}
       <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-6xl relative z-10 w-full px-2">
-        {MODULES.map((module) => (
-          <ModuleCard key={module.key} module={module} />
+        {MODULES.map((module, index) => (
+          <ModuleCard key={module.key} module={module} index={index} />
         ))}
       </nav>
 

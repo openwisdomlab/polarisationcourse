@@ -2,8 +2,8 @@
  * Demos Page - Interactive physics demonstrations for 5 units + Optical Basics
  * Enhanced with i18n, theme support, and improved interactivity indicators
  */
-import { useState, Suspense, ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect, Suspense, ReactNode } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -1498,9 +1498,29 @@ export function DemosPage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { isMobile, isTablet } = useIsMobile()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [activeDemo, setActiveDemo] = useState<string>('light-wave')
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   const [expandedUnit, setExpandedUnit] = useState<number | null>(0)
+
+  // Handle URL query parameter for direct demo linking
+  // e.g., /demos?demo=malus-law will auto-select and expand that demo
+  useEffect(() => {
+    const demoParam = searchParams.get('demo')
+    if (demoParam) {
+      // Find the demo by ID
+      const targetDemo = DEMOS.find(d => d.id === demoParam)
+      if (targetDemo) {
+        // Set the active demo
+        setActiveDemo(demoParam)
+        // Expand the unit containing this demo
+        setExpandedUnit(targetDemo.unit)
+        // Clear the URL parameter to allow normal navigation
+        // (but keep the demo selected)
+        setSearchParams({}, { replace: true })
+      }
+    }
+  }, [searchParams, setSearchParams])
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({
     lifeScene: true,  // Life scene card expanded by default
     physics: false,

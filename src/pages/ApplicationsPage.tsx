@@ -20,12 +20,22 @@ import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Badge } from '@/components/shared'
 import {
   Home, Camera, Monitor, HeartPulse, Satellite, Leaf, Factory,
-  ChevronRight, Lightbulb, X,
+  ChevronRight, Lightbulb, X, ExternalLink, BookOpen,
   Eye, Atom, FlaskConical
 } from 'lucide-react'
 
 // Application categories
 type ApplicationCategory = 'photography' | 'display' | 'medical' | 'remote' | 'nature' | 'industry' | 'research' | 'interdisciplinary'
+
+// Reference type for academic sources
+interface Reference {
+  title: string
+  authors?: string
+  journal?: string
+  year?: number
+  url?: string
+  doi?: string
+}
 
 // Application data interface
 interface Application {
@@ -47,6 +57,7 @@ interface Application {
     zh: string
   }
   difficulty: 'easy' | 'medium' | 'advanced'
+  references?: Reference[]
 }
 
 // Nature sub-category for the Nature section
@@ -95,12 +106,29 @@ const APPLICATIONS: Application[] = [
     icon: '📷',
     examplesEn: ['Eliminating water surface reflections', 'Darkening blue sky', 'Removing glare from foliage'],
     examplesZh: ['消除水面反射', '使蓝天更深沉', '去除树叶眩光'],
-    relatedDemo: 'brewster-angle',
+    relatedDemo: 'brewster',
     funFact: {
       en: 'The effect is strongest when shooting at 90° to the sun!',
       zh: '当拍摄方向与太阳成90°时效果最强！',
     },
     difficulty: 'easy',
+    references: [
+      {
+        title: 'Polarization in Remote Sensing and Photography',
+        authors: 'J. S. Tyo et al.',
+        journal: 'Applied Optics',
+        year: 2006,
+        doi: '10.1364/AO.45.005453',
+        url: 'https://doi.org/10.1364/AO.45.005453'
+      },
+      {
+        title: 'Polarized Light in Nature',
+        authors: 'G. Horváth, D. Varjú',
+        journal: 'Springer',
+        year: 2004,
+        url: 'https://link.springer.com/book/10.1007/978-3-662-09387-0'
+      }
+    ],
   },
   {
     id: '3d-photography',
@@ -134,12 +162,27 @@ const APPLICATIONS: Application[] = [
     icon: '🖥️',
     examplesEn: ['Computer monitors', 'Smartphone screens', 'Digital watches', 'Calculator displays'],
     examplesZh: ['电脑显示器', '智能手机屏幕', '电子手表', '计算器显示'],
-    relatedDemo: 'malus-law',
+    relatedDemo: 'malus',
     funFact: {
       en: 'If you wear polarizing sunglasses, some LCD screens may look black at certain angles!',
       zh: '如果你戴偏振太阳镜，某些LCD屏幕在特定角度可能看起来是黑色的！',
     },
     difficulty: 'medium',
+    references: [
+      {
+        title: 'Fundamentals of Liquid Crystal Devices',
+        authors: 'D.-K. Yang, S.-T. Wu',
+        journal: 'Wiley',
+        year: 2014,
+        url: 'https://onlinelibrary.wiley.com/doi/book/10.1002/9781118751992'
+      },
+      {
+        title: 'Liquid Crystal Display Technology',
+        journal: 'IEEE Spectrum',
+        year: 2000,
+        url: 'https://spectrum.ieee.org/the-origins-of-the-lcd'
+      }
+    ],
   },
   {
     id: 'oled-polarizer',
@@ -178,6 +221,23 @@ const APPLICATIONS: Application[] = [
       zh: '医生使用偏振显微镜区分痛风（针状晶体）和假性痛风（菱形晶体）！',
     },
     difficulty: 'medium',
+    references: [
+      {
+        title: 'Polarized Light Microscopy: Principles and Practice',
+        authors: 'P. C. Robinson, S. Bradbury',
+        journal: 'Royal Microscopical Society',
+        year: 1992,
+        url: 'https://www.wiley.com/en-us/Polarized+Light+Microscopy-p-9780471417880'
+      },
+      {
+        title: 'Crystal Identification in Synovial Fluid',
+        authors: 'H. R. Schumacher Jr.',
+        journal: 'JAMA',
+        year: 1988,
+        doi: '10.1001/jama.1988.03410140085035',
+        url: 'https://jamanetwork.com/journals/jama/article-abstract/373091'
+      }
+    ],
   },
   {
     id: 'glucose-polarimetry',
@@ -249,7 +309,7 @@ const APPLICATIONS: Application[] = [
     icon: '🏗️',
     examplesEn: ['Bridge design validation', 'Aircraft component testing', 'Glass tempering QC'],
     examplesZh: ['桥梁设计验证', '飞机部件测试', '玻璃钢化质检'],
-    relatedDemo: 'stress-birefringence',
+    relatedDemo: 'anisotropy',
     funFact: {
       en: 'You can see stress patterns in plastic rulers and CD cases between polarizers!',
       zh: '你可以在偏振片之间看到塑料尺和CD盒中的应力图案！',
@@ -841,6 +901,78 @@ function ApplicationDetailModal({
               )}>
                 {isZh ? app.funFact.zh : app.funFact.en}
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* References */}
+        {app.references && app.references.length > 0 && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <BookOpen className="w-4 h-4" />
+              {isZh ? '参考文献' : 'References'}
+            </h3>
+            <div className="space-y-2">
+              {app.references.map((ref, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    'p-3 rounded-lg text-xs',
+                    theme === 'dark' ? 'bg-slate-800' : 'bg-gray-50'
+                  )}
+                >
+                  <div className={cn(
+                    'font-medium mb-1',
+                    theme === 'dark' ? 'text-gray-200' : 'text-gray-800'
+                  )}>
+                    {ref.title}
+                  </div>
+                  <div className={cn(
+                    'text-xs mb-1',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {ref.authors && <span>{ref.authors}. </span>}
+                    {ref.journal && <span className="italic">{ref.journal}</span>}
+                    {ref.year && <span> ({ref.year})</span>}
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    {ref.url && (
+                      <a
+                        href={ref.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cn(
+                          'inline-flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                          theme === 'dark'
+                            ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                            : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
+                        )}
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        {isZh ? '链接' : 'Link'}
+                      </a>
+                    )}
+                    {ref.doi && (
+                      <a
+                        href={`https://doi.org/${ref.doi}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cn(
+                          'inline-flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                          theme === 'dark'
+                            ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30'
+                            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                        )}
+                      >
+                        DOI
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
