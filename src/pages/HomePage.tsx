@@ -25,7 +25,7 @@ interface ModuleConfig {
 
 const MODULES: ModuleConfig[] = [
   {
-    // 光之编年史：故事与实验 (Chronicles of Light)
+    // 光的编年史：历史故事 × 动手实验 (Chronicles of Light)
     key: 'chronicles',
     icon: '📜',
     colorTheme: {
@@ -45,9 +45,9 @@ const MODULES: ModuleConfig[] = [
     ],
   },
   {
-    // 器件工坊：偏振与光路 (Optics Playground)
-    key: 'workshop',
-    icon: '🔧',
+    // 偏振器件库：器件原理 × 分类图鉴 (Polarization Device Library)
+    key: 'deviceLibrary',
+    icon: '🔬',
     colorTheme: {
       border: 'indigo-soft', // Soft Indigo #5B6EE1
       borderHover: 'indigo-soft',
@@ -57,15 +57,35 @@ const MODULES: ModuleConfig[] = [
       gradientTo: 'indigo-600',
       buttonText: 'white',
     },
-    mainRoute: '/hardware',
+    mainRoute: '/devices',
     quickLinks: [
-      { labelKey: 'link1', route: '/hardware' },
-      { labelKey: 'link2', route: '/hardware' },
-      { labelKey: 'link3', route: '/hardware' },
+      { labelKey: 'link1', route: '/devices/polarizers' },
+      { labelKey: 'link2', route: '/devices/waveplates' },
+      { labelKey: 'link3', route: '/devices/splitters' },
     ],
   },
   {
-    // 基础底座：理论与仿真 (Theory Foundation)
+    // 光路设计室：搭建光路 × 模拟验证 (Optical Path Designer)
+    key: 'opticalBench',
+    icon: '🔧',
+    colorTheme: {
+      border: 'violet-soft', // Soft Violet #8B5CF6
+      borderHover: 'violet-soft',
+      shadow: 'rgba(139,92,246,0.25)',
+      text: 'violet-soft',
+      gradientFrom: 'violet-soft',
+      gradientTo: 'violet-600',
+      buttonText: 'white',
+    },
+    mainRoute: '/bench',
+    quickLinks: [
+      { labelKey: 'link1', route: '/bench/classic' },
+      { labelKey: 'link2', route: '/bench/free' },
+      { labelKey: 'link3', route: '/bench/hardware' },
+    ],
+  },
+  {
+    // 理论基石：基础理论 × 计算模拟 (Theory Cornerstone)
     key: 'formulaLab',
     icon: '📐',
     colorTheme: {
@@ -156,13 +176,19 @@ const getColorClasses = (module: ModuleConfig, theme: 'dark' | 'light') => {
       light: 'border-[#22C7D6]/40 hover:border-[#22C7D6]/70',
       shadow: 'hover:shadow-[0_15px_40px_rgba(34,199,214,0.25)]',
     },
-    // Soft Indigo #5B6EE1 - Optics Playground
+    // Soft Indigo #5B6EE1 - Device Library
     'indigo-soft': {
       dark: 'border-[#5B6EE1]/30 hover:border-[#5B6EE1]/60',
       light: 'border-[#5B6EE1]/40 hover:border-[#5B6EE1]/70',
       shadow: 'hover:shadow-[0_15px_40px_rgba(91,110,225,0.25)]',
     },
-    // Soft Slate-Blue #6B7A99 - Theory Foundation
+    // Soft Violet #8B5CF6 - Optical Bench
+    'violet-soft': {
+      dark: 'border-[#8B5CF6]/30 hover:border-[#8B5CF6]/60',
+      light: 'border-[#8B5CF6]/40 hover:border-[#8B5CF6]/70',
+      shadow: 'hover:shadow-[0_15px_40px_rgba(139,92,246,0.25)]',
+    },
+    // Soft Slate-Blue #6B7A99 - Theory Cornerstone
     'slate-soft': {
       dark: 'border-[#6B7A99]/30 hover:border-[#6B7A99]/60',
       light: 'border-[#6B7A99]/40 hover:border-[#6B7A99]/70',
@@ -200,6 +226,7 @@ const getTextColorClass = (color: string, theme: 'dark' | 'light') => {
   const textMap: Record<string, { dark: string; light: string }> = {
     'cyan-soft': { dark: 'text-[#22C7D6]', light: 'text-[#1BA3AD]' },
     'indigo-soft': { dark: 'text-[#5B6EE1]', light: 'text-[#4A5CC9]' },
+    'violet-soft': { dark: 'text-[#8B5CF6]', light: 'text-[#7C3AED]' },
     'slate-soft': { dark: 'text-[#6B7A99]', light: 'text-[#5A6882]' },
     'amber-soft': { dark: 'text-[#D9A441]', light: 'text-[#B88A35]' },
     'rose-soft': { dark: 'text-[#D97A8A]', light: 'text-[#C06575]' },
@@ -213,6 +240,7 @@ const getGradientClass = (from: string, to: string) => {
   const gradientMap: Record<string, string> = {
     'cyan-soft-cyan-600': 'from-[#22C7D6] to-[#0891B2]',
     'indigo-soft-indigo-600': 'from-[#5B6EE1] to-[#4F46E5]',
+    'violet-soft-violet-600': 'from-[#8B5CF6] to-[#7C3AED]',
     'slate-soft-slate-600': 'from-[#6B7A99] to-[#475569]',
     'amber-soft-amber-600': 'from-[#D9A441] to-[#D97706]',
     'rose-soft-rose-600': 'from-[#D97A8A] to-[#E11D48]',
@@ -226,6 +254,7 @@ const getHoverGradientClass = (from: string) => {
   const hoverMap: Record<string, string> = {
     'cyan-soft': 'from-[#22C7D6]/10',
     'indigo-soft': 'from-[#5B6EE1]/10',
+    'violet-soft': 'from-[#8B5CF6]/10',
     'slate-soft': 'from-[#6B7A99]/10',
     'amber-soft': 'from-[#D9A441]/10',
     'rose-soft': 'from-[#D97A8A]/10',
@@ -239,6 +268,7 @@ const getGlowClass = (from: string) => {
   const glowMap: Record<string, string> = {
     'cyan-soft': 'drop-shadow-[0_0_20px_rgba(34,199,214,0.4)]',
     'indigo-soft': 'drop-shadow-[0_0_20px_rgba(91,110,225,0.4)]',
+    'violet-soft': 'drop-shadow-[0_0_20px_rgba(139,92,246,0.4)]',
     'slate-soft': 'drop-shadow-[0_0_20px_rgba(107,122,153,0.4)]',
     'amber-soft': 'drop-shadow-[0_0_20px_rgba(217,164,65,0.4)]',
     'rose-soft': 'drop-shadow-[0_0_20px_rgba(217,122,138,0.4)]',

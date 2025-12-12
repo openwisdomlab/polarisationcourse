@@ -1,9 +1,10 @@
 /**
- * Chronicles Page - History of Polarized Light
- * 编年史页面 - 偏振光发现史
+ * Chronicles Page - History of Light and Polarization
+ * 光的编年史 - 双线叙事：广义光学 + 偏振光
  *
- * Interactive timeline showcasing key discoveries and scientists
- * in the history of polarization physics.
+ * Interactive dual-timeline showcasing key discoveries:
+ * - Left track: General optics history (核心光学发现)
+ * - Right track: Polarization-specific history (偏振光专属旅程)
  */
 
 import { useState } from 'react'
@@ -15,10 +16,11 @@ import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Tabs, Badge } from '@/components/shared'
 import {
   Home, Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
-  FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight
+  FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
+  Sun, Sparkles, ExternalLink
 } from 'lucide-react'
 
-// Timeline events data
+// Timeline events data - 双轨历史数据
 interface TimelineEvent {
   year: number
   titleEn: string
@@ -29,6 +31,8 @@ interface TimelineEvent {
   scientistZh?: string
   category: 'discovery' | 'theory' | 'experiment' | 'application'
   importance: 1 | 2 | 3 // 1 = major milestone, 2 = significant, 3 = notable
+  // 双轨分类: 'optics' = 广义光学, 'polarization' = 偏振光专属
+  track: 'optics' | 'polarization'
   details?: {
     en: string[]
     zh: string[]
@@ -53,9 +57,278 @@ interface TimelineEvent {
     season?: string
     mood?: string
   }
+  // 参考文献 (用于事实核查)
+  references?: {
+    title: string
+    url?: string
+  }[]
+  // 故事真实性标注
+  historicalNote?: {
+    en: string
+    zh: string
+  }
 }
 
 const TIMELINE_EVENTS: TimelineEvent[] = [
+  // ===== 广义光学轨道 (General Optics Track) =====
+  {
+    year: 1621,
+    titleEn: 'Snell\'s Law of Refraction',
+    titleZh: '斯涅尔折射定律',
+    descriptionEn: 'Willebrord Snell discovers the mathematical law governing light refraction at interfaces.',
+    descriptionZh: '威理博·斯涅尔发现了光在界面折射时遵循的数学定律。',
+    scientistEn: 'Willebrord Snell',
+    scientistZh: '威理博·斯涅尔',
+    category: 'theory',
+    importance: 1,
+    track: 'optics',
+    details: {
+      en: [
+        'n₁ sin θ₁ = n₂ sin θ₂',
+        'Fundamental law relating incident and refracted angles',
+        'Foundation for understanding lenses and optical instruments'
+      ],
+      zh: [
+        'n₁ sin θ₁ = n₂ sin θ₂',
+        '建立入射角与折射角关系的基本定律',
+        '理解透镜和光学仪器的基础'
+      ]
+    },
+    scientistBio: {
+      birthYear: 1580,
+      deathYear: 1626,
+      nationality: 'Dutch',
+      portraitEmoji: '📏',
+      bioEn: 'Willebrord Snellius was a Dutch astronomer and mathematician. He independently discovered the law of refraction in 1621, though it was not published during his lifetime.',
+      bioZh: '威理博·斯涅尔是荷兰天文学家和数学家。他于1621年独立发现了折射定律，但在他生前未曾发表。'
+    },
+    references: [
+      { title: 'Dijksterhuis, F. J. (2004). Lenses and Waves', url: 'https://link.springer.com/book/10.1007/1-4020-2698-8' }
+    ]
+  },
+  {
+    year: 1665,
+    titleEn: 'Newton\'s Prism Experiment',
+    titleZh: '牛顿三棱镜实验',
+    descriptionEn: 'Isaac Newton uses a prism to demonstrate that white light is composed of a spectrum of colors.',
+    descriptionZh: '牛顿使用三棱镜证明白光由光谱中的各种颜色组成。',
+    scientistEn: 'Isaac Newton',
+    scientistZh: '艾萨克·牛顿',
+    category: 'experiment',
+    importance: 1,
+    track: 'optics',
+    details: {
+      en: [
+        'Performed in his room at Trinity College, Cambridge during plague lockdown',
+        'Showed white light splits into red, orange, yellow, green, blue, indigo, violet',
+        'Proved colors are inherent properties of light, not added by the prism'
+      ],
+      zh: [
+        '在瘟疫封锁期间于剑桥三一学院的房间里进行',
+        '展示白光分解为红、橙、黄、绿、蓝、靛、紫',
+        '证明颜色是光的固有属性，而非棱镜添加'
+      ]
+    },
+    story: {
+      en: `In 1665, the Great Plague forced Cambridge University to close. A young Isaac Newton, just 23, retreated to his family's farm at Woolsthorpe Manor. There, in isolation, he would have his "annus mirabilis" — his miracle year.
+
+He purchased a glass prism at a country fair, more a toy than a scientific instrument. Back in his darkened room, he drilled a small hole in the window shutter, letting a single beam of sunlight enter.
+
+When the white beam passed through the prism, it spread into a rainbow — a spectrum of colors from red to violet stretched across the opposite wall. But Newton wasn't satisfied with just observing. He placed a second prism in the path of just one color. That color passed through unchanged.
+
+"Light itself is a heterogeneous mixture," he realized. White light wasn't simple; it was a combination of all colors. The prism didn't create colors — it revealed them.
+
+This insight, born in plague-time isolation, became the foundation of spectroscopy. Centuries later, astronomers would use the same principle to discover the composition of distant stars.`,
+      zh: `1665年，大瘟疫迫使剑桥大学关闭。年仅23岁的艾萨克·牛顿回到了家乡伍尔斯索普庄园。在那里，在隔离中，他将迎来他的"奇迹年"。
+
+他在一个乡村集市上买了一块玻璃棱镜，与其说是科学仪器，不如说是玩具。回到他昏暗的房间，他在窗板上钻了一个小孔，让一束阳光射入。
+
+当白光穿过棱镜时，它展开成一道彩虹——从红到紫的光谱在对面墙上伸展。但牛顿并不满足于观察。他在一种颜色的路径上放置了第二个棱镜。那种颜色原封不动地通过了。
+
+"光本身是一种异质混合物，"他意识到。白光不是单一的；它是所有颜色的组合。棱镜不是创造颜色——它揭示颜色。
+
+这一洞见诞生于瘟疫隔离期间，成为光谱学的基础。几个世纪后，天文学家将使用同样的原理来发现遥远恒星的成分。`
+    },
+    scientistBio: {
+      birthYear: 1643,
+      deathYear: 1727,
+      nationality: 'English',
+      portraitEmoji: '🍎',
+      bioEn: 'Sir Isaac Newton was an English mathematician, physicist, and astronomer. He made seminal contributions to optics, calculus, and mechanics. His work "Opticks" (1704) laid the foundation for the corpuscular theory of light.',
+      bioZh: '艾萨克·牛顿爵士是英国数学家、物理学家和天文学家。他对光学、微积分和力学做出了开创性贡献。他的著作《光学》（1704）奠定了光的微粒理论基础。'
+    },
+    scene: {
+      location: 'Woolsthorpe Manor, Lincolnshire, England',
+      season: 'Summer',
+      mood: 'discovery'
+    },
+    references: [
+      { title: 'Newton, I. (1704). Opticks' },
+      { title: 'Westfall, R. S. (1980). Never at Rest: A Biography of Isaac Newton' }
+    ]
+  },
+  {
+    year: 1676,
+    titleEn: 'First Measurement of Light Speed',
+    titleZh: '首次测量光速',
+    descriptionEn: 'Ole Rømer calculates the speed of light by observing the moons of Jupiter, proving light travels at finite speed.',
+    descriptionZh: '奥勒·罗默通过观测木星卫星计算出光速，证明光以有限速度传播。',
+    scientistEn: 'Ole Rømer',
+    scientistZh: '奥勒·罗默',
+    category: 'discovery',
+    importance: 1,
+    track: 'optics',
+    details: {
+      en: [
+        'Observed delays in eclipses of Jupiter\'s moon Io',
+        'Calculated light speed as approximately 220,000 km/s (close to modern value)',
+        'First proof that light doesn\'t travel instantaneously'
+      ],
+      zh: [
+        '观测到木卫一被木星遮挡时间的延迟',
+        '计算出光速约为220,000公里/秒（接近现代数值）',
+        '首次证明光不是瞬时传播'
+      ]
+    },
+    scientistBio: {
+      birthYear: 1644,
+      deathYear: 1710,
+      nationality: 'Danish',
+      portraitEmoji: '🪐',
+      bioEn: 'Ole Rømer was a Danish astronomer who made the first quantitative measurements of the speed of light. He later became the mayor of Copenhagen and reformed Danish weights and measures.',
+      bioZh: '奥勒·罗默是丹麦天文学家，首次对光速进行了定量测量。后来他成为哥本哈根市长，并改革了丹麦的度量衡制度。'
+    },
+    references: [
+      { title: 'Cohen, I. B. (1940). Roemer and the First Determination of the Velocity of Light' }
+    ]
+  },
+  {
+    year: 1801,
+    titleEn: 'Young\'s Double-Slit Experiment',
+    titleZh: '杨氏双缝实验',
+    descriptionEn: 'Thomas Young demonstrates light interference, providing strong evidence for the wave theory of light.',
+    descriptionZh: '托马斯·杨演示了光的干涉现象，为光的波动理论提供了有力证据。',
+    scientistEn: 'Thomas Young',
+    scientistZh: '托马斯·杨',
+    category: 'experiment',
+    importance: 1,
+    track: 'optics',
+    details: {
+      en: [
+        'Light passing through two narrow slits creates an interference pattern',
+        'Bright and dark bands prove wave-like behavior of light',
+        'Challenged Newton\'s corpuscular theory',
+        'Foundation for quantum mechanics (later, with electrons)'
+      ],
+      zh: [
+        '光通过两条狭缝后产生干涉图案',
+        '明暗条纹证明了光的波动性',
+        '挑战了牛顿的微粒说',
+        '量子力学的基础（后来用于电子）'
+      ]
+    },
+    story: {
+      en: `In 1801, Thomas Young — physician, polymath, and decoder of Egyptian hieroglyphics — performed one of the most beautiful experiments in physics.
+
+He let sunlight pass through a tiny pinhole, then through two closely spaced slits. On the screen behind, instead of two bright lines, he saw something magical: a series of alternating bright and dark bands, like ripples on a pond meeting and interfering.
+
+"Light behaves as a wave," Young concluded. When the peaks of two waves align, they add up (bright). When a peak meets a trough, they cancel (dark). This simple experiment dealt a devastating blow to Newton's beloved particle theory.
+
+Young's contemporaries largely ignored him — Newton's authority was too great. But decades later, Fresnel would build on Young's work to create a complete mathematical theory of light waves. Young lived to see his vindication.
+
+Today, the double-slit experiment remains so profound that Richard Feynman called it "a phenomenon which contains the only mystery" of quantum mechanics.`,
+      zh: `1801年，托马斯·杨——医生、博学家、埃及象形文字解读者——进行了物理学史上最美丽的实验之一。
+
+他让阳光通过一个小孔，然后通过两条紧密相邻的狭缝。在后面的屏幕上，他看到的不是两条亮线，而是一系列神奇的明暗交替条纹，就像池塘中相遇并干涉的波纹。
+
+"光像波一样传播，"杨得出结论。当两个波的波峰对齐时，它们叠加（亮）。当波峰遇到波谷时，它们抵消（暗）。这个简单的实验对牛顿钟爱的微粒理论造成了毁灭性打击。
+
+杨的同时代人大多忽视他——牛顿的权威太大了。但几十年后，菲涅尔将在杨的工作基础上建立完整的光波数学理论。杨在有生之年看到了自己的平反。
+
+今天，双缝实验仍然如此深刻，以至于理查德·费曼称它为"包含量子力学唯一奥秘的现象"。`
+    },
+    scientistBio: {
+      birthYear: 1773,
+      deathYear: 1829,
+      nationality: 'English',
+      portraitEmoji: '🌊',
+      bioEn: 'Thomas Young was an English polymath who made important contributions to physics, physiology, and Egyptology. Besides the double-slit experiment, he helped decipher the Rosetta Stone and proposed the trichromatic theory of color vision.',
+      bioZh: '托马斯·杨是英国博学家，在物理学、生理学和埃及学方面做出了重要贡献。除了双缝实验，他还帮助解读了罗塞塔石碑，并提出了三色视觉理论。'
+    },
+    scene: {
+      location: 'London, England',
+      season: 'Spring',
+      mood: 'elegance'
+    },
+    references: [
+      { title: 'Young, T. (1802). On the Theory of Light and Colours' },
+      { title: 'Robinson, A. (2006). The Last Man Who Knew Everything: Thomas Young' }
+    ]
+  },
+  {
+    year: 1865,
+    titleEn: 'Maxwell\'s Electromagnetic Theory',
+    titleZh: '麦克斯韦电磁理论',
+    descriptionEn: 'James Clerk Maxwell unifies electricity, magnetism, and optics, showing light is an electromagnetic wave.',
+    descriptionZh: '詹姆斯·克拉克·麦克斯韦统一了电、磁和光学，证明光是电磁波。',
+    scientistEn: 'James Clerk Maxwell',
+    scientistZh: '詹姆斯·克拉克·麦克斯韦',
+    category: 'theory',
+    importance: 1,
+    track: 'optics',
+    details: {
+      en: [
+        'Four elegant equations describe all electromagnetic phenomena',
+        'Predicted the speed of electromagnetic waves matches light speed',
+        'Light is oscillating electric and magnetic fields',
+        'Foundation for radio, TV, wireless communication'
+      ],
+      zh: [
+        '四个优雅的方程描述所有电磁现象',
+        '预测电磁波速度与光速相同',
+        '光是振荡的电场和磁场',
+        '无线电、电视、无线通信的基础'
+      ]
+    },
+    story: {
+      en: `In 1865, James Clerk Maxwell wrote down four equations that would change humanity forever. Working at his estate in Glenlair, Scotland, he unified two seemingly unrelated forces — electricity and magnetism — into a single, beautiful theory.
+
+Then came the revelation: from his equations, he derived that electromagnetic disturbances travel as waves at a speed of about 310,000 km/s. This was suspiciously close to the known speed of light.
+
+"We can scarcely avoid the inference," Maxwell wrote with understated British reserve, "that light consists in the transverse undulations of the same medium which is the cause of electric and magnetic phenomena."
+
+Light itself was an electromagnetic wave! The colors we see, the warmth of the sun, the signals in our phones — all manifestations of the same fundamental phenomenon, described by four simple equations.
+
+Einstein later called Maxwell's work "the most profound and the most fruitful that physics has experienced since the time of Newton." Maxwell died young at 48, just before Hertz experimentally confirmed his predictions. He never knew how thoroughly he had revolutionized human civilization.`,
+      zh: `1865年，詹姆斯·克拉克·麦克斯韦写下了将永远改变人类的四个方程。在他位于苏格兰格伦莱尔的庄园工作时，他将两种看似无关的力——电和磁——统一成一个单一而美丽的理论。
+
+然后启示来了：从他的方程中，他推导出电磁扰动以约310,000公里/秒的速度以波的形式传播。这与已知的光速惊人地接近。
+
+"我们几乎不可能避免这样的推论，"麦克斯韦以含蓄的英国风格写道，"光由同一介质的横向波动组成，而这种介质正是电磁现象的原因。"
+
+光本身就是电磁波！我们看到的颜色、太阳的温暖、手机中的信号——都是同一基本现象的表现，由四个简单的方程描述。
+
+爱因斯坦后来称麦克斯韦的工作是"自牛顿以来物理学经历的最深刻、最富有成果的工作"。麦克斯韦年仅48岁便英年早逝，就在赫兹实验验证他的预测之前。他从未知道自己多么彻底地改变了人类文明。`
+    },
+    scientistBio: {
+      birthYear: 1831,
+      deathYear: 1879,
+      nationality: 'Scottish',
+      portraitEmoji: '⚡',
+      bioEn: 'James Clerk Maxwell was a Scottish physicist who formulated classical electromagnetic theory. His equations unified electricity, magnetism, and optics into a single coherent framework. He also made significant contributions to statistical mechanics and the theory of color.',
+      bioZh: '詹姆斯·克拉克·麦克斯韦是苏格兰物理学家，建立了经典电磁理论。他的方程将电、磁和光学统一成一个连贯的框架。他还对统计力学和色彩理论做出了重要贡献。'
+    },
+    scene: {
+      location: 'Glenlair, Scotland',
+      season: 'Autumn',
+      mood: 'unification'
+    },
+    references: [
+      { title: 'Maxwell, J. C. (1865). A Dynamical Theory of the Electromagnetic Field' },
+      { title: 'Mahon, B. (2003). The Man Who Changed Everything: The Life of James Clerk Maxwell' }
+    ]
+  },
+  // ===== 偏振光轨道 (Polarization Track) =====
   {
     year: 1669,
     titleEn: 'Discovery of Double Refraction',
@@ -66,6 +339,7 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
     scientistZh: '伊拉斯谟·巴托林',
     category: 'discovery',
     importance: 1,
+    track: 'polarization',
     details: {
       en: [
         'Bartholin observed that objects viewed through Iceland spar (calcite) appeared double',
@@ -78,6 +352,9 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
         '这一发现后来被偏振理论所解释'
       ]
     },
+    references: [
+      { title: 'Bartholin, E. (1669). Experimenta crystalli Islandici disdiaclastici' }
+    ],
     story: {
       en: `The year was 1669, in the ancient university city of Copenhagen. Professor Erasmus Bartholin sat in his study, surrounded by the curiosities that sailors brought back from distant Iceland — transparent crystals they called "Iceland spar."
 
@@ -122,6 +399,7 @@ Little did he know that this transparent stone from the frozen north would one d
     scientistZh: '克里斯蒂安·惠更斯',
     category: 'theory',
     importance: 1,
+    track: 'optics',
     details: {
       en: [
         'Published "Treatise on Light" (Traité de la Lumière)',
@@ -170,7 +448,11 @@ In his dedication, he wrote: "One finds in this subject a kind of demonstration 
       location: 'The Hague, Netherlands',
       season: 'Winter',
       mood: 'contemplation'
-    }
+    },
+    references: [
+      { title: 'Huygens, C. (1690). Traité de la Lumière' },
+      { title: 'Dijksterhuis, F. J. (2004). Lenses and Waves: Christiaan Huygens and the Mathematical Science of Optics' }
+    ]
   },
   {
     year: 1808,
@@ -182,6 +464,7 @@ In his dedication, he wrote: "One finds in this subject a kind of demonstration 
     scientistZh: '艾蒂安-路易·马吕斯',
     category: 'discovery',
     importance: 1,
+    track: 'polarization',
     details: {
       en: [
         'Malus was looking at the setting sun\'s reflection through a calcite crystal',
@@ -232,7 +515,11 @@ Years later, dying young from tuberculosis contracted in Egypt, Malus would be r
       location: 'Paris, France',
       season: 'Autumn',
       mood: 'serendipity'
-    }
+    },
+    references: [
+      { title: 'Malus, E. L. (1809). Sur une propriété de la lumière réfléchie' },
+      { title: 'Buchwald, J. Z. (1989). The Rise of the Wave Theory of Light: Optical Theory and Experiment in the Early Nineteenth Century' }
+    ]
   },
   {
     year: 1809,
@@ -244,6 +531,7 @@ Years later, dying young from tuberculosis contracted in Egypt, Malus would be r
     scientistZh: '艾蒂安-路易·马吕斯',
     category: 'theory',
     importance: 1,
+    track: 'polarization',
     details: {
       en: [
         'The intensity of transmitted light follows a cosine-squared relationship',
@@ -292,7 +580,10 @@ Tragically, Malus would not live to see his law's full impact. He died just thre
       location: 'Paris, France',
       season: 'Winter',
       mood: 'determination'
-    }
+    },
+    references: [
+      { title: 'Malus, E. L. (1810). Théorie de la double réfraction de la lumière' }
+    ]
   },
   {
     year: 1811,
@@ -304,6 +595,7 @@ Tragically, Malus would not live to see his law's full impact. He died just thre
     scientistZh: '大卫·布儒斯特',
     category: 'discovery',
     importance: 2,
+    track: 'polarization',
     details: {
       en: [
         'At Brewster\'s angle, reflected light is 100% polarized',
@@ -370,6 +662,7 @@ tan(θB) = n₂/n₁
     scientistZh: '奥古斯丁-让·菲涅尔',
     category: 'theory',
     importance: 1,
+    track: 'optics',
     details: {
       en: [
         'Proposed that light waves are transverse (perpendicular to propagation)',
@@ -436,6 +729,7 @@ The revolution he sparked continues to this day. Every polarizing sunglasses len
     scientistZh: '威廉·尼科尔',
     category: 'experiment',
     importance: 2,
+    track: 'polarization',
     details: {
       en: [
         'Made from two calcite prisms cemented with Canada balsam',
@@ -502,6 +796,7 @@ Nicol himself, modest to a fault, never patented his invention. He gave it freel
     scientistZh: '乔治·加布里埃尔·斯托克斯',
     category: 'theory',
     importance: 2,
+    track: 'polarization',
     details: {
       en: [
         'Four parameters (S₀, S₁, S₂, S₃) completely describe any polarization state',
@@ -568,6 +863,7 @@ S₀给出总强度。S₁描述水平与垂直的倾向。S₂捕捉对角线�
     scientistZh: '埃德温·兰德',
     category: 'application',
     importance: 1,
+    track: 'polarization',
     details: {
       en: [
         'Created by aligning microscopic crystals in a plastic sheet',
@@ -632,6 +928,7 @@ Yet it all started with a teenager bothered by headlight glare, and the audacity
     descriptionZh: '首个使用偏振原理的实用液晶显示器被展示。',
     category: 'application',
     importance: 2,
+    track: 'polarization',
     details: {
       en: [
         'LCD panels use two crossed polarizers with liquid crystals between them',
@@ -965,19 +1262,23 @@ function TimelineCard({ event, isExpanded, onToggle, onReadStory }: TimelineCard
   const isZh = i18n.language === 'zh'
   const category = CATEGORY_LABELS[event.category]
 
+  // Track-based colors
+  const isOpticsTrack = event.track === 'optics'
+  const trackColor = isOpticsTrack
+    ? { dot: 'bg-amber-500 border-amber-500/30', border: theme === 'dark' ? 'border-amber-500/50' : 'border-amber-400' }
+    : { dot: 'bg-cyan-500 border-cyan-500/30', border: theme === 'dark' ? 'border-cyan-500/50' : 'border-cyan-400' }
+
   return (
     <div className={cn(
       'relative pl-8 pb-8 border-l-2 last:pb-0',
-      theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+      isOpticsTrack
+        ? theme === 'dark' ? 'border-amber-500/30' : 'border-amber-300'
+        : theme === 'dark' ? 'border-cyan-500/30' : 'border-cyan-300'
     )}>
-      {/* Timeline dot */}
+      {/* Timeline dot with track indicator */}
       <div className={cn(
         'absolute -left-2.5 w-5 h-5 rounded-full border-4',
-        event.importance === 1
-          ? 'bg-amber-500 border-amber-500/30'
-          : event.importance === 2
-            ? 'bg-cyan-500 border-cyan-500/30'
-            : theme === 'dark' ? 'bg-slate-600 border-slate-500' : 'bg-gray-400 border-gray-300'
+        trackColor.dot
       )} />
 
       {/* Year label */}
@@ -993,8 +1294,8 @@ function TimelineCard({ event, isExpanded, onToggle, onReadStory }: TimelineCard
         className={cn(
           'rounded-xl border p-4 transition-all',
           theme === 'dark'
-            ? 'bg-slate-800/50 border-slate-700 hover:border-amber-500/50'
-            : 'bg-white border-gray-200 hover:border-amber-400 hover:shadow-md'
+            ? `bg-slate-800/50 border-slate-700 hover:${trackColor.border}`
+            : `bg-white border-gray-200 hover:${trackColor.border} hover:shadow-md`
         )}
       >
         <div
@@ -1003,6 +1304,16 @@ function TimelineCard({ event, isExpanded, onToggle, onReadStory }: TimelineCard
         >
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
+              {/* Track badge */}
+              <span className={cn(
+                'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                isOpticsTrack
+                  ? theme === 'dark' ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+                  : theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-700'
+              )}>
+                {isOpticsTrack ? <Sun className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
+                {isOpticsTrack ? (isZh ? '光学' : 'Optics') : (isZh ? '偏振' : 'Polarization')}
+              </span>
               <Badge color={category.color}>
                 {isZh ? category.zh : category.en}
               </Badge>
@@ -1091,6 +1402,57 @@ function TimelineCard({ event, isExpanded, onToggle, onReadStory }: TimelineCard
                 {isZh ? '阅读完整故事' : 'Read Full Story'}
               </button>
             )}
+
+            {/* References section */}
+            {event.references && event.references.length > 0 && (
+              <div className={cn(
+                'mt-4 pt-4 border-t',
+                theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+              )}>
+                <h4 className={cn(
+                  'text-xs font-semibold mb-2 flex items-center gap-2',
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                )}>
+                  <ExternalLink className="w-3 h-3" />
+                  {isZh ? '参考文献' : 'References'}
+                </h4>
+                <ul className="space-y-1">
+                  {event.references.map((ref, idx) => (
+                    <li key={idx} className={cn(
+                      'text-xs',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                    )}>
+                      {ref.url ? (
+                        <a
+                          href={ref.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cn(
+                            'hover:underline',
+                            theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                          )}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {ref.title}
+                        </a>
+                      ) : (
+                        ref.title
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Historical note (if story accuracy is uncertain) */}
+            {event.historicalNote && (
+              <div className={cn(
+                'mt-3 p-2 rounded text-xs italic',
+                theme === 'dark' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
+              )}>
+                {isZh ? event.historicalNote.zh : event.historicalNote.en}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -1113,12 +1475,15 @@ export function ChroniclesPage() {
   const [activeTab, setActiveTab] = useState('timeline')
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
   const [filter, setFilter] = useState<string>('')
+  const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
 
-  // Filter events by category
-  const filteredEvents = filter
-    ? TIMELINE_EVENTS.filter(e => e.category === filter)
-    : TIMELINE_EVENTS
+  // Filter events by category and track
+  const filteredEvents = TIMELINE_EVENTS.filter(e => {
+    const categoryMatch = !filter || e.category === filter
+    const trackMatch = trackFilter === 'all' || e.track === trackFilter
+    return categoryMatch && trackMatch
+  }).sort((a, b) => a.year - b.year)
 
   // Get unique scientists from events
   const scientists = TIMELINE_EVENTS.filter(e => e.scientistBio?.bioEn).reduce((acc, event) => {
@@ -1205,16 +1570,31 @@ export function ChroniclesPage() {
             'text-2xl sm:text-3xl font-bold mb-3',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
-            {isZh ? '偏振光的发现之旅' : 'The Journey of Polarization Discovery'}
+            {isZh ? '双线叙事：光学与偏振' : 'Dual Narrative: Optics & Polarization'}
           </h2>
           <p className={cn(
-            'text-base max-w-2xl mx-auto',
+            'text-base max-w-3xl mx-auto mb-4',
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           )}>
             {isZh
-              ? '从17世纪的偶然发现到现代液晶显示器，探索三个多世纪的光学奥秘。'
-              : 'From 17th-century chance discoveries to modern LCD displays — explore over three centuries of optical mysteries.'}
+              ? '从17世纪的偶然发现到现代应用，探索三个多世纪的光学奥秘。左侧追溯广义光学史上的核心发现，右侧聚焦偏振光的专属旅程。'
+              : 'From 17th-century discoveries to modern applications — explore over three centuries of optical mysteries. Left track traces core optics history, right track follows the polarization journey.'}
           </p>
+          {/* Dual track legend */}
+          <div className="flex justify-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
+              <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}>
+                {isZh ? '广义光学' : 'General Optics'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+              <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
+                {isZh ? '偏振光' : 'Polarization'}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -1225,17 +1605,71 @@ export function ChroniclesPage() {
         {/* Content */}
         {activeTab === 'timeline' && (
           <>
-            {/* Category filters */}
+            {/* Track filters */}
             <div className={cn(
-              'flex flex-wrap gap-2 mb-6 p-3 rounded-lg',
+              'flex flex-wrap items-center gap-2 mb-4 p-3 rounded-lg',
               theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
             )}>
+              <span className={cn('text-sm font-medium mr-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+                {isZh ? '轨道：' : 'Track:'}
+              </span>
+              <button
+                onClick={() => setTrackFilter('all')}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5',
+                  trackFilter === 'all'
+                    ? 'bg-gray-600 text-white'
+                    : theme === 'dark'
+                      ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                )}
+              >
+                {isZh ? '全部' : 'All'}
+              </button>
+              <button
+                onClick={() => setTrackFilter('optics')}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5',
+                  trackFilter === 'optics'
+                    ? 'bg-amber-500 text-white'
+                    : theme === 'dark'
+                      ? 'text-amber-400/70 hover:text-amber-400 hover:bg-amber-500/20'
+                      : 'text-amber-600 hover:text-amber-700 hover:bg-amber-100'
+                )}
+              >
+                <Sun className="w-3.5 h-3.5" />
+                {isZh ? '广义光学' : 'Optics'}
+              </button>
+              <button
+                onClick={() => setTrackFilter('polarization')}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5',
+                  trackFilter === 'polarization'
+                    ? 'bg-cyan-500 text-white'
+                    : theme === 'dark'
+                      ? 'text-cyan-400/70 hover:text-cyan-400 hover:bg-cyan-500/20'
+                      : 'text-cyan-600 hover:text-cyan-700 hover:bg-cyan-100'
+                )}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {isZh ? '偏振光' : 'Polarization'}
+              </button>
+            </div>
+
+            {/* Category filters */}
+            <div className={cn(
+              'flex flex-wrap items-center gap-2 mb-6 p-3 rounded-lg',
+              theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
+            )}>
+              <span className={cn('text-sm font-medium mr-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+                {isZh ? '类型：' : 'Type:'}
+              </span>
               <button
                 onClick={() => setFilter('')}
                 className={cn(
                   'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
                   !filter
-                    ? 'bg-amber-500 text-white'
+                    ? 'bg-gray-600 text-white'
                     : theme === 'dark'
                       ? 'text-gray-400 hover:text-white hover:bg-slate-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
@@ -1250,7 +1684,7 @@ export function ChroniclesPage() {
                   className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
                     filter === key
-                      ? 'bg-amber-500 text-white'
+                      ? 'bg-gray-600 text-white'
                       : theme === 'dark'
                         ? 'text-gray-400 hover:text-white hover:bg-slate-700'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'

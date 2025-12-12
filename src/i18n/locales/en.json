@@ -17,27 +17,36 @@
     "description": "An educational platform based on real polarization physics. From stories to simulations, from puzzles to experiments — explore the fascinating world of polarized light.",
     "chronicles": {
       "title": "Chronicles of Light",
-      "subtitle": "Stories × Experiments",
-      "description": "Start with stories, build intuition with experiments—trace polarization through history and step into an interactive lab.",
+      "subtitle": "Historical Stories × Hands-on Experiments",
+      "description": "Dual narrative: left traces core discoveries in optics history, right follows the polarized light journey—ignite curiosity with stories, verify intuition with experiments.",
       "cta": "Explore",
       "link1": "Read a Story",
       "link2": "Do an Experiment",
       "link3": "Follow a Path"
     },
-    "workshop": {
-      "title": "Optics Playground",
-      "subtitle": "Devices × Light Paths",
-      "description": "Learn polarization devices, build light paths, and watch outcomes change—snap optics together like LEGO.",
-      "cta": "Enter Playground",
-      "link1": "Meet a Device",
-      "link2": "Build a Light Path",
+    "deviceLibrary": {
+      "title": "Polarization Device Library",
+      "subtitle": "Device Principles × Visual Guide",
+      "description": "Systematically learn polarizers, wave plates, beam splitters and more: working principles, specifications, applications—build your optics knowledge map.",
+      "cta": "Browse Devices",
+      "link1": "Polarizer Family",
+      "link2": "Wave Plates & Retarders",
+      "link3": "Beam Splitters"
+    },
+    "opticalBench": {
+      "title": "Optical Path Designer",
+      "subtitle": "Build Light Paths × Simulate Results",
+      "description": "Assemble optical systems like LEGO: from classic experiments to creative designs, watch light paths evolve in real-time, verify your optical intuition.",
+      "cta": "Start Building",
+      "link1": "Recreate Classic Setups",
+      "link2": "Free Design Mode",
       "link3": "See Real Hardware"
     },
     "formulaLab": {
-      "title": "Theory Foundation",
-      "subtitle": "Theory × Simulation",
-      "description": "Turn laws into tools—learn the theory, run calculators, and simulate what you can prove and see.",
-      "cta": "Start Simulation",
+      "title": "Theory Cornerstone",
+      "subtitle": "Basic Theory × Computational Simulation",
+      "description": "Turn laws into tools—from Maxwell's equations to Jones matrices, understand the principles, calculate the results, visualize the physics.",
+      "cta": "Start Learning",
       "link1": "Understand a Concept",
       "link2": "Run a Calculation",
       "link3": "Simulate & Verify"
@@ -53,8 +62,8 @@
     },
     "gallery": {
       "title": "PolarCraft Studio",
-      "subtitle": "Artworks × Merch",
-      "description": "Make with polarization—artworks, merch, and visual storytelling inspired by light's hidden structure.",
+      "subtitle": "Artworks × Creative Products",
+      "description": "Make with polarization—art installations, science posters, creative merchandise—bring the beauty of optics into everyday life.",
       "cta": "Browse Studio",
       "link1": "View Gallery",
       "link2": "Behind the Design",
