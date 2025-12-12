@@ -115,10 +115,34 @@ export const useGameStore = create<GameState>()(
 
     loadLevel: (index: number) => {
       const { world } = get()
-      if (!world) return
+      if (!world) {
+        console.error('Cannot load level: World not initialized. Call initWorld() first.')
+        return
+      }
+
+      // Validate index is a valid number
+      if (typeof index !== 'number' || isNaN(index) || !isFinite(index)) {
+        console.error(`Invalid level index: ${index}. Index must be a valid number.`)
+        return
+      }
+
+      // Validate index is within bounds
+      if (index < 0 || index >= TUTORIAL_LEVELS.length) {
+        console.error(`Level index ${index} out of bounds. Valid range: 0-${TUTORIAL_LEVELS.length - 1}.`)
+        return
+      }
 
       const level = TUTORIAL_LEVELS[index]
-      if (!level) return
+      if (!level) {
+        console.error(`Level at index ${index} is undefined.`)
+        return
+      }
+
+      // Validate level structure
+      if (!level.blocks || !Array.isArray(level.blocks)) {
+        console.error(`Level ${index} has invalid structure: missing or invalid blocks array.`)
+        return
+      }
 
       world.loadLevel(level)
 
@@ -179,7 +203,16 @@ export const useGameStore = create<GameState>()(
 
     rotateBlockAt: (position: BlockPosition) => {
       const { world } = get()
-      if (!world) return
+      if (!world) {
+        console.error('Cannot rotate block: World not initialized.')
+        return
+      }
+
+      // Validate position
+      if (!position || typeof position.x !== 'number' || typeof position.y !== 'number' || typeof position.z !== 'number') {
+        console.error('Invalid block position for rotation:', position)
+        return
+      }
 
       const block = world.getBlock(position.x, position.y, position.z)
       if (!block || block.type === 'solid' || block.type === 'air') return
@@ -189,7 +222,17 @@ export const useGameStore = create<GameState>()(
 
       // For polarizers and emitters, rotate polarization angle
       if (block.type === 'polarizer' || block.type === 'emitter' || block.type === 'sensor') {
-        newState.polarizationAngle = ((block.polarizationAngle + 45) % 180) as PolarizationAngle
+        // Validate current polarization angle before rotation
+        const validAngles: PolarizationAngle[] = [0, 45, 90, 135]
+        const currentAngle = validAngles.includes(block.polarizationAngle as PolarizationAngle)
+          ? block.polarizationAngle
+          : 0
+
+        const newAngle = (currentAngle + 45) % 180
+        // Ensure new angle is a valid PolarizationAngle
+        newState.polarizationAngle = validAngles.includes(newAngle as PolarizationAngle)
+          ? newAngle as PolarizationAngle
+          : 0
       }
       // For rotators, toggle rotation amount
       else if (block.type === 'rotator') {
@@ -197,7 +240,10 @@ export const useGameStore = create<GameState>()(
       }
       // For mirrors and splitters, rotate facing
       else {
-        newState.rotation = (block.rotation + 90) % 360
+        const currentRotation = typeof block.rotation === 'number' && !isNaN(block.rotation)
+          ? block.rotation
+          : 0
+        newState.rotation = (currentRotation + 90) % 360
       }
 
       world.setBlock(position.x, position.y, position.z, newState)
@@ -237,15 +283,41 @@ export const useGameStore = create<GameState>()(
 
     checkLevelCompletion: () => {
       const { world, currentLevel } = get()
-      if (!world || !currentLevel) return false
+      if (!world || !currentLevel) {
+        return false
+      }
 
       // Check if all required sensors are activated
       const goal = currentLevel.goal
-      if (!goal?.sensorPositions) return false
+      if (!goal || !goal.sensorPositions || !Array.isArray(goal.sensorPositions)) {
+        return false
+      }
+
+      // If no sensor positions are defined, level cannot be completed
+      if (goal.sensorPositions.length === 0) {
+        console.warn('Level has no sensor positions defined in goal.')
+        return false
+      }
 
       const allActivated = goal.sensorPositions.every(pos => {
+        // Validate position object
+        if (!pos || typeof pos.x !== 'number' || typeof pos.y !== 'number' || typeof pos.z !== 'number') {
+          console.error('Invalid sensor position in level goal:', pos)
+          return false
+        }
+
         const block = world.getBlock(pos.x, pos.y, pos.z)
-        return block?.type === 'sensor' && block.activated
+        if (!block) {
+          console.error(`No block found at sensor position (${pos.x}, ${pos.y}, ${pos.z}).`)
+          return false
+        }
+
+        if (block.type !== 'sensor') {
+          console.error(`Block at (${pos.x}, ${pos.y}, ${pos.z}) is not a sensor. Found: ${block.type}`)
+          return false
+        }
+
+        return block.activated === true
       })
 
       if (allActivated) {
