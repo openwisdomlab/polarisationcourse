@@ -13,7 +13,7 @@ import {
   Home, Image, Users, Palette, AlertTriangle,
   ChevronRight, Eye, Sparkles,
   ShoppingBag, GraduationCap, Baby, Briefcase, User,
-  Wand2, Download, RefreshCw, Sliders
+  Wand2, Download, RefreshCw
 } from 'lucide-react'
 
 // Data imports

@@ -17,12 +17,11 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Tabs, Badge } from '@/components/shared'
+import { Badge } from '@/components/shared'
 import {
   Home, Camera, Monitor, HeartPulse, Satellite, Leaf, Factory,
-  ChevronRight, ExternalLink, BookOpen, Lightbulb, X,
-  Eye, Microscope, Sun, Bug, Bird, Fish, Compass,
-  Atom, FlaskConical, Cpu, Dna, Utensils, Landmark, Shield
+  ChevronRight, Lightbulb, X,
+  Eye, Atom, FlaskConical
 } from 'lucide-react'
 
 // Application categories
@@ -965,7 +964,7 @@ function NatureDetailModal({
 }
 
 export function ApplicationsPage() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 

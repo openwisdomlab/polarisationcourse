@@ -16,12 +16,12 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Tabs, Badge } from '@/components/shared'
+import { Badge } from '@/components/shared'
 import {
-  Home, Search, Filter, ChevronRight, ExternalLink,
+  Home, Search, ChevronRight, ExternalLink,
   Layers, Circle, Square, Triangle, Hexagon,
-  Zap, Eye, Settings, BookOpen, ShoppingCart,
-  Info, X, ArrowRight
+  Zap, Settings, ShoppingCart,
+  X, ArrowRight
 } from 'lucide-react'
 
 // Device category types
@@ -809,7 +809,7 @@ function DeviceDetailModal({ device, onClose }: { device: Device; onClose: () =>
 }
 
 export function DevicesPage() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
