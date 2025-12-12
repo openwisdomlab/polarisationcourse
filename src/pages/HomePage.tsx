@@ -93,12 +93,12 @@ const MODULES: ModuleConfig[] = [
       gradientTo: 'violet-500',
       buttonText: 'white',
     },
-    mainRoute: '/game2d',
+    mainRoute: '/games',
     quickLinks: [
-      { labelKey: 'link1', route: '/game2d' },
-      { labelKey: 'link2', route: '/game' },
-      { labelKey: 'link3', route: '/cardgame' },
-      { labelKey: 'link4', route: '/escape' },
+      { labelKey: 'link1', route: '/games/2d' },
+      { labelKey: 'link2', route: '/games/3d' },
+      { labelKey: 'link3', route: '/games/card' },
+      { labelKey: 'link4', route: '/games/escape' },
     ],
   },
   {
