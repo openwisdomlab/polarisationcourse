@@ -333,6 +333,7 @@ interface AnalysisTool {
   descriptionZh: string
   icon: React.ReactNode
   available: boolean
+  link?: string
 }
 
 const ANALYSIS_TOOLS: AnalysisTool[] = [
@@ -379,7 +380,8 @@ const ANALYSIS_TOOLS: AnalysisTool[] = [
     descriptionEn: 'Visualize polarization states on the Poincaré sphere.',
     descriptionZh: '在庞加莱球上可视化偏振态。',
     icon: <Sparkles className="w-5 h-5" />,
-    available: false,
+    available: true,
+    link: '/lab/poincare',
   },
 ]
 
@@ -723,20 +725,8 @@ export function LabPage() {
           <div className="space-y-6">
             {/* Tools Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {ANALYSIS_TOOLS.map(tool => (
-                <div
-                  key={tool.id}
-                  className={cn(
-                    'p-4 rounded-xl border transition-all',
-                    tool.available
-                      ? theme === 'dark'
-                        ? 'bg-slate-800/70 border-slate-700 hover:border-yellow-500/50 cursor-pointer'
-                        : 'bg-white border-gray-200 hover:border-yellow-400 cursor-pointer'
-                      : theme === 'dark'
-                        ? 'bg-slate-800/30 border-slate-700/50 opacity-60'
-                        : 'bg-gray-50 border-gray-200 opacity-60'
-                  )}
-                >
+              {ANALYSIS_TOOLS.map(tool => {
+                const cardContent = (
                   <div className="flex items-start gap-3">
                     <div className={cn(
                       'p-2 rounded-lg',
@@ -767,10 +757,40 @@ export function LabPage() {
                       )}>
                         {isZh ? tool.descriptionZh : tool.descriptionEn}
                       </p>
+                      {tool.available && tool.link && (
+                        <div className={cn(
+                          'mt-2 flex items-center gap-1 text-sm font-medium',
+                          theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
+                        )}>
+                          <span>{isZh ? '打开工具' : 'Open Tool'}</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+
+                const cardClassName = cn(
+                  'p-4 rounded-xl border transition-all block',
+                  tool.available
+                    ? theme === 'dark'
+                      ? 'bg-slate-800/70 border-slate-700 hover:border-yellow-500/50 cursor-pointer hover:-translate-y-0.5'
+                      : 'bg-white border-gray-200 hover:border-yellow-400 cursor-pointer hover:-translate-y-0.5'
+                    : theme === 'dark'
+                      ? 'bg-slate-800/30 border-slate-700/50 opacity-60'
+                      : 'bg-gray-50 border-gray-200 opacity-60'
+                )
+
+                return tool.available && tool.link ? (
+                  <Link key={tool.id} to={tool.link} className={cardClassName}>
+                    {cardContent}
+                  </Link>
+                ) : (
+                  <div key={tool.id} className={cardClassName}>
+                    {cardContent}
+                  </div>
+                )
+              })}
             </div>
 
             {/* Info Box */}
