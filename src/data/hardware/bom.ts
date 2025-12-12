@@ -302,6 +302,238 @@ const SAMPLE_BOM_ITEMS: BOMItem[] = [
   }
 ]
 
+// ===== PolarCraft@UC2 Advanced Hardware =====
+const POLARCRAFT_ADVANCED_BOM_ITEMS: BOMItem[] = [
+  {
+    id: 'bom-raspi-4b',
+    name: 'Raspberry Pi 4B (4GB+)',
+    nameZh: 'Raspberry Pi 4B (4GB+)',
+    category: 'extension',
+    quantity: 1,
+    unitPrice: 55,
+    currency: 'EUR',
+    supplier: 'Official / Authorized Reseller',
+    partNumber: 'RPI4B-4GB',
+    notes: 'Or RPi 5 for better performance',
+    notesZh: '或使用RPi 5以获得更好性能',
+    essential: false
+  },
+  {
+    id: 'bom-raspi-hq-camera',
+    name: 'Raspberry Pi HQ Camera',
+    nameZh: 'Raspberry Pi HQ相机',
+    category: 'extension',
+    quantity: 1,
+    unitPrice: 50,
+    currency: 'EUR',
+    supplier: 'Official / Authorized Reseller',
+    partNumber: 'RPI-HQ-CAM',
+    notes: 'Sony IMX477 12.3MP sensor, or USB industrial camera alternative',
+    notesZh: 'Sony IMX477 12.3MP传感器，或使用USB工业相机替代',
+    essential: false
+  },
+  {
+    id: 'bom-objective-10x',
+    name: 'Objective Lens 10× (RMS)',
+    nameZh: '物镜 10× (RMS螺纹)',
+    category: 'extension',
+    quantity: 1,
+    unitPrice: 20,
+    currency: 'EUR',
+    supplier: 'Second-hand Microscope / AliExpress',
+    partNumber: 'OBJ-10X-RMS',
+    notes: 'Standard RMS thread, can use salvaged objectives',
+    notesZh: '标准RMS螺纹，可使用二手显微镜物镜',
+    essential: false
+  },
+  {
+    id: 'bom-objective-20x',
+    name: 'Objective Lens 20× (RMS)',
+    nameZh: '物镜 20× (RMS螺纹)',
+    category: 'extension',
+    quantity: 1,
+    unitPrice: 25,
+    currency: 'EUR',
+    supplier: 'Second-hand Microscope / AliExpress',
+    partNumber: 'OBJ-20X-RMS',
+    notes: 'Optional higher magnification',
+    notesZh: '可选更高倍率',
+    essential: false
+  },
+  {
+    id: 'bom-tube-lens',
+    name: 'Tube Lens f=50mm Achromat',
+    nameZh: '筒镜 f=50mm 消色差透镜',
+    category: 'extension',
+    quantity: 1,
+    unitPrice: 15,
+    currency: 'EUR',
+    supplier: 'AliExpress / Optical Supplier',
+    partNumber: 'TUBE-50-ACH',
+    notes: 'f=50mm or f=100mm achromatic doublet',
+    notesZh: 'f=50mm或f=100mm消色差双胶合透镜',
+    essential: false
+  },
+  {
+    id: 'bom-rotation-scale',
+    name: 'Rotation Scale Plate (3D Printed)',
+    nameZh: '旋转刻度盘（3D打印）',
+    category: 'extension',
+    quantity: 2,
+    unitPrice: 2,
+    currency: 'EUR',
+    supplier: '3D Print',
+    partNumber: 'ROT-SCALE-360',
+    notes: '0-360° graduation for POL-Stage and POL-Illum',
+    notesZh: '用于POL-Stage和POL-Illum的0-360°刻度',
+    essential: false
+  }
+]
+
+// ===== PolarCraft@UC2 Teaching Sample Sets =====
+const POLARCRAFT_SAMPLE_BOM_ITEMS: BOMItem[] = [
+  {
+    id: 'bom-crystal-vitaminc',
+    name: 'Vitamin C Crystal Samples',
+    nameZh: '维生素C晶体样品',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 3,
+    currency: 'EUR',
+    supplier: 'Pharmacy / DIY crystallization',
+    partNumber: 'SAMP-VITC',
+    notes: 'Birefringence cross and interference colors',
+    notesZh: '双折射十字和干涉色彩',
+    essential: false
+  },
+  {
+    id: 'bom-crystal-citric',
+    name: 'Citric Acid Crystal Samples',
+    nameZh: '柠檬酸晶体样品',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 2,
+    currency: 'EUR',
+    supplier: 'Grocery / Lab Supply',
+    partNumber: 'SAMP-CITRIC',
+    notes: 'Beautiful birefringent patterns',
+    notesZh: '美丽的双折射图案',
+    essential: false
+  },
+  {
+    id: 'bom-crystal-sugar',
+    name: 'Sugar Crystal Samples',
+    nameZh: '蔗糖晶体样品',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 2,
+    currency: 'EUR',
+    supplier: 'DIY crystallization',
+    partNumber: 'SAMP-SUGAR-CRYST',
+    notes: 'Rock candy crystals work well',
+    notesZh: '冰糖结晶效果很好',
+    essential: false
+  },
+  {
+    id: 'bom-stress-cd-case',
+    name: 'CD Case (Stress Sample)',
+    nameZh: 'CD盒（应力样品）',
+    category: 'sample',
+    quantity: 2,
+    unitPrice: 1,
+    currency: 'EUR',
+    supplier: 'Recycle / Secondhand',
+    partNumber: 'SAMP-CD',
+    notes: 'Shows injection molding stress patterns',
+    notesZh: '显示注塑成型应力图案',
+    essential: false
+  },
+  {
+    id: 'bom-stress-cutlery',
+    name: 'Disposable Plastic Cutlery',
+    nameZh: '一次性塑料餐具',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 1,
+    currency: 'EUR',
+    supplier: 'Supermarket',
+    partNumber: 'SAMP-CUTLERY',
+    notes: 'Clear plastic spoons/forks show stress patterns',
+    notesZh: '透明塑料勺/叉显示应力图案',
+    essential: false
+  },
+  {
+    id: 'bom-3dprint-petg',
+    name: '3D Printed PETG Samples',
+    nameZh: '3D打印PETG透明样品',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 3,
+    currency: 'EUR',
+    supplier: '3D Print',
+    partNumber: 'SAMP-PETG',
+    notes: 'Transparent geometric shapes showing print stress',
+    notesZh: '透明几何形状，显示打印应力分布',
+    essential: false
+  },
+  {
+    id: 'bom-bio-onion',
+    name: 'Onion Skin (Bio Sample)',
+    nameZh: '洋葱皮（生物样品）',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 0,
+    currency: 'EUR',
+    supplier: 'Kitchen',
+    partNumber: 'SAMP-ONION',
+    notes: 'Fresh preparation, single cell layer',
+    notesZh: '新鲜制备，单细胞层',
+    essential: false
+  },
+  {
+    id: 'bom-bio-starch',
+    name: 'Starch Granules',
+    nameZh: '淀粉颗粒',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 2,
+    currency: 'EUR',
+    supplier: 'Grocery Store',
+    partNumber: 'SAMP-STARCH',
+    notes: 'Potato/corn starch shows Maltese cross',
+    notesZh: '马铃薯/玉米淀粉显示马耳他十字',
+    essential: false
+  },
+  {
+    id: 'bom-bio-cotton',
+    name: 'Cotton Fiber Samples',
+    nameZh: '棉纤维样品',
+    category: 'sample',
+    quantity: 1,
+    unitPrice: 0,
+    currency: 'EUR',
+    supplier: 'Cotton ball / Fabric',
+    partNumber: 'SAMP-COTTON',
+    notes: 'Shows fiber orientation and twist',
+    notesZh: '显示纤维取向和捻度',
+    essential: false
+  },
+  {
+    id: 'bom-pol-code-card',
+    name: 'Polarization Code Card (DIY)',
+    nameZh: '偏振密码卡（DIY）',
+    category: 'sample',
+    quantity: 5,
+    unitPrice: 1,
+    currency: 'EUR',
+    supplier: 'DIY with tape layers',
+    partNumber: 'SAMP-CODE',
+    notes: 'Multi-layer tape patterns encode hidden messages (Logo/QR)',
+    notesZh: '多层胶带拼接图案，编码隐藏信息（Logo/QR码）',
+    essential: false
+  }
+]
+
 // ===== Consumable BOM - Consumable Items =====
 const CONSUMABLE_BOM_ITEMS: BOMItem[] = [
   {
@@ -363,6 +595,32 @@ export const BOM_CONFIGS: BOMConfig[] = [
     name: 'Complete Polarimetry Lab',
     nameZh: '完整偏振实验室',
     items: [...CORE_BOM_ITEMS, ...EXTENSION_BOM_ITEMS, ...SAMPLE_BOM_ITEMS, ...CONSUMABLE_BOM_ITEMS]
+  },
+  // PolarCraft@UC2 Specific Configurations
+  {
+    id: 'bom-polarcraft-advanced',
+    name: 'PolarCraft@UC2 Advanced Kit',
+    nameZh: 'PolarCraft@UC2 高级套件',
+    items: POLARCRAFT_ADVANCED_BOM_ITEMS
+  },
+  {
+    id: 'bom-polarcraft-samples',
+    name: 'PolarCraft@UC2 Teaching Samples',
+    nameZh: 'PolarCraft@UC2 教学样品套装',
+    items: POLARCRAFT_SAMPLE_BOM_ITEMS
+  },
+  {
+    id: 'bom-polarcraft-complete',
+    name: 'PolarCraft@UC2 Complete Lab',
+    nameZh: 'PolarCraft@UC2 完整实验室',
+    items: [
+      ...CORE_BOM_ITEMS,
+      ...EXTENSION_BOM_ITEMS,
+      ...POLARCRAFT_ADVANCED_BOM_ITEMS,
+      ...SAMPLE_BOM_ITEMS,
+      ...POLARCRAFT_SAMPLE_BOM_ITEMS,
+      ...CONSUMABLE_BOM_ITEMS
+    ]
   }
 ]
 
