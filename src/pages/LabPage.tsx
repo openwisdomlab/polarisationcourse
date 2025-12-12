@@ -363,6 +363,7 @@ const ANALYSIS_TOOLS: AnalysisTool[] = [
     descriptionZh: '计算完全偏振光的琼斯向量变换。',
     icon: <Calculator className="w-5 h-5" />,
     available: true,
+    link: '/lab/jones',
   },
   {
     id: 'data-fitting',
