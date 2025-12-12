@@ -23,7 +23,16 @@
     "game2d": "2D 游戏",
     "game2dDescription": "演示马吕斯定律的交互式2D谜题",
     "gameDescription": "使用偏振光束和光学元件解决谜题",
-    "courseDescription": "通过交互式演示学习偏振光物理"
+    "courseDescription": "通过交互式演示学习偏振光物理",
+    "hardware": "UC2 硬件",
+    "hardwareDescription": "基于开源UC2框架的模块化偏振光学实验平台",
+    "exploreHardware": "探索硬件",
+    "cardGame": "偏振探秘",
+    "cardGameDescription": "1-4人桌游，30-60分钟，学习偏振光学原理",
+    "playCardGame": "进入桌游",
+    "merchandise": "偏振文创",
+    "merchandiseDescription": "偏振艺术照片、明信片、贴纸与教育玩具",
+    "browseMerch": "浏览文创"
   },
   "game": {
     "level": "关卡",

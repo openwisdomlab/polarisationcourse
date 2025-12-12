@@ -23,7 +23,16 @@
     "game2d": "2D Game",
     "game2dDescription": "Interactive 2D puzzles demonstrating Malus's Law",
     "gameDescription": "Solve puzzles using polarized light beams and optical components",
-    "courseDescription": "Learn polarization physics through interactive demonstrations"
+    "courseDescription": "Learn polarization physics through interactive demonstrations",
+    "hardware": "UC2 Hardware",
+    "hardwareDescription": "Modular polarization optics platform based on open-source UC2",
+    "exploreHardware": "Explore",
+    "cardGame": "PolarQuest",
+    "cardGameDescription": "1-4 player tabletop game, 30-60 min, learn polarization optics",
+    "playCardGame": "Play Game",
+    "merchandise": "Art & Merch",
+    "merchandiseDescription": "Polarization art prints, postcards, stickers & educational toys",
+    "browseMerch": "Browse"
   },
   "game": {
     "level": "Level",

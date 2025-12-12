@@ -281,3 +281,217 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==================== Print Styles ==================== */
+@media print {
+  /* Reset colors for printing */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  /* Hide non-essential elements */
+  header,
+  footer,
+  nav,
+  .print\\:hidden,
+  button:not(.print\\:block),
+  .fixed,
+  .sticky,
+  .animate-beam-move,
+  .animate-pulse-glow {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .print\\:block {
+    display: block !important;
+  }
+
+  /* Ensure content is visible */
+  .print\\:text-black {
+    color: black !important;
+  }
+
+  .print\\:bg-white {
+    background: white !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Card printing - A4 grid layout */
+  .print-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10pt;
+    page-break-inside: avoid;
+  }
+
+  .print-card {
+    border: 1pt solid #333;
+    border-radius: 4pt;
+    padding: 8pt;
+    page-break-inside: avoid;
+    font-size: 9pt;
+  }
+
+  /* Table printing */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 10pt;
+  }
+
+  th, td {
+    border: 1pt solid #333;
+    padding: 4pt 8pt;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold;
+  }
+
+  /* Links - show URL */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+  }
+
+  a[href^="#"]:after,
+  a[href^="javascript"]:after {
+    content: "";
+  }
+
+  /* Margins */
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+
+  /* First page */
+  @page :first {
+    margin-top: 2cm;
+  }
+
+  /* BOM table specific */
+  .bom-table {
+    font-size: 9pt;
+  }
+
+  .bom-table th {
+    background-color: #e0e0e0 !important;
+  }
+
+  .bom-table .total-row {
+    font-weight: bold;
+    border-top: 2pt solid #333;
+  }
+
+  /* Game cards for printing */
+  .game-card-print {
+    width: 63mm;
+    height: 88mm;
+    border: 0.5pt solid #333;
+    border-radius: 3mm;
+    padding: 3mm;
+    page-break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .game-card-print-title {
+    font-weight: bold;
+    font-size: 10pt;
+    border-bottom: 0.5pt solid #999;
+    padding-bottom: 2mm;
+    margin-bottom: 2mm;
+  }
+
+  .game-card-print-body {
+    flex: 1;
+    font-size: 8pt;
+    overflow: hidden;
+  }
+
+  .game-card-print-footer {
+    font-size: 7pt;
+    color: #666;
+    border-top: 0.5pt solid #999;
+    padding-top: 2mm;
+    margin-top: 2mm;
+  }
+}
+
+/* ==================== High Contrast Mode ==================== */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: hsl(199 100% 50%);
+    --color-border: hsl(0 0% 30%);
+  }
+
+  .game-panel {
+    border-width: 2px;
+    border-color: white;
+  }
+
+  button,
+  a {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  button:focus,
+  a:focus {
+    outline-color: var(--color-primary);
+  }
+}
+
+/* ==================== Focus Visible Styles ==================== */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  padding: 8px 16px;
+  z-index: 100;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 0;
+}
