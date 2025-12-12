@@ -316,7 +316,8 @@
         "details_research": [
           "The Poincaré sphere maps all polarization states to a 2-sphere surface",
           "Orthogonal polarization states are antipodal points on the sphere",
-          "Polarization evolution through optical elements corresponds to rotations on the sphere"
+          "Polarization evolution through optical elements corresponds to rotations on the sphere",
+          "Degree of polarization: DOP = √(S₁² + S₂² + S₃²) / S₀"
         ]
       },
       "experiment": {

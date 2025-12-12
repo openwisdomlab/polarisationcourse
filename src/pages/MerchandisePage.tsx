@@ -17,7 +17,7 @@ import {
 
 // Data imports
 import {
-  PRODUCTS, PRODUCT_CATEGORIES, PRICE_RANGES, AUDIENCE_LABELS
+  PRODUCTS, PRODUCT_CATEGORIES, AUDIENCE_LABELS
 } from '@/data'
 import type { Product, AudienceType } from '@/data/types'
 
@@ -41,7 +41,6 @@ function ProductCard({ product, onClick }: ProductCardProps) {
   const isZh = i18n.language === 'zh'
 
   const categoryInfo = PRODUCT_CATEGORIES[product.category]
-  const priceInfo = PRICE_RANGES[product.priceRange]
 
   // Generate unique seed from product id
   const seed = product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
@@ -71,11 +70,6 @@ function ProductCard({ product, onClick }: ProductCardProps) {
       <CardHeader
         title={isZh ? product.nameZh : product.name}
         subtitle={isZh ? categoryInfo.labelZh : categoryInfo.label}
-        badge={
-          <Badge color={priceInfo.color as any} size="sm">
-            {priceInfo.range}
-          </Badge>
-        }
       />
 
       <CardContent>
@@ -126,7 +120,6 @@ function ProductDetail({ product, onClose }: ProductDetailProps) {
   if (!product) return null
 
   const categoryInfo = PRODUCT_CATEGORIES[product.category]
-  const priceInfo = PRICE_RANGES[product.priceRange]
   const seed = product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
 
   return (
@@ -169,7 +162,6 @@ function ProductDetail({ product, onClose }: ProductDetailProps) {
               </h2>
               <div className="flex gap-2">
                 <Badge color="cyan">{isZh ? categoryInfo.labelZh : categoryInfo.label}</Badge>
-                <Badge color={priceInfo.color as any}>{priceInfo.range}</Badge>
               </div>
             </div>
           </div>
@@ -323,7 +315,6 @@ export function MerchandisePage() {
   // State
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
-  const [priceFilter, setPriceFilter] = useState('')
   const [audienceFilter, setAudienceFilter] = useState('')
   const [requiresPolarizerOnly, setRequiresPolarizerOnly] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
@@ -345,9 +336,6 @@ export function MerchandisePage() {
       // Category filter
       if (categoryFilter && product.category !== categoryFilter) return false
 
-      // Price filter
-      if (priceFilter && product.priceRange !== priceFilter) return false
-
       // Audience filter
       if (audienceFilter && !product.targetAudience.includes(audienceFilter as AudienceType)) return false
 
@@ -356,19 +344,13 @@ export function MerchandisePage() {
 
       return true
     })
-  }, [searchQuery, categoryFilter, priceFilter, audienceFilter, requiresPolarizerOnly])
+  }, [searchQuery, categoryFilter, audienceFilter, requiresPolarizerOnly])
 
   // Filter options
   const categoryOptions = Object.entries(PRODUCT_CATEGORIES).map(([key, val]) => ({
     value: key,
     label: val.label,
     labelZh: val.labelZh
-  }))
-
-  const priceOptions = Object.entries(PRICE_RANGES).map(([key, val]) => ({
-    value: key,
-    label: `${val.label} (${val.range})`,
-    labelZh: `${val.labelZh} (${val.range})`
   }))
 
   const audienceOptions = Object.entries(AUDIENCE_LABELS).map(([key, val]) => ({
@@ -483,13 +465,6 @@ export function MerchandisePage() {
               value={categoryFilter}
               options={categoryOptions}
               onChange={setCategoryFilter}
-            />
-            <FilterSelect
-              label="Price"
-              labelZh="价位"
-              value={priceFilter}
-              options={priceOptions}
-              onChange={setPriceFilter}
             />
             <FilterSelect
               label="Audience"
