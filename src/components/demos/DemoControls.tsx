@@ -69,6 +69,10 @@ export function SliderControl({
   const colors = sliderColorClasses[color] || sliderColorClasses.cyan
   const textColorClass = theme === 'dark' ? `text-${color}-400` : `text-${color}-600`
 
+  // Calculate percentage, handling edge case where min equals max to avoid division by zero
+  const range = max - min
+  const percentage = range > 0 ? Math.max(0, Math.min(100, ((value - min) / range) * 100)) : 0
+
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
@@ -78,7 +82,7 @@ export function SliderControl({
       <div className="relative">
         <div
           className={cn('absolute inset-0 h-2 rounded-lg', colors.track)}
-          style={{ width: `${((value - min) / (max - min)) * 100}%` }}
+          style={{ width: `${percentage}%` }}
         />
         <input
           type="range"
@@ -559,14 +563,22 @@ export function AnimatedValue({
   }
   const colorClasses = theme === 'dark' ? colorClassesDark : colorClassesLight
   const colors = colorClasses[color] || colorClasses.cyan
-  const percentage = ((value - min) / (max - min)) * 100
+
+  // Calculate percentage, handling edge case where min equals max to avoid division by zero
+  const range = max - min
+  const percentage = range > 0 ? ((value - min) / range) * 100 : 0
+
+  // Validate value for display
+  const displayValue = typeof value === 'number' && !isNaN(value) && isFinite(value)
+    ? value.toFixed(decimals)
+    : '0'
 
   return (
     <div className="space-y-1">
       <div className="flex justify-between items-center">
         <span className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{label}</span>
         <span className={cn('font-mono text-sm font-semibold', colors.text)}>
-          {value.toFixed(decimals)}
+          {displayValue}
           {unit}
         </span>
       </div>

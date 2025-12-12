@@ -23,7 +23,22 @@ function posKey(x: number, y: number, z: number): string {
 
 // 从键值解析位置
 function parseKey(key: string): BlockPosition {
-  const [x, y, z] = key.split(',').map(Number);
+  const parts = key.split(',');
+  if (parts.length !== 3) {
+    console.error(`Invalid position key format: "${key}". Expected "x,y,z" format.`);
+    return { x: 0, y: 0, z: 0 };
+  }
+
+  const [xStr, yStr, zStr] = parts;
+  const x = Number(xStr);
+  const y = Number(yStr);
+  const z = Number(zStr);
+
+  if (isNaN(x) || isNaN(y) || isNaN(z)) {
+    console.error(`Invalid position key values: "${key}". Coordinates must be valid numbers.`);
+    return { x: 0, y: 0, z: 0 };
+  }
+
   return { x, y, z };
 }
 
@@ -195,6 +210,11 @@ export class World {
 
     // 计算下一个位置
     const dir = DIRECTION_VECTORS[light.direction];
+    if (!dir) {
+      console.error(`Invalid light direction: "${light.direction}". Light propagation stopped.`);
+      return;
+    }
+
     const nextPos: BlockPosition = {
       x: fromPosition.x + dir.x,
       y: fromPosition.y + dir.y,

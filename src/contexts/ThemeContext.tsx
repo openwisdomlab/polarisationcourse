@@ -13,8 +13,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('polarcraft-theme')
-      if (saved === 'light' || saved === 'dark') return saved
+      try {
+        const saved = localStorage.getItem('polarcraft-theme')
+        if (saved === 'light' || saved === 'dark') return saved
+      } catch (error) {
+        // localStorage may be unavailable in private browsing mode or if storage is full
+        console.warn('Unable to access localStorage for theme:', error)
+      }
     }
     return 'dark'
   })
@@ -56,7 +61,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.style.setProperty('--accent-green', '#16a34a')
     }
 
-    localStorage.setItem('polarcraft-theme', theme)
+    try {
+      localStorage.setItem('polarcraft-theme', theme)
+    } catch (error) {
+      // localStorage may be unavailable in private browsing mode or if storage quota is exceeded
+      console.warn('Unable to save theme to localStorage:', error)
+    }
   }, [theme])
 
   const toggleTheme = () => {

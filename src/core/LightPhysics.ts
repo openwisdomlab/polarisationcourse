@@ -103,13 +103,19 @@ export class LightPhysics {
    * @returns 干涉后的光包数组
    */
   static calculateInterference(lights: LightPacket[]): LightPacket[] {
-    if (lights.length === 0) return [];
+    if (!lights || lights.length === 0) return [];
     if (lights.length === 1) return lights;
 
     // 按方向和偏振角分组
     const groups = new Map<string, LightPacket[]>();
 
     for (const light of lights) {
+      // Validate light packet has required properties
+      if (!light || typeof light.direction !== 'string' || typeof light.polarization !== 'number') {
+        console.error('Invalid light packet in interference calculation:', light);
+        continue;
+      }
+
       // 正交的光不干涉，所以我们按(方向, 偏振角)分组
       const key = `${light.direction}_${light.polarization}`;
       if (!groups.has(key)) {
@@ -121,6 +127,11 @@ export class LightPhysics {
     const result: LightPacket[] = [];
 
     for (const [, groupLights] of groups) {
+      // Skip empty groups (shouldn't happen, but be safe)
+      if (!groupLights || groupLights.length === 0) {
+        continue;
+      }
+
       if (groupLights.length === 1) {
         result.push(groupLights[0]);
         continue;
@@ -133,10 +144,15 @@ export class LightPhysics {
       let negativeSum = 0;
 
       for (const light of groupLights) {
+        // Validate intensity is a valid number
+        const intensity = typeof light.intensity === 'number' && !isNaN(light.intensity)
+          ? light.intensity
+          : 0;
+
         if (light.phase === 1) {
-          positiveSum += light.intensity;
+          positiveSum += intensity;
         } else {
-          negativeSum += light.intensity;
+          negativeSum += intensity;
         }
       }
 
@@ -285,11 +301,24 @@ export class LightPhysics {
    * 将角度标准化到有效的偏振角度
    */
   private static normalizeAngle(angle: number): PolarizationAngle {
+    // Validate input is a valid number
+    if (isNaN(angle) || !isFinite(angle)) {
+      console.error(`Invalid angle value: ${angle}. Defaulting to 0.`);
+      return 0;
+    }
+
     // 将角度限制在0-180范围内
     angle = ((angle % 180) + 180) % 180;
 
     // 找到最接近的有效角度
     const validAngles: PolarizationAngle[] = [0, 45, 90, 135];
+
+    // Safety check - validAngles should never be empty, but validate anyway
+    if (validAngles.length === 0) {
+      console.error('No valid polarization angles defined. Defaulting to 0.');
+      return 0;
+    }
+
     let closest = validAngles[0];
     let minDiff = Math.abs(angle - validAngles[0]);
 
@@ -314,8 +343,21 @@ export class LightPhysics {
 
     const horizontalOrder: Direction[] = ['north', 'east', 'south', 'west'];
     const baseIndex = horizontalOrder.indexOf(baseFacing);
+
+    // Validate baseFacing is a valid horizontal direction
+    if (baseIndex === -1) {
+      console.error(`Invalid base facing direction: "${baseFacing}". Defaulting to "north".`);
+      return 'north';
+    }
+
+    // Validate rotation is a valid number
+    if (isNaN(rotation) || !isFinite(rotation)) {
+      console.error(`Invalid rotation value: ${rotation}. Defaulting to 0.`);
+      return baseFacing;
+    }
+
     const rotationSteps = Math.floor(rotation / 90) % 4;
-    const newIndex = (baseIndex + rotationSteps) % 4;
+    const newIndex = (baseIndex + rotationSteps + 4) % 4; // Add 4 to handle negative modulo
 
     return horizontalOrder[newIndex];
   }
