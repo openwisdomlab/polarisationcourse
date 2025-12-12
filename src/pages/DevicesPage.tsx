@@ -23,6 +23,7 @@ import {
   Zap, Settings, ShoppingCart,
   X, ArrowRight
 } from 'lucide-react'
+import { DeviceIconMap, DefaultDeviceIcon } from '@/components/icons'
 
 // Device category types
 type DeviceCategory = 'polarizers' | 'waveplates' | 'splitters' | 'retarders' | 'uc2' | 'other'
@@ -528,12 +529,15 @@ function DeviceCard({ device, onClick }: { device: Device; onClick: () => void }
   const difficulty = DIFFICULTY_CONFIG[device.difficulty]
   const category = CATEGORIES.find(c => c.id === device.category)
 
+  // Get the appropriate icon component
+  const IconComponent = DeviceIconMap[device.id] || DefaultDeviceIcon
+
   return (
     <div
       onClick={onClick}
       className={cn(
         'rounded-xl border p-4 cursor-pointer transition-all',
-        'hover:-translate-y-1 hover:shadow-lg',
+        'hover:-translate-y-1 hover:shadow-lg group',
         theme === 'dark'
           ? 'bg-slate-800/50 border-slate-700 hover:border-indigo-500/50'
           : 'bg-white border-gray-200 hover:border-indigo-400'
@@ -542,10 +546,11 @@ function DeviceCard({ device, onClick }: { device: Device; onClick: () => void }
       {/* Icon and Title */}
       <div className="flex items-start gap-3 mb-3">
         <div className={cn(
-          'w-12 h-12 rounded-lg flex items-center justify-center text-2xl flex-shrink-0',
-          theme === 'dark' ? 'bg-indigo-500/20' : 'bg-indigo-100'
+          'w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden',
+          'group-hover:scale-105 transition-transform duration-300',
+          theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-50'
         )}>
-          {device.icon}
+          <IconComponent size={48} theme={theme} />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className={cn(
@@ -597,6 +602,9 @@ function DeviceDetailModal({ device, onClose }: { device: Device; onClose: () =>
   const isZh = i18n.language === 'zh'
   const difficulty = DIFFICULTY_CONFIG[device.difficulty]
 
+  // Get the appropriate icon component
+  const IconComponent = DeviceIconMap[device.id] || DefaultDeviceIcon
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -624,10 +632,10 @@ function DeviceDetailModal({ device, onClose }: { device: Device; onClose: () =>
         {/* Header */}
         <div className="flex items-start gap-4 mb-6">
           <div className={cn(
-            'w-16 h-16 rounded-xl flex items-center justify-center text-3xl flex-shrink-0',
-            theme === 'dark' ? 'bg-indigo-500/20' : 'bg-indigo-100'
+            'w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden',
+            theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-50'
           )}>
-            {device.icon}
+            <IconComponent size={72} theme={theme} />
           </div>
           <div>
             <h2 className={cn(

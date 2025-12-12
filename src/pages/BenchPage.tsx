@@ -22,6 +22,11 @@ import {
   Lightbulb, Layers, HelpCircle,
   Box, ExternalLink
 } from 'lucide-react'
+import {
+  OpticalComponentMap,
+  LightBeam,
+  type OpticalComponentType
+} from '@/components/bench'
 
 // Component types for the optical bench
 type BenchComponentType = 'emitter' | 'polarizer' | 'waveplate' | 'mirror' | 'splitter' | 'sensor' | 'lens'
@@ -175,40 +180,8 @@ const DIFFICULTY_CONFIG = {
   hard: { labelEn: 'Hard', labelZh: '困难', color: 'red' as const },
 }
 
-// Component on bench visualization
-function BenchComponentViz({
-  component,
-  selected,
-  onClick,
-}: {
-  component: BenchComponent
-  selected: boolean
-  onClick: () => void
-}) {
-  const { theme } = useTheme()
-  const paletteItem = PALETTE_COMPONENTS.find(p => p.type === component.type)
-
-  return (
-    <div
-      onClick={onClick}
-      className={cn(
-        'absolute w-14 h-14 rounded-xl flex items-center justify-center text-2xl cursor-pointer transition-all',
-        'hover:scale-110',
-        selected && 'ring-2 ring-offset-2',
-        theme === 'dark'
-          ? cn('bg-slate-800 border border-slate-600', selected && 'ring-cyan-400 ring-offset-slate-900')
-          : cn('bg-white border border-gray-300 shadow-md', selected && 'ring-cyan-500 ring-offset-white')
-      )}
-      style={{
-        left: component.x - 28,
-        top: component.y - 28,
-        transform: `rotate(${component.rotation}deg)`,
-      }}
-    >
-      {paletteItem?.icon || '?'}
-    </div>
-  )
-}
+// Component on bench visualization - now rendered as part of SVG canvas
+// This function is kept for legacy purposes but the main rendering is done in the canvas SVG
 
 // Experiment card component
 function ExperimentCard({
@@ -679,8 +652,9 @@ export function BenchPage() {
             )}
             onClick={() => setSelectedId(null)}
           >
-            {/* Grid */}
-            <svg className="absolute inset-0 w-full h-full opacity-20">
+            {/* Full SVG Canvas for optical bench */}
+            <svg className="absolute inset-0 w-full h-full">
+              {/* Background grid */}
               <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
                   <path
@@ -688,44 +662,126 @@ export function BenchPage() {
                     fill="none"
                     stroke={theme === 'dark' ? '#334155' : '#94a3b8'}
                     strokeWidth="1"
+                    opacity="0.3"
                   />
                 </pattern>
+                <pattern id="grid-dots" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <circle cx="0" cy="0" r="1.5" fill={theme === 'dark' ? '#475569' : '#94a3b8'} opacity="0.3" />
+                </pattern>
+                {/* Optical table surface gradient */}
+                <linearGradient id="table-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor={theme === 'dark' ? '#0f172a' : '#f8fafc'} />
+                  <stop offset="100%" stopColor={theme === 'dark' ? '#1e293b' : '#e2e8f0'} />
+                </linearGradient>
               </defs>
+
+              {/* Optical table surface */}
+              <rect width="100%" height="100%" fill="url(#table-grad)" />
               <rect width="100%" height="100%" fill="url(#grid)" />
+              <rect width="100%" height="100%" fill="url(#grid-dots)" />
+
+              {/* Optical rail visualization */}
+              <rect x="60" y="196" width="680" height="8" rx="2"
+                fill={theme === 'dark' ? '#334155' : '#94a3b8'} opacity="0.5" />
+              <rect x="60" y="198" width="680" height="4" rx="1"
+                fill={theme === 'dark' ? '#1e293b' : '#cbd5e1'} opacity="0.8" />
+
+              {/* Light beams (rendered first, behind components) */}
+              {isSimulating && components.length > 0 && (
+                <g className="light-beams">
+                  {components.filter(c => c.type === 'emitter').map(emitter => {
+                    // Calculate light path through components
+                    const beamEndX = Math.min(emitter.x + 500, 750)
+                    const polarAngle = (emitter.properties.polarization as number) || 0
+
+                    // Find components in the beam path
+                    const componentsInPath = components
+                      .filter(c => c.type !== 'emitter' && c.x > emitter.x && Math.abs(c.y - emitter.y) < 40)
+                      .sort((a, b) => a.x - b.x)
+
+                    // Generate beam segments
+                    const segments: { x1: number; y1: number; x2: number; y2: number; polarAngle: number; intensity: number }[] = []
+                    let currentX = emitter.x
+                    let currentPolarAngle = polarAngle
+                    let currentIntensity = 100
+
+                    componentsInPath.forEach((comp) => {
+                      // Beam to component
+                      segments.push({
+                        x1: currentX + 30,
+                        y1: emitter.y,
+                        x2: comp.x - 30,
+                        y2: comp.y,
+                        polarAngle: currentPolarAngle,
+                        intensity: currentIntensity
+                      })
+
+                      // Modify polarization based on component type
+                      if (comp.type === 'polarizer') {
+                        const polarizerAngle = (comp.properties.angle as number) || 0
+                        const angleDiff = Math.abs(currentPolarAngle - polarizerAngle)
+                        currentIntensity *= Math.pow(Math.cos(angleDiff * Math.PI / 180), 2)
+                        currentPolarAngle = polarizerAngle
+                      } else if (comp.type === 'waveplate') {
+                        currentPolarAngle = (currentPolarAngle + 45) % 180
+                      }
+
+                      currentX = comp.x
+                    })
+
+                    // Final beam segment to end
+                    if (currentIntensity > 5) {
+                      segments.push({
+                        x1: currentX + 30,
+                        y1: emitter.y,
+                        x2: beamEndX,
+                        y2: emitter.y,
+                        polarAngle: currentPolarAngle,
+                        intensity: currentIntensity
+                      })
+                    }
+
+                    return segments.map((seg, idx) => (
+                      <LightBeam
+                        key={`${emitter.id}-beam-${idx}`}
+                        x1={seg.x1}
+                        y1={seg.y1}
+                        x2={seg.x2}
+                        y2={seg.y2}
+                        polarizationAngle={seg.polarAngle}
+                        intensity={seg.intensity}
+                        showPolarization={showPolarization}
+                        animated={true}
+                      />
+                    ))
+                  })}
+                </g>
+              )}
+
+              {/* Optical components */}
+              <g className="optical-components">
+                {components.map(component => {
+                  const ComponentViz = OpticalComponentMap[component.type as OpticalComponentType]
+                  if (ComponentViz) {
+                    return (
+                      <ComponentViz
+                        key={component.id}
+                        x={component.x}
+                        y={component.y}
+                        rotation={component.rotation}
+                        selected={component.id === selectedId}
+                        polarizationAngle={(component.properties.angle as number) || (component.properties.polarization as number) || 0}
+                        onClick={(e) => {
+                          e?.stopPropagation()
+                          setSelectedId(component.id)
+                        }}
+                      />
+                    )
+                  }
+                  return null
+                })}
+              </g>
             </svg>
-
-            {/* Light beam visualization (simplified) */}
-            {isSimulating && components.length > 0 && (
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                {/* Simple beam from emitter */}
-                {components.filter(c => c.type === 'emitter').map(emitter => (
-                  <line
-                    key={emitter.id}
-                    x1={emitter.x}
-                    y1={emitter.y}
-                    x2={emitter.x + 400}
-                    y2={emitter.y}
-                    stroke={showPolarization ? '#22d3ee' : '#fbbf24'}
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    opacity="0.7"
-                    style={{
-                      filter: 'drop-shadow(0 0 8px currentColor)',
-                    }}
-                  />
-                ))}
-              </svg>
-            )}
-
-            {/* Components */}
-            {components.map(component => (
-              <BenchComponentViz
-                key={component.id}
-                component={component}
-                selected={component.id === selectedId}
-                onClick={() => setSelectedId(component.id)}
-              />
-            ))}
 
             {/* Empty state */}
             {components.length === 0 && (

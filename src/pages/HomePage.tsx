@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
+import { ModuleIconMap, type ModuleIconKey } from '@/components/icons'
 
 // Module configuration for the 9 creative hubs
 interface ModuleConfig {
@@ -360,9 +361,20 @@ function ModuleCard({ module }: { module: ModuleConfig }) {
       <div className={`absolute inset-0 bg-gradient-to-br ${hoverGradientClass} to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl`} />
 
       {/* Icon */}
-      <span className={`text-3xl sm:text-4xl mb-2 block ${glowClass}`}>
-        {module.icon}
-      </span>
+      <div className="mb-2 flex justify-center">
+        {(() => {
+          const IconComponent = ModuleIconMap[module.key as ModuleIconKey]
+          if (IconComponent) {
+            return (
+              <IconComponent
+                size={48}
+                className={`group-hover:scale-110 transition-transform duration-300 ${glowClass}`}
+              />
+            )
+          }
+          return <span className={`text-3xl sm:text-4xl ${glowClass}`}>{module.icon}</span>
+        })()}
+      </div>
 
       {/* Title */}
       <h2 className={`text-base sm:text-lg font-bold ${textColorClass} mb-0.5`}>
