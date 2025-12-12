@@ -14,25 +14,61 @@
   "home": {
     "title": "PolarCraft",
     "subtitle": "偏振光物理益智游戏",
-    "description": "一款基于真实偏振物理原理的教育益智游戏。通过交互式谜题探索马吕斯定律、双折射、干涉等光学现象。",
-    "playGame": "玩 3D",
-    "play2D": "玩 2D",
-    "startCourse": "进入课程",
-    "game3d": "3D 游戏",
-    "game3dDescription": "使用偏振光束和光学元件解决3D谜题",
-    "game2d": "2D 游戏",
-    "game2dDescription": "演示马吕斯定律的交互式2D谜题",
-    "gameDescription": "使用偏振光束和光学元件解决谜题",
-    "courseDescription": "通过交互式演示学习偏振光物理",
-    "hardware": "UC2 硬件",
-    "hardwareDescription": "基于开源UC2框架的模块化偏振光学实验平台",
-    "exploreHardware": "探索硬件",
-    "cardGame": "偏振探秘",
-    "cardGameDescription": "1-4人桌游，30-60分钟，学习偏振光学原理",
-    "playCardGame": "进入桌游",
-    "merchandise": "偏振文创",
-    "merchandiseDescription": "偏振艺术照片、明信片、贴纸与教育玩具",
-    "browseMerch": "浏览文创"
+    "description": "一个基于真实偏振物理的教育平台。从故事到仿真，从谜题到实验——探索偏振光的奇妙世界。",
+    "chronicles": {
+      "title": "光的编年史",
+      "subtitle": "历史故事 × 课程实验",
+      "description": "用故事把「为什么」讲清楚，用实验把「怎么做」练出来。",
+      "cta": "探索故事",
+      "link1": "故事时间线",
+      "link2": "课程实验",
+      "link3": "学习路径"
+    },
+    "workshop": {
+      "title": "偏振工坊",
+      "subtitle": "偏振器件 × 偏振光路",
+      "description": "把器件当积木，把光路当电路图——搭起来就懂了。",
+      "cta": "进入工坊",
+      "link1": "器件库",
+      "link2": "光路配方",
+      "link3": "硬件模块"
+    },
+    "formulaLab": {
+      "title": "公式实验室",
+      "subtitle": "基础理论 × 计算模拟",
+      "description": "从公式到仿真，一键验证你的直觉。",
+      "cta": "开始计算",
+      "link1": "概念图谱",
+      "link2": "计算器",
+      "link3": "模拟实验"
+    },
+    "polarquest": {
+      "title": "偏振探秘",
+      "subtitle": "2D/3D 解谜游戏",
+      "description": "在谜题里学物理，在物理里解谜题。",
+      "cta": "开始游戏",
+      "link1": "2D 解谜",
+      "link2": "3D 体素世界",
+      "link3": "挑战关卡"
+    },
+    "gallery": {
+      "title": "光的文创馆",
+      "subtitle": "偏振艺术 × 创意周边",
+      "description": "把「看不见的偏振」做成「看得见的美」。",
+      "cta": "浏览文创",
+      "link1": "艺术商店",
+      "link2": "作品展览",
+      "link3": "图案生成器"
+    },
+    "labGroup": {
+      "title": "虚拟课题组",
+      "subtitle": "任务 × 讨论 × 项目",
+      "description": "像研究生一样学偏振：做任务、写记录、产出成果。",
+      "cta": "加入课题组",
+      "link1": "课题看板",
+      "link2": "项目仓库",
+      "link3": "卡牌工具"
+    }
   },
   "game": {
     "level": "关卡",

@@ -14,25 +14,61 @@
   "home": {
     "title": "PolarCraft",
     "subtitle": "Polarized Light Physics Puzzle Game",
-    "description": "An educational voxel puzzle game based on real polarization physics principles. Explore Malus's Law, birefringence, interference and more through interactive puzzles.",
-    "playGame": "Play 3D",
-    "play2D": "Play 2D",
-    "startCourse": "Start Course",
-    "game3d": "3D Game",
-    "game3dDescription": "Solve 3D puzzles with polarized light beams and optical components",
-    "game2d": "2D Game",
-    "game2dDescription": "Interactive 2D puzzles demonstrating Malus's Law",
-    "gameDescription": "Solve puzzles using polarized light beams and optical components",
-    "courseDescription": "Learn polarization physics through interactive demonstrations",
-    "hardware": "UC2 Hardware",
-    "hardwareDescription": "Modular polarization optics platform based on open-source UC2",
-    "exploreHardware": "Explore",
-    "cardGame": "PolarQuest",
-    "cardGameDescription": "1-4 player tabletop game, 30-60 min, learn polarization optics",
-    "playCardGame": "Play Game",
-    "merchandise": "Art & Merch",
-    "merchandiseDescription": "Polarization art prints, postcards, stickers & educational toys",
-    "browseMerch": "Browse"
+    "description": "An educational platform based on real polarization physics. From stories to simulations, from puzzles to experiments — explore the fascinating world of polarized light.",
+    "chronicles": {
+      "title": "Chronicles of Light",
+      "subtitle": "Stories × Experiments",
+      "description": "Understand the \"why\" through stories, master the \"how\" through experiments.",
+      "cta": "Explore",
+      "link1": "Story Timeline",
+      "link2": "Course Experiments",
+      "link3": "Learning Paths"
+    },
+    "workshop": {
+      "title": "Polarization Workshop",
+      "subtitle": "Components × Light Paths",
+      "description": "Treat components as building blocks, light paths as circuits — build to understand.",
+      "cta": "Enter Workshop",
+      "link1": "Component Library",
+      "link2": "Light Path Recipes",
+      "link3": "Hardware Modules"
+    },
+    "formulaLab": {
+      "title": "Formula Lab",
+      "subtitle": "Theory × Simulations",
+      "description": "From formulas to simulations, validate your intuition with one click.",
+      "cta": "Start Calculating",
+      "link1": "Concept Atlas",
+      "link2": "Calculators",
+      "link3": "Simulations"
+    },
+    "polarquest": {
+      "title": "PolarQuest",
+      "subtitle": "2D/3D Puzzle Games",
+      "description": "Learn physics in puzzles, solve puzzles with physics.",
+      "cta": "Play Now",
+      "link1": "2D Puzzles",
+      "link2": "3D Voxel World",
+      "link3": "Challenges"
+    },
+    "gallery": {
+      "title": "Polar Art Gallery",
+      "subtitle": "Art × Merchandise",
+      "description": "Turn invisible polarization into visible beauty.",
+      "cta": "Browse Gallery",
+      "link1": "Art Shop",
+      "link2": "Art Collection",
+      "link3": "Pattern Generator"
+    },
+    "labGroup": {
+      "title": "Virtual Lab Group",
+      "subtitle": "Tasks × Projects",
+      "description": "Learn polarization like a graduate student: do tasks, keep records, produce results.",
+      "cta": "Join Lab",
+      "link1": "Research Board",
+      "link2": "Projects",
+      "link3": "Card Tools"
+    }
   },
   "game": {
     "level": "Level",
