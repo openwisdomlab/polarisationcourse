@@ -24,8 +24,8 @@ import {
   Home, Search, Play, Pause, RotateCcw,
   ChevronRight, ChevronLeft, Trash2, Eye, EyeOff,
   Lightbulb, Layers, Book, FlaskConical, Wrench,
-  Box, ExternalLink, Info, X, Plus,
-  Circle, Square, Triangle, Hexagon, Settings
+  Box, ExternalLink, X, Plus,
+  Circle, Square, Triangle
 } from 'lucide-react'
 import { DeviceIconMap, DefaultDeviceIcon } from '@/components/icons'
 import {
