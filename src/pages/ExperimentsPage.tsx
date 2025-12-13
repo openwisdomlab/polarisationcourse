@@ -1,12 +1,12 @@
 /**
- * Experiments Page - DIY Polarization Experiments Handbook
- * 偏振实验手册 - DIY × 家庭实验
+ * Experiments Page - Polarization Creation Bureau (偏振造物局)
+ * 偏振造物局 - 艺术与DIY创作中心
  *
- * Low-cost, hands-on experiments using everyday materials:
- * - Phone screen + polarizer experiments
- * - Tape birefringence art
- * - Sugar solution optical rotation
- * - Stress patterns in plastics
+ * Sub-modules:
+ * 1. DIY实验 - Hands-on experiments with everyday materials
+ * 2. 偏振文创 - Polarization-themed creative products
+ * 3. 作品展示 - Community gallery and works showcase
+ * 4. 创作工坊 - Creative workshop and tutorials
  */
 
 import { useState } from 'react'
@@ -15,11 +15,13 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Badge } from '@/components/shared'
+import { Badge, Tabs } from '@/components/shared'
 import {
   Home, Beaker, Clock, DollarSign, AlertTriangle, ChevronRight,
   CheckCircle2, Star, Lightbulb, Camera, X,
-  ShoppingBag, Eye, GraduationCap
+  ShoppingBag, Eye, GraduationCap,
+  Palette, ImageIcon, Sparkles, Package, Heart,
+  Scissors, Brush, Layers
 } from 'lucide-react'
 
 // Experiment difficulty and cost levels
@@ -603,6 +605,301 @@ const COST_CONFIG = {
   medium: { labelEn: '$$', labelZh: '中等成本', icon: '$$' },
 }
 
+// Sub-module tabs
+const SUB_MODULE_TABS = [
+  { id: 'diy', labelEn: 'DIY Experiments', labelZh: 'DIY实验', icon: <Beaker className="w-4 h-4" /> },
+  { id: 'creative', labelEn: 'Creative Products', labelZh: '偏振文创', icon: <Palette className="w-4 h-4" /> },
+  { id: 'gallery', labelEn: 'Works Gallery', labelZh: '作品展示', icon: <ImageIcon className="w-4 h-4" /> },
+  { id: 'workshop', labelEn: 'Creative Workshop', labelZh: '创作工坊', icon: <Scissors className="w-4 h-4" /> },
+]
+
+// Creative products data
+interface CreativeProduct {
+  id: string
+  nameEn: string
+  nameZh: string
+  descriptionEn: string
+  descriptionZh: string
+  category: 'art' | 'accessory' | 'decor' | 'kit'
+  imageUrl?: string
+  price?: string
+  featured?: boolean
+}
+
+const CREATIVE_PRODUCTS: CreativeProduct[] = [
+  {
+    id: 'tape-art-kit',
+    nameEn: 'Tape Birefringence Art Kit',
+    nameZh: '胶带双折射艺术套装',
+    descriptionEn: 'Create stunning colorful art using tape and polarizers. Includes polarizing films and cellophane tape.',
+    descriptionZh: '使用胶带和偏振片创作绚丽的彩色艺术作品。包含偏振膜和玻璃纸胶带。',
+    category: 'kit',
+    price: '¥39',
+    featured: true,
+  },
+  {
+    id: 'polarized-coaster',
+    nameEn: 'Polarization Color Coaster Set',
+    nameZh: '偏振变色杯垫套装',
+    descriptionEn: 'Coasters that change colors when rotated - physics you can use every day!',
+    descriptionZh: '旋转时变色的杯垫 - 每天都能使用的物理学！',
+    category: 'decor',
+    price: '¥59',
+  },
+  {
+    id: 'stress-viewer',
+    nameEn: 'Stress Visualization Frame',
+    nameZh: '应力可视化相框',
+    descriptionEn: 'A decorative frame with crossed polarizers - perfect for displaying stress patterns in plastic items.',
+    descriptionZh: '带有正交偏振片的装饰相框 - 完美展示塑料物品中的应力图案。',
+    category: 'decor',
+    price: '¥89',
+    featured: true,
+  },
+  {
+    id: 'polarizer-earrings',
+    nameEn: 'Polarizer Earrings',
+    nameZh: '偏振片耳环',
+    descriptionEn: 'Wearable physics! Mini polarizers that show color changes with rotation.',
+    descriptionZh: '可穿戴的物理学！迷你偏振片，旋转时显示颜色变化。',
+    category: 'accessory',
+    price: '¥49',
+  },
+  {
+    id: 'lcd-rescue-kit',
+    nameEn: 'LCD Teardown Education Kit',
+    nameZh: 'LCD拆解教学套装',
+    descriptionEn: 'Learn how LCD screens work by safely disassembling and exploring old calculators.',
+    descriptionZh: '通过安全拆解和探索旧计算器，学习LCD屏幕的工作原理。',
+    category: 'kit',
+    price: '¥29',
+  },
+  {
+    id: 'rainbow-window',
+    nameEn: 'Rainbow Window Film',
+    nameZh: '彩虹窗贴膜',
+    descriptionEn: 'Birefringent window film that creates rainbow patterns with sunlight.',
+    descriptionZh: '双折射窗户贴膜，在阳光下创造彩虹图案。',
+    category: 'art',
+    price: '¥35',
+  },
+  {
+    id: 'polarimeter-diy',
+    nameEn: 'DIY Polarimeter Kit',
+    nameZh: 'DIY旋光仪套装',
+    descriptionEn: 'Build your own polarimeter to measure optical rotation of sugar solutions.',
+    descriptionZh: '制作你自己的旋光仪，测量糖溶液的旋光度。',
+    category: 'kit',
+    price: '¥79',
+    featured: true,
+  },
+  {
+    id: 'sky-mapper',
+    nameEn: 'Sky Polarization Mapper',
+    nameZh: '天空偏振测绘器',
+    descriptionEn: 'A simple tool for mapping sky polarization patterns - like a bee!',
+    descriptionZh: '一个简单的工具，用于绘制天空偏振图案 - 像蜜蜂一样！',
+    category: 'kit',
+    price: '¥45',
+  },
+]
+
+const CATEGORY_CONFIG = {
+  art: { labelEn: 'Art', labelZh: '艺术', color: 'purple' as const, icon: '🎨' },
+  accessory: { labelEn: 'Accessory', labelZh: '配饰', color: 'pink' as const, icon: '💫' },
+  decor: { labelEn: 'Decor', labelZh: '装饰', color: 'orange' as const, icon: '🏠' },
+  kit: { labelEn: 'Kit', labelZh: '套装', color: 'green' as const, icon: '📦' },
+}
+
+// Gallery works data
+interface GalleryWork {
+  id: string
+  titleEn: string
+  titleZh: string
+  authorEn: string
+  authorZh: string
+  descriptionEn: string
+  descriptionZh: string
+  category: 'tape-art' | 'photography' | 'installation' | 'science' | 'student'
+  likes: number
+  featured?: boolean
+}
+
+const GALLERY_WORKS: GalleryWork[] = [
+  {
+    id: 'galaxy-tape',
+    titleEn: 'Galaxy in Tape',
+    titleZh: '胶带中的星系',
+    authorEn: 'Zhang Wei',
+    authorZh: '张伟',
+    descriptionEn: 'A spiral galaxy pattern created with multiple layers of transparent tape.',
+    descriptionZh: '使用多层透明胶带创作的螺旋星系图案。',
+    category: 'tape-art',
+    likes: 234,
+    featured: true,
+  },
+  {
+    id: 'sunset-polarizer',
+    titleEn: 'Polarized Sunset',
+    titleZh: '偏振日落',
+    authorEn: 'Li Ming',
+    authorZh: '李明',
+    descriptionEn: 'Photograph of sunset captured with rotating polarizer, showing sky polarization.',
+    descriptionZh: '使用旋转偏振片拍摄的日落照片，显示天空偏振。',
+    category: 'photography',
+    likes: 189,
+    featured: true,
+  },
+  {
+    id: 'stress-butterfly',
+    titleEn: 'Butterfly Under Stress',
+    titleZh: '应力蝴蝶',
+    authorEn: 'Wang Fang',
+    authorZh: '王芳',
+    descriptionEn: 'A transparent plastic butterfly showing beautiful stress patterns.',
+    descriptionZh: '透明塑料蝴蝶展示美丽的应力图案。',
+    category: 'science',
+    likes: 156,
+  },
+  {
+    id: 'rainbow-sculpture',
+    titleEn: 'Rainbow Light Installation',
+    titleZh: '彩虹光装置',
+    authorEn: 'Chen Xin',
+    authorZh: '陈欣',
+    descriptionEn: 'An interactive sculpture using birefringent materials and LED light.',
+    descriptionZh: '使用双折射材料和LED灯的互动雕塑。',
+    category: 'installation',
+    likes: 312,
+    featured: true,
+  },
+  {
+    id: 'malus-demo',
+    titleEn: 'Malus\'s Law Demonstration',
+    titleZh: '马吕斯定律演示',
+    authorEn: 'Liu Yang',
+    authorZh: '刘阳',
+    descriptionEn: 'A student project demonstrating Malus\'s law with Arduino-controlled rotation.',
+    descriptionZh: '使用Arduino控制旋转演示马吕斯定律的学生项目。',
+    category: 'student',
+    likes: 87,
+  },
+  {
+    id: 'ice-crystal',
+    titleEn: 'Ice Crystal Polarimetry',
+    titleZh: '冰晶偏振显微术',
+    authorEn: 'Zhao Lin',
+    authorZh: '赵琳',
+    descriptionEn: 'Microscope images of ice crystals between crossed polarizers.',
+    descriptionZh: '冰晶在正交偏振片之间的显微镜图像。',
+    category: 'science',
+    likes: 201,
+  },
+  {
+    id: 'lcd-mosaic',
+    titleEn: 'LCD Recycling Mosaic',
+    titleZh: 'LCD回收马赛克',
+    authorEn: 'Huang Yu',
+    authorZh: '黄宇',
+    descriptionEn: 'A mosaic artwork made from recycled LCD polarizers.',
+    descriptionZh: '用回收的LCD偏振片制作的马赛克艺术品。',
+    category: 'tape-art',
+    likes: 145,
+  },
+  {
+    id: 'bee-vision',
+    titleEn: 'Simulating Bee Vision',
+    titleZh: '模拟蜜蜂视觉',
+    authorEn: 'Sun Chen',
+    authorZh: '孙晨',
+    descriptionEn: 'A wearable device that visualizes sky polarization patterns like bees see.',
+    descriptionZh: '一种可穿戴设备，像蜜蜂一样可视化天空偏振图案。',
+    category: 'science',
+    likes: 278,
+    featured: true,
+  },
+]
+
+const GALLERY_CATEGORY_CONFIG = {
+  'tape-art': { labelEn: 'Tape Art', labelZh: '胶带艺术', color: 'purple' as const },
+  'photography': { labelEn: 'Photography', labelZh: '摄影', color: 'cyan' as const },
+  'installation': { labelEn: 'Installation', labelZh: '装置', color: 'orange' as const },
+  'science': { labelEn: 'Science', labelZh: '科学', color: 'green' as const },
+  'student': { labelEn: 'Student Work', labelZh: '学生作品', color: 'blue' as const },
+}
+
+// Workshop tutorials
+interface Tutorial {
+  id: string
+  titleEn: string
+  titleZh: string
+  descriptionEn: string
+  descriptionZh: string
+  duration: number // minutes
+  difficulty: Difficulty
+  materials: { en: string[]; zh: string[] }
+  steps: number
+}
+
+const TUTORIALS: Tutorial[] = [
+  {
+    id: 'basic-tape-art',
+    titleEn: 'Basic Tape Art Techniques',
+    titleZh: '基础胶带艺术技法',
+    descriptionEn: 'Learn the fundamentals of creating colorful patterns with cellophane tape.',
+    descriptionZh: '学习使用玻璃纸胶带创作彩色图案的基础技法。',
+    duration: 30,
+    difficulty: 'easy',
+    materials: {
+      en: ['Cellophane tape', 'Polarizing films (2)', 'Glass slide', 'Scissors'],
+      zh: ['玻璃纸胶带', '偏振膜（2片）', '玻璃片', '剪刀'],
+    },
+    steps: 5,
+  },
+  {
+    id: 'stress-art',
+    titleEn: 'Photoelastic Art Creation',
+    titleZh: '光弹艺术创作',
+    descriptionEn: 'Create artistic patterns using stressed transparent materials.',
+    descriptionZh: '使用受力透明材料创作艺术图案。',
+    duration: 45,
+    difficulty: 'medium',
+    materials: {
+      en: ['Clear acrylic sheet', 'Heat gun', 'Polarizing films', 'Clamps'],
+      zh: ['透明亚克力板', '热风枪', '偏振膜', '夹具'],
+    },
+    steps: 7,
+  },
+  {
+    id: 'polarization-photo',
+    titleEn: 'Polarization Photography Guide',
+    titleZh: '偏振摄影指南',
+    descriptionEn: 'Master the art of using polarizing filters for stunning photography.',
+    descriptionZh: '掌握使用偏振滤镜拍摄惊艳照片的艺术。',
+    duration: 60,
+    difficulty: 'medium',
+    materials: {
+      en: ['Camera', 'Circular polarizing filter', 'Tripod', 'Various subjects'],
+      zh: ['相机', '圆偏振滤镜', '三脚架', '各种拍摄对象'],
+    },
+    steps: 8,
+  },
+  {
+    id: 'light-box',
+    titleEn: 'Build a Polarization Light Box',
+    titleZh: '制作偏振光盒',
+    descriptionEn: 'Create a professional-looking light box for displaying birefringent art.',
+    descriptionZh: '制作一个专业外观的光盒，用于展示双折射艺术。',
+    duration: 90,
+    difficulty: 'hard',
+    materials: {
+      en: ['LED strip', 'Diffuser panel', 'Polarizing films', 'Wooden frame'],
+      zh: ['LED灯条', '扩散板', '偏振膜', '木框'],
+    },
+    steps: 10,
+  },
+]
+
 // Experiment card component
 function ExperimentCard({
   experiment,
@@ -934,18 +1231,233 @@ function ExperimentDetailModal({
   )
 }
 
+// Creative product card
+function ProductCard({ product }: { product: CreativeProduct }) {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+  const category = CATEGORY_CONFIG[product.category]
+
+  return (
+    <div className={cn(
+      'rounded-xl border p-4 transition-all hover:-translate-y-1 hover:shadow-lg',
+      theme === 'dark'
+        ? 'bg-slate-800/50 border-slate-700 hover:border-violet-500/50'
+        : 'bg-white border-gray-200 hover:border-violet-400'
+    )}>
+      {/* Product image placeholder */}
+      <div className={cn(
+        'aspect-square rounded-lg mb-3 flex items-center justify-center text-4xl',
+        theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
+      )}>
+        {category.icon}
+      </div>
+
+      {/* Title and badges */}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h3 className={cn(
+          'font-semibold text-sm flex-1',
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        )}>
+          {isZh ? product.nameZh : product.nameEn}
+        </h3>
+        {product.featured && (
+          <Sparkles className={cn('w-4 h-4 flex-shrink-0', theme === 'dark' ? 'text-amber-400' : 'text-amber-500')} />
+        )}
+      </div>
+
+      {/* Description */}
+      <p className={cn(
+        'text-xs line-clamp-2 mb-3',
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      )}>
+        {isZh ? product.descriptionZh : product.descriptionEn}
+      </p>
+
+      {/* Price and category */}
+      <div className="flex items-center justify-between">
+        <Badge color={category.color} size="sm">
+          {isZh ? category.labelZh : category.labelEn}
+        </Badge>
+        {product.price && (
+          <span className={cn(
+            'font-semibold',
+            theme === 'dark' ? 'text-teal-400' : 'text-teal-600'
+          )}>
+            {product.price}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Gallery work card
+function GalleryCard({ work }: { work: GalleryWork }) {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+  const category = GALLERY_CATEGORY_CONFIG[work.category]
+
+  return (
+    <div className={cn(
+      'rounded-xl border overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg group',
+      theme === 'dark'
+        ? 'bg-slate-800/50 border-slate-700 hover:border-cyan-500/50'
+        : 'bg-white border-gray-200 hover:border-cyan-400'
+    )}>
+      {/* Image placeholder */}
+      <div className={cn(
+        'aspect-video flex items-center justify-center relative',
+        theme === 'dark' ? 'bg-gradient-to-br from-slate-700 to-slate-800' : 'bg-gradient-to-br from-gray-100 to-gray-200'
+      )}>
+        <ImageIcon className={cn('w-12 h-12', theme === 'dark' ? 'text-slate-600' : 'text-gray-400')} />
+        {work.featured && (
+          <span className={cn(
+            'absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-medium',
+            theme === 'dark' ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+          )}>
+            ✦ {isZh ? '精选' : 'Featured'}
+          </span>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-3">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3 className={cn(
+            'font-semibold text-sm',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? work.titleZh : work.titleEn}
+          </h3>
+          <Badge color={category.color} size="sm">
+            {isZh ? category.labelZh : category.labelEn}
+          </Badge>
+        </div>
+
+        <p className={cn(
+          'text-xs mb-2',
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        )}>
+          {isZh ? work.authorZh : work.authorEn}
+        </p>
+
+        <p className={cn(
+          'text-xs line-clamp-2 mb-2',
+          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+        )}>
+          {isZh ? work.descriptionZh : work.descriptionEn}
+        </p>
+
+        <div className="flex items-center gap-1">
+          <Heart className={cn('w-3.5 h-3.5', theme === 'dark' ? 'text-rose-400' : 'text-rose-500')} />
+          <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            {work.likes}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Tutorial card
+function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+  const difficulty = DIFFICULTY_CONFIG[tutorial.difficulty]
+
+  return (
+    <div className={cn(
+      'rounded-xl border p-4 transition-all hover:-translate-y-1 hover:shadow-lg',
+      theme === 'dark'
+        ? 'bg-slate-800/50 border-slate-700 hover:border-pink-500/50'
+        : 'bg-white border-gray-200 hover:border-pink-400'
+    )}>
+      {/* Header */}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <div className="flex items-center gap-2">
+          <Brush className={cn('w-5 h-5', theme === 'dark' ? 'text-pink-400' : 'text-pink-500')} />
+          <h3 className={cn(
+            'font-semibold',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? tutorial.titleZh : tutorial.titleEn}
+          </h3>
+        </div>
+        <Badge color={difficulty.color} size="sm">
+          {difficulty.icon}
+        </Badge>
+      </div>
+
+      {/* Description */}
+      <p className={cn(
+        'text-sm mb-3',
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      )}>
+        {isZh ? tutorial.descriptionZh : tutorial.descriptionEn}
+      </p>
+
+      {/* Meta */}
+      <div className="flex items-center gap-4 text-xs mb-3">
+        <span className={cn(
+          'flex items-center gap-1',
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        )}>
+          <Clock className="w-3.5 h-3.5" />
+          {tutorial.duration} {isZh ? '分钟' : 'min'}
+        </span>
+        <span className={cn(
+          'flex items-center gap-1',
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        )}>
+          <Layers className="w-3.5 h-3.5" />
+          {tutorial.steps} {isZh ? '步骤' : 'steps'}
+        </span>
+      </div>
+
+      {/* Materials preview */}
+      <div className={cn(
+        'text-xs p-2 rounded-lg',
+        theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'
+      )}>
+        <span className={cn('font-medium', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>
+          {isZh ? '材料：' : 'Materials: '}
+        </span>
+        <span className={cn(theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+          {(isZh ? tutorial.materials.zh : tutorial.materials.en).slice(0, 3).join('、')}
+          {tutorial.materials.en.length > 3 && '...'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export function ExperimentsPage() {
   const { i18n } = useTranslation()
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
+  const [activeTab, setActiveTab] = useState<'diy' | 'creative' | 'gallery' | 'workshop'>('diy')
   const [selectedExperiment, setSelectedExperiment] = useState<Experiment | null>(null)
   const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'all'>('all')
+  const [filterCategory, setFilterCategory] = useState<string>('all')
 
   // Filter experiments
   const filteredExperiments = filterDifficulty === 'all'
     ? EXPERIMENTS
     : EXPERIMENTS.filter(exp => exp.difficulty === filterDifficulty)
+
+  // Filter products by category
+  const filteredProducts = filterCategory === 'all'
+    ? CREATIVE_PRODUCTS
+    : CREATIVE_PRODUCTS.filter(p => p.category === filterCategory)
+
+  // Filter gallery works by category
+  const filteredWorks = filterCategory === 'all'
+    ? GALLERY_WORKS
+    : GALLERY_WORKS.filter(w => w.category === filterCategory)
 
   return (
     <div className={cn(
@@ -976,13 +1488,13 @@ export function ExperimentsPage() {
                   'text-xl font-bold',
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 )}>
-                  {isZh ? '偏振实验手册' : 'DIY Experiments'}
+                  {isZh ? '偏振造物局' : 'Polarization Workshop'}
                 </h1>
                 <p className={cn(
                   'text-sm',
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
                 )}>
-                  {isZh ? 'DIY × 家庭实验' : 'Hands-on × Home Experiments'}
+                  {isZh ? '艺术与DIY创作中心' : 'Art & DIY Creation Center'}
                 </p>
               </div>
             </div>
@@ -992,40 +1504,59 @@ export function ExperimentsPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Intro Banner */}
-        <div className={cn(
-          'rounded-2xl p-6 mb-8 border',
-          theme === 'dark'
-            ? 'bg-gradient-to-r from-teal-900/30 to-cyan-900/30 border-teal-700/30'
-            : 'bg-gradient-to-r from-teal-50 to-cyan-50 border-teal-200'
-        )}>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className={cn(
-              'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0',
-              theme === 'dark' ? 'bg-teal-500/20' : 'bg-teal-100'
-            )}>
-              <Beaker className={cn('w-7 h-7', theme === 'dark' ? 'text-teal-400' : 'text-teal-600')} />
-            </div>
-            <div className="flex-1">
-              <h2 className={cn(
-                'text-lg font-semibold mb-1',
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              )}>
-                {isZh ? '用身边材料探索偏振光的奥秘' : 'Explore Polarization with Everyday Materials'}
-              </h2>
-              <p className={cn(
-                'text-sm',
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              )}>
-                {isZh
-                  ? '这些实验使用手机、胶带、塑料等日常物品，无需昂贵设备即可在家体验偏振光的魅力。'
-                  : 'These experiments use phones, tape, plastic and other household items. No expensive equipment needed!'}
-              </p>
-            </div>
-          </div>
+        {/* Sub-module Tabs */}
+        <div className="mb-6">
+          <Tabs
+            tabs={SUB_MODULE_TABS.map(tab => ({
+              ...tab,
+              label: isZh ? tab.labelZh : tab.labelEn,
+            }))}
+            activeTab={activeTab}
+            onChange={(id: string) => {
+              setActiveTab(id as 'diy' | 'creative' | 'gallery' | 'workshop')
+              setFilterCategory('all')
+              setFilterDifficulty('all')
+            }}
+          />
         </div>
 
-        {/* Difficulty Filter */}
+        {/* Tab-specific content */}
+        {activeTab === 'diy' && (
+          <>
+            {/* Intro Banner */}
+            <div className={cn(
+              'rounded-2xl p-6 mb-8 border',
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-teal-900/30 to-cyan-900/30 border-teal-700/30'
+                : 'bg-gradient-to-r from-teal-50 to-cyan-50 border-teal-200'
+            )}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className={cn(
+                  'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0',
+                  theme === 'dark' ? 'bg-teal-500/20' : 'bg-teal-100'
+                )}>
+                  <Beaker className={cn('w-7 h-7', theme === 'dark' ? 'text-teal-400' : 'text-teal-600')} />
+                </div>
+                <div className="flex-1">
+                  <h2 className={cn(
+                    'text-lg font-semibold mb-1',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? '用身边材料探索偏振光的奥秘' : 'Explore Polarization with Everyday Materials'}
+                  </h2>
+                  <p className={cn(
+                    'text-sm',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {isZh
+                      ? '这些实验使用手机、胶带、塑料等日常物品，无需昂贵设备即可在家体验偏振光的魅力。'
+                      : 'These experiments use phones, tape, plastic and other household items. No expensive equipment needed!'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Difficulty Filter */}
         <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
           <button
             onClick={() => setFilterDifficulty('all')}
@@ -1127,6 +1658,331 @@ export function ExperimentsPage() {
             </div>
           </div>
         </div>
+          </>
+        )}
+
+        {/* Creative Products Tab */}
+        {activeTab === 'creative' && (
+          <>
+            {/* Intro Banner */}
+            <div className={cn(
+              'rounded-2xl p-6 mb-8 border',
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-violet-900/30 to-pink-900/30 border-violet-700/30'
+                : 'bg-gradient-to-r from-violet-50 to-pink-50 border-violet-200'
+            )}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className={cn(
+                  'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0',
+                  theme === 'dark' ? 'bg-violet-500/20' : 'bg-violet-100'
+                )}>
+                  <Palette className={cn('w-7 h-7', theme === 'dark' ? 'text-violet-400' : 'text-violet-600')} />
+                </div>
+                <div className="flex-1">
+                  <h2 className={cn(
+                    'text-lg font-semibold mb-1',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? '偏振主题文创产品' : 'Polarization-Themed Creative Products'}
+                  </h2>
+                  <p className={cn(
+                    'text-sm',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {isZh
+                      ? '精心设计的偏振光艺术套装和装饰品，将物理学融入日常生活。'
+                      : 'Beautifully designed polarization art kits and decorations that bring physics into daily life.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+              <button
+                onClick={() => setFilterCategory('all')}
+                className={cn(
+                  'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
+                  filterCategory === 'all'
+                    ? theme === 'dark'
+                      ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50'
+                      : 'bg-violet-100 text-violet-700 border border-violet-300'
+                    : theme === 'dark'
+                      ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
+                      : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+                )}
+              >
+                {isZh ? '全部' : 'All'}
+              </button>
+              {(Object.keys(CATEGORY_CONFIG) as Array<keyof typeof CATEGORY_CONFIG>).map(cat => {
+                const config = CATEGORY_CONFIG[cat]
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setFilterCategory(cat)}
+                    className={cn(
+                      'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1',
+                      filterCategory === cat
+                        ? theme === 'dark'
+                          ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50'
+                          : 'bg-violet-100 text-violet-700 border border-violet-300'
+                        : theme === 'dark'
+                          ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
+                          : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+                    )}
+                  >
+                    <span>{config.icon}</span>
+                    {isZh ? config.labelZh : config.labelEn}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {filteredProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Gallery Tab */}
+        {activeTab === 'gallery' && (
+          <>
+            {/* Intro Banner */}
+            <div className={cn(
+              'rounded-2xl p-6 mb-8 border',
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border-cyan-700/30'
+                : 'bg-gradient-to-r from-cyan-50 to-blue-50 border-cyan-200'
+            )}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className={cn(
+                  'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0',
+                  theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
+                )}>
+                  <ImageIcon className={cn('w-7 h-7', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                </div>
+                <div className="flex-1">
+                  <h2 className={cn(
+                    'text-lg font-semibold mb-1',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? '偏振艺术作品展示' : 'Polarization Art Gallery'}
+                  </h2>
+                  <p className={cn(
+                    'text-sm',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {isZh
+                      ? '来自社区的精彩偏振光艺术作品，包括胶带艺术、摄影和科学项目。'
+                      : 'Amazing polarization art from our community - tape art, photography, and science projects.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+              <button
+                onClick={() => setFilterCategory('all')}
+                className={cn(
+                  'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
+                  filterCategory === 'all'
+                    ? theme === 'dark'
+                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
+                      : 'bg-cyan-100 text-cyan-700 border border-cyan-300'
+                    : theme === 'dark'
+                      ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
+                      : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+                )}
+              >
+                {isZh ? '全部' : 'All'}
+              </button>
+              {(Object.keys(GALLERY_CATEGORY_CONFIG) as Array<keyof typeof GALLERY_CATEGORY_CONFIG>).map(cat => {
+                const config = GALLERY_CATEGORY_CONFIG[cat]
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setFilterCategory(cat)}
+                    className={cn(
+                      'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
+                      filterCategory === cat
+                        ? theme === 'dark'
+                          ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
+                          : 'bg-cyan-100 text-cyan-700 border border-cyan-300'
+                        : theme === 'dark'
+                          ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
+                          : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+                    )}
+                  >
+                    {isZh ? config.labelZh : config.labelEn}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Works Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredWorks.map(work => (
+                <GalleryCard key={work.id} work={work} />
+              ))}
+            </div>
+
+            {/* Submit Your Work CTA */}
+            <div className={cn(
+              'mt-12 rounded-2xl border p-6 text-center',
+              theme === 'dark' ? 'bg-slate-800/30 border-slate-700' : 'bg-white border-gray-200'
+            )}>
+              <Sparkles className={cn(
+                'w-10 h-10 mx-auto mb-3',
+                theme === 'dark' ? 'text-amber-400' : 'text-amber-500'
+              )} />
+              <h3 className={cn(
+                'text-lg font-semibold mb-2',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                {isZh ? '分享你的作品' : 'Share Your Work'}
+              </h3>
+              <p className={cn(
+                'text-sm mb-4 max-w-md mx-auto',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                {isZh
+                  ? '创作了偏振光艺术作品？提交给我们，有机会在这里展示！'
+                  : 'Created a polarization art piece? Submit it and get featured in our gallery!'}
+              </p>
+              <button
+                className={cn(
+                  'px-6 py-2.5 rounded-lg font-medium transition-colors',
+                  theme === 'dark'
+                    ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                    : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                )}
+              >
+                {isZh ? '提交作品' : 'Submit Work'}
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Workshop Tab */}
+        {activeTab === 'workshop' && (
+          <>
+            {/* Intro Banner */}
+            <div className={cn(
+              'rounded-2xl p-6 mb-8 border',
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-pink-900/30 to-rose-900/30 border-pink-700/30'
+                : 'bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200'
+            )}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className={cn(
+                  'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0',
+                  theme === 'dark' ? 'bg-pink-500/20' : 'bg-pink-100'
+                )}>
+                  <Scissors className={cn('w-7 h-7', theme === 'dark' ? 'text-pink-400' : 'text-pink-600')} />
+                </div>
+                <div className="flex-1">
+                  <h2 className={cn(
+                    'text-lg font-semibold mb-1',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? '创作工坊教程' : 'Creative Workshop Tutorials'}
+                  </h2>
+                  <p className={cn(
+                    'text-sm',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {isZh
+                      ? '从基础到进阶的偏振艺术创作教程，学习制作属于你的偏振光艺术品。'
+                      : 'Step-by-step tutorials from basics to advanced polarization art creation.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tutorials Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              {TUTORIALS.map(tutorial => (
+                <TutorialCard key={tutorial.id} tutorial={tutorial} />
+              ))}
+            </div>
+
+            {/* More resources section */}
+            <div className={cn(
+              'rounded-2xl border p-6',
+              theme === 'dark' ? 'bg-slate-800/30 border-slate-700' : 'bg-white border-gray-200'
+            )}>
+              <h3 className={cn(
+                'text-lg font-semibold mb-4',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                {isZh ? '更多创作资源' : 'More Resources'}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Link
+                  to="/demos"
+                  className={cn(
+                    'p-4 rounded-lg flex items-start gap-3 transition-colors',
+                    theme === 'dark'
+                      ? 'bg-slate-800 hover:bg-slate-700'
+                      : 'bg-gray-50 hover:bg-gray-100'
+                  )}
+                >
+                  <Eye className={cn('w-5 h-5 mt-0.5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                  <div>
+                    <h4 className={cn('font-medium mb-0.5', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                      {isZh ? '偏振演示馆' : 'Demo Gallery'}
+                    </h4>
+                    <p className={cn('text-xs', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                      {isZh ? '了解偏振原理' : 'Learn polarization principles'}
+                    </p>
+                  </div>
+                </Link>
+                <Link
+                  to="/devices"
+                  className={cn(
+                    'p-4 rounded-lg flex items-start gap-3 transition-colors',
+                    theme === 'dark'
+                      ? 'bg-slate-800 hover:bg-slate-700'
+                      : 'bg-gray-50 hover:bg-gray-100'
+                  )}
+                >
+                  <Package className={cn('w-5 h-5 mt-0.5', theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')} />
+                  <div>
+                    <h4 className={cn('font-medium mb-0.5', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                      {isZh ? '器件图鉴' : 'Device Library'}
+                    </h4>
+                    <p className={cn('text-xs', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                      {isZh ? '认识光学器件' : 'Learn optical devices'}
+                    </p>
+                  </div>
+                </Link>
+                <Link
+                  to="/bench"
+                  className={cn(
+                    'p-4 rounded-lg flex items-start gap-3 transition-colors',
+                    theme === 'dark'
+                      ? 'bg-slate-800 hover:bg-slate-700'
+                      : 'bg-gray-50 hover:bg-gray-100'
+                  )}
+                >
+                  <Layers className={cn('w-5 h-5 mt-0.5', theme === 'dark' ? 'text-violet-400' : 'text-violet-600')} />
+                  <div>
+                    <h4 className={cn('font-medium mb-0.5', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                      {isZh ? '光路设计室' : 'Optical Bench'}
+                    </h4>
+                    <p className={cn('text-xs', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                      {isZh ? '设计光路实验' : 'Design optical experiments'}
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
       </main>
 
       {/* Experiment Detail Modal */}
