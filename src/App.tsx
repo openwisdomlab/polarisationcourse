@@ -11,7 +11,7 @@ import {
   EscapeRoomPage,
   ChroniclesPage,
   LabPage,
-  OpticalDesignStudioPage,
+  OpticalDesignStudioPageV2 as OpticalDesignStudioPage,
   ApplicationsPage,
   ExperimentsPage,
   CalculationWorkshopPage,

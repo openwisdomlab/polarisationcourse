@@ -1,0 +1,425 @@
+/**
+ * Optical Canvas Component - 光学画布组件
+ *
+ * Main SVG canvas for optical bench with:
+ * - Drag-and-drop component movement
+ * - Light path visualization
+ * - Component selection
+ * - Grid background
+ */
+
+import { useRef, useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
+import { Layers } from 'lucide-react'
+import {
+  useOpticalBenchStore,
+  getPolarizationColor,
+  type BenchComponent,
+} from '@/stores/opticalBenchStore'
+import {
+  OpticalComponentMap,
+  LightBeam,
+  type OpticalComponentType,
+} from '@/components/bench'
+import { PALETTE_COMPONENTS } from '@/data'
+
+// ============================================
+// Sensor Reading Display
+// ============================================
+
+interface SensorReadingProps {
+  x: number
+  y: number
+  intensity: number
+  polarization: number
+  showPolarization: boolean
+}
+
+function SensorReading({ x, y, intensity, polarization, showPolarization }: SensorReadingProps) {
+  const { theme } = useTheme()
+  const color = showPolarization ? getPolarizationColor(polarization) : '#22d3ee'
+
+  return (
+    <g transform={`translate(${x}, ${y - 45})`}>
+      {/* Background */}
+      <rect
+        x="-35"
+        y="-12"
+        width="70"
+        height="24"
+        rx="4"
+        fill={theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.95)'}
+        stroke={color}
+        strokeWidth="1.5"
+      />
+      {/* Intensity text */}
+      <text
+        x="0"
+        y="4"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="bold"
+        fontFamily="monospace"
+        fill={color}
+      >
+        {intensity.toFixed(1)}%
+      </text>
+      {/* Polarization indicator */}
+      {showPolarization && (
+        <circle cx="25" cy="0" r="4" fill={color} opacity="0.8" />
+      )}
+    </g>
+  )
+}
+
+// ============================================
+// Empty State Component
+// ============================================
+
+function EmptyState() {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="text-center">
+        <div className={cn(
+          'w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4',
+          theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
+        )}>
+          <Layers className={cn('w-8 h-8', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')} />
+        </div>
+        <h3 className={cn('text-lg font-semibold mb-2', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+          {isZh ? '开始设计光路' : 'Start Designing'}
+        </h3>
+        <p className={cn('text-sm max-w-sm mx-auto', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+          {isZh
+            ? '从左侧浏览器件、选择实验，或自由添加组件'
+            : 'Browse devices, select experiments, or freely add components'}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// Selected Component Info
+// ============================================
+
+interface SelectedComponentInfoProps {
+  component: BenchComponent
+}
+
+function SelectedComponentInfo({ component }: SelectedComponentInfoProps) {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+  const paletteItem = PALETTE_COMPONENTS.find(p => p.type === component.type)
+
+  if (!paletteItem) return null
+
+  return (
+    <div className={cn(
+      'absolute bottom-4 left-4 rounded-xl border p-3 z-10',
+      theme === 'dark' ? 'bg-slate-900/95 border-slate-700' : 'bg-white/95 border-gray-200'
+    )}>
+      <div className="flex items-center gap-3">
+        <span className="text-xl">{paletteItem.icon}</span>
+        <div>
+          <h4 className={cn('font-semibold text-sm', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+            {isZh ? paletteItem.nameZh : paletteItem.nameEn}
+          </h4>
+          <p className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            {isZh ? `角度: ${component.rotation}°` : `Angle: ${component.rotation}°`}
+            {component.properties.angle !== undefined && (
+              <span className="ml-2">
+                {isZh ? `偏振: ${component.properties.angle}°` : `Pol: ${component.properties.angle}°`}
+              </span>
+            )}
+          </p>
+          <p className={cn('text-xs font-mono', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')}>
+            {isZh ? paletteItem.principleZh : paletteItem.principleEn}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// Main Optical Canvas Component
+// ============================================
+
+export function OpticalCanvas() {
+  const { theme } = useTheme()
+  const svgRef = useRef<SVGSVGElement>(null)
+
+  const {
+    components,
+    selectedComponentId,
+    selectComponent,
+    isSimulating,
+    showPolarization,
+    lightSegments,
+    sensorReadings,
+    isDragging,
+    snapToGrid,
+    gridSize,
+    startDrag,
+    updateDrag,
+    endDrag,
+    calculateLightPaths,
+  } = useOpticalBenchStore()
+
+  const selectedComponent = components.find(c => c.id === selectedComponentId)
+
+  // Get SVG coordinates from mouse event
+  const getSVGCoords = useCallback((e: React.MouseEvent | MouseEvent) => {
+    if (!svgRef.current) return { x: 0, y: 0 }
+    const svg = svgRef.current
+    const pt = svg.createSVGPoint()
+    pt.x = e.clientX
+    pt.y = e.clientY
+    const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse())
+    return { x: svgP.x, y: svgP.y }
+  }, [])
+
+  // Handle mouse down on component
+  const handleComponentMouseDown = useCallback((e: React.MouseEvent, componentId: string) => {
+    e.stopPropagation()
+    const coords = getSVGCoords(e)
+    const component = components.find(c => c.id === componentId)
+    if (component) {
+      const offset = {
+        x: coords.x - component.x,
+        y: coords.y - component.y,
+      }
+      startDrag(componentId, offset)
+    }
+  }, [components, getSVGCoords, startDrag])
+
+  // Handle mouse move for dragging
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isDragging) {
+      const coords = getSVGCoords(e)
+      updateDrag(coords)
+    }
+  }, [isDragging, getSVGCoords, updateDrag])
+
+  // Handle mouse up to end drag
+  const handleMouseUp = useCallback(() => {
+    if (isDragging) {
+      endDrag()
+      // Recalculate light paths after drag
+      if (isSimulating) {
+        calculateLightPaths()
+      }
+    }
+  }, [isDragging, endDrag, isSimulating, calculateLightPaths])
+
+  // Handle canvas click (deselect)
+  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === svgRef.current || (e.target as SVGElement).closest('.canvas-background')) {
+      selectComponent(null)
+    }
+  }, [selectComponent])
+
+  // Add global mouse event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('mouseup', handleMouseUp)
+      }
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp])
+
+  // Recalculate light paths when simulation starts or components change
+  useEffect(() => {
+    if (isSimulating) {
+      calculateLightPaths()
+    }
+  }, [isSimulating, components, calculateLightPaths])
+
+  return (
+    <div
+      className={cn('absolute inset-0 overflow-hidden', theme === 'dark' ? 'bg-slate-950/50' : 'bg-gray-50/50')}
+    >
+      <svg
+        ref={svgRef}
+        className="absolute inset-0 w-full h-full"
+        onClick={handleCanvasClick}
+        style={{ cursor: isDragging ? 'grabbing' : 'default' }}
+      >
+        {/* Background */}
+        <defs>
+          <pattern id="optical-grid" width={gridSize} height={gridSize} patternUnits="userSpaceOnUse">
+            <path
+              d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`}
+              fill="none"
+              stroke={theme === 'dark' ? '#334155' : '#94a3b8'}
+              strokeWidth="1"
+              opacity="0.3"
+            />
+          </pattern>
+          <linearGradient id="table-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={theme === 'dark' ? '#0f172a' : '#f8fafc'} />
+            <stop offset="100%" stopColor={theme === 'dark' ? '#1e293b' : '#e2e8f0'} />
+          </linearGradient>
+          {/* Light beam glow filter */}
+          <filter id="beam-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Background fill */}
+        <rect
+          className="canvas-background"
+          width="100%"
+          height="100%"
+          fill="url(#table-gradient)"
+        />
+        <rect
+          className="canvas-background"
+          width="100%"
+          height="100%"
+          fill="url(#optical-grid)"
+        />
+
+        {/* Optical rail */}
+        <rect
+          x="60"
+          y="196"
+          width="680"
+          height="8"
+          rx="2"
+          fill={theme === 'dark' ? '#334155' : '#94a3b8'}
+          opacity="0.5"
+        />
+
+        {/* Snap grid indicators when dragging */}
+        {isDragging && snapToGrid && (
+          <g className="snap-indicators" opacity="0.5">
+            {Array.from({ length: Math.floor(800 / gridSize) }).map((_, i) => (
+              <line
+                key={`v-${i}`}
+                x1={i * gridSize}
+                y1="0"
+                x2={i * gridSize}
+                y2="400"
+                stroke={theme === 'dark' ? '#4f46e5' : '#818cf8'}
+                strokeWidth="0.5"
+                strokeDasharray="2,4"
+              />
+            ))}
+            {Array.from({ length: Math.floor(400 / gridSize) }).map((_, i) => (
+              <line
+                key={`h-${i}`}
+                x1="0"
+                y1={i * gridSize}
+                x2="800"
+                y2={i * gridSize}
+                stroke={theme === 'dark' ? '#4f46e5' : '#818cf8'}
+                strokeWidth="0.5"
+                strokeDasharray="2,4"
+              />
+            ))}
+          </g>
+        )}
+
+        {/* Light beams */}
+        {isSimulating && lightSegments.length > 0 && (
+          <g className="light-beams" filter="url(#beam-glow)">
+            {lightSegments.map(segment => (
+              <LightBeam
+                key={segment.id}
+                x1={segment.x1}
+                y1={segment.y1}
+                x2={segment.x2}
+                y2={segment.y2}
+                polarizationAngle={segment.polarization}
+                intensity={segment.intensity}
+                showPolarization={showPolarization}
+                animated={true}
+              />
+            ))}
+          </g>
+        )}
+
+        {/* Sensor readings */}
+        {isSimulating && (
+          <g className="sensor-readings">
+            {components
+              .filter(c => c.type === 'sensor')
+              .map(sensor => {
+                const reading = sensorReadings.get(sensor.id)
+                if (reading) {
+                  return (
+                    <SensorReading
+                      key={`reading-${sensor.id}`}
+                      x={sensor.x}
+                      y={sensor.y}
+                      intensity={reading.intensity}
+                      polarization={reading.polarization}
+                      showPolarization={showPolarization}
+                    />
+                  )
+                }
+                return null
+              })}
+          </g>
+        )}
+
+        {/* Optical components */}
+        <g className="optical-components">
+          {components.map(component => {
+            const ComponentViz = OpticalComponentMap[component.type as OpticalComponentType]
+            if (ComponentViz) {
+              return (
+                <g
+                  key={component.id}
+                  style={{ cursor: isDragging && selectedComponentId === component.id ? 'grabbing' : 'grab' }}
+                  onMouseDown={(e) => handleComponentMouseDown(e, component.id)}
+                >
+                  <ComponentViz
+                    x={component.x}
+                    y={component.y}
+                    rotation={component.rotation}
+                    selected={component.id === selectedComponentId}
+                    polarizationAngle={
+                      (component.properties.angle as number) ||
+                      (component.properties.polarization as number) ||
+                      0
+                    }
+                    onClick={(e) => {
+                      e?.stopPropagation()
+                      selectComponent(component.id)
+                    }}
+                  />
+                </g>
+              )
+            }
+            return null
+          })}
+        </g>
+      </svg>
+
+      {/* Empty state */}
+      {components.length === 0 && <EmptyState />}
+
+      {/* Selected component info */}
+      {selectedComponent && <SelectedComponentInfo component={selectedComponent} />}
+    </div>
+  )
+}
+
+export default OpticalCanvas
