@@ -98,13 +98,57 @@
       "cta": "Start Calculating",
       "link1": "Jones Matrix",
       "link2": "Mueller Matrix",
-      "link3": "Stokes Parameters"
+      "link3": "Stokes Parameters",
+      "link4": "Poincaré Sphere"
     },
     "openData": {
       "title": "Open Data: Polarization Datasets",
       "subtitle": "Coming Soon",
       "description": "Open science data platform: polarization experimental data, spectral data, user-contributed datasets—coming soon, stay tuned.",
       "cta": "Coming Soon"
+    }
+  },
+  "calc": {
+    "title": "Calculation Workshop",
+    "subtitle": "Polarization Optics Calculators",
+    "heroTitle": "Professional Polarization Calculation Tools",
+    "heroDescription": "Master polarization optics through computation: Jones matrix transforms, Mueller matrix cascades, Stokes parameter analysis, and Poincaré sphere visualization.",
+    "openTool": "Open Tool",
+    "aboutTitle": "About Calculation Workshop",
+    "aboutDescription": "The Calculation Workshop provides interactive tools for computing and visualizing polarization optics. These calculators implement the mathematical foundations of polarization: Jones calculus for coherent light, Mueller-Stokes formalism for partially polarized light, and the Poincaré sphere for geometric visualization of polarization states.",
+    "tools": {
+      "jones": {
+        "title": "Jones Matrix Calculator",
+        "subtitle": "Coherent light polarization",
+        "description": "Compute Jones vector transformations through optical elements. Ideal for analyzing fully polarized, coherent light through polarizers, waveplates, and rotators.",
+        "jonesFeature1": "2×2 complex matrix operations",
+        "jonesFeature2": "Cascade multiple optical elements",
+        "jonesFeature3": "Visualize polarization ellipse evolution"
+      },
+      "mueller": {
+        "title": "Mueller Matrix Calculator",
+        "subtitle": "Partially polarized light",
+        "description": "Compute Mueller matrix transformations for partially polarized or depolarized light. Handles real-world scenarios where Jones calculus is insufficient.",
+        "muellerFeature1": "4×4 real matrix operations",
+        "muellerFeature2": "Handle depolarization effects",
+        "muellerFeature3": "Connect to Stokes parameters"
+      },
+      "stokes": {
+        "title": "Stokes Parameter Calculator",
+        "subtitle": "Complete polarization state",
+        "description": "Calculate and convert between Stokes parameters (S₀, S₁, S₂, S₃), ellipse parameters, and polarization degree. Essential for experimental polarimetry.",
+        "stokesFeature1": "Full Stokes vector analysis",
+        "stokesFeature2": "Degree of polarization calculation",
+        "stokesFeature3": "Ellipse parameter extraction"
+      },
+      "poincare": {
+        "title": "Poincaré Sphere Viewer",
+        "subtitle": "Geometric visualization",
+        "description": "Interactive 3D visualization of polarization states on the Poincaré sphere. Understand polarization transformations as rotations in 3D space.",
+        "poincareFeature1": "Interactive 3D sphere rotation",
+        "poincareFeature2": "Map polarization states to sphere points",
+        "poincareFeature3": "Visualize optical element effects"
+      }
     }
   },
   "game": {

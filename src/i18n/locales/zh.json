@@ -98,13 +98,57 @@
       "cta": "开始计算",
       "link1": "Jones矩阵",
       "link2": "Mueller矩阵",
-      "link3": "Stokes参数"
+      "link3": "Stokes参数",
+      "link4": "庞加莱球"
     },
     "openData": {
       "title": "开放数据：偏振数据集",
       "subtitle": "待更新",
       "description": "开放科学数据平台：偏振实验数据、光谱数据、用户贡献数据集——即将上线，敬请期待。",
       "cta": "待更新"
+    }
+  },
+  "calc": {
+    "title": "计算工坊",
+    "subtitle": "偏振光学计算工具",
+    "heroTitle": "专业偏振计算工具集",
+    "heroDescription": "通过计算深入理解偏振光学：Jones矩阵变换、Mueller矩阵级联、Stokes参数分析、庞加莱球可视化。",
+    "openTool": "打开工具",
+    "aboutTitle": "关于计算工坊",
+    "aboutDescription": "计算工坊提供交互式的偏振光学计算与可视化工具。这些计算器实现了偏振的数学基础：用于相干光的Jones矩阵、用于部分偏振光的Mueller-Stokes形式、以及用于偏振态几何可视化的庞加莱球。",
+    "tools": {
+      "jones": {
+        "title": "Jones矩阵计算器",
+        "subtitle": "相干光偏振",
+        "description": "计算光通过光学元件的Jones向量变换。适用于分析完全偏振的相干光通过偏振片、波片和旋转器的情况。",
+        "jonesFeature1": "2×2复数矩阵运算",
+        "jonesFeature2": "级联多个光学元件",
+        "jonesFeature3": "可视化偏振椭圆演变"
+      },
+      "mueller": {
+        "title": "Mueller矩阵计算器",
+        "subtitle": "部分偏振光",
+        "description": "计算部分偏振光或退偏光的Mueller矩阵变换。处理Jones矩阵无法描述的实际场景。",
+        "muellerFeature1": "4×4实数矩阵运算",
+        "muellerFeature2": "处理退偏效应",
+        "muellerFeature3": "连接Stokes参数"
+      },
+      "stokes": {
+        "title": "Stokes参数计算器",
+        "subtitle": "完整偏振态",
+        "description": "计算和转换Stokes参数（S₀, S₁, S₂, S₃）、椭圆参数和偏振度。实验偏振测量的必备工具。",
+        "stokesFeature1": "完整Stokes向量分析",
+        "stokesFeature2": "偏振度计算",
+        "stokesFeature3": "椭圆参数提取"
+      },
+      "poincare": {
+        "title": "庞加莱球查看器",
+        "subtitle": "几何可视化",
+        "description": "庞加莱球上偏振态的交互式3D可视化。将偏振变换理解为三维空间中的旋转。",
+        "poincareFeature1": "交互式3D球体旋转",
+        "poincareFeature2": "将偏振态映射到球面点",
+        "poincareFeature3": "可视化光学元件效应"
+      }
     }
   },
   "game": {

@@ -15,6 +15,7 @@ import {
   BenchPage,
   ApplicationsPage,
   ExperimentsPage,
+  CalculationWorkshopPage,
   PoincareSphereViewerPage,
   JonesCalculatorPage,
   StokesCalculatorPage,
@@ -57,13 +58,19 @@ export function App() {
         <Route path="/optics" element={<Navigate to="/bench" replace />} />
         <Route path="/creative" element={<Navigate to="/experiments" replace />} />
         <Route path="/simulation" element={<Navigate to="/lab" replace />} />
-        <Route path="/data" element={<Navigate to="/lab" replace />} />
 
-        {/* Lab tools */}
-        <Route path="/lab/poincare" element={<PoincareSphereViewerPage />} />
-        <Route path="/lab/jones" element={<JonesCalculatorPage />} />
-        <Route path="/lab/stokes" element={<StokesCalculatorPage />} />
-        <Route path="/lab/mueller" element={<MuellerCalculatorPage />} />
+        {/* Calculation Workshop - 计算工坊 */}
+        <Route path="/calc" element={<CalculationWorkshopPage />} />
+        <Route path="/calc/jones" element={<JonesCalculatorPage />} />
+        <Route path="/calc/mueller" element={<MuellerCalculatorPage />} />
+        <Route path="/calc/stokes" element={<StokesCalculatorPage />} />
+        <Route path="/calc/poincare" element={<PoincareSphereViewerPage />} />
+
+        {/* Lab tools (legacy routes, redirect to /calc) */}
+        <Route path="/lab/poincare" element={<Navigate to="/calc/poincare" replace />} />
+        <Route path="/lab/jones" element={<Navigate to="/calc/jones" replace />} />
+        <Route path="/lab/stokes" element={<Navigate to="/calc/stokes" replace />} />
+        <Route path="/lab/mueller" element={<Navigate to="/calc/mueller" replace />} />
       </Routes>
     </BrowserRouter>
   )
