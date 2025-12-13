@@ -24,8 +24,8 @@ import {
   Home, Search, Play, Pause, RotateCcw,
   ChevronRight, ChevronLeft, Trash2, Eye, EyeOff,
   Lightbulb, Layers, Book, FlaskConical, Wrench,
-  Box, ExternalLink, X, Plus,
-  Circle, Square, Triangle
+  ExternalLink, X, Plus,
+  Circle, Triangle
 } from 'lucide-react'
 import { DeviceIconMap, DefaultDeviceIcon } from '@/components/icons'
 import {
@@ -38,9 +38,9 @@ import {
 // Types & Interfaces
 // ============================================
 
-type DeviceCategory = 'polarizers' | 'waveplates' | 'splitters' | 'retarders' | 'uc2' | 'other'
+type DeviceCategory = 'polarizers' | 'waveplates' | 'splitters' | 'retarders' | 'other'
 type BenchComponentType = 'emitter' | 'polarizer' | 'waveplate' | 'mirror' | 'splitter' | 'sensor' | 'lens'
-type SidebarTab = 'devices' | 'experiments' | 'design'
+type SidebarTab = 'experiments' | 'design'
 
 interface Device {
   id: string
@@ -305,82 +305,15 @@ const DEVICES: Device[] = [
     difficulty: 'advanced',
     benchComponentType: 'splitter',
   },
-  // === UC2 Modules ===
-  {
-    id: 'uc2-polarizer-cube',
-    nameEn: 'UC2 Polarizer Cube',
-    nameZh: 'UC2 偏振片模块',
-    category: 'uc2',
-    descriptionEn: 'Modular polarizer insert for UC2 system with snap-fit design.',
-    descriptionZh: 'UC2系统的模块化偏振片插件，卡扣设计。',
-    principleEn: 'Standard linear polarizer in 3D-printed cube compatible with UC2 rail system.',
-    principleZh: '标准线偏振片安装在与UC2导轨兼容的3D打印立方体中。',
-    icon: '🔲',
-    specifications: [
-      { key: 'Cube Size', valueEn: '50×50×50 mm', valueZh: '50×50×50 mm' },
-      { key: 'Aperture', valueEn: '25 mm', valueZh: '25 mm' },
-    ],
-    applications: {
-      en: ['Education experiments', 'Rapid prototyping'],
-      zh: ['教育实验', '快速原型'],
-    },
-    purchaseLinks: [{ name: 'UC2 GitHub', url: 'https://github.com/openUC2/UC2-GIT' }],
-    difficulty: 'basic',
-    benchComponentType: 'polarizer',
-  },
-  {
-    id: 'uc2-waveplate-holder',
-    nameEn: 'UC2 Waveplate Holder',
-    nameZh: 'UC2 波片支架',
-    category: 'uc2',
-    descriptionEn: 'Precision rotation mount for waveplates in UC2 system.',
-    descriptionZh: 'UC2系统中波片的精密旋转支架。',
-    principleEn: 'Accepts standard 1" waveplates with graduated rotation scale.',
-    principleZh: '接受标准1英寸波片，带刻度旋转刻度。',
-    icon: '🔄',
-    specifications: [
-      { key: 'Optic Size', valueEn: '1" (25.4 mm)', valueZh: '1英寸' },
-      { key: 'Resolution', valueEn: '1° graduations', valueZh: '1°刻度' },
-    ],
-    applications: {
-      en: ['Polarization experiments', 'Student labs'],
-      zh: ['偏振实验', '学生实验室'],
-    },
-    purchaseLinks: [{ name: 'UC2 GitHub', url: 'https://github.com/openUC2/UC2-GIT' }],
-    difficulty: 'basic',
-    benchComponentType: 'waveplate',
-  },
-  {
-    id: 'uc2-led-matrix',
-    nameEn: 'UC2 LED Matrix Module',
-    nameZh: 'UC2 LED矩阵模块',
-    category: 'uc2',
-    descriptionEn: 'Programmable LED array for illumination control.',
-    descriptionZh: '可编程LED阵列用于照明控制。',
-    principleEn: 'Addressable RGB LED matrix controlled via ESP32.',
-    principleZh: '通过ESP32控制的可寻址RGB LED矩阵。',
-    icon: '💡',
-    specifications: [
-      { key: 'LED Count', valueEn: '8×8 or 4×4', valueZh: '8×8 或 4×4' },
-      { key: 'Control', valueEn: 'ESP32 WiFi/USB', valueZh: 'ESP32 WiFi/USB' },
-    ],
-    applications: {
-      en: ['Köhler illumination', 'Dark-field microscopy'],
-      zh: ['柯勒照明', '暗场显微镜'],
-    },
-    purchaseLinks: [{ name: 'UC2 GitHub', url: 'https://github.com/openUC2/UC2-GIT' }],
-    difficulty: 'intermediate',
-    benchComponentType: 'emitter',
-  },
+  // UC2 Modules have been moved to a separate module
 ]
 
-// Category configuration
+// Category configuration (UC2 removed - will be a separate module)
 const CATEGORIES: { id: DeviceCategory | 'all'; labelEn: string; labelZh: string; icon: typeof Circle }[] = [
   { id: 'all', labelEn: 'All', labelZh: '全部', icon: Layers },
   { id: 'polarizers', labelEn: 'Polarizers', labelZh: '偏振器', icon: Circle },
   { id: 'waveplates', labelEn: 'Wave Plates', labelZh: '波片', icon: Layers },
   { id: 'splitters', labelEn: 'Splitters', labelZh: '分束器', icon: Triangle },
-  { id: 'uc2', labelEn: 'UC2', labelZh: 'UC2模块', icon: Square },
 ]
 
 // ============================================
@@ -568,16 +501,8 @@ const PALETTE_COMPONENTS: {
   { type: 'lens', icon: '🔍', nameEn: 'Lens', nameZh: '透镜', color: 'amber', principleEn: '1/f = 1/do + 1/di', principleZh: '薄透镜公式' },
 ]
 
-// UC2 hardware mapping
-const UC2_COMPONENT_MAP: Record<BenchComponentType, { uc2Id: string; nameEn: string; nameZh: string }> = {
-  emitter: { uc2Id: 'UC2-LED', nameEn: 'UC2 LED Module', nameZh: 'UC2 LED模块' },
-  polarizer: { uc2Id: 'UC2-POL', nameEn: 'UC2 Polarizer Cube', nameZh: 'UC2 偏振片模块' },
-  waveplate: { uc2Id: 'UC2-WP', nameEn: 'UC2 Waveplate Holder', nameZh: 'UC2 波片支架' },
-  mirror: { uc2Id: 'UC2-MIR', nameEn: 'UC2 Mirror Mount', nameZh: 'UC2 反射镜支架' },
-  splitter: { uc2Id: 'UC2-BS', nameEn: 'UC2 Beam Splitter', nameZh: 'UC2 分束器模块' },
-  sensor: { uc2Id: 'UC2-CAM', nameEn: 'UC2 Camera Module', nameZh: 'UC2 相机模块' },
-  lens: { uc2Id: 'UC2-LENS', nameEn: 'UC2 Lens Holder', nameZh: 'UC2 透镜支架' },
-}
+// UC2 hardware mapping - moved to separate UC2 module
+// (Will be implemented as independent sub-module)
 
 const DIFFICULTY_CONFIG = {
   basic: { labelEn: 'Basic', labelZh: '基础', color: 'green' as const },
@@ -592,7 +517,7 @@ const DIFFICULTY_CONFIG = {
 // Sub-Components
 // ============================================
 
-// Device Card Component
+// Device Card Component - Compact horizontal layout for top bar
 function DeviceCard({
   device,
   isSelected,
@@ -614,7 +539,7 @@ function DeviceCard({
     <div
       onClick={onClick}
       className={cn(
-        'rounded-lg border p-3 cursor-pointer transition-all',
+        'flex-shrink-0 w-48 rounded-lg border p-2 cursor-pointer transition-all',
         'hover:shadow-md group',
         isSelected
           ? theme === 'dark'
@@ -625,25 +550,23 @@ function DeviceCard({
             : 'bg-white border-gray-200 hover:border-gray-300'
       )}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-center gap-2">
         <div className={cn(
-          'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden',
+          'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden',
           theme === 'dark' ? 'bg-slate-700' : 'bg-gray-100'
         )}>
-          <IconComponent size={32} theme={theme} />
+          <IconComponent size={24} theme={theme} />
         </div>
         <div className="flex-1 min-w-0">
           <h4 className={cn(
-            'font-medium text-sm line-clamp-1',
+            'font-medium text-xs line-clamp-1',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
             {isZh ? device.nameZh : device.nameEn}
           </h4>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <Badge color={difficulty.color} size="sm">
-              {isZh ? difficulty.labelZh : difficulty.labelEn}
-            </Badge>
-          </div>
+          <Badge color={difficulty.color} size="sm">
+            {isZh ? difficulty.labelZh : difficulty.labelEn}
+          </Badge>
         </div>
         {onAddToBench && device.benchComponentType && (
           <button
@@ -652,14 +575,14 @@ function DeviceCard({
               onAddToBench()
             }}
             className={cn(
-              'p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all',
+              'p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all flex-shrink-0',
               theme === 'dark'
                 ? 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
                 : 'bg-violet-100 text-violet-600 hover:bg-violet-200'
             )}
             title={isZh ? '添加到光路' : 'Add to bench'}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
@@ -916,76 +839,7 @@ function ExperimentCard({
   )
 }
 
-// UC2 Panel
-function UC2Panel({
-  components,
-  onClose,
-}: {
-  components: BenchComponent[]
-  onClose: () => void
-}) {
-  const { theme } = useTheme()
-  const { i18n } = useTranslation()
-  const isZh = i18n.language === 'zh'
-
-  const componentCounts = components.reduce((acc, comp) => {
-    acc[comp.type] = (acc[comp.type] || 0) + 1
-    return acc
-  }, {} as Record<BenchComponentType, number>)
-
-  return (
-    <div className={cn(
-      'absolute right-4 top-16 w-72 rounded-xl border shadow-xl z-20',
-      theme === 'dark' ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
-    )}>
-      <div className={cn(
-        'flex items-center justify-between p-3 border-b',
-        theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
-      )}>
-        <div className="flex items-center gap-2">
-          <Box className={cn('w-4 h-4', theme === 'dark' ? 'text-emerald-400' : 'text-emerald-600')} />
-          <h3 className={cn('font-semibold text-sm', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-            {isZh ? 'UC2 零件清单' : 'UC2 Parts List'}
-          </h3>
-        </div>
-        <button onClick={onClose} className={cn('p-1 rounded', theme === 'dark' ? 'hover:bg-slate-800' : 'hover:bg-gray-100')}>
-          <X className="w-4 h-4 text-gray-400" />
-        </button>
-      </div>
-      <div className="p-3 space-y-2 max-h-48 overflow-y-auto">
-        {Object.entries(componentCounts).map(([type, count]) => {
-          const uc2Info = UC2_COMPONENT_MAP[type as BenchComponentType]
-          const palComp = PALETTE_COMPONENTS.find(p => p.type === type)
-          return (
-            <div key={type} className={cn(
-              'flex items-center justify-between p-2 rounded-lg',
-              theme === 'dark' ? 'bg-slate-800' : 'bg-gray-50'
-            )}>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{palComp?.icon}</span>
-                <span className={cn('text-sm', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-                  {isZh ? uc2Info.nameZh : uc2Info.nameEn}
-                </span>
-              </div>
-              <Badge color="green">×{count}</Badge>
-            </div>
-          )
-        })}
-      </div>
-      <div className={cn('p-3 border-t', theme === 'dark' ? 'border-slate-700' : 'border-gray-200')}>
-        <a
-          href="https://github.com/openUC2/UC2-GIT"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-emerald-500 to-emerald-600 text-white"
-        >
-          <ExternalLink className="w-4 h-4" />
-          {isZh ? '获取 UC2 模块' : 'Get UC2 Modules'}
-        </a>
-      </div>
-    </div>
-  )
-}
+// UC2 Panel - moved to separate UC2 module
 
 // ============================================
 // Main Page Component
@@ -997,17 +851,17 @@ export function OpticalDesignStudioPage() {
   const isZh = i18n.language === 'zh'
 
   // State
-  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('devices')
+  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('experiments')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<DeviceCategory | 'all'>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null)
+  const [deviceLibraryCollapsed, setDeviceLibraryCollapsed] = useState(false)
 
   const [components, setComponents] = useState<BenchComponent[]>([])
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null)
   const [isSimulating, setIsSimulating] = useState(false)
   const [showPolarization, setShowPolarization] = useState(true)
-  const [showUC2Panel, setShowUC2Panel] = useState(false)
   const [currentExperiment, setCurrentExperiment] = useState<ClassicExperiment | null>(null)
 
   // Filtered devices
@@ -1073,9 +927,8 @@ export function OpticalDesignStudioPage() {
 
   const selectedComponent = components.find(c => c.id === selectedComponentId)
 
-  // Sidebar tabs configuration
+  // Sidebar tabs configuration (Device library moved to top bar)
   const sidebarTabs = [
-    { id: 'devices' as const, icon: Book, labelEn: 'Devices', labelZh: '器件库' },
     { id: 'experiments' as const, icon: FlaskConical, labelEn: 'Experiments', labelZh: '实验库' },
     { id: 'design' as const, icon: Wrench, labelEn: 'Design', labelZh: '自由设计' },
   ]
@@ -1120,26 +973,108 @@ export function OpticalDesignStudioPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowUC2Panel(!showUC2Panel)}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-                  showUC2Panel
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
-                    : theme === 'dark'
-                      ? 'bg-slate-800 text-gray-300 hover:text-white'
-                      : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                )}
-                disabled={components.length === 0}
-              >
-                <Box className="w-4 h-4" />
-                <span className="hidden sm:inline">UC2</span>
-              </button>
               <LanguageThemeSwitcher />
             </div>
           </div>
         </div>
       </header>
+
+      {/* Device Library - Top Horizontal Bar */}
+      <div className={cn(
+        'flex-shrink-0 border-b transition-all duration-300',
+        deviceLibraryCollapsed ? 'h-10' : 'h-auto',
+        theme === 'dark' ? 'bg-slate-900/70 border-slate-800' : 'bg-white/70 border-gray-200'
+      )}>
+        {/* Header with collapse toggle */}
+        <div className={cn(
+          'flex items-center justify-between px-4 py-2 border-b',
+          theme === 'dark' ? 'border-slate-800' : 'border-gray-100'
+        )}>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Book className={cn('w-4 h-4', theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')} />
+              <h2 className={cn('font-semibold text-sm', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                {isZh ? '器件库' : 'Device Library'}
+              </h2>
+            </div>
+            {!deviceLibraryCollapsed && (
+              <>
+                {/* Search */}
+                <div className="relative">
+                  <Search className={cn(
+                    'absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5',
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  )} />
+                  <input
+                    type="text"
+                    placeholder={isZh ? '搜索...' : 'Search...'}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className={cn(
+                      'w-40 pl-7 pr-2 py-1 rounded-lg border text-xs',
+                      theme === 'dark'
+                        ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500'
+                        : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+                    )}
+                  />
+                </div>
+                {/* Category Filter */}
+                <div className="flex items-center gap-1">
+                  {CATEGORIES.map(cat => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={cn(
+                        'px-2 py-0.5 rounded text-xs font-medium transition-colors',
+                        selectedCategory === cat.id
+                          ? theme === 'dark'
+                            ? 'bg-indigo-500/20 text-indigo-400'
+                            : 'bg-indigo-100 text-indigo-700'
+                          : theme === 'dark'
+                            ? 'text-gray-400 hover:text-gray-200'
+                            : 'text-gray-500 hover:text-gray-700'
+                      )}
+                    >
+                      {isZh ? cat.labelZh : cat.labelEn}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          <button
+            onClick={() => setDeviceLibraryCollapsed(!deviceLibraryCollapsed)}
+            className={cn(
+              'p-1 rounded transition-colors',
+              theme === 'dark' ? 'hover:bg-slate-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+            )}
+          >
+            {deviceLibraryCollapsed ? <ChevronRight className="w-4 h-4 rotate-90" /> : <ChevronRight className="w-4 h-4 -rotate-90" />}
+          </button>
+        </div>
+
+        {/* Device List - Horizontal scrollable */}
+        {!deviceLibraryCollapsed && (
+          <div className="overflow-x-auto overflow-y-hidden px-4 py-2">
+            <div className="flex gap-2 min-w-max">
+              {filteredDevices.map(device => (
+                <DeviceCard
+                  key={device.id}
+                  device={device}
+                  isSelected={selectedDevice?.id === device.id}
+                  onClick={() => setSelectedDevice(device)}
+                  onAddToBench={() => addDeviceToBench(device)}
+                />
+              ))}
+              {filteredDevices.length === 0 && (
+                <p className={cn('text-sm py-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+                  {isZh ? '未找到器件' : 'No devices found'}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="flex-1 flex overflow-hidden relative">
         {/* Left Sidebar */}
@@ -1183,73 +1118,9 @@ export function OpticalDesignStudioPage() {
             </button>
           </div>
 
-          {/* Sidebar Content */}
+          {/* Sidebar Content - Independent scroll, device library moved to top bar */}
           {!sidebarCollapsed && (
-            <div className="flex-1 overflow-y-auto p-3">
-              {sidebarTab === 'devices' && (
-                <div className="space-y-3">
-                  {/* Search */}
-                  <div className="relative">
-                    <Search className={cn(
-                      'absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                    )} />
-                    <input
-                      type="text"
-                      placeholder={isZh ? '搜索器件...' : 'Search...'}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className={cn(
-                        'w-full pl-8 pr-3 py-2 rounded-lg border text-sm',
-                        theme === 'dark'
-                          ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500'
-                          : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                      )}
-                    />
-                  </div>
-
-                  {/* Category Filter */}
-                  <div className="flex flex-wrap gap-1">
-                    {CATEGORIES.map(cat => (
-                      <button
-                        key={cat.id}
-                        onClick={() => setSelectedCategory(cat.id)}
-                        className={cn(
-                          'px-2 py-1 rounded text-xs font-medium transition-colors',
-                          selectedCategory === cat.id
-                            ? theme === 'dark'
-                              ? 'bg-indigo-500/20 text-indigo-400'
-                              : 'bg-indigo-100 text-indigo-700'
-                            : theme === 'dark'
-                              ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
-                              : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                        )}
-                      >
-                        {isZh ? cat.labelZh : cat.labelEn}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Device List */}
-                  <div className="space-y-2">
-                    {filteredDevices.map(device => (
-                      <DeviceCard
-                        key={device.id}
-                        device={device}
-                        isSelected={selectedDevice?.id === device.id}
-                        onClick={() => setSelectedDevice(device)}
-                        onAddToBench={() => addDeviceToBench(device)}
-                      />
-                    ))}
-                    {filteredDevices.length === 0 && (
-                      <p className={cn('text-sm text-center py-4', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                        {isZh ? '未找到器件' : 'No devices found'}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
+            <div className="flex-1 overflow-y-auto p-3 isolate">
               {sidebarTab === 'experiments' && (
                 <div className="space-y-2">
                   <p className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
@@ -1366,10 +1237,7 @@ export function OpticalDesignStudioPage() {
             </button>
           </div>
 
-          {/* UC2 Panel */}
-          {showUC2Panel && components.length > 0 && (
-            <UC2Panel components={components} onClose={() => setShowUC2Panel(false)} />
-          )}
+          {/* UC2 Panel - moved to separate UC2 module */}
 
           {/* Experiment Info */}
           {currentExperiment && (
