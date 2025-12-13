@@ -213,28 +213,13 @@ const MODULES: ModuleConfig[] = [
     },
     mainRoute: '/calc',
     quickLinks: [
-      { labelKey: 'link1', route: '/calc?tool=jones' }, // Jones matrix calculator
-      { labelKey: 'link2', route: '/calc?tool=mueller' }, // Mueller matrix calculator
-      { labelKey: 'link3', route: '/calc?tool=stokes' }, // Stokes parameter calculator
+      { labelKey: 'link1', route: '/calc/jones' }, // Jones matrix calculator
+      { labelKey: 'link2', route: '/calc/mueller' }, // Mueller matrix calculator
+      { labelKey: 'link3', route: '/calc/stokes' }, // Stokes parameter calculator
+      { labelKey: 'link4', route: '/calc/poincare' }, // Poincaré sphere viewer
     ],
   },
-  {
-    // 开放数据：偏振数据集 (Open Data: Polarization Datasets) - Coming Soon
-    key: 'openData',
-    icon: '◎', // Bullseye - represents data and precision
-    colorTheme: {
-      border: 'slate-cool', // Cool Slate #64748B (neutral, distinct from blues)
-      borderHover: 'slate-cool',
-      shadow: 'rgba(100,116,139,0.25)',
-      text: 'slate-cool',
-      gradientFrom: 'slate-cool',
-      gradientTo: 'slate-600',
-      buttonText: 'white',
-    },
-    mainRoute: '/data',
-    quickLinks: [], // No quick links for coming soon module
-    comingSoon: true, // Mark as coming soon
-  },
+  // 开放数据 (Open Data) - Hidden temporarily
 ]
 
 // Color mapping for Tailwind classes - using distinct, visually-friendly colors
