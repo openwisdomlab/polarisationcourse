@@ -20,7 +20,7 @@ import {
   Home, Play, Pause, RotateCcw,
   ChevronRight, Trash2, Eye, EyeOff,
   Lightbulb, Layers, HelpCircle,
-  Box, ExternalLink
+  Box, ExternalLink, Info, BookOpen
 } from 'lucide-react'
 import {
   OpticalComponentMap,
@@ -52,15 +52,95 @@ interface ClassicExperiment {
   linkedDemo?: string
 }
 
-// Palette components available for building
-const PALETTE_COMPONENTS: { type: BenchComponentType; icon: string; nameEn: string; nameZh: string; color: string }[] = [
-  { type: 'emitter', icon: '💡', nameEn: 'Light Source', nameZh: '光源', color: 'yellow' },
-  { type: 'polarizer', icon: '◐', nameEn: 'Polarizer', nameZh: '偏振片', color: 'indigo' },
-  { type: 'waveplate', icon: '◈', nameEn: 'Wave Plate', nameZh: '波片', color: 'violet' },
-  { type: 'mirror', icon: '🪞', nameEn: 'Mirror', nameZh: '反射镜', color: 'cyan' },
-  { type: 'splitter', icon: '◇', nameEn: 'Beam Splitter', nameZh: '分束器', color: 'emerald' },
-  { type: 'sensor', icon: '📡', nameEn: 'Detector', nameZh: '探测器', color: 'rose' },
-  { type: 'lens', icon: '🔍', nameEn: 'Lens', nameZh: '透镜', color: 'amber' },
+// Palette components available for building with descriptions
+const PALETTE_COMPONENTS: {
+  type: BenchComponentType
+  icon: string
+  nameEn: string
+  nameZh: string
+  color: string
+  descriptionEn: string
+  descriptionZh: string
+  principleEn: string
+  principleZh: string
+}[] = [
+  {
+    type: 'emitter',
+    icon: '💡',
+    nameEn: 'Light Source',
+    nameZh: '光源',
+    color: 'yellow',
+    descriptionEn: 'Generates polarized light beam',
+    descriptionZh: '产生偏振光束',
+    principleEn: 'Emits monochromatic light with specific polarization state',
+    principleZh: '发射具有特定偏振态的单色光',
+  },
+  {
+    type: 'polarizer',
+    icon: '◐',
+    nameEn: 'Polarizer',
+    nameZh: '偏振片',
+    color: 'indigo',
+    descriptionEn: 'Filters light by polarization angle',
+    descriptionZh: '按偏振角度过滤光线',
+    principleEn: 'Malus\'s Law: I = I₀ × cos²θ',
+    principleZh: '马吕斯定律: I = I₀ × cos²θ',
+  },
+  {
+    type: 'waveplate',
+    icon: '◈',
+    nameEn: 'Wave Plate',
+    nameZh: '波片',
+    color: 'violet',
+    descriptionEn: 'Changes polarization state',
+    descriptionZh: '改变偏振态',
+    principleEn: 'λ/4: linear→circular; λ/2: rotates polarization by 2θ',
+    principleZh: 'λ/4: 线偏振→圆偏振; λ/2: 偏振旋转2θ',
+  },
+  {
+    type: 'mirror',
+    icon: '🪞',
+    nameEn: 'Mirror',
+    nameZh: '反射镜',
+    color: 'cyan',
+    descriptionEn: 'Reflects light beam',
+    descriptionZh: '反射光束',
+    principleEn: 'Angle of incidence = Angle of reflection',
+    principleZh: '入射角 = 反射角',
+  },
+  {
+    type: 'splitter',
+    icon: '◇',
+    nameEn: 'Beam Splitter',
+    nameZh: '分束器',
+    color: 'emerald',
+    descriptionEn: 'Splits beam into two paths',
+    descriptionZh: '将光束分成两路',
+    principleEn: 'PBS: splits by polarization; Calcite: birefringence',
+    principleZh: 'PBS: 按偏振分光; 方解石: 双折射',
+  },
+  {
+    type: 'sensor',
+    icon: '📡',
+    nameEn: 'Detector',
+    nameZh: '探测器',
+    color: 'rose',
+    descriptionEn: 'Measures light intensity',
+    descriptionZh: '测量光强',
+    principleEn: 'Converts optical signal to measurable data',
+    principleZh: '将光信号转换为可测量数据',
+  },
+  {
+    type: 'lens',
+    icon: '🔍',
+    nameEn: 'Lens',
+    nameZh: '透镜',
+    color: 'amber',
+    descriptionEn: 'Focuses or diverges light',
+    descriptionZh: '聚焦或发散光线',
+    principleEn: '1/f = 1/do + 1/di (thin lens equation)',
+    principleZh: '1/f = 1/物距 + 1/像距 (薄透镜公式)',
+  },
 ]
 
 // Classic experiments catalog
@@ -529,12 +609,17 @@ export function BenchPage() {
   const [isSimulating, setIsSimulating] = useState(false)
   const [showUC2Panel, setShowUC2Panel] = useState(false)
   const [showPolarization, setShowPolarization] = useState(true)
+  const [currentExperiment, setCurrentExperiment] = useState<ClassicExperiment | null>(null)
+  const [showExperimentInfo, setShowExperimentInfo] = useState(true)
+  const [hoveredComponent, setHoveredComponent] = useState<BenchComponentType | null>(null)
 
   // Load classic experiment
   const loadExperiment = useCallback((experiment: ClassicExperiment) => {
     setComponents([...experiment.components])
     setSelectedId(null)
     setIsSimulating(false)
+    setCurrentExperiment(experiment)
+    setShowExperimentInfo(true)
   }, [])
 
   // Add component to bench
@@ -564,6 +649,7 @@ export function BenchPage() {
     setComponents([])
     setSelectedId(null)
     setIsSimulating(false)
+    setCurrentExperiment(null)
   }, [])
 
   // Rotate selected component
@@ -639,10 +725,10 @@ export function BenchPage() {
         </div>
       </header>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Tabs & Components */}
         <aside className={cn(
-          'w-72 border-r flex flex-col',
+          'w-72 border-r flex flex-col flex-shrink-0',
           theme === 'dark' ? 'bg-slate-900/50 border-slate-800' : 'bg-white/50 border-gray-200'
         )}>
           {/* Tab Selector */}
@@ -680,13 +766,15 @@ export function BenchPage() {
                   'text-xs',
                   theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
                 )}>
-                  {isZh ? '点击器件添加到光学平台' : 'Click a component to add it to the bench'}
+                  {isZh ? '点击器件添加到光学平台，悬停查看详情' : 'Click to add, hover for details'}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   {PALETTE_COMPONENTS.map(item => (
                     <button
                       key={item.type}
                       onClick={() => addComponent(item.type)}
+                      onMouseEnter={() => setHoveredComponent(item.type)}
+                      onMouseLeave={() => setHoveredComponent(null)}
                       className={cn(
                         'flex flex-col items-center gap-1 p-3 rounded-xl border transition-all hover:scale-105',
                         theme === 'dark'
@@ -704,6 +792,46 @@ export function BenchPage() {
                     </button>
                   ))}
                 </div>
+
+                {/* Hovered component info */}
+                {hoveredComponent && (
+                  <div className={cn(
+                    'p-3 rounded-lg border-l-4',
+                    theme === 'dark'
+                      ? 'bg-slate-800/80 border-violet-500'
+                      : 'bg-violet-50 border-violet-400'
+                  )}>
+                    {(() => {
+                      const comp = PALETTE_COMPONENTS.find(c => c.type === hoveredComponent)
+                      if (!comp) return null
+                      return (
+                        <>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg">{comp.icon}</span>
+                            <span className={cn(
+                              'font-medium',
+                              theme === 'dark' ? 'text-white' : 'text-gray-900'
+                            )}>
+                              {isZh ? comp.nameZh : comp.nameEn}
+                            </span>
+                          </div>
+                          <p className={cn(
+                            'text-xs mb-1',
+                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                          )}>
+                            {isZh ? comp.descriptionZh : comp.descriptionEn}
+                          </p>
+                          <p className={cn(
+                            'text-xs font-mono',
+                            theme === 'dark' ? 'text-violet-400' : 'text-violet-600'
+                          )}>
+                            {isZh ? comp.principleZh : comp.principleEn}
+                          </p>
+                        </>
+                      )
+                    })()}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -805,6 +933,147 @@ export function BenchPage() {
               components={components}
               onClose={() => setShowUC2Panel(false)}
             />
+          )}
+
+          {/* Experiment Info Panel - shows optical path explanation */}
+          {currentExperiment && showExperimentInfo && (
+            <div className={cn(
+              'absolute top-4 right-4 w-80 rounded-xl border shadow-xl z-20',
+              theme === 'dark' ? 'bg-slate-900/95 border-slate-700' : 'bg-white/95 border-gray-200'
+            )}>
+              <div className={cn(
+                'flex items-center justify-between p-3 border-b',
+                theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+              )}>
+                <div className="flex items-center gap-2">
+                  <BookOpen className={cn('w-4 h-4', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                  <h3 className={cn('font-semibold text-sm', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                    {isZh ? '光路说明' : 'Optical Path Guide'}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowExperimentInfo(false)}
+                  className={cn(
+                    'p-1 rounded transition-colors',
+                    theme === 'dark' ? 'hover:bg-slate-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                  )}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-3 space-y-3 max-h-80 overflow-y-auto">
+                {/* Experiment title */}
+                <div>
+                  <h4 className={cn(
+                    'font-semibold mb-1',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? currentExperiment.nameZh : currentExperiment.nameEn}
+                  </h4>
+                  <p className={cn(
+                    'text-xs',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {isZh ? currentExperiment.descriptionZh : currentExperiment.descriptionEn}
+                  </p>
+                </div>
+
+                {/* Components in the path */}
+                <div>
+                  <h5 className={cn(
+                    'text-xs font-medium mb-2 flex items-center gap-1',
+                    theme === 'dark' ? 'text-violet-400' : 'text-violet-600'
+                  )}>
+                    <Layers className="w-3 h-3" />
+                    {isZh ? '光路组成' : 'Optical Components'}
+                  </h5>
+                  <div className="flex flex-wrap gap-1">
+                    {currentExperiment.components.map((comp, idx) => {
+                      const palComp = PALETTE_COMPONENTS.find(p => p.type === comp.type)
+                      return (
+                        <span
+                          key={comp.id}
+                          className={cn(
+                            'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs',
+                            theme === 'dark' ? 'bg-slate-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+                          )}
+                        >
+                          <span>{palComp?.icon}</span>
+                          <span>{isZh ? palComp?.nameZh : palComp?.nameEn}</span>
+                          {idx < currentExperiment.components.length - 1 && (
+                            <ChevronRight className="w-3 h-3 ml-0.5 text-gray-500" />
+                          )}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Learning points */}
+                <div className={cn(
+                  'p-2 rounded-lg',
+                  theme === 'dark' ? 'bg-slate-800' : 'bg-cyan-50'
+                )}>
+                  <h5 className={cn(
+                    'text-xs font-medium mb-1.5 flex items-center gap-1',
+                    theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                  )}>
+                    <Lightbulb className="w-3 h-3" />
+                    {isZh ? '知识要点' : 'Key Points'}
+                  </h5>
+                  <ul className="space-y-1">
+                    {(isZh ? currentExperiment.learningPoints.zh : currentExperiment.learningPoints.en).map((point, idx) => (
+                      <li
+                        key={idx}
+                        className={cn(
+                          'text-xs flex items-start gap-1.5',
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                        )}
+                      >
+                        <span className={cn(
+                          'mt-1 w-1 h-1 rounded-full flex-shrink-0',
+                          theme === 'dark' ? 'bg-cyan-400' : 'bg-cyan-500'
+                        )} />
+                        <span className="font-mono">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Link to demo */}
+                {currentExperiment.linkedDemo && (
+                  <Link
+                    to={`/demos?demo=${currentExperiment.linkedDemo}`}
+                    className={cn(
+                      'flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                      theme === 'dark'
+                        ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                        : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
+                    )}
+                  >
+                    <Eye className="w-4 h-4" />
+                    {isZh ? '查看交互演示' : 'View Interactive Demo'}
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Toggle experiment info button when collapsed */}
+          {currentExperiment && !showExperimentInfo && (
+            <button
+              onClick={() => setShowExperimentInfo(true)}
+              className={cn(
+                'absolute top-4 right-4 p-2 rounded-lg border z-10 transition-colors',
+                theme === 'dark'
+                  ? 'bg-slate-900/90 border-slate-700 text-cyan-400 hover:bg-slate-800'
+                  : 'bg-white/90 border-gray-200 text-cyan-600 hover:bg-gray-50'
+              )}
+              title={isZh ? '显示光路说明' : 'Show Path Guide'}
+            >
+              <Info className="w-5 h-5" />
+            </button>
           )}
 
           {/* Canvas */}
