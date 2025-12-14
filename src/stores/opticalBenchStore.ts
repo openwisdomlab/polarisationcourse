@@ -344,7 +344,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
     // ========== Component Management ==========
 
-    addComponent: (type, position) => {
+    addComponent: (type: BenchComponentType, position?: Position) => {
       const state = get()
       const defaultX = position?.x ?? 300 + Math.random() * 100
       const defaultY = position?.y ?? 180 + Math.random() * 40
@@ -358,7 +358,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
         properties: getDefaultProperties(type),
       }
 
-      set(prev => ({
+      set((prev: OpticalBenchState) => ({
         components: [...prev.components, newComponent],
         selectedComponentId: newComponent.id,
         hasUnsavedChanges: true,
@@ -367,9 +367,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       get().saveToHistory()
     },
 
-    updateComponent: (id, updates) => {
-      set(prev => ({
-        components: prev.components.map(c =>
+    updateComponent: (id: string, updates: Partial<BenchComponent>) => {
+      set((prev: OpticalBenchState) => ({
+        components: prev.components.map((c: BenchComponent) =>
           c.id === id ? { ...c, ...updates } : c
         ),
         hasUnsavedChanges: true,
@@ -377,10 +377,10 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       get().saveToHistory()
     },
 
-    moveComponent: (id, position) => {
+    moveComponent: (id: string, position: Position) => {
       const state = get()
-      set(prev => ({
-        components: prev.components.map(c =>
+      set((prev: OpticalBenchState) => ({
+        components: prev.components.map((c: BenchComponent) =>
           c.id === id ? {
             ...c,
             x: snapToGridValue(position.x, state.gridSize, state.snapToGrid),
@@ -391,9 +391,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       }))
     },
 
-    rotateComponent: (id, deltaAngle) => {
-      set(prev => ({
-        components: prev.components.map(c =>
+    rotateComponent: (id: string, deltaAngle: number) => {
+      set((prev: OpticalBenchState) => ({
+        components: prev.components.map((c: BenchComponent) =>
           c.id === id ? { ...c, rotation: normalizeAngle(c.rotation + deltaAngle) } : c
         ),
         hasUnsavedChanges: true,
@@ -401,9 +401,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       get().saveToHistory()
     },
 
-    deleteComponent: (id) => {
-      set(prev => ({
-        components: prev.components.filter(c => c.id !== id),
+    deleteComponent: (id: string) => {
+      set((prev: OpticalBenchState) => ({
+        components: prev.components.filter((c: BenchComponent) => c.id !== id),
         selectedComponentId: prev.selectedComponentId === id ? null : prev.selectedComponentId,
         hasUnsavedChanges: true,
       }))
@@ -417,9 +417,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       }
     },
 
-    duplicateComponent: (id) => {
+    duplicateComponent: (id: string) => {
       const state = get()
-      const component = state.components.find(c => c.id === id)
+      const component = state.components.find((c: BenchComponent) => c.id === id)
       if (component) {
         const newComponent: BenchComponent = {
           ...component,
@@ -427,7 +427,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
           x: component.x + 40,
           y: component.y + 40,
         }
-        set(prev => ({
+        set((prev: OpticalBenchState) => ({
           components: [...prev.components, newComponent],
           selectedComponentId: newComponent.id,
           hasUnsavedChanges: true,
@@ -453,18 +453,18 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
     // ========== Selection ==========
 
-    selectComponent: (id) => {
+    selectComponent: (id: string | null) => {
       set({ selectedComponentId: id })
     },
 
-    setHoveredComponent: (id) => {
+    setHoveredComponent: (id: string | null) => {
       set({ hoveredComponentId: id })
     },
 
     // ========== History ==========
 
     saveToHistory: () => {
-      set(prev => {
+      set((prev: OpticalBenchState) => {
         const newHistory = prev.history.slice(0, prev.historyIndex + 1)
         newHistory.push([...prev.components])
 
@@ -481,7 +481,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
     },
 
     undo: () => {
-      set(prev => {
+      set((prev: OpticalBenchState) => {
         if (prev.historyIndex <= 0) return prev
         const newIndex = prev.historyIndex - 1
         return {
@@ -494,7 +494,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
     },
 
     redo: () => {
-      set(prev => {
+      set((prev: OpticalBenchState) => {
         if (prev.historyIndex >= prev.history.length - 1) return prev
         const newIndex = prev.historyIndex + 1
         return {
@@ -508,7 +508,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
     // ========== Simulation ==========
 
-    setSimulating: (isSimulating) => {
+    setSimulating: (isSimulating: boolean) => {
       set({ isSimulating })
       if (isSimulating) {
         get().calculateLightPaths()
@@ -520,12 +520,12 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       get().setSimulating(!state.isSimulating)
     },
 
-    setShowPolarization: (show) => {
+    setShowPolarization: (show: boolean) => {
       set({ showPolarization: show })
     },
 
     toggleShowPolarization: () => {
-      set(prev => ({ showPolarization: !prev.showPolarization }))
+      set((prev: OpticalBenchState) => ({ showPolarization: !prev.showPolarization }))
     },
 
     calculateLightPaths: () => {
@@ -535,9 +535,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       const formulas: string[] = []
 
       // Find all emitters
-      const emitters = state.components.filter(c => c.type === 'emitter')
+      const emitters = state.components.filter((c: BenchComponent) => c.type === 'emitter')
 
-      emitters.forEach(emitter => {
+      emitters.forEach((emitter: BenchComponent) => {
         const initialPolarization = emitter.properties.polarization ?? 0
         const isUnpolarized = initialPolarization === -1
 
@@ -553,9 +553,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
         segments.push(...rays)
 
         // Update sensor readings
-        rays.forEach(seg => {
+        rays.forEach((seg: LightSegment) => {
           const sensor = state.components.find(
-            c => c.type === 'sensor' &&
+            (c: BenchComponent) => c.type === 'sensor' &&
             Math.abs(c.x - seg.x2) < 40 &&
             Math.abs(c.y - seg.y2) < 40
           )
@@ -582,9 +582,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
     // ========== Experiments & Challenges ==========
 
-    loadExperiment: (experiment) => {
+    loadExperiment: (experiment: ClassicExperiment) => {
       set({
-        components: experiment.components.map(c => ({ ...c, id: generateId() })),
+        components: experiment.components.map((c: BenchComponent) => ({ ...c, id: generateId() })),
         selectedComponentId: null,
         isSimulating: false,
         lightSegments: [],
@@ -601,9 +601,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       set({ currentExperiment: null })
     },
 
-    loadChallenge: (challenge) => {
+    loadChallenge: (challenge: Challenge) => {
       set({
-        components: challenge.initialSetup.map(c => ({ ...c, id: generateId() })),
+        components: challenge.initialSetup.map((c: BenchComponent) => ({ ...c, id: generateId() })),
         selectedComponentId: null,
         isSimulating: false,
         lightSegments: [],
@@ -655,7 +655,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
     // ========== Tutorial ==========
 
-    startTutorial: (tutorial) => {
+    startTutorial: (tutorial: Tutorial) => {
       set({
         currentTutorial: tutorial,
         tutorialStepIndex: 0,
@@ -663,7 +663,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
     },
 
     nextTutorialStep: () => {
-      set(prev => {
+      set((prev: OpticalBenchState) => {
         if (!prev.currentTutorial) return prev
         const nextIndex = prev.tutorialStepIndex + 1
         if (nextIndex >= prev.currentTutorial.steps.length) {
@@ -674,7 +674,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
     },
 
     prevTutorialStep: () => {
-      set(prev => ({
+      set((prev: OpticalBenchState) => ({
         tutorialStepIndex: Math.max(0, prev.tutorialStepIndex - 1),
       }))
     },
@@ -685,7 +685,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
     // ========== Save/Load ==========
 
-    saveDesign: (name, description) => {
+    saveDesign: (name: string, description?: string) => {
       const state = get()
       const id = state.currentDesignId || generateId()
       const now = Date.now()
@@ -695,12 +695,12 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
         name,
         description,
         components: [...state.components],
-        createdAt: state.savedDesigns.find(d => d.id === id)?.createdAt || now,
+        createdAt: state.savedDesigns.find((d: SavedDesign) => d.id === id)?.createdAt || now,
         updatedAt: now,
       }
 
-      set(prev => {
-        const designs = prev.savedDesigns.filter(d => d.id !== id)
+      set((prev: OpticalBenchState) => {
+        const designs = prev.savedDesigns.filter((d: SavedDesign) => d.id !== id)
         designs.push(design)
 
         // Persist to localStorage
@@ -720,9 +720,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       return id
     },
 
-    loadDesign: (id) => {
+    loadDesign: (id: string) => {
       const state = get()
-      const design = state.savedDesigns.find(d => d.id === id)
+      const design = state.savedDesigns.find((d: SavedDesign) => d.id === id)
       if (!design) return
 
       set({
@@ -739,9 +739,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       get().saveToHistory()
     },
 
-    deleteDesign: (id) => {
-      set(prev => {
-        const designs = prev.savedDesigns.filter(d => d.id !== id)
+    deleteDesign: (id: string) => {
+      set((prev: OpticalBenchState) => {
+        const designs = prev.savedDesigns.filter((d: SavedDesign) => d.id !== id)
 
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(designs))
@@ -767,7 +767,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       return JSON.stringify(exportData, null, 2)
     },
 
-    importDesign: (json) => {
+    importDesign: (json: string) => {
       try {
         const data = JSON.parse(json)
         if (!data.components || !Array.isArray(data.components)) {
@@ -806,14 +806,14 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
     // ========== UI ==========
 
-    setShowGrid: (show) => set({ showGrid: show }),
-    setSnapToGrid: (snap) => set({ snapToGrid: snap }),
-    setGridSize: (size) => set({ gridSize: size }),
-    setShowFormulas: (show) => set({ showFormulas: show }),
+    setShowGrid: (show: boolean) => set({ showGrid: show }),
+    setSnapToGrid: (snap: boolean) => set({ snapToGrid: snap }),
+    setGridSize: (size: number) => set({ gridSize: size }),
+    setShowFormulas: (show: boolean) => set({ showFormulas: show }),
 
     // ========== Drag ==========
 
-    startDrag: (componentId, offset) => {
+    startDrag: (componentId: string, offset: Position) => {
       set({
         isDragging: true,
         dragOffset: offset,
@@ -821,7 +821,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       })
     },
 
-    updateDrag: (position) => {
+    updateDrag: (position: Position) => {
       const state = get()
       if (!state.isDragging || !state.selectedComponentId || !state.dragOffset) return
 
