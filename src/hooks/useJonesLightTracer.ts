@@ -43,6 +43,12 @@ import {
   createEmitterJones,
 } from '@/core/physics'
 
+// Import advanced mechanics for Master Class components
+import {
+  calculateFidelity,
+  fidelityToAssessment,
+} from '@/core/game2d/mechanics'
+
 // ============================================
 // Types
 // ============================================
@@ -702,6 +708,160 @@ function processComponentInteraction(
       }
       break
     }
+
+    // ===========================================
+    // Master Class Campaign - Advanced Mechanics
+    // ===========================================
+
+    case 'quantumLock': {
+      // Quantum Lock: High-fidelity sensor requiring >99% Jones vector match
+      // Uses fidelity formula: F = |⟨ψ_target|ψ_input⟩|²
+      const sensor = ctx.sensors.get(component.id)
+      if (sensor) {
+        // Record incoming beam
+        sensor.incomingBeams.push({
+          jones: inputJones,
+          coherenceId: ctx.coherenceId,
+        })
+
+        // Superpose all incoming beams
+        const superposedJones = superposeJonesVectors(
+          sensor.incomingBeams.map((b) => ({ jones: b.jones, pathLength: 0 }))
+        )
+
+        sensor.receivedJones = superposedJones
+        sensor.receivedIntensity = jonesIntensity(superposedJones)
+        sensor.receivedPolarization = jonesVectorToPolarization(superposedJones)
+
+        // Get required parameters from component
+        const reqIntensity = component.requiredIntensity ?? 30
+        const reqFidelity = component.requiredFidelity ?? 0.99
+        const targetJones = component.targetJones
+
+        // Check intensity first
+        if (sensor.receivedIntensity < reqIntensity) {
+          sensor.activated = false
+          sensor.fidelity = 0
+        } else if (targetJones) {
+          // Calculate fidelity against target state
+          const fidelity = calculateFidelity(targetJones, superposedJones)
+          sensor.fidelity = fidelity
+          sensor.activated = fidelity >= reqFidelity
+
+          // Store assessment for UI
+          const assessment = fidelityToAssessment(fidelity)
+          // Store target for visualization
+          ;(sensor as unknown as { targetJones: JonesVector }).targetJones = targetJones
+          ;(sensor as unknown as { fidelityAssessment: typeof assessment }).fidelityAssessment = assessment
+        } else {
+          // No target specified, behave like regular sensor
+          sensor.fidelity = 1.0
+          sensor.activated = true
+        }
+      }
+      break
+    }
+
+    case 'interferometerTarget': {
+      // Interferometer Target: Part of a dual-port sensor system
+      // Can be either Port A (bright, requires high intensity) or Port B (dark, requires low intensity)
+      const sensor = ctx.sensors.get(component.id)
+      if (sensor) {
+        // Record incoming beam
+        sensor.incomingBeams.push({
+          jones: inputJones,
+          coherenceId: ctx.coherenceId,
+        })
+
+        // Superpose all incoming beams (interference!)
+        const superposedJones = superposeJonesVectors(
+          sensor.incomingBeams.map((b) => ({ jones: b.jones, pathLength: 0 }))
+        )
+
+        sensor.receivedJones = superposedJones
+        sensor.receivedIntensity = jonesIntensity(superposedJones)
+        sensor.receivedPolarization = jonesVectorToPolarization(superposedJones)
+
+        // Check if this is Port A (bright) or Port B (dark)
+        const isPortA = component.isInterferometerPortA ?? false
+        const isPortB = component.isInterferometerPortB ?? false
+        const minBright = component.minIntensityForBright ?? 90
+        const maxDark = component.maxIntensityForDark ?? 5
+
+        // Store port info for UI
+        ;(sensor as unknown as { isBrightPort: boolean }).isBrightPort = isPortA
+        ;(sensor as unknown as { isDarkPort: boolean }).isDarkPort = isPortB
+
+        if (isPortA) {
+          // Bright port: requires high intensity (constructive interference)
+          sensor.activated = sensor.receivedIntensity >= minBright
+          sensor.fidelity = Math.min(1, sensor.receivedIntensity / minBright)
+        } else if (isPortB) {
+          // Dark port: requires low intensity (destructive interference)
+          sensor.activated = sensor.receivedIntensity <= maxDark
+          // Fidelity is how close to zero we got
+          sensor.fidelity = sensor.receivedIntensity <= maxDark
+            ? 1.0 - (sensor.receivedIntensity / maxDark)
+            : 0
+        } else {
+          // Default behavior
+          sensor.activated = sensor.receivedIntensity >= (component.requiredIntensity ?? 50)
+          sensor.fidelity = 1.0
+        }
+      }
+      break
+    }
+
+    case 'opticalMine': {
+      // Optical Mine: Danger zone that triggers level fail if light > threshold
+      // Can be bypassed with specific polarization state (safe state)
+      const mine = ctx.sensors.get(component.id)
+      if (mine) {
+        // Record incoming beam
+        mine.incomingBeams.push({
+          jones: inputJones,
+          coherenceId: ctx.coherenceId,
+        })
+
+        // Superpose all incoming beams
+        const superposedJones = superposeJonesVectors(
+          mine.incomingBeams.map((b) => ({ jones: b.jones, pathLength: 0 }))
+        )
+
+        mine.receivedJones = superposedJones
+        mine.receivedIntensity = jonesIntensity(superposedJones)
+        mine.receivedPolarization = jonesVectorToPolarization(superposedJones)
+
+        // Get mine parameters
+        const threshold = component.mineThreshold ?? 5
+        const safeJones = component.safeJones
+        const safeTolerance = component.safeTolerance ?? 0.9
+
+        // Mark as mine for UI
+        ;(mine as unknown as { isMine: boolean }).isMine = true
+
+        // Calculate danger level (0-1)
+        const dangerLevel = Math.min(1, mine.receivedIntensity / threshold)
+        ;(mine as unknown as { dangerLevel: number }).dangerLevel = dangerLevel
+
+        // Check for safe state (bypass)
+        let inSafeState = false
+        if (safeJones && mine.receivedIntensity > 0) {
+          const fidelity = calculateFidelity(safeJones, superposedJones)
+          inSafeState = fidelity >= safeTolerance
+          mine.fidelity = fidelity
+        }
+        ;(mine as unknown as { inSafeState: boolean }).inSafeState = inSafeState
+
+        // Check if triggered (BOOM!)
+        const triggered = mine.receivedIntensity >= threshold && !inSafeState
+        ;(mine as unknown as { triggered: boolean }).triggered = triggered
+
+        // "activated" means the mine is SAFE (not triggered)
+        mine.activated = !triggered
+      }
+      break
+    }
   }
 }
 
@@ -786,9 +946,16 @@ export function traceJonesLightSystem(
   const beams: JonesBeamSegment[] = []
   const sensors = new Map<string, JonesSensorState>()
 
-  // Initialize sensors
+  // Initialize sensors (including advanced types that behave like sensors)
+  const sensorTypes = [
+    'sensor',
+    'coincidenceCounter',
+    'quantumLock',
+    'interferometerTarget',
+    'opticalMine',
+  ]
   components
-    .filter((c) => c.type === 'sensor')
+    .filter((c) => sensorTypes.includes(c.type))
     .forEach((s) => {
       sensors.set(s.id, {
         id: s.id,
