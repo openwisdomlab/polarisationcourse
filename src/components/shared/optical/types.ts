@@ -23,6 +23,8 @@ export type OpticalComponentType =
   | 'circularFilter'      // Passes only RCP or LCP light
   | 'coincidenceCounter'  // Requires TWO beams with specific phase relationship
   | 'opticalIsolator'     // One-way light valve (blocks back-reflection)
+  // Optical Detective mode - Mystery Box components
+  | 'mysteryBox'          // Hidden optical element - player must deduce its identity
 
 // 光学元件基础接口
 export interface OpticalComponent {
@@ -117,6 +119,34 @@ export interface OpticalComponent {
    * Faraday rotation angle for optical isolator (default: 45)
    */
   faradayRotation?: number
+
+  // === Mystery Box (Optical Detective) Properties ===
+
+  /**
+   * Hidden element type for mystery box - the actual optical element hidden inside
+   * Player must deduce this through probing with different light states
+   */
+  hiddenElementType?: 'polarizer' | 'halfWavePlate' | 'quarterWavePlate' | 'rotator' | 'retarder' | 'opticalRotator'
+
+  /**
+   * Hidden element angle (fast axis, transmission axis, or rotation angle)
+   */
+  hiddenElementAngle?: number
+
+  /**
+   * Hidden retardation for general retarder (in degrees: 90=λ/4, 180=λ/2)
+   */
+  hiddenRetardation?: number
+
+  /**
+   * Display name shown when mystery is revealed (localized)
+   */
+  revealedName?: string
+
+  /**
+   * Whether the mystery has been solved by the player
+   */
+  isSolved?: boolean
 }
 
 // 光束段 (extended for Jones calculus)

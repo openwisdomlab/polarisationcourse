@@ -58,3 +58,8 @@ export type { PhaseVisualizerSVGProps, EnhancedLightBeamSVGProps } from './Phase
 
 export { VectorScopeSVG, VectorScopeDefs, PolarizationIndicator } from './VectorScopeSVG'
 export type { VectorScopeSVGProps, PolarizationIndicatorProps } from './VectorScopeSVG'
+
+// === Optical Detective Mode (Black Box / Mystery Component) ===
+
+export { MysteryBoxSVG, MysteryBoxDefs } from './MysteryBoxSVG'
+export type { MysteryBoxSVGProps } from './MysteryBoxSVG'

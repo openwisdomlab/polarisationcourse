@@ -19,7 +19,8 @@ import {
   PoincareSphereViewerPage,
   JonesCalculatorPage,
   StokesCalculatorPage,
-  MuellerCalculatorPage
+  MuellerCalculatorPage,
+  DetectiveGamePage,
 } from '@/pages'
 
 export function App() {
@@ -34,6 +35,7 @@ export function App() {
         <Route path="/games/3d" element={<GamePage />} />
         <Route path="/games/card" element={<CardGamePage />} />
         <Route path="/games/escape" element={<EscapeRoomPage />} />
+        <Route path="/games/detective" element={<DetectiveGamePage />} />
 
         {/* Standalone game routes (for backwards compatibility) */}
         <Route path="/game" element={<Navigate to="/games/3d" replace />} />

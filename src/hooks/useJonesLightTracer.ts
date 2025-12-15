@@ -35,6 +35,7 @@ import {
   rotatorMatrix,
   halfWavePlateMatrix,
   quarterWavePlateMatrix,
+  retarderMatrix,
   splitByBirefringence,
   scaleJonesIntensity,
   getJonesPolarizationInfo,
@@ -631,6 +632,74 @@ function processComponentInteraction(
         )
       }
       // Backward direction: light is blocked (no output)
+      break
+    }
+
+    case 'mysteryBox': {
+      // Mystery Box (Optical Detective): applies hidden optical transformation
+      // The player doesn't know what's inside - they must deduce it!
+      const hiddenType = compState.hiddenElementType ?? 'polarizer'
+      const hiddenAngle = compState.hiddenElementAngle ?? 0
+      const hiddenRetard = compState.hiddenRetardation ?? 90
+
+      let outputJones: JonesVector
+
+      switch (hiddenType) {
+        case 'polarizer': {
+          // Hidden polarizer
+          const matrix = polarizerMatrix(hiddenAngle)
+          outputJones = applyJonesMatrix(matrix, inputJones)
+          break
+        }
+        case 'halfWavePlate': {
+          // Hidden λ/2 plate
+          const matrix = halfWavePlateMatrix(hiddenAngle)
+          outputJones = applyJonesMatrix(matrix, inputJones)
+          break
+        }
+        case 'quarterWavePlate': {
+          // Hidden λ/4 plate
+          const matrix = quarterWavePlateMatrix(hiddenAngle)
+          outputJones = applyJonesMatrix(matrix, inputJones)
+          break
+        }
+        case 'rotator': {
+          // Hidden optical rotator
+          const matrix = rotatorMatrix(hiddenAngle)
+          outputJones = applyJonesMatrix(matrix, inputJones)
+          break
+        }
+        case 'opticalRotator': {
+          // Hidden optical rotator (sugar solution, Faraday rotator)
+          const matrix = rotatorMatrix(hiddenAngle)
+          outputJones = applyJonesMatrix(matrix, inputJones)
+          break
+        }
+        case 'retarder': {
+          // Hidden general retarder with arbitrary retardation
+          const matrix = retarderMatrix(hiddenAngle, hiddenRetard)
+          outputJones = applyJonesMatrix(matrix, inputJones)
+          break
+        }
+        default: {
+          // Unknown type: pass through
+          outputJones = inputJones
+        }
+      }
+
+      const outputIntensity = jonesIntensity(outputJones)
+      if (outputIntensity >= ctx.config.minIntensity) {
+        // Apply slight attenuation for mystery box
+        const attenuatedJones = scaleJonesIntensity(outputJones, ctx.config.wavePlateLoss)
+        traceLightPathJones(
+          endX,
+          endY,
+          direction,
+          attenuatedJones,
+          ctx,
+          depth + 1
+        )
+      }
       break
     }
   }

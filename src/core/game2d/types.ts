@@ -23,6 +23,7 @@ export interface OpticalComponent {
     | 'sensor'
     | 'halfWavePlate'
     | 'quarterWavePlate'
+    | 'mysteryBox'  // Optical Detective: hidden component for probing
   x: number // percentage position
   y: number // percentage position
   angle: number // orientation angle (fast axis for waveplates)
@@ -55,6 +56,24 @@ export interface OpticalComponent {
    * Crystal axis angle for splitters (default: 0° = o-axis horizontal)
    */
   crystalAxisAngle?: number
+
+  // === Mystery Box (Optical Detective) Properties ===
+  /**
+   * Hidden element type for mystery box
+   */
+  hiddenElementType?: 'polarizer' | 'halfWavePlate' | 'quarterWavePlate' | 'rotator' | 'retarder' | 'opticalRotator'
+  /**
+   * Hidden element angle (fast axis, transmission axis, or rotation angle)
+   */
+  hiddenElementAngle?: number
+  /**
+   * Hidden retardation for general retarder (in degrees: 90=λ/4, 180=λ/2)
+   */
+  hiddenRetardation?: number
+  /**
+   * Whether the mystery has been solved by the player
+   */
+  isSolved?: boolean
 }
 
 // Level definition with multiple components
