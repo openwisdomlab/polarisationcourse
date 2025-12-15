@@ -620,7 +620,7 @@ function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
       />
 
       {/* Animated polarization wave lines */}
-      <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ opacity: 0.15 }}>
         <defs>
           <linearGradient id="wave-grad-1" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor={theme === 'dark' ? '#ff4444' : '#ff6666'} stopOpacity="0.3" />
@@ -629,31 +629,39 @@ function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
           </linearGradient>
         </defs>
         {/* Horizontal wave lines simulating E-field */}
-        {[0.2, 0.35, 0.5, 0.65, 0.8].map((yPos, i) => (
-          <path
-            key={`h-${i}`}
-            d={`M 0 ${yPos * 100}% Q 25% ${yPos * 100 + Math.sin((time + i * 30) * Math.PI / 180) * 3}%, 50% ${yPos * 100}% T 100% ${yPos * 100}%`}
-            fill="none"
-            stroke="url(#wave-grad-1)"
-            strokeWidth="1"
-            style={{
-              transform: `translateX(${Math.sin((time + i * 60) * Math.PI / 180) * 20}px)`,
-            }}
-          />
-        ))}
+        {[0.2, 0.35, 0.5, 0.65, 0.8].map((yPos, i) => {
+          const y = yPos * 100
+          const yOffset = Math.sin((time + i * 30) * Math.PI / 180) * 3
+          return (
+            <path
+              key={`h-${i}`}
+              d={`M 0 ${y} Q 25 ${y + yOffset}, 50 ${y} T 100 ${y}`}
+              fill="none"
+              stroke="url(#wave-grad-1)"
+              strokeWidth="0.5"
+              style={{
+                transform: `translateX(${Math.sin((time + i * 60) * Math.PI / 180) * 2}%)`,
+              }}
+            />
+          )
+        })}
         {/* Vertical wave lines simulating B-field (perpendicular) */}
-        {[0.15, 0.4, 0.6, 0.85].map((xPos, i) => (
-          <path
-            key={`v-${i}`}
-            d={`M ${xPos * 100}% 0 Q ${xPos * 100 + Math.cos((time + i * 45) * Math.PI / 180) * 2}% 50%, ${xPos * 100}% 100%`}
-            fill="none"
-            stroke={theme === 'dark' ? 'rgba(100, 200, 255, 0.15)' : 'rgba(50, 150, 200, 0.1)'}
-            strokeWidth="1"
-            style={{
-              transform: `translateY(${Math.cos((time + i * 45) * Math.PI / 180) * 15}px)`,
-            }}
-          />
-        ))}
+        {[0.15, 0.4, 0.6, 0.85].map((xPos, i) => {
+          const x = xPos * 100
+          const xOffset = Math.cos((time + i * 45) * Math.PI / 180) * 2
+          return (
+            <path
+              key={`v-${i}`}
+              d={`M ${x} 0 Q ${x + xOffset} 50, ${x} 100`}
+              fill="none"
+              stroke={theme === 'dark' ? 'rgba(100, 200, 255, 0.15)' : 'rgba(50, 150, 200, 0.1)'}
+              strokeWidth="0.5"
+              style={{
+                transform: `translateY(${Math.cos((time + i * 45) * Math.PI / 180) * 1.5}%)`,
+              }}
+            />
+          )
+        })}
       </svg>
 
       {/* Light beam decorations with polarization colors */}
