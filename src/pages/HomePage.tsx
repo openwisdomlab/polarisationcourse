@@ -64,7 +64,7 @@ const MODULES: ModuleConfig[] = [
     ],
   },
   {
-    // 光学设计室：器件图鉴 × 光路设计 (Optical Design Studio: Device Library × Path Design)
+    // 光学设计室：偏振器件和光路设计 (Optical Design Studio: Polarization Devices & Path Design)
     // Merged module combining deviceLibrary + opticalBench
     key: 'opticalDesignStudio',
     icon: '⬡', // Hexagon - represents optical components
