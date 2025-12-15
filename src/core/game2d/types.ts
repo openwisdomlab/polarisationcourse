@@ -25,6 +25,8 @@ export interface OpticalComponent {
     | 'quarterWavePlate'
     | 'mysteryBox'  // Optical Detective: hidden component for probing
     | 'circularFilter'  // Circular polarizer (passes RCP or LCP)
+    | 'beamCombiner'  // Combines two beams (for interference)
+    | 'phaseShifter'  // Introduces phase delay
   x: number // percentage position
   y: number // percentage position
   angle: number // orientation angle (fast axis for waveplates)
@@ -87,19 +89,170 @@ export interface OpticalComponent {
   isSolved?: boolean
 }
 
-// Level definition with multiple components
+// ============================================
+// Campaign & Difficulty Types
+// ============================================
+
+export type Campaign = 'vector' | 'spin' | 'wave' | 'challenge'
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert' | 'master'
+
+// ============================================
+// Advanced Victory Conditions
+// ============================================
+
+/**
+ * Sensor target specification for advanced puzzles
+ * Supports linear angle, circular polarization, or Jones vector matching
+ */
+export interface SensorTarget {
+  /** Target polarization state type */
+  type: 'linear' | 'circular' | 'elliptical' | 'any'
+
+  /** For linear: target angle in degrees (0-180) */
+  linearAngle?: number
+
+  /** For circular/elliptical: handedness */
+  handedness?: 'left' | 'right'
+
+  /** Target Jones vector for precise matching (overrides above if set) */
+  jonesVector?: JonesVector
+
+  /** Required fidelity for Jones vector matching (default: 0.99 = 99%) */
+  fidelity?: number
+
+  /** Required minimum intensity (0-100) */
+  minIntensity?: number
+
+  /** Required maximum intensity (for dark ports) */
+  maxIntensity?: number
+}
+
+/**
+ * Inventory definition - components available to player
+ */
+export interface LevelInventory {
+  polarizer?: number
+  mirror?: number
+  splitter?: number
+  rotator?: number
+  halfWavePlate?: number
+  quarterWavePlate?: number
+  phaseShifter?: number
+  beamCombiner?: number
+  circularFilter?: number
+}
+
+/**
+ * Success criteria for level completion
+ */
+export interface VictoryConditions {
+  /** All sensors must be activated */
+  allSensorsActivated?: boolean
+
+  /** Specific sensors with target states */
+  sensorTargets?: Record<string, SensorTarget>
+
+  /** Minimum total intensity at sensors */
+  minTotalIntensity?: number
+
+  /** Maximum allowed intensity at danger zones */
+  maxDangerZoneIntensity?: number
+
+  /** Required output configuration for interferometers */
+  interferometerConfig?: {
+    brightPortId: string
+    darkPortId: string
+    brightMinIntensity: number
+    darkMaxIntensity: number
+  }
+
+  /** For XOR/logic gates: output should be ON when condition is met */
+  logicGateCondition?: 'XOR' | 'AND' | 'OR'
+}
+
+// ============================================
+// Level Definition
+// ============================================
+
+/**
+ * Level definition with advanced campaign system
+ */
 export interface Level2D {
+  /** Unique level ID */
   id: number
+
+  /** Internal string identifier for references */
+  levelId: string
+
+  /** Display name (English) */
   name: string
+
+  /** Display name (Chinese) */
   nameZh: string
+
+  /** Brief description (English) */
   description: string
+
+  /** Brief description (Chinese) */
   descriptionZh: string
+
+  /** Optional hint (English) */
   hint?: string
+
+  /** Optional hint (Chinese) */
   hintZh?: string
+
+  /** Pre-placed components (locked and unlocked) */
   components: OpticalComponent[]
-  gridSize: { width: number; height: number } // for positioning
-  openEnded?: boolean // multiple solutions possible
-  difficulty: 'easy' | 'medium' | 'hard' | 'expert'
+
+  /** Grid size for positioning */
+  gridSize: { width: number; height: number }
+
+  /** Multiple solutions possible */
+  openEnded?: boolean
+
+  // === Campaign System ===
+
+  /** Difficulty tier */
+  difficulty: Difficulty
+
+  /** Campaign this level belongs to */
+  campaign: Campaign
+
+  /** Order within campaign (for progression) */
+  campaignOrder: number
+
+  // === Inventory System ===
+
+  /** Components available to place (empty = use what's given) */
+  inventory?: LevelInventory
+
+  // === Advanced Victory Conditions ===
+
+  /** Victory conditions for level completion */
+  victory?: VictoryConditions
+
+  // === Educational Content ===
+
+  /** Physics concepts taught in this level */
+  concepts?: string[]
+
+  /** Physics concepts (Chinese) */
+  conceptsZh?: string[]
+
+  /** Goal description for HUD display */
+  goalDescription?: string
+
+  /** Goal description (Chinese) */
+  goalDescriptionZh?: string
+
+  // === Scoring (Optional) ===
+
+  /** Par component count for gold medal */
+  parComponentCount?: number
+
+  /** Target fidelity for bonus points */
+  perfectFidelity?: number
 }
 
 // Light beam segment for visualization
