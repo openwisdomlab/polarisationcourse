@@ -87,6 +87,10 @@ export interface LightSegment {
   // Polarization analysis (derived from jonesVector)
   polarizationType: 'linear' | 'circular' | 'elliptical'
   handedness: 'right' | 'left' | 'none'
+  // Beam geometry (Phase 4: Geometric Optics)
+  beamWidth: number            // Beam width in pixels (default ~10)
+  beamDivergence: number       // Divergence angle in degrees (positive = spreading)
+  ellipticity: number          // Polarization ellipticity: 0 = linear, ±1 = circular
 }
 
 export interface SavedDesign {
@@ -944,6 +948,9 @@ interface RayState {
   depth: number                 // Recursion depth (for limiting)
   sourceId: string              // Original emitter ID
   visitedComponents: Set<string> // Components already visited by this ray path
+  // Beam geometry (Phase 4: Geometric Optics)
+  beamWidth: number             // Current beam width in pixels
+  beamDivergence: number        // Current divergence angle in degrees
 }
 
 /**
@@ -1178,6 +1185,108 @@ function applyJonesTransformation(
   return { jones: outputJones, intensity, polarization }
 }
 
+// ============================================
+// Geometric Optics: Thin Lens Equation
+// ============================================
+
+/**
+ * Default beam parameters
+ */
+const DEFAULT_BEAM_WIDTH = 10        // pixels
+const DEFAULT_BEAM_DIVERGENCE = 0    // degrees (collimated)
+
+/**
+ * Calculate beam transformation through a thin lens using paraxial approximation
+ *
+ * The thin lens equation relates the beam properties before and after the lens:
+ * - For a collimated beam (divergence = 0), the lens focuses it to a waist at f
+ * - For a diverging beam, the lens can collimate or focus it depending on geometry
+ *
+ * Using the ABCD matrix formalism for thin lens:
+ * | A  B |   | 1      0  |
+ * | C  D | = | -1/f   1  |
+ *
+ * Where f is focal length (positive for convex, negative for concave)
+ *
+ * Beam parameters transform as:
+ * - θ_out = θ_in - h/f  (paraxial ray angle)
+ * - For Gaussian beam: w(z) = w0 * sqrt(1 + (z/zR)²)
+ *
+ * Simplified model for visualization:
+ * - Tracks beam width and divergence angle
+ * - Positive f (convex): converges parallel rays to focus
+ * - Negative f (concave): diverges rays
+ */
+function calculateLensTransformation(
+  inputWidth: number,
+  inputDivergence: number,  // degrees
+  focalLength: number,      // mm (positive = convex, negative = concave)
+  rayHeight: number = 0     // Height of ray from optical axis (pixels)
+): { width: number; divergence: number } {
+
+  // Pixel to mm conversion (approximate for visualization)
+  const PIXELS_PER_MM = 2
+
+  // Convert divergence to radians
+  const inputDivRad = (inputDivergence * Math.PI) / 180
+
+  // Effective focal length in pixels
+  const fPixels = focalLength * PIXELS_PER_MM
+
+  // Paraxial approximation: ray angle changes by -h/f
+  // θ_out = θ_in - y/f
+  const rayHeightContribution = rayHeight / fPixels
+
+  // For collimated beam entering lens: divergence becomes -1/f (focusing angle)
+  // For diverging beam: adds to existing divergence
+  let outputDivRad: number
+
+  if (Math.abs(focalLength) < 1) {
+    // Very short focal length - strong lens effect
+    outputDivRad = inputDivRad + Math.sign(-focalLength) * 0.2
+  } else {
+    // Apply thin lens formula
+    // Δθ = -h/f for a ray at height h
+    // For the beam envelope, use typical ray height (half beam width)
+    const typicalHeight = inputWidth / 2
+    const angleChange = -typicalHeight / fPixels
+
+    outputDivRad = inputDivRad + angleChange - rayHeightContribution
+  }
+
+  // Convert back to degrees
+  const outputDivergence = (outputDivRad * 180) / Math.PI
+
+  // Beam width immediately after lens (minimal change at lens plane)
+  // Width change occurs as beam propagates
+  const outputWidth = inputWidth
+
+  // Clamp divergence to reasonable range for visualization
+  const clampedDivergence = Math.max(-30, Math.min(30, outputDivergence))
+
+  return {
+    width: outputWidth,
+    divergence: clampedDivergence
+  }
+}
+
+/**
+ * Calculate beam width after propagating a distance with given divergence
+ * w(z) = w0 + z * tan(θ)
+ */
+function propagateBeamWidth(
+  initialWidth: number,
+  divergenceDeg: number,
+  distance: number
+): number {
+  const divRad = (divergenceDeg * Math.PI) / 180
+  const widthChange = distance * Math.tan(divRad)
+  const newWidth = initialWidth + widthChange
+
+  // Clamp to reasonable range for visualization
+  return Math.max(2, Math.min(50, newWidth))
+}
+
 /**
  * Queue-based ray tracing with beam splitting support
  *
@@ -1216,7 +1325,9 @@ function traceLightRays(
     phase: 1,
     depth: 0,
     sourceId: emitter.id,
-    visitedComponents: new Set([emitter.id])
+    visitedComponents: new Set([emitter.id]),
+    beamWidth: DEFAULT_BEAM_WIDTH,
+    beamDivergence: DEFAULT_BEAM_DIVERGENCE,
   }]
 
   let segmentCounter = 0
@@ -1239,13 +1350,25 @@ function traceLightRays(
       const endY = nextComponent.y
       const analysis = analyzePolarization(ray.jonesVector)
 
+      // Calculate segment length for beam propagation
+      const segStartX = ray.position.x + ray.direction.x * 30
+      const segStartY = ray.position.y + ray.direction.y * 30
+      const segEndX = endX - ray.direction.x * 30
+      const segEndY = endY - ray.direction.y * 30
+      const segmentLength = Math.sqrt(
+        Math.pow(segEndX - segStartX, 2) + Math.pow(segEndY - segStartY, 2)
+      )
+
+      // Calculate beam width at end of segment (propagation with divergence)
+      const endBeamWidth = propagateBeamWidth(ray.beamWidth, ray.beamDivergence, segmentLength)
+
       // Create segment from current position to component
       segments.push({
         id: `${ray.id}-seg${segmentCounter++}`,
-        x1: ray.position.x + ray.direction.x * 30,
-        y1: ray.position.y + ray.direction.y * 30,
-        x2: endX - ray.direction.x * 30,
-        y2: endY - ray.direction.y * 30,
+        x1: segStartX,
+        y1: segStartY,
+        x2: segEndX,
+        y2: segEndY,
         polarization: ray.polarization,
         jonesVector: ray.jonesVector,
         intensity: ray.intensity,
@@ -1253,6 +1376,9 @@ function traceLightRays(
         rayId: ray.sourceId,
         polarizationType: analysis.type,
         handedness: analysis.handedness,
+        beamWidth: ray.beamWidth,
+        beamDivergence: ray.beamDivergence,
+        ellipticity: analysis.ellipticity,
       })
 
       // Mark component as visited for this ray path
@@ -1370,6 +1496,8 @@ function traceLightRays(
                 depth: ray.depth + 1,
                 sourceId: ray.sourceId,
                 visitedComponents: new Set(newVisited),
+                beamWidth: endBeamWidth,
+                beamDivergence: ray.beamDivergence,
               })
             }
 
@@ -1387,6 +1515,8 @@ function traceLightRays(
                 depth: ray.depth + 1,
                 sourceId: ray.sourceId,
                 visitedComponents: new Set(newVisited),
+                beamWidth: endBeamWidth,
+                beamDivergence: ray.beamDivergence,
               })
             }
             rayBranchCounter++
@@ -1412,6 +1542,8 @@ function traceLightRays(
                 depth: ray.depth + 1,
                 sourceId: ray.sourceId,
                 visitedComponents: new Set(newVisited),
+                beamWidth: endBeamWidth,
+                beamDivergence: ray.beamDivergence,
               })
             }
 
@@ -1434,6 +1566,8 @@ function traceLightRays(
                 depth: ray.depth + 1,
                 sourceId: ray.sourceId,
                 visitedComponents: new Set(newVisited),
+                beamWidth: endBeamWidth,
+                beamDivergence: ray.beamDivergence,
               })
             }
             rayBranchCounter++
@@ -1459,6 +1593,8 @@ function traceLightRays(
                 depth: ray.depth + 1,
                 sourceId: ray.sourceId,
                 visitedComponents: new Set(newVisited),
+                beamWidth: endBeamWidth,
+                beamDivergence: ray.beamDivergence,
               })
             }
 
@@ -1476,6 +1612,8 @@ function traceLightRays(
                 depth: ray.depth + 1,
                 sourceId: ray.sourceId,
                 visitedComponents: new Set(newVisited),
+                beamWidth: endBeamWidth,
+                beamDivergence: ray.beamDivergence,
               })
             }
             rayBranchCounter++
@@ -1484,14 +1622,29 @@ function traceLightRays(
         }
 
         case 'lens': {
-          // Lens doesn't affect polarization (Phase 4 will add beam focusing)
-          formulas.push(`Lens: f = ${nextComponent.properties.focalLength}mm`)
+          // Apply thin lens transformation to beam geometry
+          const focalLength = nextComponent.properties.focalLength ?? 50
+          const lensResult = calculateLensTransformation(
+            endBeamWidth, // Use propagated beam width at lens position
+            ray.beamDivergence,
+            focalLength,
+            0 // On-axis ray (ray height = 0)
+          )
+
+          // Generate educational formula
+          const lensType = focalLength > 0 ? 'convex' : 'concave'
+          const focusEffect = focalLength > 0 ? 'converging' : 'diverging'
+          formulas.push(`Lens(${lensType}, f=${focalLength}mm): θ = ${ray.beamDivergence.toFixed(1)}° → ${lensResult.divergence.toFixed(1)}° (${focusEffect})`)
+
+          // Lens doesn't affect polarization, only beam geometry
           rayQueue.push({
             ...ray,
             id: ray.id,
             position: { x: endX, y: endY },
             depth: ray.depth + 1,
             visitedComponents: newVisited,
+            beamWidth: lensResult.width,
+            beamDivergence: lensResult.divergence,
           })
           break
         }
@@ -1524,15 +1677,15 @@ function traceLightRays(
 
       t = Math.min(t, 500) // Limit maximum extension
 
-      const endX = ray.position.x + ray.direction.x * t
-      const endY = ray.position.y + ray.direction.y * t
+      const edgeEndX = ray.position.x + ray.direction.x * t
+      const edgeEndY = ray.position.y + ray.direction.y * t
 
       segments.push({
         id: `${ray.id}-seg${segmentCounter++}`,
         x1: ray.position.x + ray.direction.x * 30,
         y1: ray.position.y + ray.direction.y * 30,
-        x2: endX,
-        y2: endY,
+        x2: edgeEndX,
+        y2: edgeEndY,
         polarization: ray.polarization,
         jonesVector: ray.jonesVector,
         intensity: ray.intensity,
@@ -1540,6 +1693,9 @@ function traceLightRays(
         rayId: ray.sourceId,
         polarizationType: analysis.type,
         handedness: analysis.handedness,
+        beamWidth: ray.beamWidth,
+        beamDivergence: ray.beamDivergence,
+        ellipticity: analysis.ellipticity,
       })
     }
   }
@@ -1549,6 +1705,9 @@ function traceLightRays(
 
 // Export utility functions for use in components
 export { getPolarizationColor, normalizeAngle, calculateMalusLaw }
+
+// Export beam geometry utilities for visualization (Phase 4)
+export { propagateBeamWidth, DEFAULT_BEAM_WIDTH, DEFAULT_BEAM_DIVERGENCE }
 
 // Re-export Jones calculus utilities for use in visualization components
 export {
