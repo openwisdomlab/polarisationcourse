@@ -15,8 +15,246 @@ import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
   FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Sun, Sparkles, HelpCircle
+  Sun, Sparkles, HelpCircle, Map
 } from 'lucide-react'
+
+// ============================================
+// Optical Overview Diagram - 光学全景图
+// ============================================
+
+function OpticalOverviewDiagram() {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  return (
+    <div className={cn(
+      'mb-8 rounded-xl border overflow-hidden transition-all',
+      theme === 'dark' ? 'bg-slate-900/50 border-slate-700' : 'bg-white border-gray-200'
+    )}>
+      {/* Header */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={cn(
+          'w-full flex items-center justify-between px-4 py-3 transition-colors',
+          theme === 'dark' ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'
+        )}
+      >
+        <div className="flex items-center gap-2">
+          <Map className={cn('w-5 h-5', theme === 'dark' ? 'text-violet-400' : 'text-violet-600')} />
+          <h3 className={cn('font-semibold text-base', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+            {isZh ? '光学全景图' : 'Optical Science Overview'}
+          </h3>
+          <span className={cn('text-xs px-2 py-0.5 rounded-full', theme === 'dark' ? 'bg-violet-500/20 text-violet-400' : 'bg-violet-100 text-violet-700')}>
+            {isZh ? '点击展开' : 'Click to expand'}
+          </span>
+        </div>
+        {isExpanded ? (
+          <ChevronUp className={cn('w-5 h-5', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')} />
+        ) : (
+          <ChevronDown className={cn('w-5 h-5', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')} />
+        )}
+      </button>
+
+      {/* Expanded Content */}
+      {isExpanded && (
+        <div className="px-4 pb-4">
+          {/* SVG Overview Diagram */}
+          <svg viewBox="0 0 800 400" className="w-full max-w-4xl mx-auto">
+            {/* Background */}
+            <rect width="800" height="400" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
+
+            {/* Title */}
+            <text x="400" y="30" fontSize="14" fill={theme === 'dark' ? '#e2e8f0' : '#1e293b'} textAnchor="middle" fontWeight="bold">
+              {isZh ? '光学学科体系 —— 偏振光在其中的位置' : 'Optics Hierarchy — Where Polarization Fits'}
+            </text>
+
+            {/* EM Spectrum Bar */}
+            <g transform="translate(50, 50)">
+              <text x="350" y="0" fontSize="10" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
+                {isZh ? '电磁波谱' : 'Electromagnetic Spectrum'}
+              </text>
+              {/* Spectrum gradient */}
+              <defs>
+                <linearGradient id="spectrum-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ff0080" />
+                  <stop offset="14%" stopColor="#ff0000" />
+                  <stop offset="28%" stopColor="#ff8800" />
+                  <stop offset="42%" stopColor="#ffff00" />
+                  <stop offset="57%" stopColor="#00ff00" />
+                  <stop offset="71%" stopColor="#0088ff" />
+                  <stop offset="85%" stopColor="#0000ff" />
+                  <stop offset="100%" stopColor="#8800ff" />
+                </linearGradient>
+              </defs>
+              <rect x="0" y="10" width="700" height="20" fill="url(#spectrum-gradient)" rx="4" opacity="0.8" />
+              {/* Visible light highlight */}
+              <rect x="200" y="8" width="300" height="24" fill="none" stroke={theme === 'dark' ? '#fff' : '#000'} strokeWidth="2" rx="4" strokeDasharray="4,2" />
+              <text x="350" y="50" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
+                {isZh ? '可见光 (380-700nm)' : 'Visible Light (380-700nm)'}
+              </text>
+              {/* Labels */}
+              <text x="50" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">γ/X-ray</text>
+              <text x="150" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">UV</text>
+              <text x="550" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">IR</text>
+              <text x="650" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">Radio</text>
+            </g>
+
+            {/* Main branches of Optics */}
+            {/* Geometric Optics */}
+            <g transform="translate(50, 130)">
+              <rect x="0" y="0" width="180" height="100" rx="8" fill={theme === 'dark' ? '#1e3a5f' : '#dbeafe'} stroke={theme === 'dark' ? '#3b82f6' : '#60a5fa'} strokeWidth="2" />
+              <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? '#60a5fa' : '#1d4ed8'} textAnchor="middle" fontWeight="bold">
+                {isZh ? '几何光学' : 'Geometric Optics'}
+              </text>
+              <text x="90" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
+                {isZh ? '光线追踪' : 'Ray Tracing'}
+              </text>
+              <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '折射定律' : "Snell's Law"}
+              </text>
+              <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '透镜成像' : 'Lens Imaging'}
+              </text>
+              <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '光学仪器' : 'Optical Instruments'}
+              </text>
+            </g>
+
+            {/* Wave Optics - Main box with polarization highlight */}
+            <g transform="translate(260, 130)">
+              <rect x="0" y="0" width="280" height="180" rx="8" fill={theme === 'dark' ? '#134e4a' : '#ccfbf1'} stroke={theme === 'dark' ? '#14b8a6' : '#2dd4bf'} strokeWidth="2" />
+              <text x="140" y="25" fontSize="12" fill={theme === 'dark' ? '#2dd4bf' : '#0d9488'} textAnchor="middle" fontWeight="bold">
+                {isZh ? '波动光学' : 'Wave Optics'}
+              </text>
+              <text x="140" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
+                {isZh ? '电磁波理论' : 'Electromagnetic Wave Theory'}
+              </text>
+
+              {/* Polarization - highlighted sub-box */}
+              <rect x="15" y="60" width="120" height="110" rx="6" fill={theme === 'dark' ? '#164e63' : '#cffafe'} stroke={theme === 'dark' ? '#22d3ee' : '#06b6d4'} strokeWidth="3" strokeDasharray="none" />
+              <g transform="translate(75, 80)">
+                <Sparkles className="w-4 h-4" />
+              </g>
+              <text x="75" y="95" fontSize="10" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle" fontWeight="bold">
+                {isZh ? '偏振光学 ⭐' : 'Polarization ⭐'}
+              </text>
+              <text x="75" y="110" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
+                • {isZh ? '马吕斯定律' : "Malus's Law"}
+              </text>
+              <text x="75" y="123" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
+                • {isZh ? '双折射' : 'Birefringence'}
+              </text>
+              <text x="75" y="136" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
+                • {isZh ? '波片' : 'Waveplates'}
+              </text>
+              <text x="75" y="149" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
+                • {isZh ? '椭圆偏振' : 'Elliptical Pol.'}
+              </text>
+              <text x="75" y="162" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
+                • {isZh ? '斯托克斯参量' : 'Stokes Vectors'}
+              </text>
+
+              {/* Other wave optics topics */}
+              <text x="200" y="80" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '干涉' : 'Interference'}
+              </text>
+              <text x="200" y="95" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '衍射' : 'Diffraction'}
+              </text>
+              <text x="200" y="110" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '相干性' : 'Coherence'}
+              </text>
+              <text x="200" y="125" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '散射' : 'Scattering'}
+              </text>
+            </g>
+
+            {/* Quantum Optics */}
+            <g transform="translate(570, 130)">
+              <rect x="0" y="0" width="180" height="100" rx="8" fill={theme === 'dark' ? '#4c1d95' : '#ede9fe'} stroke={theme === 'dark' ? '#8b5cf6' : '#a78bfa'} strokeWidth="2" />
+              <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? '#a78bfa' : '#7c3aed'} textAnchor="middle" fontWeight="bold">
+                {isZh ? '量子光学' : 'Quantum Optics'}
+              </text>
+              <text x="90" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
+                {isZh ? '光子理论' : 'Photon Theory'}
+              </text>
+              <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '光电效应' : 'Photoelectric'}
+              </text>
+              <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '量子纠缠' : 'Entanglement'}
+              </text>
+              <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+                • {isZh ? '单光子源' : 'Single Photon'}
+              </text>
+            </g>
+
+            {/* Applications section */}
+            <g transform="translate(50, 340)">
+              <text x="0" y="0" fontSize="10" fill={theme === 'dark' ? '#94a3b8' : '#64748b'}>
+                {isZh ? '偏振光应用：' : 'Polarization Applications:'}
+              </text>
+              <g transform="translate(120, -8)">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                  {isZh ? '3D电影' : '3D Cinema'}
+                </text>
+              </g>
+              <g transform="translate(210, -8)">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                  {isZh ? 'LCD显示' : 'LCD Display'}
+                </text>
+              </g>
+              <g transform="translate(300, -8)">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                  {isZh ? '太阳镜' : 'Sunglasses'}
+                </text>
+              </g>
+              <g transform="translate(390, -8)">
+                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
+                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                  {isZh ? '偏振显微镜' : 'Pol. Microscopy'}
+                </text>
+              </g>
+              <g transform="translate(500, -8)">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                  {isZh ? '光通信' : 'Fiber Optics'}
+                </text>
+              </g>
+              <g transform="translate(590, -8)">
+                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
+                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                  {isZh ? '遥感测量' : 'Remote Sensing'}
+                </text>
+              </g>
+            </g>
+
+            {/* Connecting lines */}
+            <line x1="140" y1="230" x2="260" y2="220" stroke={theme === 'dark' ? '#475569' : '#cbd5e1'} strokeWidth="1" strokeDasharray="4,2" />
+            <line x1="540" y1="220" x2="570" y2="180" stroke={theme === 'dark' ? '#475569' : '#cbd5e1'} strokeWidth="1" strokeDasharray="4,2" />
+          </svg>
+
+          {/* Legend */}
+          <div className={cn(
+            'mt-4 p-3 rounded-lg text-xs',
+            theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
+          )}>
+            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              {isZh
+                ? '💡 偏振光学是波动光学的重要分支，研究光的横波特性。本课程聚焦偏振现象的发现历史、物理原理和现代应用。'
+                : '💡 Polarization optics is a key branch of wave optics, studying the transverse wave nature of light. This course focuses on the discovery history, physical principles, and modern applications of polarization.'}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // Timeline events data - 双轨历史数据
 interface TimelineEvent {
@@ -2085,6 +2323,9 @@ export function ChroniclesPage() {
             </div>
           </div>
         </div>
+
+        {/* Optical Overview Diagram - 光学全景图 */}
+        <OpticalOverviewDiagram />
 
         {/* Tabs */}
         <div className="mb-6">
