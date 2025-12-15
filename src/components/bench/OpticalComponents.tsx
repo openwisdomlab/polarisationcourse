@@ -374,6 +374,7 @@ export function LensViz({ x, y, rotation, selected, onClick }: ComponentProps) {
 }
 
 // Light beam visualization with polarization
+// Supports linear, circular, and elliptical polarization visualization
 interface LightBeamProps {
   x1: number
   y1: number
@@ -383,22 +384,49 @@ interface LightBeamProps {
   intensity?: number // 0-100
   showPolarization?: boolean
   animated?: boolean
+  // Enhanced polarization properties from Jones vector analysis
+  polarizationType?: 'linear' | 'circular' | 'elliptical'
+  handedness?: 'right' | 'left' | 'none'
+  ellipticity?: number // 0 = linear, ±π/4 = circular
 }
 
-export function LightBeam({ x1, y1, x2, y2, polarizationAngle = 0, intensity = 100, showPolarization = true, animated = true }: LightBeamProps) {
-  // Calculate polarization color
-  const getPolarizationColor = (angle: number) => {
+export function LightBeam({
+  x1,
+  y1,
+  x2,
+  y2,
+  polarizationAngle = 0,
+  intensity = 100,
+  showPolarization = true,
+  animated = true,
+  polarizationType = 'linear',
+  handedness = 'none',
+  ellipticity = 0,
+}: LightBeamProps) {
+  // Calculate polarization color based on state
+  const getPolarizationColor = (angle: number, type: string, hand: string) => {
+    if (type === 'circular') {
+      // Circular polarization: blue for RCP, pink for LCP
+      return hand === 'right' ? '#3b82f6' : '#ec4899'
+    }
+    if (type === 'elliptical') {
+      // Elliptical: purple tint based on ellipticity
+      return '#a855f7'
+    }
+    // Linear polarization: color by angle
     const colors: Record<number, string> = {
       0: '#ef4444',   // Red - horizontal
       45: '#f97316',  // Orange
       90: '#22c55e',  // Green - vertical
       135: '#3b82f6', // Blue
     }
-    return colors[angle % 180] || '#fbbf24'
+    return colors[Math.round(angle / 45) * 45 % 180] || '#fbbf24'
   }
 
-  const beamColor = showPolarization ? getPolarizationColor(polarizationAngle) : '#fbbf24'
-  const opacity = intensity / 100
+  const beamColor = showPolarization
+    ? getPolarizationColor(polarizationAngle, polarizationType, handedness)
+    : '#fbbf24'
+  const opacity = Math.max(0.1, intensity / 100)
 
   // Calculate beam length and angle
   const dx = x2 - x1
@@ -406,7 +434,198 @@ export function LightBeam({ x1, y1, x2, y2, polarizationAngle = 0, intensity = 1
   const length = Math.sqrt(dx * dx + dy * dy)
   const angle = Math.atan2(dy, dx) * 180 / Math.PI
 
-  const id = `beam-${x1}-${y1}-${x2}-${y2}`
+  const id = `beam-${Math.round(x1)}-${Math.round(y1)}-${Math.round(x2)}-${Math.round(y2)}`
+
+  // Generate polarization visualization elements
+  const renderPolarizationIndicator = () => {
+    if (!showPolarization || length < 60) return null
+
+    const midX = (x1 + x2) / 2
+    const midY = (y1 + y2) / 2
+
+    if (polarizationType === 'circular') {
+      // Circular polarization: animated rotating helix
+      const direction = handedness === 'right' ? 1 : -1
+      return (
+        <g transform={`translate(${midX}, ${midY}) rotate(${angle})`}>
+          {/* Helix representation */}
+          {[0, 1, 2, 3, 4].map((i) => {
+            const t = (i / 4) * 2 * Math.PI
+            const xPos = (i - 2) * 10
+            const yOff = Math.sin(t) * 6
+            return (
+              <circle
+                key={i}
+                cx={xPos}
+                cy={yOff}
+                r="2"
+                fill={beamColor}
+                opacity={0.6 + (i / 10)}
+              >
+                <animate
+                  attributeName="cy"
+                  values={`${yOff};${-yOff};${yOff}`}
+                  dur="0.5s"
+                  repeatCount="indefinite"
+                  begin={`${i * 0.1 * direction}s`}
+                />
+              </circle>
+            )
+          })}
+          {/* Rotation direction arrow */}
+          <g transform="translate(25, 0)">
+            <circle
+              cx="0"
+              cy="0"
+              r="6"
+              fill="none"
+              stroke={beamColor}
+              strokeWidth="1.5"
+              strokeDasharray="2 2"
+              opacity="0.7"
+            >
+              <animateTransform
+                attributeName="transform"
+                type="rotate"
+                from={direction > 0 ? '0' : '360'}
+                to={direction > 0 ? '360' : '0'}
+                dur="1s"
+                repeatCount="indefinite"
+              />
+            </circle>
+            <text
+              x="0"
+              y="3"
+              textAnchor="middle"
+              fontSize="8"
+              fill={beamColor}
+              fontWeight="bold"
+            >
+              {handedness === 'right' ? 'R' : 'L'}
+            </text>
+          </g>
+        </g>
+      )
+    }
+
+    if (polarizationType === 'elliptical') {
+      // Elliptical polarization: animated ellipse
+      const ellipticityAbs = Math.abs(ellipticity)
+      const axisRatio = Math.tan(ellipticityAbs)
+      const direction = ellipticity > 0 ? 1 : -1
+      return (
+        <g transform={`translate(${midX}, ${midY}) rotate(${angle})`}>
+          {/* Ellipse showing polarization shape */}
+          <ellipse
+            cx="0"
+            cy="0"
+            rx="12"
+            ry={Math.max(3, 12 * axisRatio)}
+            fill="none"
+            stroke={beamColor}
+            strokeWidth="1.5"
+            opacity="0.6"
+            transform={`rotate(${polarizationAngle - angle})`}
+          >
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from={`${polarizationAngle - angle}`}
+              to={`${polarizationAngle - angle + 360 * direction}`}
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </ellipse>
+          {/* Field vector */}
+          <line
+            x1="0"
+            y1="0"
+            x2="10"
+            y2="0"
+            stroke={beamColor}
+            strokeWidth="2"
+            opacity="0.8"
+          >
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="0"
+              to={`${360 * direction}`}
+              dur="1s"
+              repeatCount="indefinite"
+            />
+          </line>
+        </g>
+      )
+    }
+
+    // Linear polarization: oscillating arrow
+    return (
+      <g transform={`translate(${midX}, ${midY}) rotate(${angle})`}>
+        {/* Oscillation plane indicator */}
+        <g transform={`rotate(${polarizationAngle - angle})`}>
+          <line
+            x1="0"
+            y1="-8"
+            x2="0"
+            y2="8"
+            stroke="white"
+            strokeWidth="2"
+            opacity="0.6"
+          >
+            <animate
+              attributeName="y1"
+              values="-8;-10;-8"
+              dur="0.3s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="y2"
+              values="8;10;8"
+              dur="0.3s"
+              repeatCount="indefinite"
+            />
+          </line>
+          {/* Arrow heads */}
+          <polygon
+            points="0,-10 -2,-6 2,-6"
+            fill="white"
+            opacity="0.6"
+          >
+            <animate
+              attributeName="points"
+              values="0,-10 -2,-6 2,-6;0,-12 -3,-8 3,-8;0,-10 -2,-6 2,-6"
+              dur="0.3s"
+              repeatCount="indefinite"
+            />
+          </polygon>
+          <polygon
+            points="0,10 -2,6 2,6"
+            fill="white"
+            opacity="0.6"
+          >
+            <animate
+              attributeName="points"
+              values="0,10 -2,6 2,6;0,12 -3,8 3,8;0,10 -2,6 2,6"
+              dur="0.3s"
+              repeatCount="indefinite"
+            />
+          </polygon>
+        </g>
+        {/* Angle indicator */}
+        <text
+          x="18"
+          y="4"
+          fontSize="9"
+          fill={beamColor}
+          fontWeight="bold"
+          opacity="0.8"
+        >
+          {Math.round(polarizationAngle)}°
+        </text>
+      </g>
+    )
+  }
 
   return (
     <g>
@@ -466,18 +685,8 @@ export function LightBeam({ x1, y1, x2, y2, polarizationAngle = 0, intensity = 1
         </g>
       )}
 
-      {/* Polarization wave indicator */}
-      {showPolarization && length > 60 && (
-        <g transform={`translate(${(x1 + x2) / 2}, ${(y1 + y2) / 2}) rotate(${angle})`}>
-          <path
-            d={`M-20,0 Q-10,${polarizationAngle === 0 || polarizationAngle === 180 ? 8 : 0} 0,0 T20,0`}
-            fill="none"
-            stroke="white"
-            strokeWidth="1"
-            opacity="0.5"
-          />
-        </g>
-      )}
+      {/* Polarization state indicator */}
+      {renderPolarizationIndicator()}
     </g>
   )
 }

@@ -157,19 +157,50 @@ interface SensorReadingProps {
   intensity: number
   polarization: number
   showPolarization: boolean
+  polarizationType?: 'linear' | 'circular' | 'elliptical'
+  handedness?: 'right' | 'left' | 'none'
 }
 
-function SensorReading({ x, y, intensity, polarization, showPolarization }: SensorReadingProps) {
+function SensorReading({
+  x,
+  y,
+  intensity,
+  polarization,
+  showPolarization,
+  polarizationType = 'linear',
+  handedness = 'none',
+}: SensorReadingProps) {
   const { theme } = useTheme()
-  const color = showPolarization ? getPolarizationColor(polarization) : '#22d3ee'
+
+  // Color based on polarization type
+  const getTypeColor = () => {
+    if (!showPolarization) return '#22d3ee'
+    if (polarizationType === 'circular') {
+      return handedness === 'right' ? '#3b82f6' : '#ec4899'
+    }
+    if (polarizationType === 'elliptical') return '#a855f7'
+    return getPolarizationColor(polarization)
+  }
+  const color = getTypeColor()
+
+  // Polarization type label
+  const getTypeLabel = () => {
+    if (polarizationType === 'circular') {
+      return handedness === 'right' ? 'RCP' : 'LCP'
+    }
+    if (polarizationType === 'elliptical') {
+      return 'Ellip'
+    }
+    return `${Math.round(polarization)}°`
+  }
 
   return (
     <g transform={`translate(${x}, ${y - 45})`}>
       {/* Background */}
       <rect
-        x="-35"
+        x="-40"
         y="-12"
-        width="70"
+        width="80"
         height="24"
         rx="4"
         fill={theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.95)'}
@@ -178,7 +209,7 @@ function SensorReading({ x, y, intensity, polarization, showPolarization }: Sens
       />
       {/* Intensity text */}
       <text
-        x="0"
+        x="-10"
         y="4"
         textAnchor="middle"
         fontSize="12"
@@ -188,9 +219,61 @@ function SensorReading({ x, y, intensity, polarization, showPolarization }: Sens
       >
         {intensity.toFixed(1)}%
       </text>
-      {/* Polarization indicator */}
+      {/* Polarization type indicator */}
       {showPolarization && (
-        <circle cx="25" cy="0" r="4" fill={color} opacity="0.8" />
+        <g transform="translate(22, 0)">
+          {polarizationType === 'circular' ? (
+            // Circular indicator with rotation
+            <g>
+              <circle
+                cx="0"
+                cy="0"
+                r="6"
+                fill="none"
+                stroke={color}
+                strokeWidth="1.5"
+                strokeDasharray="2 1"
+              />
+              <text
+                x="0"
+                y="3"
+                textAnchor="middle"
+                fontSize="7"
+                fontWeight="bold"
+                fill={color}
+              >
+                {handedness === 'right' ? 'R' : 'L'}
+              </text>
+            </g>
+          ) : polarizationType === 'elliptical' ? (
+            // Elliptical indicator
+            <ellipse
+              cx="0"
+              cy="0"
+              rx="8"
+              ry="4"
+              fill="none"
+              stroke={color}
+              strokeWidth="1.5"
+            />
+          ) : (
+            // Linear indicator - arrow
+            <g transform={`rotate(${polarization - 90})`}>
+              <line
+                x1="0"
+                y1="-6"
+                x2="0"
+                y2="6"
+                stroke={color}
+                strokeWidth="2"
+              />
+              <polygon
+                points="0,-8 -2,-4 2,-4"
+                fill={color}
+              />
+            </g>
+          )}
+        </g>
       )}
     </g>
   )
@@ -474,6 +557,10 @@ export function OpticalCanvas() {
                 intensity={segment.intensity}
                 showPolarization={showPolarization}
                 animated={true}
+                // Enhanced polarization visualization from Jones vector analysis
+                polarizationType={segment.polarizationType}
+                handedness={segment.handedness}
+                ellipticity={segment.ellipticity}
               />
             ))}
           </g>
@@ -509,6 +596,8 @@ export function OpticalCanvas() {
                       intensity={reading.intensity}
                       polarization={reading.polarization}
                       showPolarization={showPolarization}
+                      polarizationType={reading.polarizationType}
+                      handedness={reading.handedness}
                     />
                   )
                 }
