@@ -25,6 +25,10 @@ export type OpticalComponentType =
   | 'opticalIsolator'     // One-way light valve (blocks back-reflection)
   // Optical Detective mode - Mystery Box components
   | 'mysteryBox'          // Hidden optical element - player must deduce its identity
+  // Master Class Campaign - Advanced Mechanics
+  | 'quantumLock'         // High-fidelity sensor requiring >99% Jones vector match
+  | 'interferometerTarget' // Dual-port sensor (bright/dark port requirements)
+  | 'opticalMine'         // Danger zone - triggers level fail if light > threshold
 
 // 光学元件基础接口
 export interface OpticalComponent {
@@ -147,6 +151,91 @@ export interface OpticalComponent {
    * Whether the mystery has been solved by the player
    */
   isSolved?: boolean
+
+  // === Quantum Lock (Master Class) Properties ===
+
+  /**
+   * Target Jones vector for quantum lock (high-fidelity matching)
+   * Lock only opens when received light has >requiredFidelity match
+   */
+  targetJones?: JonesVector
+
+  /**
+   * Required fidelity threshold for quantum lock (default: 0.99 = 99%)
+   * Fidelity F = |⟨ψ_target|ψ_input⟩|²
+   */
+  requiredFidelity?: number
+
+  /**
+   * Display name for the target state (localized)
+   */
+  targetStateName?: string
+  targetStateNameZh?: string
+
+  /**
+   * Whether to show target state hint (visual ellipse preview)
+   */
+  showTargetHint?: boolean
+
+  // === Interferometer Target Properties ===
+
+  /**
+   * This sensor is "Port A" of an interferometer target
+   * When true, this sensor requires HIGH intensity (bright port)
+   */
+  isInterferometerPortA?: boolean
+
+  /**
+   * This sensor is "Port B" of an interferometer target
+   * When true, this sensor requires LOW intensity (dark port)
+   */
+  isInterferometerPortB?: boolean
+
+  /**
+   * Linked port ID for interferometer target pairing
+   * Port A and B must both be satisfied for puzzle completion
+   */
+  linkedPortId?: string
+
+  /**
+   * Maximum allowed intensity for dark port (default: 5%)
+   */
+  maxIntensityForDark?: number
+
+  /**
+   * Minimum required intensity for bright port (default: 90%)
+   */
+  minIntensityForBright?: number
+
+  // === Optical Mine Properties ===
+
+  /**
+   * Intensity threshold that triggers the mine (default: 5%)
+   * Light above this intensity causes level failure
+   */
+  mineThreshold?: number
+
+  /**
+   * Safe polarization state that doesn't trigger the mine
+   * Players can bypass the mine using this specific state
+   */
+  safeJones?: JonesVector
+
+  /**
+   * Tolerance for safe state matching (default: 0.9 = 90% fidelity)
+   */
+  safeTolerance?: number
+
+  /**
+   * What happens when mine is triggered
+   */
+  mineEffect?: 'fail_level' | 'absorb' | 'scatter'
+
+  /**
+   * Display name for safe state (hint, localized)
+   */
+  safeStateName?: string
+  safeStateNameZh?: string
 }
 
 // 光束段 (extended for Jones calculus)
@@ -204,6 +293,66 @@ export interface SensorState {
    * 1.0 = perfect match, 0.0 = orthogonal
    */
   fidelity?: number
+
+  // === Quantum Lock Extensions ===
+
+  /**
+   * Target Jones vector (for visualization comparison)
+   */
+  targetJones?: JonesVector
+
+  /**
+   * Detailed fidelity assessment for quantum locks
+   */
+  fidelityAssessment?: {
+    quality: 'perfect' | 'excellent' | 'good' | 'fair' | 'poor' | 'orthogonal'
+    description: string
+    descriptionZh: string
+  }
+
+  // === Interferometer Target Extensions ===
+
+  /**
+   * Whether this is a bright port (requires high intensity)
+   */
+  isBrightPort?: boolean
+
+  /**
+   * Whether this is a dark port (requires low intensity)
+   */
+  isDarkPort?: boolean
+
+  /**
+   * Linked port satisfaction status
+   */
+  linkedPortSatisfied?: boolean
+
+  /**
+   * Interference visibility V = (I_max - I_min) / (I_max + I_min)
+   */
+  visibility?: number
+
+  // === Optical Mine Extensions ===
+
+  /**
+   * Whether this is an optical mine (danger zone)
+   */
+  isMine?: boolean
+
+  /**
+   * Whether the mine was triggered (level fail condition)
+   */
+  triggered?: boolean
+
+  /**
+   * Danger level (0-1) approaching trigger threshold
+   */
+  dangerLevel?: number
+
+  /**
+   * Whether light is in safe state (bypassing mine)
+   */
+  inSafeState?: boolean
 }
 
 // SVG组件通用Props

@@ -63,3 +63,14 @@ export type { VectorScopeSVGProps, PolarizationIndicatorProps } from './VectorSc
 
 export { MysteryBoxSVG, MysteryBoxDefs } from './MysteryBoxSVG'
 export type { MysteryBoxSVGProps } from './MysteryBoxSVG'
+
+// === Master Class Campaign - Advanced Mechanics (Phase 2) ===
+
+export { QuantumLockSVG } from './QuantumLockSVG'
+export type { QuantumLockSVGProps } from './QuantumLockSVG'
+
+export { InterferometerTargetSVG } from './InterferometerTargetSVG'
+export type { InterferometerTargetSVGProps } from './InterferometerTargetSVG'
+
+export { OpticalMineSVG } from './OpticalMineSVG'
+export type { OpticalMineSVGProps } from './OpticalMineSVG'
