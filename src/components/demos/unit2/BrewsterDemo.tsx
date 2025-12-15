@@ -814,7 +814,7 @@ export function BrewsterDemo() {
 
             {/* 色散模式开关 */}
             <div className="flex items-center justify-between py-2 border-t border-slate-700/50">
-              <span className="text-xs text-gray-400">{t('demoUi.brewster.dispersionMode') || '色散模式'}</span>
+              <span className="text-xs text-gray-400">{t('demoUi.brewster.dispersionMode')}</span>
               <Toggle
                 label=""
                 checked={showDispersion}
@@ -826,7 +826,7 @@ export function BrewsterDemo() {
             {showDispersion && (
               <div className="space-y-2">
                 <SliderControl
-                  label={t('demoUi.brewster.wavelength') || '波长 λ'}
+                  label={t('demoUi.brewster.wavelength')}
                   value={wavelength}
                   min={380}
                   max={780}
@@ -834,15 +834,7 @@ export function BrewsterDemo() {
                   unit=" nm"
                   onChange={setWavelength}
                   color="purple"
-                  formatValue={(v) => {
-                    const colorNames: Record<number, string> = {
-                      400: '紫', 450: '蓝', 500: '青', 550: '绿', 580: '黄', 620: '橙', 700: '红'
-                    }
-                    const closest = Object.keys(colorNames).reduce((a, b) =>
-                      Math.abs(Number(a) - v) < Math.abs(Number(b) - v) ? a : b
-                    )
-                    return `${v} (${colorNames[Number(closest)] || ''})`
-                  }}
+                  formatValue={(v) => `${v} nm`}
                 />
                 {/* 光谱色带 */}
                 <div
@@ -856,7 +848,7 @@ export function BrewsterDemo() {
 
             {/* 材料选择器 */}
             <div className="pt-2 border-t border-slate-700/50">
-              <div className="text-xs text-gray-500 mb-2">{t('demoUi.brewster.selectMaterial') || '选择材料'}</div>
+              <div className="text-xs text-gray-500 mb-2">{t('demoUi.brewster.selectMaterial')}</div>
               <div className="grid grid-cols-2 gap-1.5">
                 {DISPERSIVE_MATERIALS.map((m, index) => {
                   const matN = getMaterialIndex(m, 550)
@@ -890,7 +882,7 @@ export function BrewsterDemo() {
               </div>
               {showDispersion && (
                 <div className="flex justify-between text-xs mt-1">
-                  <span className="text-gray-500">{t('demoUi.brewster.dispersionRange') || 'Δθ_B (色散)'}</span>
+                  <span className="text-gray-500">{t('demoUi.brewster.dispersionRange')}</span>
                   <span className="text-purple-400 font-mono">{dispersionRange.toFixed(2)}°</span>
                 </div>
               )}
@@ -951,13 +943,13 @@ export function BrewsterDemo() {
           {/* 色散曲线 - 仅在色散模式下显示 */}
           {showDispersion && (
             <div className="grid grid-cols-2 gap-3">
-              <ControlPanel title={t('demoUi.brewster.dispersionCurve') || '折射率色散 n(λ)'}>
+              <ControlPanel title={t('demoUi.brewster.dispersionCurve')}>
                 <DispersionCurve material={currentMaterial} currentWavelength={wavelength} />
                 <p className="text-xs text-gray-500 mt-1">
-                  {currentMaterial.type === 'sellmeier' ? 'Sellmeier方程' : 'Cauchy方程'}
+                  {currentMaterial.type === 'sellmeier' ? 'Sellmeier' : 'Cauchy'}
                 </p>
               </ControlPanel>
-              <ControlPanel title={t('demoUi.brewster.brewsterDispersion') || '布儒斯特角色散 θB(λ)'}>
+              <ControlPanel title={t('demoUi.brewster.brewsterDispersion')}>
                 <BrewsterWavelengthCurve material={currentMaterial} currentWavelength={wavelength} />
                 <p className="text-xs text-gray-500 mt-1">
                   θB = arctan(n)
@@ -980,10 +972,9 @@ export function BrewsterDemo() {
             {t('demoUi.brewster.physicalDesc')}
           </p>
         </InfoCard>
-        <InfoCard title={t('demoUi.brewster.dispersionTitle') || '色散效应'} color="green">
+        <InfoCard title={t('demoUi.brewster.dispersionTitle')} color="green">
           <p className="text-xs text-gray-300">
-            {t('demoUi.brewster.dispersionDesc') ||
-              '折射率随波长变化（色散）导致不同颜色光的布儒斯特角略有不同。蓝光折射率高于红光，因此蓝光的布儒斯特角更大。这解释了为何宽带增透膜设计困难——无法同时满足所有波长的布儒斯特条件。'}
+            {t('demoUi.brewster.dispersionDesc')}
           </p>
         </InfoCard>
         <InfoCard title={t('demoUi.brewster.applicationsTitle')} color="orange">

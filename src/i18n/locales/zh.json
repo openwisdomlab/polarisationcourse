@@ -2840,7 +2840,18 @@
       "physicalExplanation": "物理解释",
       "physicalDesc": "在布儒斯特角，折射光中的振动电荷（p偏振方向）与反射方向平行，无法有效辐射能量到反射方向。",
       "applicationsTitle": "应用场景",
-      "applicationsList": ["偏振镜片减少眩光", "激光器布儒斯特窗", "摄影偏振滤镜"]
+      "applicationsList": ["偏振镜片减少眩光", "激光器布儒斯特窗", "摄影偏振滤镜"],
+      "dispersionMode": "色散模式",
+      "wavelength": "波长 λ",
+      "selectMaterial": "选择材料",
+      "dispersionRange": "Δθ_B (色散)",
+      "dispersionCurve": "折射率色散 n(λ)",
+      "brewsterDispersion": "布儒斯特角色散 θB(λ)",
+      "dispersionTitle": "色散效应",
+      "dispersionDesc": "折射率随波长变化（色散）导致不同颜色光的布儒斯特角略有不同。蓝光折射率高于红光，因此蓝光的布儒斯特角更大。这解释了为何宽带增透膜设计困难——无法同时满足所有波长的布儒斯特条件。",
+      "bk7Glass": "BK7玻璃",
+      "fusedSilica": "熔融石英",
+      "sapphire": "蓝宝石"
     },
     "chromatic": {
       "sampleParams": "样品参数",

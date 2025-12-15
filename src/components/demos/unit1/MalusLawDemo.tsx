@@ -80,10 +80,10 @@ function PolarizerCircle({
     <div className="flex flex-col items-center">
       <span className="text-xs text-gray-400 mb-2">{label}</span>
       <span className="text-[10px] text-gray-500 mb-2">{sublabel}</span>
-      <div className="relative w-24 h-24 rounded-full border border-blue-500/40 bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-[0_0_15px_rgba(60,105,240,0.3),inset_0_0_15px_rgba(0,0,0,0.7)] flex items-center justify-center">
+      <div className="relative w-16 h-16 rounded-full border border-blue-500/40 bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-[0_0_15px_rgba(60,105,240,0.3),inset_0_0_15px_rgba(0,0,0,0.7)] flex items-center justify-center">
         {/* 透光轴 */}
         <motion.div
-          className="absolute w-[2px] h-[70px] rounded-full"
+          className="absolute w-[2px] h-[46px] rounded-full"
           style={{
             background: isBase
               ? 'linear-gradient(180deg, rgba(200,211,255,0.9), rgba(84,144,255,0.9))'
@@ -115,34 +115,34 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
   const curvePath = useMemo(() => {
     const points: string[] = []
     for (let theta = 0; theta <= 180; theta += 2) {
-      const x = 30 + (theta / 180) * 240
-      const y = 130 - Math.pow(Math.cos((theta * Math.PI) / 180), 2) * 100
+      const x = 25 + (theta / 180) * 180
+      const y = 95 - Math.pow(Math.cos((theta * Math.PI) / 180), 2) * 70
       points.push(`${theta === 0 ? 'M' : 'L'} ${x},${y}`)
     }
     return points.join(' ')
   }, [])
 
   // 当前点位置
-  const pointX = 30 + (currentAngle / 180) * 240
-  const pointY = 130 - intensity * 100
+  const pointX = 25 + (currentAngle / 180) * 180
+  const pointY = 95 - intensity * 70
 
   return (
-    <svg viewBox="0 0 300 160" className="w-full h-auto">
+    <svg viewBox="0 0 230 120" className="w-full h-auto">
       {/* 坐标轴 */}
-      <line x1="30" y1="130" x2="280" y2="130" stroke="#d1dcff" strokeWidth="1.2" />
-      <line x1="30" y1="130" x2="30" y2="25" stroke="#d1dcff" strokeWidth="1.2" />
+      <line x1="25" y1="95" x2="210" y2="95" stroke="#d1dcff" strokeWidth="1" />
+      <line x1="25" y1="95" x2="25" y2="20" stroke="#d1dcff" strokeWidth="1" />
 
       {/* 网格线 */}
-      <line x1="30" y1="80" x2="280" y2="80" stroke="rgba(127,150,233,0.25)" strokeWidth="0.7" strokeDasharray="3 3" />
-      <line x1="30" y1="30" x2="280" y2="30" stroke="rgba(127,150,233,0.25)" strokeWidth="0.7" strokeDasharray="3 3" />
+      <line x1="25" y1="60" x2="210" y2="60" stroke="rgba(127,150,233,0.25)" strokeWidth="0.5" strokeDasharray="3 3" />
+      <line x1="25" y1="25" x2="210" y2="25" stroke="rgba(127,150,233,0.25)" strokeWidth="0.5" strokeDasharray="3 3" />
 
       {/* X轴刻度 */}
       {[0, 45, 90, 135, 180].map((theta) => {
-        const x = 30 + (theta / 180) * 240
+        const x = 25 + (theta / 180) * 180
         return (
           <g key={theta}>
-            <line x1={x} y1="130" x2={x} y2="135" stroke="#bcc6ff" strokeWidth="0.8" />
-            <text x={x} y="148" textAnchor="middle" fill="#d9e0ff" fontSize="10">
+            <line x1={x} y1="95" x2={x} y2="99" stroke="#bcc6ff" strokeWidth="0.6" />
+            <text x={x} y="110" textAnchor="middle" fill="#d9e0ff" fontSize="8">
               {theta}°
             </text>
           </g>
@@ -151,11 +151,11 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
 
       {/* Y轴刻度 */}
       {[0, 0.5, 1].map((val, i) => {
-        const y = 130 - val * 100
+        const y = 95 - val * 70
         return (
           <g key={i}>
-            <line x1="25" y1={y} x2="30" y2={y} stroke="#bcc6ff" strokeWidth="0.8" />
-            <text x="20" y={y + 4} textAnchor="end" fill="#d9e0ff" fontSize="10">
+            <line x1="21" y1={y} x2="25" y2={y} stroke="#bcc6ff" strokeWidth="0.6" />
+            <text x="18" y={y + 3} textAnchor="end" fill="#d9e0ff" fontSize="8">
               {val.toFixed(1)}
             </text>
           </g>
@@ -163,13 +163,13 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
       })}
 
       {/* 曲线 */}
-      <path d={curvePath} fill="none" stroke="#4f9ef7" strokeWidth="2.5" />
+      <path d={curvePath} fill="none" stroke="#4f9ef7" strokeWidth="2" />
 
       {/* 当前点 */}
       <motion.circle
         cx={pointX}
         cy={pointY}
-        r="6"
+        r="4"
         fill="#ff7e67"
         stroke="rgba(255,255,255,0.3)"
         strokeWidth="1"
@@ -179,16 +179,16 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
 
       {/* 点标签 */}
       <motion.text
-        x={pointX + 8}
-        y={pointY - 8}
+        x={pointX + 6}
+        y={pointY - 6}
         fill="#fce9e5"
-        fontSize="10"
-        animate={{ x: pointX + 8, y: pointY - 8 }}
+        fontSize="7"
+        animate={{ x: pointX + 6, y: pointY - 6 }}
         transition={{ duration: 0.2 }}
         style={{
           paintOrder: 'stroke',
           stroke: 'rgba(0,0,0,0.7)',
-          strokeWidth: 3,
+          strokeWidth: 2,
           strokeLinejoin: 'round',
         }}
       >
@@ -196,16 +196,16 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
       </motion.text>
 
       {/* 轴标题 */}
-      <text x="155" y="158" textAnchor="middle" fill="#f0f3ff" fontSize="11">
+      <text x="118" y="118" textAnchor="middle" fill="#f0f3ff" fontSize="9">
         θ
       </text>
       <text
-        x="12"
-        y="80"
+        x="8"
+        y="58"
         textAnchor="middle"
         fill="#f0f3ff"
-        fontSize="11"
-        transform="rotate(-90 12 80)"
+        fontSize="9"
+        transform="rotate(-90 8 58)"
       >
         I / I₀
       </text>

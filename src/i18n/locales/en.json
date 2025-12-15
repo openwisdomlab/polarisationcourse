@@ -2625,7 +2625,18 @@
       "physicalExplanation": "Physical Explanation",
       "physicalDesc": "At Brewster's angle, oscillating charges in refracted beam are parallel to reflection direction, cannot radiate effectively.",
       "applicationsTitle": "Applications",
-      "applicationsList": ["Polarizing lenses reduce glare", "Laser Brewster windows", "Photography polarizing filters"]
+      "applicationsList": ["Polarizing lenses reduce glare", "Laser Brewster windows", "Photography polarizing filters"],
+      "dispersionMode": "Dispersion Mode",
+      "wavelength": "Wavelength λ",
+      "selectMaterial": "Select Material",
+      "dispersionRange": "Δθ_B (Dispersion)",
+      "dispersionCurve": "Refractive Index n(λ)",
+      "brewsterDispersion": "Brewster Angle θB(λ)",
+      "dispersionTitle": "Dispersion Effect",
+      "dispersionDesc": "Refractive index varies with wavelength (dispersion), causing slightly different Brewster angles for different colors. Blue light has higher n than red, so blue has larger Brewster angle. This explains why broadband AR coatings are difficult—cannot satisfy Brewster condition for all wavelengths simultaneously.",
+      "bk7Glass": "BK7 Glass",
+      "fusedSilica": "Fused Silica",
+      "sapphire": "Sapphire"
     },
     "chromatic": {
       "sampleParams": "Sample Parameters",

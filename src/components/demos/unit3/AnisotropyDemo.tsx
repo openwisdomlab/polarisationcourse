@@ -118,10 +118,10 @@ export function AnisotropyDemo() {
   }, [materialType, stressLevel, indicatrixParams])
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
+    <div className="flex flex-col lg:flex-row gap-4">
       {/* 可视化区域 */}
-      <div className="flex-1 min-h-[500px]">
-        <svg viewBox="0 0 600 500" className="w-full h-auto">
+      <div className="flex-1 min-h-[320px]">
+        <svg viewBox="0 0 450 380" className="w-full h-auto">
           <defs>
             {/* 渐变定义 */}
             <linearGradient id="aniso-beam-grad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -147,23 +147,23 @@ export function AnisotropyDemo() {
 
           {/* 背景 */}
           <rect
-            x="0" y="0" width="600" height="500"
+            x="0" y="0" width="450" height="380"
             fill={theme === 'dark' ? '#0f172a' : '#f1f5f9'}
           />
 
           {/* 标题 */}
           <text
-            x="300" y="30"
+            x="225" y="22"
             textAnchor="middle"
             className={cn(
-              'text-lg font-semibold',
+              'text-sm font-semibold',
               theme === 'dark' ? 'fill-cyan-400' : 'fill-cyan-600'
             )}
           >
             {isZh ? '光学各向异性' : 'Optical Anisotropy'}
           </text>
           <text
-            x="300" y="50"
+            x="225" y="38"
             textAnchor="middle"
             className={cn(
               'text-xs',
@@ -175,26 +175,26 @@ export function AnisotropyDemo() {
 
           {/* 折射率椭球（光率体）- 中央显示 */}
           {showIndicatrix && (
-            <g transform="translate(300, 250)">
+            <g transform="translate(180, 190)">
               {/* 椭球轮廓 */}
               {materialType === 'isotropic' ? (
                 // 各向同性 - 圆球
                 <circle
                   cx="0" cy="0"
-                  r="80"
+                  r="60"
                   fill={`${material.color}20`}
                   stroke={material.color}
-                  strokeWidth="2"
+                  strokeWidth="1.5"
                 />
               ) : materialType === 'biaxial' ? (
                 // 双轴晶体 - 三轴不等的椭球
                 <ellipse
                   cx="0" cy="0"
-                  rx="90"
-                  ry="70"
+                  rx="70"
+                  ry="55"
                   fill={`${material.color}20`}
                   stroke={material.color}
-                  strokeWidth="2"
+                  strokeWidth="1.5"
                   transform="rotate(-15)"
                 />
               ) : (
@@ -202,16 +202,16 @@ export function AnisotropyDemo() {
                 <>
                   <ellipse
                     cx="0" cy="0"
-                    rx={60 + (material.ne - material.no) * 200}
-                    ry="80"
+                    rx={45 + (material.ne - material.no) * 150}
+                    ry="60"
                     fill={`${material.color}20`}
                     stroke={material.color}
-                    strokeWidth="2"
+                    strokeWidth="1.5"
                   />
                   {/* 负晶体标记 */}
                   {material.ne < material.no && (
                     <text
-                      x="0" y="-100"
+                      x="0" y="-75"
                       textAnchor="middle"
                       className={cn(
                         'text-xs',
@@ -228,14 +228,14 @@ export function AnisotropyDemo() {
               {showOpticAxis && materialType !== 'isotropic' && (
                 <>
                   <line
-                    x1="0" y1="-120"
-                    x2="0" y2="120"
+                    x1="0" y1="-90"
+                    x2="0" y2="90"
                     stroke={theme === 'dark' ? '#fbbf24' : '#f59e0b'}
-                    strokeWidth="2"
-                    strokeDasharray="5,5"
+                    strokeWidth="1.5"
+                    strokeDasharray="4,4"
                   />
                   <text
-                    x="10" y="-110"
+                    x="8" y="-80"
                     className={cn(
                       'text-xs',
                       theme === 'dark' ? 'fill-yellow-400' : 'fill-yellow-600'
@@ -249,18 +249,18 @@ export function AnisotropyDemo() {
               {/* 入射光方向指示器 */}
               <g transform={`rotate(${-90 + lightAngle})`}>
                 <line
-                  x1="-130" y1="0"
-                  x2="-90" y2="0"
+                  x1="-100" y1="0"
+                  x2="-68" y2="0"
                   stroke="url(#aniso-beam-grad)"
-                  strokeWidth="4"
+                  strokeWidth="3"
                   filter="url(#aniso-glow)"
                 />
                 <polygon
-                  points="-90,0 -100,-6 -100,6"
+                  points="-68,0 -76,-4 -76,4"
                   fill="#fbbf24"
                 />
                 <text
-                  x="-140" y="5"
+                  x="-108" y="4"
                   textAnchor="end"
                   className={cn(
                     'text-xs',
@@ -283,22 +283,22 @@ export function AnisotropyDemo() {
                   >
                     <line
                       x1="0" y1="0"
-                      x2={80 * Math.cos((90 + lightAngle) * Math.PI / 180)}
-                      y2={80 * Math.sin((90 + lightAngle) * Math.PI / 180)}
+                      x2={60 * Math.cos((90 + lightAngle) * Math.PI / 180)}
+                      y2={60 * Math.sin((90 + lightAngle) * Math.PI / 180)}
                       stroke="url(#aniso-o-ray)"
-                      strokeWidth="3"
-                    />
-                    <circle
-                      cx={60 * Math.cos((90 + lightAngle) * Math.PI / 180)}
-                      cy={60 * Math.sin((90 + lightAngle) * Math.PI / 180)}
-                      r="6"
-                      fill="none"
-                      stroke="#ff4444"
                       strokeWidth="2"
                     />
+                    <circle
+                      cx={45 * Math.cos((90 + lightAngle) * Math.PI / 180)}
+                      cy={45 * Math.sin((90 + lightAngle) * Math.PI / 180)}
+                      r="4"
+                      fill="none"
+                      stroke="#ff4444"
+                      strokeWidth="1.5"
+                    />
                     <text
-                      x={95 * Math.cos((90 + lightAngle) * Math.PI / 180)}
-                      y={95 * Math.sin((90 + lightAngle) * Math.PI / 180)}
+                      x={72 * Math.cos((90 + lightAngle) * Math.PI / 180)}
+                      y={72 * Math.sin((90 + lightAngle) * Math.PI / 180)}
                       textAnchor="middle"
                       className="fill-red-400 text-xs"
                     >
@@ -315,30 +315,30 @@ export function AnisotropyDemo() {
                   >
                     <line
                       x1="0" y1="0"
-                      x2={80 * Math.cos(lightAngle * Math.PI / 180)}
-                      y2={-80 * Math.sin(lightAngle * Math.PI / 180)}
+                      x2={60 * Math.cos(lightAngle * Math.PI / 180)}
+                      y2={-60 * Math.sin(lightAngle * Math.PI / 180)}
                       stroke="url(#aniso-e-ray)"
-                      strokeWidth="3"
-                    />
-                    <line
-                      x1={50 * Math.cos(lightAngle * Math.PI / 180) - 5}
-                      y1={-50 * Math.sin(lightAngle * Math.PI / 180) - 5}
-                      x2={50 * Math.cos(lightAngle * Math.PI / 180) + 5}
-                      y2={-50 * Math.sin(lightAngle * Math.PI / 180) + 5}
-                      stroke="#44ff44"
                       strokeWidth="2"
                     />
                     <line
-                      x1={50 * Math.cos(lightAngle * Math.PI / 180) - 5}
-                      y1={-50 * Math.sin(lightAngle * Math.PI / 180) + 5}
-                      x2={50 * Math.cos(lightAngle * Math.PI / 180) + 5}
-                      y2={-50 * Math.sin(lightAngle * Math.PI / 180) - 5}
+                      x1={38 * Math.cos(lightAngle * Math.PI / 180) - 4}
+                      y1={-38 * Math.sin(lightAngle * Math.PI / 180) - 4}
+                      x2={38 * Math.cos(lightAngle * Math.PI / 180) + 4}
+                      y2={-38 * Math.sin(lightAngle * Math.PI / 180) + 4}
                       stroke="#44ff44"
-                      strokeWidth="2"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1={38 * Math.cos(lightAngle * Math.PI / 180) - 4}
+                      y1={-38 * Math.sin(lightAngle * Math.PI / 180) + 4}
+                      x2={38 * Math.cos(lightAngle * Math.PI / 180) + 4}
+                      y2={-38 * Math.sin(lightAngle * Math.PI / 180) - 4}
+                      stroke="#44ff44"
+                      strokeWidth="1.5"
                     />
                     <text
-                      x={95 * Math.cos(lightAngle * Math.PI / 180)}
-                      y={-95 * Math.sin(lightAngle * Math.PI / 180)}
+                      x={72 * Math.cos(lightAngle * Math.PI / 180)}
+                      y={-72 * Math.sin(lightAngle * Math.PI / 180)}
                       textAnchor="middle"
                       className="fill-green-400 text-xs"
                     >
@@ -350,14 +350,14 @@ export function AnisotropyDemo() {
 
               {/* 角度标注 */}
               <path
-                d={`M -40,0 A 40,40 0 0,${lightAngle > 0 ? 0 : 1} ${-40 * Math.cos(lightAngle * Math.PI / 180)},${40 * Math.sin(lightAngle * Math.PI / 180)}`}
+                d={`M -30,0 A 30,30 0 0,${lightAngle > 0 ? 0 : 1} ${-30 * Math.cos(lightAngle * Math.PI / 180)},${30 * Math.sin(lightAngle * Math.PI / 180)}`}
                 fill="none"
                 stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
                 strokeWidth="1"
               />
               <text
-                x={-55 * Math.cos(lightAngle * Math.PI / 360)}
-                y={25 * Math.sin(lightAngle * Math.PI / 360)}
+                x={-42 * Math.cos(lightAngle * Math.PI / 360)}
+                y={20 * Math.sin(lightAngle * Math.PI / 360)}
                 className={cn(
                   'text-xs',
                   theme === 'dark' ? 'fill-gray-400' : 'fill-gray-600'
@@ -370,27 +370,27 @@ export function AnisotropyDemo() {
 
           {/* 应力示意图 - 仅用于stressed材料 */}
           {materialType === 'stressed' && (
-            <g transform="translate(300, 420)">
+            <g transform="translate(180, 320)">
               <rect
-                x="-100" y="-20"
-                width="200" height="40"
+                x="-75" y="-15"
+                width="150" height="30"
                 fill={`${material.color}20`}
                 stroke={material.color}
-                strokeWidth="2"
-                rx="5"
+                strokeWidth="1.5"
+                rx="4"
               />
               {/* 应力箭头 */}
               <motion.g
                 animate={{
-                  x: [-5, 5, -5],
+                  x: [-3, 3, -3],
                 }}
                 transition={{ duration: 0.5, repeat: Infinity }}
               >
-                <polygon points="-120,-10 -100,-10 -100,-15 -90,0 -100,15 -100,10 -120,10" fill="#ef4444" />
-                <polygon points="120,-10 100,-10 100,-15 90,0 100,15 100,10 120,10" fill="#ef4444" />
+                <polygon points="-90,-8 -75,-8 -75,-12 -68,0 -75,12 -75,8 -90,8" fill="#ef4444" />
+                <polygon points="90,-8 75,-8 75,-12 68,0 75,12 75,8 90,8" fill="#ef4444" />
               </motion.g>
               <text
-                x="0" y="5"
+                x="0" y="4"
                 textAnchor="middle"
                 className={cn(
                   'text-xs',
@@ -403,17 +403,17 @@ export function AnisotropyDemo() {
           )}
 
           {/* 折射率数值显示 */}
-          <g transform="translate(500, 150)">
+          <g transform="translate(375, 110)">
             <rect
-              x="-70" y="-30"
-              width="140" height={materialType === 'biaxial' ? '100' : '80'}
-              rx="8"
+              x="-55" y="-22"
+              width="110" height={materialType === 'biaxial' ? '75' : '60'}
+              rx="6"
               fill={theme === 'dark' ? '#1e293b' : '#ffffff'}
               stroke={theme === 'dark' ? '#334155' : '#e2e8f0'}
               strokeWidth="1"
             />
             <text
-              x="0" y="-10"
+              x="0" y="-6"
               textAnchor="middle"
               className={cn(
                 'text-xs font-semibold',
@@ -423,41 +423,41 @@ export function AnisotropyDemo() {
               {isZh ? '折射率' : 'Refractive Index'}
             </text>
             <text
-              x="0" y="15"
+              x="0" y="12"
               textAnchor="middle"
               className={cn(
                 'text-xs',
                 theme === 'dark' ? 'fill-red-400' : 'fill-red-600'
               )}
             >
-              n<tspan fontSize="8" dy="2">o</tspan><tspan dy="-2"> = {material.no.toFixed(3)}</tspan>
+              n<tspan fontSize="7" dy="1">o</tspan><tspan dy="-1"> = {material.no.toFixed(3)}</tspan>
             </text>
             <text
-              x="0" y="35"
+              x="0" y="28"
               textAnchor="middle"
               className={cn(
                 'text-xs',
                 theme === 'dark' ? 'fill-green-400' : 'fill-green-600'
               )}
             >
-              n<tspan fontSize="8" dy="2">e</tspan><tspan dy="-2"> = {material.ne.toFixed(3)}</tspan>
+              n<tspan fontSize="7" dy="1">e</tspan><tspan dy="-1"> = {material.ne.toFixed(3)}</tspan>
             </text>
             {materialType === 'biaxial' && material.ny && (
               <text
-                x="0" y="55"
+                x="0" y="44"
                 textAnchor="middle"
                 className={cn(
                   'text-xs',
                   theme === 'dark' ? 'fill-purple-400' : 'fill-purple-600'
                 )}
               >
-                n<tspan fontSize="8" dy="2">y</tspan><tspan dy="-2"> = {material.ny.toFixed(3)}</tspan>
+                n<tspan fontSize="7" dy="1">y</tspan><tspan dy="-1"> = {material.ny.toFixed(3)}</tspan>
               </text>
             )}
           </g>
 
           {/* 图例 */}
-          <g transform="translate(100, 420)">
+          <g transform="translate(75, 320)">
             <text
               x="0" y="0"
               className={cn(
@@ -467,15 +467,15 @@ export function AnisotropyDemo() {
             >
               {isZh ? '图例' : 'Legend'}
             </text>
-            <circle cx="10" cy="20" r="4" fill="none" stroke="#ff4444" strokeWidth="2" />
-            <text x="25" y="24" className="fill-gray-400 text-xs">
+            <circle cx="8" cy="16" r="3" fill="none" stroke="#ff4444" strokeWidth="1.5" />
+            <text x="20" y="19" className="fill-gray-400 text-xs">
               {isZh ? 'o光（寻常光）' : 'o-ray (ordinary)'}
             </text>
-            <g transform="translate(0, 20)">
-              <line x1="6" y1="16" x2="14" y2="24" stroke="#44ff44" strokeWidth="2" />
-              <line x1="14" y1="16" x2="6" y2="24" stroke="#44ff44" strokeWidth="2" />
+            <g transform="translate(0, 18)">
+              <line x1="5" y1="13" x2="11" y2="19" stroke="#44ff44" strokeWidth="1.5" />
+              <line x1="11" y1="13" x2="5" y2="19" stroke="#44ff44" strokeWidth="1.5" />
             </g>
-            <text x="25" y="44" className="fill-gray-400 text-xs">
+            <text x="20" y="35" className="fill-gray-400 text-xs">
               {isZh ? 'e光（非寻常光）' : 'e-ray (extraordinary)'}
             </text>
           </g>
@@ -483,7 +483,7 @@ export function AnisotropyDemo() {
       </div>
 
       {/* 控制面板 */}
-      <div className="w-full lg:w-80 space-y-4">
+      <div className="w-full lg:w-72 space-y-3">
         <ControlPanel title={isZh ? '材料类型' : 'Material Type'}>
           <PresetButtons
             options={[
