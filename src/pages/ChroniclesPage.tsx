@@ -15,7 +15,7 @@ import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
   FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Sun, Sparkles, ExternalLink
+  Sun, Sparkles, HelpCircle
 } from 'lucide-react'
 
 // Timeline events data - 双轨历史数据
@@ -65,6 +65,13 @@ interface TimelineEvent {
     en: string
     zh: string
   }
+  // 思考问题 - 激发学生好奇心
+  thinkingQuestion?: {
+    en: string
+    zh: string
+  }
+  // 实验配图 - 经典实验的可视化
+  illustrationType?: 'prism' | 'double-slit' | 'calcite' | 'reflection' | 'polarizer' | 'lcd' | 'mantis' | 'wave' | 'birefringence' | 'nicol'
 }
 
 const TIMELINE_EVENTS: TimelineEvent[] = [
@@ -102,7 +109,11 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
     },
     references: [
       { title: 'Dijksterhuis, F. J. (2004). Lenses and Waves', url: 'https://link.springer.com/book/10.1007/1-4020-2698-8' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'When you put a straw in a glass of water, it appears bent. Is this the same phenomenon as Snell\'s Law? What other everyday examples of refraction can you think of?',
+      zh: '当你把吸管放入水杯中，它看起来是弯曲的。这和斯涅尔定律是同一个现象吗？你还能想到生活中哪些折射的例子？'
+    }
   },
   {
     year: 1665,
@@ -163,7 +174,12 @@ This insight, born in plague-time isolation, became the foundation of spectrosco
     references: [
       { title: 'Newton, I. (1704). Opticks' },
       { title: 'Westfall, R. S. (1980). Never at Rest: A Biography of Isaac Newton' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'If white light contains all colors, why do objects appear to have different colors? What happens to the other colors?',
+      zh: '如果白光包含所有颜色，为什么物体看起来有不同的颜色？其他颜色去哪里了？'
+    },
+    illustrationType: 'prism'
   },
   {
     year: 1676,
@@ -198,7 +214,11 @@ This insight, born in plague-time isolation, became the foundation of spectrosco
     },
     references: [
       { title: 'Cohen, I. B. (1940). Roemer and the First Determination of the Velocity of Light' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'If light travels so fast (300,000 km/s), how did Rømer manage to measure it using only a telescope? What clever trick did he use?',
+      zh: '光速如此之快（每秒30万公里），罗默是如何仅用望远镜测量它的？他用了什么巧妙的方法？'
+    }
   },
   {
     year: 1801,
@@ -261,7 +281,12 @@ Today, the double-slit experiment remains so profound that Richard Feynman calle
     references: [
       { title: 'Young, T. (1802). On the Theory of Light and Colours' },
       { title: 'Robinson, A. (2006). The Last Man Who Knew Everything: Thomas Young' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'Why does the double-slit experiment create bright and dark bands? What would happen if you covered one of the slits?',
+      zh: '为什么双缝实验会产生明暗相间的条纹？如果你遮住其中一条缝会发生什么？'
+    },
+    illustrationType: 'double-slit'
   },
   {
     year: 1865,
@@ -324,7 +349,12 @@ Einstein later called Maxwell's work "the most profound and the most fruitful th
     references: [
       { title: 'Maxwell, J. C. (1865). A Dynamical Theory of the Electromagnetic Field' },
       { title: 'Mahon, B. (2003). The Man Who Changed Everything: The Life of James Clerk Maxwell' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'Maxwell showed that light is an electromagnetic wave. But what about radio waves, X-rays, and microwaves? Are they related to light?',
+      zh: '麦克斯韦证明了光是电磁波。那么无线电波、X射线和微波呢？它们与光有关系吗？'
+    },
+    illustrationType: 'wave'
   },
   // ===== 偏振光轨道 (Polarization Track) =====
   {
@@ -385,7 +415,12 @@ Little did he know that this transparent stone from the frozen north would one d
       location: 'Copenhagen, Denmark',
       season: 'Autumn',
       mood: 'curiosity'
-    }
+    },
+    thinkingQuestion: {
+      en: 'Why does calcite create two images? What property of light could cause it to split into two separate beams?',
+      zh: '为什么方解石会产生两个像？光的什么性质会导致它分裂成两束？'
+    },
+    illustrationType: 'calcite'
   },
   {
     year: 1690,
@@ -450,7 +485,12 @@ In his dedication, he wrote: "One finds in this subject a kind of demonstration 
     references: [
       { title: 'Huygens, C. (1690). Traité de la Lumière' },
       { title: 'Dijksterhuis, F. J. (2004). Lenses and Waves: Christiaan Huygens and the Mathematical Science of Optics' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'Huygens imagined light as a wave in an invisible "ether". If the ether doesn\'t exist, how can light waves travel through empty space?',
+      zh: '惠更斯把光想象成在无形"以太"中传播的波。如果以太不存在，光波如何能在真空中传播？'
+    },
+    illustrationType: 'wave'
   },
   {
     year: 1808,
@@ -517,7 +557,12 @@ Years later, dying young from tuberculosis contracted in Egypt, Malus would be r
     references: [
       { title: 'Malus, E. L. (1809). Sur une propriété de la lumière réfléchie' },
       { title: 'Buchwald, J. Z. (1989). The Rise of the Wave Theory of Light: Optical Theory and Experiment in the Early Nineteenth Century' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'Malus discovered polarization by accident while looking at a sunset. What other great scientific discoveries were made by accident?',
+      zh: '马吕斯在观看日落时偶然发现了偏振现象。还有哪些伟大的科学发现是偶然发生的？'
+    },
+    illustrationType: 'reflection'
   },
   {
     year: 1809,
@@ -581,7 +626,12 @@ Tragically, Malus would not live to see his law's full impact. He died just thre
     },
     references: [
       { title: 'Malus, E. L. (1810). Théorie de la double réfraction de la lumière' }
-    ]
+    ],
+    thinkingQuestion: {
+      en: 'Malus\'s Law shows that at 90° the light is completely blocked. What everyday objects use this "crossed polarizers" effect?',
+      zh: '马吕斯定律表明在90°时光被完全阻挡。日常生活中有哪些物品利用这种"正交偏振片"效应？'
+    },
+    illustrationType: 'polarizer'
   },
   {
     year: 1811,
@@ -648,7 +698,12 @@ tan(θB) = n₂/n₁
       location: 'Edinburgh, Scotland',
       season: 'Spring',
       mood: 'precision'
-    }
+    },
+    thinkingQuestion: {
+      en: 'Polarized sunglasses reduce glare from water and roads. How does Brewster\'s angle explain why they work so well?',
+      zh: '偏振太阳镜可以减少水面和道路的眩光。布儒斯特角如何解释它们为什么如此有效？'
+    },
+    illustrationType: 'reflection'
   },
   {
     year: 1815,
@@ -782,7 +837,12 @@ Nicol himself, modest to a fault, never patented his invention. He gave it freel
       location: 'Edinburgh, Scotland',
       season: 'Autumn',
       mood: 'craftsmanship'
-    }
+    },
+    thinkingQuestion: {
+      en: 'The Nicol prism was replaced by polaroid film in most applications. What are the trade-offs between a crystal prism and a plastic polarizing film?',
+      zh: '尼科尔棱镜在大多数应用中已被偏振薄膜取代。晶体棱镜和塑料偏振薄膜之间有什么权衡取舍？'
+    },
+    illustrationType: 'nicol'
   },
   {
     year: 1852,
@@ -916,7 +976,12 @@ Yet it all started with a teenager bothered by headlight glare, and the audacity
       location: 'New York City, USA',
       season: 'Summer',
       mood: 'innovation'
-    }
+    },
+    thinkingQuestion: {
+      en: 'Land invented Polaroid film at just 20 years old. Why is it important for young people to pursue seemingly "impossible" ideas?',
+      zh: '兰德在20岁时就发明了宝丽来薄膜。为什么年轻人追求看似"不可能"的想法很重要？'
+    },
+    illustrationType: 'polarizer'
   },
   {
     year: 1971,
@@ -978,7 +1043,12 @@ The story of polarized light has become the story of modern communication. Barth
       location: 'Princeton, New Jersey, USA',
       season: 'All seasons',
       mood: 'technological revolution'
-    }
+    },
+    thinkingQuestion: {
+      en: 'The screen you\'re looking at right now uses polarization. What would happen if you looked at your phone through polarized sunglasses at different angles?',
+      zh: '你现在看的屏幕就使用了偏振原理。如果你通过偏振太阳镜从不同角度看手机，会发生什么？'
+    },
+    illustrationType: 'lcd'
   },
   {
     year: 2012,
@@ -1038,7 +1108,12 @@ In the rainbow-colored eyes of a small crustacean, three centuries of optical re
       location: 'Great Barrier Reef, Australia',
       season: 'Summer',
       mood: 'wonder'
-    }
+    },
+    thinkingQuestion: {
+      en: 'Evolution gave mantis shrimp the ability to see circular polarization. Why might this ability be useful for survival in the ocean?',
+      zh: '进化使螳螂虾获得了看见圆偏振光的能力。为什么这种能力对于在海洋中生存可能有用？'
+    },
+    illustrationType: 'mantis'
   },
   {
     year: 2018,
@@ -1221,6 +1296,244 @@ const CATEGORY_LABELS = {
   theory: { en: 'Theory', zh: '理论', color: 'purple' as const },
   experiment: { en: 'Experiment', zh: '实验', color: 'green' as const },
   application: { en: 'Application', zh: '应用', color: 'orange' as const },
+}
+
+// SVG Illustrations for classic experiments - 经典实验配图
+function ExperimentIllustration({ type, className = '' }: { type: string; className?: string }) {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const illustrations: Record<string, React.ReactElement> = {
+    prism: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Prism */}
+        <polygon
+          points="60,10 100,70 20,70"
+          fill={isDark ? '#1e293b' : '#f8fafc'}
+          stroke={isDark ? '#64748b' : '#94a3b8'}
+          strokeWidth="2"
+        />
+        {/* Incoming white light */}
+        <line x1="0" y1="40" x2="45" y2="40" stroke="#fff" strokeWidth="3" />
+        {/* Spectrum rays */}
+        <line x1="75" y1="45" x2="120" y2="25" stroke="#ef4444" strokeWidth="2" />
+        <line x1="75" y1="47" x2="120" y2="35" stroke="#f97316" strokeWidth="2" />
+        <line x1="75" y1="49" x2="120" y2="45" stroke="#eab308" strokeWidth="2" />
+        <line x1="75" y1="51" x2="120" y2="55" stroke="#22c55e" strokeWidth="2" />
+        <line x1="75" y1="53" x2="120" y2="65" stroke="#3b82f6" strokeWidth="2" />
+        <line x1="75" y1="55" x2="120" y2="75" stroke="#8b5cf6" strokeWidth="2" />
+      </svg>
+    ),
+    'double-slit': (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Light source */}
+        <circle cx="10" cy="40" r="6" fill="#fbbf24" />
+        {/* Barrier with slits */}
+        <rect x="40" y="0" width="4" height="32" fill={isDark ? '#475569' : '#94a3b8'} />
+        <rect x="40" y="38" width="4" height="4" fill={isDark ? '#0f172a' : '#f1f5f9'} />
+        <rect x="40" y="48" width="4" height="32" fill={isDark ? '#475569' : '#94a3b8'} />
+        {/* Waves from source */}
+        <path d="M 16,40 Q 28,30 40,36" fill="none" stroke="#fbbf24" strokeWidth="1.5" opacity="0.7" />
+        <path d="M 16,40 Q 28,50 40,44" fill="none" stroke="#fbbf24" strokeWidth="1.5" opacity="0.7" />
+        {/* Interference pattern */}
+        <rect x="100" y="0" width="15" height="80" fill={isDark ? '#1e293b' : '#f1f5f9'} />
+        {[0, 16, 32, 48, 64].map((y, i) => (
+          <rect key={i} x="100" y={y + 4} width="15" height="8" fill="#fbbf24" opacity={i % 2 === 0 ? 0.9 : 0.3} />
+        ))}
+        {/* Waves from slits */}
+        <path d="M 44,36 Q 70,20 100,20" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
+        <path d="M 44,36 Q 70,40 100,40" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
+        <path d="M 44,44 Q 70,40 100,40" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
+        <path d="M 44,44 Q 70,60 100,60" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
+      </svg>
+    ),
+    calcite: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Calcite crystal (rhombus) */}
+        <polygon
+          points="30,20 80,15 90,60 40,65"
+          fill={isDark ? 'rgba(147, 197, 253, 0.2)' : 'rgba(147, 197, 253, 0.4)'}
+          stroke={isDark ? '#60a5fa' : '#3b82f6'}
+          strokeWidth="2"
+        />
+        {/* Incoming light */}
+        <line x1="0" y1="40" x2="30" y2="40" stroke="#fff" strokeWidth="3" />
+        {/* Double refraction - ordinary ray */}
+        <line x1="50" y1="42" x2="120" y2="50" stroke="#22d3ee" strokeWidth="2.5" />
+        <text x="105" y="62" fill={isDark ? '#22d3ee' : '#0891b2'} fontSize="8">o-ray</text>
+        {/* Extraordinary ray */}
+        <line x1="50" y1="38" x2="120" y2="25" stroke="#fbbf24" strokeWidth="2.5" />
+        <text x="105" y="20" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="8">e-ray</text>
+        {/* Double image dots */}
+        <circle cx="15" cy="40" r="3" fill="#fff" />
+      </svg>
+    ),
+    reflection: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Glass surface */}
+        <rect x="0" y="50" width="120" height="30" fill={isDark ? 'rgba(147, 197, 253, 0.2)' : 'rgba(147, 197, 253, 0.3)'} />
+        <line x1="0" y1="50" x2="120" y2="50" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="2" />
+        {/* Incident ray */}
+        <line x1="20" y1="10" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
+        <polygon points="58,46 62,50 54,50" fill="#fff" />
+        {/* Reflected ray (polarized) */}
+        <line x1="60" y1="50" x2="100" y2="10" stroke="#22d3ee" strokeWidth="2.5" />
+        {/* Polarization indicator */}
+        <ellipse cx="85" cy="25" rx="8" ry="2" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
+        {/* Angle arc */}
+        <path d="M 60,35 A 15,15 0 0,1 75,50" fill="none" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
+        <text x="72" y="42" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">θB</text>
+      </svg>
+    ),
+    polarizer: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Unpolarized light waves */}
+        <g transform="translate(5, 40)">
+          <line x1="0" y1="-10" x2="0" y2="10" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="-7" y1="-7" x2="7" y2="7" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="-10" y1="0" x2="10" y2="0" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="-7" y1="7" x2="7" y2="-7" stroke="#fbbf24" strokeWidth="2" />
+        </g>
+        {/* Arrow */}
+        <line x1="20" y1="40" x2="40" y2="40" stroke="#fbbf24" strokeWidth="2" />
+        {/* Polarizer 1 */}
+        <rect x="45" y="15" width="8" height="50" fill={isDark ? 'rgba(34, 211, 238, 0.3)' : 'rgba(34, 211, 238, 0.4)'} stroke="#22d3ee" strokeWidth="1.5" />
+        <line x1="49" y1="18" x2="49" y2="62" stroke="#22d3ee" strokeWidth="2" strokeDasharray="3,2" />
+        {/* Polarized light */}
+        <line x1="53" y1="40" x2="65" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        <g transform="translate(70, 40)">
+          <line x1="0" y1="-8" x2="0" y2="8" stroke="#22d3ee" strokeWidth="2" />
+        </g>
+        {/* Arrow */}
+        <line x1="75" y1="40" x2="85" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        {/* Polarizer 2 (crossed) */}
+        <rect x="90" y="15" width="8" height="50" fill={isDark ? 'rgba(251, 191, 36, 0.3)' : 'rgba(251, 191, 36, 0.4)'} stroke="#fbbf24" strokeWidth="1.5" />
+        <line x1="91" y1="40" x2="97" y2="40" stroke="#fbbf24" strokeWidth="2" strokeDasharray="3,2" />
+        {/* No light */}
+        <line x1="98" y1="40" x2="115" y2="40" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" strokeDasharray="2,2" />
+        <text x="105" y="55" fill={isDark ? '#ef4444' : '#dc2626'} fontSize="8">×</text>
+      </svg>
+    ),
+    wave: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* E field wave */}
+        <path
+          d="M 0,40 Q 15,10 30,40 Q 45,70 60,40 Q 75,10 90,40 Q 105,70 120,40"
+          fill="none"
+          stroke="#22d3ee"
+          strokeWidth="2.5"
+        />
+        {/* B field wave (perpendicular) */}
+        <path
+          d="M 0,40 Q 15,55 30,40 Q 45,25 60,40 Q 75,55 90,40 Q 105,25 120,40"
+          fill="none"
+          stroke="#f472b6"
+          strokeWidth="2"
+          opacity="0.7"
+        />
+        {/* Labels */}
+        <text x="5" y="15" fill="#22d3ee" fontSize="9" fontWeight="bold">E</text>
+        <text x="5" y="65" fill="#f472b6" fontSize="9" fontWeight="bold">B</text>
+        {/* Propagation arrow */}
+        <line x1="50" y1="75" x2="70" y2="75" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1.5" />
+        <polygon points="70,75 65,72 65,78" fill={isDark ? '#94a3b8' : '#64748b'} />
+        <text x="55" y="72" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">k</text>
+      </svg>
+    ),
+    lcd: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Backlight */}
+        <rect x="0" y="25" width="15" height="30" fill="#fbbf24" opacity="0.8" />
+        {/* Polarizer 1 */}
+        <rect x="20" y="20" width="5" height="40" fill={isDark ? 'rgba(34, 211, 238, 0.4)' : 'rgba(34, 211, 238, 0.5)'} stroke="#22d3ee" />
+        {/* LC layer */}
+        <rect x="30" y="15" width="30" height="50" fill={isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)'} stroke="#8b5cf6" />
+        {/* Twisted molecules */}
+        <path d="M 35,25 Q 45,30 55,25" fill="none" stroke="#8b5cf6" strokeWidth="1.5" />
+        <path d="M 35,40 Q 45,35 55,40" fill="none" stroke="#8b5cf6" strokeWidth="1.5" />
+        <path d="M 35,55 Q 45,50 55,55" fill="none" stroke="#8b5cf6" strokeWidth="1.5" />
+        {/* Polarizer 2 */}
+        <rect x="65" y="20" width="5" height="40" fill={isDark ? 'rgba(34, 211, 238, 0.4)' : 'rgba(34, 211, 238, 0.5)'} stroke="#22d3ee" />
+        {/* Display pixel */}
+        <rect x="80" y="25" width="35" height="30" fill={isDark ? '#0f172a' : '#1e293b'} stroke={isDark ? '#475569' : '#64748b'} />
+        <rect x="85" y="30" width="10" height="20" fill="#22c55e" />
+        <rect x="100" y="30" width="10" height="20" fill="#3b82f6" />
+      </svg>
+    ),
+    nicol: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Nicol prism shape */}
+        <polygon
+          points="20,20 70,15 100,40 70,65 20,60"
+          fill={isDark ? 'rgba(147, 197, 253, 0.15)' : 'rgba(147, 197, 253, 0.25)'}
+          stroke={isDark ? '#60a5fa' : '#3b82f6'}
+          strokeWidth="2"
+        />
+        {/* Diagonal cut */}
+        <line x1="45" y1="17" x2="45" y2="63" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" strokeDasharray="3,2" />
+        {/* Incoming light */}
+        <line x1="0" y1="40" x2="20" y2="40" stroke="#fff" strokeWidth="2.5" />
+        {/* Ordinary ray (reflected/absorbed) */}
+        <line x1="45" y1="40" x2="70" y2="65" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1.5" strokeDasharray="2,2" />
+        <text x="60" y="75" fill={isDark ? '#64748b' : '#94a3b8'} fontSize="7">absorbed</text>
+        {/* Extraordinary ray (transmitted) */}
+        <line x1="45" y1="40" x2="120" y2="40" stroke="#22d3ee" strokeWidth="2.5" />
+        <text x="100" y="35" fill="#22d3ee" fontSize="7">e-ray</text>
+      </svg>
+    ),
+    mantis: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Mantis shrimp eye (simplified) */}
+        <ellipse cx="30" cy="40" rx="20" ry="25" fill={isDark ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.4)'} stroke="#22c55e" strokeWidth="2" />
+        {/* Eye bands */}
+        <line x1="10" y1="35" x2="50" y2="35" stroke="#22c55e" strokeWidth="3" />
+        <line x1="10" y1="45" x2="50" y2="45" stroke="#22c55e" strokeWidth="3" />
+        {/* Incoming light types */}
+        <g transform="translate(70, 20)">
+          <circle cx="0" cy="0" r="4" fill="#22d3ee" />
+          <path d="M -8,0 A 8,8 0 1,1 8,0" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
+          <text x="12" y="4" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">linear</text>
+        </g>
+        <g transform="translate(70, 40)">
+          <circle cx="0" cy="0" r="4" fill="#f472b6" />
+          <ellipse cx="0" cy="0" rx="8" ry="4" fill="none" stroke="#f472b6" strokeWidth="1.5" />
+          <text x="12" y="4" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">circular</text>
+        </g>
+        <g transform="translate(70, 60)">
+          <circle cx="0" cy="0" r="4" fill="#fbbf24" />
+          <ellipse cx="0" cy="0" rx="8" ry="6" fill="none" stroke="#fbbf24" strokeWidth="1.5" transform="rotate(30)" />
+          <text x="12" y="4" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">elliptical</text>
+        </g>
+        {/* Arrows to eye */}
+        <line x1="55" y1="20" x2="48" y2="35" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
+        <line x1="55" y1="40" x2="50" y2="40" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
+        <line x1="55" y1="60" x2="48" y2="45" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
+      </svg>
+    ),
+    birefringence: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Crystal structure */}
+        <rect x="40" y="10" width="40" height="60" fill={isDark ? 'rgba(147, 197, 253, 0.15)' : 'rgba(147, 197, 253, 0.25)'} stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="2" />
+        {/* Optic axis indicator */}
+        <line x1="60" y1="5" x2="60" y2="75" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" strokeDasharray="3,2" />
+        <text x="62" y="10" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">optic axis</text>
+        {/* Incoming light */}
+        <line x1="5" y1="40" x2="40" y2="40" stroke="#fff" strokeWidth="2.5" />
+        {/* O-ray (follows optic axis) */}
+        <line x1="80" y1="40" x2="115" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        {/* E-ray (deflected) */}
+        <line x1="80" y1="40" x2="115" y2="25" stroke="#fbbf24" strokeWidth="2" />
+        {/* Inside crystal paths */}
+        <line x1="40" y1="40" x2="80" y2="40" stroke="#22d3ee" strokeWidth="1.5" opacity="0.6" />
+        <line x1="40" y1="40" x2="80" y2="35" stroke="#fbbf24" strokeWidth="1.5" opacity="0.6" />
+        {/* Labels */}
+        <text x="100" y="50" fill="#22d3ee" fontSize="7">o</text>
+        <text x="108" y="23" fill="#fbbf24" fontSize="7">e</text>
+      </svg>
+    ),
+  }
+
+  return illustrations[type] || null
 }
 
 // Story Modal Component - 沉浸式故事阅读模式
@@ -1480,143 +1793,162 @@ function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }: StoryM
   )
 }
 
-// Timeline event card component
-interface TimelineCardProps {
+// Dual Track Card Component - 双轨卡片组件
+interface DualTrackCardProps {
   event: TimelineEvent
   isExpanded: boolean
   onToggle: () => void
   onReadStory: () => void
+  side: 'left' | 'right'
 }
 
-function TimelineCard({ event, isExpanded, onToggle, onReadStory }: TimelineCardProps) {
+function DualTrackCard({ event, isExpanded, onToggle, onReadStory, side: _side }: DualTrackCardProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
   const category = CATEGORY_LABELS[event.category]
 
-  // Track-based colors
   const isOpticsTrack = event.track === 'optics'
   const trackColor = isOpticsTrack
-    ? { dot: 'bg-amber-500 border-amber-500/30', border: theme === 'dark' ? 'border-amber-500/50' : 'border-amber-400' }
-    : { dot: 'bg-cyan-500 border-cyan-500/30', border: theme === 'dark' ? 'border-cyan-500/50' : 'border-cyan-400' }
+    ? { bg: theme === 'dark' ? 'bg-amber-500/10' : 'bg-amber-50', border: theme === 'dark' ? 'border-amber-500/30' : 'border-amber-200', hoverBorder: theme === 'dark' ? 'hover:border-amber-500/50' : 'hover:border-amber-400' }
+    : { bg: theme === 'dark' ? 'bg-cyan-500/10' : 'bg-cyan-50', border: theme === 'dark' ? 'border-cyan-500/30' : 'border-cyan-200', hoverBorder: theme === 'dark' ? 'hover:border-cyan-500/50' : 'hover:border-cyan-400' }
 
   return (
-    <div className={cn(
-      'relative pl-8 pb-8 border-l-2 last:pb-0',
-      isOpticsTrack
-        ? theme === 'dark' ? 'border-amber-500/30' : 'border-amber-300'
-        : theme === 'dark' ? 'border-cyan-500/30' : 'border-cyan-300'
-    )}>
-      {/* Timeline dot with track indicator */}
-      <div className={cn(
-        'absolute -left-2.5 w-5 h-5 rounded-full border-4',
-        trackColor.dot
-      )} />
-
-      {/* Year label */}
-      <div className={cn(
-        'absolute -left-20 w-14 text-right font-mono text-sm font-semibold',
-        theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-      )}>
-        {event.year}
-      </div>
-
-      {/* Card */}
-      <div
-        className={cn(
-          'rounded-xl border p-4 transition-all',
-          theme === 'dark'
-            ? `bg-slate-800/50 border-slate-700 hover:${trackColor.border}`
-            : `bg-white border-gray-200 hover:${trackColor.border} hover:shadow-md`
-        )}
-      >
-        <div
-          className="flex items-start justify-between gap-3 cursor-pointer"
-          onClick={onToggle}
-        >
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              {/* Track badge */}
-              <span className={cn(
-                'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
-                isOpticsTrack
-                  ? theme === 'dark' ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
-                  : theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-700'
-              )}>
-                {isOpticsTrack ? <Sun className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
-                {isOpticsTrack ? (isZh ? '光学' : 'Optics') : (isZh ? '偏振' : 'Polarization')}
-              </span>
-              <Badge color={category.color}>
-                {isZh ? category.zh : category.en}
-              </Badge>
-              {event.importance === 1 && (
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-              )}
-            </div>
-            <h3 className={cn(
-              'font-semibold text-lg mb-1',
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            )}>
-              {isZh ? event.titleZh : event.titleEn}
-            </h3>
-            {event.scientistEn && (
-              <p className={cn(
-                'text-sm mb-2 flex items-center gap-1',
-                theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-              )}>
-                {event.scientistBio?.portraitEmoji && (
-                  <span className="text-base mr-1">{event.scientistBio.portraitEmoji}</span>
-                )}
-                <User className="w-3.5 h-3.5" />
-                {isZh ? event.scientistZh : event.scientistEn}
-              </p>
+    <div
+      className={cn(
+        'rounded-xl border p-3 sm:p-4 transition-all cursor-pointer',
+        trackColor.bg,
+        trackColor.border,
+        trackColor.hoverBorder,
+        theme === 'dark' ? 'hover:shadow-lg hover:shadow-black/20' : 'hover:shadow-md'
+      )}
+      onClick={onToggle}
+    >
+      {/* Header */}
+      <div className="flex items-start gap-2">
+        <div className="flex-1 min-w-0">
+          {/* Badges */}
+          <div className="flex flex-wrap items-center gap-1.5 mb-2">
+            <Badge color={category.color} className="text-xs">
+              {isZh ? category.zh : category.en}
+            </Badge>
+            {event.importance === 1 && (
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
             )}
+          </div>
+
+          {/* Title */}
+          <h3 className={cn(
+            'font-semibold text-sm sm:text-base mb-1 line-clamp-2',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? event.titleZh : event.titleEn}
+          </h3>
+
+          {/* Scientist */}
+          {event.scientistEn && (
             <p className={cn(
-              'text-sm',
+              'text-xs sm:text-sm mb-1 flex items-center gap-1',
+              isOpticsTrack
+                ? theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                : theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+            )}>
+              {event.scientistBio?.portraitEmoji && (
+                <span className="text-sm">{event.scientistBio.portraitEmoji}</span>
+              )}
+              {isZh ? event.scientistZh : event.scientistEn}
+            </p>
+          )}
+
+          {/* Description (collapsed) */}
+          {!isExpanded && (
+            <p className={cn(
+              'text-xs line-clamp-2',
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             )}>
               {isZh ? event.descriptionZh : event.descriptionEn}
             </p>
-          </div>
-          <div className={cn(
-            'flex-shrink-0 p-1 rounded-full transition-colors',
-            theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
-          )}>
-            {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-gray-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-gray-400" />
-            )}
-          </div>
+          )}
         </div>
 
-        {/* Expanded details */}
-        {isExpanded && (
-          <div className={cn(
-            'mt-4 pt-4 border-t',
-            theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
-          )}>
-            {event.details && (
-              <>
-                <h4 className={cn(
-                  'text-sm font-semibold mb-2 flex items-center gap-2',
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                )}>
-                  <Lightbulb className="w-4 h-4" />
-                  {isZh ? '深入了解' : 'Learn More'}
-                </h4>
-                <ul className={cn(
-                  'text-sm space-y-1.5 list-disc list-inside mb-4',
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                )}>
-                  {(isZh ? event.details.zh : event.details.en).map((detail, i) => (
-                    <li key={i}>{detail}</li>
-                  ))}
-                </ul>
-              </>
-            )}
+        {/* Expand icon */}
+        <div className={cn(
+          'flex-shrink-0 p-1 rounded-full transition-colors',
+          theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-200'
+        )}>
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 text-gray-400" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-400" />
+          )}
+        </div>
+      </div>
 
-            {/* Read Story Button */}
+      {/* Expanded Content */}
+      {isExpanded && (
+        <div className={cn(
+          'mt-3 pt-3 border-t',
+          theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+        )}>
+          {/* Full description */}
+          <p className={cn(
+            'text-sm mb-3',
+            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+          )}>
+            {isZh ? event.descriptionZh : event.descriptionEn}
+          </p>
+
+          {/* Illustration */}
+          {event.illustrationType && (
+            <div className={cn(
+              'mb-3 p-2 rounded-lg flex items-center justify-center',
+              theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/50'
+            )}>
+              <ExperimentIllustration type={event.illustrationType} className="w-full max-w-[180px] h-auto" />
+            </div>
+          )}
+
+          {/* Details */}
+          {event.details && (
+            <div className="mb-3">
+              <h4 className={cn(
+                'text-xs font-semibold mb-1.5 flex items-center gap-1',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              )}>
+                <Lightbulb className="w-3.5 h-3.5" />
+                {isZh ? '深入了解' : 'Learn More'}
+              </h4>
+              <ul className={cn(
+                'text-xs space-y-1 list-disc list-inside',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                {(isZh ? event.details.zh : event.details.en).slice(0, 3).map((detail, i) => (
+                  <li key={i}>{detail}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Thinking Question */}
+          {event.thinkingQuestion && (
+            <div className={cn(
+              'mb-3 p-2 rounded-lg border-l-3',
+              theme === 'dark'
+                ? 'bg-purple-500/10 border-purple-500 text-purple-300'
+                : 'bg-purple-50 border-purple-500 text-purple-700'
+            )}>
+              <h4 className="text-xs font-semibold mb-1 flex items-center gap-1">
+                <HelpCircle className="w-3.5 h-3.5" />
+                {isZh ? '思考问题' : 'Think About It'}
+              </h4>
+              <p className="text-xs italic">
+                {isZh ? event.thinkingQuestion.zh : event.thinkingQuestion.en}
+              </p>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-2">
             {event.story && (
               <button
                 onClick={(e) => {
@@ -1624,70 +1956,23 @@ function TimelineCard({ event, isExpanded, onToggle, onReadStory }: TimelineCard
                   onReadStory()
                 }}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                  theme === 'dark'
-                    ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-                    : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                  isOpticsTrack
+                    ? theme === 'dark'
+                      ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                      : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                    : theme === 'dark'
+                      ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                      : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
                 )}
               >
-                <BookOpen className="w-4 h-4" />
-                {isZh ? '阅读完整故事' : 'Read Full Story'}
+                <BookOpen className="w-3.5 h-3.5" />
+                {isZh ? '阅读故事' : 'Read Story'}
               </button>
             )}
-
-            {/* References section */}
-            {event.references && event.references.length > 0 && (
-              <div className={cn(
-                'mt-4 pt-4 border-t',
-                theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
-              )}>
-                <h4 className={cn(
-                  'text-xs font-semibold mb-2 flex items-center gap-2',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-                )}>
-                  <ExternalLink className="w-3 h-3" />
-                  {isZh ? '参考文献' : 'References'}
-                </h4>
-                <ul className="space-y-1">
-                  {event.references.map((ref, idx) => (
-                    <li key={idx} className={cn(
-                      'text-xs',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-                    )}>
-                      {ref.url ? (
-                        <a
-                          href={ref.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={cn(
-                            'hover:underline',
-                            theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                          )}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {ref.title}
-                        </a>
-                      ) : (
-                        ref.title
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Historical note (if story accuracy is uncertain) */}
-            {event.historicalNote && (
-              <div className={cn(
-                'mt-3 p-2 rounded text-xs italic',
-                theme === 'dark' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
-              )}>
-                {isZh ? event.historicalNote.zh : event.historicalNote.en}
-              </div>
-            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1767,7 +2052,7 @@ export function ChroniclesPage() {
       />
 
       {/* Main content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Hero section */}
         <div className="text-center mb-8">
           <h2 className={cn(
@@ -1899,17 +2184,134 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Timeline */}
-            <div className="relative ml-20">
-              {filteredEvents.map((event, index) => (
-                <TimelineCard
-                  key={event.year}
-                  event={event}
-                  isExpanded={expandedEvent === index}
-                  onToggle={() => setExpandedEvent(expandedEvent === index ? null : index)}
-                  onReadStory={() => handleOpenStory(index)}
-                />
-              ))}
+            {/* Dual Track Timeline - 双轨时间线 */}
+            <div className="relative">
+              {/* Track Labels - 轨道标签 */}
+              <div className="flex items-center justify-between mb-6">
+                <div className={cn(
+                  'flex-1 text-center py-2 rounded-l-lg border-r',
+                  theme === 'dark'
+                    ? 'bg-amber-500/10 border-amber-500/30'
+                    : 'bg-amber-50 border-amber-200'
+                )}>
+                  <div className="flex items-center justify-center gap-2">
+                    <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
+                    <span className={cn('font-semibold', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
+                      {isZh ? '广义光学' : 'General Optics'}
+                    </span>
+                  </div>
+                </div>
+                <div className={cn(
+                  'w-20 text-center py-2',
+                  theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
+                )}>
+                  <span className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                    {isZh ? '年份' : 'Year'}
+                  </span>
+                </div>
+                <div className={cn(
+                  'flex-1 text-center py-2 rounded-r-lg border-l',
+                  theme === 'dark'
+                    ? 'bg-cyan-500/10 border-cyan-500/30'
+                    : 'bg-cyan-50 border-cyan-200'
+                )}>
+                  <div className="flex items-center justify-center gap-2">
+                    <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                    <span className={cn('font-semibold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
+                      {isZh ? '偏振光' : 'Polarization'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Timeline with center axis */}
+              <div className="relative">
+                {/* Center vertical line */}
+                <div className={cn(
+                  'absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2',
+                  theme === 'dark' ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50' : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
+                )} />
+
+                {/* Events */}
+                {(() => {
+                  // Get all unique years from filtered events
+                  const years = [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
+
+                  return years.map((year) => {
+                    const opticsEvent = filteredEvents.find(e => e.year === year && e.track === 'optics')
+                    const polarizationEvent = filteredEvents.find(e => e.year === year && e.track === 'polarization')
+                    const opticsIndex = opticsEvent ? filteredEvents.findIndex(e => e === opticsEvent) : -1
+                    const polarizationIndex = polarizationEvent ? filteredEvents.findIndex(e => e === polarizationEvent) : -1
+
+                    return (
+                      <div key={year} className="relative flex items-stretch mb-6 last:mb-0">
+                        {/* Left side - Optics */}
+                        <div className="flex-1 pr-4 flex justify-end">
+                          {opticsEvent && (
+                            <div className="w-full max-w-md">
+                              <DualTrackCard
+                                event={opticsEvent}
+                                isExpanded={expandedEvent === opticsIndex}
+                                onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
+                                onReadStory={() => handleOpenStory(opticsIndex)}
+                                side="left"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Center year marker */}
+                        <div className="w-20 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
+                          <div className={cn(
+                            'w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2',
+                            opticsEvent && polarizationEvent
+                              ? theme === 'dark'
+                                ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
+                                : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
+                              : opticsEvent
+                                ? theme === 'dark'
+                                  ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                                  : 'bg-amber-100 border-amber-500 text-amber-700'
+                                : theme === 'dark'
+                                  ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
+                                  : 'bg-cyan-100 border-cyan-500 text-cyan-700'
+                          )}>
+                            {year}
+                          </div>
+                          {/* Connector lines */}
+                          {opticsEvent && (
+                            <div className={cn(
+                              'absolute top-6 right-full w-4 h-0.5 mr-0',
+                              theme === 'dark' ? 'bg-amber-500/50' : 'bg-amber-400'
+                            )} />
+                          )}
+                          {polarizationEvent && (
+                            <div className={cn(
+                              'absolute top-6 left-full w-4 h-0.5 ml-0',
+                              theme === 'dark' ? 'bg-cyan-500/50' : 'bg-cyan-400'
+                            )} />
+                          )}
+                        </div>
+
+                        {/* Right side - Polarization */}
+                        <div className="flex-1 pl-4 flex justify-start">
+                          {polarizationEvent && (
+                            <div className="w-full max-w-md">
+                              <DualTrackCard
+                                event={polarizationEvent}
+                                isExpanded={expandedEvent === polarizationIndex}
+                                onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
+                                onReadStory={() => handleOpenStory(polarizationIndex)}
+                                side="right"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })
+                })()}
+              </div>
             </div>
           </>
         )}
