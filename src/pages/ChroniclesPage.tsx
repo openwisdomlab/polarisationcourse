@@ -309,7 +309,14 @@ interface TimelineEvent {
     zh: string
   }
   // 实验配图 - 经典实验的可视化
-  illustrationType?: 'prism' | 'double-slit' | 'calcite' | 'reflection' | 'polarizer' | 'lcd' | 'mantis' | 'wave' | 'birefringence' | 'nicol'
+  illustrationType?: 'prism' | 'double-slit' | 'calcite' | 'reflection' | 'polarizer' | 'lcd' | 'mantis' | 'wave' | 'birefringence' | 'nicol' | 'faraday' | 'chirality' | 'rayleigh' | 'poincare' | 'photoelectric' | 'jones'
+  // 双轨连接 - 跨轨道因果关系
+  linkTo?: {
+    year: number
+    trackTarget: 'optics' | 'polarization'
+    descriptionEn: string
+    descriptionZh: string
+  }
 }
 
 const TIMELINE_EVENTS: TimelineEvent[] = [
@@ -591,6 +598,12 @@ Einstein later called Maxwell's work "the most profound and the most fruitful th
     thinkingQuestion: {
       en: 'Maxwell showed that light is an electromagnetic wave. But what about radio waves, X-rays, and microwaves? Are they related to light?',
       zh: '麦克斯韦证明了光是电磁波。那么无线电波、X射线和微波呢？它们与光有关系吗？'
+    },
+    linkTo: {
+      year: 1845,
+      trackTarget: 'polarization',
+      descriptionEn: 'Faraday\'s discovery that magnetism could rotate polarized light provided experimental evidence for the light-electromagnetism connection',
+      descriptionZh: '法拉第发现磁场能旋转偏振光，为光与电磁的联系提供了实验证据'
     },
     illustrationType: 'wave'
   },
@@ -945,10 +958,79 @@ tan(θB) = n₂/n₁
   },
   {
     year: 1815,
-    titleEn: 'Fresnel\'s Wave Theory',
-    titleZh: '菲涅尔的波动理论',
-    descriptionEn: 'Augustin-Jean Fresnel develops a comprehensive wave theory explaining diffraction and polarization.',
-    descriptionZh: '菲涅尔发展出完整的波动理论，解释了衍射和偏振现象。',
+    titleEn: 'Discovery of Optical Activity',
+    titleZh: '旋光性的发现',
+    descriptionEn: 'Jean-Baptiste Biot discovers that certain liquids (like sugar solutions) can rotate the plane of polarized light — a phenomenon distinct from birefringence.',
+    descriptionZh: '让-巴蒂斯特·毕奥发现某些液体（如糖溶液）能旋转偏振光的振动平面——这一现象不同于双折射，称为"旋光性"。',
+    scientistEn: 'Jean-Baptiste Biot',
+    scientistZh: '让-巴蒂斯特·毕奥',
+    category: 'discovery',
+    importance: 1,
+    track: 'polarization',
+    details: {
+      en: [
+        'Observed that polarized light passing through quartz or sugar solutions has its plane rotated',
+        'Rotation angle is proportional to path length and concentration',
+        'Distinguished from birefringence: rotation occurs without beam splitting',
+        'This "natural optical activity" is related to molecular asymmetry (chirality)',
+        'Laid the foundation for Pasteur\'s later discovery of molecular chirality'
+      ],
+      zh: [
+        '观察到偏振光通过石英或糖溶液时振动平面发生旋转',
+        '旋转角度与光程长度和浓度成正比',
+        '不同于双折射：旋转时不发生光束分裂',
+        '这种"自然旋光"与分子不对称性（手性）有关',
+        '为巴斯德后来发现分子手性奠定了基础'
+      ]
+    },
+    story: {
+      en: `In 1815, in the laboratories of the École Polytechnique in Paris, Jean-Baptiste Biot was studying quartz crystals when he noticed something puzzling. Polarized light passing through certain quartz specimens emerged with its polarization plane twisted — not split into two beams like in calcite, but smoothly rotated.
+
+Even more surprising, the same effect occurred in sugar solutions. The sweeter the solution, the greater the rotation. Biot realized he had discovered a fundamentally different way that matter could interact with polarized light.
+
+He called it "rotary polarization" or "optical activity." Some substances rotated the light clockwise (dextrorotatory), others counterclockwise (levorotatory). The phenomenon seemed to be connected to the very structure of molecules themselves.
+
+Biot could not explain why this happened — that would require understanding molecular structure at a level not yet achieved. But he had opened a door that would lead, thirty years later, to one of the most profound discoveries in chemistry: molecular chirality.
+
+Today, measuring optical rotation remains a standard technique in chemistry and pharmaceutical industries. Every time a chemist verifies the purity of a sugar or the correct "handedness" of a drug molecule, they use the principle Biot discovered.`,
+      zh: `1815年，在巴黎综合理工学院的实验室里，让-巴蒂斯特·毕奥研究石英晶体时注意到一个令人困惑的现象。偏振光通过某些石英样品后，其偏振平面发生了扭转——不是像方解石那样分成两束，而是平滑地旋转。
+
+更令人惊讶的是，糖溶液中也出现了同样的效果。溶液越甜，旋转角度越大。毕奥意识到他发现了物质与偏振光相互作用的一种根本不同的方式。
+
+他称之为"旋转偏振"或"旋光性"。有些物质使光顺时针旋转（右旋），有些则逆时针旋转（左旋）。这种现象似乎与分子本身的结构有关。
+
+毕奥无法解释为什么会发生这种情况——那需要对分子结构有更深入的理解。但他打开了一扇门，三十年后将引出化学史上最深刻的发现之一：分子手性。
+
+今天，测量旋光度仍然是化学和制药行业的标准技术。每当化学家验证糖的纯度或药物分子的正确"手性"时，他们都在使用毕奥发现的原理。`
+    },
+    scientistBio: {
+      birthYear: 1774,
+      deathYear: 1862,
+      nationality: 'French',
+      portraitEmoji: '🔬',
+      bioEn: 'Jean-Baptiste Biot was a French physicist, astronomer, and mathematician. He made important contributions to optics, magnetism, and astronomy. He accompanied Gay-Lussac on a famous balloon ascent for scientific research and was one of the first to study meteorites scientifically.',
+      bioZh: '让-巴蒂斯特·毕奥是法国物理学家、天文学家和数学家。他在光学、磁学和天文学方面做出了重要贡献。他曾与盖-吕萨克一起进行著名的气球升空科学研究，也是最早科学研究陨石的人之一。'
+    },
+    scene: {
+      location: 'Paris, France',
+      season: 'Spring',
+      mood: 'discovery'
+    },
+    historicalNote: {
+      en: 'Note: Optical activity (rotation of polarization plane) is distinct from birefringence (splitting light into two beams). Both involve polarization but through different mechanisms.',
+      zh: '注：旋光性（偏振面旋转）与双折射（将光分成两束）是不同的现象。两者都涉及偏振，但机制不同。'
+    },
+    thinkingQuestion: {
+      en: 'Sugar solutions rotate polarized light. Does this mean sugar molecules have a special shape? What does "handedness" mean for a molecule?',
+      zh: '糖溶液能旋转偏振光。这是否意味着糖分子有特殊的形状？分子的"手性"是什么意思？'
+    }
+  },
+  {
+    year: 1817,
+    titleEn: 'Fresnel\'s Transverse Wave Theory',
+    titleZh: '菲涅尔的横波理论',
+    descriptionEn: 'Fresnel proposes that light is a transverse wave — a hypothesis crucially validated by polarization phenomena observed by Malus and others.',
+    descriptionZh: '菲涅尔提出光是横波——这一假说被马吕斯等人观察到的偏振现象所关键验证。偏振现象的存在反过来证明了光必须是横波。',
     scientistEn: 'Augustin-Jean Fresnel',
     scientistZh: '奥古斯丁-让·菲涅尔',
     category: 'theory',
@@ -956,17 +1038,25 @@ tan(θB) = n₂/n₁
     track: 'optics',
     details: {
       en: [
-        'Proposed that light waves are transverse (perpendicular to propagation)',
+        'Polarization phenomena (observed since 1808) could only be explained if light was a transverse wave',
+        'Longitudinal waves (like sound) cannot be polarized — only transverse waves can',
         'Developed Fresnel equations for reflection and transmission',
-        'Explained interference and diffraction mathematically',
+        'Mathematically unified interference, diffraction, and polarization',
         'Invented the Fresnel lens for lighthouses'
       ],
       zh: [
-        '提出光波是横波（垂直于传播方向）',
+        '偏振现象（1808年起被观测到）只有在光是横波时才能解释',
+        '纵波（如声波）无法偏振——只有横波才可以',
         '推导出菲涅尔反射和透射方程',
-        '用数学解释了干涉和衍射',
+        '用数学统一了干涉、衍射和偏振',
         '发明了用于灯塔的菲涅尔透镜'
       ]
+    },
+    linkTo: {
+      year: 1808,
+      trackTarget: 'polarization',
+      descriptionEn: 'Polarization phenomena discovered by Malus provided crucial evidence that light must be a transverse wave',
+      descriptionZh: '马吕斯发现的偏振现象为"光是横波"提供了关键证据'
     },
     story: {
       en: `In 1815, post-Napoleonic France was in chaos. Augustin-Jean Fresnel, a young civil engineer, had just lost his job for supporting the Bourbon restoration. Exiled to the countryside with nothing but time on his hands, he turned to an old obsession: the nature of light.
@@ -1083,6 +1173,162 @@ Nicol himself, modest to a fault, never patented his invention. He gave it freel
     illustrationType: 'nicol'
   },
   {
+    year: 1845,
+    titleEn: 'Faraday Effect',
+    titleZh: '法拉第效应',
+    descriptionEn: 'Michael Faraday discovers that a magnetic field can rotate the plane of polarized light in glass — the first evidence linking light and electromagnetism.',
+    descriptionZh: '迈克尔·法拉第发现磁场能旋转玻璃中偏振光的振动平面——这是光与电磁学联系的首个证据，直接启发了麦克斯韦的电磁理论。',
+    scientistEn: 'Michael Faraday',
+    scientistZh: '迈克尔·法拉第',
+    category: 'discovery',
+    importance: 1,
+    track: 'polarization',
+    details: {
+      en: [
+        'Polarized light passing through glass in a strong magnetic field has its plane rotated',
+        'Rotation angle is proportional to magnetic field strength and path length',
+        'First experimental evidence that light and magnetism are related',
+        'Unlike natural optical activity, Faraday rotation is non-reciprocal (direction-dependent)',
+        'Directly inspired Maxwell\'s electromagnetic theory of light (1865)'
+      ],
+      zh: [
+        '偏振光在强磁场中通过玻璃时振动平面发生旋转',
+        '旋转角度与磁场强度和光程成正比',
+        '光和磁学相关的首个实验证据',
+        '与自然旋光不同，法拉第旋转是非互易的（方向相关）',
+        '直接启发了麦克斯韦的光电磁理论（1865）'
+      ]
+    },
+    story: {
+      en: `In September 1845, in the basement laboratory of the Royal Institution in London, Michael Faraday — the greatest experimental physicist of his age — was hunting for a connection he believed must exist between light and magnetism.
+
+For years, he had tried and failed. Light beams passed through electric fields without effect. Magnetic fields seemed equally impotent. His notebooks filled with failed experiments, each ending with the melancholy note: "no effect."
+
+Then, on September 13th, he tried something new: a powerful electromagnet and a piece of heavy glass he had made years earlier. He sent a beam of polarized light through the glass, with the magnetic field aligned along the beam's path.
+
+The analyzer on the other side was set to block the light. But when Faraday turned on the magnet — the darkness lifted! The light was getting through. The magnetic field had rotated the polarization plane.
+
+"I have at last succeeded in magnetizing and electrifying a ray of light," Faraday wrote with barely contained excitement. "The effect is great."
+
+This discovery, now called the Faraday effect, was monumental. For the first time, a connection between electromagnetism and light had been demonstrated experimentally. Twenty years later, Maxwell would use this insight to show that light itself is an electromagnetic wave.
+
+Note: The Faraday effect differs from natural optical activity (like in sugar solutions) because it is non-reciprocal — the rotation direction depends on the direction of light propagation relative to the magnetic field.`,
+      zh: `1845年9月，伦敦皇家研究所的地下实验室里，迈克尔·法拉第——那个时代最伟大的实验物理学家——正在寻找他坚信存在的光与磁之间的联系。
+
+多年来，他尝试了又失败了。光束穿过电场毫无效果。磁场似乎同样无能为力。他的笔记本里记满了失败的实验，每一次都以忧郁的注释结束："无效果"。
+
+然后，9月13日，他尝试了一些新东西：一块强电磁铁和一块他多年前制作的重玻璃。他让一束偏振光穿过玻璃，磁场沿着光束路径排列。
+
+另一边的检偏器被设置为阻挡光线。但当法拉第打开磁铁时——黑暗消散了！光线透过来了。磁场旋转了偏振平面。
+
+"我终于成功地使一束光磁化和电化了，"法拉第难以抑制激动地写道。"效果很明显。"
+
+这一发现，现在被称为法拉第效应，具有划时代意义。这是首次实验证明电磁与光之间存在联系。二十年后，麦克斯韦将利用这一洞见证明光本身就是电磁波。
+
+注：法拉第效应与自然旋光（如糖溶液中的）不同，因为它是非互易的——旋转方向取决于光传播方向与磁场的相对关系。`
+    },
+    scientistBio: {
+      birthYear: 1791,
+      deathYear: 1867,
+      nationality: 'English',
+      portraitEmoji: '⚡',
+      bioEn: 'Michael Faraday was an English scientist who contributed greatly to electromagnetism and electrochemistry. Despite little formal education, he became one of the most influential scientists in history. He discovered electromagnetic induction, invented the electric motor, and established the concept of magnetic field lines.',
+      bioZh: '迈克尔·法拉第是英国科学家，对电磁学和电化学做出了巨大贡献。尽管几乎没有受过正规教育，他却成为历史上最有影响力的科学家之一。他发现了电磁感应，发明了电动机，并建立了磁场线的概念。'
+    },
+    scene: {
+      location: 'Royal Institution, London',
+      season: 'Autumn',
+      mood: 'breakthrough'
+    },
+    linkTo: {
+      year: 1865,
+      trackTarget: 'optics',
+      descriptionEn: 'This discovery directly inspired Maxwell\'s electromagnetic theory of light',
+      descriptionZh: '这一发现直接启发了麦克斯韦的光电磁理论'
+    },
+    historicalNote: {
+      en: 'The Faraday effect is non-reciprocal (direction-dependent), unlike natural optical activity. This property is used today in optical isolators to prevent laser light from reflecting back.',
+      zh: '法拉第效应是非互易的（方向相关），与自然旋光不同。这一特性如今用于光隔离器，防止激光反射回去。'
+    },
+    thinkingQuestion: {
+      en: 'The Faraday effect showed light and magnetism are connected. What did this suggest about the nature of light itself?',
+      zh: '法拉第效应表明光和磁是有联系的。这暗示了光本身是什么性质？'
+    },
+    illustrationType: 'faraday'
+  },
+  {
+    year: 1848,
+    titleEn: 'Discovery of Molecular Chirality',
+    titleZh: '分子手性的发现',
+    descriptionEn: 'Louis Pasteur discovers that tartaric acid crystals exist in two mirror-image forms, establishing the connection between molecular structure and optical activity.',
+    descriptionZh: '路易·巴斯德发现酒石酸晶体存在两种镜像形式，建立了分子结构与旋光性之间的联系——这是偏振光学与生命科学最紧密的桥梁。',
+    scientistEn: 'Louis Pasteur',
+    scientistZh: '路易·巴斯德',
+    category: 'discovery',
+    importance: 1,
+    track: 'polarization',
+    details: {
+      en: [
+        'Manually separated tartaric acid crystals into left- and right-handed forms',
+        'Each form rotated polarized light in opposite directions',
+        'Proved that optical activity arises from molecular asymmetry (chirality)',
+        'Established the link between polarization and life sciences (biology, chemistry, medicine)',
+        'Foundation for understanding DNA helices, protein structures, and drug design'
+      ],
+      zh: [
+        '手工将酒石酸晶体分成左旋和右旋两种形式',
+        '每种形式使偏振光向相反方向旋转',
+        '证明旋光性源于分子不对称性（手性）',
+        '建立了偏振与生命科学（生物学、化学、医学）的联系',
+        '为理解DNA螺旋、蛋白质结构和药物设计奠定基础'
+      ]
+    },
+    story: {
+      en: `In 1848, a 25-year-old chemist named Louis Pasteur was studying tartaric acid crystals — a byproduct of winemaking. Previous chemists had noticed something puzzling: two forms of the acid had identical chemical formulas, yet one rotated polarized light while the other didn't.
+
+Working at the École Normale Supérieure in Paris, Pasteur examined the crystals under a microscope with extraordinary patience. He noticed something no one had seen before: the crystals had tiny asymmetric facets that made them distinguishable as "left-handed" and "right-handed" forms, like a pair of gloves.
+
+With tweezers, crystal by crystal, he painstakingly separated the two forms into two piles. When he dissolved each pile separately and tested them with polarized light — one solution rotated light clockwise, the other counterclockwise, by equal amounts!
+
+The "inactive" form was actually a mixture of both. There was nothing chemically different about the molecules — they were mirror images of each other, like left and right hands. This "handedness" at the molecular level explained Biot's optical activity.
+
+Pasteur later said this moment changed his life. "The universe is asymmetric," he declared. This discovery of molecular chirality would transform chemistry, biology, and medicine. DNA's double helix, proteins that fold into specific shapes, drugs that work differently depending on their handedness — all trace back to that afternoon in Paris when a young man sorted crystals with tweezers.`,
+      zh: `1848年，一位25岁的化学家路易·巴斯德正在研究酒石酸晶体——一种酿酒的副产品。之前的化学家注意到一个令人困惑的现象：两种形式的酸具有相同的化学式，但一种能旋转偏振光，另一种却不能。
+
+在巴黎高等师范学校工作时，巴斯德以非凡的耐心在显微镜下检查这些晶体。他注意到了之前无人发现的东西：晶体有微小的不对称切面，可以将它们区分为"左旋"和"右旋"两种形式，就像一双手套。
+
+用镊子，一颗晶体接一颗晶体，他费力地将两种形式分成两堆。当他分别溶解每堆并用偏振光测试时——一种溶液使光顺时针旋转，另一种使光逆时针旋转，角度相等！
+
+"非活性"形式实际上是两者的混合物。分子之间没有化学差异——它们是彼此的镜像，就像左手和右手。这种分子层面的"手性"解释了毕奥的旋光性。
+
+巴斯德后来说这一刻改变了他的人生。"宇宙是不对称的，"他宣称。这一分子手性的发现将改变化学、生物学和医学。DNA的双螺旋、折叠成特定形状的蛋白质、因手性不同而效果各异的药物——这一切都可以追溯到巴黎的那个下午，一个年轻人用镊子分拣晶体的时刻。`
+    },
+    scientistBio: {
+      birthYear: 1822,
+      deathYear: 1895,
+      nationality: 'French',
+      portraitEmoji: '🔬',
+      bioEn: 'Louis Pasteur was a French chemist and microbiologist renowned for his discoveries in vaccination, microbial fermentation, and pasteurization. His early work on chirality and polarized light laid the foundation for stereochemistry, before he turned to microbiology where he saved countless lives.',
+      bioZh: '路易·巴斯德是法国化学家和微生物学家，以疫苗接种、微生物发酵和巴氏消毒法的发现而闻名。他早期关于手性和偏振光的工作为立体化学奠定了基础，之后他转向微生物学，挽救了无数生命。'
+    },
+    scene: {
+      location: 'Paris, France',
+      season: 'Spring',
+      mood: 'revelation'
+    },
+    linkTo: {
+      year: 1815,
+      trackTarget: 'polarization',
+      descriptionEn: 'Pasteur explained Biot\'s optical activity by discovering molecular chirality',
+      descriptionZh: '巴斯德通过发现分子手性解释了毕奥的旋光性'
+    },
+    thinkingQuestion: {
+      en: 'Many drugs come in left-handed and right-handed versions. Why might one version be medicine and the other be harmful?',
+      zh: '许多药物有左旋和右旋两种版本。为什么一种版本是药物，另一种版本却可能有害？'
+    },
+    illustrationType: 'chirality'
+  },
+  {
     year: 1852,
     titleEn: 'Stokes Parameters',
     titleZh: '斯托克斯参数',
@@ -1148,6 +1394,230 @@ S₀给出总强度。S₁描述水平与垂直的倾向。S₂捕捉对角线�
       season: 'Spring',
       mood: 'mathematical elegance'
     }
+  },
+  {
+    year: 1871,
+    titleEn: 'Rayleigh Scattering and Sky Polarization',
+    titleZh: '瑞利散射与天空偏振',
+    descriptionEn: 'Lord Rayleigh explains why the sky is blue and why skylight is polarized — the most common natural polarization phenomenon.',
+    descriptionZh: '瑞利勋爵解释了天空为什么是蓝色的，以及为什么天空光是偏振的——这是最常见的自然偏振现象。',
+    scientistEn: 'Lord Rayleigh (John William Strutt)',
+    scientistZh: '瑞利勋爵（约翰·威廉·斯特拉特）',
+    category: 'theory',
+    importance: 2,
+    track: 'polarization',
+    details: {
+      en: [
+        'Small particles scatter short wavelengths (blue) more than long wavelengths (red)',
+        'Scattered light is polarized perpendicular to the scattering plane',
+        'Maximum polarization occurs at 90° from the sun',
+        'Viking navigators may have used calcite "sunstones" to detect sky polarization for navigation',
+        'Bees and other insects use sky polarization for orientation'
+      ],
+      zh: [
+        '小颗粒对短波长（蓝色）的散射强于长波长（红色）',
+        '散射光的偏振方向垂直于散射平面',
+        '在距太阳90°的方向偏振度最大',
+        '维京航海家可能使用方解石"太阳石"探测天空偏振来导航',
+        '蜜蜂和其他昆虫利用天空偏振来定向'
+      ]
+    },
+    story: {
+      en: `In 1871, John William Strutt — the future Lord Rayleigh — solved one of the oldest puzzles about the sky: why is it blue?
+
+The answer lay in the scattering of sunlight by tiny molecules in the atmosphere. Rayleigh showed mathematically that small particles scatter short wavelengths (blue light) much more strongly than long wavelengths (red light). This explained not only the blue sky during the day but also the red sunsets when sunlight travels through more atmosphere.
+
+But Rayleigh discovered something else equally remarkable: this scattered light is polarized. Look at the sky at 90° from the sun's direction, and you're seeing light that vibrates predominantly in one plane. The sky itself is a giant polarizer!
+
+This phenomenon had practical implications. Legend has it that Viking navigators used crystals of Iceland spar — calcite — as "sunstones" to find the sun on overcast days by detecting the polarization pattern in the sky. Modern research has confirmed this is possible.
+
+Nature was already using sky polarization. Bees, ants, and many other insects have evolved eyes that can detect polarized light, using the sky's polarization pattern as a compass. The mantis shrimp, discovered later, would prove to have the most sophisticated polarization vision of all.
+
+Rayleigh's work showed that polarization isn't just a laboratory curiosity — it's woven into the very fabric of the natural world.`,
+      zh: `1871年，约翰·威廉·斯特拉特——未来的瑞利勋爵——解开了关于天空的最古老谜题之一：为什么天空是蓝色的？
+
+答案在于大气中微小分子对阳光的散射。瑞利用数学证明，小颗粒对短波长（蓝光）的散射比对长波长（红光）的散射强得多。这不仅解释了白天蓝色的天空，也解释了当阳光穿过更多大气层时出现的红色日落。
+
+但瑞利发现了同样令人惊叹的另一件事：这种散射的光是偏振的。从距太阳90°的方向看天空，你看到的光主要在一个平面上振动。天空本身就是一个巨大的偏振器！
+
+这一现象有实际意义。传说维京航海家使用冰洲石晶体——方解石——作为"太阳石"，通过检测天空中的偏振图案，在阴天也能找到太阳。现代研究已证实这是可能的。
+
+大自然早已在使用天空偏振。蜜蜂、蚂蚁和许多其他昆虫已经进化出能够探测偏振光的眼睛，利用天空的偏振图案作为指南针。后来发现的螳螂虾，将被证明拥有最精密的偏振视觉。
+
+瑞利的工作表明，偏振不仅仅是实验室里的好奇现象——它是自然界结构的一部分。`
+    },
+    scientistBio: {
+      birthYear: 1842,
+      deathYear: 1919,
+      nationality: 'English',
+      portraitEmoji: '🌤️',
+      bioEn: 'John William Strutt, 3rd Baron Rayleigh, was an English physicist who won the Nobel Prize in 1904 for discovering argon. He made major contributions to acoustics, optics, and the theory of scattering. The Rayleigh criterion for optical resolution and Rayleigh-Jeans law are named after him.',
+      bioZh: '约翰·威廉·斯特拉特，第三代瑞利男爵，是英国物理学家，1904年因发现氩气获得诺贝尔奖。他在声学、光学和散射理论方面做出了重大贡献。光学分辨率的瑞利准则和瑞利-金斯定律都以他命名。'
+    },
+    scene: {
+      location: 'Cambridge, England',
+      season: 'Summer',
+      mood: 'natural wonder'
+    },
+    thinkingQuestion: {
+      en: 'If you look at the sky through polarized sunglasses, what changes do you notice? Why is the effect strongest at 90° from the sun?',
+      zh: '如果你通过偏振太阳镜看天空，你注意到什么变化？为什么在距太阳90°的方向效果最强？'
+    },
+    illustrationType: 'rayleigh'
+  },
+  {
+    year: 1892,
+    titleEn: 'Poincaré Sphere',
+    titleZh: '庞加莱球',
+    descriptionEn: 'Henri Poincaré introduces a geometric representation of polarization states on a sphere — complementing Stokes\'s algebraic approach.',
+    descriptionZh: '亨利·庞加莱引入一种在球面上几何表示偏振态的方法——作为斯托克斯代数方法的直观补充。',
+    scientistEn: 'Henri Poincaré',
+    scientistZh: '亨利·庞加莱',
+    category: 'theory',
+    importance: 2,
+    track: 'polarization',
+    details: {
+      en: [
+        'Any polarization state maps to a unique point on the sphere surface',
+        'Equator: linear polarization states (horizontal, vertical, diagonal)',
+        'Poles: circular polarization (right-handed and left-handed)',
+        'Intermediate latitudes: elliptical polarization',
+        'Optical elements (wave plates) correspond to rotations on the sphere',
+        'Provides intuitive visualization of polarization evolution through optical systems'
+      ],
+      zh: [
+        '任何偏振态都对应球面上的唯一一点',
+        '赤道：线偏振态（水平、垂直、对角线）',
+        '两极：圆偏振（右旋和左旋）',
+        '中间纬度：椭圆偏振',
+        '光学元件（波片）对应球面上的旋转',
+        '提供偏振态通过光学系统演化的直观可视化'
+      ]
+    },
+    story: {
+      en: `In 1892, the great French mathematician Henri Poincaré — a man who seemed to touch every branch of mathematics and physics — turned his attention to polarized light.
+
+Stokes had given us four numbers to describe polarization. But four numbers are abstract. Poincaré asked: can we visualize polarization states geometrically?
+
+His answer was elegant: a sphere. Every possible polarization state corresponds to exactly one point on the surface of a sphere. The equator holds all linear polarization states — horizontal, vertical, and everything in between. The north pole is right-circular polarization; the south pole is left-circular. The space between holds all the elliptical states.
+
+The beauty became apparent when considering optical elements. A quarter-wave plate? That's a 90° rotation around a certain axis. A half-wave plate? A 180° rotation. The evolution of polarization through a complex optical system could be visualized as a path traced on the sphere's surface.
+
+The Poincaré sphere transformed polarization from abstract algebra into visual geometry. Today, every optical engineer learns to think in terms of this sphere. When designing fiber optic communications or calibrating satellite instruments, the Poincaré sphere provides immediate intuition about how polarization will evolve.
+
+Stokes gave us the language of polarization measurement; Poincaré gave us a map to navigate the landscape of polarization states.`,
+      zh: `1892年，伟大的法国数学家亨利·庞加莱——一个似乎触及数学和物理学每个分支的人——将注意力转向了偏振光。
+
+斯托克斯给了我们四个数字来描述偏振。但四个数字是抽象的。庞加莱问：我们能从几何上可视化偏振态吗？
+
+他的答案很优雅：一个球。每一种可能的偏振态都恰好对应球面上的一个点。赤道包含所有线偏振态——水平、垂直，以及它们之间的一切。北极是右旋圆偏振；南极是左旋圆偏振。两者之间的空间包含所有椭圆偏振态。
+
+考虑光学元件时，这种美感变得更加明显。四分之一波片？那是绕某个轴旋转90°。半波片？旋转180°。偏振态通过复杂光学系统的演化可以被可视化为球面上的一条路径。
+
+庞加莱球将偏振从抽象代数转变为可视几何。今天，每个光学工程师都学会用这个球来思考。在设计光纤通信或校准卫星仪器时，庞加莱球提供了偏振如何演化的直觉理解。
+
+斯托克斯给了我们偏振测量的语言；庞加莱给了我们导航偏振态图景的地图。`
+    },
+    scientistBio: {
+      birthYear: 1854,
+      deathYear: 1912,
+      nationality: 'French',
+      portraitEmoji: '🌐',
+      bioEn: 'Jules Henri Poincaré was a French mathematician, theoretical physicist, and philosopher of science. He made fundamental contributions to topology, celestial mechanics, and relativity theory. He is considered one of the last universalist mathematicians who contributed to nearly every field of mathematics.',
+      bioZh: '亨利·庞加莱是法国数学家、理论物理学家和科学哲学家。他对拓扑学、天体力学和相对论做出了根本性贡献。他被认为是最后一位对几乎所有数学领域都有贡献的全才数学家之一。'
+    },
+    scene: {
+      location: 'Paris, France',
+      season: 'Winter',
+      mood: 'geometric elegance'
+    },
+    linkTo: {
+      year: 1852,
+      trackTarget: 'polarization',
+      descriptionEn: 'The Poincaré sphere provides a geometric visualization of Stokes parameters',
+      descriptionZh: '庞加莱球为斯托克斯参数提供了几何可视化'
+    },
+    thinkingQuestion: {
+      en: 'Why is it useful to represent polarization states on a sphere? What advantage does geometry have over pure algebra?',
+      zh: '为什么在球面上表示偏振态是有用的？几何相比纯代数有什么优势？'
+    },
+    illustrationType: 'poincare'
+  },
+  {
+    year: 1905,
+    titleEn: 'Photon Concept and Photoelectric Effect',
+    titleZh: '光子概念与光电效应',
+    descriptionEn: 'Einstein proposes light consists of quantized packets (photons), bridging classical wave optics and quantum mechanics.',
+    descriptionZh: '爱因斯坦提出光由量子化的能量包（光子）组成——架起经典波动光学与量子力学的桥梁，为理解光偏振的量子本质奠定基础。',
+    scientistEn: 'Albert Einstein',
+    scientistZh: '阿尔伯特·爱因斯坦',
+    category: 'theory',
+    importance: 1,
+    track: 'optics',
+    details: {
+      en: [
+        'Light behaves as discrete energy packets: E = hν',
+        'Explained the photoelectric effect which classical wave theory could not',
+        'Light exhibits both wave and particle properties (wave-particle duality)',
+        'Each photon carries polarization information',
+        'Foundation for quantum optics and quantum polarimetry (2023 entry)'
+      ],
+      zh: [
+        '光表现为离散的能量包：E = hν',
+        '解释了经典波动理论无法解释的光电效应',
+        '光表现出波粒二象性',
+        '每个光子携带偏振信息',
+        '量子光学和量子偏振测量的基础（见2023年条目）'
+      ]
+    },
+    story: {
+      en: `In 1905 — his "miracle year" — a 26-year-old patent clerk in Bern published four papers that would revolutionize physics. One of them earned him the Nobel Prize: the explanation of the photoelectric effect.
+
+The problem was simple to state: when light shines on a metal surface, electrons are ejected. But classical wave theory predicted wrong results. Increasing light intensity should give electrons more energy — but it didn't. Only changing the light's frequency mattered.
+
+Einstein proposed a radical solution: light is not just a wave but comes in discrete packets, which he called "light quanta" (later named photons). Each photon carries energy E = hν, where ν is the frequency and h is Planck's constant. Higher frequency means higher energy per photon, regardless of how many photons there are.
+
+This was revolutionary. Maxwell had shown light was an electromagnetic wave. Now Einstein was saying it was also a particle. Both were true — wave-particle duality was born.
+
+For polarization, this had profound implications. Each photon carries its own polarization state. When light passes through a polarizer, individual photons either pass or don't — there's no "half-passage." The classical continuous wave description is an approximation that emerges from countless quantum events.
+
+Einstein's insight opened the door to quantum optics. A century later, entangled photon pairs would enable quantum polarimetry — measuring polarization with precision beyond classical limits.`,
+      zh: `1905年——他的"奇迹年"——一位26岁的伯尔尼专利局职员发表了四篇将彻底改变物理学的论文。其中一篇为他赢得了诺贝尔奖：对光电效应的解释。
+
+问题陈述起来很简单：当光照射到金属表面时，电子会被弹出。但经典波动理论预测的结果是错误的。增加光强应该给电子更多能量——但并没有。只有改变光的频率才有影响。
+
+爱因斯坦提出了一个激进的解决方案：光不仅是波，而且以离散的包形式出现，他称之为"光量子"（后来被命名为光子）。每个光子携带能量E = hν，其中ν是频率，h是普朗克常数。频率越高意味着每个光子能量越高，无论有多少个光子。
+
+这是革命性的。麦克斯韦已经证明光是电磁波。现在爱因斯坦说它也是粒子。两者都是对的——波粒二象性诞生了。
+
+对于偏振，这有深远的影响。每个光子携带自己的偏振态。当光通过偏振器时，单个光子要么通过要么不通过——没有"通过一半"的说法。经典的连续波描述是由无数量子事件产生的近似。
+
+爱因斯坦的洞见打开了量子光学的大门。一个世纪后，纠缠光子对将使量子偏振测量成为可能——以超越经典极限的精度测量偏振。`
+    },
+    scientistBio: {
+      birthYear: 1879,
+      deathYear: 1955,
+      nationality: 'German-American',
+      portraitEmoji: '🎓',
+      bioEn: 'Albert Einstein was a German-born theoretical physicist, widely regarded as one of the greatest scientists of all time. He received the Nobel Prize in 1921 for his explanation of the photoelectric effect. He also developed the theories of special and general relativity, fundamentally changing our understanding of space, time, and gravity.',
+      bioZh: '阿尔伯特·爱因斯坦是德裔理论物理学家，被广泛认为是有史以来最伟大的科学家之一。他因解释光电效应而获得1921年诺贝尔奖。他还发展了狭义和广义相对论，从根本上改变了我们对空间、时间和引力的理解。'
+    },
+    scene: {
+      location: 'Bern, Switzerland',
+      season: 'Spring',
+      mood: 'paradigm shift'
+    },
+    linkTo: {
+      year: 2023,
+      trackTarget: 'polarization',
+      descriptionEn: 'The photon concept is the foundation for quantum polarimetry',
+      descriptionZh: '光子概念是量子偏振测量的基础'
+    },
+    thinkingQuestion: {
+      en: 'Light behaves as both a wave (with polarization) and a particle (photon). How can something be both at once?',
+      zh: '光同时表现为波（有偏振）和粒子（光子）。怎么可能同时是两者？'
+    },
+    illustrationType: 'photoelectric'
   },
   {
     year: 1929,
@@ -1220,6 +1690,157 @@ Yet it all started with a teenager bothered by headlight glare, and the audacity
       zh: '兰德在20岁时就发明了宝丽来薄膜。为什么年轻人追求看似"不可能"的想法很重要？'
     },
     illustrationType: 'polarizer'
+  },
+  {
+    year: 1941,
+    titleEn: 'Jones Calculus',
+    titleZh: '琼斯矢量与矩阵',
+    descriptionEn: 'R. Clark Jones develops a matrix formalism for completely polarized light, enabling systematic analysis of optical systems.',
+    descriptionZh: '克拉克·琼斯开发了一套描述完全偏振光的矩阵形式体系，使光学系统的系统性分析成为可能。',
+    scientistEn: 'R. Clark Jones',
+    scientistZh: '克拉克·琼斯',
+    category: 'theory',
+    importance: 2,
+    track: 'polarization',
+    details: {
+      en: [
+        'Polarization state represented by a 2-element complex vector',
+        'Optical elements (polarizers, wave plates) represented by 2×2 matrices',
+        'System analysis: multiply matrices in sequence',
+        'Only valid for completely polarized, coherent light',
+        'Complemented later by Mueller calculus for partial polarization'
+      ],
+      zh: [
+        '偏振态用2元复数矢量表示',
+        '光学元件（偏振器、波片）用2×2矩阵表示',
+        '系统分析：按顺序相乘矩阵',
+        '仅适用于完全偏振的相干光',
+        '后来被穆勒矩阵补充，用于部分偏振光'
+      ]
+    },
+    story: {
+      en: `In 1941, while much of the world was at war, a young physicist named R. Clark Jones at Polaroid Corporation was solving a different kind of problem: how to systematically calculate the behavior of polarized light through complex optical systems.
+
+Before Jones, analyzing a series of polarizers, wave plates, and other optical elements required tedious case-by-case calculations. Jones introduced an elegant mathematical framework that would transform optical engineering.
+
+His insight was to represent the polarization state of light as a two-component complex vector — what we now call the Jones vector. Horizontal polarization becomes (1, 0). Vertical becomes (0, 1). Circular polarization? (1, i)/√2.
+
+Better yet, each optical element could be represented as a 2×2 matrix. To find what happens when light passes through a series of elements, simply multiply the matrices together.
+
+This may seem abstract, but it was revolutionary for practical work. An optical engineer designing a system with ten elements could now multiply ten matrices and immediately know the output polarization. What once took hours now took minutes.
+
+The Jones calculus has one limitation: it only works for completely polarized light. For partially polarized or unpolarized light, the Mueller calculus (developed around the same time) is needed. Together, these two formalisms form the mathematical backbone of modern polarization optics.`,
+      zh: `1941年，当世界大部分地区还在战火中时，宝丽来公司的一位年轻物理学家克拉克·琼斯正在解决另一种问题：如何系统地计算偏振光通过复杂光学系统的行为。
+
+在琼斯之前，分析一系列偏振器、波片和其他光学元件需要繁琐的逐案计算。琼斯引入了一个优雅的数学框架，将改变光学工程。
+
+他的洞见是将光的偏振态表示为一个双分量复数矢量——我们现在称之为琼斯矢量。水平偏振变成(1, 0)。垂直偏振变成(0, 1)。圆偏振？(1, i)/√2。
+
+更好的是，每个光学元件都可以用2×2矩阵表示。要找出光通过一系列元件后会发生什么，只需将矩阵相乘。
+
+这可能看起来很抽象，但对于实际工作来说是革命性的。设计一个有十个元件的系统的光学工程师现在可以把十个矩阵相乘，立即知道输出偏振态。以前需要几小时的工作现在只需几分钟。
+
+琼斯演算有一个局限性：它只适用于完全偏振光。对于部分偏振或非偏振光，需要穆勒矩阵（大约同时期发展）。这两种形式体系共同构成了现代偏振光学的数学骨架。`
+    },
+    scientistBio: {
+      birthYear: 1916,
+      deathYear: 2004,
+      nationality: 'American',
+      portraitEmoji: '🧮',
+      bioEn: 'R. Clark Jones was an American physicist who spent most of his career at Polaroid Corporation. He developed the Jones calculus, a standard tool in polarization optics. He also made important contributions to optical system design and detector theory.',
+      bioZh: '克拉克·琼斯是美国物理学家，职业生涯大部分时间在宝丽来公司度过。他发展了琼斯演算，这是偏振光学中的标准工具。他还对光学系统设计和探测器理论做出了重要贡献。'
+    },
+    scene: {
+      location: 'Cambridge, Massachusetts, USA',
+      season: 'Autumn',
+      mood: 'mathematical precision'
+    },
+    linkTo: {
+      year: 1852,
+      trackTarget: 'polarization',
+      descriptionEn: 'Jones calculus provides a matrix formalism complementary to Stokes parameters',
+      descriptionZh: '琼斯演算提供了与斯托克斯参数互补的矩阵形式体系'
+    },
+    thinkingQuestion: {
+      en: 'Why would optical engineers prefer multiplying matrices over doing case-by-case calculations? What makes this approach more powerful?',
+      zh: '为什么光学工程师更喜欢用矩阵相乘而不是逐案计算？是什么使这种方法更强大？'
+    },
+    illustrationType: 'jones'
+  },
+  {
+    year: 1943,
+    titleEn: 'Mueller Calculus',
+    titleZh: '穆勒矩阵',
+    descriptionEn: 'Hans Mueller develops a 4×4 matrix formalism for describing partially polarized light, extending polarization analysis to real-world conditions.',
+    descriptionZh: '汉斯·穆勒发展了描述部分偏振光的4×4矩阵体系，将偏振分析扩展到实际条件。',
+    scientistEn: 'Hans Mueller',
+    scientistZh: '汉斯·穆勒',
+    category: 'theory',
+    importance: 2,
+    track: 'polarization',
+    details: {
+      en: [
+        'Uses 4-element Stokes vectors to describe any polarization state',
+        'Optical elements represented by 4×4 Mueller matrices',
+        'Can handle partially polarized and unpolarized light',
+        'Accounts for depolarization effects in real materials',
+        'Essential for polarimetric imaging and remote sensing'
+      ],
+      zh: [
+        '用4元斯托克斯矢量描述任何偏振态',
+        '光学元件用4×4穆勒矩阵表示',
+        '可以处理部分偏振和非偏振光',
+        '考虑了真实材料中的退偏效应',
+        '对偏振成像和遥感至关重要'
+      ]
+    },
+    story: {
+      en: `Around 1943, physicist Hans Mueller at MIT developed a powerful generalization of polarization mathematics. While Jones calculus worked beautifully for perfectly polarized light, real light in real environments is often only partially polarized. Mueller calculus could handle it all.
+
+The key insight was to work directly with Stokes parameters — the four measurable quantities Stokes had defined in 1852. Mueller represented these as a 4-element vector and optical elements as 4×4 matrices.
+
+This larger framework could describe things Jones calculus couldn't: scattering that randomizes polarization, surfaces that partially depolarize reflected light, and the complex interactions of light with biological tissue or rough surfaces.
+
+Mueller calculus found its natural home in polarimetric imaging. When analyzing satellite images of Earth's atmosphere, studying cancer tissue under a polarization microscope, or characterizing optical coatings, Mueller matrices provide the complete picture.
+
+The relationship between Jones and Mueller calculus is deep: for completely polarized light, you can convert between them. But Mueller can go places Jones cannot — into the messy, partially polarized world where most real measurements happen.
+
+Today, Mueller matrix decomposition is a standard technique in medical imaging, helping doctors distinguish healthy tissue from cancerous growth by their different depolarization properties.`,
+      zh: `大约1943年，麻省理工学院的物理学家汉斯·穆勒发展出了偏振数学的强大推广。虽然琼斯演算对完全偏振光效果很好，但真实环境中的真实光往往只是部分偏振的。穆勒矩阵可以处理这一切。
+
+关键的洞见是直接使用斯托克斯参数——斯托克斯在1852年定义的四个可测量量。穆勒将它们表示为4元矢量，将光学元件表示为4×4矩阵。
+
+这个更大的框架可以描述琼斯演算无法描述的事物：使偏振随机化的散射、部分退偏反射光的表面，以及光与生物组织或粗糙表面的复杂相互作用。
+
+穆勒矩阵在偏振成像中找到了自然的归宿。在分析地球大气的卫星图像、用偏振显微镜研究癌症组织、或表征光学涂层时，穆勒矩阵提供了完整的图景。
+
+琼斯演算和穆勒矩阵之间的关系很深：对于完全偏振光，你可以在它们之间转换。但穆勒矩阵可以到达琼斯演算无法到达的地方——进入大多数真实测量发生的杂乱的、部分偏振的世界。
+
+今天，穆勒矩阵分解是医学成像中的标准技术，帮助医生通过不同的退偏特性区分健康组织和癌变组织。`
+    },
+    scientistBio: {
+      birthYear: 1900,
+      deathYear: 1965,
+      nationality: 'American',
+      portraitEmoji: '📊',
+      bioEn: 'Hans Mueller was an American physicist at MIT who developed the Mueller calculus for polarization optics. His work provided the mathematical foundation for analyzing partially polarized light, essential for modern polarimetric imaging.',
+      bioZh: '汉斯·穆勒是麻省理工学院的美国物理学家，发展了偏振光学的穆勒矩阵。他的工作为分析部分偏振光提供了数学基础，这对现代偏振成像至关重要。'
+    },
+    scene: {
+      location: 'MIT, Cambridge, USA',
+      season: 'Winter',
+      mood: 'completeness'
+    },
+    linkTo: {
+      year: 2018,
+      trackTarget: 'polarization',
+      descriptionEn: 'Mueller calculus is the foundation for modern polarimetric medical imaging',
+      descriptionZh: '穆勒矩阵是现代偏振医学成像的基础'
+    },
+    thinkingQuestion: {
+      en: 'Why do we need both Jones and Mueller calculus? When would you choose one over the other?',
+      zh: '为什么我们需要琼斯演算和穆勒矩阵两种方法？什么时候选择其中一种而不是另一种？'
+    }
   },
   {
     year: 1971,
@@ -1767,6 +2388,173 @@ function ExperimentIllustration({ type, className = '' }: { type: string; classN
         {/* Labels */}
         <text x="100" y="50" fill="#22d3ee" fontSize="7">o</text>
         <text x="108" y="23" fill="#fbbf24" fontSize="7">e</text>
+      </svg>
+    ),
+    faraday: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Electromagnet coil */}
+        <rect x="35" y="15" width="50" height="50" fill={isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)'} stroke="#8b5cf6" strokeWidth="2" rx="4" />
+        {/* Coil windings */}
+        {[20, 30, 40, 50, 60].map((y, i) => (
+          <ellipse key={i} cx="60" cy={y} rx="25" ry="4" fill="none" stroke="#8b5cf6" strokeWidth="1" opacity="0.6" />
+        ))}
+        {/* Magnetic field arrow */}
+        <line x1="60" y1="5" x2="60" y2="75" stroke={isDark ? '#c084fc' : '#a855f7'} strokeWidth="1.5" strokeDasharray="4,2" />
+        <polygon points="60,5 55,12 65,12" fill={isDark ? '#c084fc' : '#a855f7'} />
+        <text x="68" y="10" fill={isDark ? '#c084fc' : '#a855f7'} fontSize="7">B</text>
+        {/* Incoming polarized light */}
+        <line x1="0" y1="40" x2="30" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        <line x1="15" y1="33" x2="15" y2="47" stroke="#22d3ee" strokeWidth="2" />
+        {/* Rotated outgoing light */}
+        <line x1="90" y1="40" x2="120" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        <line x1="105" y1="32" x2="105" y2="48" stroke="#22d3ee" strokeWidth="2" transform="rotate(30, 105, 40)" />
+        {/* Rotation arrow */}
+        <path d="M 95,55 A 10,10 0 0,1 115,55" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
+        <polygon points="115,55 112,50 110,57" fill="#fbbf24" />
+      </svg>
+    ),
+    chirality: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Left-handed molecule */}
+        <g transform="translate(25, 40)">
+          <circle cx="0" cy="0" r="8" fill="#22c55e" opacity="0.8" />
+          <line x1="0" y1="-8" x2="0" y2="-20" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
+          <circle cx="0" cy="-24" r="4" fill="#3b82f6" />
+          <line x1="8" y1="0" x2="18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
+          <circle cx="22" cy="10" r="4" fill="#ef4444" />
+          <line x1="-8" y1="0" x2="-18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
+          <circle cx="-22" cy="10" r="4" fill="#fbbf24" />
+          <text x="-5" y="30" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">L</text>
+        </g>
+        {/* Mirror line */}
+        <line x1="60" y1="10" x2="60" y2="70" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" strokeDasharray="4,2" />
+        {/* Right-handed molecule (mirror) */}
+        <g transform="translate(95, 40)">
+          <circle cx="0" cy="0" r="8" fill="#22c55e" opacity="0.8" />
+          <line x1="0" y1="-8" x2="0" y2="-20" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
+          <circle cx="0" cy="-24" r="4" fill="#3b82f6" />
+          <line x1="-8" y1="0" x2="-18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
+          <circle cx="-22" cy="10" r="4" fill="#ef4444" />
+          <line x1="8" y1="0" x2="18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
+          <circle cx="22" cy="10" r="4" fill="#fbbf24" />
+          <text x="-5" y="30" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">R</text>
+        </g>
+        {/* Mirror label */}
+        <text x="52" y="78" fill={isDark ? '#64748b' : '#94a3b8'} fontSize="6">mirror</text>
+      </svg>
+    ),
+    rayleigh: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Sun */}
+        <circle cx="10" cy="40" r="8" fill="#fbbf24" />
+        {/* Sun rays */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+          <line
+            key={i}
+            x1={10 + 10 * Math.cos(angle * Math.PI / 180)}
+            y1={40 + 10 * Math.sin(angle * Math.PI / 180)}
+            x2={10 + 14 * Math.cos(angle * Math.PI / 180)}
+            y2={40 + 14 * Math.sin(angle * Math.PI / 180)}
+            stroke="#fbbf24"
+            strokeWidth="1.5"
+          />
+        ))}
+        {/* Incident beam */}
+        <line x1="22" y1="40" x2="50" y2="40" stroke="#fff" strokeWidth="2" />
+        {/* Scattering particle */}
+        <circle cx="55" cy="40" r="4" fill={isDark ? '#475569' : '#94a3b8'} />
+        {/* Scattered blue light (perpendicular) */}
+        <line x1="55" y1="36" x2="55" y2="10" stroke="#3b82f6" strokeWidth="2" />
+        <line x1="55" y1="44" x2="55" y2="70" stroke="#3b82f6" strokeWidth="2" />
+        {/* Forward red light */}
+        <line x1="59" y1="40" x2="90" y2="40" stroke="#ef4444" strokeWidth="2" />
+        {/* Polarization indicators */}
+        <line x1="55" y1="18" x2="48" y2="18" stroke="#3b82f6" strokeWidth="1.5" />
+        <line x1="55" y1="18" x2="62" y2="18" stroke="#3b82f6" strokeWidth="1.5" />
+        {/* Labels */}
+        <text x="35" y="12" fill="#3b82f6" fontSize="7">blue</text>
+        <text x="95" y="43" fill="#ef4444" fontSize="7">red</text>
+        <text x="65" y="18" fill="#3b82f6" fontSize="6">⊥</text>
+      </svg>
+    ),
+    poincare: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Sphere */}
+        <ellipse cx="60" cy="40" rx="35" ry="35" fill="none" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="1.5" />
+        {/* Equator */}
+        <ellipse cx="60" cy="40" rx="35" ry="10" fill="none" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="1" strokeDasharray="3,2" />
+        {/* Vertical meridian */}
+        <ellipse cx="60" cy="40" rx="10" ry="35" fill="none" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="1" strokeDasharray="3,2" />
+        {/* North pole - RCP */}
+        <circle cx="60" cy="5" r="4" fill="#22d3ee" />
+        <text x="68" y="10" fill="#22d3ee" fontSize="6">R</text>
+        {/* South pole - LCP */}
+        <circle cx="60" cy="75" r="4" fill="#f472b6" />
+        <text x="68" y="75" fill="#f472b6" fontSize="6">L</text>
+        {/* H polarization */}
+        <circle cx="95" cy="40" r="3" fill="#fbbf24" />
+        <text x="100" y="43" fill="#fbbf24" fontSize="6">H</text>
+        {/* V polarization */}
+        <circle cx="25" cy="40" r="3" fill="#22c55e" />
+        <text x="10" y="43" fill="#22c55e" fontSize="6">V</text>
+        {/* Diagonal */}
+        <circle cx="60" cy="30" r="2" fill="#a855f7" />
+        {/* Trajectory arc */}
+        <path d="M 75,25 Q 85,40 75,55" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2,2" />
+        <polygon points="75,55 80,50 72,50" fill="#ef4444" />
+      </svg>
+    ),
+    photoelectric: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Photon wave packets */}
+        <g>
+          <rect x="5" y="35" width="15" height="10" fill="#fbbf24" opacity="0.3" rx="2" />
+          <path d="M 7,40 Q 10,35 13,40 Q 16,45 19,40" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
+          <text x="7" y="55" fill="#fbbf24" fontSize="6">hν</text>
+        </g>
+        {/* Arrow */}
+        <line x1="22" y1="40" x2="38" y2="40" stroke="#fbbf24" strokeWidth="1.5" />
+        <polygon points="38,40 33,37 33,43" fill="#fbbf24" />
+        {/* Metal surface */}
+        <rect x="40" y="25" width="40" height="30" fill={isDark ? '#475569' : '#94a3b8'} rx="2" />
+        <text x="50" y="42" fill={isDark ? '#1e293b' : '#f1f5f9'} fontSize="7">Metal</text>
+        {/* Ejected electron */}
+        <circle cx="95" cy="30" r="4" fill="#22d3ee" />
+        <text x="100" y="33" fill="#22d3ee" fontSize="6">e⁻</text>
+        {/* Electron trajectory */}
+        <path d="M 80,35 Q 85,25 95,30" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
+        {/* Energy equation */}
+        <text x="45" y="70" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">E = hν</text>
+      </svg>
+    ),
+    jones: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Input vector */}
+        <g transform="translate(15, 40)">
+          <rect x="-8" y="-20" width="16" height="40" fill={isDark ? 'rgba(34, 211, 238, 0.2)' : 'rgba(34, 211, 238, 0.3)'} stroke="#22d3ee" strokeWidth="1" rx="2" />
+          <text x="-4" y="-5" fill="#22d3ee" fontSize="8">E</text>
+          <text x="-4" y="10" fill="#22d3ee" fontSize="6">in</text>
+        </g>
+        {/* Arrow to matrix */}
+        <line x1="28" y1="40" x2="38" y2="40" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
+        {/* 2x2 Matrix */}
+        <g transform="translate(55, 40)">
+          <rect x="-18" y="-22" width="36" height="44" fill={isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)'} stroke="#8b5cf6" strokeWidth="1.5" rx="2" />
+          <text x="-12" y="-5" fill="#8b5cf6" fontSize="7">a  b</text>
+          <text x="-12" y="10" fill="#8b5cf6" fontSize="7">c  d</text>
+        </g>
+        {/* Arrow to output */}
+        <line x1="78" y1="40" x2="88" y2="40" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
+        {/* Output vector */}
+        <g transform="translate(105, 40)">
+          <rect x="-8" y="-20" width="16" height="40" fill={isDark ? 'rgba(251, 191, 36, 0.2)' : 'rgba(251, 191, 36, 0.3)'} stroke="#fbbf24" strokeWidth="1" rx="2" />
+          <text x="-5" y="-5" fill="#fbbf24" fontSize="8">E</text>
+          <text x="-6" y="10" fill="#fbbf24" fontSize="5">out</text>
+        </g>
+        {/* Equals sign */}
+        <text x="82" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">=</text>
+        {/* Multiplication sign */}
+        <text x="32" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">×</text>
       </svg>
     ),
   }
