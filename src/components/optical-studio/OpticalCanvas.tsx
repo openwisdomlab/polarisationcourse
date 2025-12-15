@@ -17,6 +17,7 @@ import {
   useOpticalBenchStore,
   getPolarizationColor,
   type BenchComponent,
+  type LightSegment,
 } from '@/stores/opticalBenchStore'
 import {
   OpticalComponentMap,
