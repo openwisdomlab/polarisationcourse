@@ -29,7 +29,7 @@ import {
   Target,
   Sparkles,
 } from 'lucide-react'
-import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
+// LanguageThemeSwitcher is handled by PersistentHeader
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -60,7 +60,7 @@ import { DeductionPanel, validateGuess } from '@/components/detective'
 import type { MysteryGuess, ObservationLog, MysteryElementType } from '@/components/detective'
 
 // Import detective levels
-import { DETECTIVE_LEVELS, type DetectiveLevel } from '@/core/game2d/detectiveLevels'
+import { DETECTIVE_LEVELS } from '@/core/game2d/detectiveLevels'
 
 // Import stores
 import {
@@ -256,7 +256,11 @@ export function DetectiveGamePage() {
       } else if (property === 'filterHandedness') {
         newValue = (current.filterHandedness ?? component.filterHandedness ?? 'right') === 'right' ? 'left' : 'right'
       } else {
-        const currentVal = current[property] ?? (component[property as keyof OpticalComponent] as number) ?? 0
+        // Handle numeric angle properties
+        const componentValue = property === 'angle' ? component.angle
+          : property === 'polarizationAngle' ? component.polarizationAngle
+          : 0
+        const currentVal = (current[property] as number | undefined) ?? componentValue ?? 0
         newValue = (currentVal + delta + 360) % 360
         if (property === 'polarizationAngle') {
           newValue = newValue % 180
@@ -300,7 +304,8 @@ export function DetectiveGamePage() {
         showToast(isZh ? '正确！神秘元件已揭示' : 'Correct! Mystery element revealed', 'success')
 
         // Track discovery achievements
-        const difficulty = currentLevel.difficulty
+        // Map 'expert' to 'hard' for discovery tracking
+        const difficulty = currentLevel.difficulty === 'expert' ? 'hard' : currentLevel.difficulty
         const newDiscoveries = checkDetectiveDiscovery(
           true,
           attempts,
@@ -418,21 +423,22 @@ export function DetectiveGamePage() {
     >
       {/* Header */}
       <PersistentHeader
-        title={isZh ? '光学侦探' : 'Optical Detective'}
-        subtitle={isZh ? 'PolarQuest' : 'PolarQuest'}
-        leftIcon={
-          <Link
-            to="/game2d"
-            className={cn(
-              'p-2 rounded-lg transition-all',
-              isDark ? 'hover:bg-slate-700/50 text-slate-400' : 'hover:bg-slate-200 text-slate-600'
-            )}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Link>
-        }
+        moduleKey="polarquest"
+        moduleName={isZh ? '光学侦探' : 'Optical Detective'}
+        compact={isCompact}
+        showSettings={!isCompact}
         rightContent={
           <div className="flex items-center gap-2">
+            {/* Back button */}
+            <Link
+              to="/game2d"
+              className={cn(
+                'p-2 rounded-lg transition-all',
+                isDark ? 'hover:bg-slate-700/50 text-slate-400' : 'hover:bg-slate-200 text-slate-600'
+              )}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Link>
             {/* Stats */}
             <div
               className={cn(
@@ -444,7 +450,6 @@ export function DetectiveGamePage() {
               <Search className="w-3 h-3" />
               {discoveryStore.mysteriesSolved}
             </div>
-            {!isCompact && <LanguageThemeSwitcher compact />}
           </div>
         }
       />
@@ -568,19 +573,47 @@ export function DetectiveGamePage() {
                 return (
                   <g key={component.id}>
                     {component.type === 'emitter' && (
-                      <EmitterSVG
-                        x={state.x}
-                        y={state.y}
-                        polarization={state.polarizationAngle ?? 0}
-                        direction={state.direction ?? 'down'}
-                        isAnimating={isAnimating}
-                        showPolarization={showPolarization}
-                        getPolarizationColor={getPolarizationColor}
-                        locked={component.locked}
-                        selected={isSelected}
+                      <g
                         onClick={() => !component.locked && setSelectedComponent(component.id)}
-                        onRotate={(delta) => handleRotate(component.id, delta, 'polarizationAngle')}
-                      />
+                        style={{ cursor: component.locked ? 'not-allowed' : 'pointer' }}
+                      >
+                        {/* Selection ring */}
+                        {isSelected && !component.locked && (
+                          <circle cx={state.x} cy={state.y} r="6" fill="none" stroke="#22d3ee" strokeWidth="0.4" strokeDasharray="2,1">
+                            <animate attributeName="stroke-dashoffset" values="0;6" dur="1s" repeatCount="indefinite" />
+                          </circle>
+                        )}
+                        <EmitterSVG
+                          x={state.x}
+                          y={state.y}
+                          polarization={state.polarizationAngle ?? 0}
+                          direction={state.direction ?? 'down'}
+                          isAnimating={isAnimating}
+                          showPolarization={showPolarization}
+                          getPolarizationColor={getPolarizationColor}
+                        />
+                        {/* Rotation buttons */}
+                        {isSelected && !component.locked && (
+                          <>
+                            <g
+                              transform={`translate(${state.x - 8}, ${state.y})`}
+                              onClick={(e) => { e.stopPropagation(); handleRotate(component.id, -15, 'polarizationAngle') }}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <circle r="2" fill="#22d3ee" opacity="0.8" />
+                              <text textAnchor="middle" y="0.8" fill="white" fontSize="2.5">↺</text>
+                            </g>
+                            <g
+                              transform={`translate(${state.x + 8}, ${state.y})`}
+                              onClick={(e) => { e.stopPropagation(); handleRotate(component.id, 15, 'polarizationAngle') }}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <circle r="2" fill="#22d3ee" opacity="0.8" />
+                              <text textAnchor="middle" y="0.8" fill="white" fontSize="2.5">↻</text>
+                            </g>
+                          </>
+                        )}
+                      </g>
                     )}
 
                     {component.type === 'polarizer' && (
@@ -601,11 +634,11 @@ export function DetectiveGamePage() {
                       <MirrorSVG
                         x={state.x}
                         y={state.y}
-                        mirrorAngle={state.angle}
-                        locked={component.locked}
+                        angle={state.angle}
+                        locked={component.locked ?? false}
                         selected={isSelected}
                         onClick={() => !component.locked && setSelectedComponent(component.id)}
-                        onToggle={() => handleRotate(component.id, 0, 'angle')}
+                        onRotate={(delta: number) => handleRotate(component.id, delta, 'angle')}
                         isDark={isDark}
                       />
                     )}
@@ -631,10 +664,9 @@ export function DetectiveGamePage() {
                       <SensorSVG
                         x={state.x}
                         y={state.y}
-                        activated={sensorStates.find((s) => s.id === component.id)?.activated ?? false}
-                        receivedIntensity={sensorStates.find((s) => s.id === component.id)?.receivedIntensity ?? 0}
-                        requiredIntensity={component.requiredIntensity}
-                        showPolarization={showPolarization}
+                        sensorState={sensorStates.find((s) => s.id === component.id)}
+                        requiredIntensity={component.requiredIntensity ?? 0}
+                        requiredPolarization={component.requiredPolarization}
                         isDark={isDark}
                       />
                     )}

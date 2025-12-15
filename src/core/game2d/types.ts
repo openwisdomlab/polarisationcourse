@@ -24,6 +24,7 @@ export interface OpticalComponent {
     | 'halfWavePlate'
     | 'quarterWavePlate'
     | 'mysteryBox'  // Optical Detective: hidden component for probing
+    | 'circularFilter'  // Circular polarizer (passes RCP or LCP)
   x: number // percentage position
   y: number // percentage position
   angle: number // orientation angle (fast axis for waveplates)
@@ -56,6 +57,16 @@ export interface OpticalComponent {
    * Crystal axis angle for splitters (default: 0° = o-axis horizontal)
    */
   crystalAxisAngle?: number
+
+  /**
+   * Phase shift in degrees for phaseShifter component (default: 90)
+   */
+  phaseShift?: number
+
+  /**
+   * Filter handedness for circularFilter ('right' or 'left')
+   */
+  filterHandedness?: 'right' | 'left'
 
   // === Mystery Box (Optical Detective) Properties ===
   /**

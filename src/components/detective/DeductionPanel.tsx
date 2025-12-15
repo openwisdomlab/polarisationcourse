@@ -15,8 +15,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Lightbulb, Check, AlertTriangle, HelpCircle, Eye } from 'lucide-react'
-import type { JonesVector, PolarizationInfo } from '@/core/physics'
-import { jonesIntensity, analyzePolarization } from '@/core/JonesCalculus'
+import type { PolarizationInfo } from '@/core/physics'
 
 // Types for mystery element options
 export type MysteryElementType =
@@ -125,8 +124,8 @@ export function DeductionPanel({
   isOpen,
   onClose,
   onSubmitGuess,
-  hiddenType,
-  hiddenAngle,
+  hiddenType: _hiddenType,
+  hiddenAngle: _hiddenAngle,
   hiddenRetardation,
   observations,
   mysteryBoxId,
@@ -134,6 +133,9 @@ export function DeductionPanel({
   maxAttempts = 3,
   attempts = 0,
 }: DeductionPanelProps) {
+  // Note: _hiddenType and _hiddenAngle are passed to onSubmitGuess callback for validation
+  void _hiddenType
+  void _hiddenAngle
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
