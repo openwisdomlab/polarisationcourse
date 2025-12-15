@@ -64,7 +64,7 @@ const MODULES: ModuleConfig[] = [
     ],
   },
   {
-    // 光学设计室：偏振器件和光路设计 (Optical Design Studio: Polarization Devices & Path Design)
+    // 光学设计室：偏振器件 × 光路设计 (Optical Design Studio: Device Library × Light Path Design)
     // Merged module combining deviceLibrary + opticalBench
     key: 'opticalDesignStudio',
     icon: '⬡', // Hexagon - represents optical components
@@ -508,7 +508,7 @@ function ModuleCard({ module, index }: { module: ModuleConfig; index: number }) 
       </p>
 
       {/* Description */}
-      <p className={`text-xs mb-3 leading-relaxed line-clamp-2 relative z-10 ${
+      <p className={`text-xs mb-3 leading-relaxed line-clamp-2 relative z-10 text-left ${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
       }`}>
         {t(`home.${module.key}.description`)}
