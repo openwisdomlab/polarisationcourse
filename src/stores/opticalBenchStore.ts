@@ -6,14 +6,29 @@
  * - Undo/redo history
  * - Simulation state
  * - Design save/load
+ *
+ * Physics Engine: Jones Calculus for accurate polarization simulation
+ * - Jones vectors represent full polarization state (linear, circular, elliptical)
+ * - Jones matrices describe optical element transformations
  */
 
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
+import {
+  type Complex,
+  type JonesVector,
+  polarizationToJonesVector,
+  jonesVectorToPolarization,
+  jonesIntensity,
+  analyzePolarization,
+} from '@/core/JonesCalculus'
 
 // ============================================
 // Types
 // ============================================
+
+// Re-export Jones types for convenience
+export type { Complex, JonesVector }
 
 export type BenchComponentType = 'emitter' | 'polarizer' | 'waveplate' | 'mirror' | 'splitter' | 'sensor' | 'lens'
 
@@ -44,8 +59,9 @@ export interface LightRay {
   id: string
   origin: Position
   direction: Position  // Normalized direction vector
-  polarization: number
-  intensity: number
+  polarization: number  // Legacy: angle in degrees (0-180), kept for backward compatibility
+  jonesVector: JonesVector  // Full polarization state as Jones vector [Ex, Ey]
+  intensity: number  // Derived from |Ex|² + |Ey|², kept for quick access
   phase: number
   wavelength: number
   sourceId: string
@@ -57,10 +73,14 @@ export interface LightSegment {
   y1: number
   x2: number
   y2: number
-  polarization: number
-  intensity: number
+  polarization: number  // Legacy: angle in degrees, derived from jonesVector
+  jonesVector: JonesVector  // Full polarization state
+  intensity: number  // Derived from jonesVector: |Ex|² + |Ey|²
   phase: number
   rayId: string
+  // Polarization analysis (derived from jonesVector)
+  polarizationType: 'linear' | 'circular' | 'elliptical'
+  handedness: 'right' | 'left' | 'none'
 }
 
 export interface SavedDesign {
@@ -139,7 +159,13 @@ interface OpticalBenchState {
   isSimulating: boolean
   showPolarization: boolean
   lightSegments: LightSegment[]
-  sensorReadings: Map<string, { intensity: number; polarization: number }>
+  sensorReadings: Map<string, {
+    intensity: number
+    polarization: number
+    jonesVector: JonesVector
+    polarizationType: 'linear' | 'circular' | 'elliptical'
+    handedness: 'right' | 'left' | 'none'
+  }>
 
   // History for undo/redo
   history: BenchComponent[][]
@@ -539,7 +565,13 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
     calculateLightPaths: () => {
       const state = get()
       const segments: LightSegment[] = []
-      const readings = new Map<string, { intensity: number; polarization: number }>()
+      const readings = new Map<string, {
+        intensity: number
+        polarization: number
+        jonesVector: JonesVector
+        polarizationType: 'linear' | 'circular' | 'elliptical'
+        handedness: 'right' | 'left' | 'none'
+      }>()
       const formulas: string[] = []
 
       // Find all emitters
@@ -560,7 +592,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
 
         segments.push(...rays)
 
-        // Update sensor readings
+        // Update sensor readings with full Jones vector information
         rays.forEach((seg: LightSegment) => {
           const sensor = state.components.find(
             (c: BenchComponent) => c.type === 'sensor' &&
@@ -571,6 +603,9 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
             readings.set(sensor.id, {
               intensity: seg.intensity,
               polarization: seg.polarization,
+              jonesVector: seg.jonesVector,
+              polarizationType: seg.polarizationType,
+              handedness: seg.handedness,
             })
           }
         })
@@ -898,13 +933,24 @@ function traceLightRays(
   const segments: LightSegment[] = []
   const maxBounces = 10
   const canvasWidth = 800
+  const intensityThreshold = 1 // Stop tracing if intensity drops below 1%
 
   // Initial ray direction based on emitter rotation
   let direction = rotateVector({ x: 1, y: 0 }, emitter.rotation)
   let currentPos = { x: emitter.x, y: emitter.y }
-  let currentPolarization = initialPolarization
-  let currentIntensity = initialIntensity
+
+  // Initialize Jones vector from polarization angle
+  // Scale by sqrt(intensity/100) to normalize intensity to 100%
+  let currentJonesVector = polarizationToJonesVector(
+    initialPolarization,
+    initialIntensity / 100
+  )
+  let currentIntensity = jonesIntensity(currentJonesVector) * 100
+  let currentPolarization = jonesVectorToPolarization(currentJonesVector)
   let currentPhase = 1
+
+  // Analyze initial polarization state
+  let polarizationAnalysis = analyzePolarization(currentJonesVector)
 
   // Sort components by distance in ray direction
   const sortedComponents = allComponents
@@ -915,7 +961,7 @@ function traceLightRays(
       return distA - distB
     })
 
-  for (let bounce = 0; bounce < maxBounces && currentIntensity > 1; bounce++) {
+  for (let bounce = 0; bounce < maxBounces && currentIntensity > intensityThreshold; bounce++) {
     // Find next component in path
     const nextComponent = sortedComponents.find(comp => {
       const dx = comp.x - currentPos.x
@@ -932,7 +978,7 @@ function traceLightRays(
       endX = nextComponent.x
       endY = nextComponent.y
 
-      // Add segment to next component
+      // Add segment to next component with full Jones vector information
       segments.push({
         id: `${emitter.id}-seg-${bounce}`,
         x1: currentPos.x + direction.x * 30,
@@ -940,12 +986,17 @@ function traceLightRays(
         x2: endX - direction.x * 30,
         y2: endY - direction.y * 30,
         polarization: currentPolarization,
+        jonesVector: currentJonesVector,
         intensity: currentIntensity,
         phase: currentPhase,
         rayId: emitter.id,
+        polarizationType: polarizationAnalysis.type,
+        handedness: polarizationAnalysis.handedness,
       })
 
       // Process component effect
+      // NOTE: Phase 1 - Currently using scalar calculations, syncing to Jones vector
+      // Phase 3 will replace this with proper Jones matrix transformations
       switch (nextComponent.type) {
         case 'polarizer': {
           const polarizerAngle = nextComponent.properties.angle ?? 0
@@ -954,6 +1005,8 @@ function traceLightRays(
           formulas.push(`I = ${currentIntensity.toFixed(1)} × cos²(${angleDiff.toFixed(0)}°) = ${newIntensity.toFixed(1)}%`)
           currentIntensity = newIntensity
           currentPolarization = polarizerAngle
+          // Sync Jones vector with scalar values
+          currentJonesVector = polarizationToJonesVector(currentPolarization, currentIntensity / 100)
           break
         }
 
@@ -961,14 +1014,18 @@ function traceLightRays(
           const retardation = nextComponent.properties.retardation ?? 90
           if (retardation === 90) {
             // λ/4 - converts linear to circular (simplified as 45° rotation)
+            // TODO Phase 3: Use quarterWavePlateMatrix for accurate circular polarization
             currentPolarization = (currentPolarization + 45) % 180
             formulas.push(`λ/4: θ → ${currentPolarization}° (circular)`)
           } else if (retardation === 180) {
             // λ/2 - rotates polarization by 2θ relative to fast axis
+            // TODO Phase 3: Use halfWavePlateMatrix for accurate transformation
             const fastAxis = nextComponent.rotation
             currentPolarization = (2 * fastAxis - currentPolarization + 360) % 180
             formulas.push(`λ/2: θ = 2×${fastAxis}° - θ_in = ${currentPolarization}°`)
           }
+          // Sync Jones vector with scalar values
+          currentJonesVector = polarizationToJonesVector(currentPolarization, currentIntensity / 100)
           break
         }
 
@@ -981,6 +1038,7 @@ function traceLightRays(
 
           // Update sorted components for new direction
           sortedComponents.splice(sortedComponents.indexOf(nextComponent), 1)
+          // Mirror preserves polarization state, no Jones vector update needed
           break
         }
 
@@ -988,29 +1046,37 @@ function traceLightRays(
           const splitType = nextComponent.properties.splitType ?? 'pbs'
           if (splitType === 'pbs') {
             // PBS: s-polarization reflects, p-polarization transmits
-            // For now, just continue transmission with one polarization
+            // TODO Phase 2: Implement beam branching for both output paths
             currentPolarization = 0 // p-polarization transmitted
             formulas.push(`PBS: p → transmitted, s → reflected (90°)`)
           } else if (splitType === 'calcite') {
             // Calcite: o-ray and e-ray separate
+            // TODO Phase 2: Implement beam branching for o-ray and e-ray
             formulas.push(`Calcite: o-ray (0°), e-ray (90°)`)
           }
+          // Sync Jones vector with scalar values
+          currentJonesVector = polarizationToJonesVector(currentPolarization, currentIntensity / 100)
           break
         }
 
         case 'lens': {
           // Lens doesn't affect polarization, just continues
+          // TODO Phase 4: Implement ABCD matrix for beam width/convergence
           formulas.push(`Lens: f = ${nextComponent.properties.focalLength}mm`)
           break
         }
 
         case 'sensor': {
           // End of path
-          formulas.push(`Sensor: I = ${currentIntensity.toFixed(1)}%, θ = ${currentPolarization}°`)
+          const analysis = analyzePolarization(currentJonesVector)
+          formulas.push(`Sensor: I = ${currentIntensity.toFixed(1)}%, θ = ${currentPolarization}° (${analysis.type})`)
           currentIntensity = 0 // Stop tracing
           break
         }
       }
+
+      // Update polarization analysis after component interaction
+      polarizationAnalysis = analyzePolarization(currentJonesVector)
 
       currentPos = { x: nextComponent.x, y: nextComponent.y }
 
@@ -1030,9 +1096,12 @@ function traceLightRays(
         x2: endX,
         y2: endY,
         polarization: currentPolarization,
+        jonesVector: currentJonesVector,
         intensity: currentIntensity,
         phase: currentPhase,
         rayId: emitter.id,
+        polarizationType: polarizationAnalysis.type,
+        handedness: polarizationAnalysis.handedness,
       })
 
       break // Exit loop
@@ -1044,3 +1113,12 @@ function traceLightRays(
 
 // Export utility functions for use in components
 export { getPolarizationColor, normalizeAngle, calculateMalusLaw }
+
+// Re-export Jones calculus utilities for use in visualization components
+export {
+  complex,
+  polarizationToJonesVector,
+  jonesVectorToPolarization,
+  jonesIntensity,
+  analyzePolarization,
+} from '@/core/JonesCalculus'
