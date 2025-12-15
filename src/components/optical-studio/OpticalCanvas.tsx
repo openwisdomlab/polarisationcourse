@@ -26,6 +26,127 @@ import {
 import { PALETTE_COMPONENTS } from '@/data'
 
 // ============================================
+// Component Label Display
+// ============================================
+
+interface ComponentLabelProps {
+  component: BenchComponent
+  showLabels: boolean
+}
+
+function ComponentLabel({ component, showLabels }: ComponentLabelProps) {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+  const paletteItem = PALETTE_COMPONENTS.find(p => p.type === component.type)
+
+  if (!showLabels || !paletteItem) return null
+
+  const name = isZh ? paletteItem.nameZh : paletteItem.nameEn
+  const params: string[] = []
+
+  // Add key parameters
+  if (component.properties.polarization !== undefined && component.properties.polarization >= 0) {
+    params.push(`${component.properties.polarization}°`)
+  }
+  if (component.properties.angle !== undefined) {
+    params.push(`${component.properties.angle}°`)
+  }
+  if (component.properties.retardation !== undefined) {
+    params.push(`λ/${component.properties.retardation === 90 ? '4' : '2'}`)
+  }
+
+  const label = params.length > 0 ? `${name} (${params.join(', ')})` : name
+
+  return (
+    <g transform={`translate(${component.x}, ${component.y - 50})`}>
+      {/* Background */}
+      <rect
+        x={-label.length * 3.5}
+        y="-10"
+        width={label.length * 7}
+        height="18"
+        rx="3"
+        fill={theme === 'dark' ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.9)'}
+        stroke={theme === 'dark' ? '#475569' : '#cbd5e1'}
+        strokeWidth="1"
+      />
+      {/* Label text */}
+      <text
+        x="0"
+        y="2"
+        textAnchor="middle"
+        fontSize="10"
+        fontWeight="500"
+        fill={theme === 'dark' ? '#e2e8f0' : '#1e293b'}
+      >
+        {label}
+      </text>
+    </g>
+  )
+}
+
+// ============================================
+// Light Path Annotation
+// ============================================
+
+interface LightPathAnnotationProps {
+  segment: LightSegment
+  showAnnotations: boolean
+  showPolarization: boolean
+}
+
+function LightPathAnnotation({ segment, showAnnotations, showPolarization }: LightPathAnnotationProps) {
+  const { theme } = useTheme()
+
+  if (!showAnnotations) return null
+
+  const midX = (segment.x1 + segment.x2) / 2
+  const midY = (segment.y1 + segment.y2) / 2
+  const angle = Math.atan2(segment.y2 - segment.y1, segment.x2 - segment.x1) * (180 / Math.PI)
+  const color = showPolarization ? getPolarizationColor(segment.polarization) : '#22d3ee'
+
+  return (
+    <g transform={`translate(${midX}, ${midY})`}>
+      {/* Direction arrow */}
+      <g transform={`rotate(${angle})`}>
+        <path
+          d="M -8,0 L 8,0 L 4,-3 M 8,0 L 4,3"
+          fill="none"
+          stroke={color}
+          strokeWidth="1.5"
+          opacity="0.7"
+        />
+      </g>
+      {/* Intensity badge */}
+      <g transform="translate(0, -12)">
+        <rect
+          x="-18"
+          y="-8"
+          width="36"
+          height="14"
+          rx="2"
+          fill={theme === 'dark' ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.85)'}
+          stroke={color}
+          strokeWidth="1"
+        />
+        <text
+          x="0"
+          y="1"
+          textAnchor="middle"
+          fontSize="8"
+          fontWeight="600"
+          fontFamily="monospace"
+          fill={color}
+        >
+          {segment.intensity.toFixed(0)}% {showPolarization ? `${segment.polarization}°` : ''}
+        </text>
+      </g>
+    </g>
+  )
+}
+
+// ============================================
 // Sensor Reading Display
 // ============================================
 
@@ -163,6 +284,8 @@ export function OpticalCanvas() {
     selectComponent,
     isSimulating,
     showPolarization,
+    showLabels,
+    showAnnotations,
     lightSegments,
     sensorReadings,
     isDragging,
@@ -355,6 +478,20 @@ export function OpticalCanvas() {
           </g>
         )}
 
+        {/* Light path annotations */}
+        {isSimulating && lightSegments.length > 0 && (
+          <g className="light-annotations">
+            {lightSegments.map(segment => (
+              <LightPathAnnotation
+                key={`annotation-${segment.id}`}
+                segment={segment}
+                showAnnotations={showAnnotations}
+                showPolarization={showPolarization}
+              />
+            ))}
+          </g>
+        )}
+
         {/* Sensor readings */}
         {isSimulating && (
           <g className="sensor-readings">
@@ -385,26 +522,29 @@ export function OpticalCanvas() {
             const ComponentViz = OpticalComponentMap[component.type as OpticalComponentType]
             if (ComponentViz) {
               return (
-                <g
-                  key={component.id}
-                  style={{ cursor: isDragging && selectedComponentId === component.id ? 'grabbing' : 'grab' }}
-                  onMouseDown={(e) => handleComponentMouseDown(e, component.id)}
-                >
-                  <ComponentViz
-                    x={component.x}
-                    y={component.y}
-                    rotation={component.rotation}
-                    selected={component.id === selectedComponentId}
-                    polarizationAngle={
-                      (component.properties.angle as number) ||
-                      (component.properties.polarization as number) ||
-                      0
-                    }
-                    onClick={(e) => {
-                      e?.stopPropagation()
-                      selectComponent(component.id)
-                    }}
-                  />
+                <g key={component.id}>
+                  <g
+                    style={{ cursor: isDragging && selectedComponentId === component.id ? 'grabbing' : 'grab' }}
+                    onMouseDown={(e) => handleComponentMouseDown(e, component.id)}
+                  >
+                    <ComponentViz
+                      x={component.x}
+                      y={component.y}
+                      rotation={component.rotation}
+                      selected={component.id === selectedComponentId}
+                      polarizationAngle={
+                        (component.properties.angle as number) ||
+                        (component.properties.polarization as number) ||
+                        0
+                      }
+                      onClick={(e) => {
+                        e?.stopPropagation()
+                        selectComponent(component.id)
+                      }}
+                    />
+                  </g>
+                  {/* Component label */}
+                  <ComponentLabel component={component} showLabels={showLabels} />
                 </g>
               )
             }

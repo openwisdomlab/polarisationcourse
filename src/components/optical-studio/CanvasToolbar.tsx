@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils'
 import {
   Play, Pause, Eye, EyeOff, RotateCcw, RotateCw,
   Trash2, Undo2, Redo2, Save, FolderOpen, Download,
-  Upload, Grid3X3, Magnet, X, Keyboard
+  Upload, Grid3X3, Magnet, X, Keyboard, Tag, MessageSquare
 } from 'lucide-react'
 import { useOpticalBenchStore } from '@/stores/opticalBenchStore'
 
@@ -307,6 +307,8 @@ function KeyboardShortcutsDialog({ isOpen, onClose }: KeyboardShortcutsDialogPro
     { key: 'Ctrl/Cmd + Shift + Z', actionEn: 'Redo', actionZh: '重做' },
     { key: 'Ctrl/Cmd + S', actionEn: 'Save design', actionZh: '保存设计' },
     { key: 'V', actionEn: 'Toggle polarization display', actionZh: '切换偏振显示' },
+    { key: 'L', actionEn: 'Toggle component labels', actionZh: '切换组件标签' },
+    { key: 'A', actionEn: 'Toggle light path annotations', actionZh: '切换光路注释' },
     { key: 'G', actionEn: 'Toggle grid', actionZh: '切换网格' },
     { key: 'Escape', actionEn: 'Deselect / Close dialogs', actionZh: '取消选择/关闭对话框' },
     { key: '1-7', actionEn: 'Add component (Emitter, Polarizer, etc.)', actionZh: '添加组件（光源、偏振片等）' },
@@ -373,6 +375,10 @@ export function CanvasToolbar() {
     toggleSimulating,
     showPolarization,
     toggleShowPolarization,
+    showLabels,
+    toggleShowLabels,
+    showAnnotations,
+    toggleShowAnnotations,
     selectedComponentId,
     rotateComponent,
     deleteSelectedComponent,
@@ -455,6 +461,18 @@ export function CanvasToolbar() {
           active={showPolarization}
           icon={showPolarization ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
           title={isZh ? '偏振显示' : 'Polarization'}
+        />
+        <ToolbarButton
+          onClick={toggleShowLabels}
+          active={showLabels}
+          icon={<Tag className="w-5 h-5" />}
+          title={isZh ? '组件标签' : 'Labels'}
+        />
+        <ToolbarButton
+          onClick={toggleShowAnnotations}
+          active={showAnnotations}
+          icon={<MessageSquare className="w-5 h-5" />}
+          title={isZh ? '光路注释' : 'Annotations'}
         />
         <ToolbarButton
           onClick={() => setShowGrid(!showGrid)}

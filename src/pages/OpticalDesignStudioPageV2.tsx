@@ -35,6 +35,7 @@ import {
   ChallengePanel,
   TutorialOverlay,
   FormulaDisplay,
+  PrinciplesPanel,
   useKeyboardShortcuts,
 } from '@/components/optical-studio'
 
@@ -323,6 +324,9 @@ export function OpticalDesignStudioPageV2() {
         collapsed={deviceLibraryCollapsed}
         onToggleCollapse={() => setDeviceLibraryCollapsed(!deviceLibraryCollapsed)}
       />
+
+      {/* Principles Panel - First Principles of Polarization Optics */}
+      <PrinciplesPanel />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden relative">

@@ -16,6 +16,7 @@ export { ComponentPropertiesPanel } from './ComponentPropertiesPanel'
 export { ChallengePanel } from './ChallengePanel'
 export { TutorialOverlay } from './TutorialOverlay'
 export { FormulaDisplay } from './FormulaDisplay'
+export { PrinciplesPanel } from './PrinciplesPanel'
 
 // Hooks
 export { useKeyboardShortcuts } from './useKeyboardShortcuts'

@@ -165,6 +165,8 @@ interface OpticalBenchState {
   snapToGrid: boolean
   gridSize: number
   canvasSize: { width: number; height: number }
+  showLabels: boolean
+  showAnnotations: boolean
 
   // Drag state
   isDragging: boolean
@@ -232,6 +234,10 @@ interface OpticalBenchActions {
   setSnapToGrid: (snap: boolean) => void
   setGridSize: (size: number) => void
   setShowFormulas: (show: boolean) => void
+  setShowLabels: (show: boolean) => void
+  toggleShowLabels: () => void
+  setShowAnnotations: (show: boolean) => void
+  toggleShowAnnotations: () => void
 
   // Drag
   startDrag: (componentId: string, offset: Position) => void
@@ -326,6 +332,8 @@ const initialState: OpticalBenchState = {
   snapToGrid: true,
   gridSize: 20,
   canvasSize: { width: 800, height: 400 },
+  showLabels: true,
+  showAnnotations: true,
 
   isDragging: false,
   dragOffset: null,
@@ -810,6 +818,10 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
     setSnapToGrid: (snap: boolean) => set({ snapToGrid: snap }),
     setGridSize: (size: number) => set({ gridSize: size }),
     setShowFormulas: (show: boolean) => set({ showFormulas: show }),
+    setShowLabels: (show: boolean) => set({ showLabels: show }),
+    toggleShowLabels: () => set((prev: OpticalBenchState) => ({ showLabels: !prev.showLabels })),
+    setShowAnnotations: (show: boolean) => set({ showAnnotations: show }),
+    toggleShowAnnotations: () => set((prev: OpticalBenchState) => ({ showAnnotations: !prev.showAnnotations })),
 
     // ========== Drag ==========
 
