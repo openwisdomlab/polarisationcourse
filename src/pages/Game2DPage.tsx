@@ -25,6 +25,7 @@ import {
   Settings2,
   RotateCw,
   X,
+  Keyboard,
 } from 'lucide-react'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -490,7 +491,7 @@ export function Game2DPage() {
     setIsComplete(false)
   }
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     const initialStates: Record<string, Partial<OpticalComponent>> = {}
     currentLevel.components.forEach((c) => {
       initialStates[c.id] = {
@@ -501,7 +502,60 @@ export function Game2DPage() {
     })
     setComponentStates(initialStates)
     setIsComplete(false)
-  }
+  }, [currentLevel.components])
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return
+      }
+
+      switch (e.key.toLowerCase()) {
+        case 'r':
+          // Reset level
+          handleReset()
+          break
+        case 'h':
+          // Toggle hint (if available)
+          if (currentLevel.hint) {
+            setShowHint((prev) => !prev)
+          }
+          break
+        case 'escape':
+          // Deselect component
+          setSelectedComponent(null)
+          break
+        case 'n':
+        case ']':
+          // Next level
+          if (currentLevelIndex < LEVELS.length - 1) {
+            setCurrentLevelIndex(currentLevelIndex + 1)
+          }
+          break
+        case 'p':
+        case '[':
+          // Previous level
+          if (currentLevelIndex > 0) {
+            setCurrentLevelIndex(currentLevelIndex - 1)
+          }
+          break
+        case 'v':
+          // Toggle polarization colors
+          setShowPolarization((prev) => !prev)
+          break
+        case ' ':
+          // Toggle animation
+          e.preventDefault()
+          setIsAnimating((prev) => !prev)
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentLevelIndex, currentLevel.hint, handleReset])
 
   const goToNextLevel = () => {
     if (currentLevelIndex < LEVELS.length - 1) {
@@ -1063,6 +1117,55 @@ export function Game2DPage() {
               </p>
             </div>
           </div>
+
+          {/* Keyboard Shortcuts - only show on desktop */}
+          {!isCompact && (
+            <div className="mb-6">
+              <h3
+                className={cn(
+                  'font-bold mb-3 flex items-center gap-2',
+                  isDark ? 'text-white' : 'text-slate-800'
+                )}
+              >
+                <Keyboard className="w-4 h-4" />
+                {isZh ? '快捷键' : 'Shortcuts'}
+              </h3>
+              <div className={cn('space-y-1 text-xs', isDark ? 'text-slate-400' : 'text-slate-600')}>
+                <div className="flex justify-between">
+                  <span>← →</span>
+                  <span>{isZh ? '旋转选中元件' : 'Rotate component'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>R</span>
+                  <span>{isZh ? '重置关卡' : 'Reset level'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>H</span>
+                  <span>{isZh ? '显示提示' : 'Toggle hint'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>V</span>
+                  <span>{isZh ? '切换偏振色' : 'Toggle colors'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>N / ]</span>
+                  <span>{isZh ? '下一关' : 'Next level'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>P / [</span>
+                  <span>{isZh ? '上一关' : 'Prev level'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Esc</span>
+                  <span>{isZh ? '取消选择' : 'Deselect'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>{isZh ? '空格' : 'Space'}</span>
+                  <span>{isZh ? '暂停/播放' : 'Pause/Play'}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Polarization colors - 使用共享配置 */}
           {showPolarization && (
