@@ -17,7 +17,7 @@
     "subtitle": "Ultimate Exploration of Polarized Light Physics",
     "description": "A gamified education and open science platform based on real polarization physics. From stories to simulations, from puzzles to experiments, from gaming to frontier research in a virtual lab group — explore the fascinating world of polarized light.",
     "chronicles": {
-      "title": "Chronicles of Light: Discovery Journey",
+      "title": "Chronicles of Light",
       "subtitle": "Historical Stories × Classic Experiments",
       "description": "Dual narrative: left traces core discoveries in optics history, right follows the polarized light journey—ignite curiosity with stories, verify intuition with experiments.",
       "cta": "Explore",
@@ -26,7 +26,7 @@
       "link3": "Polarization Journey"
     },
     "opticalDesignStudio": {
-      "title": "Optical Design Studio: Devices & Paths",
+      "title": "Optical Design Studio",
       "subtitle": "Device Library × Light Path Design",
       "description": "Browse comprehensive optical device catalog, design custom light paths, simulate classic experiments, and interface with UC2 modular hardware—an all-in-one optics workstation.",
       "cta": "Enter Studio",
@@ -35,7 +35,7 @@
       "link3": "Free Design"
     },
     "formulaLab": {
-      "title": "Demo Gallery: Principle Visualization",
+      "title": "Demo Gallery",
       "subtitle": "Basic Theory × Computational Simulation",
       "description": "Turn laws into visible experiments—from Malus's Law to birefringence, see it, interact with it, remember it.",
       "cta": "Start Exploring",
@@ -44,7 +44,7 @@
       "link3": "Stokes Vector"
     },
     "polarquest": {
-      "title": "PolarQuest: The Light Chamber",
+      "title": "PolarQuest",
       "subtitle": "Puzzle Game × Polarization Strategy",
       "description": "Solve puzzles in 2D light paths and a 3D voxel world—turn polarization into playable strategy.",
       "cta": "Play Now",
@@ -53,7 +53,7 @@
       "link3": "Challenge Mode"
     },
     "creativeLab": {
-      "title": "Polarization Workshop: Art & DIY",
+      "title": "Polarization Workshop",
       "subtitle": "Polarization Art × Cultural Products",
       "description": "Create with polarization: photography techniques, tape birefringence art, phone screen experiments—experience the beauty of optics through making.",
       "cta": "Enter Workshop",
@@ -63,7 +63,7 @@
       "link4": "Creative Products"
     },
     "labGroup": {
-      "title": "Virtual Lab: Light Research Guild",
+      "title": "Virtual Lab",
       "subtitle": "Quests × Applications × Calculations × Community",
       "description": "Learn by doing research: research tasks & frontiers, application cases (displays/medicine/nature), professional calculation tools (Jones/Mueller/Stokes), community discussions & showcase—turn knowledge into real projects with peers.",
       "cta": "Join Guild",
@@ -73,7 +73,7 @@
       "link4": "Community"
     },
     "openData": {
-      "title": "Open Data: Polarization Datasets",
+      "title": "Open Data",
       "subtitle": "Coming Soon",
       "description": "Open science data platform: polarization experimental data, spectral data, user-contributed datasets—coming soon, stay tuned.",
       "cta": "Coming Soon"
