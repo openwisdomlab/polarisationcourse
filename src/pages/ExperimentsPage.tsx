@@ -15,12 +15,13 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { Badge, Tabs, PersistentHeader } from '@/components/shared'
+import { ExperimentTools, EXPERIMENT_TOOLS } from '@/components/experiments'
 import {
   Beaker, Clock, DollarSign, AlertTriangle, ChevronRight,
   CheckCircle2, Star, Lightbulb, Camera, X,
   ShoppingBag, Eye, GraduationCap,
   Palette, ImageIcon, Sparkles, Package, Heart,
-  Scissors, Brush, Layers
+  Scissors, Brush, Layers, Wrench, BookOpen
 } from 'lucide-react'
 
 // Experiment difficulty and cost levels
@@ -989,6 +990,12 @@ function ExperimentDetailModal({
   const difficulty = DIFFICULTY_CONFIG[experiment.difficulty]
   const cost = COST_CONFIG[experiment.cost]
 
+  // Tab state for Info/Tools
+  const [activeModalTab, setActiveModalTab] = useState<'info' | 'tools'>('info')
+
+  // Check if this experiment has tools available
+  const hasTools = EXPERIMENT_TOOLS[experiment.id]?.length > 0
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
@@ -1002,7 +1009,7 @@ function ExperimentDetailModal({
       )}>
         {/* Header */}
         <div className={cn(
-          'sticky top-0 p-6 border-b z-10',
+          'sticky top-0 p-6 pb-0 border-b z-10',
           theme === 'dark' ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
         )}>
           <button
@@ -1022,7 +1029,7 @@ function ExperimentDetailModal({
             {isZh ? experiment.nameZh : experiment.nameEn}
           </h2>
 
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap mb-4">
             <Badge color={difficulty.color}>
               {isZh ? difficulty.labelZh : difficulty.labelEn}
             </Badge>
@@ -1041,8 +1048,58 @@ function ExperimentDetailModal({
               {isZh ? cost.labelZh : cost.labelEn}
             </span>
           </div>
+
+          {/* Modal Tabs */}
+          <div className="flex gap-1 -mb-px">
+            <button
+              onClick={() => setActiveModalTab('info')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg border-b-2 transition-colors',
+                activeModalTab === 'info'
+                  ? theme === 'dark'
+                    ? 'border-teal-500 text-teal-400 bg-slate-800/50'
+                    : 'border-teal-500 text-teal-600 bg-teal-50'
+                  : theme === 'dark'
+                    ? 'border-transparent text-gray-400 hover:text-gray-200'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+              )}
+            >
+              <BookOpen className="w-4 h-4" />
+              {isZh ? '实验指南' : 'Guide'}
+            </button>
+            <button
+              onClick={() => setActiveModalTab('tools')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg border-b-2 transition-colors',
+                activeModalTab === 'tools'
+                  ? theme === 'dark'
+                    ? 'border-teal-500 text-teal-400 bg-slate-800/50'
+                    : 'border-teal-500 text-teal-600 bg-teal-50'
+                  : theme === 'dark'
+                    ? 'border-transparent text-gray-400 hover:text-gray-200'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+              )}
+            >
+              <Wrench className="w-4 h-4" />
+              {isZh ? '数字工具' : 'Tools'}
+              {hasTools && (
+                <span className={cn(
+                  'ml-1 px-1.5 py-0.5 text-[10px] rounded-full',
+                  theme === 'dark' ? 'bg-teal-500/20 text-teal-400' : 'bg-teal-100 text-teal-600'
+                )}>
+                  {EXPERIMENT_TOOLS[experiment.id].length}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
+        {/* Tab Content */}
+        {activeModalTab === 'tools' ? (
+          <div className="p-6">
+            <ExperimentTools experimentId={experiment.id} />
+          </div>
+        ) : (
         <div className="p-6 space-y-6">
           {/* Materials */}
           <div>
@@ -1225,6 +1282,7 @@ function ExperimentDetailModal({
             </Link>
           )}
         </div>
+        )}
       </div>
     </div>
   )
