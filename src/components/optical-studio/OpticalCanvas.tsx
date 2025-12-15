@@ -183,17 +183,6 @@ function SensorReading({
   }
   const color = getTypeColor()
 
-  // Polarization type label
-  const getTypeLabel = () => {
-    if (polarizationType === 'circular') {
-      return handedness === 'right' ? 'RCP' : 'LCP'
-    }
-    if (polarizationType === 'elliptical') {
-      return 'Ellip'
-    }
-    return `${Math.round(polarization)}°`
-  }
-
   return (
     <g transform={`translate(${x}, ${y - 45})`}>
       {/* Background */}
