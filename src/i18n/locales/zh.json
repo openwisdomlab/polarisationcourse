@@ -122,6 +122,95 @@
       }
     }
   },
+  "opticalDesign": {
+    "title": "光学设计室",
+    "subtitle": "偏振光学工作台",
+    "modulesLabel": "模块",
+    "modules": {
+      "devices": {
+        "title": "偏振器件",
+        "description": "浏览全面的光学器件目录"
+      },
+      "paths": {
+        "title": "偏振光路",
+        "description": "经典实验与详细原理解析"
+      },
+      "design": {
+        "title": "自由设计",
+        "description": "设计自定义偏振光路"
+      }
+    },
+    "principlesTitle": "光学原理",
+    "principles": {
+      "orthogonality": "正交性",
+      "malus": "马吕斯定律",
+      "birefringence": "双折射",
+      "interference": "干涉"
+    },
+    "devicesCount": "个器件",
+    "experimentsCount": "个实验",
+    "searchPlaceholder": "搜索器件...",
+    "noDevicesFound": "未找到器件",
+    "tryDifferentSearch": "请尝试其他关键词",
+    "device": {
+      "description": "描述",
+      "principle": "工作原理",
+      "formula": "公式",
+      "specifications": "技术参数",
+      "applications": "应用领域",
+      "relatedDevices": "相关器件",
+      "tryInBench": "在自由设计中试用"
+    },
+    "difficulty": {
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难"
+    },
+    "all": "全部",
+    "selectExperiment": "选择一个实验",
+    "selectExperimentHint": "从列表中选择以查看详情",
+    "tryExperiment": "开始实验",
+    "viewDemo": "查看演示",
+    "learningPoints": "学习要点",
+    "componentsUsed": "使用的组件",
+    "opticalPathPreview": "光路预览",
+    "clickTryToSee": "点击「开始实验」查看光路",
+    "components": {
+      "title": "组件",
+      "emitter": "光源",
+      "polarizer": "偏振片",
+      "waveplate": "波片",
+      "mirror": "反射镜",
+      "splitter": "分束器",
+      "lens": "透镜",
+      "sensor": "探测器"
+    },
+    "play": "播放",
+    "pause": "暂停",
+    "togglePolarization": "切换偏振色彩",
+    "toggleGrid": "切换网格",
+    "rotateCCW": "逆时针旋转",
+    "rotateCW": "顺时针旋转",
+    "delete": "删除",
+    "undo": "撤销",
+    "redo": "重做",
+    "clearAll": "全部清除",
+    "keyboardShortcuts": "快捷键",
+    "hint": "提示",
+    "dragToPlace": "点击添加组件到画布",
+    "selectComponent": "未选择组件",
+    "selectComponentHint": "点击组件以编辑属性",
+    "rotation": "旋转角度",
+    "polarization": "偏振态",
+    "unpolarized": "自然光",
+    "horizontal": "水平",
+    "vertical": "垂直",
+    "transmissionAxis": "透光轴",
+    "retardation": "延迟量",
+    "splitterType": "分束器类型",
+    "calcite": "方解石（双折射）",
+    "duplicate": "复制"
+  },
   "game": {
     "level": "关卡",
     "sandbox": "沙盒",

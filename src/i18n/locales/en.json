@@ -122,6 +122,95 @@
       }
     }
   },
+  "opticalDesign": {
+    "title": "Optical Design Studio",
+    "subtitle": "Polarization Optics Workstation",
+    "modulesLabel": "Modules",
+    "modules": {
+      "devices": {
+        "title": "Device Gallery",
+        "description": "Browse comprehensive optical device catalog"
+      },
+      "paths": {
+        "title": "Optical Paths",
+        "description": "Classic experiments with detailed explanations"
+      },
+      "design": {
+        "title": "Free Design",
+        "description": "Design custom polarization light paths"
+      }
+    },
+    "principlesTitle": "Optical Principles",
+    "principles": {
+      "orthogonality": "Orthogonality",
+      "malus": "Malus's Law",
+      "birefringence": "Birefringence",
+      "interference": "Interference"
+    },
+    "devicesCount": "devices",
+    "experimentsCount": "experiments",
+    "searchPlaceholder": "Search devices...",
+    "noDevicesFound": "No devices found",
+    "tryDifferentSearch": "Try different keywords",
+    "device": {
+      "description": "Description",
+      "principle": "Working Principle",
+      "formula": "Formula",
+      "specifications": "Specifications",
+      "applications": "Applications",
+      "relatedDevices": "Related Devices",
+      "tryInBench": "Try in Free Design"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "all": "All",
+    "selectExperiment": "Select an experiment",
+    "selectExperimentHint": "Choose from the list to view details",
+    "tryExperiment": "Try Experiment",
+    "viewDemo": "View Demo",
+    "learningPoints": "Learning Points",
+    "componentsUsed": "Components Used",
+    "opticalPathPreview": "Optical Path Preview",
+    "clickTryToSee": "Click 'Try Experiment' to see the light path",
+    "components": {
+      "title": "Components",
+      "emitter": "Light Source",
+      "polarizer": "Polarizer",
+      "waveplate": "Wave Plate",
+      "mirror": "Mirror",
+      "splitter": "Beam Splitter",
+      "lens": "Lens",
+      "sensor": "Sensor"
+    },
+    "play": "Play",
+    "pause": "Pause",
+    "togglePolarization": "Toggle Polarization Colors",
+    "toggleGrid": "Toggle Grid",
+    "rotateCCW": "Rotate Counter-clockwise",
+    "rotateCW": "Rotate Clockwise",
+    "delete": "Delete",
+    "undo": "Undo",
+    "redo": "Redo",
+    "clearAll": "Clear All",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "hint": "Hint",
+    "dragToPlace": "Click to add component to canvas",
+    "selectComponent": "No component selected",
+    "selectComponentHint": "Click a component to edit properties",
+    "rotation": "Rotation",
+    "polarization": "Polarization",
+    "unpolarized": "Unpolarized",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical",
+    "transmissionAxis": "Transmission Axis",
+    "retardation": "Retardation",
+    "splitterType": "Splitter Type",
+    "calcite": "Calcite (Birefringent)",
+    "duplicate": "Duplicate"
+  },
   "game": {
     "level": "Level",
     "sandbox": "Sandbox",

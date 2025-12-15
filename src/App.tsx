@@ -11,6 +11,7 @@ import {
   EscapeRoomPage,
   ChroniclesPage,
   LabPage,
+  OpticalDesignPage,
   OpticalDesignStudioPageV2 as OpticalDesignStudioPage,
   ApplicationsPage,
   ExperimentsPage,
@@ -47,8 +48,11 @@ export function App() {
         <Route path="/chronicles" element={<ChroniclesPage />} />
         <Route path="/lab" element={<LabPage />} />
 
-        {/* Optical Design Studio - merged 器件图鉴 + 光学工作台 */}
-        <Route path="/optical-studio" element={<OpticalDesignStudioPage />} />
+        {/* Optical Design Studio - 光学设计室 (模块化版本) */}
+        <Route path="/optical-studio" element={<OpticalDesignPage />} />
+
+        {/* Legacy optical studio route */}
+        <Route path="/optical-studio-v2" element={<OpticalDesignStudioPage />} />
 
         {/* Legacy routes - redirect to merged optical studio */}
         <Route path="/devices" element={<Navigate to="/optical-studio" replace />} />
