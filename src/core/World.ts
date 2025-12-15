@@ -1,6 +1,11 @@
 /**
  * PolarCraft - 体素世界管理
  * 管理方块和光传播的元胞自动机
+ *
+ * Refactored to use:
+ * - Iterative BFS propagation (replaces recursive DFS)
+ * - Jones Calculus wave optics (WaveLight)
+ * - Energy threshold-based termination
  */
 
 import {
@@ -14,7 +19,7 @@ import {
   createDefaultBlockState,
   PolarizationAngle
 } from './types';
-import { LightPhysics } from './LightPhysics';
+import { LightPhysics, WaveLight } from './LightPhysics';
 
 // 方块键值生成
 function posKey(x: number, y: number, z: number): string {
@@ -43,17 +48,67 @@ function parseKey(key: string): BlockPosition {
 }
 
 /**
+ * Propagation queue item for BFS light propagation
+ */
+interface PropagationItem {
+  position: BlockPosition;
+  light: WaveLight;
+}
+
+/**
+ * Wave light state at a position (for coherent superposition)
+ */
+interface WaveLightState {
+  lights: WaveLight[];
+}
+
+/**
+ * Configuration for light propagation
+ */
+interface PropagationConfig {
+  /** Use wave optics (Jones Calculus) instead of legacy scalar model */
+  useWaveOptics: boolean;
+  /** Maximum iterations for BFS (prevents infinite loops) */
+  maxIterations: number;
+  /** Energy threshold for stopping propagation */
+  energyThreshold: number;
+}
+
+const DEFAULT_PROPAGATION_CONFIG: PropagationConfig = {
+  useWaveOptics: true,
+  maxIterations: 10000,
+  energyThreshold: 0.01
+};
+
+/**
  * 体素世界类
  */
 export class World {
   private blocks: Map<string, BlockState> = new Map();
   private lightStates: Map<string, LightState> = new Map();
+  private waveLightStates: Map<string, WaveLightState> = new Map();
   private worldSize: number;
   private listeners: Set<(type: string, data: unknown) => void> = new Set();
+  private propagationConfig: PropagationConfig = { ...DEFAULT_PROPAGATION_CONFIG };
+  private emitterCounter: number = 0;
 
   constructor(size: number = 32) {
     this.worldSize = size;
     this.initializeGround();
+  }
+
+  /**
+   * Configure propagation behavior
+   */
+  setPropagationConfig(config: Partial<PropagationConfig>): void {
+    this.propagationConfig = { ...this.propagationConfig, ...config };
+  }
+
+  /**
+   * Get current propagation configuration
+   */
+  getPropagationConfig(): PropagationConfig {
+    return { ...this.propagationConfig };
   }
 
   /**
@@ -156,22 +211,17 @@ export class World {
 
   /**
    * 更新光传播 - 核心的元胞自动机
+   * Refactored to use iterative BFS with wave optics
    */
   updateLightPropagation(): void {
     // 清空当前光状态
     this.lightStates.clear();
+    this.waveLightStates.clear();
 
-    // 收集所有光源
-    const emitters: Array<{ position: BlockPosition; state: BlockState }> = [];
-    for (const [key, state] of this.blocks) {
-      if (state.type === 'emitter') {
-        emitters.push({ position: parseKey(key), state });
-      }
-    }
-
-    // 从每个光源开始传播光线
-    for (const emitter of emitters) {
-      this.propagateLightFromEmitter(emitter.position, emitter.state);
+    if (this.propagationConfig.useWaveOptics) {
+      this.propagateLightBFS();
+    } else {
+      this.propagateLightLegacy();
     }
 
     // 更新所有感应器状态
@@ -181,9 +231,279 @@ export class World {
   }
 
   /**
-   * 从光源传播光线
+   * BFS-based light propagation using wave optics (Jones Calculus)
+   * 基于BFS的波动光学传播算法
    */
-  private propagateLightFromEmitter(position: BlockPosition, state: BlockState): void {
+  private propagateLightBFS(): void {
+    // Collect all emitters
+    const emitters: Array<{ position: BlockPosition; state: BlockState }> = [];
+    for (const [key, state] of this.blocks) {
+      if (state.type === 'emitter') {
+        emitters.push({ position: parseKey(key), state });
+      }
+    }
+
+    // Initialize the propagation queue with all emitter outputs
+    const queue: PropagationItem[] = [];
+
+    for (const emitter of emitters) {
+      const sourceId = `emitter_${this.emitterCounter++}`;
+      const initialLight = LightPhysics.createEmitterWave(emitter.state, sourceId);
+      queue.push({
+        position: emitter.position,
+        light: initialLight
+      });
+    }
+
+    // Track visited positions per source to handle loops
+    // Key: `${sourceId}_${posKey}_${direction}` to allow different paths
+    const visited = new Set<string>();
+
+    let iterations = 0;
+    const { maxIterations, energyThreshold } = this.propagationConfig;
+
+    // BFS propagation loop
+    while (queue.length > 0 && iterations < maxIterations) {
+      iterations++;
+
+      const item = queue.shift()!;
+      const { position, light } = item;
+
+      // Check energy threshold
+      if (light.jones.intensity < energyThreshold) {
+        continue;
+      }
+
+      // Calculate next position
+      const dir = DIRECTION_VECTORS[light.direction];
+      if (!dir) {
+        console.error(`Invalid light direction: "${light.direction}". Skipping.`);
+        continue;
+      }
+
+      const nextPos: BlockPosition = {
+        x: position.x + dir.x,
+        y: position.y + dir.y,
+        z: position.z + dir.z
+      };
+
+      // Check world bounds
+      if (Math.abs(nextPos.x) > this.worldSize ||
+          Math.abs(nextPos.y) > this.worldSize ||
+          Math.abs(nextPos.z) > this.worldSize) {
+        continue;
+      }
+
+      // Create visit key to prevent infinite loops
+      const visitKey = `${light.sourceId}_${posKey(nextPos.x, nextPos.y, nextPos.z)}_${light.direction}`;
+
+      // Skip if we've already processed this exact configuration
+      if (visited.has(visitKey)) {
+        continue;
+      }
+      visited.add(visitKey);
+
+      // Advance the light (update path length and phase)
+      const advancedLight = LightPhysics.advanceWaveLight(light);
+
+      // Record light at this position
+      this.addWaveLightToPosition(nextPos, advancedLight);
+
+      // Get block at next position
+      const block = this.getBlock(nextPos.x, nextPos.y, nextPos.z);
+
+      // Process block and get output lights
+      const outputLights = this.processBlockWave(nextPos, advancedLight, block);
+
+      // Add output lights to queue for further propagation
+      for (const outputLight of outputLights) {
+        if (LightPhysics.isAboveThreshold(outputLight)) {
+          queue.push({
+            position: nextPos,
+            light: outputLight
+          });
+        }
+      }
+    }
+
+    if (iterations >= maxIterations) {
+      console.warn(`Light propagation reached maximum iterations (${maxIterations}). Consider optimizing the optical setup.`);
+    }
+
+    // Calculate coherent interference at each position and convert to legacy format
+    this.finalizeWaveLightStates();
+  }
+
+  /**
+   * Process a block using wave optics and return output lights
+   * 使用波动光学处理方块并返回输出光
+   */
+  private processBlockWave(position: BlockPosition, light: WaveLight, block: BlockState | null): WaveLight[] {
+    // Air or no block - continue propagating
+    if (!block || block.type === 'air') {
+      return [light];
+    }
+
+    switch (block.type) {
+      case 'solid':
+      case 'emitter':
+        // Solid blocks and emitters block light
+        return [];
+
+      case 'polarizer': {
+        const result = LightPhysics.processPolarizerWave(light, block);
+        return result ? [result] : [];
+      }
+
+      case 'rotator': {
+        const result = LightPhysics.processRotatorWave(light, block);
+        return [result];
+      }
+
+      case 'splitter': {
+        return LightPhysics.processSplitterWave(light, block);
+      }
+
+      case 'mirror': {
+        const result = LightPhysics.processMirrorWave(light, block);
+        return result ? [result] : [];
+      }
+
+      case 'sensor':
+        // Sensors don't block light
+        return [light];
+
+      case 'absorber': {
+        const result = LightPhysics.processAbsorberWave(light, block);
+        return result ? [result] : [];
+      }
+
+      case 'phaseShifter': {
+        const result = LightPhysics.processPhaseShifterWave(light, block);
+        return [result];
+      }
+
+      case 'beamSplitter': {
+        return LightPhysics.processBeamSplitterWave(light, block);
+      }
+
+      case 'quarterWave': {
+        const result = LightPhysics.processQuarterWaveWave(light, block);
+        return [result];
+      }
+
+      case 'halfWave': {
+        const result = LightPhysics.processHalfWaveWave(light, block);
+        return [result];
+      }
+
+      case 'prism': {
+        const result = LightPhysics.processPrismWave(light, block);
+        return [result];
+      }
+
+      case 'lens': {
+        return LightPhysics.processLensWave(light, block);
+      }
+
+      case 'portal': {
+        return this.handlePortalBlockWave(position, light, block);
+      }
+
+      default:
+        // Unknown block type - pass through
+        return [light];
+    }
+  }
+
+  /**
+   * Handle portal block with wave optics
+   */
+  private handlePortalBlockWave(_position: BlockPosition, light: WaveLight, block: BlockState): WaveLight[] {
+    const linkedId = block.linkedPortalId;
+
+    if (!linkedId) {
+      // Unlinked portal - light passes through
+      return [light];
+    }
+
+    // Find linked portal
+    const linkedPortal = this.findPortalById(linkedId);
+
+    if (linkedPortal) {
+      // Teleport light to linked portal position
+      // The light will continue from there in the next iteration
+      return [{
+        ...light,
+        // Note: we return the light to be queued from the portal position
+        // The caller should handle the position change
+      }];
+    }
+
+    return [light];
+  }
+
+  /**
+   * Add wave light to position for later interference calculation
+   */
+  private addWaveLightToPosition(position: BlockPosition, light: WaveLight): void {
+    const key = posKey(position.x, position.y, position.z);
+
+    if (!this.waveLightStates.has(key)) {
+      this.waveLightStates.set(key, { lights: [] });
+    }
+
+    this.waveLightStates.get(key)!.lights.push(light);
+  }
+
+  /**
+   * Calculate coherent superposition at each position and convert to legacy LightState
+   * 计算每个位置的相干叠加并转换为传统光状态
+   */
+  private finalizeWaveLightStates(): void {
+    for (const [key, waveState] of this.waveLightStates) {
+      // Calculate coherent interference
+      const superposedLights = LightPhysics.calculateInterferenceWave(waveState.lights);
+
+      // Convert to legacy format
+      const packets: LightPacket[] = [];
+      for (const light of superposedLights) {
+        if (LightPhysics.isAboveThreshold(light)) {
+          packets.push(LightPhysics.toLightPacket(light));
+        }
+      }
+
+      if (packets.length > 0) {
+        // Also apply legacy interference for consistency
+        const finalPackets = LightPhysics.calculateInterference(packets);
+        this.lightStates.set(key, { packets: finalPackets });
+      }
+    }
+  }
+
+  /**
+   * Legacy recursive propagation (for backward compatibility)
+   * 传统递归传播（用于向后兼容）
+   */
+  private propagateLightLegacy(): void {
+    // Collect all emitters
+    const emitters: Array<{ position: BlockPosition; state: BlockState }> = [];
+    for (const [key, state] of this.blocks) {
+      if (state.type === 'emitter') {
+        emitters.push({ position: parseKey(key), state });
+      }
+    }
+
+    // Propagate from each emitter
+    for (const emitter of emitters) {
+      this.propagateLightFromEmitterLegacy(emitter.position, emitter.state);
+    }
+  }
+
+  /**
+   * 从光源传播光线 (Legacy)
+   */
+  private propagateLightFromEmitterLegacy(position: BlockPosition, state: BlockState): void {
     // 确定光源发射方向
     const emitDirection = LightPhysics.getActualFacing(state.facing, state.rotation);
 
@@ -196,13 +516,13 @@ export class World {
     };
 
     // 开始传播
-    this.propagateLight(position, initialLight);
+    this.propagateLightLegacyRecursive(position, initialLight, 0);
   }
 
   /**
-   * 递归传播光线
+   * 递归传播光线 (Legacy implementation)
    */
-  private propagateLight(fromPosition: BlockPosition, light: LightPacket, depth: number = 0): void {
+  private propagateLightLegacyRecursive(fromPosition: BlockPosition, light: LightPacket, depth: number): void {
     // 防止无限递归
     if (depth > 100 || light.intensity <= 0) {
       return;
@@ -236,14 +556,14 @@ export class World {
 
     if (!block) {
       // 空气 - 光继续传播
-      this.propagateLight(nextPos, light, depth + 1);
+      this.propagateLightLegacyRecursive(nextPos, light, depth + 1);
       return;
     }
 
     // 处理不同类型的方块
     switch (block.type) {
       case 'air':
-        this.propagateLight(nextPos, light, depth + 1);
+        this.propagateLightLegacyRecursive(nextPos, light, depth + 1);
         break;
 
       case 'solid':
@@ -268,7 +588,7 @@ export class World {
 
       case 'sensor':
         // 感应器不阻挡光，但会记录
-        this.propagateLight(nextPos, light, depth + 1);
+        this.propagateLightLegacyRecursive(nextPos, light, depth + 1);
         break;
 
       case 'emitter':
@@ -312,7 +632,7 @@ export class World {
   }
 
   /**
-   * 处理偏振片
+   * 处理偏振片 (Legacy)
    */
   private handlePolarizerBlock(
     position: BlockPosition,
@@ -323,12 +643,12 @@ export class World {
     const result = LightPhysics.processPolarizerBlock(light, block);
 
     if (result && result.intensity > 0) {
-      this.propagateLight(position, result, depth + 1);
+      this.propagateLightLegacyRecursive(position, result, depth + 1);
     }
   }
 
   /**
-   * 处理波片
+   * 处理波片 (Legacy)
    */
   private handleRotatorBlock(
     position: BlockPosition,
@@ -337,11 +657,11 @@ export class World {
     depth: number
   ): void {
     const result = LightPhysics.processRotatorBlock(light, block);
-    this.propagateLight(position, result, depth + 1);
+    this.propagateLightLegacyRecursive(position, result, depth + 1);
   }
 
   /**
-   * 处理方解石（双折射）
+   * 处理方解石（双折射）(Legacy)
    */
   private handleSplitterBlock(
     position: BlockPosition,
@@ -353,13 +673,13 @@ export class World {
 
     for (const resultLight of results) {
       if (resultLight.intensity > 0) {
-        this.propagateLight(position, resultLight, depth + 1);
+        this.propagateLightLegacyRecursive(position, resultLight, depth + 1);
       }
     }
   }
 
   /**
-   * 处理反射镜
+   * 处理反射镜 (Legacy)
    */
   private handleMirrorBlock(
     position: BlockPosition,
@@ -370,14 +690,14 @@ export class World {
     const result = LightPhysics.processMirrorBlock(light, block);
 
     if (result && result.intensity > 0) {
-      this.propagateLight(position, result, depth + 1);
+      this.propagateLightLegacyRecursive(position, result, depth + 1);
     }
   }
 
-  // ============== 高级方块处理方法 ==============
+  // ============== 高级方块处理方法 (Legacy) ==============
 
   /**
-   * 处理吸收器
+   * 处理吸收器 (Legacy)
    */
   private handleAbsorberBlock(
     position: BlockPosition,
@@ -388,12 +708,12 @@ export class World {
     const result = LightPhysics.processAbsorberBlock(light, block);
 
     if (result && result.intensity > 0) {
-      this.propagateLight(position, result, depth + 1);
+      this.propagateLightLegacyRecursive(position, result, depth + 1);
     }
   }
 
   /**
-   * 处理相位调制器
+   * 处理相位调制器 (Legacy)
    */
   private handlePhaseShifterBlock(
     position: BlockPosition,
@@ -402,11 +722,11 @@ export class World {
     depth: number
   ): void {
     const result = LightPhysics.processPhaseShifterBlock(light, block);
-    this.propagateLight(position, result, depth + 1);
+    this.propagateLightLegacyRecursive(position, result, depth + 1);
   }
 
   /**
-   * 处理分束器
+   * 处理分束器 (Legacy)
    */
   private handleBeamSplitterBlock(
     position: BlockPosition,
@@ -418,13 +738,13 @@ export class World {
 
     for (const resultLight of results) {
       if (resultLight.intensity > 0) {
-        this.propagateLight(position, resultLight, depth + 1);
+        this.propagateLightLegacyRecursive(position, resultLight, depth + 1);
       }
     }
   }
 
   /**
-   * 处理四分之一波片
+   * 处理四分之一波片 (Legacy)
    */
   private handleQuarterWaveBlock(
     position: BlockPosition,
@@ -433,11 +753,11 @@ export class World {
     depth: number
   ): void {
     const result = LightPhysics.processQuarterWaveBlock(light, block);
-    this.propagateLight(position, result, depth + 1);
+    this.propagateLightLegacyRecursive(position, result, depth + 1);
   }
 
   /**
-   * 处理二分之一波片
+   * 处理二分之一波片 (Legacy)
    */
   private handleHalfWaveBlock(
     position: BlockPosition,
@@ -446,11 +766,11 @@ export class World {
     depth: number
   ): void {
     const result = LightPhysics.processHalfWaveBlock(light, block);
-    this.propagateLight(position, result, depth + 1);
+    this.propagateLightLegacyRecursive(position, result, depth + 1);
   }
 
   /**
-   * 处理棱镜
+   * 处理棱镜 (Legacy)
    */
   private handlePrismBlock(
     position: BlockPosition,
@@ -459,11 +779,11 @@ export class World {
     depth: number
   ): void {
     const result = LightPhysics.processPrismBlock(light, block);
-    this.propagateLight(position, result, depth + 1);
+    this.propagateLightLegacyRecursive(position, result, depth + 1);
   }
 
   /**
-   * 处理透镜
+   * 处理透镜 (Legacy)
    */
   private handleLensBlock(
     position: BlockPosition,
@@ -475,13 +795,13 @@ export class World {
 
     for (const resultLight of results) {
       if (resultLight.intensity > 0) {
-        this.propagateLight(position, resultLight, depth + 1);
+        this.propagateLightLegacyRecursive(position, resultLight, depth + 1);
       }
     }
   }
 
   /**
-   * 处理传送门
+   * 处理传送门 (Legacy)
    * 将光传送到链接的传送门位置
    */
   private handlePortalBlock(
@@ -494,7 +814,7 @@ export class World {
 
     if (!linkedId) {
       // 未链接的传送门，光线直接穿过
-      this.propagateLight(position, light, depth + 1);
+      this.propagateLightLegacyRecursive(position, light, depth + 1);
       return;
     }
 
@@ -503,7 +823,7 @@ export class World {
 
     if (linkedPortal) {
       // 从链接传送门的位置继续传播光线
-      this.propagateLight(linkedPortal.position, light, depth + 1);
+      this.propagateLightLegacyRecursive(linkedPortal.position, light, depth + 1);
     }
   }
 

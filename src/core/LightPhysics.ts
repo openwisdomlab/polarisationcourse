@@ -1,6 +1,10 @@
 /**
  * PolarCraft - 光物理引擎
  * 实现偏振光的四大公理
+ *
+ * This module provides both:
+ * 1. Legacy scalar-based methods for game compatibility
+ * 2. New Jones Calculus-based methods for accurate wave optics
  */
 
 import {
@@ -11,6 +15,15 @@ import {
   BlockState,
   OPPOSITE_DIRECTION
 } from './types';
+
+import {
+  JonesVector,
+  JonesMatrix,
+  superposeLights,
+  waveLightToLightPacket,
+  lightPacketToWaveLight
+} from './WaveOptics';
+import type { WaveLight } from './WaveOptics';
 
 /**
  * 光物理引擎 - 实现偏振光的核心物理规则
@@ -583,4 +596,420 @@ export class LightPhysics {
 
     return false;
   }
+
+  // ============================================================
+  // Jones Calculus Wave Optics Methods (科学精确波动光学)
+  // ============================================================
+
+  /**
+   * Energy threshold for light propagation termination
+   * Light below this intensity will not propagate further
+   */
+  static readonly ENERGY_THRESHOLD = 0.01;
+
+  /**
+   * Create Jones Matrix for a linear polarizer at given angle
+   * 偏振片的Jones矩阵
+   */
+  static getPolarizerMatrix(angleDegrees: number): JonesMatrix {
+    return JonesMatrix.linearPolarizerDegrees(angleDegrees);
+  }
+
+  /**
+   * Create Jones Matrix for a wave plate (retarder)
+   * 波片的Jones矩阵
+   * @param retardationDegrees Phase retardation in degrees (90 for λ/4, 180 for λ/2)
+   * @param fastAxisDegrees Angle of fast axis in degrees
+   */
+  static getWaveplateMatrix(retardationDegrees: number, fastAxisDegrees: number): JonesMatrix {
+    const retardationRadians = retardationDegrees * Math.PI / 180;
+    const fastAxisRadians = fastAxisDegrees * Math.PI / 180;
+    return JonesMatrix.waveplate(retardationRadians, fastAxisRadians);
+  }
+
+  /**
+   * Create Jones Matrix for a quarter-wave plate
+   * 四分之一波片的Jones矩阵
+   */
+  static getQuarterWavePlateMatrix(fastAxisDegrees: number = 45): JonesMatrix {
+    return JonesMatrix.quarterWavePlateDegrees(fastAxisDegrees);
+  }
+
+  /**
+   * Create Jones Matrix for a half-wave plate
+   * 二分之一波片的Jones矩阵
+   */
+  static getHalfWavePlateMatrix(fastAxisDegrees: number = 45): JonesMatrix {
+    return JonesMatrix.halfWavePlateDegrees(fastAxisDegrees);
+  }
+
+  /**
+   * Create Jones Matrix for an optical rotator
+   * 旋光器的Jones矩阵
+   */
+  static getRotatorMatrix(rotationDegrees: number): JonesMatrix {
+    return JonesMatrix.rotatorDegrees(rotationDegrees);
+  }
+
+  /**
+   * Create Jones Matrix for an attenuator/absorber
+   * 吸收器的Jones矩阵
+   * @param absorptionRate Rate of absorption (0 = full transmission, 1 = full absorption)
+   */
+  static getAbsorberMatrix(absorptionRate: number): JonesMatrix {
+    const transmittance = 1 - Math.max(0, Math.min(1, absorptionRate));
+    return JonesMatrix.attenuator(transmittance);
+  }
+
+  /**
+   * Create Jones Matrix for a phase shifter
+   * 相位调制器的Jones矩阵
+   */
+  static getPhaseShifterMatrix(phaseShiftDegrees: number): JonesMatrix {
+    return JonesMatrix.phaseShifter(phaseShiftDegrees * Math.PI / 180);
+  }
+
+  /**
+   * Process WaveLight through a polarizer block using Jones Calculus
+   * 使用Jones矩阵处理光通过偏振片
+   */
+  static processPolarizerWave(input: WaveLight, blockState: BlockState): WaveLight | null {
+    const matrix = this.getPolarizerMatrix(blockState.polarizationAngle);
+    const outputJones = matrix.apply(input.jones);
+
+    if (outputJones.intensity < this.ENERGY_THRESHOLD) {
+      return null;
+    }
+
+    return {
+      jones: outputJones,
+      direction: input.direction,
+      globalPhase: input.globalPhase,
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through a rotator block using Jones Calculus
+   * 使用Jones矩阵处理光通过旋光器
+   */
+  static processRotatorWave(input: WaveLight, blockState: BlockState): WaveLight {
+    const matrix = this.getRotatorMatrix(blockState.rotationAmount);
+    const outputJones = matrix.apply(input.jones);
+
+    return {
+      jones: outputJones,
+      direction: input.direction,
+      globalPhase: input.globalPhase,
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through a beam splitter (birefringent crystal)
+   * 使用Jones矩阵处理光通过双折射晶体
+   * Returns [o-ray, e-ray] both as WaveLight
+   */
+  static processSplitterWave(input: WaveLight, blockState: BlockState): WaveLight[] {
+    // Horizontal polarizer for o-ray (extracts horizontal component)
+    const oMatrix = JonesMatrix.horizontalPolarizer();
+    // Vertical polarizer for e-ray (extracts vertical component)
+    const eMatrix = JonesMatrix.verticalPolarizer();
+
+    const oJones = oMatrix.apply(input.jones);
+    const eJones = eMatrix.apply(input.jones);
+
+    const results: WaveLight[] = [];
+
+    // o-ray continues in original direction
+    if (oJones.intensity >= this.ENERGY_THRESHOLD) {
+      results.push({
+        jones: oJones,
+        direction: input.direction,
+        globalPhase: input.globalPhase,
+        sourceId: input.sourceId,
+        pathLength: input.pathLength
+      });
+    }
+
+    // e-ray is refracted (direction depends on crystal facing)
+    if (eJones.intensity >= this.ENERGY_THRESHOLD) {
+      results.push({
+        jones: eJones,
+        direction: this.getRefractedDirection(input.direction, blockState.facing),
+        globalPhase: input.globalPhase,
+        sourceId: input.sourceId,
+        pathLength: input.pathLength
+      });
+    }
+
+    return results;
+  }
+
+  /**
+   * Process WaveLight through a mirror block
+   * 处理光通过反射镜
+   */
+  static processMirrorWave(input: WaveLight, blockState: BlockState): WaveLight | null {
+    const mirrorFacing = blockState.facing;
+    const inputFrom = OPPOSITE_DIRECTION[input.direction];
+
+    if (!this.isLightHittingMirror(inputFrom, mirrorFacing)) {
+      return null;
+    }
+
+    // Mirror reflection can introduce phase shift (simplified model)
+    const mirrorMatrix = JonesMatrix.mirror();
+    const outputJones = mirrorMatrix.apply(input.jones);
+
+    return {
+      jones: outputJones,
+      direction: this.getReflectedDirection(input.direction, mirrorFacing),
+      globalPhase: input.globalPhase + Math.PI, // π phase shift on reflection
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through an absorber block
+   * 处理光通过吸收器
+   */
+  static processAbsorberWave(input: WaveLight, blockState: BlockState): WaveLight | null {
+    const matrix = this.getAbsorberMatrix(blockState.absorptionRate ?? 0.5);
+    const outputJones = matrix.apply(input.jones);
+
+    if (outputJones.intensity < this.ENERGY_THRESHOLD) {
+      return null;
+    }
+
+    return {
+      jones: outputJones,
+      direction: input.direction,
+      globalPhase: input.globalPhase,
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through a phase shifter block
+   * 处理光通过相位调制器
+   */
+  static processPhaseShifterWave(input: WaveLight, blockState: BlockState): WaveLight {
+    const matrix = this.getPhaseShifterMatrix(blockState.phaseShift ?? 0);
+    const outputJones = matrix.apply(input.jones);
+
+    return {
+      jones: outputJones,
+      direction: input.direction,
+      globalPhase: input.globalPhase + (blockState.phaseShift ?? 0) * Math.PI / 180,
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through a beam splitter (non-polarizing)
+   * 处理光通过分束器
+   */
+  static processBeamSplitterWave(input: WaveLight, blockState: BlockState): WaveLight[] {
+    const splitRatio = blockState.splitRatio ?? 0.5;
+
+    const results: WaveLight[] = [];
+
+    // Transmitted beam
+    const transmittedAmplitude = Math.sqrt(splitRatio);
+    if (transmittedAmplitude > Math.sqrt(this.ENERGY_THRESHOLD)) {
+      results.push({
+        jones: input.jones.scale(transmittedAmplitude),
+        direction: input.direction,
+        globalPhase: input.globalPhase,
+        sourceId: input.sourceId,
+        pathLength: input.pathLength
+      });
+    }
+
+    // Reflected beam (with π/2 phase shift)
+    const reflectedAmplitude = Math.sqrt(1 - splitRatio);
+    if (reflectedAmplitude > Math.sqrt(this.ENERGY_THRESHOLD)) {
+      results.push({
+        jones: input.jones.scale(reflectedAmplitude),
+        direction: this.getPerpendicularDirection(input.direction),
+        globalPhase: input.globalPhase + Math.PI / 2,
+        sourceId: input.sourceId,
+        pathLength: input.pathLength
+      });
+    }
+
+    return results;
+  }
+
+  /**
+   * Process WaveLight through a quarter-wave plate
+   * 处理光通过四分之一波片
+   */
+  static processQuarterWaveWave(input: WaveLight, blockState: BlockState): WaveLight {
+    // Default fast axis at 45° converts linear to circular
+    const fastAxis = blockState.rotationAmount ?? 45;
+    const matrix = this.getQuarterWavePlateMatrix(fastAxis);
+    const outputJones = matrix.apply(input.jones);
+
+    return {
+      jones: outputJones,
+      direction: input.direction,
+      globalPhase: input.globalPhase,
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through a half-wave plate
+   * 处理光通过二分之一波片
+   */
+  static processHalfWaveWave(input: WaveLight, blockState: BlockState): WaveLight {
+    // Default fast axis at 45° rotates polarization by 90°
+    const fastAxis = blockState.rotationAmount ?? 45;
+    const matrix = this.getHalfWavePlateMatrix(fastAxis / 2); // HWP rotates by 2θ
+    const outputJones = matrix.apply(input.jones);
+
+    return {
+      jones: outputJones,
+      direction: input.direction,
+      globalPhase: input.globalPhase,
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through a prism
+   * 处理光通过棱镜
+   */
+  static processPrismWave(input: WaveLight, blockState: BlockState): WaveLight {
+    const prismFacing = blockState.facing;
+    let newDirection = input.direction;
+
+    if (this.areDirectionsPerpendicular(input.direction, prismFacing)) {
+      newDirection = prismFacing;
+    }
+
+    return {
+      jones: input.jones,
+      direction: newDirection,
+      globalPhase: input.globalPhase,
+      sourceId: input.sourceId,
+      pathLength: input.pathLength
+    };
+  }
+
+  /**
+   * Process WaveLight through a lens
+   * 处理光通过透镜
+   */
+  static processLensWave(input: WaveLight, blockState: BlockState): WaveLight[] {
+    const focalLength = blockState.focalLength ?? 2;
+    const isConverging = focalLength > 0;
+
+    if (isConverging) {
+      return [{
+        jones: input.jones,
+        direction: input.direction,
+        globalPhase: input.globalPhase,
+        sourceId: input.sourceId,
+        pathLength: input.pathLength
+      }];
+    } else {
+      // Diverging lens splits into two beams
+      const amplitude = Math.sqrt(0.5);
+      const results: WaveLight[] = [];
+
+      if (input.jones.intensity * 0.5 >= this.ENERGY_THRESHOLD) {
+        results.push({
+          jones: input.jones.scale(amplitude),
+          direction: input.direction,
+          globalPhase: input.globalPhase,
+          sourceId: input.sourceId,
+          pathLength: input.pathLength
+        });
+
+        results.push({
+          jones: input.jones.scale(amplitude),
+          direction: this.getPerpendicularDirection(input.direction),
+          globalPhase: input.globalPhase,
+          sourceId: input.sourceId,
+          pathLength: input.pathLength
+        });
+      }
+
+      return results;
+    }
+  }
+
+  /**
+   * Calculate coherent interference of multiple WaveLights
+   * 计算多束光的相干叠加
+   */
+  static calculateInterferenceWave(lights: WaveLight[]): WaveLight[] {
+    return superposeLights(lights);
+  }
+
+  /**
+   * Convert legacy LightPacket to WaveLight
+   * 将传统光包转换为波动光学表示
+   */
+  static toWaveLight(packet: LightPacket, sourceId: string = 'legacy'): WaveLight {
+    return lightPacketToWaveLight(packet, sourceId);
+  }
+
+  /**
+   * Convert WaveLight to legacy LightPacket
+   * 将波动光学表示转换为传统光包
+   */
+  static toLightPacket(light: WaveLight): LightPacket {
+    return waveLightToLightPacket(light);
+  }
+
+  /**
+   * Check if light intensity is above propagation threshold
+   * 检查光强是否高于传播阈值
+   */
+  static isAboveThreshold(light: WaveLight): boolean {
+    return light.jones.intensity >= this.ENERGY_THRESHOLD;
+  }
+
+  /**
+   * Create initial WaveLight from emitter block
+   * 从发射器方块创建初始波动光
+   */
+  static createEmitterWave(blockState: BlockState, sourceId: string): WaveLight {
+    const direction = this.getActualFacing(blockState.facing, blockState.rotation);
+    return {
+      jones: JonesVector.linearPolarizationDegrees(blockState.polarizationAngle, 1),
+      direction,
+      globalPhase: 0,
+      sourceId,
+      pathLength: 0
+    };
+  }
+
+  /**
+   * Advance WaveLight by one block (adds to path length)
+   * 将波动光前进一个方块
+   */
+  static advanceWaveLight(light: WaveLight): WaveLight {
+    return {
+      ...light,
+      pathLength: light.pathLength + 1,
+      // Add phase from path length (simplified: assume wavelength = 1 block)
+      globalPhase: light.globalPhase + 2 * Math.PI
+    };
+  }
 }
+
+// Re-export wave optics types for convenience
+export { JonesVector, JonesMatrix, superposeLights } from './WaveOptics';
+export type { Complex, WaveLight } from './WaveOptics';
