@@ -19,7 +19,6 @@ import {
   type JonesVector,
   polarizationToJonesVector,
   jonesVectorToPolarization,
-  jonesIntensity,
   analyzePolarization,
 } from '@/core/JonesCalculus'
 
@@ -920,9 +919,169 @@ function getDefaultProperties(type: BenchComponentType): BenchComponent['propert
 }
 
 // ============================================
-// Helper: Light Ray Tracing
+// Helper: Light Ray Tracing (Queue-Based with Beam Splitting)
 // ============================================
 
+/**
+ * Ray state for queue-based tracing
+ * Each ray in the queue represents a light path to be traced
+ */
+interface RayState {
+  id: string                    // Unique ray identifier (e.g., "emitter1-ray0-branch1")
+  position: Position            // Current position
+  direction: Position           // Normalized direction vector
+  jonesVector: JonesVector      // Full polarization state
+  intensity: number             // Current intensity (0-100%)
+  polarization: number          // Legacy angle in degrees
+  phase: number                 // Phase for interference
+  depth: number                 // Recursion depth (for limiting)
+  sourceId: string              // Original emitter ID
+  visitedComponents: Set<string> // Components already visited by this ray path
+}
+
+/**
+ * Find the next component in the ray's path
+ */
+function findNextComponent(
+  ray: RayState,
+  components: BenchComponent[]
+): BenchComponent | null {
+  let closestComponent: BenchComponent | null = null
+  let closestDist = Infinity
+
+  for (const comp of components) {
+    // Skip already visited components (prevents infinite loops)
+    if (ray.visitedComponents.has(comp.id)) continue
+
+    const dx = comp.x - ray.position.x
+    const dy = comp.y - ray.position.y
+
+    // Distance along ray direction
+    const dot = dx * ray.direction.x + dy * ray.direction.y
+    if (dot <= 10) continue // Must be ahead of current position
+
+    // Perpendicular distance (how close ray passes to component)
+    const perpDist = Math.abs(dx * ray.direction.y - dy * ray.direction.x)
+    if (perpDist > 50) continue // Too far from ray path
+
+    if (dot < closestDist) {
+      closestDist = dot
+      closestComponent = comp
+    }
+  }
+
+  return closestComponent
+}
+
+/**
+ * Calculate PBS (Polarizing Beam Splitter) output
+ * p-polarization (0°) transmits, s-polarization (90°) reflects
+ */
+function calculatePBSSplit(
+  inputJones: JonesVector,
+  inputIntensity: number,
+  splitterRotation: number
+): { transmitted: { jones: JonesVector; intensity: number; polarization: number };
+     reflected: { jones: JonesVector; intensity: number; polarization: number } } {
+
+  // PBS separates based on polarization relative to splitter orientation
+  // p-polarization (parallel to plane of incidence) transmits
+  // s-polarization (perpendicular) reflects
+
+  const inputPol = jonesVectorToPolarization(inputJones)
+  const relativeAngle = inputPol - splitterRotation
+
+  // Calculate how much is p vs s polarized
+  const pComponent = Math.cos(relativeAngle * Math.PI / 180)
+  const sComponent = Math.sin(relativeAngle * Math.PI / 180)
+
+  // Transmitted beam: p-polarization only
+  const transmittedIntensity = inputIntensity * pComponent * pComponent
+  const transmittedPol = splitterRotation // p-polarization aligned with splitter
+  const transmittedJones = polarizationToJonesVector(transmittedPol, transmittedIntensity / 100)
+
+  // Reflected beam: s-polarization only
+  const reflectedIntensity = inputIntensity * sComponent * sComponent
+  const reflectedPol = (splitterRotation + 90) % 180 // s-polarization perpendicular
+  const reflectedJones = polarizationToJonesVector(reflectedPol, reflectedIntensity / 100)
+
+  return {
+    transmitted: { jones: transmittedJones, intensity: transmittedIntensity, polarization: transmittedPol },
+    reflected: { jones: reflectedJones, intensity: reflectedIntensity, polarization: reflectedPol }
+  }
+}
+
+/**
+ * Calculate Calcite birefringence output
+ * Ordinary ray (o-ray) and extraordinary ray (e-ray) separate spatially
+ */
+function calculateCalciteSplit(
+  inputJones: JonesVector,
+  inputIntensity: number,
+  crystalRotation: number
+): { oRay: { jones: JonesVector; intensity: number; polarization: number };
+     eRay: { jones: JonesVector; intensity: number; polarization: number } } {
+
+  // Calcite separates light into o-ray and e-ray based on crystal axis
+  // o-ray: polarized perpendicular to optic axis
+  // e-ray: polarized parallel to optic axis
+
+  const inputPol = jonesVectorToPolarization(inputJones)
+  const relativeAngle = inputPol - crystalRotation
+
+  // Calculate projections onto o and e axes
+  const oComponent = Math.cos(relativeAngle * Math.PI / 180)
+  const eComponent = Math.sin(relativeAngle * Math.PI / 180)
+
+  // o-ray: perpendicular to optic axis
+  const oIntensity = inputIntensity * oComponent * oComponent
+  const oPol = crystalRotation
+  const oJones = polarizationToJonesVector(oPol, oIntensity / 100)
+
+  // e-ray: parallel to optic axis (displaced spatially)
+  const eIntensity = inputIntensity * eComponent * eComponent
+  const ePol = (crystalRotation + 90) % 180
+  const eJones = polarizationToJonesVector(ePol, eIntensity / 100)
+
+  return {
+    oRay: { jones: oJones, intensity: oIntensity, polarization: oPol },
+    eRay: { jones: eJones, intensity: eIntensity, polarization: ePol }
+  }
+}
+
+/**
+ * Calculate NPBS (Non-Polarizing Beam Splitter) output
+ * 50/50 split regardless of polarization
+ */
+function calculateNPBSSplit(
+  _inputJones: JonesVector, // Preserved for future Phase 3 Jones matrix implementation
+  inputIntensity: number,
+  inputPolarization: number
+): { transmitted: { jones: JonesVector; intensity: number; polarization: number };
+     reflected: { jones: JonesVector; intensity: number; polarization: number } } {
+
+  // NPBS splits intensity 50/50, preserving polarization state
+  // Note: Phase 3 will use _inputJones directly for proper Jones vector splitting
+  const halfIntensity = inputIntensity / 2
+
+  const transmittedJones = polarizationToJonesVector(inputPolarization, halfIntensity / 100)
+  const reflectedJones = polarizationToJonesVector(inputPolarization, halfIntensity / 100)
+
+  return {
+    transmitted: { jones: transmittedJones, intensity: halfIntensity, polarization: inputPolarization },
+    reflected: { jones: reflectedJones, intensity: halfIntensity, polarization: inputPolarization }
+  }
+}
+
+/**
+ * Queue-based ray tracing with beam splitting support
+ *
+ * This function traces light rays through the optical system, supporting:
+ * - Multiple bounces (mirrors)
+ * - Beam splitting (PBS, calcite, NPBS)
+ * - Intensity threshold cutoff
+ * - Maximum recursion depth
+ */
 function traceLightRays(
   emitter: BenchComponent,
   allComponents: BenchComponent[],
@@ -931,180 +1090,336 @@ function traceLightRays(
   formulas: string[]
 ): LightSegment[] {
   const segments: LightSegment[] = []
-  const maxBounces = 10
-  const canvasWidth = 800
-  const intensityThreshold = 1 // Stop tracing if intensity drops below 1%
 
-  // Initial ray direction based on emitter rotation
-  let direction = rotateVector({ x: 1, y: 0 }, emitter.rotation)
-  let currentPos = { x: emitter.x, y: emitter.y }
+  // Configuration
+  const MAX_DEPTH = 10          // Maximum recursion depth
+  const INTENSITY_THRESHOLD = 1 // Stop if intensity < 1%
+  const CANVAS_WIDTH = 800
+  const CANVAS_HEIGHT = 400
 
-  // Initialize Jones vector from polarization angle
-  // Scale by sqrt(intensity/100) to normalize intensity to 100%
-  let currentJonesVector = polarizationToJonesVector(
-    initialPolarization,
-    initialIntensity / 100
-  )
-  let currentIntensity = jonesIntensity(currentJonesVector) * 100
-  let currentPolarization = jonesVectorToPolarization(currentJonesVector)
-  let currentPhase = 1
+  // Initialize the ray queue with the emitter's output
+  const initialJones = polarizationToJonesVector(initialPolarization, initialIntensity / 100)
+  const initialDirection = rotateVector({ x: 1, y: 0 }, emitter.rotation)
 
-  // Analyze initial polarization state
-  let polarizationAnalysis = analyzePolarization(currentJonesVector)
+  const rayQueue: RayState[] = [{
+    id: `${emitter.id}-ray0`,
+    position: { x: emitter.x, y: emitter.y },
+    direction: initialDirection,
+    jonesVector: initialJones,
+    intensity: initialIntensity,
+    polarization: initialPolarization,
+    phase: 1,
+    depth: 0,
+    sourceId: emitter.id,
+    visitedComponents: new Set([emitter.id])
+  }]
 
-  // Sort components by distance in ray direction
-  const sortedComponents = allComponents
-    .filter(c => c.id !== emitter.id)
-    .sort((a, b) => {
-      const distA = (a.x - currentPos.x) * direction.x + (a.y - currentPos.y) * direction.y
-      const distB = (b.x - currentPos.x) * direction.x + (b.y - currentPos.y) * direction.y
-      return distA - distB
-    })
+  let segmentCounter = 0
+  let rayBranchCounter = 0
 
-  for (let bounce = 0; bounce < maxBounces && currentIntensity > intensityThreshold; bounce++) {
-    // Find next component in path
-    const nextComponent = sortedComponents.find(comp => {
-      const dx = comp.x - currentPos.x
-      const dy = comp.y - currentPos.y
-      const dot = dx * direction.x + dy * direction.y
-      const perpDist = Math.abs(dx * direction.y - dy * direction.x)
-      return dot > 10 && perpDist < 50
-    })
+  // Process rays until queue is empty
+  while (rayQueue.length > 0) {
+    const ray = rayQueue.shift()!
 
-    let endX: number
-    let endY: number
+    // Skip rays below intensity threshold or max depth
+    if (ray.intensity < INTENSITY_THRESHOLD || ray.depth >= MAX_DEPTH) {
+      continue
+    }
+
+    // Find next component in this ray's path
+    const nextComponent = findNextComponent(ray, allComponents)
 
     if (nextComponent) {
-      endX = nextComponent.x
-      endY = nextComponent.y
+      const endX = nextComponent.x
+      const endY = nextComponent.y
+      const analysis = analyzePolarization(ray.jonesVector)
 
-      // Add segment to next component with full Jones vector information
+      // Create segment from current position to component
       segments.push({
-        id: `${emitter.id}-seg-${bounce}`,
-        x1: currentPos.x + direction.x * 30,
-        y1: currentPos.y + direction.y * 30,
-        x2: endX - direction.x * 30,
-        y2: endY - direction.y * 30,
-        polarization: currentPolarization,
-        jonesVector: currentJonesVector,
-        intensity: currentIntensity,
-        phase: currentPhase,
-        rayId: emitter.id,
-        polarizationType: polarizationAnalysis.type,
-        handedness: polarizationAnalysis.handedness,
+        id: `${ray.id}-seg${segmentCounter++}`,
+        x1: ray.position.x + ray.direction.x * 30,
+        y1: ray.position.y + ray.direction.y * 30,
+        x2: endX - ray.direction.x * 30,
+        y2: endY - ray.direction.y * 30,
+        polarization: ray.polarization,
+        jonesVector: ray.jonesVector,
+        intensity: ray.intensity,
+        phase: ray.phase,
+        rayId: ray.sourceId,
+        polarizationType: analysis.type,
+        handedness: analysis.handedness,
       })
 
-      // Process component effect
-      // NOTE: Phase 1 - Currently using scalar calculations, syncing to Jones vector
-      // Phase 3 will replace this with proper Jones matrix transformations
+      // Mark component as visited for this ray path
+      const newVisited = new Set(ray.visitedComponents)
+      newVisited.add(nextComponent.id)
+
+      // Process component and potentially create new rays
       switch (nextComponent.type) {
         case 'polarizer': {
           const polarizerAngle = nextComponent.properties.angle ?? 0
-          const angleDiff = Math.abs(currentPolarization - polarizerAngle)
-          const newIntensity = calculateMalusLaw(currentIntensity, angleDiff)
-          formulas.push(`I = ${currentIntensity.toFixed(1)} × cos²(${angleDiff.toFixed(0)}°) = ${newIntensity.toFixed(1)}%`)
-          currentIntensity = newIntensity
-          currentPolarization = polarizerAngle
-          // Sync Jones vector with scalar values
-          currentJonesVector = polarizationToJonesVector(currentPolarization, currentIntensity / 100)
+          const angleDiff = Math.abs(ray.polarization - polarizerAngle)
+          const newIntensity = calculateMalusLaw(ray.intensity, angleDiff)
+          formulas.push(`I = ${ray.intensity.toFixed(1)} × cos²(${angleDiff.toFixed(0)}°) = ${newIntensity.toFixed(1)}%`)
+
+          // Continue with filtered ray
+          if (newIntensity >= INTENSITY_THRESHOLD) {
+            const newJones = polarizationToJonesVector(polarizerAngle, newIntensity / 100)
+            rayQueue.push({
+              ...ray,
+              id: ray.id,
+              position: { x: endX, y: endY },
+              jonesVector: newJones,
+              intensity: newIntensity,
+              polarization: polarizerAngle,
+              depth: ray.depth + 1,
+              visitedComponents: newVisited,
+            })
+          }
           break
         }
 
         case 'waveplate': {
           const retardation = nextComponent.properties.retardation ?? 90
+          let newPolarization = ray.polarization
+
           if (retardation === 90) {
-            // λ/4 - converts linear to circular (simplified as 45° rotation)
-            // TODO Phase 3: Use quarterWavePlateMatrix for accurate circular polarization
-            currentPolarization = (currentPolarization + 45) % 180
-            formulas.push(`λ/4: θ → ${currentPolarization}° (circular)`)
+            // λ/4 waveplate (simplified - Phase 3 will use proper Jones matrices)
+            newPolarization = (ray.polarization + 45) % 180
+            formulas.push(`λ/4: θ → ${newPolarization}° (circular)`)
           } else if (retardation === 180) {
-            // λ/2 - rotates polarization by 2θ relative to fast axis
-            // TODO Phase 3: Use halfWavePlateMatrix for accurate transformation
+            // λ/2 waveplate
             const fastAxis = nextComponent.rotation
-            currentPolarization = (2 * fastAxis - currentPolarization + 360) % 180
-            formulas.push(`λ/2: θ = 2×${fastAxis}° - θ_in = ${currentPolarization}°`)
+            newPolarization = (2 * fastAxis - ray.polarization + 360) % 180
+            formulas.push(`λ/2: θ = 2×${fastAxis}° - θ_in = ${newPolarization}°`)
           }
-          // Sync Jones vector with scalar values
-          currentJonesVector = polarizationToJonesVector(currentPolarization, currentIntensity / 100)
+
+          const newJones = polarizationToJonesVector(newPolarization, ray.intensity / 100)
+          rayQueue.push({
+            ...ray,
+            id: ray.id,
+            position: { x: endX, y: endY },
+            jonesVector: newJones,
+            polarization: newPolarization,
+            depth: ray.depth + 1,
+            visitedComponents: newVisited,
+          })
           break
         }
 
         case 'mirror': {
-          // Reflect direction
           const mirrorAngle = nextComponent.rotation
           const normal = rotateVector({ x: 0, y: -1 }, mirrorAngle)
-          direction = reflectDirection(direction, normal)
-          formulas.push(`Mirror: θ_r = θ_i = ${mirrorAngle}°`)
+          const reflectedDir = reflectDirection(ray.direction, normal)
+          formulas.push(`Mirror: reflection at ${mirrorAngle}°`)
 
-          // Update sorted components for new direction
-          sortedComponents.splice(sortedComponents.indexOf(nextComponent), 1)
-          // Mirror preserves polarization state, no Jones vector update needed
+          rayQueue.push({
+            ...ray,
+            id: ray.id,
+            position: { x: endX, y: endY },
+            direction: reflectedDir,
+            depth: ray.depth + 1,
+            visitedComponents: newVisited,
+          })
           break
         }
 
         case 'splitter': {
           const splitType = nextComponent.properties.splitType ?? 'pbs'
+          const splitterRotation = nextComponent.rotation
+
           if (splitType === 'pbs') {
-            // PBS: s-polarization reflects, p-polarization transmits
-            // TODO Phase 2: Implement beam branching for both output paths
-            currentPolarization = 0 // p-polarization transmitted
-            formulas.push(`PBS: p → transmitted, s → reflected (90°)`)
+            // Polarizing Beam Splitter: p transmits, s reflects
+            const { transmitted, reflected } = calculatePBSSplit(
+              ray.jonesVector, ray.intensity, splitterRotation
+            )
+
+            formulas.push(`PBS: p(${transmitted.intensity.toFixed(1)}%) → transmitted, s(${reflected.intensity.toFixed(1)}%) → reflected`)
+
+            // Transmitted ray (continues in same direction)
+            if (transmitted.intensity >= INTENSITY_THRESHOLD) {
+              rayQueue.push({
+                id: `${ray.id}-t${rayBranchCounter}`,
+                position: { x: endX, y: endY },
+                direction: ray.direction,
+                jonesVector: transmitted.jones,
+                intensity: transmitted.intensity,
+                polarization: transmitted.polarization,
+                phase: ray.phase,
+                depth: ray.depth + 1,
+                sourceId: ray.sourceId,
+                visitedComponents: new Set(newVisited),
+              })
+            }
+
+            // Reflected ray (perpendicular direction)
+            if (reflected.intensity >= INTENSITY_THRESHOLD) {
+              const reflectedDir = rotateVector(ray.direction, 90)
+              rayQueue.push({
+                id: `${ray.id}-r${rayBranchCounter}`,
+                position: { x: endX, y: endY },
+                direction: reflectedDir,
+                jonesVector: reflected.jones,
+                intensity: reflected.intensity,
+                polarization: reflected.polarization,
+                phase: ray.phase,
+                depth: ray.depth + 1,
+                sourceId: ray.sourceId,
+                visitedComponents: new Set(newVisited),
+              })
+            }
+            rayBranchCounter++
+
           } else if (splitType === 'calcite') {
-            // Calcite: o-ray and e-ray separate
-            // TODO Phase 2: Implement beam branching for o-ray and e-ray
-            formulas.push(`Calcite: o-ray (0°), e-ray (90°)`)
+            // Calcite birefringence: o-ray and e-ray separate
+            const { oRay, eRay } = calculateCalciteSplit(
+              ray.jonesVector, ray.intensity, splitterRotation
+            )
+
+            formulas.push(`Calcite: o-ray(${oRay.intensity.toFixed(1)}%), e-ray(${eRay.intensity.toFixed(1)}%)`)
+
+            // o-ray (ordinary ray - continues straight)
+            if (oRay.intensity >= INTENSITY_THRESHOLD) {
+              rayQueue.push({
+                id: `${ray.id}-o${rayBranchCounter}`,
+                position: { x: endX, y: endY },
+                direction: ray.direction,
+                jonesVector: oRay.jones,
+                intensity: oRay.intensity,
+                polarization: oRay.polarization,
+                phase: ray.phase,
+                depth: ray.depth + 1,
+                sourceId: ray.sourceId,
+                visitedComponents: new Set(newVisited),
+              })
+            }
+
+            // e-ray (extraordinary ray - displaced, slight angle change)
+            if (eRay.intensity >= INTENSITY_THRESHOLD) {
+              // e-ray is displaced and has slight angular deviation
+              const eRayDir = rotateVector(ray.direction, 5) // Small deviation
+              const displacement = 15 // Spatial displacement in pixels
+              rayQueue.push({
+                id: `${ray.id}-e${rayBranchCounter}`,
+                position: {
+                  x: endX + ray.direction.y * displacement,
+                  y: endY - ray.direction.x * displacement
+                },
+                direction: eRayDir,
+                jonesVector: eRay.jones,
+                intensity: eRay.intensity,
+                polarization: eRay.polarization,
+                phase: ray.phase,
+                depth: ray.depth + 1,
+                sourceId: ray.sourceId,
+                visitedComponents: new Set(newVisited),
+              })
+            }
+            rayBranchCounter++
+
+          } else if (splitType === 'npbs') {
+            // Non-polarizing beam splitter: 50/50 split
+            const { transmitted, reflected } = calculateNPBSSplit(
+              ray.jonesVector, ray.intensity, ray.polarization
+            )
+
+            formulas.push(`NPBS: 50/50 split (${transmitted.intensity.toFixed(1)}% each)`)
+
+            // Transmitted ray
+            if (transmitted.intensity >= INTENSITY_THRESHOLD) {
+              rayQueue.push({
+                id: `${ray.id}-t${rayBranchCounter}`,
+                position: { x: endX, y: endY },
+                direction: ray.direction,
+                jonesVector: transmitted.jones,
+                intensity: transmitted.intensity,
+                polarization: transmitted.polarization,
+                phase: ray.phase,
+                depth: ray.depth + 1,
+                sourceId: ray.sourceId,
+                visitedComponents: new Set(newVisited),
+              })
+            }
+
+            // Reflected ray
+            if (reflected.intensity >= INTENSITY_THRESHOLD) {
+              const reflectedDir = rotateVector(ray.direction, 90)
+              rayQueue.push({
+                id: `${ray.id}-r${rayBranchCounter}`,
+                position: { x: endX, y: endY },
+                direction: reflectedDir,
+                jonesVector: reflected.jones,
+                intensity: reflected.intensity,
+                polarization: reflected.polarization,
+                phase: ray.phase,
+                depth: ray.depth + 1,
+                sourceId: ray.sourceId,
+                visitedComponents: new Set(newVisited),
+              })
+            }
+            rayBranchCounter++
           }
-          // Sync Jones vector with scalar values
-          currentJonesVector = polarizationToJonesVector(currentPolarization, currentIntensity / 100)
           break
         }
 
         case 'lens': {
-          // Lens doesn't affect polarization, just continues
-          // TODO Phase 4: Implement ABCD matrix for beam width/convergence
+          // Lens doesn't affect polarization (Phase 4 will add beam focusing)
           formulas.push(`Lens: f = ${nextComponent.properties.focalLength}mm`)
+          rayQueue.push({
+            ...ray,
+            id: ray.id,
+            position: { x: endX, y: endY },
+            depth: ray.depth + 1,
+            visitedComponents: newVisited,
+          })
           break
         }
 
         case 'sensor': {
-          // End of path
-          const analysis = analyzePolarization(currentJonesVector)
-          formulas.push(`Sensor: I = ${currentIntensity.toFixed(1)}%, θ = ${currentPolarization}° (${analysis.type})`)
-          currentIntensity = 0 // Stop tracing
+          // End of path - sensor absorbs light
+          const analysis = analyzePolarization(ray.jonesVector)
+          formulas.push(`Sensor: I = ${ray.intensity.toFixed(1)}%, θ = ${ray.polarization.toFixed(0)}° (${analysis.type})`)
+          // Don't add to queue - ray terminates here
           break
         }
       }
 
-      // Update polarization analysis after component interaction
-      polarizationAnalysis = analyzePolarization(currentJonesVector)
-
-      currentPos = { x: nextComponent.x, y: nextComponent.y }
-
     } else {
-      // No more components, extend to canvas edge
-      const t = Math.max(
-        direction.x > 0 ? (canvasWidth - currentPos.x) / direction.x : 0,
-        direction.y !== 0 ? (direction.y > 0 ? 400 : 0 - currentPos.y) / direction.y : 0
-      )
-      endX = currentPos.x + direction.x * Math.min(t, 500)
-      endY = currentPos.y + direction.y * Math.min(t, 500)
+      // No component found - extend ray to canvas edge
+      const analysis = analyzePolarization(ray.jonesVector)
+
+      // Calculate intersection with canvas boundary
+      let t = Infinity
+      if (ray.direction.x > 0) {
+        t = Math.min(t, (CANVAS_WIDTH - ray.position.x) / ray.direction.x)
+      } else if (ray.direction.x < 0) {
+        t = Math.min(t, -ray.position.x / ray.direction.x)
+      }
+      if (ray.direction.y > 0) {
+        t = Math.min(t, (CANVAS_HEIGHT - ray.position.y) / ray.direction.y)
+      } else if (ray.direction.y < 0) {
+        t = Math.min(t, -ray.position.y / ray.direction.y)
+      }
+
+      t = Math.min(t, 500) // Limit maximum extension
+
+      const endX = ray.position.x + ray.direction.x * t
+      const endY = ray.position.y + ray.direction.y * t
 
       segments.push({
-        id: `${emitter.id}-seg-${bounce}`,
-        x1: currentPos.x + direction.x * 30,
-        y1: currentPos.y + direction.y * 30,
+        id: `${ray.id}-seg${segmentCounter++}`,
+        x1: ray.position.x + ray.direction.x * 30,
+        y1: ray.position.y + ray.direction.y * 30,
         x2: endX,
         y2: endY,
-        polarization: currentPolarization,
-        jonesVector: currentJonesVector,
-        intensity: currentIntensity,
-        phase: currentPhase,
-        rayId: emitter.id,
-        polarizationType: polarizationAnalysis.type,
-        handedness: polarizationAnalysis.handedness,
+        polarization: ray.polarization,
+        jonesVector: ray.jonesVector,
+        intensity: ray.intensity,
+        phase: ray.phase,
+        rayId: ray.sourceId,
+        polarizationType: analysis.type,
+        handedness: analysis.handedness,
       })
-
-      break // Exit loop
     }
   }
 
