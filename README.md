@@ -59,6 +59,7 @@ npm run preview  # Preview production build
 | `/game` | Full 3D voxel puzzle experience |
 | `/game2d` | 2D puzzle mode with 11 levels |
 | `/demos` | Interactive physics demonstrations |
+| `/optical-studio` | Optical Design Studio - Device Library + Light Path Designer |
 
 ### Core Physics
 
@@ -165,6 +166,38 @@ The 2D game offers a simplified, more accessible puzzle experience using SVG-bas
 - **Eye Button** - Toggle polarization color display
 - **Reset** - Restore level to initial state
 
+### Optical Design Studio (光学设计室)
+
+A comprehensive polarized light art design tool combining Device Library and Optical Bench for creating and simulating optical systems.
+
+#### Features
+
+- **Device Library (器件图鉴)** - Browse 80+ optical devices with detailed specifications, working principles, and formulas
+- **Optical Bench (光学工作台)** - Interactive canvas for designing custom optical paths
+- **Classic Experiments** - Pre-configured setups demonstrating key optical phenomena
+- **Challenge Mode** - Goal-based puzzles with success conditions
+- **Interactive Tutorials** - Step-by-step guides for learning optical principles
+- **Save/Load Designs** - Persist and share your optical creations
+
+#### Component Types
+
+| Component | Function |
+|-----------|----------|
+| **Emitter** | Light source with configurable polarization |
+| **Polarizer** | Filters light by polarization angle (Malus's Law) |
+| **Waveplate** | Phase retarder (λ/4 or λ/2) |
+| **Mirror** | Reflects light at specified angles |
+| **Splitter** | Beam splitter (PBS/NPBS/Calcite) |
+| **Sensor** | Detects light intensity and polarization |
+| **Lens** | Focus or defocus light beams |
+
+#### Controls
+
+- **Drag & Drop** - Move components on the canvas
+- **Click** - Select component to edit properties
+- **Rotate** - Adjust component orientation
+- **Grid Snap** - Align components precisely
+
 ### Tutorial Levels (3D Game)
 
 | Level | Concept |
@@ -212,6 +245,7 @@ polarisation/
 │   │   ├── game/       # 3D scene components
 │   │   ├── hud/        # UI overlay components
 │   │   ├── demos/      # Physics demonstrations
+│   │   ├── optical-studio/  # Optical Design Studio components
 │   │   └── ui/         # Shared UI primitives
 │   ├── contexts/       # Theme provider
 │   └── i18n/           # Translations
@@ -282,6 +316,7 @@ npm run preview  # 预览生产构建
 | `/game` | 完整3D体素解谜体验 |
 | `/game2d` | 2D解谜模式，共11个关卡 |
 | `/demos` | 交互式物理演示 |
+| `/optical-studio` | 光学设计室 - 器件图鉴 + 光路设计 |
 
 ### 核心物理
 
@@ -388,6 +423,38 @@ npm run preview  # 预览生产构建
 - **眼睛按钮** - 切换偏振颜色显示
 - **重置** - 恢复关卡初始状态
 
+### 光学设计室
+
+一个综合性的偏振光艺术设计工具，集成器件图鉴和光学工作台，用于创建和模拟光学系统。
+
+#### 功能特点
+
+- **器件图鉴** - 浏览80+光学器件，包含详细规格、工作原理和公式
+- **光学工作台** - 交互式画布，用于设计自定义光路
+- **经典实验** - 预配置的实验设置，演示关键光学现象
+- **挑战模式** - 基于目标的解谜关卡，带成功条件
+- **交互式教程** - 学习光学原理的分步指南
+- **保存/加载设计** - 持久化和分享您的光学创作
+
+#### 组件类型
+
+| 组件 | 功能 |
+|------|------|
+| **发射器** | 可配置偏振的光源 |
+| **偏振片** | 按偏振角度过滤光（马吕斯定律）|
+| **波片** | 相位延迟器（λ/4 或 λ/2）|
+| **镜子** | 以指定角度反射光 |
+| **分光器** | 分束器（PBS/NPBS/方解石）|
+| **传感器** | 检测光强度和偏振 |
+| **透镜** | 聚焦或发散光束 |
+
+#### 操作方式
+
+- **拖放** - 在画布上移动组件
+- **点击** - 选择组件编辑属性
+- **旋转** - 调整组件方向
+- **网格对齐** - 精确对齐组件
+
 ### 教程关卡（3D游戏）
 
 | 关卡 | 概念 |
@@ -435,6 +502,7 @@ polarisation/
 │   │   ├── game/       # 3D场景组件
 │   │   ├── hud/        # UI叠加组件
 │   │   ├── demos/      # 物理演示
+│   │   ├── optical-studio/  # 光学设计室组件
 │   │   └── ui/         # 共享UI基础组件
 │   ├── contexts/       # 主题提供者
 │   └── i18n/           # 翻译文件

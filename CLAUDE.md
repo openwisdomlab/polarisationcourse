@@ -19,6 +19,7 @@ PolarCraft is an educational voxel puzzle game based on polarized light physics.
 - Interactive 3D voxel puzzle game with 5 tutorial levels
 - **NEW**: 2D puzzle game with 11 levels across 4 difficulty tiers (easy/medium/hard/expert)
 - Educational course platform with 15 interactive physics demos across 6 units
+- **Optical Design Studio**: Polarized light art design tool with Device Library + Optical Bench
 - Multi-language support (English/Chinese)
 - Dark/Light theme switching
 - Three camera modes in 3D game (first-person, isometric, top-down)
@@ -69,13 +70,15 @@ polarisation/
 │   │   └── LightPhysics.ts       # Polarized light physics (four axioms)
 │   │
 │   ├── stores/                   # Zustand stores
-│   │   └── gameStore.ts          # Game state, actions, tutorial hints
+│   │   ├── gameStore.ts          # Game state, actions, tutorial hints
+│   │   └── opticalBenchStore.ts  # Optical Design Studio state management
 │   │
 │   ├── pages/                    # Page components
 │   │   ├── HomePage.tsx          # Landing page with navigation
 │   │   ├── GamePage.tsx          # Full 3D game with HUD
 │   │   ├── Game2DPage.tsx        # 2D CSS/SVG-based puzzle game
 │   │   ├── DemosPage.tsx         # Interactive physics demos
+│   │   ├── OpticalDesignStudioPageV2.tsx  # Optical Design Studio (current)
 │   │   └── index.ts              # Barrel export
 │   │
 │   ├── components/
@@ -112,6 +115,18 @@ polarisation/
 │   │   │   ├── Demo2DCanvas.tsx  # 2D demo wrapper (Canvas)
 │   │   │   ├── DemoControls.tsx  # Shared demo UI controls
 │   │   │   └── index.ts          # Barrel export
+│   │   │
+│   │   ├── optical-studio/       # Optical Design Studio components
+│   │   │   ├── OpticalCanvas.tsx           # Main SVG canvas with drag-drop
+│   │   │   ├── CanvasToolbar.tsx           # Play/pause, reset, settings
+│   │   │   ├── DeviceLibrary.tsx           # Device browser with 80+ devices
+│   │   │   ├── Sidebar.tsx                 # Experiments/Free Design/Tutorials tabs
+│   │   │   ├── ComponentPropertiesPanel.tsx # Edit component properties
+│   │   │   ├── ChallengePanel.tsx          # Challenge mode UI
+│   │   │   ├── TutorialOverlay.tsx         # Step-by-step tutorials
+│   │   │   ├── FormulaDisplay.tsx          # Real-time physics formulas
+│   │   │   ├── PrinciplesPanel.tsx         # First Principles reference
+│   │   │   └── index.ts                    # Barrel export
 │   │   │
 │   │   └── ui/                   # Reusable UI primitives
 │   │       ├── button.tsx        # Button component
@@ -164,6 +179,7 @@ polarisation/
 | `/game` | `GamePage` | Full 3D voxel puzzle game with HUD |
 | `/game2d` | `Game2DPage` | 2D SVG-based puzzle game (Monument Valley-style) |
 | `/demos` | `DemosPage` | Interactive physics demos and course content |
+| `/optical-studio` | `OpticalDesignStudioPageV2` | Optical Design Studio - Device Library + Light Path Design |
 
 ### Core Components
 
@@ -173,9 +189,11 @@ polarisation/
 | `src/core/World.ts` | Block storage, light propagation cellular automaton, levels |
 | `src/core/LightPhysics.ts` | Static physics methods (four optical axioms) |
 | `src/stores/gameStore.ts` | Global game state, actions, subscriptions |
+| `src/stores/opticalBenchStore.ts` | Optical Design Studio state, light path calculation |
 | `src/components/game/Scene.tsx` | R3F scene composition, controls, lighting |
 | `src/pages/Game2DPage.tsx` | 2D puzzle game logic, SVG rendering, level definitions |
 | `src/pages/DemosPage.tsx` | Demo navigation, info cards, SVG diagrams |
+| `src/pages/OpticalDesignStudioPageV2.tsx` | Optical Design Studio main page |
 
 ## Key Concepts
 
@@ -374,6 +392,157 @@ The 2D game (`/game2d`) offers a simplified, more accessible puzzle experience u
 - **Arrow Left/Right** - Rotate selected component
 - **Eye button** - Toggle polarization color display
 - **Reset** - Restore level to initial state
+
+## Optical Design Studio (光学设计室)
+
+A comprehensive polarized light art design tool that combines a Device Library with an interactive Optical Bench for creating and simulating optical systems.
+
+### Features
+
+- **Device Library (器件图鉴)** - Browse 80+ optical devices with detailed specifications, working principles, formulas, and real-world applications
+- **Optical Bench (光学工作台)** - Interactive SVG canvas for designing custom optical paths with drag-and-drop
+- **Classic Experiments** - Pre-configured setups demonstrating key optical phenomena (Malus's Law, birefringence, etc.)
+- **Challenge Mode** - Goal-based puzzles with success conditions and hints
+- **Interactive Tutorials** - Step-by-step guides for learning optical principles
+- **Save/Load Designs** - Persist designs to localStorage, export/import as JSON
+- **First Principles Panel** - Quick reference for the four optical axioms
+
+### Component Types (Optical Bench)
+
+| Component | Function | Key Properties |
+|-----------|----------|----------------|
+| `emitter` | Light source | `polarization` (0-180° or -1 for unpolarized) |
+| `polarizer` | Linear polarizer filter | `angle` (transmission axis) |
+| `waveplate` | Phase retarder | `retardation` (90 for λ/4, 180 for λ/2) |
+| `mirror` | Reflects light | `reflectAngle`, `rotation` |
+| `splitter` | Beam splitter | `splitType` (PBS/NPBS/Calcite) |
+| `sensor` | Detects light | Reads intensity & polarization |
+| `lens` | Focus/defocus | `focalLength` |
+
+### Optical Bench Store Structure
+
+```typescript
+// src/stores/opticalBenchStore.ts
+interface OpticalBenchState {
+  // Components on the bench
+  components: BenchComponent[]
+  selectedComponentId: string | null
+
+  // Light simulation
+  lightSegments: LightSegment[]
+  isSimulating: boolean
+  showPolarization: boolean
+
+  // UI state
+  showGrid: boolean
+  snapToGrid: boolean
+  showLabels: boolean
+  showAnnotations: boolean
+  showFormulas: boolean
+
+  // History (undo/redo)
+  history: HistoryState[]
+  historyIndex: number
+
+  // Saved designs
+  savedDesigns: SavedDesign[]
+
+  // Experiments & challenges
+  currentExperiment: ClassicExperiment | null
+  currentChallenge: Challenge | null
+  currentTutorial: Tutorial | null
+
+  // Actions
+  addComponent: (type: BenchComponentType, position: Position) => void
+  updateComponent: (id: string, updates: Partial<BenchComponent>) => void
+  moveComponent: (id: string, position: Position) => void
+  rotateComponent: (id: string, angle: number) => void
+  deleteComponent: (id: string) => void
+  duplicateComponent: (id: string) => void
+
+  calculateLightPaths: () => void
+  saveDesign: (name: string) => void
+  loadDesign: (id: string) => void
+  loadExperiment: (experiment: ClassicExperiment) => void
+  loadChallenge: (challenge: Challenge) => void
+
+  undo: () => void
+  redo: () => void
+}
+```
+
+### Light Path Calculation
+
+The Optical Bench uses recursive ray tracing to calculate light paths:
+
+```typescript
+// Light propagation through components
+1. Start from emitter with initial polarization
+2. Trace ray until it hits a component or boundary
+3. Apply component effect:
+   - Polarizer: Apply Malus's Law (I = I₀ × cos²θ)
+   - Waveplate: Modify polarization state
+   - Mirror: Reflect with angle calculation
+   - Splitter: Create two rays (o-ray and e-ray for calcite)
+4. Continue tracing each output ray
+5. Stop at sensors or after max bounces (10)
+```
+
+### Controls (Optical Bench)
+
+| Input | Action |
+|-------|--------|
+| Click + Drag | Move component |
+| Click | Select component |
+| Double-click | Open properties panel |
+| Delete/Backspace | Remove selected component |
+| Ctrl+Z | Undo |
+| Ctrl+Shift+Z | Redo |
+| Ctrl+D | Duplicate selected |
+| Space | Toggle simulation |
+
+### Adding a New Experiment
+
+Experiments are defined in the `opticalBenchStore.ts`:
+
+```typescript
+const experiment: ClassicExperiment = {
+  id: 'malus-law',
+  name: "Malus's Law",
+  nameZh: '马吕斯定律',
+  description: 'Demonstrate intensity variation through crossed polarizers',
+  descriptionZh: '演示通过交叉偏振片的强度变化',
+  difficulty: 'easy',
+  components: [
+    { type: 'emitter', x: 100, y: 200, polarization: 0 },
+    { type: 'polarizer', x: 300, y: 200, angle: 45 },
+    { type: 'sensor', x: 500, y: 200 },
+  ],
+  learningPoints: [
+    'Intensity follows cos²θ relationship',
+    'Crossed polarizers (90°) block all light',
+  ],
+}
+```
+
+### Adding a New Challenge
+
+```typescript
+const challenge: Challenge = {
+  id: 'challenge-1',
+  name: 'Light Maze',
+  nameZh: '光之迷宫',
+  description: 'Guide light to the sensor with 50% intensity',
+  difficulty: 'medium',
+  initialComponents: [...],
+  availableComponents: ['polarizer', 'mirror'],
+  successConditions: {
+    sensorIntensity: { min: 45, max: 55 },
+    sensorPolarization: 90,
+  },
+  hints: ['Try using a 45° polarizer first'],
+}
+```
 
 ## Course Structure (Interactive Demos)
 
