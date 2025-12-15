@@ -1,6 +1,6 @@
-# PolarCraft - Polarized Light Voxel Puzzle Game
+# PolarCraft - Polarized Light Creative Platform
 
-# PolarCraft - 偏振光体素解谜游戏
+# PolarCraft - 偏振光创意平台
 
 ---
 
@@ -11,22 +11,29 @@
 <a name="english"></a>
 ## English
 
-> An Optical Puzzle Experience
+> Explore the Hidden Geometry of Light
 
-A beautifully crafted puzzle game that transforms the invisible geometry of polarized light into elegant, tangible challenges. Manipulate light beams, rotate polarizers, and unlock sensors through clever optical arrangements.
+A comprehensive educational platform that transforms the invisible world of polarized light into interactive experiences. Through games, simulations, design tools, and research modules, discover the science behind 3D movies, LCD screens, and optical instruments.
 
 ### Features
 
-- **3D Voxel Puzzles** - Solve optical challenges in immersive 3D environments using real physics principles
-- **2D Puzzle Mode** - 11 levels across 4 difficulty tiers with SVG-based visuals and smooth animations
-- **Intuitive Light Physics** - Malus's Law, birefringence, and wave interference made playable
-- **Multiple Camera Views** - First-person, isometric, and top-down perspectives
-- **Polarization Visualization** - Toggle vision modes to see hidden polarization states
-- **Educational Course** - 17 interactive demos across 6 physics units with difficulty levels
-- **Course Search** - Global search across all demos, physics content, and applications
-- **Difficulty Levels** - Foundation, Application, and Research content modes
-- **Real-World Connections** - SVG illustrations showing everyday applications of polarization
-- **Bilingual Support** - English and Chinese interface
+**6 Creative Modules:**
+
+- **Chronicles of Light** - Journey through the history of polarization discoveries
+- **Optical Design Studio** - Device library (80+ components) + interactive light path designer
+- **Polarization Demo Gallery** - 19 interactive physics demonstrations across 6 units
+- **PolarQuest Game Hub** - 2D puzzles, 3D voxel games, card battles, and escape rooms
+- **Creative Workshop** - Polarization art, photography, and DIY experiments
+- **Virtual Lab Group** - Research tasks, applications database, and calculation tools
+
+**Core Capabilities:**
+
+- **Real Physics Engine** - Malus's Law, birefringence, wave interference, Jones/Mueller calculus
+- **Calculation Workshop** - Jones, Stokes, Mueller calculators + Poincaré sphere viewer
+- **Multiple Game Modes** - 2D puzzles (11 levels), 3D voxel (5 tutorials), card game, escape room
+- **3-Tier Difficulty System** - Foundation, Application, and Research content levels
+- **Interactive Simulations** - Real-time light propagation with polarization visualization
+- **Bilingual Support** - Full English and Chinese interface
 - **Dark/Light Theme** - Comfortable viewing in any environment
 
 ### Tech Stack
@@ -51,15 +58,48 @@ npm run build    # Production build
 npm run preview  # Preview production build
 ```
 
-### Game Routes
+### Application Routes
+
+#### Core Modules
+
+| Route | Module | Description |
+|-------|--------|-------------|
+| `/` | Home | Landing page with 6 creative module navigation |
+| `/chronicles` | Chronicles of Light | History of polarization discoveries |
+| `/optical-studio` | Optical Design Studio | Device library + light path designer |
+| `/demos` | Demo Gallery | 19 interactive physics demonstrations |
+| `/games` | PolarQuest Hub | Game center with multiple modes |
+| `/creative` | Creative Workshop | Art, photography, and DIY projects |
+| `/lab` | Virtual Lab Group | Research tasks and community |
+
+#### Games (PolarQuest)
 
 | Route | Description |
 |-------|-------------|
-| `/` | Landing page with navigation |
-| `/game` | Full 3D voxel puzzle experience |
-| `/game2d` | 2D puzzle mode with 11 levels |
-| `/demos` | Interactive physics demonstrations |
-| `/optical-studio` | Optical Design Studio - Device Library + Light Path Designer |
+| `/games` | Game hub with all modes |
+| `/games/2d` | 2D puzzle mode (11 levels, 4 difficulties) |
+| `/games/3d` | 3D voxel puzzle (5 tutorial levels) |
+| `/games/card` | Polarization card game |
+| `/games/escape` | Light chamber escape room |
+
+#### Calculation Workshop
+
+| Route | Description |
+|-------|-------------|
+| `/calc` | Calculation tools hub |
+| `/calc/jones` | Jones matrix calculator |
+| `/calc/stokes` | Stokes vector calculator |
+| `/calc/mueller` | Mueller matrix calculator |
+| `/calc/poincare` | Poincaré sphere viewer |
+
+#### Other Routes
+
+| Route | Description |
+|-------|-------------|
+| `/hardware` | Hardware and optical equipment |
+| `/merchandise` | Educational products and kits |
+| `/applications` | Real-world applications database |
+| `/experiments` | Creative experiments gallery |
 
 ### Core Physics
 
@@ -210,16 +250,16 @@ A comprehensive polarized light art design tool combining Device Library and Opt
 
 ### Course Curriculum
 
-The educational platform covers 6 units of polarization optics:
+The educational platform covers 6 units of polarization optics with 19 interactive demos:
 
 | Unit | Topic | Demos |
 |------|-------|-------|
 | 0 | Optical Fundamentals | Light Wave, Polarization Intro, Polarization Types, Interactive Optical Bench |
 | 1 | Light Polarization | Polarization State, Malus's Law, Birefringence, Waveplate |
 | 2 | Interface Reflection | Fresnel Equations, Brewster's Angle |
-| 3 | Transparent Media | Chromatic Polarization, Optical Rotation, Optical Anisotropy |
+| 3 | Transparent Media | Chromatic Polarization, Optical Rotation, Anisotropy (Stress) |
 | 4 | Turbid Media Scattering | Mie Scattering, Rayleigh Scattering |
-| 5 | Full Polarimetry | Stokes Vectors, Mueller Matrices |
+| 5 | Full Polarimetry | Stokes Vectors, Mueller Matrices, Jones Matrices, Polarization Calculator |
 
 #### Difficulty Levels
 
@@ -238,26 +278,43 @@ Visit `/demos` to explore interactive visualizations.
 ```
 polarisation/
 ├── src/
-│   ├── core/           # Physics engine & world logic
-│   ├── stores/         # Zustand state management
-│   ├── pages/          # Route components
+│   ├── core/                  # Physics engine & world logic
+│   │   └── game2d/            # 2D game specific logic
+│   ├── stores/                # Zustand state management
+│   ├── pages/                 # Route page components (20+ pages)
+│   ├── hooks/                 # Custom React hooks
+│   ├── data/                  # Static data files
+│   │   ├── cardgame/          # Card game definitions
+│   │   ├── hardware/          # Hardware catalog data
+│   │   └── merchandise/       # Product catalog data
 │   ├── components/
-│   │   ├── game/       # 3D scene components
-│   │   ├── hud/        # UI overlay components
-│   │   ├── demos/      # Physics demonstrations
-│   │   ├── optical-studio/  # Optical Design Studio components
-│   │   └── ui/         # Shared UI primitives
-│   ├── contexts/       # Theme provider
-│   └── i18n/           # Translations
-├── server/             # Backend (multiplayer planned)
-└── CLAUDE.md           # Development guide
+│   │   ├── game/              # 3D voxel game components (R3F)
+│   │   ├── hud/               # Game UI overlay components
+│   │   ├── bench/             # Optical bench components
+│   │   ├── demos/             # Physics demo components (6 units)
+│   │   │   ├── basics/        # Unit 0: Optical fundamentals
+│   │   │   ├── unit1/         # Unit 1: Polarization
+│   │   │   ├── unit2/         # Unit 2: Interface reflection
+│   │   │   ├── unit3/         # Unit 3: Transparent media
+│   │   │   ├── unit4/         # Unit 4: Scattering
+│   │   │   └── unit5/         # Unit 5: Full polarimetry
+│   │   ├── optical-studio/    # Optical Design Studio components
+│   │   ├── shared/optical/    # Shared optical visualization components
+│   │   ├── icons/             # Custom icon components
+│   │   └── ui/                # Shared UI primitives
+│   ├── contexts/              # React contexts (theme, etc.)
+│   └── i18n/                  # Internationalization
+│       └── locales/           # Translation files (en.json, zh.json)
+├── server/                    # Backend (NestJS + Colyseus)
+├── CLAUDE.md                  # Development guide
+└── COURSE.md                  # Course curriculum
 ```
 
 ### Design Philosophy
 
-> "Making the invisible geometry of light visible and playable"
+> "Making the invisible geometry of light visible, playable, and explorable"
 
-This game transforms abstract optical physics into spatial puzzles. Each block represents a real optical component, and solutions emerge from understanding how polarized light behaves. The aesthetic draws from low-poly architectural puzzle games, emphasizing clean geometry and soft lighting over photorealism.
+PolarCraft transforms abstract optical physics into interactive experiences through multiple pathways: spatial puzzles, visual simulations, creative tools, and research modules. Each component represents real optical principles, from simple polarizers to complex Mueller matrices. The design philosophy emphasizes hands-on discovery over passive learning, enabling users to build intuition through experimentation.
 
 ### License
 
@@ -268,22 +325,29 @@ MIT License
 <a name="中文"></a>
 ## 中文
 
-> 一款光学解谜游戏体验
+> 探索光的隐形几何
 
-一款精心打造的解谜游戏，将偏振光的隐形几何转化为优雅而具体的挑战。操控光束、旋转偏振片，通过巧妙的光学布局解锁传感器。
+一个综合性教育平台，将偏振光的隐形世界转化为交互式体验。通过游戏、仿真、设计工具和研究模块，探索3D电影、LCD屏幕和光学仪器背后的科学。
 
 ### 特性
 
-- **3D体素解谜** - 在沉浸式3D环境中使用真实物理原理解决光学挑战
-- **2D解谜模式** - 11个关卡，4个难度等级，基于SVG的视觉效果和流畅动画
-- **直观的光学物理** - 马吕斯定律、双折射和波干涉变得可玩
-- **多视角相机** - 第一人称、等距视角和俯视视角
-- **偏振可视化** - 切换视觉模式查看隐藏的偏振状态
-- **教育课程** - 6个单元共17个交互式演示，支持难度分级
-- **课程搜索** - 全局搜索演示、物理内容和应用
-- **难度级别** - 基础层、应用层、研究层三种内容模式
-- **生活实例** - SVG插图展示偏振光的日常应用
-- **双语支持** - 中英文界面
+**6大创意模块：**
+
+- **光的编年史** - 穿越偏振发现的历史之旅
+- **光学设计室** - 器件图鉴（80+组件）+ 交互式光路设计器
+- **偏振演示馆** - 6个单元共19个交互式物理演示
+- **偏振探秘游戏中心** - 2D解谜、3D体素游戏、卡牌对战、密室逃脱
+- **偏振造物局** - 偏振艺术、摄影与DIY实验
+- **虚拟课题组：光研社** - 研究任务、应用数据库和计算工具
+
+**核心能力：**
+
+- **真实物理引擎** - 马吕斯定律、双折射、波干涉、Jones/Mueller矩阵运算
+- **计算工坊** - Jones、Stokes、Mueller计算器 + Poincaré球查看器
+- **多种游戏模式** - 2D解谜（11关）、3D体素（5教程）、卡牌游戏、密室逃脱
+- **三级难度系统** - 基础层、应用层、研究层三种内容级别
+- **交互式仿真** - 实时光传播与偏振可视化
+- **双语支持** - 完整的中英文界面
 - **深色/浅色主题** - 在任何环境下都能舒适观看
 
 ### 技术栈
@@ -308,15 +372,48 @@ npm run build    # 生产构建
 npm run preview  # 预览生产构建
 ```
 
-### 游戏路由
+### 应用路由
+
+#### 核心模块
+
+| 路由 | 模块 | 描述 |
+|------|------|------|
+| `/` | 首页 | 带6大创意模块导航的首页 |
+| `/chronicles` | 光的编年史 | 偏振发现的历史之旅 |
+| `/optical-studio` | 光学设计室 | 器件图鉴 + 光路设计器 |
+| `/demos` | 演示馆 | 19个交互式物理演示 |
+| `/games` | 游戏中心 | 多模式游戏中心 |
+| `/creative` | 偏振造物局 | 艺术、摄影与DIY项目 |
+| `/lab` | 虚拟课题组 | 研究任务和社区 |
+
+#### 游戏（偏振探秘）
 
 | 路由 | 描述 |
 |------|------|
-| `/` | 带导航的首页 |
-| `/game` | 完整3D体素解谜体验 |
-| `/game2d` | 2D解谜模式，共11个关卡 |
-| `/demos` | 交互式物理演示 |
-| `/optical-studio` | 光学设计室 - 器件图鉴 + 光路设计 |
+| `/games` | 游戏中心 |
+| `/games/2d` | 2D解谜模式（11关，4个难度） |
+| `/games/3d` | 3D体素解谜（5个教程关卡） |
+| `/games/card` | 偏振卡牌游戏 |
+| `/games/escape` | 光之密室逃脱 |
+
+#### 计算工坊
+
+| 路由 | 描述 |
+|------|------|
+| `/calc` | 计算工具中心 |
+| `/calc/jones` | Jones矩阵计算器 |
+| `/calc/stokes` | Stokes矢量计算器 |
+| `/calc/mueller` | Mueller矩阵计算器 |
+| `/calc/poincare` | Poincaré球查看器 |
+
+#### 其他路由
+
+| 路由 | 描述 |
+|------|------|
+| `/hardware` | 硬件和光学设备 |
+| `/merchandise` | 教育产品和套件 |
+| `/applications` | 现实应用数据库 |
+| `/experiments` | 创意实验画廊 |
 
 ### 核心物理
 
@@ -467,16 +564,16 @@ npm run preview  # 预览生产构建
 
 ### 课程大纲
 
-教育平台涵盖6个偏振光学单元：
+教育平台涵盖6个偏振光学单元，共19个交互式演示：
 
 | 单元 | 主题 | 演示 |
 |------|------|------|
 | 0 | 光学基础 | 光波、偏振简介、偏振类型、交互式光学平台 |
 | 1 | 光的偏振 | 偏振态、马吕斯定律、双折射、波片 |
 | 2 | 界面反射 | 菲涅尔方程、布儒斯特角 |
-| 3 | 透明介质 | 色偏振、旋光性、光学各向异性 |
+| 3 | 透明介质 | 色偏振、旋光性、应力双折射 |
 | 4 | 浑浊介质散射 | 米氏散射、瑞利散射 |
-| 5 | 全偏振测量 | 斯托克斯矢量、穆勒矩阵 |
+| 5 | 全偏振测量 | 斯托克斯矢量、穆勒矩阵、Jones矩阵、偏振计算器 |
 
 #### 难度级别
 
@@ -495,26 +592,43 @@ npm run preview  # 预览生产构建
 ```
 polarisation/
 ├── src/
-│   ├── core/           # 物理引擎和世界逻辑
-│   ├── stores/         # Zustand状态管理
-│   ├── pages/          # 路由组件
+│   ├── core/                  # 物理引擎和世界逻辑
+│   │   └── game2d/            # 2D游戏特定逻辑
+│   ├── stores/                # Zustand状态管理
+│   ├── pages/                 # 路由页面组件（20+页面）
+│   ├── hooks/                 # 自定义React钩子
+│   ├── data/                  # 静态数据文件
+│   │   ├── cardgame/          # 卡牌游戏定义
+│   │   ├── hardware/          # 硬件目录数据
+│   │   └── merchandise/       # 产品目录数据
 │   ├── components/
-│   │   ├── game/       # 3D场景组件
-│   │   ├── hud/        # UI叠加组件
-│   │   ├── demos/      # 物理演示
-│   │   ├── optical-studio/  # 光学设计室组件
-│   │   └── ui/         # 共享UI基础组件
-│   ├── contexts/       # 主题提供者
-│   └── i18n/           # 翻译文件
-├── server/             # 后端（多人游戏计划中）
-└── CLAUDE.md           # 开发指南
+│   │   ├── game/              # 3D体素游戏组件（R3F）
+│   │   ├── hud/               # 游戏UI叠加组件
+│   │   ├── bench/             # 光学平台组件
+│   │   ├── demos/             # 物理演示组件（6个单元）
+│   │   │   ├── basics/        # 单元0：光学基础
+│   │   │   ├── unit1/         # 单元1：偏振
+│   │   │   ├── unit2/         # 单元2：界面反射
+│   │   │   ├── unit3/         # 单元3：透明介质
+│   │   │   ├── unit4/         # 单元4：散射
+│   │   │   └── unit5/         # 单元5：全偏振测量
+│   │   ├── optical-studio/    # 光学设计室组件
+│   │   ├── shared/optical/    # 共享光学可视化组件
+│   │   ├── icons/             # 自定义图标组件
+│   │   └── ui/                # 共享UI基础组件
+│   ├── contexts/              # React上下文（主题等）
+│   └── i18n/                  # 国际化
+│       └── locales/           # 翻译文件（en.json, zh.json）
+├── server/                    # 后端（NestJS + Colyseus）
+├── CLAUDE.md                  # 开发指南
+└── COURSE.md                  # 课程大纲
 ```
 
 ### 设计理念
 
-> "让光的隐形几何可见且可玩"
+> "让光的隐形几何可见、可玩、可探索"
 
-这款游戏将抽象的光学物理转化为空间解谜。每个方块代表一个真实的光学组件，解决方案来自于理解偏振光的行为方式。美学风格借鉴了低多边形建筑解谜游戏，强调简洁的几何形状和柔和的光照，而非照片级真实感。
+PolarCraft通过多种途径将抽象的光学物理转化为交互式体验：空间解谜、视觉仿真、创意工具和研究模块。每个组件都代表真实的光学原理，从简单的偏振片到复杂的穆勒矩阵。设计理念强调通过动手发现而非被动学习，让用户通过实验建立直觉。
 
 ### 许可证
 
