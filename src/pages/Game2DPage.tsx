@@ -4,6 +4,8 @@
  * Inspired by Monument Valley and Shadowmatic aesthetics
  *
  * 重构版本: 使用共享的光学组件库和物理计算库
+ *
+ * Phase 1 Update: Jones Calculus support for interference and circular polarization
  */
 
 import { useState, useCallback, useEffect } from 'react'
@@ -25,6 +27,8 @@ import {
   RotateCw,
   X,
   Keyboard,
+  Atom,
+  FlaskConical,
 } from 'lucide-react'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -32,7 +36,7 @@ import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
 
-// 导入共享模块
+// Import shared modules
 import { getPolarizationColor, POLARIZATION_DISPLAY_CONFIG } from '@/lib/polarization'
 import {
   EmitterSVG,
@@ -45,7 +49,13 @@ import {
   LightBeamDefs,
 } from '@/components/shared/optical'
 import type { OpticalComponent } from '@/components/shared/optical/types'
+
+// Import both light tracers for comparison/fallback
 import { useLightTracer } from '@/hooks/useLightTracer'
+import { useJonesLightTracerLegacy } from '@/hooks/useJonesLightTracer'
+
+// Import advanced levels
+import { ADVANCED_LEVELS, type AdvancedLevel } from '@/core/game2d/advancedLevels'
 
 // Level definition with multiple components
 interface Level2D {
@@ -392,6 +402,9 @@ const LEVELS: Level2D[] = [
   },
 ]
 
+// Game mode type
+type GameMode = 'classic' | 'advanced'
+
 export function Game2DPage() {
   const { t, i18n } = useTranslation()
   void t
@@ -409,7 +422,15 @@ export function Game2DPage() {
   const [showPolarization, setShowPolarization] = useState(true)
   const [showMobileInfo, setShowMobileInfo] = useState(false)
 
-  const currentLevel = LEVELS[currentLevelIndex]
+  // NEW: Game mode toggle (classic vs advanced Jones physics)
+  const [gameMode, setGameMode] = useState<GameMode>('advanced')
+  const [showAdvancedLevels, setShowAdvancedLevels] = useState(false)
+  const [currentAdvancedIndex, setCurrentAdvancedIndex] = useState(0)
+
+  // Current level based on mode
+  const currentLevel = showAdvancedLevels
+    ? ADVANCED_LEVELS[currentAdvancedIndex]
+    : LEVELS[currentLevelIndex]
   const isDark = theme === 'dark'
 
   // Initialize component states when level changes
@@ -420,19 +441,29 @@ export function Game2DPage() {
         angle: c.angle,
         polarizationAngle: c.polarizationAngle,
         rotationAmount: c.rotationAmount,
+        phaseShift: (c as any).phaseShift,
       }
     })
     setComponentStates(initialStates)
     setIsComplete(false)
     setSelectedComponent(null)
     setShowHint(false)
-  }, [currentLevelIndex, currentLevel.components])
+  }, [currentLevelIndex, currentAdvancedIndex, showAdvancedLevels, currentLevel.components])
 
-  // 使用共享的光路追踪Hook
-  const { beams: lightBeams, sensorStates } = useLightTracer(
+  // Use appropriate light tracer based on game mode
+  // Classic mode: original scalar physics
+  // Advanced mode: full Jones calculus with interference
+  const classicResult = useLightTracer(
     currentLevel.components,
     componentStates
   )
+  const jonesResult = useJonesLightTracerLegacy(
+    currentLevel.components,
+    componentStates
+  )
+
+  // Select tracer result based on mode
+  const { beams: lightBeams, sensorStates } = gameMode === 'advanced' ? jonesResult : classicResult
 
   // Check win condition
   useEffect(() => {
@@ -530,16 +561,32 @@ export function Game2DPage() {
         case 'n':
         case ']':
           // Next level
-          if (currentLevelIndex < LEVELS.length - 1) {
-            setCurrentLevelIndex(currentLevelIndex + 1)
+          if (showAdvancedLevels) {
+            if (currentAdvancedIndex < ADVANCED_LEVELS.length - 1) {
+              setCurrentAdvancedIndex(currentAdvancedIndex + 1)
+            }
+          } else {
+            if (currentLevelIndex < LEVELS.length - 1) {
+              setCurrentLevelIndex(currentLevelIndex + 1)
+            }
           }
           break
         case 'p':
         case '[':
           // Previous level
-          if (currentLevelIndex > 0) {
-            setCurrentLevelIndex(currentLevelIndex - 1)
+          if (showAdvancedLevels) {
+            if (currentAdvancedIndex > 0) {
+              setCurrentAdvancedIndex(currentAdvancedIndex - 1)
+            }
+          } else {
+            if (currentLevelIndex > 0) {
+              setCurrentLevelIndex(currentLevelIndex - 1)
+            }
           }
+          break
+        case 'm':
+          // Toggle game mode
+          setGameMode((prev) => (prev === 'classic' ? 'advanced' : 'classic'))
           break
         case 'v':
           // Toggle polarization colors
@@ -555,26 +602,46 @@ export function Game2DPage() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentLevelIndex, currentLevel.hint, handleReset])
+  }, [currentLevelIndex, currentAdvancedIndex, showAdvancedLevels, currentLevel.hint, handleReset])
 
   const goToNextLevel = () => {
-    if (currentLevelIndex < LEVELS.length - 1) {
-      setCurrentLevelIndex(currentLevelIndex + 1)
+    if (showAdvancedLevels) {
+      if (currentAdvancedIndex < ADVANCED_LEVELS.length - 1) {
+        setCurrentAdvancedIndex(currentAdvancedIndex + 1)
+      }
+    } else {
+      if (currentLevelIndex < LEVELS.length - 1) {
+        setCurrentLevelIndex(currentLevelIndex + 1)
+      }
     }
   }
 
   const goToPrevLevel = () => {
-    if (currentLevelIndex > 0) {
-      setCurrentLevelIndex(currentLevelIndex - 1)
+    if (showAdvancedLevels) {
+      if (currentAdvancedIndex > 0) {
+        setCurrentAdvancedIndex(currentAdvancedIndex - 1)
+      }
+    } else {
+      if (currentLevelIndex > 0) {
+        setCurrentLevelIndex(currentLevelIndex - 1)
+      }
     }
   }
 
-  // Difficulty colors
+  // Current level index for display
+  const displayLevelIndex = showAdvancedLevels ? currentAdvancedIndex : currentLevelIndex
+  const totalLevels = showAdvancedLevels ? ADVANCED_LEVELS.length : LEVELS.length
+
+  // Difficulty colors (extended for advanced levels)
   const difficultyColors: Record<string, string> = {
     easy: 'text-green-400 bg-green-500/20 border-green-500/30',
     medium: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30',
     hard: 'text-orange-400 bg-orange-500/20 border-orange-500/30',
     expert: 'text-red-400 bg-red-500/20 border-red-500/30',
+    // Advanced difficulty levels
+    master: 'text-purple-400 bg-purple-500/20 border-purple-500/30',
+    grandmaster: 'text-pink-400 bg-pink-500/20 border-pink-500/30',
+    legendary: 'text-amber-400 bg-amber-500/20 border-amber-500/30',
   }
 
   return (
@@ -646,10 +713,53 @@ export function Game2DPage() {
         <div className="flex-1 flex flex-col items-center">
           {/* Level Info */}
           <div className={cn("text-center", isCompact ? "mb-2" : "mb-4")}>
+            {/* Mode Toggle */}
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <button
+                onClick={() => setShowAdvancedLevels(false)}
+                className={cn(
+                  'px-3 py-1 rounded-lg text-xs font-medium transition-all',
+                  !showAdvancedLevels
+                    ? 'bg-cyan-500 text-white'
+                    : isDark
+                      ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                      : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                )}
+              >
+                {isZh ? '经典关卡' : 'Classic'}
+              </button>
+              <button
+                onClick={() => setShowAdvancedLevels(true)}
+                className={cn(
+                  'px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1',
+                  showAdvancedLevels
+                    ? 'bg-purple-500 text-white'
+                    : isDark
+                      ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                      : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                )}
+              >
+                <Atom className="w-3 h-3" />
+                {isZh ? '量子物理' : 'Quantum'}
+              </button>
+              {/* Physics Mode Indicator */}
+              <span
+                className={cn(
+                  'px-2 py-0.5 rounded text-xs',
+                  gameMode === 'advanced'
+                    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                    : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                )}
+                title={gameMode === 'advanced' ? 'Jones Calculus (Full Physics)' : 'Scalar Physics (Simplified)'}
+              >
+                {gameMode === 'advanced' ? 'Jones' : 'Scalar'}
+              </span>
+            </div>
+
             <div className="flex items-center justify-center gap-4 mb-2">
               <button
                 onClick={goToPrevLevel}
-                disabled={currentLevelIndex === 0}
+                disabled={displayLevelIndex === 0}
                 className={cn(
                   'p-2 rounded-full transition-all',
                   isDark
@@ -671,19 +781,30 @@ export function Game2DPage() {
                     )}
                   >
                     {isZh
-                      ? { easy: '简单', medium: '中等', hard: '困难', expert: '专家' }[
-                          currentLevel.difficulty
-                        ]
+                      ? {
+                          easy: '简单',
+                          medium: '中等',
+                          hard: '困难',
+                          expert: '专家',
+                          master: '大师',
+                          grandmaster: '宗师',
+                          legendary: '传奇',
+                        }[currentLevel.difficulty] ?? currentLevel.difficulty
                       : currentLevel.difficulty}
                   </span>
                 </div>
                 <span className={cn('text-xs', isDark ? 'text-slate-500' : 'text-slate-400')}>
-                  {currentLevelIndex + 1} / {LEVELS.length}
+                  {displayLevelIndex + 1} / {totalLevels}
+                  {showAdvancedLevels && (
+                    <span className="ml-2 text-purple-400">
+                      ({(currentLevel as AdvancedLevel).category})
+                    </span>
+                  )}
                 </span>
               </div>
               <button
                 onClick={goToNextLevel}
-                disabled={currentLevelIndex === LEVELS.length - 1}
+                disabled={displayLevelIndex === totalLevels - 1}
                 className={cn(
                   'p-2 rounded-full transition-all',
                   isDark
@@ -697,6 +818,15 @@ export function Game2DPage() {
             <p className={cn('text-sm max-w-md', isDark ? 'text-slate-400' : 'text-slate-600')}>
               {isZh ? currentLevel.descriptionZh : currentLevel.description}
             </p>
+            {/* Show concepts for advanced levels */}
+            {showAdvancedLevels && (currentLevel as AdvancedLevel).concepts && (
+              <div className={cn('mt-2 text-xs', isDark ? 'text-purple-300/70' : 'text-purple-600/70')}>
+                <FlaskConical className="w-3 h-3 inline mr-1" />
+                {isZh
+                  ? (currentLevel as AdvancedLevel).conceptsZh?.slice(0, 2).join(' • ')
+                  : (currentLevel as AdvancedLevel).concepts?.slice(0, 2).join(' • ')}
+              </div>
+            )}
           </div>
 
           {/* Game Canvas - SVG-based */}
