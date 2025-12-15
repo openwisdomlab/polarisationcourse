@@ -7,8 +7,9 @@
  * - Right track: Polarization-specific history (偏振光专属旅程)
  */
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { Tabs, Badge, PersistentHeader } from '@/components/shared'
@@ -18,15 +19,77 @@ import {
   Sun, Sparkles, HelpCircle, Map
 } from 'lucide-react'
 
+// Mapping from diagram concepts to timeline years for navigation
+const DIAGRAM_NODE_TO_YEAR: Record<string, number> = {
+  'snells-law': 1621,
+  'ray-tracing': 1621,
+  'lens-imaging': 1665,
+  'malus-law': 1809,
+  'birefringence': 1669,
+  'waveplates': 1816,
+  'stokes-vectors': 1852,
+  'quantum-optics': 1905,
+  'photoelectric': 1905,
+  'entanglement': 2023,
+  'single-photon': 2023,
+  'interference': 1801,
+  'diffraction': 1801,
+}
+
 // ============================================
-// Optical Overview Diagram - 光学全景图
+// Optical Overview Diagram - 光学全景图 (Interactive Navigation Map)
 // ============================================
 
-function OpticalOverviewDiagram() {
+interface OpticalOverviewDiagramProps {
+  onNodeClick?: (year: number) => void
+}
+
+// Hover animation variants for SVG groups
+const hoverVariants = {
+  rest: { scale: 1 },
+  hover: { scale: 1.03, transition: { duration: 0.2 } }
+}
+
+const clickableNodeVariants = {
+  rest: { scale: 1, opacity: 1 },
+  hover: { scale: 1.08, opacity: 1, transition: { duration: 0.15 } }
+}
+
+function OpticalOverviewDiagram({ onNodeClick }: OpticalOverviewDiagramProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
   const [isExpanded, setIsExpanded] = useState(false)
+
+  const handleNodeClick = useCallback((nodeId: string) => {
+    const year = DIAGRAM_NODE_TO_YEAR[nodeId]
+    if (year && onNodeClick) {
+      onNodeClick(year)
+    }
+  }, [onNodeClick])
+
+  // Color schemes - Amber for General Optics, Cyan for Polarization
+  const amberColors = {
+    bgDark: '#451a03',
+    bgLight: '#fffbeb',
+    strokeDark: '#f59e0b',
+    strokeLight: '#d97706',
+    textDark: '#fbbf24',
+    textLight: '#b45309',
+    subtextDark: '#fcd34d',
+    subtextLight: '#92400e',
+  }
+
+  const cyanColors = {
+    bgDark: '#164e63',
+    bgLight: '#cffafe',
+    strokeDark: '#22d3ee',
+    strokeLight: '#06b6d4',
+    textDark: '#22d3ee',
+    textLight: '#0891b2',
+    subtextDark: '#67e8f9',
+    subtextLight: '#0e7490',
+  }
 
   return (
     <div className={cn(
@@ -42,12 +105,15 @@ function OpticalOverviewDiagram() {
         )}
       >
         <div className="flex items-center gap-2">
-          <Map className={cn('w-5 h-5', theme === 'dark' ? 'text-violet-400' : 'text-violet-600')} />
+          <Map className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
           <h3 className={cn('font-semibold text-base', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
             {isZh ? '光学全景图' : 'Optical Science Overview'}
           </h3>
-          <span className={cn('text-xs px-2 py-0.5 rounded-full', theme === 'dark' ? 'bg-violet-500/20 text-violet-400' : 'bg-violet-100 text-violet-700')}>
-            {isZh ? '点击展开' : 'Click to expand'}
+          <span className={cn(
+            'text-xs px-2 py-0.5 rounded-full',
+            theme === 'dark' ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+          )}>
+            {isZh ? '点击概念跳转' : 'Click to navigate'}
           </span>
         </div>
         {isExpanded ? (
@@ -61,12 +127,13 @@ function OpticalOverviewDiagram() {
       {isExpanded && (
         <div className="px-4 pb-4">
           {/* SVG Overview Diagram */}
-          <svg viewBox="0 0 800 400" className="w-full max-w-4xl mx-auto">
+          <svg viewBox="0 0 800 420" className="w-full max-w-4xl mx-auto">
             {/* Background */}
-            <rect width="800" height="400" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
+            <rect width="800" height="420" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
 
             {/* Title */}
             <text x="400" y="30" fontSize="14" fill={theme === 'dark' ? '#e2e8f0' : '#1e293b'} textAnchor="middle" fontWeight="bold">
+              <title>{isZh ? '点击任意概念跳转到对应历史事件' : 'Click any concept to navigate to its historical event'}</title>
               {isZh ? '光学学科体系 —— 偏振光在其中的位置' : 'Optics Hierarchy — Where Polarization Fits'}
             </text>
 
@@ -102,141 +169,307 @@ function OpticalOverviewDiagram() {
             </g>
 
             {/* Main branches of Optics */}
-            {/* Geometric Optics */}
-            <g transform="translate(50, 130)">
-              <rect x="0" y="0" width="180" height="100" rx="8" fill={theme === 'dark' ? '#1e3a5f' : '#dbeafe'} stroke={theme === 'dark' ? '#3b82f6' : '#60a5fa'} strokeWidth="2" />
-              <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? '#60a5fa' : '#1d4ed8'} textAnchor="middle" fontWeight="bold">
+            {/* Geometric Optics - AMBER theme */}
+            <motion.g
+              transform="translate(50, 130)"
+              initial="rest"
+              whileHover="hover"
+              variants={hoverVariants}
+              style={{ cursor: 'pointer' }}
+            >
+              <title>{isZh ? '几何光学 - 光线追踪方法' : 'Geometric Optics - Ray Tracing Methods'}</title>
+              <rect
+                x="0" y="0" width="180" height="100" rx="8"
+                fill={theme === 'dark' ? amberColors.bgDark : amberColors.bgLight}
+                stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight}
+                strokeWidth="2"
+              />
+              <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? amberColors.textDark : amberColors.textLight} textAnchor="middle" fontWeight="bold">
                 {isZh ? '几何光学' : 'Geometric Optics'}
               </text>
-              <text x="90" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
-                {isZh ? '光线追踪' : 'Ray Tracing'}
-              </text>
-              <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
-                • {isZh ? '折射定律' : "Snell's Law"}
-              </text>
-              <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
-                • {isZh ? '透镜成像' : 'Lens Imaging'}
-              </text>
-              <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('ray-tracing')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="90" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
+                  {isZh ? '光线追踪' : 'Ray Tracing'}
+                </text>
+              </motion.g>
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('snells-law')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>1621 - Snell</title>
+                  • {isZh ? '折射定律' : "Snell's Law"}
+                </text>
+              </motion.g>
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('lens-imaging')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>1665 - Newton</title>
+                  • {isZh ? '透镜成像' : 'Lens Imaging'}
+                </text>
+              </motion.g>
+              <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? '#78716c' : '#a8a29e'} textAnchor="middle">
                 • {isZh ? '光学仪器' : 'Optical Instruments'}
               </text>
-            </g>
+            </motion.g>
 
-            {/* Wave Optics - Main box with polarization highlight */}
-            <g transform="translate(260, 130)">
-              <rect x="0" y="0" width="280" height="180" rx="8" fill={theme === 'dark' ? '#134e4a' : '#ccfbf1'} stroke={theme === 'dark' ? '#14b8a6' : '#2dd4bf'} strokeWidth="2" />
-              <text x="140" y="25" fontSize="12" fill={theme === 'dark' ? '#2dd4bf' : '#0d9488'} textAnchor="middle" fontWeight="bold">
+            {/* Wave Optics - Main box with AMBER theme, polarization sub-box with CYAN */}
+            <motion.g
+              transform="translate(260, 130)"
+              initial="rest"
+              whileHover="hover"
+              variants={hoverVariants}
+            >
+              <title>{isZh ? '波动光学 - 电磁波理论' : 'Wave Optics - Electromagnetic Wave Theory'}</title>
+              <rect
+                x="0" y="0" width="280" height="180" rx="8"
+                fill={theme === 'dark' ? amberColors.bgDark : amberColors.bgLight}
+                stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight}
+                strokeWidth="2"
+              />
+              <text x="140" y="25" fontSize="12" fill={theme === 'dark' ? amberColors.textDark : amberColors.textLight} textAnchor="middle" fontWeight="bold">
                 {isZh ? '波动光学' : 'Wave Optics'}
               </text>
               <text x="140" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
                 {isZh ? '电磁波理论' : 'Electromagnetic Wave Theory'}
               </text>
 
-              {/* Polarization - highlighted sub-box */}
-              <rect x="15" y="60" width="120" height="110" rx="6" fill={theme === 'dark' ? '#164e63' : '#cffafe'} stroke={theme === 'dark' ? '#22d3ee' : '#06b6d4'} strokeWidth="3" strokeDasharray="none" />
-              <g transform="translate(75, 80)">
-                <Sparkles className="w-4 h-4" />
-              </g>
-              <text x="75" y="95" fontSize="10" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle" fontWeight="bold">
-                {isZh ? '偏振光学 ⭐' : 'Polarization ⭐'}
-              </text>
-              <text x="75" y="110" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
-                • {isZh ? '马吕斯定律' : "Malus's Law"}
-              </text>
-              <text x="75" y="123" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
-                • {isZh ? '双折射' : 'Birefringence'}
-              </text>
-              <text x="75" y="136" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
-                • {isZh ? '波片' : 'Waveplates'}
-              </text>
-              <text x="75" y="149" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
-                • {isZh ? '椭圆偏振' : 'Elliptical Pol.'}
-              </text>
-              <text x="75" y="162" fontSize="7" fill={theme === 'dark' ? '#67e8f9' : '#06b6d4'} textAnchor="middle">
-                • {isZh ? '斯托克斯参量' : 'Stokes Vectors'}
-              </text>
+              {/* Polarization - highlighted sub-box with CYAN theme */}
+              <motion.g
+                initial="rest"
+                whileHover="hover"
+                variants={hoverVariants}
+                style={{ cursor: 'pointer' }}
+              >
+                <rect
+                  x="15" y="60" width="120" height="110" rx="6"
+                  fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight}
+                  stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight}
+                  strokeWidth="3"
+                />
+                <text x="75" y="80" fontSize="10" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle" fontWeight="bold">
+                  <title>{isZh ? '偏振光学 - 本课程核心' : 'Polarization Optics - Course Focus'}</title>
+                  {isZh ? '偏振光学 ⭐' : 'Polarization ⭐'}
+                </text>
+                <motion.g
+                  variants={clickableNodeVariants}
+                  onClick={() => handleNodeClick('malus-law')}
+                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+                >
+                  <text x="75" y="98" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                    <title>1809 - Malus</title>
+                    • {isZh ? '马吕斯定律' : "Malus's Law"}
+                  </text>
+                </motion.g>
+                <motion.g
+                  variants={clickableNodeVariants}
+                  onClick={() => handleNodeClick('birefringence')}
+                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+                >
+                  <text x="75" y="113" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                    <title>1669 - Bartholin</title>
+                    • {isZh ? '双折射' : 'Birefringence'}
+                  </text>
+                </motion.g>
+                <motion.g
+                  variants={clickableNodeVariants}
+                  onClick={() => handleNodeClick('waveplates')}
+                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+                >
+                  <text x="75" y="128" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                    <title>1816 - Fresnel</title>
+                    • {isZh ? '波片' : 'Waveplates'}
+                  </text>
+                </motion.g>
+                <text x="75" y="143" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle">
+                  • {isZh ? '椭圆偏振' : 'Elliptical Pol.'}
+                </text>
+                <motion.g
+                  variants={clickableNodeVariants}
+                  onClick={() => handleNodeClick('stokes-vectors')}
+                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+                >
+                  <text x="75" y="158" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                    <title>1852 - Stokes</title>
+                    • {isZh ? '斯托克斯参量' : 'Stokes Vectors'}
+                  </text>
+                </motion.g>
+              </motion.g>
 
-              {/* Other wave optics topics */}
-              <text x="200" y="80" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
-                • {isZh ? '干涉' : 'Interference'}
-              </text>
-              <text x="200" y="95" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
-                • {isZh ? '衍射' : 'Diffraction'}
-              </text>
-              <text x="200" y="110" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+              {/* Other wave optics topics - AMBER subtler */}
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('interference')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="200" y="80" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>1801 - Young</title>
+                  • {isZh ? '干涉' : 'Interference'}
+                </text>
+              </motion.g>
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('diffraction')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="200" y="95" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>1801 - Young/Fresnel</title>
+                  • {isZh ? '衍射' : 'Diffraction'}
+                </text>
+              </motion.g>
+              <text x="200" y="110" fontSize="8" fill={theme === 'dark' ? '#78716c' : '#a8a29e'} textAnchor="middle">
                 • {isZh ? '相干性' : 'Coherence'}
               </text>
-              <text x="200" y="125" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
+              <text x="200" y="125" fontSize="8" fill={theme === 'dark' ? '#78716c' : '#a8a29e'} textAnchor="middle">
                 • {isZh ? '散射' : 'Scattering'}
               </text>
-            </g>
+            </motion.g>
 
-            {/* Quantum Optics */}
-            <g transform="translate(570, 130)">
-              <rect x="0" y="0" width="180" height="100" rx="8" fill={theme === 'dark' ? '#4c1d95' : '#ede9fe'} stroke={theme === 'dark' ? '#8b5cf6' : '#a78bfa'} strokeWidth="2" />
-              <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? '#a78bfa' : '#7c3aed'} textAnchor="middle" fontWeight="bold">
-                {isZh ? '量子光学' : 'Quantum Optics'}
-              </text>
+            {/* Quantum Optics - AMBER theme */}
+            <motion.g
+              transform="translate(570, 130)"
+              initial="rest"
+              whileHover="hover"
+              variants={hoverVariants}
+              style={{ cursor: 'pointer' }}
+            >
+              <title>{isZh ? '量子光学 - 光子理论' : 'Quantum Optics - Photon Theory'}</title>
+              <rect
+                x="0" y="0" width="180" height="100" rx="8"
+                fill={theme === 'dark' ? amberColors.bgDark : amberColors.bgLight}
+                stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight}
+                strokeWidth="2"
+              />
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('quantum-optics')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? amberColors.textDark : amberColors.textLight} textAnchor="middle" fontWeight="bold" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>1905 - Einstein</title>
+                  {isZh ? '量子光学' : 'Quantum Optics'}
+                </text>
+              </motion.g>
               <text x="90" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
                 {isZh ? '光子理论' : 'Photon Theory'}
               </text>
-              <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
-                • {isZh ? '光电效应' : 'Photoelectric'}
-              </text>
-              <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
-                • {isZh ? '量子纠缠' : 'Entanglement'}
-              </text>
-              <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">
-                • {isZh ? '单光子源' : 'Single Photon'}
-              </text>
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('photoelectric')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>1905 - Einstein</title>
+                  • {isZh ? '光电效应' : 'Photoelectric'}
+                </text>
+              </motion.g>
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('entanglement')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>2023 - Quantum Polarimetry</title>
+                  • {isZh ? '量子纠缠' : 'Entanglement'}
+                </text>
+              </motion.g>
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('single-photon')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
+                  <title>2023 - Single Photon Sources</title>
+                  • {isZh ? '单光子源' : 'Single Photon'}
+                </text>
+              </motion.g>
+            </motion.g>
+
+            {/* NEW: Quantum-Polarization connector - Bridging classical and modern */}
+            <g>
+              <title>{isZh ? '量子偏振测量 - 连接经典与现代' : 'Quantum Polarimetry - Bridging Classical & Modern'}</title>
+              {/* Dashed line from Quantum Optics to Polarization box */}
+              <path
+                d="M 570 200 Q 500 260 395 230"
+                fill="none"
+                stroke={theme === 'dark' ? '#a78bfa' : '#8b5cf6'}
+                strokeWidth="2"
+                strokeDasharray="6,4"
+                opacity="0.7"
+              />
+              {/* Label on the connector */}
+              <rect
+                x="455" y="235" width="100" height="22" rx="4"
+                fill={theme === 'dark' ? '#4c1d95' : '#ede9fe'}
+                stroke={theme === 'dark' ? '#a78bfa' : '#8b5cf6'}
+                strokeWidth="1"
+              />
+              <motion.g
+                variants={clickableNodeVariants}
+                onClick={() => handleNodeClick('entanglement')}
+                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+              >
+                <text x="505" y="250" fontSize="8" fill={theme === 'dark' ? '#c4b5fd' : '#7c3aed'} textAnchor="middle" fontWeight="500">
+                  <title>2023 - {isZh ? '量子偏振测量突破经典极限' : 'Quantum Polarimetry surpasses classical limits'}</title>
+                  {isZh ? '量子偏振测量' : 'Quantum Polarimetry'}
+                </text>
+              </motion.g>
             </g>
 
-            {/* Applications section */}
-            <g transform="translate(50, 340)">
-              <text x="0" y="0" fontSize="10" fill={theme === 'dark' ? '#94a3b8' : '#64748b'}>
+            {/* Applications section - CYAN theme */}
+            <g transform="translate(50, 360)">
+              <text x="0" y="0" fontSize="10" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} fontWeight="500">
                 {isZh ? '偏振光应用：' : 'Polarization Applications:'}
               </text>
               <g transform="translate(120, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
                   {isZh ? '3D电影' : '3D Cinema'}
                 </text>
               </g>
               <g transform="translate(210, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
                   {isZh ? 'LCD显示' : 'LCD Display'}
                 </text>
               </g>
               <g transform="translate(300, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
                   {isZh ? '太阳镜' : 'Sunglasses'}
                 </text>
               </g>
               <g transform="translate(390, -8)">
-                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
-                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
+                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
                   {isZh ? '偏振显微镜' : 'Pol. Microscopy'}
                 </text>
               </g>
               <g transform="translate(500, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
+                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
                   {isZh ? '光通信' : 'Fiber Optics'}
                 </text>
               </g>
               <g transform="translate(590, -8)">
-                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? '#164e63' : '#cffafe'} />
-                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? '#22d3ee' : '#0891b2'} textAnchor="middle">
+                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
+                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
                   {isZh ? '遥感测量' : 'Remote Sensing'}
                 </text>
               </g>
             </g>
 
-            {/* Connecting lines */}
-            <line x1="140" y1="230" x2="260" y2="220" stroke={theme === 'dark' ? '#475569' : '#cbd5e1'} strokeWidth="1" strokeDasharray="4,2" />
-            <line x1="540" y1="220" x2="570" y2="180" stroke={theme === 'dark' ? '#475569' : '#cbd5e1'} strokeWidth="1" strokeDasharray="4,2" />
+            {/* Connecting lines between boxes - Updated colors */}
+            <line x1="140" y1="230" x2="260" y2="220" stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight} strokeWidth="1.5" strokeDasharray="4,2" opacity="0.6" />
+            <line x1="540" y1="220" x2="570" y2="180" stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight} strokeWidth="1.5" strokeDasharray="4,2" opacity="0.6" />
           </svg>
 
           {/* Legend */}
@@ -244,10 +477,24 @@ function OpticalOverviewDiagram() {
             'mt-4 p-3 rounded-lg text-xs',
             theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
           )}>
+            <div className="flex flex-wrap items-center gap-4 mb-2">
+              <div className="flex items-center gap-1.5">
+                <div className={cn('w-3 h-3 rounded', theme === 'dark' ? 'bg-amber-500/50 border border-amber-500' : 'bg-amber-100 border border-amber-400')} />
+                <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-700'}>{isZh ? '广义光学' : 'General Optics'}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className={cn('w-3 h-3 rounded', theme === 'dark' ? 'bg-cyan-500/50 border border-cyan-500' : 'bg-cyan-100 border border-cyan-400')} />
+                <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'}>{isZh ? '偏振光（本课程重点）' : 'Polarization (Course Focus)'}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className={cn('text-xs underline', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>{isZh ? '带下划线' : 'Underlined'}</span>
+                <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}>{isZh ? '= 可点击跳转' : '= Clickable'}</span>
+              </div>
+            </div>
             <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
               {isZh
-                ? '💡 偏振光学是波动光学的重要分支，研究光的横波特性。本课程聚焦偏振现象的发现历史、物理原理和现代应用。'
-                : '💡 Polarization optics is a key branch of wave optics, studying the transverse wave nature of light. This course focuses on the discovery history, physical principles, and modern applications of polarization.'}
+                ? '💡 偏振光学是波动光学的重要分支，研究光的横波特性。点击带下划线的概念可跳转到对应的历史事件。'
+                : '💡 Polarization optics is a key branch of wave optics, studying the transverse wave nature of light. Click underlined concepts to navigate to their historical events.'}
             </p>
           </div>
         </div>
@@ -3057,6 +3304,28 @@ export function ChroniclesPage() {
     }
   }
 
+  // Scroll to a specific year in the timeline
+  const handleNavigateToYear = useCallback((year: number) => {
+    // First, ensure we're on the timeline tab
+    setActiveTab('timeline')
+    // Reset filters to ensure the year is visible
+    setTrackFilter('all')
+    setFilter('')
+
+    // Wait for state updates and DOM to render
+    setTimeout(() => {
+      const element = document.getElementById(`timeline-year-${year}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        // Add a brief highlight effect
+        element.classList.add('ring-2', 'ring-amber-400', 'ring-opacity-75')
+        setTimeout(() => {
+          element.classList.remove('ring-2', 'ring-amber-400', 'ring-opacity-75')
+        }, 2000)
+      }
+    }, 100)
+  }, [])
+
   return (
     <div className={cn(
       'min-h-screen',
@@ -3112,8 +3381,8 @@ export function ChroniclesPage() {
           </div>
         </div>
 
-        {/* Optical Overview Diagram - 光学全景图 */}
-        <OpticalOverviewDiagram />
+        {/* Optical Overview Diagram - 光学全景图 (Interactive Navigation Map) */}
+        <OpticalOverviewDiagram onNodeClick={handleNavigateToYear} />
 
         {/* Tabs */}
         <div className="mb-6">
@@ -3273,7 +3542,7 @@ export function ChroniclesPage() {
                     const polarizationIndex = polarizationEvent ? filteredEvents.findIndex(e => e === polarizationEvent) : -1
 
                     return (
-                      <div key={year} className="relative flex items-stretch mb-6 last:mb-0">
+                      <div key={year} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
                         {/* Left side - Optics */}
                         <div className="flex-1 pr-4 flex justify-end">
                           {opticsEvent && (
