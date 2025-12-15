@@ -431,6 +431,13 @@ export function quarterWavePlateMatrix(fastAxisDeg: number): JonesMatrix {
 
 /**
  * General retarder (waveplate) with arbitrary retardation
+ *
+ * Derived from: M = R(θ) × D(δ) × R(-θ)
+ * where R(θ) is rotation and D(δ) = [[e^(-iδ/2), 0], [0, e^(iδ/2)]]
+ *
+ * Result: [[cos(δ/2) - i·sin(δ/2)·cos(2θ), -i·sin(δ/2)·sin(2θ)],
+ *          [-i·sin(δ/2)·sin(2θ), cos(δ/2) + i·sin(δ/2)·cos(2θ)]]
+ *
  * @param fastAxisDeg - Fast axis angle in degrees
  * @param retardationDeg - Phase retardation in degrees (90 = λ/4, 180 = λ/2)
  */
@@ -440,34 +447,27 @@ export function retarderMatrix(
 ): JonesMatrix {
   const theta = (fastAxisDeg * Math.PI) / 180
   const delta = (retardationDeg * Math.PI) / 180
-  const c = Math.cos(theta)
-  const s = Math.sin(theta)
-  const halfDelta = delta / 2
 
-  // General retarder matrix
-  const cosHalf = Math.cos(halfDelta)
-  const sinHalf = Math.sin(halfDelta)
+  // Calculate cos(2θ) and sin(2θ) for the matrix elements
+  const cos2theta = Math.cos(2 * theta)
+  const sin2theta = Math.sin(2 * theta)
 
+  // Phase retardation components
+  const cosHalfDelta = Math.cos(delta / 2)
+  const sinHalfDelta = Math.sin(delta / 2)
+
+  // General retarder matrix:
+  // M_00 = cos(δ/2) - i·sin(δ/2)·cos(2θ)
+  // M_01 = M_10 = -i·sin(δ/2)·sin(2θ)
+  // M_11 = cos(δ/2) + i·sin(δ/2)·cos(2θ)
   return [
     [
-      complex.create(
-        cosHalf + (c * c - s * s) * (1 - cosHalf) / 2 + (c * c - s * s) * (1 - cosHalf) / 2,
-        -(c * c - s * s) * sinHalf
-      ),
-      complex.create(
-        2 * c * s * (1 - cosHalf) / 2,
-        -2 * c * s * sinHalf / 2
-      ),
+      complex.create(cosHalfDelta, -sinHalfDelta * cos2theta),
+      complex.create(0, -sinHalfDelta * sin2theta),
     ],
     [
-      complex.create(
-        2 * c * s * (1 - cosHalf) / 2,
-        -2 * c * s * sinHalf / 2
-      ),
-      complex.create(
-        cosHalf - (c * c - s * s) * (1 - cosHalf) / 2 - (c * c - s * s) * (1 - cosHalf) / 2,
-        (c * c - s * s) * sinHalf
-      ),
+      complex.create(0, -sinHalfDelta * sin2theta),
+      complex.create(cosHalfDelta, sinHalfDelta * cos2theta),
     ],
   ]
 }

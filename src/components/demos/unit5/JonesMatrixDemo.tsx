@@ -11,114 +11,19 @@ import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard, ValueDisplay } from '../DemoControls'
 import { Copy, Check, Code } from 'lucide-react'
 
-// 复数类型
-interface Complex {
-  re: number
-  im: number
-}
-
-// Jones 矢量类型 (2×1 复数矢量)
-type JonesVector = [Complex, Complex]
-
-// Jones 矩阵类型 (2×2 复数矩阵)
-type JonesMatrix = [[Complex, Complex], [Complex, Complex]]
-
-// 复数运算工具
-const complex = {
-  create: (re: number, im: number = 0): Complex => ({ re, im }),
-  add: (a: Complex, b: Complex): Complex => ({ re: a.re + b.re, im: a.im + b.im }),
-  sub: (a: Complex, b: Complex): Complex => ({ re: a.re - b.re, im: a.im - b.im }),
-  mul: (a: Complex, b: Complex): Complex => ({
-    re: a.re * b.re - a.im * b.im,
-    im: a.re * b.im + a.im * b.re,
-  }),
-  scale: (a: Complex, s: number): Complex => ({ re: a.re * s, im: a.im * s }),
-  conj: (a: Complex): Complex => ({ re: a.re, im: -a.im }),
-  abs: (a: Complex): number => Math.sqrt(a.re * a.re + a.im * a.im),
-  phase: (a: Complex): number => Math.atan2(a.im, a.re),
-  fromPolar: (r: number, theta: number): Complex => ({
-    re: r * Math.cos(theta),
-    im: r * Math.sin(theta),
-  }),
-  exp: (theta: number): Complex => ({ re: Math.cos(theta), im: Math.sin(theta) }),
-  format: (c: Complex, decimals: number = 2): string => {
-    const re = c.re.toFixed(decimals)
-    const im = Math.abs(c.im).toFixed(decimals)
-    if (Math.abs(c.im) < 0.001) return re
-    if (Math.abs(c.re) < 0.001) return c.im >= 0 ? `${im}i` : `-${im}i`
-    return c.im >= 0 ? `${re}+${im}i` : `${re}-${im}i`
-  },
-}
-
-// Jones 矩阵乘以 Jones 矢量
-function applyJones(matrix: JonesMatrix, vec: JonesVector): JonesVector {
-  return [
-    complex.add(complex.mul(matrix[0][0], vec[0]), complex.mul(matrix[0][1], vec[1])),
-    complex.add(complex.mul(matrix[1][0], vec[0]), complex.mul(matrix[1][1], vec[1])),
-  ]
-}
-
-// 计算 Jones 矢量的强度
-function jonesIntensity(vec: JonesVector): number {
-  return complex.abs(vec[0]) ** 2 + complex.abs(vec[1]) ** 2
-}
-
-// 常见光学元件的 Jones 矩阵
-function getPolarizerMatrix(angle: number): JonesMatrix {
-  const theta = (angle * Math.PI) / 180
-  const c = Math.cos(theta)
-  const s = Math.sin(theta)
-  return [
-    [complex.create(c * c), complex.create(c * s)],
-    [complex.create(c * s), complex.create(s * s)],
-  ]
-}
-
-function getHalfWavePlateMatrix(angle: number): JonesMatrix {
-  const theta = (angle * Math.PI) / 180
-  const c2 = Math.cos(2 * theta)
-  const s2 = Math.sin(2 * theta)
-  // HWP 引入 π 相位差，矩阵包含 -i 因子（可省略全局相位）
-  return [
-    [complex.create(c2), complex.create(s2)],
-    [complex.create(s2), complex.create(-c2)],
-  ]
-}
-
-function getQuarterWavePlateMatrix(angle: number): JonesMatrix {
-  const theta = (angle * Math.PI) / 180
-  const c = Math.cos(theta)
-  const s = Math.sin(theta)
-  const exp_i_pi4 = complex.exp(Math.PI / 4) // e^(iπ/4)
-  // QWP 矩阵
-  return [
-    [
-      complex.add(complex.scale(complex.create(c * c), 1), complex.scale(exp_i_pi4, s * s)),
-      complex.scale(complex.sub(complex.create(1), exp_i_pi4), c * s),
-    ],
-    [
-      complex.scale(complex.sub(complex.create(1), exp_i_pi4), c * s),
-      complex.add(complex.scale(complex.create(s * s), 1), complex.scale(exp_i_pi4, c * c)),
-    ],
-  ]
-}
-
-function getRotatorMatrix(angle: number): JonesMatrix {
-  const theta = (angle * Math.PI) / 180
-  const c = Math.cos(theta)
-  const s = Math.sin(theta)
-  return [
-    [complex.create(c), complex.create(-s)],
-    [complex.create(s), complex.create(c)],
-  ]
-}
-
-function getIdentityMatrix(): JonesMatrix {
-  return [
-    [complex.create(1), complex.create(0)],
-    [complex.create(0), complex.create(1)],
-  ]
-}
+// Import Jones Calculus utilities from shared module
+import {
+  type JonesVector,
+  type JonesMatrix,
+  complex,
+  applyJonesMatrix,
+  jonesIntensity,
+  polarizerMatrix,
+  halfWavePlateMatrix,
+  quarterWavePlateMatrix,
+  rotatorMatrix,
+  identityMatrix,
+} from '@/core/JonesCalculus'
 
 // 光学元件类型
 type OpticalElement = 'polarizer' | 'half-wave' | 'quarter-wave' | 'rotator' | 'identity'
@@ -127,16 +32,16 @@ type OpticalElement = 'polarizer' | 'half-wave' | 'quarter-wave' | 'rotator' | '
 function getElementMatrix(element: OpticalElement, angle: number): JonesMatrix {
   switch (element) {
     case 'polarizer':
-      return getPolarizerMatrix(angle)
+      return polarizerMatrix(angle)
     case 'half-wave':
-      return getHalfWavePlateMatrix(angle)
+      return halfWavePlateMatrix(angle)
     case 'quarter-wave':
-      return getQuarterWavePlateMatrix(angle)
+      return quarterWavePlateMatrix(angle)
     case 'rotator':
-      return getRotatorMatrix(angle)
+      return rotatorMatrix(angle)
     case 'identity':
     default:
-      return getIdentityMatrix()
+      return identityMatrix()
   }
 }
 
@@ -635,7 +540,7 @@ export function JonesMatrixDemo() {
   const matrix = getElementMatrix(element, angle)
 
   // 计算输出 Jones 矢量
-  const outputJones = applyJones(matrix, inputJones)
+  const outputJones = applyJonesMatrix(matrix, inputJones)
 
   // 计算透过率
   const inputIntensity = jonesIntensity(inputJones)
