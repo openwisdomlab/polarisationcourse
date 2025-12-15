@@ -27,7 +27,7 @@
     },
     "opticalDesignStudio": {
       "title": "Optical Design Studio: Devices & Paths",
-      "subtitle": "Device Library × Light Path Design × Experiments",
+      "subtitle": "Device Library × Light Path Design",
       "description": "Browse comprehensive optical device catalog, design custom light paths, simulate classic experiments, and interface with UC2 modular hardware—an all-in-one optics workstation.",
       "cta": "Enter Studio",
       "link1": "Device Library",
@@ -36,7 +36,7 @@
     },
     "formulaLab": {
       "title": "Demo Gallery: Principle Visualization",
-      "subtitle": "Visual Demos × Interactive Simulation",
+      "subtitle": "Basic Theory × Computational Simulation",
       "description": "Turn laws into visible experiments—from Malus's Law to birefringence, see it, interact with it, remember it.",
       "cta": "Start Exploring",
       "link1": "Malus's Law Demo",
@@ -45,7 +45,7 @@
     },
     "polarquest": {
       "title": "PolarQuest: The Light Chamber",
-      "subtitle": "Puzzles × Strategy",
+      "subtitle": "Puzzle Game × Polarization Strategy",
       "description": "Solve puzzles in 2D light paths and a 3D voxel world—turn polarization into playable strategy.",
       "cta": "Play Now",
       "link1": "2D Beginner Level",
@@ -54,7 +54,7 @@
     },
     "creativeLab": {
       "title": "Polarization Workshop: Art & DIY",
-      "subtitle": "Polarization Art × Photography × Creative Making",
+      "subtitle": "Polarization Art × Cultural Products",
       "description": "Create with polarization: photography techniques, tape birefringence art, phone screen experiments—experience the beauty of optics through making.",
       "cta": "Enter Workshop",
       "link1": "Art Gallery",
