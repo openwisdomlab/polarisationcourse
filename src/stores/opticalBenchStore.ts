@@ -17,9 +17,16 @@ import { subscribeWithSelector } from 'zustand/middleware'
 import {
   type Complex,
   type JonesVector,
+  type JonesMatrix,
+  complex,
   polarizationToJonesVector,
   jonesVectorToPolarization,
+  jonesIntensity,
   analyzePolarization,
+  applyJonesMatrix,
+  polarizerMatrix,
+  halfWavePlateMatrix,
+  quarterWavePlateMatrix,
 } from '@/core/JonesCalculus'
 
 // ============================================
@@ -974,36 +981,54 @@ function findNextComponent(
 }
 
 /**
- * Calculate PBS (Polarizing Beam Splitter) output
- * p-polarization (0°) transmits, s-polarization (90°) reflects
+ * Calculate PBS (Polarizing Beam Splitter) output using Jones vector projection
+ * p-polarization (parallel to splitter axis) transmits
+ * s-polarization (perpendicular to splitter axis) reflects
  */
 function calculatePBSSplit(
   inputJones: JonesVector,
-  inputIntensity: number,
+  _inputIntensity: number, // Derived from Jones vector now
   splitterRotation: number
 ): { transmitted: { jones: JonesVector; intensity: number; polarization: number };
      reflected: { jones: JonesVector; intensity: number; polarization: number } } {
 
-  // PBS separates based on polarization relative to splitter orientation
-  // p-polarization (parallel to plane of incidence) transmits
-  // s-polarization (perpendicular) reflects
+  // PBS projects input onto p and s polarization states
+  // p-axis is aligned with splitterRotation, s-axis is perpendicular
 
-  const inputPol = jonesVectorToPolarization(inputJones)
-  const relativeAngle = inputPol - splitterRotation
+  const theta = (splitterRotation * Math.PI) / 180
+  const cosTheta = Math.cos(theta)
+  const sinTheta = Math.sin(theta)
 
-  // Calculate how much is p vs s polarized
-  const pComponent = Math.cos(relativeAngle * Math.PI / 180)
-  const sComponent = Math.sin(relativeAngle * Math.PI / 180)
+  // Project input Jones vector onto p-polarization axis (transmitted)
+  // p-polarization unit vector in Jones space: [cos(θ), sin(θ)]
+  // Projection: (E · p̂) p̂
+  const pDotE = complex.add(
+    complex.scale(inputJones[0], cosTheta),
+    complex.scale(inputJones[1], sinTheta)
+  )
+  const transmittedJones: JonesVector = [
+    complex.scale(pDotE, cosTheta),
+    complex.scale(pDotE, sinTheta)
+  ]
 
-  // Transmitted beam: p-polarization only
-  const transmittedIntensity = inputIntensity * pComponent * pComponent
-  const transmittedPol = splitterRotation // p-polarization aligned with splitter
-  const transmittedJones = polarizationToJonesVector(transmittedPol, transmittedIntensity / 100)
+  // Project input Jones vector onto s-polarization axis (reflected)
+  // s-polarization unit vector in Jones space: [-sin(θ), cos(θ)]
+  const sDotE = complex.add(
+    complex.scale(inputJones[0], -sinTheta),
+    complex.scale(inputJones[1], cosTheta)
+  )
+  const reflectedJones: JonesVector = [
+    complex.scale(sDotE, -sinTheta),
+    complex.scale(sDotE, cosTheta)
+  ]
 
-  // Reflected beam: s-polarization only
-  const reflectedIntensity = inputIntensity * sComponent * sComponent
-  const reflectedPol = (splitterRotation + 90) % 180 // s-polarization perpendicular
-  const reflectedJones = polarizationToJonesVector(reflectedPol, reflectedIntensity / 100)
+  // Calculate intensities from Jones vectors
+  const transmittedIntensity = jonesIntensity(transmittedJones) * 100
+  const reflectedIntensity = jonesIntensity(reflectedJones) * 100
+
+  // Derive polarization angles
+  const transmittedPol = transmittedIntensity > 0.01 ? splitterRotation : 0
+  const reflectedPol = reflectedIntensity > 0.01 ? (splitterRotation + 90) % 180 : 0
 
   return {
     transmitted: { jones: transmittedJones, intensity: transmittedIntensity, polarization: transmittedPol },
@@ -1012,36 +1037,53 @@ function calculatePBSSplit(
 }
 
 /**
- * Calculate Calcite birefringence output
+ * Calculate Calcite birefringence output using Jones vector projection
  * Ordinary ray (o-ray) and extraordinary ray (e-ray) separate spatially
+ * o-ray: polarized perpendicular to optic axis (no walk-off)
+ * e-ray: polarized parallel to optic axis (spatial walk-off)
  */
 function calculateCalciteSplit(
   inputJones: JonesVector,
-  inputIntensity: number,
+  _inputIntensity: number, // Derived from Jones vector now
   crystalRotation: number
 ): { oRay: { jones: JonesVector; intensity: number; polarization: number };
      eRay: { jones: JonesVector; intensity: number; polarization: number } } {
 
-  // Calcite separates light into o-ray and e-ray based on crystal axis
-  // o-ray: polarized perpendicular to optic axis
-  // e-ray: polarized parallel to optic axis
+  // Calcite projects input onto orthogonal polarization states
+  // o-ray axis is perpendicular to optic axis (crystalRotation)
+  // e-ray axis is parallel to optic axis
 
-  const inputPol = jonesVectorToPolarization(inputJones)
-  const relativeAngle = inputPol - crystalRotation
+  const theta = (crystalRotation * Math.PI) / 180
+  const cosTheta = Math.cos(theta)
+  const sinTheta = Math.sin(theta)
 
-  // Calculate projections onto o and e axes
-  const oComponent = Math.cos(relativeAngle * Math.PI / 180)
-  const eComponent = Math.sin(relativeAngle * Math.PI / 180)
+  // o-ray: perpendicular to optic axis, unit vector: [-sin(θ), cos(θ)]
+  const oDotE = complex.add(
+    complex.scale(inputJones[0], -sinTheta),
+    complex.scale(inputJones[1], cosTheta)
+  )
+  const oJones: JonesVector = [
+    complex.scale(oDotE, -sinTheta),
+    complex.scale(oDotE, cosTheta)
+  ]
 
-  // o-ray: perpendicular to optic axis
-  const oIntensity = inputIntensity * oComponent * oComponent
-  const oPol = crystalRotation
-  const oJones = polarizationToJonesVector(oPol, oIntensity / 100)
+  // e-ray: parallel to optic axis, unit vector: [cos(θ), sin(θ)]
+  const eDotE = complex.add(
+    complex.scale(inputJones[0], cosTheta),
+    complex.scale(inputJones[1], sinTheta)
+  )
+  const eJones: JonesVector = [
+    complex.scale(eDotE, cosTheta),
+    complex.scale(eDotE, sinTheta)
+  ]
 
-  // e-ray: parallel to optic axis (displaced spatially)
-  const eIntensity = inputIntensity * eComponent * eComponent
-  const ePol = (crystalRotation + 90) % 180
-  const eJones = polarizationToJonesVector(ePol, eIntensity / 100)
+  // Calculate intensities from Jones vectors
+  const oIntensity = jonesIntensity(oJones) * 100
+  const eIntensity = jonesIntensity(eJones) * 100
+
+  // Derive polarization angles
+  const oPol = oIntensity > 0.01 ? (crystalRotation + 90) % 180 : 0
+  const ePol = eIntensity > 0.01 ? crystalRotation : 0
 
   return {
     oRay: { jones: oJones, intensity: oIntensity, polarization: oPol },
@@ -1051,26 +1093,89 @@ function calculateCalciteSplit(
 
 /**
  * Calculate NPBS (Non-Polarizing Beam Splitter) output
- * 50/50 split regardless of polarization
+ * 50/50 split regardless of polarization, preserving Jones vector state
  */
 function calculateNPBSSplit(
-  _inputJones: JonesVector, // Preserved for future Phase 3 Jones matrix implementation
+  inputJones: JonesVector,
   inputIntensity: number,
-  inputPolarization: number
+  _inputPolarization: number // Kept for backward compatibility
 ): { transmitted: { jones: JonesVector; intensity: number; polarization: number };
      reflected: { jones: JonesVector; intensity: number; polarization: number } } {
 
   // NPBS splits intensity 50/50, preserving polarization state
-  // Note: Phase 3 will use _inputJones directly for proper Jones vector splitting
-  const halfIntensity = inputIntensity / 2
+  // Scale Jones vector by 1/√2 for each output (maintains |E|² conservation)
+  const scale = 1 / Math.SQRT2
 
-  const transmittedJones = polarizationToJonesVector(inputPolarization, halfIntensity / 100)
-  const reflectedJones = polarizationToJonesVector(inputPolarization, halfIntensity / 100)
+  const transmittedJones: JonesVector = [
+    complex.scale(inputJones[0], scale),
+    complex.scale(inputJones[1], scale)
+  ]
+  const reflectedJones: JonesVector = [
+    complex.scale(inputJones[0], scale),
+    complex.scale(inputJones[1], scale)
+  ]
+
+  const halfIntensity = inputIntensity / 2
+  const polarization = jonesVectorToPolarization(inputJones)
 
   return {
-    transmitted: { jones: transmittedJones, intensity: halfIntensity, polarization: inputPolarization },
-    reflected: { jones: reflectedJones, intensity: halfIntensity, polarization: inputPolarization }
+    transmitted: { jones: transmittedJones, intensity: halfIntensity, polarization },
+    reflected: { jones: reflectedJones, intensity: halfIntensity, polarization }
   }
+}
+
+// ============================================
+// Jones Matrix Component Transformations
+// ============================================
+
+/**
+ * Get the Jones matrix for an optical component
+ * This enables accurate polarization state transformations
+ */
+function getComponentJonesMatrix(
+  component: BenchComponent
+): JonesMatrix | null {
+  switch (component.type) {
+    case 'polarizer': {
+      const angle = component.properties.angle ?? 0
+      return polarizerMatrix(angle)
+    }
+
+    case 'waveplate': {
+      const retardation = component.properties.retardation ?? 90
+      const fastAxis = component.rotation
+
+      if (retardation === 90) {
+        // Quarter-wave plate (λ/4)
+        return quarterWavePlateMatrix(fastAxis)
+      } else if (retardation === 180) {
+        // Half-wave plate (λ/2)
+        return halfWavePlateMatrix(fastAxis)
+      }
+      // For other retardations, would need general retarder matrix
+      return null
+    }
+
+    default:
+      // Mirror, splitter, lens, sensor don't have simple Jones matrices
+      // (they require special handling for direction changes or branching)
+      return null
+  }
+}
+
+/**
+ * Apply Jones matrix transformation to a ray
+ * Returns the transformed Jones vector and derived quantities
+ */
+function applyJonesTransformation(
+  inputJones: JonesVector,
+  matrix: JonesMatrix
+): { jones: JonesVector; intensity: number; polarization: number } {
+  const outputJones = applyJonesMatrix(matrix, inputJones)
+  const intensity = jonesIntensity(outputJones) * 100 // Convert to percentage
+  const polarization = jonesVectorToPolarization(outputJones)
+
+  return { jones: outputJones, intensity, polarization }
 }
 
 /**
@@ -1157,21 +1262,24 @@ function traceLightRays(
       // Process component and potentially create new rays
       switch (nextComponent.type) {
         case 'polarizer': {
+          // Use Jones matrix for accurate polarizer transformation
           const polarizerAngle = nextComponent.properties.angle ?? 0
-          const angleDiff = Math.abs(ray.polarization - polarizerAngle)
-          const newIntensity = calculateMalusLaw(ray.intensity, angleDiff)
-          formulas.push(`I = ${ray.intensity.toFixed(1)} × cos²(${angleDiff.toFixed(0)}°) = ${newIntensity.toFixed(1)}%`)
+          const matrix = polarizerMatrix(polarizerAngle)
+          const result = applyJonesTransformation(ray.jonesVector, matrix)
 
-          // Continue with filtered ray
-          if (newIntensity >= INTENSITY_THRESHOLD) {
-            const newJones = polarizationToJonesVector(polarizerAngle, newIntensity / 100)
+          // Generate formula for educational display
+          const angleDiff = Math.abs(ray.polarization - polarizerAngle)
+          formulas.push(`Polarizer(${polarizerAngle}°): I = ${ray.intensity.toFixed(1)}% × cos²(${angleDiff.toFixed(0)}°) = ${result.intensity.toFixed(1)}%`)
+
+          // Continue with filtered ray if above threshold
+          if (result.intensity >= INTENSITY_THRESHOLD) {
             rayQueue.push({
               ...ray,
               id: ray.id,
               position: { x: endX, y: endY },
-              jonesVector: newJones,
-              intensity: newIntensity,
-              polarization: polarizerAngle,
+              jonesVector: result.jones,
+              intensity: result.intensity,
+              polarization: result.polarization,
               depth: ray.depth + 1,
               visitedComponents: newVisited,
             })
@@ -1180,30 +1288,43 @@ function traceLightRays(
         }
 
         case 'waveplate': {
+          // Use Jones matrices for accurate waveplate transformations
           const retardation = nextComponent.properties.retardation ?? 90
-          let newPolarization = ray.polarization
+          const fastAxis = nextComponent.rotation
+          const matrix = getComponentJonesMatrix(nextComponent)
 
-          if (retardation === 90) {
-            // λ/4 waveplate (simplified - Phase 3 will use proper Jones matrices)
-            newPolarization = (ray.polarization + 45) % 180
-            formulas.push(`λ/4: θ → ${newPolarization}° (circular)`)
-          } else if (retardation === 180) {
-            // λ/2 waveplate
-            const fastAxis = nextComponent.rotation
-            newPolarization = (2 * fastAxis - ray.polarization + 360) % 180
-            formulas.push(`λ/2: θ = 2×${fastAxis}° - θ_in = ${newPolarization}°`)
+          if (matrix) {
+            const result = applyJonesTransformation(ray.jonesVector, matrix)
+            const analysis = analyzePolarization(result.jones)
+
+            if (retardation === 90) {
+              // Quarter-wave plate - can create circular polarization
+              formulas.push(`λ/4(${fastAxis}°): ${ray.polarization.toFixed(0)}° → ${analysis.type} (${analysis.handedness})`)
+            } else if (retardation === 180) {
+              // Half-wave plate - rotates linear polarization
+              formulas.push(`λ/2(${fastAxis}°): ${ray.polarization.toFixed(0)}° → ${result.polarization.toFixed(0)}°`)
+            }
+
+            rayQueue.push({
+              ...ray,
+              id: ray.id,
+              position: { x: endX, y: endY },
+              jonesVector: result.jones,
+              intensity: result.intensity,
+              polarization: result.polarization,
+              depth: ray.depth + 1,
+              visitedComponents: newVisited,
+            })
+          } else {
+            // Fallback for unsupported retardation values
+            rayQueue.push({
+              ...ray,
+              id: ray.id,
+              position: { x: endX, y: endY },
+              depth: ray.depth + 1,
+              visitedComponents: newVisited,
+            })
           }
-
-          const newJones = polarizationToJonesVector(newPolarization, ray.intensity / 100)
-          rayQueue.push({
-            ...ray,
-            id: ray.id,
-            position: { x: endX, y: endY },
-            jonesVector: newJones,
-            polarization: newPolarization,
-            depth: ray.depth + 1,
-            visitedComponents: newVisited,
-          })
           break
         }
 
@@ -1431,9 +1552,15 @@ export { getPolarizationColor, normalizeAngle, calculateMalusLaw }
 
 // Re-export Jones calculus utilities for use in visualization components
 export {
+  type JonesMatrix,
   complex,
   polarizationToJonesVector,
   jonesVectorToPolarization,
   jonesIntensity,
   analyzePolarization,
+  applyJonesMatrix,
+  polarizerMatrix,
+  halfWavePlateMatrix,
+  quarterWavePlateMatrix,
+  rotatorMatrix,
 } from '@/core/JonesCalculus'
