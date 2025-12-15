@@ -19,6 +19,7 @@ export * from './unit1/MalusLawDemo'
 export * from './unit1/BirefringenceDemo'
 export * from './unit1/WaveplateDemo'
 export * from './unit1/PolarizationStateDemo'
+export * from './unit1/AragoFresnelDemo'
 
 // Unit 2: 界面反射偏振特征
 export * from './unit2/FresnelDemo'

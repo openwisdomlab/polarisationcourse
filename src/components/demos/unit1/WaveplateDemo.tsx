@@ -2,6 +2,12 @@
  * 波片原理演示 - Unit 1
  * 演示四分之一波片和二分之一波片对偏振态的影响
  * 重构版本：使用清晰的2D Canvas + SVG + Framer Motion
+ *
+ * 升级版本：增加非理想器件参数模拟
+ * - 相位误差（制造公差）
+ * - 快轴对准误差
+ * - 透过率损耗
+ * - 波长依赖性（色散）
  */
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
@@ -11,13 +17,32 @@ import {
   ValueDisplay,
   InfoCard,
   Formula,
+  Toggle,
 } from '../DemoControls'
+import {
+  JonesMatrix,
+  JonesVector,
+  StokesVector,
+  NonIdealWaveplateParams,
+  IDEAL_WAVEPLATE,
+  TYPICAL_WAVEPLATE,
+  waveplateRetardation,
+  wavelengthToRGB,
+} from '@/core/WaveOptics'
 
 // 波片类型
 type WaveplateType = 'quarter' | 'half'
 
 // 偏振态类型
 type PolarizationState = 'linear' | 'circular-r' | 'circular-l' | 'elliptical'
+
+// 难度级别
+type DifficultyLevel = 'basic' | 'research'
+
+// 非理想波片参数接口（扩展UI用）
+interface WaveplateParams extends NonIdealWaveplateParams {
+  useNonIdeal: boolean
+}
 
 // 波片光路演示Canvas
 function WaveplateCanvas({
@@ -515,6 +540,74 @@ function PresetButton({
   )
 }
 
+// 使用Jones矩阵计算非理想波片输出
+function calculateNonIdealOutput(
+  waveplateType: WaveplateType,
+  inputAngle: number,
+  fastAxisAngle: number,
+  params: WaveplateParams,
+  wavelength: number = 550,
+): {
+  outputJones: JonesVector
+  outputStokes: StokesVector
+  actualRetardation: number
+  outputIntensity: number
+  ellipticity: number
+} {
+  // 创建输入Jones矢量
+  const inputJones = JonesVector.linearPolarizationDegrees(inputAngle, 1)
+
+  // 标称相位延迟
+  const nominalRetardation = waveplateType === 'quarter' ? Math.PI / 2 : Math.PI
+
+  // 计算实际相位延迟（考虑波长和相位误差）
+  let actualRetardation: number
+  if (params.useNonIdeal) {
+    // 波长效应 + 相位误差
+    actualRetardation = waveplateRetardation(
+      params.designWavelength,
+      wavelength,
+      nominalRetardation
+    ) + params.phaseError
+
+    // 使用非理想波片矩阵
+    const matrix = JonesMatrix.nonIdealWaveplate(
+      nominalRetardation,
+      fastAxisAngle,
+      params,
+      wavelength
+    )
+    const outputJones = matrix.apply(inputJones)
+    const outputStokes = StokesVector.fromJonesVector(outputJones)
+
+    // 计算椭圆度
+    const ellipticity = Math.abs(outputStokes.ellipticityAngle / 45)
+
+    return {
+      outputJones,
+      outputStokes,
+      actualRetardation,
+      outputIntensity: outputJones.intensity,
+      ellipticity,
+    }
+  } else {
+    // 理想波片
+    actualRetardation = nominalRetardation
+    const matrix = JonesMatrix.waveplate(actualRetardation, fastAxisAngle * Math.PI / 180)
+    const outputJones = matrix.apply(inputJones)
+    const outputStokes = StokesVector.fromJonesVector(outputJones)
+    const ellipticity = Math.abs(outputStokes.ellipticityAngle / 45)
+
+    return {
+      outputJones,
+      outputStokes,
+      actualRetardation,
+      outputIntensity: outputJones.intensity,
+      ellipticity,
+    }
+  }
+}
+
 // 主演示组件
 export function WaveplateDemo() {
   const [waveplateType, setWaveplateType] = useState<WaveplateType>('quarter')
@@ -522,7 +615,35 @@ export function WaveplateDemo() {
   const [fastAxisAngle, setFastAxisAngle] = useState(0)
   const [animate, setAnimate] = useState(true)
 
+  // 研究模式状态
+  const [difficultyLevel, setDifficultyLevel] = useState<DifficultyLevel>('basic')
+  const [wavelength, setWavelength] = useState(550)
+  const [nonIdealParams, setNonIdealParams] = useState<WaveplateParams>({
+    ...TYPICAL_WAVEPLATE,
+    useNonIdeal: false,
+  })
+
   const relativeAngle = ((inputAngle - fastAxisAngle) % 180 + 180) % 180
+
+  // 计算非理想输出（仅在研究模式下使用）
+  const nonIdealResult = useMemo(() => {
+    if (difficultyLevel === 'research' && nonIdealParams.useNonIdeal) {
+      return calculateNonIdealOutput(
+        waveplateType,
+        inputAngle,
+        fastAxisAngle,
+        nonIdealParams,
+        wavelength
+      )
+    }
+    return null
+  }, [waveplateType, inputAngle, fastAxisAngle, nonIdealParams, wavelength, difficultyLevel])
+
+  // 波长颜色
+  const wavelengthColor = useMemo(() => {
+    const rgb = wavelengthToRGB(wavelength)
+    return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+  }, [wavelength])
 
   // 计算输出偏振态描述
   const getOutputDescription = () => {
@@ -565,6 +686,34 @@ export function WaveplateDemo() {
         <p className="text-gray-400 mt-1">
           λ/4和λ/2波片如何改变光的偏振态
         </p>
+      </div>
+
+      {/* 难度级别选择 */}
+      <div className="flex justify-center gap-2">
+        <motion.button
+          className={`px-4 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+            difficultyLevel === 'basic'
+              ? 'bg-green-500/20 text-green-400 border-green-500/50'
+              : 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+          }`}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setDifficultyLevel('basic')}
+        >
+          🌱 基础模式
+        </motion.button>
+        <motion.button
+          className={`px-4 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+            difficultyLevel === 'research'
+              ? 'bg-purple-500/20 text-purple-400 border-purple-500/50'
+              : 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+          }`}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setDifficultyLevel('research')}
+        >
+          🔬 研究模式
+        </motion.button>
       </div>
 
       {/* 波片类型选择 */}
@@ -688,6 +837,156 @@ export function WaveplateDemo() {
               : '快轴与慢轴相位差为 π (180°)'}
           </div>
         </ControlPanel>
+
+        {/* 研究模式：非理想参数控制 */}
+        {difficultyLevel === 'research' && (
+          <ControlPanel title="🔬 非理想波片参数">
+            {/* 启用非理想模式 */}
+            <div className="flex items-center justify-between py-2 border-b border-slate-700/50">
+              <span className="text-xs text-gray-400">启用非理想模拟</span>
+              <Toggle
+                label=""
+                checked={nonIdealParams.useNonIdeal}
+                onChange={(checked) => setNonIdealParams({ ...nonIdealParams, useNonIdeal: checked })}
+              />
+            </div>
+
+            {nonIdealParams.useNonIdeal && (
+              <div className="space-y-3 pt-2">
+                {/* 波长 */}
+                <div>
+                  <SliderControl
+                    label="工作波长 λ"
+                    value={wavelength}
+                    min={400}
+                    max={700}
+                    step={10}
+                    unit=" nm"
+                    onChange={setWavelength}
+                    color="purple"
+                  />
+                  <div
+                    className="h-2 rounded-full mt-1"
+                    style={{ backgroundColor: wavelengthColor }}
+                  />
+                </div>
+
+                {/* 设计波长 */}
+                <SliderControl
+                  label="设计波长"
+                  value={nonIdealParams.designWavelength}
+                  min={500}
+                  max={600}
+                  step={10}
+                  unit=" nm"
+                  onChange={(v) => setNonIdealParams({ ...nonIdealParams, designWavelength: v })}
+                  color="cyan"
+                />
+
+                {/* 相位误差 */}
+                <SliderControl
+                  label="相位误差"
+                  value={nonIdealParams.phaseError * 180 / Math.PI}
+                  min={-10}
+                  max={10}
+                  step={0.5}
+                  unit="°"
+                  onChange={(v) => setNonIdealParams({ ...nonIdealParams, phaseError: v * Math.PI / 180 })}
+                  color="orange"
+                  formatValue={(v) => (v >= 0 ? '+' : '') + v.toFixed(1)}
+                />
+
+                {/* 快轴对准误差 */}
+                <SliderControl
+                  label="快轴对准误差"
+                  value={nonIdealParams.axisError}
+                  min={-5}
+                  max={5}
+                  step={0.1}
+                  unit="°"
+                  onChange={(v) => setNonIdealParams({ ...nonIdealParams, axisError: v })}
+                  color="red"
+                  formatValue={(v) => (v >= 0 ? '+' : '') + v.toFixed(1)}
+                />
+
+                {/* 透过率 */}
+                <SliderControl
+                  label="透过率"
+                  value={nonIdealParams.transmittance * 100}
+                  min={80}
+                  max={100}
+                  step={1}
+                  unit="%"
+                  onChange={(v) => setNonIdealParams({ ...nonIdealParams, transmittance: v / 100 })}
+                  color="green"
+                />
+
+                {/* 预设按钮 */}
+                <div className="flex gap-2 pt-2 border-t border-slate-700/50">
+                  <motion.button
+                    className="flex-1 px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setNonIdealParams({ ...IDEAL_WAVEPLATE, useNonIdeal: true })}
+                  >
+                    理想波片
+                  </motion.button>
+                  <motion.button
+                    className="flex-1 px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setNonIdealParams({ ...TYPICAL_WAVEPLATE, useNonIdeal: true })}
+                  >
+                    典型波片
+                  </motion.button>
+                </div>
+              </div>
+            )}
+
+            {/* 非理想计算结果 */}
+            {nonIdealParams.useNonIdeal && nonIdealResult && (
+              <div className="mt-3 pt-3 border-t border-slate-700/50 space-y-2">
+                <div className="text-xs text-gray-500 font-medium">非理想计算结果</div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2 bg-slate-900/50 rounded">
+                    <div className="text-gray-500">实际相位延迟</div>
+                    <div className="text-purple-400 font-mono">
+                      {(nonIdealResult.actualRetardation * 180 / Math.PI).toFixed(2)}°
+                    </div>
+                  </div>
+                  <div className="p-2 bg-slate-900/50 rounded">
+                    <div className="text-gray-500">输出强度</div>
+                    <div className="text-green-400 font-mono">
+                      {(nonIdealResult.outputIntensity * 100).toFixed(1)}%
+                    </div>
+                  </div>
+                  <div className="p-2 bg-slate-900/50 rounded">
+                    <div className="text-gray-500">椭圆度</div>
+                    <div className="text-cyan-400 font-mono">
+                      {(nonIdealResult.ellipticity * 100).toFixed(1)}%
+                    </div>
+                  </div>
+                  <div className="p-2 bg-slate-900/50 rounded">
+                    <div className="text-gray-500">偏振度(DOP)</div>
+                    <div className="text-orange-400 font-mono">
+                      {(nonIdealResult.outputStokes.degreeOfPolarization * 100).toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+
+                {/* 偏差提示 */}
+                {Math.abs(nonIdealResult.actualRetardation - (waveplateType === 'quarter' ? Math.PI / 2 : Math.PI)) > 0.05 && (
+                  <div className="p-2 bg-orange-500/10 border border-orange-500/30 rounded text-xs text-orange-300">
+                    ⚠️ 相位偏差显著：输出偏振态与理想情况有明显差异。
+                    {waveplateType === 'quarter' && nonIdealResult.ellipticity < 0.9 && (
+                      <span> 原本应产生圆偏振光，现在产生椭圆偏振光。</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </ControlPanel>
+        )}
       </div>
 
       {/* 波片功能说明 */}
