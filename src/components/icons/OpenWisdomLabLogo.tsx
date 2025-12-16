@@ -21,22 +21,32 @@ export function OpenWisdomLabLogo({
   height = 40,
   theme = 'dark'
 }: OpenWisdomLabLogoProps) {
-  // Color scheme
+  // Color scheme - enhanced for better website integration
   const colors = {
-    owlPrimary: '#E91E8C',    // Pink/Magenta for owl
-    owlSecondary: '#D91A7D',  // Darker pink for details
-    textBlue: '#0066CC',      // Blue for text
-    textBlueDark: '#0052A3',  // Darker blue for text in light theme
+    owlPrimary: theme === 'dark' ? '#E91E8C' : '#D91A7D',    // Pink/Magenta for owl
+    owlSecondary: theme === 'dark' ? '#D91A7D' : '#C01670',  // Darker pink for details
+    textBlue: theme === 'dark' ? '#22D3EE' : '#0891B2',      // Cyan to match site theme
+    textBlueDark: theme === 'dark' ? '#06B6D4' : '#0E7490',  // Darker cyan for emphasis
   }
 
-  const textColor = theme === 'dark' ? colors.textBlue : colors.textBlueDark
+  const textColor = colors.textBlue
 
   return (
     <svg
       height={height}
       viewBox="0 0 300 80"
       fill="none"
-      className={cn('transition-all duration-300', className)}
+      className={cn(
+        'transition-all duration-500 ease-out',
+        'hover:scale-110 hover:drop-shadow-[0_0_25px_rgba(233,30,140,0.4)]',
+        'cursor-pointer',
+        className
+      )}
+      style={{
+        filter: theme === 'dark'
+          ? 'drop-shadow(0 2px 8px rgba(233,30,140,0.2))'
+          : 'drop-shadow(0 2px 6px rgba(217,26,125,0.15))'
+      }}
     >
       <defs>
         {/* Owl gradient */}
@@ -101,7 +111,14 @@ export function OpenWisdomLabLogo({
         />
       </g>
 
-      {/* "OPEN WISDOM LAB" Text */}
+      {/* "OPEN WISDOM LAB" Text - Enhanced gradient */}
+      <defs>
+        <linearGradient id="text-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={textColor} />
+          <stop offset="100%" stopColor={colors.textBlueDark} />
+        </linearGradient>
+      </defs>
+
       <g transform="translate(75, 0)">
         {/* OPEN */}
         <text
@@ -110,8 +127,8 @@ export function OpenWisdomLabLogo({
           fontFamily="Arial, sans-serif"
           fontSize="20"
           fontWeight="700"
-          fill={textColor}
-          letterSpacing="1"
+          fill="url(#text-grad)"
+          letterSpacing="1.5"
         >
           OPEN
         </text>
@@ -123,8 +140,8 @@ export function OpenWisdomLabLogo({
           fontFamily="Arial, sans-serif"
           fontSize="20"
           fontWeight="700"
-          fill={textColor}
-          letterSpacing="1"
+          fill="url(#text-grad)"
+          letterSpacing="1.5"
         >
           WISDOM
         </text>
@@ -136,8 +153,8 @@ export function OpenWisdomLabLogo({
           fontFamily="Arial, sans-serif"
           fontSize="20"
           fontWeight="700"
-          fill={textColor}
-          letterSpacing="1"
+          fill="url(#text-grad)"
+          letterSpacing="1.5"
         >
           LAB
         </text>
