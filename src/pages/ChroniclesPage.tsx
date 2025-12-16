@@ -7,9 +7,8 @@
  * - Right track: Polarization-specific history (偏振光专属旅程)
  */
 
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { Tabs, Badge, PersistentHeader } from '@/components/shared'
@@ -19,132 +18,10 @@ import {
   Sun, Sparkles, HelpCircle
 } from 'lucide-react'
 
-// Mapping from diagram concepts to timeline years for navigation
-const DIAGRAM_NODE_TO_YEAR: Record<string, number> = {
-  'snells-law': 1621,
-  'ray-tracing': 1621,
-  'lens-imaging': 1665,
-  'malus-law': 1809,
-  'birefringence': 1669,
-  'waveplates': 1816,
-  'stokes-vectors': 1852,
-  'quantum-optics': 1905,
-  'photoelectric': 1905,
-  'entanglement': 2023,
-  'single-photon': 2023,
-  'interference': 1801,
-  'diffraction': 1801,
-}
-
 // ============================================
-// Optical Panorama - 光学全景图 (Interactive Constellation Map)
-// 光学星图：全面系统展示光学学科体系与历史发展
+// Optical Panorama - 光学全景图 (Static Hierarchical Diagram)
+// 静态学科结构图：展示光学学科各分支与偏振光的核心位置
 // ============================================
-
-interface OpticalOverviewDiagramProps {
-  onNodeClick?: (year: number) => void
-}
-
-// 光学知识节点数据结构
-interface OpticalNode {
-  id: string
-  nameEn: string
-  nameZh: string
-  category: 'foundation' | 'geometric' | 'wave' | 'polarization' | 'quantum' | 'application'
-  year?: number
-  x: number  // 相对位置 (0-100)
-  y: number
-  size: 'large' | 'medium' | 'small'
-  description?: { en: string; zh: string }
-  connections?: string[]  // 连接到其他节点的id
-}
-
-// 完整的光学知识图谱节点
-const OPTICAL_NODES: OpticalNode[] = [
-  // 基础层 - 光的本质
-  { id: 'light-nature', nameEn: 'Nature of Light', nameZh: '光的本质', category: 'foundation', x: 50, y: 8, size: 'large',
-    description: { en: 'The fundamental question: What is light?', zh: '根本问题：光是什么？' } },
-  { id: 'em-wave', nameEn: 'EM Wave', nameZh: '电磁波', category: 'foundation', year: 1865, x: 35, y: 18, size: 'medium',
-    connections: ['light-nature', 'wave-optics'] },
-  { id: 'photon', nameEn: 'Photon', nameZh: '光子', category: 'foundation', year: 1905, x: 65, y: 18, size: 'medium',
-    connections: ['light-nature', 'quantum-optics'] },
-
-  // 几何光学分支
-  { id: 'geometric-optics', nameEn: 'Geometric Optics', nameZh: '几何光学', category: 'geometric', x: 15, y: 32, size: 'large',
-    description: { en: 'Ray tracing and lens systems', zh: '光线追踪与透镜系统' } },
-  { id: 'snells-law', nameEn: "Snell's Law", nameZh: '斯涅尔定律', category: 'geometric', year: 1621, x: 8, y: 44, size: 'small',
-    connections: ['geometric-optics'] },
-  { id: 'reflection', nameEn: 'Reflection', nameZh: '反射', category: 'geometric', x: 15, y: 48, size: 'small',
-    connections: ['geometric-optics'] },
-  { id: 'lens-imaging', nameEn: 'Lens Imaging', nameZh: '透镜成像', category: 'geometric', year: 1665, x: 22, y: 44, size: 'small',
-    connections: ['geometric-optics'] },
-  { id: 'optical-instruments', nameEn: 'Instruments', nameZh: '光学仪器', category: 'geometric', x: 15, y: 56, size: 'small',
-    connections: ['geometric-optics', 'lens-imaging'] },
-
-  // 波动光学分支
-  { id: 'wave-optics', nameEn: 'Wave Optics', nameZh: '波动光学', category: 'wave', x: 40, y: 32, size: 'large',
-    description: { en: 'Interference, diffraction, and coherence', zh: '干涉、衍射与相干性' },
-    connections: ['em-wave'] },
-  { id: 'interference', nameEn: 'Interference', nameZh: '干涉', category: 'wave', year: 1801, x: 30, y: 44, size: 'small',
-    connections: ['wave-optics'] },
-  { id: 'diffraction', nameEn: 'Diffraction', nameZh: '衍射', category: 'wave', year: 1818, x: 38, y: 48, size: 'small',
-    connections: ['wave-optics'] },
-  { id: 'coherence', nameEn: 'Coherence', nameZh: '相干性', category: 'wave', x: 46, y: 44, size: 'small',
-    connections: ['wave-optics'] },
-  { id: 'huygens', nameEn: 'Huygens Principle', nameZh: '惠更斯原理', category: 'wave', year: 1690, x: 34, y: 56, size: 'small',
-    connections: ['wave-optics', 'diffraction'] },
-
-  // 偏振光学分支 - 核心高亮
-  { id: 'polarization', nameEn: 'Polarization', nameZh: '偏振光学', category: 'polarization', x: 60, y: 38, size: 'large',
-    description: { en: 'The transverse wave nature of light - Course Focus', zh: '光的横波特性 - 本课程核心' },
-    connections: ['wave-optics'] },
-  { id: 'birefringence', nameEn: 'Birefringence', nameZh: '双折射', category: 'polarization', year: 1669, x: 52, y: 50, size: 'medium',
-    connections: ['polarization'] },
-  { id: 'malus-law', nameEn: "Malus's Law", nameZh: '马吕斯定律', category: 'polarization', year: 1809, x: 60, y: 54, size: 'medium',
-    connections: ['polarization'] },
-  { id: 'waveplates', nameEn: 'Waveplates', nameZh: '波片', category: 'polarization', year: 1816, x: 68, y: 50, size: 'medium',
-    connections: ['polarization', 'birefringence'] },
-  { id: 'stokes-vectors', nameEn: 'Stokes Vectors', nameZh: '斯托克斯参量', category: 'polarization', year: 1852, x: 54, y: 62, size: 'small',
-    connections: ['polarization'] },
-  { id: 'mueller-matrix', nameEn: 'Mueller Matrix', nameZh: '穆勒矩阵', category: 'polarization', year: 1943, x: 62, y: 66, size: 'small',
-    connections: ['stokes-vectors'] },
-  { id: 'jones-calculus', nameEn: 'Jones Calculus', nameZh: '琼斯矩阵', category: 'polarization', year: 1941, x: 70, y: 62, size: 'small',
-    connections: ['polarization', 'waveplates'] },
-  { id: 'elliptical-pol', nameEn: 'Elliptical Pol.', nameZh: '椭圆偏振', category: 'polarization', x: 76, y: 54, size: 'small',
-    connections: ['polarization'] },
-  { id: 'brewster', nameEn: "Brewster's Angle", nameZh: '布儒斯特角', category: 'polarization', year: 1815, x: 48, y: 58, size: 'small',
-    connections: ['polarization', 'reflection'] },
-  { id: 'faraday-effect', nameEn: 'Faraday Effect', nameZh: '法拉第效应', category: 'polarization', year: 1845, x: 66, y: 58, size: 'small',
-    connections: ['polarization'] },
-
-  // 量子光学分支
-  { id: 'quantum-optics', nameEn: 'Quantum Optics', nameZh: '量子光学', category: 'quantum', x: 85, y: 32, size: 'large',
-    description: { en: 'Photon physics and quantum phenomena', zh: '光子物理与量子现象' },
-    connections: ['photon'] },
-  { id: 'photoelectric', nameEn: 'Photoelectric', nameZh: '光电效应', category: 'quantum', year: 1905, x: 80, y: 44, size: 'small',
-    connections: ['quantum-optics'] },
-  { id: 'entanglement', nameEn: 'Entanglement', nameZh: '量子纠缠', category: 'quantum', year: 2022, x: 88, y: 48, size: 'small',
-    connections: ['quantum-optics'] },
-  { id: 'single-photon', nameEn: 'Single Photon', nameZh: '单光子', category: 'quantum', x: 92, y: 44, size: 'small',
-    connections: ['quantum-optics'] },
-  { id: 'quantum-pol', nameEn: 'Quantum Polarimetry', nameZh: '量子偏振测量', category: 'quantum', year: 2023, x: 78, y: 56, size: 'medium',
-    connections: ['quantum-optics', 'polarization', 'entanglement'],
-    description: { en: 'Bridging classical polarization and quantum mechanics', zh: '连接经典偏振与量子力学' } },
-
-  // 应用层
-  { id: 'app-3d', nameEn: '3D Cinema', nameZh: '3D电影', category: 'application', x: 20, y: 78, size: 'small',
-    connections: ['polarization'] },
-  { id: 'app-lcd', nameEn: 'LCD Display', nameZh: 'LCD显示', category: 'application', x: 32, y: 82, size: 'small',
-    connections: ['polarization', 'waveplates'] },
-  { id: 'app-sunglasses', nameEn: 'Sunglasses', nameZh: '偏振太阳镜', category: 'application', x: 44, y: 78, size: 'small',
-    connections: ['malus-law'] },
-  { id: 'app-microscopy', nameEn: 'Pol. Microscopy', nameZh: '偏光显微镜', category: 'application', x: 56, y: 82, size: 'small',
-    connections: ['birefringence'] },
-  { id: 'app-fiber', nameEn: 'Fiber Optics', nameZh: '光纤通信', category: 'application', x: 68, y: 78, size: 'small',
-    connections: ['polarization'] },
-  { id: 'app-lidar', nameEn: 'LiDAR', nameZh: '激光雷达', category: 'application', x: 80, y: 82, size: 'small',
-    connections: ['polarization', 'quantum-pol'] },
-]
 
 // 类别颜色配置
 const CATEGORY_COLORS = {
@@ -156,314 +33,392 @@ const CATEGORY_COLORS = {
   application: { dark: { bg: '#1f2937', stroke: '#9ca3af', text: '#d1d5db' }, light: { bg: '#f3f4f6', stroke: '#6b7280', text: '#4b5563' } },
 }
 
-// 动画变体
-const nodeVariants = {
-  rest: { scale: 1 },
-  hover: { scale: 1.15, transition: { duration: 0.2, ease: 'easeOut' as const } }
-}
-
-const pulseVariants = {
-  animate: {
-    scale: [1, 1.2, 1],
-    opacity: [0.7, 0.3, 0.7],
-    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' as const }
-  }
-}
-
-const glowVariants = {
-  animate: {
-    opacity: [0.4, 0.8, 0.4],
-    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' as const }
-  }
-}
-
-function OpticalOverviewDiagram({ onNodeClick }: OpticalOverviewDiagramProps) {
+function OpticalOverviewDiagram() {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null)
 
-  const handleNodeClick = useCallback((node: OpticalNode) => {
-    if (node.year && onNodeClick) {
-      const year = DIAGRAM_NODE_TO_YEAR[node.id] || node.year
-      onNodeClick(year)
-    }
-  }, [onNodeClick])
-
-  const getNodeColor = (category: string) => {
-    const colors = CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]
-    return theme === 'dark' ? colors.dark : colors.light
+  const getColor = (category: keyof typeof CATEGORY_COLORS) => {
+    return theme === 'dark' ? CATEGORY_COLORS[category].dark : CATEGORY_COLORS[category].light
   }
 
-  const getNodeRadius = (size: string) => {
-    switch (size) {
-      case 'large': return 5.5
-      case 'medium': return 4
-      default: return 3
-    }
-  }
+  // 光学分支数据
+  const branches = [
+    {
+      id: 'geometric',
+      nameEn: 'Geometric Optics',
+      nameZh: '几何光学',
+      descEn: 'Ray tracing, lenses, mirrors',
+      descZh: '光线追踪、透镜、反射镜',
+      category: 'geometric' as const,
+      topics: [
+        { en: 'Reflection & Refraction', zh: '反射与折射' },
+        { en: 'Lens Systems', zh: '透镜系统' },
+        { en: 'Optical Instruments', zh: '光学仪器' },
+      ]
+    },
+    {
+      id: 'wave',
+      nameEn: 'Wave Optics',
+      nameZh: '波动光学',
+      descEn: 'Interference, diffraction, coherence',
+      descZh: '干涉、衍射、相干性',
+      category: 'wave' as const,
+      topics: [
+        { en: 'Interference', zh: '干涉' },
+        { en: 'Diffraction', zh: '衍射' },
+        { en: 'Coherence', zh: '相干性' },
+      ]
+    },
+    {
+      id: 'polarization',
+      nameEn: 'Polarization Optics',
+      nameZh: '偏振光学',
+      descEn: 'Transverse wave nature - Course Focus',
+      descZh: '光的横波特性 - 本课程核心',
+      category: 'polarization' as const,
+      isHighlight: true,
+      topics: [
+        { en: "Malus's Law", zh: '马吕斯定律' },
+        { en: 'Birefringence', zh: '双折射' },
+        { en: 'Waveplates', zh: '波片' },
+        { en: 'Stokes & Mueller', zh: '斯托克斯与穆勒' },
+      ]
+    },
+    {
+      id: 'quantum',
+      nameEn: 'Quantum Optics',
+      nameZh: '量子光学',
+      descEn: 'Photon physics, quantum states',
+      descZh: '光子物理、量子态',
+      category: 'quantum' as const,
+      topics: [
+        { en: 'Photoelectric Effect', zh: '光电效应' },
+        { en: 'Quantum Entanglement', zh: '量子纠缠' },
+        { en: 'Single Photon', zh: '单光子' },
+      ]
+    },
+  ]
 
-  // 渲染连接线
-  const renderConnections = () => {
-    const connections: React.ReactElement[] = []
-    OPTICAL_NODES.forEach(node => {
-      if (node.connections) {
-        node.connections.forEach(targetId => {
-          const target = OPTICAL_NODES.find(n => n.id === targetId)
-          if (target) {
-            const isHighlighted = hoveredNode === node.id || hoveredNode === targetId
-            const isPolarizationPath = node.category === 'polarization' || target.category === 'polarization'
-            connections.push(
-              <motion.line
-                key={`${node.id}-${targetId}`}
-                x1={`${node.x}%`}
-                y1={`${node.y}%`}
-                x2={`${target.x}%`}
-                y2={`${target.y}%`}
-                stroke={isPolarizationPath
-                  ? (theme === 'dark' ? '#22d3ee' : '#06b6d4')
-                  : (theme === 'dark' ? '#475569' : '#cbd5e1')}
-                strokeWidth={isHighlighted ? 2 : 1}
-                strokeOpacity={isHighlighted ? 0.8 : 0.3}
-                strokeDasharray={isPolarizationPath ? undefined : '4,4'}
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, delay: 0.5 }}
-              />
-            )
-          }
-        })
-      }
-    })
-    return connections
-  }
-
-  // 渲染节点
-  const renderNode = (node: OpticalNode) => {
-    const colors = getNodeColor(node.category)
-    const radius = getNodeRadius(node.size)
-    const isHovered = hoveredNode === node.id
-    const isPolarization = node.category === 'polarization'
-    const isClickable = !!node.year && !!onNodeClick
-
-    return (
-      <motion.g
-        key={node.id}
-        initial="rest"
-        whileHover="hover"
-        variants={nodeVariants}
-        onMouseEnter={() => setHoveredNode(node.id)}
-        onMouseLeave={() => setHoveredNode(null)}
-        onClick={() => handleNodeClick(node)}
-        style={{ cursor: isClickable ? 'pointer' : 'default' }}
-      >
-        {/* 偏振光学节点的光晕效果 */}
-        {isPolarization && (
-          <motion.circle
-            cx={`${node.x}%`}
-            cy={`${node.y}%`}
-            r={radius + 2}
-            fill="none"
-            stroke={colors.stroke}
-            strokeWidth="0.4"
-            variants={pulseVariants}
-            animate="animate"
-          />
-        )}
-
-        {/* 大节点的外圈光晕 */}
-        {node.size === 'large' && (
-          <motion.circle
-            cx={`${node.x}%`}
-            cy={`${node.y}%`}
-            r={radius + 1.5}
-            fill={colors.stroke}
-            opacity={0.15}
-            variants={glowVariants}
-            animate="animate"
-          />
-        )}
-
-        {/* 节点主体 */}
-        <circle
-          cx={`${node.x}%`}
-          cy={`${node.y}%`}
-          r={radius}
-          fill={colors.bg}
-          stroke={colors.stroke}
-          strokeWidth={isPolarization ? 0.5 : 0.3}
-        />
-
-        {/* 节点名称 */}
-        <text
-          x={`${node.x}%`}
-          y={`${node.y + (node.size === 'large' ? 4 : node.size === 'medium' ? 3.5 : 3)}%`}
-          textAnchor="middle"
-          dominantBaseline="hanging"
-          fontSize={node.size === 'large' ? 2.8 : node.size === 'medium' ? 2.4 : 2}
-          fontWeight={node.size === 'large' ? 'bold' : 'normal'}
-          fill={colors.text}
-        >
-          {isZh ? node.nameZh : node.nameEn}
-        </text>
-
-        {/* 年份标签 */}
-        {node.year && isHovered && (
-          <text
-            x={`${node.x}%`}
-            y={`${node.y + (node.size === 'large' ? 7 : node.size === 'medium' ? 6 : 5)}%`}
-            textAnchor="middle"
-            fontSize="1.8"
-            fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-          >
-            {node.year}
-          </text>
-        )}
-      </motion.g>
-    )
-  }
+  // 偏振光应用领域
+  const applications = [
+    { en: '3D Cinema', zh: '3D电影' },
+    { en: 'LCD Display', zh: 'LCD显示' },
+    { en: 'Polarized Sunglasses', zh: '偏振太阳镜' },
+    { en: 'Polarizing Microscopy', zh: '偏光显微镜' },
+    { en: 'Fiber Optics', zh: '光纤通信' },
+    { en: 'LiDAR', zh: '激光雷达' },
+  ]
 
   return (
     <div className={cn(
       'mb-8 rounded-2xl border overflow-hidden',
       theme === 'dark'
-        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 border-slate-600'
-        : 'bg-gradient-to-br from-white via-slate-50 to-cyan-50 border-gray-200'
+        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-slate-600'
+        : 'bg-gradient-to-br from-white via-slate-50 to-white border-gray-200'
     )}>
       {/* 标题区域 */}
       <div className={cn(
         'px-6 py-4 border-b',
         theme === 'dark' ? 'border-slate-700 bg-slate-900/50' : 'border-gray-100 bg-white/50'
       )}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              'p-2 rounded-xl',
-              theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
-            )}>
-              <Sparkles className={cn('w-6 h-6', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
-            </div>
-            <div>
-              <h3 className={cn('font-bold text-lg', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-                {isZh ? '光学全景图' : 'Optical Science Panorama'}
-              </h3>
-              <p className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
-                {isZh ? '探索光学知识体系的完整图景' : 'Explore the complete landscape of optical science'}
-              </p>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            'p-2 rounded-xl',
+            theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
+          )}>
+            <Sparkles className={cn('w-6 h-6', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
           </div>
-          <div className="flex items-center gap-2">
-            <span className={cn(
-              'text-xs px-3 py-1 rounded-full font-medium',
-              theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-700'
-            )}>
-              {isZh ? '点击节点跳转历史' : 'Click nodes to navigate'}
-            </span>
+          <div>
+            <h3 className={cn('font-bold text-lg', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+              {isZh ? '光学全景图' : 'Optical Science Panorama'}
+            </h3>
+            <p className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+              {isZh ? '偏振光在光学学科体系中的核心位置' : 'The central role of polarization in optical science'}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* 主图区域 */}
-      <div className="relative">
-        {/* 背景装饰 */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* 星空背景点 */}
-          {theme === 'dark' && (
-            <>
-              {[...Array(50)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white rounded-full"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    opacity: Math.random() * 0.5 + 0.1,
-                  }}
-                  animate={{
-                    opacity: [0.1, 0.5, 0.1],
-                  }}
-                  transition={{
-                    duration: 2 + Math.random() * 3,
-                    repeat: Infinity,
-                    delay: Math.random() * 2,
-                  }}
-                />
-              ))}
-            </>
-          )}
-        </div>
-
-        {/* SVG 星图 */}
-        <svg viewBox="0 0 100 95" className="w-full" style={{ minHeight: '500px' }}>
-          {/* 渐变定义 */}
+      {/* 主图区域 - 静态SVG */}
+      <div className="p-6">
+        <svg viewBox="0 0 800 480" className="w-full" style={{ minHeight: '400px' }}>
           <defs>
-            <radialGradient id="center-glow" cx="50%" cy="10%" r="50%">
-              <stop offset="0%" stopColor={theme === 'dark' ? '#fbbf24' : '#f59e0b'} stopOpacity="0.3" />
-              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
-            </radialGradient>
-            <radialGradient id="polarization-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor={theme === 'dark' ? '#22d3ee' : '#06b6d4'} stopOpacity="0.2" />
-              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+            {/* 偏振光学高亮渐变 */}
+            <linearGradient id="pol-highlight" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={theme === 'dark' ? '#22d3ee' : '#06b6d4'} stopOpacity="0.3" />
+              <stop offset="100%" stopColor={theme === 'dark' ? '#0891b2' : '#0e7490'} stopOpacity="0.1" />
+            </linearGradient>
+            {/* 光源渐变 */}
+            <radialGradient id="light-source" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={theme === 'dark' ? '#fbbf24' : '#f59e0b'} stopOpacity="1" />
+              <stop offset="70%" stopColor={theme === 'dark' ? '#f59e0b' : '#d97706'} stopOpacity="0.6" />
+              <stop offset="100%" stopColor={theme === 'dark' ? '#d97706' : '#b45309'} stopOpacity="0" />
             </radialGradient>
           </defs>
 
-          {/* 中心光源光晕 */}
-          <ellipse cx="50" cy="8" rx="30" ry="15" fill="url(#center-glow)" />
+          {/* 顶部：光的本质 */}
+          <g>
+            {/* 光源圆 */}
+            <circle cx="400" cy="45" r="35" fill="url(#light-source)" />
+            <text
+              x="400"
+              y="50"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="14"
+              fontWeight="bold"
+              fill={theme === 'dark' ? '#1f2937' : '#1f2937'}
+            >
+              {isZh ? '光' : 'Light'}
+            </text>
+            {/* 双重性标签 */}
+            <text
+              x="400"
+              y="95"
+              textAnchor="middle"
+              fontSize="11"
+              fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
+            >
+              {isZh ? '波粒二象性' : 'Wave-Particle Duality'}
+            </text>
+          </g>
 
-          {/* 偏振区域高亮 */}
-          <ellipse cx="62" cy="55" rx="20" ry="18" fill="url(#polarization-glow)" />
+          {/* 连接光源到分支的主干线 */}
+          <path
+            d="M 400 80 L 400 130"
+            stroke={theme === 'dark' ? '#475569' : '#cbd5e1'}
+            strokeWidth="2"
+            fill="none"
+          />
+          <path
+            d="M 400 130 L 100 180 M 400 130 L 283 180 M 400 130 L 517 180 M 400 130 L 700 180"
+            stroke={theme === 'dark' ? '#475569' : '#cbd5e1'}
+            strokeWidth="2"
+            fill="none"
+          />
 
-          {/* 层次分隔线 */}
-          <line x1="5" y1="25" x2="95" y2="25" stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} strokeWidth="0.3" strokeDasharray="2,2" opacity="0.5" />
-          <line x1="5" y1="70" x2="95" y2="70" stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} strokeWidth="0.3" strokeDasharray="2,2" opacity="0.5" />
+          {/* 四大分支 */}
+          {branches.map((branch, index) => {
+            const xPositions = [100, 283, 517, 700]
+            const x = xPositions[index]
+            const colors = getColor(branch.category)
+            const boxWidth = 160
+            const boxHeight = branch.isHighlight ? 200 : 160
 
-          {/* 层次标签 */}
-          <text x="3" y="15" fontSize="3" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} fontStyle="italic">
-            {isZh ? '本质层' : 'Fundamentals'}
-          </text>
-          <text x="3" y="40" fontSize="3" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} fontStyle="italic">
-            {isZh ? '理论层' : 'Theory'}
-          </text>
-          <text x="3" y="80" fontSize="3" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} fontStyle="italic">
-            {isZh ? '应用层' : 'Applications'}
-          </text>
+            return (
+              <g key={branch.id}>
+                {/* 高亮背景（仅偏振光学） */}
+                {branch.isHighlight && (
+                  <rect
+                    x={x - boxWidth/2 - 10}
+                    y={170}
+                    width={boxWidth + 20}
+                    height={boxHeight + 20}
+                    rx="16"
+                    fill="url(#pol-highlight)"
+                  />
+                )}
 
-          {/* 连接线 */}
-          <g>{renderConnections()}</g>
+                {/* 分支框 */}
+                <rect
+                  x={x - boxWidth/2}
+                  y={180}
+                  width={boxWidth}
+                  height={boxHeight}
+                  rx="12"
+                  fill={colors.bg}
+                  stroke={colors.stroke}
+                  strokeWidth={branch.isHighlight ? 3 : 1.5}
+                />
 
-          {/* 节点 */}
-          <g>{OPTICAL_NODES.map(renderNode)}</g>
-        </svg>
+                {/* 分支标题 */}
+                <text
+                  x={x}
+                  y={205}
+                  textAnchor="middle"
+                  fontSize={branch.isHighlight ? 15 : 13}
+                  fontWeight="bold"
+                  fill={colors.text}
+                >
+                  {isZh ? branch.nameZh : branch.nameEn}
+                </text>
 
-        {/* 悬停信息卡片 */}
-        {hoveredNode && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={cn(
-              'absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-3 rounded-xl shadow-lg max-w-sm',
-              theme === 'dark' ? 'bg-slate-800 border border-slate-600' : 'bg-white border border-gray-200'
-            )}
-          >
-            {(() => {
-              const node = OPTICAL_NODES.find(n => n.id === hoveredNode)
-              if (!node) return null
+                {/* 分支描述 */}
+                <text
+                  x={x}
+                  y={225}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
+                >
+                  {isZh ? branch.descZh : branch.descEn}
+                </text>
+
+                {/* 分隔线 */}
+                <line
+                  x1={x - boxWidth/2 + 15}
+                  y1={240}
+                  x2={x + boxWidth/2 - 15}
+                  y2={240}
+                  stroke={colors.stroke}
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+
+                {/* 子主题列表 */}
+                {branch.topics.map((topic, tIndex) => (
+                  <text
+                    key={tIndex}
+                    x={x}
+                    y={260 + tIndex * 22}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fill={theme === 'dark' ? '#cbd5e1' : '#4b5563'}
+                  >
+                    • {isZh ? topic.zh : topic.en}
+                  </text>
+                ))}
+
+                {/* 高亮标记（仅偏振光学） */}
+                {branch.isHighlight && (
+                  <g>
+                    <rect
+                      x={x - 45}
+                      y={360}
+                      width={90}
+                      height={22}
+                      rx="11"
+                      fill={colors.stroke}
+                    />
+                    <text
+                      x={x}
+                      y={374}
+                      textAnchor="middle"
+                      fontSize="11"
+                      fontWeight="bold"
+                      fill={theme === 'dark' ? '#0f172a' : '#ffffff'}
+                    >
+                      {isZh ? '⭐ 本课程核心' : '⭐ Course Focus'}
+                    </text>
+                  </g>
+                )}
+              </g>
+            )
+          })}
+
+          {/* 底部：应用层 */}
+          <g>
+            {/* 应用层标题 */}
+            <text
+              x="400"
+              y="420"
+              textAnchor="middle"
+              fontSize="13"
+              fontWeight="bold"
+              fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
+            >
+              {isZh ? '偏振光的现代应用' : 'Modern Applications of Polarization'}
+            </text>
+
+            {/* 应用标签 */}
+            {applications.map((app, index) => {
+              const appColors = getColor('application')
+              const totalApps = applications.length
+              const startX = 400 - ((totalApps - 1) * 65)
+              const appX = startX + index * 130
+
               return (
-                <div className="text-center">
-                  <div className={cn('font-semibold', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-                    {isZh ? node.nameZh : node.nameEn}
-                    {node.year && <span className={cn('ml-2 text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>({node.year})</span>}
-                  </div>
-                  {node.description && (
-                    <p className={cn('text-sm mt-1', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
-                      {isZh ? node.description.zh : node.description.en}
-                    </p>
-                  )}
-                </div>
+                <g key={index}>
+                  <rect
+                    x={appX - 55}
+                    y={438}
+                    width={110}
+                    height={26}
+                    rx="13"
+                    fill={appColors.bg}
+                    stroke={appColors.stroke}
+                    strokeWidth="1"
+                  />
+                  <text
+                    x={appX}
+                    y={455}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fill={appColors.text}
+                  >
+                    {isZh ? app.zh : app.en}
+                  </text>
+                </g>
               )
-            })()}
-          </motion.div>
-        )}
+            })}
+          </g>
+
+          {/* 连接偏振光学到应用层的线 */}
+          <path
+            d="M 517 380 L 517 400 L 400 410"
+            stroke={theme === 'dark' ? '#22d3ee' : '#06b6d4'}
+            strokeWidth="2"
+            strokeDasharray="4,4"
+            fill="none"
+          />
+
+          {/* 跨学科连接标注 */}
+          <g>
+            {/* 波动光学 → 偏振光学 */}
+            <path
+              d="M 350 280 Q 400 270 450 280"
+              stroke={theme === 'dark' ? '#22c55e' : '#16a34a'}
+              strokeWidth="1.5"
+              strokeDasharray="3,3"
+              fill="none"
+              opacity="0.6"
+            />
+            {/* 偏振光学 → 量子光学 */}
+            <path
+              d="M 580 280 Q 620 270 660 280"
+              stroke={theme === 'dark' ? '#a78bfa' : '#8b5cf6'}
+              strokeWidth="1.5"
+              strokeDasharray="3,3"
+              fill="none"
+              opacity="0.6"
+            />
+          </g>
+
+          {/* 右侧说明文字 */}
+          <g>
+            <text
+              x="780"
+              y="260"
+              textAnchor="end"
+              fontSize="10"
+              fill={theme === 'dark' ? '#64748b' : '#94a3b8'}
+              fontStyle="italic"
+            >
+              {isZh ? '偏振光学揭示' : 'Polarization reveals'}
+            </text>
+            <text
+              x="780"
+              y="275"
+              textAnchor="end"
+              fontSize="10"
+              fill={theme === 'dark' ? '#64748b' : '#94a3b8'}
+              fontStyle="italic"
+            >
+              {isZh ? '光的横波本质' : 'transverse wave nature'}
+            </text>
+            <text
+              x="780"
+              y="290"
+              textAnchor="end"
+              fontSize="10"
+              fill={theme === 'dark' ? '#64748b' : '#94a3b8'}
+              fontStyle="italic"
+            >
+              {isZh ? '连接经典与量子' : 'bridging classical & quantum'}
+            </text>
+          </g>
+        </svg>
       </div>
 
       {/* 图例区域 */}
@@ -472,36 +427,37 @@ function OpticalOverviewDiagram({ onNodeClick }: OpticalOverviewDiagramProps) {
         theme === 'dark' ? 'border-slate-700 bg-slate-900/30' : 'border-gray-100 bg-gray-50/50'
       )}>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          {Object.entries(CATEGORY_COLORS).map(([key, _]) => {
-            const colors = getNodeColor(key)
-            const labels: Record<string, { en: string; zh: string }> = {
-              foundation: { en: 'Foundation', zh: '基础' },
-              geometric: { en: 'Geometric', zh: '几何光学' },
-              wave: { en: 'Wave', zh: '波动光学' },
-              polarization: { en: 'Polarization ⭐', zh: '偏振光学 ⭐' },
-              quantum: { en: 'Quantum', zh: '量子光学' },
-              application: { en: 'Applications', zh: '应用' },
-            }
-            return (
-              <div key={key} className="flex items-center gap-1.5">
-                <div
-                  className="w-3 h-3 rounded-full border-2"
-                  style={{ backgroundColor: colors.bg, borderColor: colors.stroke }}
-                />
-                <span className="text-xs" style={{ color: colors.text }}>
-                  {isZh ? labels[key].zh : labels[key].en}
-                </span>
-              </div>
-            )
-          })}
+          {Object.entries(CATEGORY_COLORS)
+            .filter(([key]) => key !== 'foundation')
+            .map(([key]) => {
+              const colors = getColor(key as keyof typeof CATEGORY_COLORS)
+              const labels: Record<string, { en: string; zh: string }> = {
+                geometric: { en: 'Geometric Optics', zh: '几何光学' },
+                wave: { en: 'Wave Optics', zh: '波动光学' },
+                polarization: { en: 'Polarization Optics ⭐', zh: '偏振光学 ⭐' },
+                quantum: { en: 'Quantum Optics', zh: '量子光学' },
+                application: { en: 'Applications', zh: '应用' },
+              }
+              return (
+                <div key={key} className="flex items-center gap-1.5">
+                  <div
+                    className="w-3 h-3 rounded-full border-2"
+                    style={{ backgroundColor: colors.bg, borderColor: colors.stroke }}
+                  />
+                  <span className="text-xs" style={{ color: colors.text }}>
+                    {isZh ? labels[key].zh : labels[key].en}
+                  </span>
+                </div>
+              )
+            })}
         </div>
         <p className={cn(
           'text-center text-xs mt-3',
           theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
         )}>
           {isZh
-            ? '💡 偏振光学是波动光学的核心分支，连接经典与量子。点击带年份的节点可跳转到对应历史事件。'
-            : '💡 Polarization optics bridges classical wave theory and quantum mechanics. Click dated nodes to navigate to historical events.'}
+            ? '偏振光学是波动光学的核心分支，是理解光的横波本质的关键，连接经典光学与量子光学的桥梁。'
+            : 'Polarization optics is a core branch of wave optics, key to understanding transverse wave nature, bridging classical and quantum optics.'}
         </p>
       </div>
     </div>
@@ -3309,27 +3265,6 @@ export function ChroniclesPage() {
     }
   }
 
-  // Scroll to a specific year in the timeline
-  const handleNavigateToYear = useCallback((year: number) => {
-    // First, ensure we're on the timeline tab
-    setActiveTab('timeline')
-    // Reset filters to ensure the year is visible
-    setTrackFilter('all')
-    setFilter('')
-
-    // Wait for state updates and DOM to render
-    setTimeout(() => {
-      const element = document.getElementById(`timeline-year-${year}`)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        // Add a brief highlight effect
-        element.classList.add('ring-2', 'ring-amber-400', 'ring-opacity-75')
-        setTimeout(() => {
-          element.classList.remove('ring-2', 'ring-amber-400', 'ring-opacity-75')
-        }, 2000)
-      }
-    }, 100)
-  }, [])
 
   return (
     <div className={cn(
@@ -3386,8 +3321,8 @@ export function ChroniclesPage() {
           </div>
         </div>
 
-        {/* Optical Overview Diagram - 光学全景图 (Interactive Navigation Map) */}
-        <OpticalOverviewDiagram onNodeClick={handleNavigateToYear} />
+        {/* Optical Overview Diagram - 光学全景图 (Static Panorama) */}
+        <OpticalOverviewDiagram />
 
         {/* Tabs */}
         <div className="mb-6">
