@@ -7,15 +7,16 @@
  * - Right track: Polarization-specific history (偏振光专属旅程)
  */
 
-import React, { useState } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
   FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Sun, Sparkles, HelpCircle
+  Sun, Sparkles, HelpCircle, Zap
 } from 'lucide-react'
 
 // ============================================
@@ -33,15 +34,561 @@ const CATEGORY_COLORS = {
   application: { dark: { bg: '#1f2937', stroke: '#9ca3af', text: '#d1d5db' }, light: { bg: '#f3f4f6', stroke: '#6b7280', text: '#4b5563' } },
 }
 
-// 光谱刻度数据
+// 光谱刻度数据 - 增强版
 const SPECTRUM_SCALES = [
-  { position: 10, labelEn: 'mm', labelZh: '毫米', category: 'geometric' },
-  { position: 30, labelEn: 'μm', labelZh: '微米', category: 'wave' },
-  { position: 55, labelEn: 'nm', labelZh: '纳米', category: 'polarization' },
-  { position: 85, labelEn: 'photon', labelZh: '光子', category: 'quantum' },
+  { position: 8, labelEn: 'Radio', labelZh: '无线电', category: null, wavelength: '1m+' },
+  { position: 18, labelEn: 'Microwave', labelZh: '微波', category: null, wavelength: 'cm' },
+  { position: 28, labelEn: 'IR', labelZh: '红外', category: 'geometric', wavelength: 'μm' },
+  { position: 42, labelEn: 'Visible', labelZh: '可见光', category: 'wave', wavelength: '380-700nm', isVisible: true },
+  { position: 58, labelEn: 'UV', labelZh: '紫外', category: 'polarization', wavelength: '10-400nm' },
+  { position: 72, labelEn: 'X-ray', labelZh: 'X射线', category: 'quantum', wavelength: '0.01-10nm' },
+  { position: 88, labelEn: 'Gamma', labelZh: '伽马', category: null, wavelength: '<0.01nm' },
 ]
 
-function OpticalOverviewDiagram() {
+// 分支对应的光谱区域
+const BRANCH_SPECTRUM_REGIONS = {
+  geometric: { start: 22, end: 38, label: 'mm-μm' },
+  wave: { start: 36, end: 52, label: 'μm-nm' },
+  polarization: { start: 48, end: 68, label: 'nm scale' },
+  quantum: { start: 66, end: 82, label: 'photon' },
+}
+
+// ============================================
+// 子组件：电磁波谱条 (SpectrumScaleBar)
+// 底部光谱可视化，支持 Hover 高亮
+// ============================================
+interface SpectrumScaleBarProps {
+  activeBranch: string | null
+  theme: 'dark' | 'light'
+  isZh: boolean
+  onHover?: (branch: string | null) => void
+}
+
+function SpectrumScaleBar({ activeBranch, theme, isZh, onHover }: SpectrumScaleBarProps) {
+  const getColor = (category: keyof typeof CATEGORY_COLORS | null) => {
+    if (!category) return theme === 'dark'
+      ? { bg: '#374151', stroke: '#6b7280', text: '#9ca3af' }
+      : { bg: '#e5e7eb', stroke: '#9ca3af', text: '#6b7280' }
+    return theme === 'dark' ? CATEGORY_COLORS[category].dark : CATEGORY_COLORS[category].light
+  }
+
+  return (
+    <div className="mt-6 px-4">
+      {/* 标题 */}
+      <motion.div
+        className="text-center mb-3"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <span className={cn(
+          'text-sm font-medium',
+          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+        )}>
+          {isZh ? '电磁波谱与研究尺度' : 'Electromagnetic Spectrum & Research Scales'}
+        </span>
+      </motion.div>
+
+      {/* 光谱条容器 */}
+      <div className="relative h-20">
+        {/* 主光谱渐变条 */}
+        <motion.div
+          className="absolute left-0 right-0 top-6 h-4 rounded-full overflow-hidden"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+          style={{ transformOrigin: 'left' }}
+        >
+          <div
+            className="w-full h-full"
+            style={{
+              background: `linear-gradient(to right,
+                #dc2626 0%,
+                #f97316 15%,
+                #eab308 25%,
+                #22c55e 40%,
+                #06b6d4 55%,
+                #3b82f6 70%,
+                #8b5cf6 85%,
+                #ec4899 100%
+              )`,
+            }}
+          />
+          {/* 暗化遮罩（非可见光区域） */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(to right,
+                ${theme === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.5)'} 0%,
+                ${theme === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)'} 35%,
+                transparent 38%,
+                transparent 52%,
+                ${theme === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)'} 55%,
+                ${theme === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.5)'} 100%
+              )`,
+            }}
+          />
+        </motion.div>
+
+        {/* 分支高亮区域 */}
+        <AnimatePresence>
+          {activeBranch && BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS] && (
+            <motion.div
+              className="absolute top-5 h-6 rounded-full border-2"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              style={{
+                left: `${BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS].start}%`,
+                width: `${BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS].end - BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS].start}%`,
+                borderColor: getColor(activeBranch as keyof typeof CATEGORY_COLORS).stroke,
+                boxShadow: `0 0 12px ${getColor(activeBranch as keyof typeof CATEGORY_COLORS).stroke}`,
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* 刻度标记 */}
+        {SPECTRUM_SCALES.map((scale, index) => {
+          const colors = getColor(scale.category as keyof typeof CATEGORY_COLORS | null)
+          const isActive = activeBranch && scale.category === activeBranch
+
+          return (
+            <motion.div
+              key={index}
+              className="absolute flex flex-col items-center"
+              style={{ left: `${scale.position}%`, transform: 'translateX(-50%)' }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 + index * 0.05 }}
+              onMouseEnter={() => scale.category && onHover?.(scale.category)}
+              onMouseLeave={() => onHover?.(null)}
+            >
+              {/* 上方标签 */}
+              <span className={cn(
+                'text-[10px] font-medium transition-all duration-200',
+                isActive ? 'scale-110' : 'scale-100'
+              )} style={{ color: isActive ? colors.stroke : colors.text }}>
+                {isZh ? scale.labelZh : scale.labelEn}
+              </span>
+
+              {/* 刻度线 */}
+              <motion.div
+                className="w-0.5 my-1 rounded-full"
+                style={{
+                  backgroundColor: isActive ? colors.stroke : colors.text,
+                  height: isActive ? 12 : 8,
+                }}
+                animate={{ height: isActive ? 12 : 8 }}
+              />
+
+              {/* 下方波长标注 */}
+              <span className={cn(
+                'text-[9px] transition-opacity duration-200',
+                isActive ? 'opacity-100' : 'opacity-50'
+              )} style={{ color: colors.text }}>
+                {scale.wavelength}
+              </span>
+            </motion.div>
+          )
+        })}
+
+        {/* 可见光区域标注 */}
+        <motion.div
+          className={cn(
+            'absolute text-[10px] px-2 py-0.5 rounded-full',
+            theme === 'dark' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
+          )}
+          style={{ left: '45%', top: '75%', transform: 'translateX(-50%)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          {isZh ? '可见光区' : 'Visible'}
+        </motion.div>
+      </div>
+
+      {/* 波长方向指示 */}
+      <div className="flex justify-between mt-1 px-2">
+        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          {isZh ? '← 长波 (低能)' : '← Long λ (Low E)'}
+        </span>
+        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          {isZh ? '短波 (高能) →' : 'Short λ (High E) →'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// 子组件：偏振光专属正弦波光束 (PolarizationBeam)
+// 动态正弦波路径，模拟横波振动
+// ============================================
+interface PolarizationBeamProps {
+  startX: number
+  startY: number
+  endX: number
+  endY: number
+  color: string
+  isActive: boolean
+}
+
+function PolarizationBeam({ startX, startY, endX, endY, color, isActive }: PolarizationBeamProps) {
+  // 生成多帧正弦波路径用于动画
+  const generateSineWavePath = useCallback((phase: number = 0, amplitude: number = 12, frequency: number = 4) => {
+    const dx = endX - startX
+    const dy = endY - startY
+    const angle = Math.atan2(dy, dx)
+
+    let path = `M ${startX} ${startY}`
+    const steps = 80
+
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps
+      const baseX = startX + dx * t
+      const baseY = startY + dy * t
+      // 渐变振幅，末端减弱
+      const ampFactor = Math.sin(t * Math.PI) * (isActive ? 1 : 0.5)
+      const offset = Math.sin((t * Math.PI * 2 * frequency) + phase) * amplitude * ampFactor
+      const perpX = -Math.sin(angle) * offset
+      const perpY = Math.cos(angle) * offset
+      path += ` L ${baseX + perpX} ${baseY + perpY}`
+    }
+
+    return path
+  }, [startX, startY, endX, endY, isActive])
+
+  // 生成多个相位的路径用于动画
+  const paths = useMemo(() => {
+    const pathFrames = []
+    for (let i = 0; i <= 20; i++) {
+      pathFrames.push(generateSineWavePath((i / 20) * Math.PI * 2))
+    }
+    return pathFrames
+  }, [generateSineWavePath])
+
+  return (
+    <g>
+      {/* 发光背景层 */}
+      <motion.path
+        d={paths[0]}
+        fill="none"
+        stroke={color}
+        strokeWidth={isActive ? 8 : 4}
+        strokeLinecap="round"
+        opacity={0.3}
+        filter="url(#beam-glow)"
+        animate={{
+          d: paths,
+        }}
+        transition={{
+          d: {
+            duration: 2,
+            repeat: Infinity,
+            ease: 'linear',
+          }
+        }}
+      />
+      {/* 主光束 */}
+      <motion.path
+        d={paths[0]}
+        fill="none"
+        stroke={color}
+        strokeWidth={isActive ? 3 : 2}
+        strokeLinecap="round"
+        animate={{
+          d: paths,
+          opacity: isActive ? [0.8, 1, 0.8] : 0.6,
+        }}
+        transition={{
+          d: {
+            duration: 2,
+            repeat: Infinity,
+            ease: 'linear',
+          },
+          opacity: {
+            duration: 1.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }
+        }}
+      />
+      {/* 流动粒子效果 */}
+      {isActive && (
+        <motion.circle
+          r={4}
+          fill={color}
+          filter="url(#particle-glow)"
+          animate={{
+            offsetDistance: ['0%', '100%'],
+            opacity: [0, 1, 1, 0],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+          style={{
+            offsetPath: `path('${generateSineWavePath(0)}')`,
+          }}
+        />
+      )}
+    </g>
+  )
+}
+
+// ============================================
+// 子组件：普通光束 (LightBeam)
+// 带流动动画的贝塞尔曲线光束
+// ============================================
+interface LightBeamProps {
+  path: string
+  color: string
+  isActive: boolean
+  delay?: number
+}
+
+function LightBeam({ path, color, isActive, delay = 0 }: LightBeamProps) {
+  return (
+    <g>
+      {/* 发光背景 */}
+      <motion.path
+        d={path}
+        fill="none"
+        stroke={color}
+        strokeWidth={isActive ? 6 : 3}
+        strokeLinecap="round"
+        opacity={0.2}
+        filter="url(#beam-glow)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.8, delay: delay + 0.3 }}
+      />
+      {/* 主光束 */}
+      <motion.path
+        d={path}
+        fill="none"
+        stroke={color}
+        strokeWidth={isActive ? 3 : 2}
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{
+          pathLength: 1,
+          opacity: isActive ? 1 : 0.5,
+        }}
+        transition={{ duration: 0.8, delay }}
+      />
+      {/* 流动效果 */}
+      <motion.path
+        d={path}
+        fill="none"
+        stroke="white"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeDasharray="8 24"
+        opacity={isActive ? 0.6 : 0.2}
+        animate={{
+          strokeDashoffset: [32, 0],
+        }}
+        transition={{
+          duration: 1,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+      />
+    </g>
+  )
+}
+
+// ============================================
+// 子组件：分支卡片 (BranchCard)
+// 玻璃拟态卡片，支持选中/高亮状态
+// ============================================
+interface BranchCardProps {
+  branch: {
+    id: string
+    nameEn: string
+    nameZh: string
+    descEn: string
+    descZh: string
+    category: keyof typeof CATEGORY_COLORS
+    scaleEn: string
+    scaleZh: string
+    isHighlight?: boolean
+    topics: { en: string; zh: string }[]
+    icon: React.ReactNode
+  }
+  isSelected: boolean
+  isZh: boolean
+  theme: 'dark' | 'light'
+  onClick: () => void
+  onHover: (isHovered: boolean) => void
+  index: number
+}
+
+function BranchCard({ branch, isSelected, isZh, theme, onClick, onHover, index }: BranchCardProps) {
+  const colors = theme === 'dark' ? CATEGORY_COLORS[branch.category].dark : CATEGORY_COLORS[branch.category].light
+  const isHero = branch.isHighlight
+
+  return (
+    <motion.div
+      className={cn(
+        'relative cursor-pointer rounded-2xl border-2 p-4 transition-all duration-300',
+        'backdrop-blur-sm',
+        isHero ? 'col-span-full lg:col-span-1 lg:row-span-2' : '',
+        theme === 'dark'
+          ? 'bg-gradient-to-br from-slate-800/80 to-slate-900/80'
+          : 'bg-gradient-to-br from-white/80 to-gray-50/80'
+      )}
+      style={{
+        borderColor: isSelected ? colors.stroke : 'transparent',
+        boxShadow: isSelected
+          ? `0 0 20px ${colors.stroke}40, 0 4px 20px rgba(0,0,0,0.1)`
+          : '0 4px 20px rgba(0,0,0,0.1)',
+      }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: isSelected ? 1.02 : 1,
+      }}
+      whileHover={{ scale: 1.03, y: -2 }}
+      transition={{
+        duration: 0.3,
+        delay: index * 0.1,
+        type: 'spring',
+        stiffness: 300,
+        damping: 25,
+      }}
+      onClick={onClick}
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={() => onHover(false)}
+    >
+      {/* Hero 卡片特殊发光效果 */}
+      {isHero && (
+        <motion.div
+          className="absolute -inset-1 rounded-2xl opacity-50"
+          style={{
+            background: `linear-gradient(135deg, ${colors.stroke}20, transparent, ${colors.stroke}10)`,
+          }}
+          animate={{
+            opacity: isSelected ? [0.3, 0.6, 0.3] : 0.2,
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      )}
+
+      {/* 卡片内容 */}
+      <div className={cn('relative z-10', isHero ? 'space-y-3' : 'space-y-2')}>
+        {/* 图标和标题行 */}
+        <div className="flex items-center gap-3">
+          <motion.div
+            className={cn(
+              'p-2 rounded-xl',
+              isHero ? 'p-3' : 'p-2'
+            )}
+            style={{ backgroundColor: `${colors.stroke}20` }}
+            animate={isHero && isSelected ? {
+              boxShadow: [`0 0 0px ${colors.stroke}`, `0 0 20px ${colors.stroke}`, `0 0 0px ${colors.stroke}`],
+            } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            {branch.icon}
+          </motion.div>
+          <div>
+            <h4
+              className={cn('font-bold', isHero ? 'text-lg' : 'text-sm')}
+              style={{ color: colors.text }}
+            >
+              {isZh ? branch.nameZh : branch.nameEn}
+            </h4>
+            <p className={cn(
+              'text-xs',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh ? branch.scaleZh : branch.scaleEn}
+            </p>
+          </div>
+        </div>
+
+        {/* 描述 */}
+        <p className={cn(
+          isHero ? 'text-sm' : 'text-xs',
+          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+        )}>
+          {isZh ? branch.descZh : branch.descEn}
+        </p>
+
+        {/* 主题标签 */}
+        <div className="flex flex-wrap gap-1.5">
+          {branch.topics.slice(0, isHero ? 4 : 2).map((topic, i) => (
+            <motion.span
+              key={i}
+              className={cn(
+                'px-2 py-0.5 rounded-full text-xs',
+                theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
+              )}
+              style={{ color: colors.text }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1 + i * 0.05 + 0.3 }}
+            >
+              {isZh ? topic.zh : topic.en}
+            </motion.span>
+          ))}
+        </div>
+
+        {/* Hero 卡片专属标记 */}
+        {isHero && (
+          <motion.div
+            className={cn(
+              'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold',
+              theme === 'dark' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-cyan-100 text-cyan-700'
+            )}
+            animate={{
+              scale: [1, 1.05, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          >
+            <Star className="w-3 h-3" />
+            {isZh ? '本课程核心' : 'Course Focus'}
+          </motion.div>
+        )}
+      </div>
+
+      {/* 选中指示器 */}
+      <AnimatePresence>
+        {isSelected && (
+          <motion.div
+            className="absolute top-2 right-2 w-3 h-3 rounded-full"
+            style={{ backgroundColor: colors.stroke }}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+// ============================================
+// 主组件：知识棱镜 (OpticalOverviewDiagram)
+// ============================================
+interface OpticalOverviewDiagramProps {
+  onFilterChange?: (branch: string) => void
+}
+
+function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagramProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
@@ -50,22 +597,30 @@ function OpticalOverviewDiagram() {
   const [isExpanded, setIsExpanded] = useState(false)
   // 选中的分支 - 默认选中偏振光学
   const [selectedBranch, setSelectedBranch] = useState<string>('polarization')
+  // Hover 状态
+  const [hoveredBranch, setHoveredBranch] = useState<string | null>(null)
 
-  const getColor = (category: keyof typeof CATEGORY_COLORS) => {
-    return theme === 'dark' ? CATEGORY_COLORS[category].dark : CATEGORY_COLORS[category].light
-  }
+  const handleBranchSelect = useCallback((branchId: string) => {
+    setSelectedBranch(branchId)
+    onFilterChange?.(branchId)
+  }, [onFilterChange])
+
+  // 当前激活的分支（hover 优先）
+  const activeBranch = hoveredBranch || selectedBranch
 
   // 光学分支数据
-  const branches = [
+  const branches = useMemo(() => [
     {
       id: 'geometric',
       nameEn: 'Geometric Optics',
       nameZh: '几何光学',
-      descEn: 'Ray tracing, lenses, mirrors',
-      descZh: '光线追踪、透镜、反射镜',
+      descEn: 'Ray tracing, lenses, mirrors - where light travels in straight lines',
+      descZh: '光线追踪、透镜、反射镜 - 光沿直线传播的世界',
       category: 'geometric' as const,
       scaleEn: 'Macroscopic (mm+)',
       scaleZh: '宏观尺度 (mm+)',
+      beamColor: '#f97316',
+      icon: <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-orange-400' : 'text-orange-600')} />,
       topics: [
         { en: 'Reflection & Refraction', zh: '反射与折射' },
         { en: 'Lens Systems', zh: '透镜系统' },
@@ -76,11 +631,13 @@ function OpticalOverviewDiagram() {
       id: 'wave',
       nameEn: 'Wave Optics',
       nameZh: '波动光学',
-      descEn: 'Interference, diffraction',
-      descZh: '干涉、衍射、相干性',
+      descEn: 'Interference, diffraction - light as waves creating patterns',
+      descZh: '干涉、衍射 - 光波创造的奇妙图案',
       category: 'wave' as const,
       scaleEn: 'Wavelength (μm)',
       scaleZh: '波长尺度 (μm)',
+      beamColor: '#22c55e',
+      icon: <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-green-400' : 'text-green-600')} />,
       topics: [
         { en: 'Interference', zh: '干涉' },
         { en: 'Diffraction', zh: '衍射' },
@@ -91,12 +648,14 @@ function OpticalOverviewDiagram() {
       id: 'polarization',
       nameEn: 'Polarization Optics',
       nameZh: '偏振光学',
-      descEn: 'Transverse wave nature',
-      descZh: '光的横波特性',
+      descEn: 'The transverse nature of light - vibrations perpendicular to propagation reveal hidden dimensions of electromagnetic waves',
+      descZh: '光的横波本质 - 垂直于传播方向的振动，揭示电磁波的隐藏维度',
       category: 'polarization' as const,
       scaleEn: 'Wave vector (nm)',
       scaleZh: '波矢尺度 (nm)',
       isHighlight: true,
+      beamColor: '#22d3ee',
+      icon: <Zap className={cn('w-6 h-6', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />,
       topics: [
         { en: "Malus's Law", zh: '马吕斯定律' },
         { en: 'Birefringence', zh: '双折射' },
@@ -108,695 +667,436 @@ function OpticalOverviewDiagram() {
       id: 'quantum',
       nameEn: 'Quantum Optics',
       nameZh: '量子光学',
-      descEn: 'Photon physics, quantum states',
-      descZh: '光子物理、量子态',
+      descEn: 'Photon physics - light as discrete packets of energy',
+      descZh: '光子物理 - 光作为离散能量包的量子世界',
       category: 'quantum' as const,
       scaleEn: 'Photon (single)',
       scaleZh: '光子尺度',
+      beamColor: '#a855f7',
+      icon: <FlaskConical className={cn('w-5 h-5', theme === 'dark' ? 'text-purple-400' : 'text-purple-600')} />,
       topics: [
         { en: 'Photoelectric Effect', zh: '光电效应' },
         { en: 'Quantum Entanglement', zh: '量子纠缠' },
         { en: 'Single Photon', zh: '单光子' },
       ]
     },
-  ]
+  ], [theme])
 
-  // 生成正弦波路径（用于偏振光束动画）
-  const generateSineWavePath = (startX: number, startY: number, endX: number, endY: number, amplitude: number = 8, frequency: number = 4) => {
-    const dx = endX - startX
-    const dy = endY - startY
-    const angle = Math.atan2(dy, dx)
-
-    let path = `M ${startX} ${startY}`
-    const steps = 60
-
-    for (let i = 1; i <= steps; i++) {
-      const t = i / steps
-      const baseX = startX + dx * t
-      const baseY = startY + dy * t
-      const offset = Math.sin(t * Math.PI * 2 * frequency) * amplitude * (1 - t * 0.3)
-      const perpX = -Math.sin(angle) * offset
-      const perpY = Math.cos(angle) * offset
-      path += ` L ${baseX + perpX} ${baseY + perpY}`
-    }
-
-    return path
-  }
+  // 获取颜色辅助函数
+  const getColor = useCallback((category: keyof typeof CATEGORY_COLORS) => {
+    return theme === 'dark' ? CATEGORY_COLORS[category].dark : CATEGORY_COLORS[category].light
+  }, [theme])
 
   return (
-    <div className={cn(
-      'mb-8 rounded-2xl border overflow-hidden transition-all duration-300',
-      theme === 'dark'
-        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-slate-600'
-        : 'bg-gradient-to-br from-white via-slate-50 to-white border-gray-200'
-    )}>
-      {/* 可折叠标题区域 */}
-      <button
+    <motion.div
+      className={cn(
+        'mb-8 rounded-3xl border overflow-hidden',
+        theme === 'dark'
+          ? 'bg-gradient-to-br from-slate-900 via-slate-800/95 to-slate-900 border-slate-700/50'
+          : 'bg-gradient-to-br from-white via-gray-50/80 to-white border-gray-200/80',
+        'shadow-xl'
+      )}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* 可折叠标题区域 - 增强版 */}
+      <motion.button
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
-          'w-full px-6 py-4 border-b flex items-center justify-between cursor-pointer transition-colors',
+          'w-full px-6 py-5 flex items-center justify-between cursor-pointer transition-all duration-300',
           theme === 'dark'
-            ? 'border-slate-700 bg-slate-900/50 hover:bg-slate-800/50'
-            : 'border-gray-100 bg-white/50 hover:bg-gray-50/50'
+            ? 'bg-gradient-to-r from-slate-900/80 via-slate-800/50 to-slate-900/80 hover:from-slate-800/80 hover:via-slate-700/50 hover:to-slate-800/80'
+            : 'bg-gradient-to-r from-white/80 via-gray-50/50 to-white/80 hover:from-gray-50/80 hover:via-gray-100/50 hover:to-gray-50/80',
+          isExpanded && (theme === 'dark' ? 'border-b border-slate-700/50' : 'border-b border-gray-200/50')
         )}
+        whileHover={{ scale: 1.002 }}
+        whileTap={{ scale: 0.998 }}
       >
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            'p-2 rounded-xl relative',
-            theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
-          )}>
-            {/* 棱镜图标 */}
-            <svg className={cn('w-6 h-6', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="12,2 22,20 2,20" />
-              {/* 色散光线 */}
-              <line x1="16" y1="12" x2="22" y2="8" stroke="#f97316" strokeWidth="1.5" />
-              <line x1="17" y1="14" x2="22" y2="14" stroke="#22c55e" strokeWidth="1.5" />
-              <line x1="16" y1="16" x2="22" y2="20" stroke="#a855f7" strokeWidth="1.5" />
+        <div className="flex items-center gap-4">
+          {/* 动态棱镜图标 */}
+          <motion.div
+            className={cn(
+              'relative p-3 rounded-2xl',
+              theme === 'dark' ? 'bg-gradient-to-br from-cyan-500/20 to-purple-500/20' : 'bg-gradient-to-br from-cyan-100 to-purple-100'
+            )}
+            animate={isExpanded ? {
+              rotate: [0, 5, -5, 0],
+              scale: [1, 1.05, 1],
+            } : {}}
+            transition={{ duration: 2, repeat: isExpanded ? Infinity : 0 }}
+          >
+            <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
+              {/* 棱镜主体 */}
+              <motion.polygon
+                points="16,4 28,26 4,26"
+                fill={theme === 'dark' ? 'url(#prism-grad-dark)' : 'url(#prism-grad-light)'}
+                stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
+                strokeWidth="1.5"
+              />
+              {/* 动态色散光线 */}
+              <motion.line
+                x1="20" y1="14" x2="30" y2="8"
+                stroke="#f97316"
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              />
+              <motion.line
+                x1="21" y1="17" x2="30" y2="17"
+                stroke="#22c55e"
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              />
+              <motion.line
+                x1="21" y1="20" x2="30" y2="23"
+                stroke="#22d3ee"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              />
+              <motion.line
+                x1="20" y1="22" x2="30" y2="28"
+                stroke="#a855f7"
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              />
+              <defs>
+                <linearGradient id="prism-grad-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#475569" />
+                  <stop offset="100%" stopColor="#1e293b" />
+                </linearGradient>
+                <linearGradient id="prism-grad-light" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#f1f5f9" />
+                  <stop offset="100%" stopColor="#e2e8f0" />
+                </linearGradient>
+              </defs>
             </svg>
-          </div>
+            {/* 发光效果 */}
+            <motion.div
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                background: 'radial-gradient(circle, rgba(34,211,238,0.3) 0%, transparent 70%)',
+              }}
+              animate={{
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </motion.div>
+
           <div className="text-left">
-            <h3 className={cn('font-bold text-lg', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-              {isZh ? '知识棱镜：光学全景图' : 'The Prism of Knowledge: Optical Panorama'}
+            <h3 className={cn(
+              'font-bold text-xl tracking-tight',
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            )}>
+              {isZh ? '知识棱镜：光学全景图' : 'The Prism of Knowledge'}
             </h3>
-            <p className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
-              {isZh ? '点击展开查看光学学科分支与偏振光的核心位置' : 'Click to explore optical branches and the central role of polarization'}
+            <p className={cn(
+              'text-sm mt-0.5',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh
+                ? '探索光学四大分支，发现偏振光的核心地位'
+                : 'Explore the four branches of optics and discover the central role of polarization'}
             </p>
           </div>
         </div>
-        <div className={cn(
-          'p-2 rounded-lg transition-transform duration-300',
-          isExpanded && 'rotate-180',
-          theme === 'dark' ? 'bg-slate-700' : 'bg-gray-100'
-        )}>
-          <ChevronDown className={cn('w-5 h-5', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')} />
-        </div>
-      </button>
 
-      {/* 可折叠内容区域 */}
-      <div className={cn(
-        'transition-all duration-500 ease-in-out overflow-hidden',
-        isExpanded ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0'
-      )}>
-        {/* 主图区域 - 棱镜与光谱 */}
-        <div className="p-6">
-          <svg viewBox="0 0 900 520" className="w-full" style={{ minHeight: '450px' }}>
-            <defs>
-              {/* 光源发光效果 */}
-              <radialGradient id="light-source-glow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-                <stop offset="40%" stopColor="#fef3c7" stopOpacity="0.9" />
-                <stop offset="70%" stopColor="#fbbf24" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-              </radialGradient>
+        <motion.div
+          className={cn(
+            'p-2.5 rounded-xl',
+            theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
+          )}
+          animate={{ rotate: isExpanded ? 180 : 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <ChevronDown className={cn(
+            'w-5 h-5',
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+          )} />
+        </motion.div>
+      </motion.button>
 
-              {/* 棱镜渐变 */}
-              <linearGradient id="prism-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor={theme === 'dark' ? '#475569' : '#e2e8f0'} />
-                <stop offset="50%" stopColor={theme === 'dark' ? '#64748b' : '#f1f5f9'} />
-                <stop offset="100%" stopColor={theme === 'dark' ? '#334155' : '#cbd5e1'} />
-              </linearGradient>
+      {/* 可折叠内容区域 - 使用 AnimatePresence */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            {/* 主要内容区域 */}
+            <div className="p-6">
+              {/* 三段式布局：光源 - SVG连接 - 卡片 */}
+              <div className="grid lg:grid-cols-[180px_1fr_320px] gap-6 items-center">
 
-              {/* 偏振光学高亮发光 */}
-              <filter id="polarization-glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feFlood floodColor="#22d3ee" floodOpacity="0.6" />
-                <feComposite in2="blur" operator="in" />
-                <feMerge>
-                  <feMergeNode />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-
-              {/* 光束渐变 */}
-              <linearGradient id="beam-geometric" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#f97316" stopOpacity="0.9" />
-              </linearGradient>
-              <linearGradient id="beam-wave" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#86efac" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#22c55e" stopOpacity="0.9" />
-              </linearGradient>
-              <linearGradient id="beam-polarization" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#67e8f9" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#22d3ee" stopOpacity="1" />
-              </linearGradient>
-              <linearGradient id="beam-quantum" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#d8b4fe" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#a855f7" stopOpacity="0.9" />
-              </linearGradient>
-
-              {/* 白光入射束 */}
-              <linearGradient id="white-beam" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#fef3c7" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="1" />
-              </linearGradient>
-
-              {/* 光谱渐变 */}
-              <linearGradient id="spectrum-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#dc2626" />
-                <stop offset="17%" stopColor="#f97316" />
-                <stop offset="33%" stopColor="#eab308" />
-                <stop offset="50%" stopColor="#22c55e" />
-                <stop offset="67%" stopColor="#06b6d4" />
-                <stop offset="83%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#8b5cf6" />
-              </linearGradient>
-
-              {/* 流光动画 */}
-              <style>{`
-                @keyframes beam-flow {
-                  0% { stroke-dashoffset: 20; }
-                  100% { stroke-dashoffset: 0; }
-                }
-                @keyframes sine-wave-flow {
-                  0% { stroke-dashoffset: 40; }
-                  100% { stroke-dashoffset: 0; }
-                }
-                @keyframes glow-pulse {
-                  0%, 100% { opacity: 0.6; }
-                  50% { opacity: 1; }
-                }
-                @keyframes card-glow {
-                  0%, 100% { filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4)); }
-                  50% { filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.8)); }
-                }
-                .beam-animated {
-                  stroke-dasharray: 10 10;
-                  animation: beam-flow 1s linear infinite;
-                }
-                .sine-wave-animated {
-                  stroke-dasharray: 20 20;
-                  animation: sine-wave-flow 2s linear infinite;
-                }
-                .polarization-card-glow {
-                  animation: card-glow 2s ease-in-out infinite;
-                }
-              `}</style>
-            </defs>
-
-            {/* 左侧：光源 */}
-            <g>
-              {/* 发光圆 */}
-              <circle cx="60" cy="200" r="45" fill="url(#light-source-glow)" />
-              <circle cx="60" cy="200" r="30" fill={theme === 'dark' ? '#fef3c7' : '#fef9c3'} />
-              <text
-                x="60"
-                y="195"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="14"
-                fontWeight="bold"
-                fill={theme === 'dark' ? '#78350f' : '#713f12'}
-              >
-                {isZh ? '白光' : 'White'}
-              </text>
-              <text
-                x="60"
-                y="210"
-                textAnchor="middle"
-                fontSize="10"
-                fill={theme === 'dark' ? '#92400e' : '#a16207'}
-              >
-                {isZh ? '光源' : 'Light'}
-              </text>
-              {/* 光的本质标签 */}
-              <text
-                x="60"
-                y="265"
-                textAnchor="middle"
-                fontSize="10"
-                fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-              >
-                {isZh ? '光的本质' : 'Nature of Light'}
-              </text>
-            </g>
-
-            {/* 白光入射束 */}
-            <path
-              d="M 105 200 L 180 200"
-              stroke="url(#white-beam)"
-              strokeWidth="6"
-              fill="none"
-              className="beam-animated"
-            />
-
-            {/* 中央：三角棱镜 */}
-            <g>
-              <polygon
-                points="180,130 260,200 180,270"
-                fill="url(#prism-gradient)"
-                stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
-                strokeWidth="2"
-              />
-              {/* 棱镜内部高光 */}
-              <polygon
-                points="190,150 240,200 190,250"
-                fill={theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}
-              />
-              {/* 棱镜标签 */}
-              <text
-                x="220"
-                y="310"
-                textAnchor="middle"
-                fontSize="11"
-                fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-              >
-                {isZh ? '物理学棱镜' : 'Physics Prism'}
-              </text>
-            </g>
-
-            {/* 色散光束 - 四条贝塞尔曲线 */}
-            {/* 几何光学 - 橙红色 */}
-            <path
-              d={`M 260 185 Q 320 140 380 100`}
-              stroke="url(#beam-geometric)"
-              strokeWidth="4"
-              fill="none"
-              className="beam-animated"
-              opacity={selectedBranch === 'geometric' || selectedBranch === 'polarization' ? 1 : 0.4}
-            />
-
-            {/* 波动光学 - 绿色 */}
-            <path
-              d={`M 260 195 Q 330 175 400 160`}
-              stroke="url(#beam-wave)"
-              strokeWidth="4"
-              fill="none"
-              className="beam-animated"
-              opacity={selectedBranch === 'wave' || selectedBranch === 'polarization' ? 1 : 0.4}
-            />
-
-            {/* 偏振光学 - 青色正弦波 (特殊动画) */}
-            <path
-              d={generateSineWavePath(260, 205, 420, 230, 10, 5)}
-              stroke="url(#beam-polarization)"
-              strokeWidth="4"
-              fill="none"
-              className="sine-wave-animated"
-              opacity={1}
-            />
-
-            {/* 量子光学 - 紫色 */}
-            <path
-              d={`M 260 220 Q 340 280 420 320`}
-              stroke="url(#beam-quantum)"
-              strokeWidth="4"
-              fill="none"
-              className="beam-animated"
-              opacity={selectedBranch === 'quantum' || selectedBranch === 'polarization' ? 1 : 0.4}
-            />
-
-            {/* 四大分支卡片 - 嵌套层次结构 */}
-            {(() => {
-              // 嵌套盒子布局配置
-              // 从外到内: 几何光学 → 波动光学 → 偏振光学 → 量子光学
-              const nestedConfig = [
-                {
-                  branch: branches[0], // 几何光学
-                  x: 420, y: 50,
-                  width: 260, height: 90,
-                  labelPosition: 'top' as const, // 标签在顶部
-                },
-                {
-                  branch: branches[1], // 波动光学
-                  x: 440, y: 150,
-                  width: 240, height: 80,
-                  labelPosition: 'top' as const,
-                },
-                {
-                  branch: branches[2], // 偏振光学 (核心焦点)
-                  x: 460, y: 240,
-                  width: 220, height: 130,
-                  labelPosition: 'center' as const, // 中心布局
-                },
-                {
-                  branch: branches[3], // 量子光学
-                  x: 480, y: 380,
-                  width: 200, height: 100,
-                  labelPosition: 'top' as const,
-                },
-              ]
-
-              return nestedConfig.map((config) => {
-                const { branch, x, y, width, height, labelPosition } = config
-                const colors = getColor(branch.category)
-                const isSelected = selectedBranch === branch.id
-                const isPolarization = branch.isHighlight
-
-                return (
-                  <g
-                    key={branch.id}
-                    onClick={() => setSelectedBranch(branch.id)}
-                    style={{ cursor: 'pointer' }}
-                    opacity={isSelected || isPolarization ? 1 : 0.7}
-                    className={isPolarization && isSelected ? 'polarization-card-glow' : ''}
+                {/* 左侧：光源与棱镜 */}
+                <div className="hidden lg:flex flex-col items-center gap-4">
+                  {/* 白光光源 */}
+                  <motion.div
+                    className="relative"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
                   >
-                    {/* 偏振光学额外发光背景 */}
-                    {isPolarization && (
-                      <rect
-                        x={x - 6}
-                        y={y - 6}
-                        width={width + 12}
-                        height={height + 12}
-                        rx="16"
-                        fill={theme === 'dark' ? 'rgba(34, 211, 238, 0.15)' : 'rgba(6, 182, 212, 0.1)'}
-                        filter="url(#polarization-glow)"
+                    {/* 发光晕圈 */}
+                    <motion.div
+                      className="absolute -inset-4 rounded-full"
+                      style={{
+                        background: 'radial-gradient(circle, rgba(251,191,36,0.4) 0%, transparent 70%)',
+                      }}
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.5, 0.8, 0.5],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    {/* 光源核心 */}
+                    <div className={cn(
+                      'w-20 h-20 rounded-full flex flex-col items-center justify-center',
+                      'bg-gradient-to-br from-amber-200 via-yellow-100 to-amber-200',
+                      'shadow-lg shadow-amber-200/50'
+                    )}>
+                      <Sun className="w-6 h-6 text-amber-600" />
+                      <span className="text-xs font-bold text-amber-800 mt-1">
+                        {isZh ? '白光' : 'White'}
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  <motion.span
+                    className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    {isZh ? '光的本质' : 'Nature of Light'}
+                  </motion.span>
+
+                  {/* 棱镜 */}
+                  <motion.div
+                    className="relative mt-4"
+                    initial={{ scale: 0, rotate: -30 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.3, type: 'spring' }}
+                  >
+                    <svg width="100" height="100" viewBox="0 0 100 100">
+                      <defs>
+                        <linearGradient id="prism-fill" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor={theme === 'dark' ? '#64748b' : '#e2e8f0'} />
+                          <stop offset="50%" stopColor={theme === 'dark' ? '#475569' : '#f1f5f9'} />
+                          <stop offset="100%" stopColor={theme === 'dark' ? '#334155' : '#cbd5e1'} />
+                        </linearGradient>
+                        <filter id="prism-shadow">
+                          <feDropShadow dx="2" dy="4" stdDeviation="4" floodOpacity="0.3" />
+                        </filter>
+                      </defs>
+                      <polygon
+                        points="50,10 90,80 10,80"
+                        fill="url(#prism-fill)"
+                        stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
+                        strokeWidth="2"
+                        filter="url(#prism-shadow)"
                       />
-                    )}
+                      {/* 棱镜高光 */}
+                      <polygon
+                        points="50,20 75,70 25,70"
+                        fill={theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)'}
+                      />
+                    </svg>
+                  </motion.div>
 
-                    {/* 卡片主体 */}
-                    <rect
-                      x={x}
-                      y={y}
-                      width={width}
-                      height={height}
-                      rx="10"
-                      fill={colors.bg}
-                      stroke={colors.stroke}
-                      strokeWidth={isPolarization ? 2.5 : isSelected ? 2 : 1}
+                  <motion.span
+                    className={cn('text-xs font-medium', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    {isZh ? '物理学棱镜' : 'Physics Prism'}
+                  </motion.span>
+                </div>
+
+                {/* 中央：SVG 光束连接层 */}
+                <div className="relative h-[400px] hidden lg:block">
+                  <svg
+                    viewBox="0 0 300 400"
+                    className="w-full h-full"
+                    style={{ overflow: 'visible' }}
+                  >
+                    <defs>
+                      {/* 光束发光滤镜 */}
+                      <filter id="beam-glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                      <filter id="particle-glow" x="-100%" y="-100%" width="300%" height="300%">
+                        <feGaussianBlur stdDeviation="2" />
+                      </filter>
+                    </defs>
+
+                    {/* 几何光学光束 */}
+                    <LightBeam
+                      path="M 0 200 Q 80 120 280 60"
+                      color="#f97316"
+                      isActive={activeBranch === 'geometric'}
+                      delay={0.1}
                     />
 
-                    {/* 顶部标签布局 */}
-                    {labelPosition === 'top' && (
-                      <>
-                        {/* 标题 */}
-                        <text
-                          x={x + width / 2}
-                          y={y + 22}
-                          textAnchor="middle"
-                          fontSize="13"
-                          fontWeight="bold"
-                          fill={colors.text}
-                        >
-                          {isZh ? branch.nameZh : branch.nameEn}
-                        </text>
-                        {/* 尺度 */}
-                        <text
-                          x={x + width / 2}
-                          y={y + 38}
-                          textAnchor="middle"
-                          fontSize="9"
-                          fill={theme === 'dark' ? '#64748b' : '#94a3b8'}
-                        >
-                          {isZh ? branch.scaleZh : branch.scaleEn}
-                        </text>
-                        {/* 子主题 - 水平排列 */}
-                        <text
-                          x={x + width / 2}
-                          y={y + 58}
-                          textAnchor="middle"
-                          fontSize="9"
-                          fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-                        >
-                          {branch.topics.slice(0, 2).map(t => isZh ? t.zh : t.en).join(' • ')}
-                        </text>
-                      </>
-                    )}
-
-                    {/* 偏振光学中心布局 */}
-                    {labelPosition === 'center' && (
-                      <>
-                        {/* 标题 */}
-                        <text
-                          x={x + width / 2}
-                          y={y + 28}
-                          textAnchor="middle"
-                          fontSize="16"
-                          fontWeight="bold"
-                          fill={colors.text}
-                        >
-                          {isZh ? branch.nameZh : branch.nameEn}
-                        </text>
-                        {/* 尺度 */}
-                        <text
-                          x={x + width / 2}
-                          y={y + 46}
-                          textAnchor="middle"
-                          fontSize="10"
-                          fill={theme === 'dark' ? '#64748b' : '#94a3b8'}
-                        >
-                          {isZh ? branch.scaleZh : branch.scaleEn}
-                        </text>
-                        {/* 分隔线 */}
-                        <line
-                          x1={x + 20}
-                          y1={y + 56}
-                          x2={x + width - 20}
-                          y2={y + 56}
-                          stroke={colors.stroke}
-                          strokeWidth="0.5"
-                          opacity="0.5"
-                        />
-                        {/* 子主题 - 垂直排列 */}
-                        {branch.topics.slice(0, 2).map((topic, tIndex) => (
-                          <text
-                            key={tIndex}
-                            x={x + width / 2}
-                            y={y + 74 + tIndex * 18}
-                            textAnchor="middle"
-                            fontSize="11"
-                            fill={theme === 'dark' ? '#cbd5e1' : '#4b5563'}
-                          >
-                            • {isZh ? topic.zh : topic.en}
-                          </text>
-                        ))}
-                        {/* 核心标记 */}
-                        <g>
-                          <rect
-                            x={x + width / 2 - 45}
-                            y={y + height - 26}
-                            width={90}
-                            height={20}
-                            rx="10"
-                            fill={colors.stroke}
-                          />
-                          <text
-                            x={x + width / 2}
-                            y={y + height - 12}
-                            textAnchor="middle"
-                            fontSize="10"
-                            fontWeight="bold"
-                            fill={theme === 'dark' ? '#0f172a' : '#ffffff'}
-                          >
-                            {isZh ? '⭐ 本课程核心' : '⭐ Course Focus'}
-                          </text>
-                        </g>
-                      </>
-                    )}
-                  </g>
-                )
-              })
-            })()}
-
-            {/* 跨学科连接虚线 - 已更新位置 */}
-            <g opacity="0.5">
-              {/* 波动 → 偏振 */}
-              <path
-                d="M 680 220 Q 695 235 680 250"
-                stroke={theme === 'dark' ? '#22c55e' : '#16a34a'}
-                strokeWidth="1.5"
-                strokeDasharray="4,4"
-                fill="none"
-              />
-              {/* 偏振 → 量子 */}
-              <path
-                d="M 680 365 Q 695 375 680 390"
-                stroke={theme === 'dark' ? '#a855f7' : '#8b5cf6'}
-                strokeWidth="1.5"
-                strokeDasharray="4,4"
-                fill="none"
-              />
-            </g>
-
-            {/* 右侧说明 - 对齐偏振光学卡片 */}
-            <g>
-              <text
-                x="710"
-                y="280"
-                textAnchor="start"
-                fontSize="11"
-                fill={theme === 'dark' ? '#22d3ee' : '#0891b2'}
-                fontWeight="bold"
-              >
-                {isZh ? '偏振光学揭示' : 'Polarization reveals'}
-              </text>
-              <text
-                x="710"
-                y="298"
-                textAnchor="start"
-                fontSize="10"
-                fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-              >
-                {isZh ? '✦ 光的横波本质' : '✦ Transverse wave nature'}
-              </text>
-              <text
-                x="710"
-                y="315"
-                textAnchor="start"
-                fontSize="10"
-                fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-              >
-                {isZh ? '✦ 连接经典与量子' : '✦ Classical-quantum bridge'}
-              </text>
-              <text
-                x="710"
-                y="332"
-                textAnchor="start"
-                fontSize="10"
-                fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-              >
-                {isZh ? '✦ 现代光学基石' : '✦ Modern optics foundation'}
-              </text>
-            </g>
-
-            {/* 底部：电磁波谱条 */}
-            <g>
-              {/* 波谱标题 */}
-              <text
-                x="450"
-                y="440"
-                textAnchor="middle"
-                fontSize="12"
-                fontWeight="bold"
-                fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
-              >
-                {isZh ? '电磁波谱与研究尺度' : 'EM Spectrum & Research Scales'}
-              </text>
-
-              {/* 光谱条 */}
-              <rect
-                x="100"
-                y="455"
-                width="700"
-                height="16"
-                rx="8"
-                fill="url(#spectrum-gradient)"
-              />
-
-              {/* 光谱条边框 */}
-              <rect
-                x="100"
-                y="455"
-                width="700"
-                height="16"
-                rx="8"
-                fill="none"
-                stroke={theme === 'dark' ? '#475569' : '#94a3b8'}
-                strokeWidth="1"
-              />
-
-              {/* 刻度标记 */}
-              {SPECTRUM_SCALES.map((scale, index) => {
-                const x = 100 + (scale.position / 100) * 700
-                const colors = getColor(scale.category as keyof typeof CATEGORY_COLORS)
-                const isActive = selectedBranch === scale.category
-
-                return (
-                  <g key={index}>
-                    {/* 刻度线 */}
-                    <line
-                      x1={x}
-                      y1={455}
-                      x2={x}
-                      y2={447}
-                      stroke={isActive ? colors.stroke : (theme === 'dark' ? '#64748b' : '#94a3b8')}
-                      strokeWidth={isActive ? 2 : 1}
+                    {/* 波动光学光束 */}
+                    <LightBeam
+                      path="M 0 200 Q 100 160 280 140"
+                      color="#22c55e"
+                      isActive={activeBranch === 'wave'}
+                      delay={0.2}
                     />
-                    {/* 刻度标签 */}
-                    <text
-                      x={x}
-                      y={440}
-                      textAnchor="middle"
-                      fontSize="9"
-                      fill={isActive ? colors.text : (theme === 'dark' ? '#64748b' : '#94a3b8')}
-                      fontWeight={isActive ? 'bold' : 'normal'}
-                    >
-                      {isZh ? scale.labelZh : scale.labelEn}
-                    </text>
-                    {/* 下方指示点 */}
-                    <circle
-                      cx={x}
-                      cy={485}
-                      r={isActive ? 5 : 3}
-                      fill={colors.stroke}
-                      opacity={isActive ? 1 : 0.5}
+
+                    {/* 偏振光学光束 - 特殊正弦波 */}
+                    <PolarizationBeam
+                      startX={0}
+                      startY={200}
+                      endX={280}
+                      endY={220}
+                      color="#22d3ee"
+                      isActive={activeBranch === 'polarization'}
                     />
-                  </g>
-                )
-              })}
 
-              {/* 波长范围标注 */}
-              <text
-                x="100"
-                y="500"
-                textAnchor="start"
-                fontSize="9"
-                fill={theme === 'dark' ? '#64748b' : '#94a3b8'}
-              >
-                {isZh ? '长波 (低能)' : 'Long λ (Low E)'}
-              </text>
-              <text
-                x="800"
-                y="500"
-                textAnchor="end"
-                fontSize="9"
-                fill={theme === 'dark' ? '#64748b' : '#94a3b8'}
-              >
-                {isZh ? '短波 (高能)' : 'Short λ (High E)'}
-              </text>
-            </g>
-          </svg>
-        </div>
+                    {/* 量子光学光束 */}
+                    <LightBeam
+                      path="M 0 200 Q 120 280 280 340"
+                      color="#a855f7"
+                      isActive={activeBranch === 'quantum'}
+                      delay={0.4}
+                    />
+                  </svg>
+                </div>
 
-        {/* 交互说明与图例 */}
-        <div className={cn(
-          'px-6 py-4 border-t',
-          theme === 'dark' ? 'border-slate-700 bg-slate-900/30' : 'border-gray-100 bg-gray-50/50'
-        )}>
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-3">
-            {branches.map((branch) => {
-              const colors = getColor(branch.category)
-              const isSelected = selectedBranch === branch.id
+                {/* 右侧：分支卡片网格 */}
+                <div className="grid grid-cols-1 gap-3">
+                  {branches.map((branch, index) => (
+                    <BranchCard
+                      key={branch.id}
+                      branch={branch}
+                      isSelected={selectedBranch === branch.id}
+                      isZh={isZh}
+                      theme={theme}
+                      onClick={() => handleBranchSelect(branch.id)}
+                      onHover={(hovered) => setHoveredBranch(hovered ? branch.id : null)}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </div>
 
-              return (
-                <button
-                  key={branch.id}
-                  onClick={() => setSelectedBranch(branch.id)}
-                  className={cn(
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all',
-                    isSelected
-                      ? 'scale-105'
-                      : 'opacity-60 hover:opacity-100'
-                  )}
-                  style={{
-                    backgroundColor: isSelected ? colors.bg : 'transparent',
-                    borderColor: colors.stroke,
-                  }}
-                >
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: colors.stroke }}
+              {/* 移动端简化视图 */}
+              <div className="lg:hidden grid grid-cols-2 gap-3 mt-4">
+                {branches.map((branch, index) => (
+                  <BranchCard
+                    key={branch.id}
+                    branch={branch}
+                    isSelected={selectedBranch === branch.id}
+                    isZh={isZh}
+                    theme={theme}
+                    onClick={() => handleBranchSelect(branch.id)}
+                    onHover={(hovered) => setHoveredBranch(hovered ? branch.id : null)}
+                    index={index}
                   />
-                  <span className="text-xs font-medium" style={{ color: colors.text }}>
-                    {isZh ? branch.nameZh : branch.nameEn}
-                    {branch.isHighlight && ' ⭐'}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+                ))}
+              </div>
 
-          <p className={cn(
-            'text-center text-xs',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-          )}>
-            {isZh
-              ? '💡 点击卡片或图例切换焦点 | 偏振光学是波动光学的核心分支，揭示光的横波本质，是连接经典光学与量子光学的桥梁'
-              : '💡 Click cards or legend to switch focus | Polarization optics is a core branch of wave optics, revealing transverse wave nature and bridging classical & quantum optics'}
-          </p>
-        </div>
-      </div>
-    </div>
+              {/* 底部：电磁波谱条 */}
+              <SpectrumScaleBar
+                activeBranch={activeBranch}
+                theme={theme}
+                isZh={isZh}
+                onHover={setHoveredBranch}
+              />
+            </div>
+
+            {/* 底部交互说明 */}
+            <motion.div
+              className={cn(
+                'px-6 py-4 border-t',
+                theme === 'dark' ? 'border-slate-700/50 bg-slate-900/30' : 'border-gray-100 bg-gray-50/30'
+              )}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {/* 图例按钮 */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
+                {branches.map((branch) => {
+                  const colors = getColor(branch.category)
+                  const isActive = selectedBranch === branch.id
+
+                  return (
+                    <motion.button
+                      key={branch.id}
+                      onClick={() => handleBranchSelect(branch.id)}
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all',
+                        'backdrop-blur-sm'
+                      )}
+                      style={{
+                        backgroundColor: isActive ? `${colors.stroke}15` : 'transparent',
+                        borderColor: isActive ? colors.stroke : `${colors.stroke}40`,
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <motion.div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: colors.stroke }}
+                        animate={isActive ? {
+                          scale: [1, 1.3, 1],
+                          boxShadow: [`0 0 0px ${colors.stroke}`, `0 0 10px ${colors.stroke}`, `0 0 0px ${colors.stroke}`],
+                        } : {}}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      />
+                      <span
+                        className={cn('text-sm font-medium', isActive ? 'font-bold' : '')}
+                        style={{ color: colors.text }}
+                      >
+                        {isZh ? branch.nameZh : branch.nameEn}
+                      </span>
+                      {branch.isHighlight && (
+                        <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                      )}
+                    </motion.button>
+                  )
+                })}
+              </div>
+
+              {/* 说明文字 */}
+              <p className={cn(
+                'text-center text-xs leading-relaxed',
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              )}>
+                {isZh
+                  ? '💡 点击卡片或图例切换焦点 | 偏振光学揭示光的横波本质，是连接经典光学与量子光学的桥梁'
+                  : '💡 Click cards or legend to switch focus | Polarization reveals the transverse nature of light, bridging classical and quantum optics'}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
 
