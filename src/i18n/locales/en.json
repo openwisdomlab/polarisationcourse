@@ -12,6 +12,12 @@
     "chinese": "Chinese",
     "comingSoon": "Coming Soon"
   },
+  "discovery": {
+    "newDiscovery": "Discovery!",
+    "secretDiscovery": "Secret Discovery!",
+    "unlocks": "Unlocks:",
+    "moreDiscoveries": "more"
+  },
   "home": {
     "title": "PolarCraft",
     "subtitle": "Ultimate Exploration of Polarized Light Physics",

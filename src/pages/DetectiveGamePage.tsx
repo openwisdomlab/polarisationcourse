@@ -69,6 +69,9 @@ import {
   checkDetectiveDiscovery,
 } from '@/stores/discoveryStore'
 
+// Import discovery notification component
+import { DiscoveryNotification } from '@/components/ui/DiscoveryNotification'
+
 // Import physics for observation logging
 import { getJonesPolarizationInfo, jonesIntensity } from '@/core/physics'
 
@@ -910,6 +913,15 @@ export function DetectiveGamePage() {
           {toast.message}
         </div>
       )}
+
+      {/* Discovery Achievement Notifications */}
+      <DiscoveryNotification
+        discoveries={discoveryStore.pendingNotifications}
+        onDismiss={(id) => discoveryStore.dismissNotification(id)}
+        autoDismissDelay={6000}
+        maxVisible={3}
+        position="top-right"
+      />
     </div>
   )
 }

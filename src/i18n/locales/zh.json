@@ -12,6 +12,12 @@
     "chinese": "中文",
     "comingSoon": "待更新"
   },
+  "discovery": {
+    "newDiscovery": "新发现!",
+    "secretDiscovery": "秘密发现!",
+    "unlocks": "解锁:",
+    "moreDiscoveries": "更多发现"
+  },
   "home": {
     "title": "PolarCraft",
     "subtitle": "偏振光物理世界终极探索",

@@ -303,6 +303,9 @@ interface DiscoveryState {
   /** Best streak ever */
   bestStreak: number
 
+  /** Queue of discoveries pending notification display */
+  pendingNotifications: Discovery[]
+
   /** Actions */
   unlockDiscovery: (discoveryId: string, discoveredIn?: string) => void
   hasDiscovery: (discoveryId: string) => boolean
@@ -310,6 +313,10 @@ interface DiscoveryState {
   getUnlockedFeatures: () => string[]
   incrementMysteriesSolved: (wasPerfect: boolean) => void
   resetProgress: () => void
+  /** Clear a notification from the pending queue */
+  dismissNotification: (discoveryId: string) => void
+  /** Clear all pending notifications */
+  clearAllNotifications: () => void
 
   /** Computed stats */
   totalDiscoveries: number
@@ -328,6 +335,7 @@ export const useDiscoveryStore = create<DiscoveryState>()(
       perfectDeductions: 0,
       currentStreak: 0,
       bestStreak: 0,
+      pendingNotifications: [],
 
       unlockDiscovery: (discoveryId: string, discoveredIn?: string) => {
         const discovery = ALL_DISCOVERIES.find((d) => d.id === discoveryId)
@@ -337,15 +345,19 @@ export const useDiscoveryStore = create<DiscoveryState>()(
           // Already discovered
           if (state.discoveries[discoveryId]) return state
 
+          const newDiscovery = {
+            ...discovery,
+            discoveredAt: Date.now(),
+            discoveredIn,
+          }
+
           return {
             discoveries: {
               ...state.discoveries,
-              [discoveryId]: {
-                ...discovery,
-                discoveredAt: Date.now(),
-                discoveredIn,
-              },
+              [discoveryId]: newDiscovery,
             },
+            // Add to pending notifications queue
+            pendingNotifications: [...state.pendingNotifications, newDiscovery],
           }
         })
       },
@@ -397,7 +409,20 @@ export const useDiscoveryStore = create<DiscoveryState>()(
           perfectDeductions: 0,
           currentStreak: 0,
           bestStreak: 0,
+          pendingNotifications: [],
         })
+      },
+
+      dismissNotification: (discoveryId: string) => {
+        set((state) => ({
+          pendingNotifications: state.pendingNotifications.filter(
+            (d) => d.id !== discoveryId
+          ),
+        }))
+      },
+
+      clearAllNotifications: () => {
+        set({ pendingNotifications: [] })
       },
 
       // Computed values (using getters in the selector)
@@ -412,6 +437,14 @@ export const useDiscoveryStore = create<DiscoveryState>()(
     {
       name: 'polarquest-discoveries',
       version: 1,
+      // Don't persist pendingNotifications - they're session-only UI state
+      partialize: (state) => ({
+        discoveries: state.discoveries,
+        mysteriesSolved: state.mysteriesSolved,
+        perfectDeductions: state.perfectDeductions,
+        currentStreak: state.currentStreak,
+        bestStreak: state.bestStreak,
+      }),
     }
   )
 )
