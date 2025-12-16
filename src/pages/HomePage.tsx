@@ -724,14 +724,7 @@ export function HomePage() {
 
       {/* Header */}
       <header className="text-center mb-6 sm:mb-10 md:mb-12 relative z-10 px-2">
-        <div className="flex justify-center mb-3 sm:mb-5">
-          <PolarCraftLogo
-            size={80}
-            theme={theme}
-            animated={true}
-            className="sm:w-24 sm:h-24 md:w-28 md:h-28"
-          />
-        </div>
+        {/* Logo temporarily removed */}
         <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 ${
           theme === 'dark'
             ? 'text-cyan-400 drop-shadow-[0_0_30px_rgba(100,200,255,0.5)]'
@@ -763,7 +756,7 @@ export function HomePage() {
         theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
       }`}>
         <p className="mb-6">
-          PolarCraft
+          PolarCraft support by Open Wisdom Lab
         </p>
         {/* Open Wisdom Lab Logo - Enhanced integration */}
         <div className="flex justify-center items-center">
