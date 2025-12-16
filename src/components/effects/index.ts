@@ -1,0 +1,1 @@
+export { LightBeamEffect } from './LightBeamEffect'

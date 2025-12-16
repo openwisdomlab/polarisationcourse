@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ModuleIconMap, type ModuleIconKey, PolarCraftLogo } from '@/components/icons'
+import { LightBeamEffect } from '@/components/effects'
 
 // Polarization angle colors for visual effect (based on polarization physics)
 const POLARIZATION_COLORS = [
@@ -293,7 +294,15 @@ const getGlowClass = (from: string) => {
   return glowMap[from] || ''
 }
 
-function ModuleCard({ module, index }: { module: ModuleConfig; index: number }) {
+interface ModuleCardProps {
+  module: ModuleConfig
+  index: number
+  onHoverStart?: (moduleKey: string) => void
+  onHoverEnd?: () => void
+  registerRef?: (key: string, ref: HTMLDivElement | null) => void
+}
+
+function ModuleCard({ module, index, onHoverStart, onHoverEnd, registerRef }: ModuleCardProps) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const [isHovered, setIsHovered] = useState(false)
@@ -301,6 +310,18 @@ function ModuleCard({ module, index }: { module: ModuleConfig; index: number }) 
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const animationRef = useRef<number | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+
+  // Register ref with parent
+  useEffect(() => {
+    if (registerRef && cardRef.current) {
+      registerRef(module.key, cardRef.current)
+    }
+    return () => {
+      if (registerRef) {
+        registerRef(module.key, null)
+      }
+    }
+  }, [module.key, registerRef])
 
   const colorClasses = getColorClasses(module, theme)
   const textColorClass = getTextColorClass(module.colorTheme.text, theme)
@@ -369,8 +390,14 @@ function ModuleCard({ module, index }: { module: ModuleConfig; index: number }) 
           ? `bg-slate-900/80 border-2 ${colorClasses.border} ${colorClasses.shadow}`
           : `bg-white/90 border-2 ${colorClasses.border} ${colorClasses.shadow}`
       }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        setIsHovered(true)
+        onHoverStart?.(module.key)
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false)
+        onHoverEnd?.()
+      }}
       onMouseMove={handleMouseMove}
       style={{
         // Add subtle brightness variation based on Malus's Law
@@ -707,6 +734,27 @@ function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
 export function HomePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const [hoveredModule, setHoveredModule] = useState<string | null>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
+  const moduleRefsMap = useRef<Map<string, HTMLDivElement | null>>(new Map())
+
+  // Callback to register module card refs
+  const registerModuleRef = useCallback((key: string, ref: HTMLDivElement | null) => {
+    if (ref) {
+      moduleRefsMap.current.set(key, ref)
+    } else {
+      moduleRefsMap.current.delete(key)
+    }
+  }, [])
+
+  // Hover handlers
+  const handleModuleHoverStart = useCallback((moduleKey: string) => {
+    setHoveredModule(moduleKey)
+  }, [])
+
+  const handleModuleHoverEnd = useCallback(() => {
+    setHoveredModule(null)
+  }, [])
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-10 ${
@@ -724,8 +772,8 @@ export function HomePage() {
 
       {/* Header */}
       <header className="text-center mb-6 sm:mb-10 md:mb-12 relative z-10 px-2">
-        {/* PolarCraft Logo */}
-        <div className="flex justify-center mb-4 sm:mb-6">
+        {/* PolarCraft Logo - Light source for beam effect */}
+        <div ref={logoRef} className="flex justify-center mb-4 sm:mb-6">
           <PolarCraftLogo size={80} theme={theme} animated />
         </div>
         <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 ${
@@ -750,9 +798,23 @@ export function HomePage() {
       {/* Navigation Cards - 9 Creative Modules with polarization effects */}
       <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-6xl relative z-10 w-full px-2">
         {MODULES.map((module, index) => (
-          <ModuleCard key={module.key} module={module} index={index} />
+          <ModuleCard
+            key={module.key}
+            module={module}
+            index={index}
+            onHoverStart={handleModuleHoverStart}
+            onHoverEnd={handleModuleHoverEnd}
+            registerRef={registerModuleRef}
+          />
         ))}
       </nav>
+
+      {/* Light beam effect from logo to hovered module */}
+      <LightBeamEffect
+        logoRef={logoRef}
+        hoveredModule={hoveredModule}
+        moduleRefs={moduleRefsMap.current}
+      />
 
       {/* Footer */}
       <footer className={`mt-6 sm:mt-10 md:mt-12 text-center text-xs sm:text-sm relative z-10 ${
