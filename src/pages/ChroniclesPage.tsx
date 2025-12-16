@@ -18,7 +18,6 @@ import {
   FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   Sun, Sparkles, HelpCircle, Zap
 } from 'lucide-react'
-import { TimelineExploration } from '@/components/chronicles'
 
 // ============================================
 // Optical Panorama - 知识棱镜 (The Prism of Knowledge)
@@ -3746,19 +3745,7 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Timeline Exploration - 双轨探索体验 */}
-            <div className="mb-8">
-              <TimelineExploration
-                events={filteredEvents}
-                isZh={isZh}
-                onReadStory={(event) => {
-                  const idx = filteredEvents.findIndex(e => e.year === event.year && e.track === event.track)
-                  if (idx !== -1) handleOpenStory(idx)
-                }}
-              />
-            </div>
-
-            {/* Classic Dual Track Timeline - 经典双轨时间线 */}
+            {/* Dual Track Timeline - 双轨时间线 */}
             <div className="relative">
               {/* Track Labels - 轨道标签 */}
               <div className="flex items-center justify-between mb-6">
