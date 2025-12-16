@@ -22,6 +22,16 @@ const POLARIZATION_GLOW_COLORS = [
   'rgba(68, 136, 255, 0.6)',   // 135° - Blue
 ]
 
+// Module glow colors for beam effect - matches the color theme
+const MODULE_GLOW_COLORS: Record<string, string> = {
+  'amber-warm': 'rgba(201, 162, 39, 0.5)',
+  'indigo-soft': 'rgba(99, 102, 241, 0.5)',
+  'cyan-deep': 'rgba(8, 145, 178, 0.5)',
+  'orange-warm': 'rgba(245, 158, 11, 0.5)',
+  'pink-vivid': 'rgba(236, 72, 153, 0.5)',
+  'emerald-bright': 'rgba(16, 185, 129, 0.5)',
+}
+
 // Module configuration for the 10 creative hubs
 interface ModuleConfig {
   key: string
@@ -297,12 +307,14 @@ const getGlowClass = (from: string) => {
 interface ModuleCardProps {
   module: ModuleConfig
   index: number
+  isBeamTarget?: boolean // Whether this module is currently receiving a beam
   onHoverStart?: (moduleKey: string) => void
   onHoverEnd?: () => void
   registerRef?: (key: string, ref: HTMLDivElement | null) => void
+  registerIconRef?: (key: string, ref: HTMLDivElement | null) => void
 }
 
-function ModuleCard({ module, index, onHoverStart, onHoverEnd, registerRef }: ModuleCardProps) {
+function ModuleCard({ module, index, isBeamTarget, onHoverStart, onHoverEnd, registerRef, registerIconRef }: ModuleCardProps) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const [isHovered, setIsHovered] = useState(false)
@@ -310,18 +322,25 @@ function ModuleCard({ module, index, onHoverStart, onHoverEnd, registerRef }: Mo
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const animationRef = useRef<number | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const iconRef = useRef<HTMLDivElement>(null)
 
-  // Register ref with parent
+  // Register refs with parent
   useEffect(() => {
     if (registerRef && cardRef.current) {
       registerRef(module.key, cardRef.current)
+    }
+    if (registerIconRef && iconRef.current) {
+      registerIconRef(module.key, iconRef.current)
     }
     return () => {
       if (registerRef) {
         registerRef(module.key, null)
       }
+      if (registerIconRef) {
+        registerIconRef(module.key, null)
+      }
     }
-  }, [module.key, registerRef])
+  }, [module.key, registerRef, registerIconRef])
 
   const colorClasses = getColorClasses(module, theme)
   const textColorClass = getTextColorClass(module.colorTheme.text, theme)
@@ -476,22 +495,30 @@ function ModuleCard({ module, index, onHoverStart, onHoverEnd, registerRef }: Mo
         }}
       />
 
-      {/* Icon with synchronized rotation effect */}
-      <div className="mb-2 flex justify-center relative z-10">
+      {/* Icon with synchronized rotation effect and beam glow */}
+      <div ref={iconRef} className="mb-2 flex justify-center relative z-10">
         {(() => {
           const IconComponent = ModuleIconMap[module.key as ModuleIconKey]
+
+          // Calculate beam glow style when this icon is being targeted
+          const beamGlowStyle = isBeamTarget ? {
+            filter: `drop-shadow(0 0 12px ${MODULE_GLOW_COLORS[module.colorTheme.gradientFrom] || module.colorTheme.shadow}) drop-shadow(0 0 20px ${MODULE_GLOW_COLORS[module.colorTheme.gradientFrom] || module.colorTheme.shadow})`,
+            transform: 'scale(1.08)',
+          } : {}
+
           if (IconComponent) {
             return (
               <div
-                className="relative"
+                className="relative transition-all duration-500"
                 style={{
-                  transform: isHovered ? `rotate(${iconRotation}deg) scale(1.1)` : 'none',
-                  transition: isHovered ? 'transform 0.05s linear' : 'transform 0.3s ease',
+                  transform: isHovered ? `rotate(${iconRotation}deg) scale(1.1)` : isBeamTarget ? 'scale(1.08)' : 'none',
+                  transition: isHovered ? 'transform 0.05s linear' : 'transform 0.5s ease, filter 0.5s ease',
+                  ...beamGlowStyle,
                 }}
               >
                 <IconComponent
                   size={48}
-                  className={`transition-none ${glowClass}`}
+                  className={`transition-all duration-500 ${isHovered ? glowClass : ''}`}
                 />
                 {/* Polarization indicator ring around icon */}
                 {isHovered && (
@@ -504,16 +531,28 @@ function ModuleCard({ module, index, onHoverStart, onHoverEnd, registerRef }: Mo
                     }}
                   />
                 )}
+                {/* Beam reception glow ring - visible when receiving beam */}
+                {isBeamTarget && !isHovered && (
+                  <div
+                    className="absolute -inset-3 rounded-full pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle, ${MODULE_GLOW_COLORS[module.colorTheme.gradientFrom] || module.colorTheme.shadow} 0%, transparent 70%)`,
+                      opacity: 0.3,
+                      animation: 'pulse 2s ease-in-out infinite',
+                    }}
+                  />
+                )}
               </div>
             )
           }
           return (
             <span
-              className={`text-3xl sm:text-4xl ${glowClass}`}
+              className={`text-3xl sm:text-4xl transition-all duration-500 ${isHovered ? glowClass : ''}`}
               style={{
-                transform: isHovered ? `rotate(${iconRotation}deg) scale(1.1)` : 'none',
-                transition: isHovered ? 'transform 0.05s linear' : 'transform 0.3s ease',
+                transform: isHovered ? `rotate(${iconRotation}deg) scale(1.1)` : isBeamTarget ? 'scale(1.08)' : 'none',
+                transition: isHovered ? 'transform 0.05s linear' : 'transform 0.5s ease, filter 0.5s ease',
                 display: 'inline-block',
+                ...beamGlowStyle,
               }}
             >
               {module.icon}
@@ -737,6 +776,7 @@ export function HomePage() {
   const [hoveredModule, setHoveredModule] = useState<string | null>(null)
   const logoRef = useRef<HTMLDivElement>(null)
   const moduleRefsMap = useRef<Map<string, HTMLDivElement | null>>(new Map())
+  const iconRefsMap = useRef<Map<string, HTMLDivElement | null>>(new Map())
 
   // Callback to register module card refs
   const registerModuleRef = useCallback((key: string, ref: HTMLDivElement | null) => {
@@ -744,6 +784,15 @@ export function HomePage() {
       moduleRefsMap.current.set(key, ref)
     } else {
       moduleRefsMap.current.delete(key)
+    }
+  }, [])
+
+  // Callback to register icon refs for precise beam targeting
+  const registerIconRef = useCallback((key: string, ref: HTMLDivElement | null) => {
+    if (ref) {
+      iconRefsMap.current.set(key, ref)
+    } else {
+      iconRefsMap.current.delete(key)
     }
   }, [])
 
@@ -802,18 +851,21 @@ export function HomePage() {
             key={module.key}
             module={module}
             index={index}
+            isBeamTarget={hoveredModule === module.key}
             onHoverStart={handleModuleHoverStart}
             onHoverEnd={handleModuleHoverEnd}
             registerRef={registerModuleRef}
+            registerIconRef={registerIconRef}
           />
         ))}
       </nav>
 
-      {/* Light beam effect from logo to hovered module */}
+      {/* Light beam effect from logo to hovered module icon */}
       <LightBeamEffect
         logoRef={logoRef}
         hoveredModule={hoveredModule}
         moduleRefs={moduleRefsMap.current}
+        iconRefs={iconRefsMap.current}
       />
 
       {/* Footer */}
