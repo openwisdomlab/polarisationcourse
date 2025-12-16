@@ -840,7 +840,7 @@ interface TimelineEvent {
     zh: string
   }
   // 实验配图 - 经典实验的可视化
-  illustrationType?: 'prism' | 'double-slit' | 'calcite' | 'reflection' | 'polarizer' | 'lcd' | 'mantis' | 'wave' | 'birefringence' | 'nicol' | 'faraday' | 'chirality' | 'rayleigh' | 'poincare' | 'photoelectric' | 'jones'
+  illustrationType?: 'prism' | 'double-slit' | 'calcite' | 'reflection' | 'polarizer' | 'lcd' | 'mantis' | 'wave' | 'birefringence' | 'nicol' | 'faraday' | 'chirality' | 'rayleigh' | 'poincare' | 'photoelectric' | 'jones' | 'snell' | 'lightspeed' | 'opticalactivity' | 'transverse' | 'stokes' | 'mueller' | 'medical' | 'metasurface' | 'quantum'
   // 双轨连接 - 跨轨道因果关系
   linkTo?: {
     year: number
@@ -889,7 +889,8 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
     thinkingQuestion: {
       en: 'When you put a straw in a glass of water, it appears bent. Is this the same phenomenon as Snell\'s Law? What other everyday examples of refraction can you think of?',
       zh: '当你把吸管放入水杯中，它看起来是弯曲的。这和斯涅尔定律是同一个现象吗？你还能想到生活中哪些折射的例子？'
-    }
+    },
+    illustrationType: 'snell'
   },
   {
     year: 1665,
@@ -994,7 +995,8 @@ This insight, born in plague-time isolation, became the foundation of spectrosco
     thinkingQuestion: {
       en: 'If light travels so fast (300,000 km/s), how did Rømer manage to measure it using only a telescope? What clever trick did he use?',
       zh: '光速如此之快（每秒30万公里），罗默是如何仅用望远镜测量它的？他用了什么巧妙的方法？'
-    }
+    },
+    illustrationType: 'lightspeed'
   },
   {
     year: 1801,
@@ -1554,7 +1556,8 @@ Today, measuring optical rotation remains a standard technique in chemistry and 
     thinkingQuestion: {
       en: 'Sugar solutions rotate polarized light. Does this mean sugar molecules have a special shape? What does "handedness" mean for a molecule?',
       zh: '糖溶液能旋转偏振光。这是否意味着糖分子有特殊的形状？分子的"手性"是什么意思？'
-    }
+    },
+    illustrationType: 'opticalactivity'
   },
   {
     year: 1817,
@@ -1629,7 +1632,8 @@ The revolution he sparked continues to this day. Every polarizing sunglasses len
       location: 'Paris, France',
       season: 'Summer',
       mood: 'revolution'
-    }
+    },
+    illustrationType: 'transverse'
   },
   {
     year: 1828,
@@ -1924,7 +1928,8 @@ S₀给出总强度。S₁描述水平与垂直的倾向。S₂捕捉对角线�
       location: 'Cambridge, England',
       season: 'Spring',
       mood: 'mathematical elegance'
-    }
+    },
+    illustrationType: 'stokes'
   },
   {
     year: 1871,
@@ -2371,7 +2376,8 @@ Today, Mueller matrix decomposition is a standard technique in medical imaging, 
     thinkingQuestion: {
       en: 'Why do we need both Jones and Mueller calculus? When would you choose one over the other?',
       zh: '为什么我们需要琼斯演算和穆勒矩阵两种方法？什么时候选择其中一种而不是另一种？'
-    }
+    },
+    illustrationType: 'mueller'
   },
   {
     year: 1971,
@@ -2561,7 +2567,8 @@ The same physics that Malus discovered in a Paris sunset, that Stokes formalized
       location: 'Global medical centers',
       season: 'All seasons',
       mood: 'hope'
-    }
+    },
+    illustrationType: 'medical'
   },
   {
     year: 2021,
@@ -2619,7 +2626,8 @@ The metasurface revolution represented a fundamental shift in optical engineerin
       location: 'Global research labs',
       season: 'All seasons',
       mood: 'innovation'
-    }
+    },
+    illustrationType: 'metasurface'
   },
   {
     year: 2023,
@@ -2677,7 +2685,8 @@ And yet the mystery remained. Why does light have polarization at all? What fund
       location: 'Global quantum labs',
       season: 'All seasons',
       mood: 'frontier science'
-    }
+    },
+    illustrationType: 'quantum'
   },
 ]
 
@@ -3086,6 +3095,260 @@ function ExperimentIllustration({ type, className = '' }: { type: string; classN
         <text x="82" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">=</text>
         {/* Multiplication sign */}
         <text x="32" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">×</text>
+      </svg>
+    ),
+    snell: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Interface line */}
+        <line x1="0" y1="45" x2="120" y2="45" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="2" />
+        {/* Upper medium (air) */}
+        <rect x="0" y="0" width="120" height="45" fill={isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.5)'} />
+        <text x="5" y="15" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">n₁ (air)</text>
+        {/* Lower medium (glass) */}
+        <rect x="0" y="45" width="120" height="35" fill={isDark ? 'rgba(147, 197, 253, 0.15)' : 'rgba(147, 197, 253, 0.3)'} />
+        <text x="5" y="75" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">n₂ (glass)</text>
+        {/* Incident ray */}
+        <line x1="20" y1="5" x2="60" y2="45" stroke="#fbbf24" strokeWidth="2.5" />
+        <polygon points="58,41 62,45 54,45" fill="#fbbf24" />
+        {/* Refracted ray (bent toward normal) */}
+        <line x1="60" y1="45" x2="85" y2="80" stroke="#22d3ee" strokeWidth="2.5" />
+        {/* Normal line */}
+        <line x1="60" y1="10" x2="60" y2="75" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" strokeDasharray="3,2" />
+        {/* Angle arcs */}
+        <path d="M 60,30 A 15,15 0 0,1 48,42" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
+        <text x="42" y="32" fill="#fbbf24" fontSize="7">θ₁</text>
+        <path d="M 60,60 A 15,15 0 0,0 70,53" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
+        <text x="72" y="62" fill="#22d3ee" fontSize="7">θ₂</text>
+        {/* Formula */}
+        <text x="85" y="15" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">n₁sinθ₁=n₂sinθ₂</text>
+      </svg>
+    ),
+    lightspeed: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Jupiter */}
+        <circle cx="85" cy="40" r="18" fill={isDark ? '#d97706' : '#f59e0b'} />
+        {/* Jupiter bands */}
+        <ellipse cx="85" cy="35" rx="18" ry="3" fill={isDark ? '#92400e' : '#b45309'} />
+        <ellipse cx="85" cy="45" rx="18" ry="3" fill={isDark ? '#92400e' : '#b45309'} />
+        {/* Io moon */}
+        <circle cx="110" cy="40" r="4" fill={isDark ? '#94a3b8' : '#64748b'} />
+        {/* Earth */}
+        <circle cx="20" cy="40" r="8" fill={isDark ? '#3b82f6' : '#60a5fa'} />
+        <ellipse cx="20" cy="40" rx="8" ry="3" fill={isDark ? '#22c55e' : '#4ade80'} opacity="0.6" />
+        {/* Light path from Io to Earth */}
+        <line x1="106" y1="40" x2="28" y2="40" stroke="#fbbf24" strokeWidth="1.5" strokeDasharray="4,2" />
+        {/* Light packets */}
+        <circle cx="70" cy="40" r="2" fill="#fbbf24" />
+        <circle cx="50" cy="40" r="2" fill="#fbbf24" />
+        {/* Delay indicator */}
+        <path d="M 45,55 A 20,20 0 0,1 75,55" fill="none" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
+        <text x="50" y="68" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">Δt delay</text>
+        {/* Sun indicator */}
+        <circle cx="55" cy="15" r="5" fill="#fbbf24" opacity="0.5" />
+        {/* Orbits */}
+        <ellipse cx="55" cy="40" rx="35" ry="10" fill="none" stroke={isDark ? '#475569' : '#cbd5e1'} strokeWidth="0.5" strokeDasharray="2,2" />
+      </svg>
+    ),
+    opticalactivity: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Tube with solution */}
+        <rect x="30" y="25" width="60" height="30" fill={isDark ? 'rgba(251, 191, 36, 0.15)' : 'rgba(251, 191, 36, 0.25)'} stroke={isDark ? '#fbbf24' : '#d97706'} strokeWidth="1.5" rx="4" />
+        {/* Sugar molecules */}
+        <text x="40" y="42" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="8">🍬</text>
+        <text x="55" y="38" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="6">🍬</text>
+        <text x="70" y="44" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="7">🍬</text>
+        {/* Input polarized light */}
+        <line x1="5" y1="40" x2="25" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        <line x1="15" y1="32" x2="15" y2="48" stroke="#22d3ee" strokeWidth="2" />
+        {/* Output rotated light */}
+        <line x1="95" y1="40" x2="115" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        <line x1="105" y1="32" x2="105" y2="48" stroke="#22d3ee" strokeWidth="2" transform="rotate(35, 105, 40)" />
+        {/* Rotation arc */}
+        <path d="M 100,25 A 15,15 0 0,1 115,35" fill="none" stroke="#f472b6" strokeWidth="1.5" />
+        <polygon points="115,35 110,32 112,38" fill="#f472b6" />
+        <text x="100" y="18" fill="#f472b6" fontSize="7">α</text>
+        {/* Arrow through tube */}
+        <line x1="28" y1="40" x2="92" y2="40" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" strokeDasharray="3,2" />
+        {/* Labels */}
+        <text x="35" y="65" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="6">sugar solution</text>
+      </svg>
+    ),
+    transverse: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Propagation axis */}
+        <line x1="10" y1="40" x2="110" y2="40" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
+        <polygon points="110,40 105,37 105,43" fill={isDark ? '#475569' : '#94a3b8'} />
+        <text x="105" y="55" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">k</text>
+        {/* Transverse E-field oscillation */}
+        <path
+          d="M 15,40 L 15,20 M 30,40 L 30,60 M 45,40 L 45,20 M 60,40 L 60,60 M 75,40 L 75,20 M 90,40 L 90,60"
+          fill="none"
+          stroke="#22d3ee"
+          strokeWidth="2"
+        />
+        {/* Arrowheads on E vectors */}
+        <polygon points="15,20 12,25 18,25" fill="#22d3ee" />
+        <polygon points="30,60 27,55 33,55" fill="#22d3ee" />
+        <polygon points="45,20 42,25 48,25" fill="#22d3ee" />
+        <polygon points="60,60 57,55 63,55" fill="#22d3ee" />
+        <polygon points="75,20 72,25 78,25" fill="#22d3ee" />
+        <polygon points="90,60 87,55 93,55" fill="#22d3ee" />
+        {/* E label */}
+        <text x="5" y="18" fill="#22d3ee" fontSize="8" fontWeight="bold">E</text>
+        {/* Wave envelope */}
+        <path
+          d="M 10,40 Q 22,15 35,40 Q 47,65 60,40 Q 72,15 85,40 Q 97,65 110,40"
+          fill="none"
+          stroke="#22d3ee"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+        {/* "Transverse" label */}
+        <text x="25" y="75" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">E ⊥ k (transverse)</text>
+      </svg>
+    ),
+    stokes: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Stokes vector bracket */}
+        <path d="M 20,10 L 15,10 L 15,70 L 20,70" fill="none" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1.5" />
+        <path d="M 50,10 L 55,10 L 55,70 L 50,70" fill="none" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1.5" />
+        {/* S0 - Total intensity */}
+        <text x="25" y="22" fill="#fbbf24" fontSize="9" fontWeight="bold">S₀</text>
+        <text x="60" y="22" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">← Total intensity</text>
+        {/* S1 - Horizontal vs Vertical */}
+        <text x="25" y="37" fill="#22d3ee" fontSize="9" fontWeight="bold">S₁</text>
+        <text x="60" y="37" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">← H vs V</text>
+        {/* S2 - Diagonal */}
+        <text x="25" y="52" fill="#22c55e" fontSize="9" fontWeight="bold">S₂</text>
+        <text x="60" y="52" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">← +45° vs -45°</text>
+        {/* S3 - Circular */}
+        <text x="25" y="67" fill="#f472b6" fontSize="9" fontWeight="bold">S₃</text>
+        <text x="60" y="67" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">← R vs L circular</text>
+        {/* Equals sign */}
+        <text x="10" y="40" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">S =</text>
+      </svg>
+    ),
+    mueller: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Input Stokes vector */}
+        <g transform="translate(10, 40)">
+          <rect x="-5" y="-25" width="12" height="50" fill={isDark ? 'rgba(34, 211, 238, 0.2)' : 'rgba(34, 211, 238, 0.3)'} stroke="#22d3ee" strokeWidth="1" rx="2" />
+          <text x="-3" y="-10" fill="#22d3ee" fontSize="6">S₀</text>
+          <text x="-3" y="0" fill="#22d3ee" fontSize="6">S₁</text>
+          <text x="-3" y="10" fill="#22d3ee" fontSize="6">S₂</text>
+          <text x="-3" y="20" fill="#22d3ee" fontSize="6">S₃</text>
+        </g>
+        {/* Multiplication sign */}
+        <text x="22" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">×</text>
+        {/* 4x4 Mueller Matrix */}
+        <g transform="translate(55, 40)">
+          <rect x="-22" y="-25" width="44" height="50" fill={isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)'} stroke="#8b5cf6" strokeWidth="1.5" rx="2" />
+          <text x="-18" y="-10" fill="#8b5cf6" fontSize="5">m₀₀ m₀₁ m₀₂ m₀₃</text>
+          <text x="-18" y="0" fill="#8b5cf6" fontSize="5">m₁₀ m₁₁ m₁₂ m₁₃</text>
+          <text x="-18" y="10" fill="#8b5cf6" fontSize="5">m₂₀ m₂₁ m₂₂ m₂₃</text>
+          <text x="-18" y="20" fill="#8b5cf6" fontSize="5">m₃₀ m₃₁ m₃₂ m₃₃</text>
+        </g>
+        {/* Equals sign */}
+        <text x="82" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">=</text>
+        {/* Output Stokes vector */}
+        <g transform="translate(105, 40)">
+          <rect x="-5" y="-25" width="14" height="50" fill={isDark ? 'rgba(251, 191, 36, 0.2)' : 'rgba(251, 191, 36, 0.3)'} stroke="#fbbf24" strokeWidth="1" rx="2" />
+          <text x="-3" y="-10" fill="#fbbf24" fontSize="6">S'₀</text>
+          <text x="-3" y="0" fill="#fbbf24" fontSize="6">S'₁</text>
+          <text x="-3" y="10" fill="#fbbf24" fontSize="6">S'₂</text>
+          <text x="-3" y="20" fill="#fbbf24" fontSize="6">S'₃</text>
+        </g>
+      </svg>
+    ),
+    medical: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Tissue sample */}
+        <ellipse cx="60" cy="40" rx="30" ry="25" fill={isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.25)'} stroke={isDark ? '#ef4444' : '#dc2626'} strokeWidth="1.5" />
+        {/* Collagen fibers (healthy - organized) */}
+        <g opacity="0.6">
+          <line x1="40" y1="30" x2="55" y2="30" stroke={isDark ? '#f472b6' : '#ec4899'} strokeWidth="1" />
+          <line x1="42" y1="35" x2="58" y2="35" stroke={isDark ? '#f472b6' : '#ec4899'} strokeWidth="1" />
+          <line x1="40" y1="40" x2="56" y2="40" stroke={isDark ? '#f472b6' : '#ec4899'} strokeWidth="1" />
+        </g>
+        {/* Cancer region (disorganized) */}
+        <circle cx="72" cy="42" r="10" fill={isDark ? 'rgba(251, 191, 36, 0.3)' : 'rgba(251, 191, 36, 0.4)'} stroke="#fbbf24" strokeWidth="1" strokeDasharray="2,1" />
+        <line x1="66" y1="38" x2="72" y2="45" stroke="#fbbf24" strokeWidth="1" />
+        <line x1="70" y1="36" x2="78" y2="42" stroke="#fbbf24" strokeWidth="1" />
+        <line x1="68" y1="46" x2="76" y2="40" stroke="#fbbf24" strokeWidth="1" />
+        {/* Polarized light input */}
+        <line x1="5" y1="40" x2="25" y2="40" stroke="#22d3ee" strokeWidth="2" />
+        <line x1="15" y1="32" x2="15" y2="48" stroke="#22d3ee" strokeWidth="2" />
+        {/* Camera/detector */}
+        <rect x="100" y="30" width="15" height="20" fill={isDark ? '#475569' : '#94a3b8'} rx="2" />
+        <circle cx="107" cy="40" r="5" fill={isDark ? '#1e293b' : '#334155'} />
+        <circle cx="107" cy="40" r="3" fill="#3b82f6" />
+        {/* Output arrow */}
+        <line x1="92" y1="40" x2="98" y2="40" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
+        {/* Labels */}
+        <text x="35" y="75" fill={isDark ? '#ef4444' : '#dc2626'} fontSize="6">tissue</text>
+        <text x="68" y="60" fill="#fbbf24" fontSize="5">cancer</text>
+      </svg>
+    ),
+    metasurface: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Substrate */}
+        <rect x="30" y="35" width="60" height="10" fill={isDark ? '#475569' : '#94a3b8'} />
+        {/* Nano-pillars array */}
+        {[35, 45, 55, 65, 75, 85].map((x, i) => (
+          <g key={i}>
+            <rect
+              x={x - 2}
+              y={22 - (i % 2) * 3}
+              width="4"
+              height={13 + (i % 2) * 3}
+              fill={isDark ? '#8b5cf6' : '#a855f7'}
+              rx="1"
+            />
+          </g>
+        ))}
+        {/* Input light beam */}
+        <line x1="5" y1="30" x2="28" y2="30" stroke="#fbbf24" strokeWidth="2" />
+        <polygon points="28,30 23,27 23,33" fill="#fbbf24" />
+        {/* Multiple output beams (beam steering) */}
+        <line x1="92" y1="30" x2="115" y2="15" stroke="#22d3ee" strokeWidth="1.5" />
+        <line x1="92" y1="30" x2="115" y2="30" stroke="#22d3ee" strokeWidth="1.5" />
+        <line x1="92" y1="30" x2="115" y2="45" stroke="#22d3ee" strokeWidth="1.5" />
+        {/* Polarization states */}
+        <circle cx="115" cy="15" r="3" fill="none" stroke="#22d3ee" strokeWidth="1" />
+        <line x1="113" y1="13" x2="117" y2="17" stroke="#22d3ee" strokeWidth="1" />
+        <ellipse cx="115" cy="30" rx="4" ry="2" fill="none" stroke="#22d3ee" strokeWidth="1" />
+        <line x1="112" y1="45" x2="118" y2="45" stroke="#22d3ee" strokeWidth="1.5" />
+        {/* Control signal */}
+        <path d="M 60,50 L 60,60 L 50,60" fill="none" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
+        <text x="35" y="65" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">control</text>
+        {/* Label */}
+        <text x="35" y="75" fill={isDark ? '#8b5cf6' : '#7c3aed'} fontSize="6">metasurface</text>
+      </svg>
+    ),
+    quantum: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* Source (entangled photon pair generator) */}
+        <rect x="45" y="32" width="30" height="16" fill={isDark ? 'rgba(139, 92, 246, 0.3)' : 'rgba(139, 92, 246, 0.4)'} stroke="#8b5cf6" strokeWidth="1.5" rx="3" />
+        <text x="52" y="43" fill="#8b5cf6" fontSize="6">BBO</text>
+        {/* Pump laser */}
+        <line x1="20" y1="40" x2="43" y2="40" stroke="#a855f7" strokeWidth="2" />
+        <polygon points="43,40 38,37 38,43" fill="#a855f7" />
+        <text x="22" y="35" fill={isDark ? '#a855f7' : '#9333ea'} fontSize="6">pump</text>
+        {/* Entangled photon 1 */}
+        <line x1="77" y1="35" x2="100" y2="20" stroke="#22d3ee" strokeWidth="2" />
+        <circle cx="105" cy="17" r="4" fill="#22d3ee" />
+        {/* Entangled photon 2 */}
+        <line x1="77" y1="45" x2="100" y2="60" stroke="#f472b6" strokeWidth="2" />
+        <circle cx="105" cy="63" r="4" fill="#f472b6" />
+        {/* Entanglement wavy connection */}
+        <path d="M 105,22 Q 115,40 105,58" fill="none" stroke={isDark ? '#fbbf24' : '#d97706'} strokeWidth="1" strokeDasharray="2,2" />
+        {/* Entanglement symbol */}
+        <text x="110" y="42" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="8">⟨ψ⟩</text>
+        {/* Labels */}
+        <text x="95" y="10" fill="#22d3ee" fontSize="6">|H⟩+|V⟩</text>
+        <text x="95" y="75" fill="#f472b6" fontSize="6">|V⟩+|H⟩</text>
+        {/* Sub-shot noise indicator */}
+        <text x="5" y="70" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="5">Δ &lt; SQL</text>
       </svg>
     ),
   }
