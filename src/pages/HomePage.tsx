@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { ModuleIconMap, type ModuleIconKey, PolarCraftLogo, OpenWisdomLabLogo } from '@/components/icons'
+import { ModuleIconMap, type ModuleIconKey, OpenWisdomLabLogo } from '@/components/icons'
 
 // Polarization angle colors for visual effect (based on polarization physics)
 const POLARIZATION_COLORS = [
