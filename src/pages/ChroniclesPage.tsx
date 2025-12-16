@@ -7,7 +7,7 @@
  * - Right track: Polarization-specific history (偏振光专属旅程)
  */
 
-import React, { useState, useMemo, useCallback } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -15,528 +15,67 @@ import { cn } from '@/lib/utils'
 import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
-  FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Sun, Sparkles, HelpCircle, Zap
+  FlaskConical, Star, ChevronDown, ChevronLeft, ChevronRight,
+  Sun, Sparkles, HelpCircle
 } from 'lucide-react'
 import { TimelineExploration } from '@/components/chronicles'
 
 // ============================================
-// Optical Panorama - 知识棱镜 (The Prism of Knowledge)
-// 交互式光谱导航图：展示光学学科各分支与偏振光的核心位置
+// 探秘翻转卡片预览组件 (Mystery Flip Card Preview)
 // ============================================
+const MYSTERY_PREVIEWS = [
+  {
+    year: 1669,
+    hookEn: 'The Double Vision',
+    hookZh: '双影之谜',
+    questionEn: 'Why does one crystal show two images?',
+    questionZh: '为什么一块晶体能看到两个影像？',
+    color: '#22d3ee',
+  },
+  {
+    year: 1809,
+    hookEn: 'The Cosine Prophecy',
+    hookZh: '余弦预言',
+    questionEn: 'Can mathematics predict light intensity?',
+    questionZh: '数学能预测光的强度吗？',
+    color: '#a855f7',
+  },
+  {
+    year: 1845,
+    hookEn: 'Magnetism Meets Light',
+    hookZh: '磁与光的邂逅',
+    questionEn: 'Can magnets twist light?',
+    questionZh: '磁铁能扭转光线吗？',
+    color: '#f97316',
+  },
+  {
+    year: 1971,
+    hookEn: 'Screens of Light',
+    hookZh: '光之屏幕',
+    questionEn: 'Can polarization create displays?',
+    questionZh: '偏振能创造显示屏吗？',
+    color: '#22c55e',
+  },
+]
 
-// 类别颜色配置 - 光谱色系
-const CATEGORY_COLORS = {
-  foundation: { dark: { bg: '#1e1b4b', stroke: '#818cf8', text: '#a5b4fc' }, light: { bg: '#eef2ff', stroke: '#6366f1', text: '#4f46e5' } },
-  geometric: { dark: { bg: '#451a03', stroke: '#f97316', text: '#fb923c' }, light: { bg: '#fff7ed', stroke: '#ea580c', text: '#c2410c' } },
-  wave: { dark: { bg: '#052e16', stroke: '#22c55e', text: '#4ade80' }, light: { bg: '#f0fdf4', stroke: '#16a34a', text: '#15803d' } },
-  polarization: { dark: { bg: '#083344', stroke: '#22d3ee', text: '#67e8f9' }, light: { bg: '#ecfeff', stroke: '#06b6d4', text: '#0891b2' } },
-  quantum: { dark: { bg: '#3b0764', stroke: '#a855f7', text: '#c084fc' }, light: { bg: '#faf5ff', stroke: '#9333ea', text: '#7e22ce' } },
-  application: { dark: { bg: '#1f2937', stroke: '#9ca3af', text: '#d1d5db' }, light: { bg: '#f3f4f6', stroke: '#6b7280', text: '#4b5563' } },
-}
-
-// 分支对应的光谱区域
-const BRANCH_SPECTRUM_REGIONS = {
-  geometric: { start: 22, end: 38, label: 'mm-μm' },
-  wave: { start: 36, end: 52, label: 'μm-nm' },
-  polarization: { start: 48, end: 68, label: 'nm scale' },
-  quantum: { start: 66, end: 82, label: 'photon' },
-}
-
-// ============================================
-// 子组件：电磁波谱条 (SpectrumScaleBar)
-// 底部光谱可视化，支持 Hover 高亮
-// ============================================
-interface SpectrumScaleBarProps {
-  activeBranch: string | null
-  theme: 'dark' | 'light'
-  isZh: boolean
-  onHover?: (branch: string | null) => void
-}
-
-// 分支在光谱上的位置映射（横向排列映射到光谱）
-const BRANCH_SPECTRUM_POSITIONS = {
-  geometric: { center: 30, labelEn: 'Geometric', labelZh: '几何光学' },
-  wave: { center: 44, labelEn: 'Wave', labelZh: '波动光学' },
-  polarization: { center: 58, labelEn: 'Polarization', labelZh: '偏振光学' },
-  quantum: { center: 74, labelEn: 'Quantum', labelZh: '量子光学' },
-}
-
-function SpectrumScaleBar({ activeBranch, theme, isZh, onHover }: SpectrumScaleBarProps) {
-  const getColor = (category: keyof typeof CATEGORY_COLORS | null) => {
-    if (!category) return theme === 'dark'
-      ? { bg: '#374151', stroke: '#6b7280', text: '#9ca3af' }
-      : { bg: '#e5e7eb', stroke: '#9ca3af', text: '#6b7280' }
-    return theme === 'dark' ? CATEGORY_COLORS[category].dark : CATEGORY_COLORS[category].light
-  }
-
-  const branchOrder = ['geometric', 'wave', 'polarization', 'quantum'] as const
-
-  return (
-    <div className="mt-8 px-4">
-      {/* 标题 */}
-      <motion.div
-        className="text-center mb-4"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <span className={cn(
-          'text-sm font-medium',
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-        )}>
-          {isZh ? '光学分支与电磁波谱对应关系' : 'Optical Branches Mapped to Electromagnetic Spectrum'}
-        </span>
-      </motion.div>
-
-      {/* 光谱条容器 */}
-      <div className="relative h-32">
-        {/* 分支标签 - 横向排列在光谱上方 */}
-        <div className="absolute left-0 right-0 top-0 h-12">
-          {branchOrder.map((branchId, index) => {
-            const branch = BRANCH_SPECTRUM_POSITIONS[branchId]
-            const colors = getColor(branchId)
-            const isActive = activeBranch === branchId
-
-            return (
-              <motion.div
-                key={branchId}
-                className="absolute flex flex-col items-center cursor-pointer"
-                style={{ left: `${branch.center}%`, transform: 'translateX(-50%)' }}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                onMouseEnter={() => onHover?.(branchId)}
-                onMouseLeave={() => onHover?.(null)}
-              >
-                {/* 分支名称 */}
-                <motion.span
-                  className={cn(
-                    'text-xs font-bold px-2 py-1 rounded-md transition-all duration-200',
-                    isActive ? 'scale-110' : 'scale-100'
-                  )}
-                  style={{
-                    color: colors.stroke,
-                    backgroundColor: isActive ? `${colors.stroke}20` : 'transparent',
-                  }}
-                  animate={isActive ? {
-                    boxShadow: [`0 0 0px ${colors.stroke}`, `0 0 8px ${colors.stroke}`, `0 0 0px ${colors.stroke}`],
-                  } : {}}
-                  transition={{ duration: 1.5, repeat: isActive ? Infinity : 0 }}
-                >
-                  {isZh ? branch.labelZh : branch.labelEn}
-                </motion.span>
-
-                {/* 连接线到光谱 */}
-                <motion.div
-                  className="w-0.5 rounded-full"
-                  style={{
-                    backgroundColor: colors.stroke,
-                    height: isActive ? 16 : 10,
-                    opacity: isActive ? 1 : 0.5,
-                  }}
-                  animate={{ height: isActive ? 16 : 10 }}
-                />
-              </motion.div>
-            )
-          })}
-        </div>
-
-        {/* 主光谱渐变条 */}
-        <motion.div
-          className="absolute left-0 right-0 top-14 h-5 rounded-full overflow-hidden"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
-          style={{ transformOrigin: 'left' }}
-        >
-          <div
-            className="w-full h-full"
-            style={{
-              background: `linear-gradient(to right,
-                #dc2626 0%,
-                #f97316 15%,
-                #eab308 25%,
-                #22c55e 40%,
-                #06b6d4 55%,
-                #3b82f6 70%,
-                #8b5cf6 85%,
-                #ec4899 100%
-              )`,
-            }}
-          />
-          {/* 暗化遮罩（非可见光区域） */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(to right,
-                ${theme === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)'} 0%,
-                ${theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.2)'} 30%,
-                transparent 35%,
-                transparent 55%,
-                ${theme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.2)'} 60%,
-                ${theme === 'dark' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)'} 100%
-              )`,
-            }}
-          />
-        </motion.div>
-
-        {/* 分支高亮区域 */}
-        <AnimatePresence>
-          {activeBranch && BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS] && (
-            <motion.div
-              className="absolute top-[52px] h-7 rounded-full border-2"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              style={{
-                left: `${BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS].start}%`,
-                width: `${BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS].end - BRANCH_SPECTRUM_REGIONS[activeBranch as keyof typeof BRANCH_SPECTRUM_REGIONS].start}%`,
-                borderColor: getColor(activeBranch as keyof typeof CATEGORY_COLORS).stroke,
-                boxShadow: `0 0 15px ${getColor(activeBranch as keyof typeof CATEGORY_COLORS).stroke}`,
-              }}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* 波长刻度 - 在光谱下方 */}
-        <div className="absolute left-0 right-0 top-[82px] flex justify-between px-4">
-          {[
-            { pos: 5, label: '1m+', labelZh: '无线电' },
-            { pos: 20, label: 'cm', labelZh: '微波' },
-            { pos: 35, label: 'μm', labelZh: '红外' },
-            { pos: 45, label: '380-700nm', labelZh: '可见光' },
-            { pos: 60, label: '10-400nm', labelZh: '紫外' },
-            { pos: 75, label: '0.01-10nm', labelZh: 'X射线' },
-            { pos: 92, label: '<0.01nm', labelZh: '伽马' },
-          ].map((scale, index) => (
-            <motion.div
-              key={index}
-              className="flex flex-col items-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 + index * 0.05 }}
-            >
-              <span className={cn(
-                'text-[9px]',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-              )}>
-                {scale.label}
-              </span>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* 波长方向指示 */}
-      <div className="flex justify-between mt-2 px-2">
-        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-          {isZh ? '← 长波 (低能)' : '← Long λ (Low E)'}
-        </span>
-        <motion.span
-          className={cn(
-            'text-[10px] px-2 py-0.5 rounded-full',
-            theme === 'dark' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
-          )}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-        >
-          {isZh ? '可见光区' : 'Visible Light'}
-        </motion.span>
-        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-          {isZh ? '短波 (高能) →' : 'Short λ (High E) →'}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-// ============================================
-// 子组件：分支卡片 (BranchCard)
-// 玻璃拟态卡片，支持选中/高亮状态
-// ============================================
-interface BranchCardProps {
-  branch: {
-    id: string
-    nameEn: string
-    nameZh: string
-    descEn: string
-    descZh: string
-    category: keyof typeof CATEGORY_COLORS
-    scaleEn: string
-    scaleZh: string
-    isHighlight?: boolean
-    topics: { en: string; zh: string }[]
-    icon: React.ReactNode
-  }
-  isSelected: boolean
-  isZh: boolean
-  theme: 'dark' | 'light'
-  onClick: () => void
-  onHover: (isHovered: boolean) => void
-  index: number
-}
-
-function BranchCard({ branch, isSelected, isZh, theme, onClick, onHover, index }: BranchCardProps) {
-  const colors = theme === 'dark' ? CATEGORY_COLORS[branch.category].dark : CATEGORY_COLORS[branch.category].light
-  const isHero = branch.isHighlight
-
-  return (
-    <motion.div
-      className={cn(
-        'relative cursor-pointer rounded-2xl border-2 p-4 transition-all duration-300',
-        'backdrop-blur-sm',
-        isHero ? 'col-span-full lg:col-span-1 lg:row-span-2' : '',
-        theme === 'dark'
-          ? 'bg-gradient-to-br from-slate-800/80 to-slate-900/80'
-          : 'bg-gradient-to-br from-white/80 to-gray-50/80'
-      )}
-      style={{
-        borderColor: isSelected ? colors.stroke : 'transparent',
-        boxShadow: isSelected
-          ? `0 0 20px ${colors.stroke}40, 0 4px 20px rgba(0,0,0,0.1)`
-          : '0 4px 20px rgba(0,0,0,0.1)',
-      }}
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        scale: isSelected ? 1.02 : 1,
-      }}
-      whileHover={{ scale: 1.03, y: -2 }}
-      transition={{
-        duration: 0.3,
-        delay: index * 0.1,
-        type: 'spring',
-        stiffness: 300,
-        damping: 25,
-      }}
-      onClick={onClick}
-      onMouseEnter={() => onHover(true)}
-      onMouseLeave={() => onHover(false)}
-    >
-      {/* Hero 卡片特殊发光效果 */}
-      {isHero && (
-        <motion.div
-          className="absolute -inset-1 rounded-2xl opacity-50"
-          style={{
-            background: `linear-gradient(135deg, ${colors.stroke}20, transparent, ${colors.stroke}10)`,
-          }}
-          animate={{
-            opacity: isSelected ? [0.3, 0.6, 0.3] : 0.2,
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      )}
-
-      {/* 卡片内容 */}
-      <div className={cn('relative z-10', isHero ? 'space-y-3' : 'space-y-2')}>
-        {/* 图标和标题行 */}
-        <div className="flex items-center gap-3">
-          <motion.div
-            className={cn(
-              'p-2 rounded-xl',
-              isHero ? 'p-3' : 'p-2'
-            )}
-            style={{ backgroundColor: `${colors.stroke}20` }}
-            animate={isHero && isSelected ? {
-              boxShadow: [`0 0 0px ${colors.stroke}`, `0 0 20px ${colors.stroke}`, `0 0 0px ${colors.stroke}`],
-            } : {}}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            {branch.icon}
-          </motion.div>
-          <div>
-            <h4
-              className={cn('font-bold', isHero ? 'text-lg' : 'text-sm')}
-              style={{ color: colors.text }}
-            >
-              {isZh ? branch.nameZh : branch.nameEn}
-            </h4>
-            <p className={cn(
-              'text-xs',
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            )}>
-              {isZh ? branch.scaleZh : branch.scaleEn}
-            </p>
-          </div>
-        </div>
-
-        {/* 描述 */}
-        <p className={cn(
-          isHero ? 'text-sm' : 'text-xs',
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-        )}>
-          {isZh ? branch.descZh : branch.descEn}
-        </p>
-
-        {/* 主题标签 */}
-        <div className="flex flex-wrap gap-1.5">
-          {branch.topics.slice(0, isHero ? 4 : 2).map((topic, i) => (
-            <motion.span
-              key={i}
-              className={cn(
-                'px-2 py-0.5 rounded-full text-xs',
-                theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
-              )}
-              style={{ color: colors.text }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 + i * 0.05 + 0.3 }}
-            >
-              {isZh ? topic.zh : topic.en}
-            </motion.span>
-          ))}
-        </div>
-
-        {/* Hero 卡片专属标记 */}
-        {isHero && (
-          <motion.div
-            className={cn(
-              'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold',
-              theme === 'dark' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-cyan-100 text-cyan-700'
-            )}
-            animate={{
-              scale: [1, 1.05, 1],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          >
-            <Star className="w-3 h-3" />
-            {isZh ? '本课程核心' : 'Course Focus'}
-          </motion.div>
-        )}
-      </div>
-
-      {/* 选中指示器 */}
-      <AnimatePresence>
-        {isSelected && (
-          <motion.div
-            className="absolute top-2 right-2 w-3 h-3 rounded-full"
-            style={{ backgroundColor: colors.stroke }}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-          />
-        )}
-      </AnimatePresence>
-    </motion.div>
-  )
-}
-
-// ============================================
-// 主组件：知识棱镜 (OpticalOverviewDiagram)
-// ============================================
-interface OpticalOverviewDiagramProps {
-  onFilterChange?: (branch: string) => void
-}
-
-function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagramProps) {
+function MysteryFlipCardPreview() {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
-
-  // 折叠状态 - 默认收起
   const [isExpanded, setIsExpanded] = useState(false)
-  // 选中的分支 - 默认选中偏振光学
-  const [selectedBranch, setSelectedBranch] = useState<string>('polarization')
-  // Hover 状态
-  const [hoveredBranch, setHoveredBranch] = useState<string | null>(null)
+  const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set())
 
-  const handleBranchSelect = useCallback((branchId: string) => {
-    setSelectedBranch(branchId)
-    onFilterChange?.(branchId)
-  }, [onFilterChange])
-
-  // 当前激活的分支（hover 优先）
-  const activeBranch = hoveredBranch || selectedBranch
-
-  // 光学分支数据
-  const branches = useMemo(() => [
-    {
-      id: 'geometric',
-      nameEn: 'Geometric Optics',
-      nameZh: '几何光学',
-      descEn: 'Ray tracing, lenses, mirrors - where light travels in straight lines',
-      descZh: '光线追踪、透镜、反射镜 - 光沿直线传播的世界',
-      category: 'geometric' as const,
-      scaleEn: 'Macroscopic (mm+)',
-      scaleZh: '宏观尺度 (mm+)',
-      beamColor: '#f97316',
-      icon: <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-orange-400' : 'text-orange-600')} />,
-      topics: [
-        { en: 'Reflection & Refraction', zh: '反射与折射' },
-        { en: 'Lens Systems', zh: '透镜系统' },
-        { en: 'Optical Instruments', zh: '光学仪器' },
-      ]
-    },
-    {
-      id: 'wave',
-      nameEn: 'Wave Optics',
-      nameZh: '波动光学',
-      descEn: 'Interference, diffraction - light as waves creating patterns',
-      descZh: '干涉、衍射 - 光波创造的奇妙图案',
-      category: 'wave' as const,
-      scaleEn: 'Wavelength (μm)',
-      scaleZh: '波长尺度 (μm)',
-      beamColor: '#22c55e',
-      icon: <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-green-400' : 'text-green-600')} />,
-      topics: [
-        { en: 'Interference', zh: '干涉' },
-        { en: 'Diffraction', zh: '衍射' },
-        { en: 'Coherence', zh: '相干性' },
-      ]
-    },
-    {
-      id: 'polarization',
-      nameEn: 'Polarization Optics',
-      nameZh: '偏振光学',
-      descEn: 'The transverse nature of light - vibrations perpendicular to propagation reveal hidden dimensions of electromagnetic waves',
-      descZh: '光的横波本质 - 垂直于传播方向的振动，揭示电磁波的隐藏维度',
-      category: 'polarization' as const,
-      scaleEn: 'Wave vector (nm)',
-      scaleZh: '波矢尺度 (nm)',
-      isHighlight: true,
-      beamColor: '#22d3ee',
-      icon: <Zap className={cn('w-6 h-6', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />,
-      topics: [
-        { en: "Malus's Law", zh: '马吕斯定律' },
-        { en: 'Birefringence', zh: '双折射' },
-        { en: 'Waveplates', zh: '波片' },
-        { en: 'Stokes & Mueller', zh: '斯托克斯与穆勒' },
-      ]
-    },
-    {
-      id: 'quantum',
-      nameEn: 'Quantum Optics',
-      nameZh: '量子光学',
-      descEn: 'Photon physics - light as discrete packets of energy',
-      descZh: '光子物理 - 光作为离散能量包的量子世界',
-      category: 'quantum' as const,
-      scaleEn: 'Photon (single)',
-      scaleZh: '光子尺度',
-      beamColor: '#a855f7',
-      icon: <FlaskConical className={cn('w-5 h-5', theme === 'dark' ? 'text-purple-400' : 'text-purple-600')} />,
-      topics: [
-        { en: 'Photoelectric Effect', zh: '光电效应' },
-        { en: 'Quantum Entanglement', zh: '量子纠缠' },
-        { en: 'Single Photon', zh: '单光子' },
-      ]
-    },
-  ], [theme])
-
-  // 获取颜色辅助函数
-  const getColor = useCallback((category: keyof typeof CATEGORY_COLORS) => {
-    return theme === 'dark' ? CATEGORY_COLORS[category].dark : CATEGORY_COLORS[category].light
-  }, [theme])
+  const toggleCard = (index: number) => {
+    setFlippedCards(prev => {
+      const next = new Set(prev)
+      if (next.has(index)) {
+        next.delete(index)
+      } else {
+        next.add(index)
+      }
+      return next
+    })
+  }
 
   return (
     <motion.div
@@ -551,7 +90,7 @@ function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagramProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* 可折叠标题区域 - 增强版 */}
+      {/* 可折叠标题区域 */}
       <motion.button
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
@@ -565,74 +104,21 @@ function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagramProps)
         whileTap={{ scale: 0.998 }}
       >
         <div className="flex items-center gap-4">
-          {/* 动态棱镜图标 */}
+          {/* 翻转卡片图标 */}
           <motion.div
             className={cn(
               'relative p-3 rounded-2xl',
               theme === 'dark' ? 'bg-gradient-to-br from-cyan-500/20 to-purple-500/20' : 'bg-gradient-to-br from-cyan-100 to-purple-100'
             )}
             animate={isExpanded ? {
-              rotate: [0, 5, -5, 0],
-              scale: [1, 1.05, 1],
+              rotateY: [0, 180, 360],
             } : {}}
-            transition={{ duration: 2, repeat: isExpanded ? Infinity : 0 }}
+            transition={{ duration: 3, repeat: isExpanded ? Infinity : 0 }}
           >
-            <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-              {/* 棱镜主体 */}
-              <motion.polygon
-                points="16,4 28,26 4,26"
-                fill={theme === 'dark' ? 'url(#prism-grad-dark)' : 'url(#prism-grad-light)'}
-                stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
-                strokeWidth="1.5"
-              />
-              {/* 动态色散光线 */}
-              <motion.line
-                x1="20" y1="14" x2="30" y2="8"
-                stroke="#f97316"
-                strokeWidth="2"
-                strokeLinecap="round"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              />
-              <motion.line
-                x1="21" y1="17" x2="30" y2="17"
-                stroke="#22c55e"
-                strokeWidth="2"
-                strokeLinecap="round"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              />
-              <motion.line
-                x1="21" y1="20" x2="30" y2="23"
-                stroke="#22d3ee"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              />
-              <motion.line
-                x1="20" y1="22" x2="30" y2="28"
-                stroke="#a855f7"
-                strokeWidth="2"
-                strokeLinecap="round"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              />
-              <defs>
-                <linearGradient id="prism-grad-dark" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#475569" />
-                  <stop offset="100%" stopColor="#1e293b" />
-                </linearGradient>
-                <linearGradient id="prism-grad-light" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#f1f5f9" />
-                  <stop offset="100%" stopColor="#e2e8f0" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <HelpCircle className={cn(
+              'w-8 h-8',
+              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+            )} />
             {/* 发光效果 */}
             <motion.div
               className="absolute inset-0 rounded-2xl"
@@ -652,15 +138,15 @@ function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagramProps)
               'font-bold text-xl tracking-tight',
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             )}>
-              {isZh ? '知识棱镜：光学全景图' : 'The Prism of Knowledge'}
+              {isZh ? '探秘翻转卡片' : 'Mystery Flip Cards'}
             </h3>
             <p className={cn(
               'text-sm mt-0.5',
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
             )}>
               {isZh
-                ? '探索光学四大分支，发现偏振光的核心地位'
-                : 'Explore the four branches of optics and discover the central role of polarization'}
+                ? '点击卡片翻转，探索光学历史中的谜题与发现'
+                : 'Click to flip cards and explore mysteries in optical history'}
             </p>
           </div>
         </div>
@@ -680,7 +166,7 @@ function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagramProps)
         </motion.div>
       </motion.button>
 
-      {/* 可折叠内容区域 - 使用 AnimatePresence */}
+      {/* 可折叠内容区域 */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -690,97 +176,121 @@ function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagramProps)
             transition={{ duration: 0.4, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            {/* 主要内容区域 - 横向排列的四大分支 */}
             <div className="p-6">
-              {/* 横向排列的分支卡片 */}
+              {/* 翻转卡片网格 */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {branches.map((branch, index) => (
-                  <BranchCard
-                    key={branch.id}
-                    branch={branch}
-                    isSelected={selectedBranch === branch.id}
-                    isZh={isZh}
-                    theme={theme}
-                    onClick={() => handleBranchSelect(branch.id)}
-                    onHover={(hovered) => setHoveredBranch(hovered ? branch.id : null)}
-                    index={index}
-                  />
-                ))}
-              </div>
-
-              {/* 底部：电磁波谱条 */}
-              <SpectrumScaleBar
-                activeBranch={activeBranch}
-                theme={theme}
-                isZh={isZh}
-                onHover={setHoveredBranch}
-              />
-            </div>
-
-            {/* 底部交互说明 */}
-            <motion.div
-              className={cn(
-                'px-6 py-4 border-t',
-                theme === 'dark' ? 'border-slate-700/50 bg-slate-900/30' : 'border-gray-100 bg-gray-50/30'
-              )}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              {/* 图例按钮 */}
-              <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
-                {branches.map((branch) => {
-                  const colors = getColor(branch.category)
-                  const isActive = selectedBranch === branch.id
-
+                {MYSTERY_PREVIEWS.map((mystery, index) => {
+                  const isFlipped = flippedCards.has(index)
                   return (
-                    <motion.button
-                      key={branch.id}
-                      onClick={() => handleBranchSelect(branch.id)}
-                      className={cn(
-                        'flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all',
-                        'backdrop-blur-sm'
-                      )}
-                      style={{
-                        backgroundColor: isActive ? `${colors.stroke}15` : 'transparent',
-                        borderColor: isActive ? colors.stroke : `${colors.stroke}40`,
-                      }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                    <motion.div
+                      key={mystery.year}
+                      className="relative h-40 cursor-pointer perspective-1000"
+                      onClick={() => toggleCard(index)}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                      style={{ perspective: '1000px' }}
                     >
                       <motion.div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: colors.stroke }}
-                        animate={isActive ? {
-                          scale: [1, 1.3, 1],
-                          boxShadow: [`0 0 0px ${colors.stroke}`, `0 0 10px ${colors.stroke}`, `0 0 0px ${colors.stroke}`],
-                        } : {}}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      />
-                      <span
-                        className={cn('text-sm font-medium', isActive ? 'font-bold' : '')}
-                        style={{ color: colors.text }}
+                        className="relative w-full h-full"
+                        animate={{ rotateY: isFlipped ? 180 : 0 }}
+                        transition={{ duration: 0.6, ease: 'easeInOut' }}
+                        style={{ transformStyle: 'preserve-3d' }}
                       >
-                        {isZh ? branch.nameZh : branch.nameEn}
-                      </span>
-                      {branch.isHighlight && (
-                        <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                      )}
-                    </motion.button>
+                        {/* 正面 - 谜题 */}
+                        <div
+                          className={cn(
+                            'absolute inset-0 rounded-xl border-2 p-4 flex flex-col justify-between backface-hidden',
+                            theme === 'dark' ? 'bg-slate-800/80' : 'bg-white'
+                          )}
+                          style={{
+                            borderColor: mystery.color,
+                            boxShadow: `0 0 20px ${mystery.color}30`,
+                            backfaceVisibility: 'hidden',
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span
+                              className="text-xs font-mono px-2 py-1 rounded-full"
+                              style={{
+                                backgroundColor: `${mystery.color}20`,
+                                color: mystery.color,
+                              }}
+                            >
+                              {mystery.year}
+                            </span>
+                            <HelpCircle
+                              className="w-5 h-5"
+                              style={{ color: mystery.color }}
+                            />
+                          </div>
+                          <div>
+                            <h4
+                              className="font-bold text-lg mb-1"
+                              style={{ color: mystery.color }}
+                            >
+                              {isZh ? mystery.hookZh : mystery.hookEn}
+                            </h4>
+                            <p className={cn(
+                              'text-sm',
+                              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                            )}>
+                              {isZh ? mystery.questionZh : mystery.questionEn}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* 背面 - 提示 */}
+                        <div
+                          className={cn(
+                            'absolute inset-0 rounded-xl border-2 p-4 flex flex-col items-center justify-center text-center',
+                            theme === 'dark' ? 'bg-slate-800/80' : 'bg-white'
+                          )}
+                          style={{
+                            borderColor: mystery.color,
+                            boxShadow: `0 0 20px ${mystery.color}30`,
+                            backfaceVisibility: 'hidden',
+                            transform: 'rotateY(180deg)',
+                          }}
+                        >
+                          <Sparkles
+                            className="w-8 h-8 mb-2"
+                            style={{ color: mystery.color }}
+                          />
+                          <p className={cn(
+                            'text-sm font-medium',
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                          )}>
+                            {isZh ? '在下方时间线中探索答案' : 'Explore the answer in timeline below'}
+                          </p>
+                          <motion.div
+                            className="mt-2"
+                            animate={{ y: [0, 5, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          >
+                            <ChevronDown
+                              className="w-5 h-5"
+                              style={{ color: mystery.color }}
+                            />
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
                   )
                 })}
               </div>
 
               {/* 说明文字 */}
               <p className={cn(
-                'text-center text-xs leading-relaxed',
+                'text-center text-sm mt-6',
                 theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
               )}>
                 {isZh
-                  ? '💡 点击卡片或图例切换焦点 | 偏振光学揭示光的横波本质，是连接经典光学与量子光学的桥梁'
-                  : '💡 Click cards or legend to switch focus | Polarization reveals the transverse nature of light, bridging classical and quantum optics'}
+                  ? '点击卡片翻转查看提示，在时间线中寻找完整答案'
+                  : 'Click cards to flip for hints, find complete answers in the timeline below'}
               </p>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -2689,411 +2199,6 @@ const CATEGORY_LABELS = {
   application: { en: 'Application', zh: '应用', color: 'orange' as const },
 }
 
-// SVG Illustrations for classic experiments - 经典实验配图
-function ExperimentIllustration({ type, className = '' }: { type: string; className?: string }) {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-
-  const illustrations: Record<string, React.ReactElement> = {
-    prism: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Prism */}
-        <polygon
-          points="60,10 100,70 20,70"
-          fill={isDark ? '#1e293b' : '#f8fafc'}
-          stroke={isDark ? '#64748b' : '#94a3b8'}
-          strokeWidth="2"
-        />
-        {/* Incoming white light */}
-        <line x1="0" y1="40" x2="45" y2="40" stroke="#fff" strokeWidth="3" />
-        {/* Spectrum rays */}
-        <line x1="75" y1="45" x2="120" y2="25" stroke="#ef4444" strokeWidth="2" />
-        <line x1="75" y1="47" x2="120" y2="35" stroke="#f97316" strokeWidth="2" />
-        <line x1="75" y1="49" x2="120" y2="45" stroke="#eab308" strokeWidth="2" />
-        <line x1="75" y1="51" x2="120" y2="55" stroke="#22c55e" strokeWidth="2" />
-        <line x1="75" y1="53" x2="120" y2="65" stroke="#3b82f6" strokeWidth="2" />
-        <line x1="75" y1="55" x2="120" y2="75" stroke="#8b5cf6" strokeWidth="2" />
-      </svg>
-    ),
-    'double-slit': (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Light source */}
-        <circle cx="10" cy="40" r="6" fill="#fbbf24" />
-        {/* Barrier with slits */}
-        <rect x="40" y="0" width="4" height="32" fill={isDark ? '#475569' : '#94a3b8'} />
-        <rect x="40" y="38" width="4" height="4" fill={isDark ? '#0f172a' : '#f1f5f9'} />
-        <rect x="40" y="48" width="4" height="32" fill={isDark ? '#475569' : '#94a3b8'} />
-        {/* Waves from source */}
-        <path d="M 16,40 Q 28,30 40,36" fill="none" stroke="#fbbf24" strokeWidth="1.5" opacity="0.7" />
-        <path d="M 16,40 Q 28,50 40,44" fill="none" stroke="#fbbf24" strokeWidth="1.5" opacity="0.7" />
-        {/* Interference pattern */}
-        <rect x="100" y="0" width="15" height="80" fill={isDark ? '#1e293b' : '#f1f5f9'} />
-        {[0, 16, 32, 48, 64].map((y, i) => (
-          <rect key={i} x="100" y={y + 4} width="15" height="8" fill="#fbbf24" opacity={i % 2 === 0 ? 0.9 : 0.3} />
-        ))}
-        {/* Waves from slits */}
-        <path d="M 44,36 Q 70,20 100,20" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
-        <path d="M 44,36 Q 70,40 100,40" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
-        <path d="M 44,44 Q 70,40 100,40" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
-        <path d="M 44,44 Q 70,60 100,60" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.5" />
-      </svg>
-    ),
-    calcite: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Calcite crystal (rhombus) */}
-        <polygon
-          points="30,20 80,15 90,60 40,65"
-          fill={isDark ? 'rgba(147, 197, 253, 0.2)' : 'rgba(147, 197, 253, 0.4)'}
-          stroke={isDark ? '#60a5fa' : '#3b82f6'}
-          strokeWidth="2"
-        />
-        {/* Incoming light */}
-        <line x1="0" y1="40" x2="30" y2="40" stroke="#fff" strokeWidth="3" />
-        {/* Double refraction - ordinary ray */}
-        <line x1="50" y1="42" x2="120" y2="50" stroke="#22d3ee" strokeWidth="2.5" />
-        <text x="105" y="62" fill={isDark ? '#22d3ee' : '#0891b2'} fontSize="8">o-ray</text>
-        {/* Extraordinary ray */}
-        <line x1="50" y1="38" x2="120" y2="25" stroke="#fbbf24" strokeWidth="2.5" />
-        <text x="105" y="20" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="8">e-ray</text>
-        {/* Double image dots */}
-        <circle cx="15" cy="40" r="3" fill="#fff" />
-      </svg>
-    ),
-    reflection: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Glass surface */}
-        <rect x="0" y="50" width="120" height="30" fill={isDark ? 'rgba(147, 197, 253, 0.2)' : 'rgba(147, 197, 253, 0.3)'} />
-        <line x1="0" y1="50" x2="120" y2="50" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="2" />
-        {/* Incident ray */}
-        <line x1="20" y1="10" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
-        <polygon points="58,46 62,50 54,50" fill="#fff" />
-        {/* Reflected ray (polarized) */}
-        <line x1="60" y1="50" x2="100" y2="10" stroke="#22d3ee" strokeWidth="2.5" />
-        {/* Polarization indicator */}
-        <ellipse cx="85" cy="25" rx="8" ry="2" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
-        {/* Angle arc */}
-        <path d="M 60,35 A 15,15 0 0,1 75,50" fill="none" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
-        <text x="72" y="42" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">θB</text>
-      </svg>
-    ),
-    polarizer: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Unpolarized light waves */}
-        <g transform="translate(5, 40)">
-          <line x1="0" y1="-10" x2="0" y2="10" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="-7" y1="-7" x2="7" y2="7" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="-10" y1="0" x2="10" y2="0" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="-7" y1="7" x2="7" y2="-7" stroke="#fbbf24" strokeWidth="2" />
-        </g>
-        {/* Arrow */}
-        <line x1="20" y1="40" x2="40" y2="40" stroke="#fbbf24" strokeWidth="2" />
-        {/* Polarizer 1 */}
-        <rect x="45" y="15" width="8" height="50" fill={isDark ? 'rgba(34, 211, 238, 0.3)' : 'rgba(34, 211, 238, 0.4)'} stroke="#22d3ee" strokeWidth="1.5" />
-        <line x1="49" y1="18" x2="49" y2="62" stroke="#22d3ee" strokeWidth="2" strokeDasharray="3,2" />
-        {/* Polarized light */}
-        <line x1="53" y1="40" x2="65" y2="40" stroke="#22d3ee" strokeWidth="2" />
-        <g transform="translate(70, 40)">
-          <line x1="0" y1="-8" x2="0" y2="8" stroke="#22d3ee" strokeWidth="2" />
-        </g>
-        {/* Arrow */}
-        <line x1="75" y1="40" x2="85" y2="40" stroke="#22d3ee" strokeWidth="2" />
-        {/* Polarizer 2 (crossed) */}
-        <rect x="90" y="15" width="8" height="50" fill={isDark ? 'rgba(251, 191, 36, 0.3)' : 'rgba(251, 191, 36, 0.4)'} stroke="#fbbf24" strokeWidth="1.5" />
-        <line x1="91" y1="40" x2="97" y2="40" stroke="#fbbf24" strokeWidth="2" strokeDasharray="3,2" />
-        {/* No light */}
-        <line x1="98" y1="40" x2="115" y2="40" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" strokeDasharray="2,2" />
-        <text x="105" y="55" fill={isDark ? '#ef4444' : '#dc2626'} fontSize="8">×</text>
-      </svg>
-    ),
-    wave: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* E field wave */}
-        <path
-          d="M 0,40 Q 15,10 30,40 Q 45,70 60,40 Q 75,10 90,40 Q 105,70 120,40"
-          fill="none"
-          stroke="#22d3ee"
-          strokeWidth="2.5"
-        />
-        {/* B field wave (perpendicular) */}
-        <path
-          d="M 0,40 Q 15,55 30,40 Q 45,25 60,40 Q 75,55 90,40 Q 105,25 120,40"
-          fill="none"
-          stroke="#f472b6"
-          strokeWidth="2"
-          opacity="0.7"
-        />
-        {/* Labels */}
-        <text x="5" y="15" fill="#22d3ee" fontSize="9" fontWeight="bold">E</text>
-        <text x="5" y="65" fill="#f472b6" fontSize="9" fontWeight="bold">B</text>
-        {/* Propagation arrow */}
-        <line x1="50" y1="75" x2="70" y2="75" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1.5" />
-        <polygon points="70,75 65,72 65,78" fill={isDark ? '#94a3b8' : '#64748b'} />
-        <text x="55" y="72" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">k</text>
-      </svg>
-    ),
-    lcd: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Backlight */}
-        <rect x="0" y="25" width="15" height="30" fill="#fbbf24" opacity="0.8" />
-        {/* Polarizer 1 */}
-        <rect x="20" y="20" width="5" height="40" fill={isDark ? 'rgba(34, 211, 238, 0.4)' : 'rgba(34, 211, 238, 0.5)'} stroke="#22d3ee" />
-        {/* LC layer */}
-        <rect x="30" y="15" width="30" height="50" fill={isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)'} stroke="#8b5cf6" />
-        {/* Twisted molecules */}
-        <path d="M 35,25 Q 45,30 55,25" fill="none" stroke="#8b5cf6" strokeWidth="1.5" />
-        <path d="M 35,40 Q 45,35 55,40" fill="none" stroke="#8b5cf6" strokeWidth="1.5" />
-        <path d="M 35,55 Q 45,50 55,55" fill="none" stroke="#8b5cf6" strokeWidth="1.5" />
-        {/* Polarizer 2 */}
-        <rect x="65" y="20" width="5" height="40" fill={isDark ? 'rgba(34, 211, 238, 0.4)' : 'rgba(34, 211, 238, 0.5)'} stroke="#22d3ee" />
-        {/* Display pixel */}
-        <rect x="80" y="25" width="35" height="30" fill={isDark ? '#0f172a' : '#1e293b'} stroke={isDark ? '#475569' : '#64748b'} />
-        <rect x="85" y="30" width="10" height="20" fill="#22c55e" />
-        <rect x="100" y="30" width="10" height="20" fill="#3b82f6" />
-      </svg>
-    ),
-    nicol: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Nicol prism shape */}
-        <polygon
-          points="20,20 70,15 100,40 70,65 20,60"
-          fill={isDark ? 'rgba(147, 197, 253, 0.15)' : 'rgba(147, 197, 253, 0.25)'}
-          stroke={isDark ? '#60a5fa' : '#3b82f6'}
-          strokeWidth="2"
-        />
-        {/* Diagonal cut */}
-        <line x1="45" y1="17" x2="45" y2="63" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" strokeDasharray="3,2" />
-        {/* Incoming light */}
-        <line x1="0" y1="40" x2="20" y2="40" stroke="#fff" strokeWidth="2.5" />
-        {/* Ordinary ray (reflected/absorbed) */}
-        <line x1="45" y1="40" x2="70" y2="65" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1.5" strokeDasharray="2,2" />
-        <text x="60" y="75" fill={isDark ? '#64748b' : '#94a3b8'} fontSize="7">absorbed</text>
-        {/* Extraordinary ray (transmitted) */}
-        <line x1="45" y1="40" x2="120" y2="40" stroke="#22d3ee" strokeWidth="2.5" />
-        <text x="100" y="35" fill="#22d3ee" fontSize="7">e-ray</text>
-      </svg>
-    ),
-    mantis: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Mantis shrimp eye (simplified) */}
-        <ellipse cx="30" cy="40" rx="20" ry="25" fill={isDark ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.4)'} stroke="#22c55e" strokeWidth="2" />
-        {/* Eye bands */}
-        <line x1="10" y1="35" x2="50" y2="35" stroke="#22c55e" strokeWidth="3" />
-        <line x1="10" y1="45" x2="50" y2="45" stroke="#22c55e" strokeWidth="3" />
-        {/* Incoming light types */}
-        <g transform="translate(70, 20)">
-          <circle cx="0" cy="0" r="4" fill="#22d3ee" />
-          <path d="M -8,0 A 8,8 0 1,1 8,0" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
-          <text x="12" y="4" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">linear</text>
-        </g>
-        <g transform="translate(70, 40)">
-          <circle cx="0" cy="0" r="4" fill="#f472b6" />
-          <ellipse cx="0" cy="0" rx="8" ry="4" fill="none" stroke="#f472b6" strokeWidth="1.5" />
-          <text x="12" y="4" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">circular</text>
-        </g>
-        <g transform="translate(70, 60)">
-          <circle cx="0" cy="0" r="4" fill="#fbbf24" />
-          <ellipse cx="0" cy="0" rx="8" ry="6" fill="none" stroke="#fbbf24" strokeWidth="1.5" transform="rotate(30)" />
-          <text x="12" y="4" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">elliptical</text>
-        </g>
-        {/* Arrows to eye */}
-        <line x1="55" y1="20" x2="48" y2="35" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
-        <line x1="55" y1="40" x2="50" y2="40" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
-        <line x1="55" y1="60" x2="48" y2="45" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" />
-      </svg>
-    ),
-    birefringence: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Crystal structure */}
-        <rect x="40" y="10" width="40" height="60" fill={isDark ? 'rgba(147, 197, 253, 0.15)' : 'rgba(147, 197, 253, 0.25)'} stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="2" />
-        {/* Optic axis indicator */}
-        <line x1="60" y1="5" x2="60" y2="75" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" strokeDasharray="3,2" />
-        <text x="62" y="10" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="6">optic axis</text>
-        {/* Incoming light */}
-        <line x1="5" y1="40" x2="40" y2="40" stroke="#fff" strokeWidth="2.5" />
-        {/* O-ray (follows optic axis) */}
-        <line x1="80" y1="40" x2="115" y2="40" stroke="#22d3ee" strokeWidth="2" />
-        {/* E-ray (deflected) */}
-        <line x1="80" y1="40" x2="115" y2="25" stroke="#fbbf24" strokeWidth="2" />
-        {/* Inside crystal paths */}
-        <line x1="40" y1="40" x2="80" y2="40" stroke="#22d3ee" strokeWidth="1.5" opacity="0.6" />
-        <line x1="40" y1="40" x2="80" y2="35" stroke="#fbbf24" strokeWidth="1.5" opacity="0.6" />
-        {/* Labels */}
-        <text x="100" y="50" fill="#22d3ee" fontSize="7">o</text>
-        <text x="108" y="23" fill="#fbbf24" fontSize="7">e</text>
-      </svg>
-    ),
-    faraday: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Electromagnet coil */}
-        <rect x="35" y="15" width="50" height="50" fill={isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)'} stroke="#8b5cf6" strokeWidth="2" rx="4" />
-        {/* Coil windings */}
-        {[20, 30, 40, 50, 60].map((y, i) => (
-          <ellipse key={i} cx="60" cy={y} rx="25" ry="4" fill="none" stroke="#8b5cf6" strokeWidth="1" opacity="0.6" />
-        ))}
-        {/* Magnetic field arrow */}
-        <line x1="60" y1="5" x2="60" y2="75" stroke={isDark ? '#c084fc' : '#a855f7'} strokeWidth="1.5" strokeDasharray="4,2" />
-        <polygon points="60,5 55,12 65,12" fill={isDark ? '#c084fc' : '#a855f7'} />
-        <text x="68" y="10" fill={isDark ? '#c084fc' : '#a855f7'} fontSize="7">B</text>
-        {/* Incoming polarized light */}
-        <line x1="0" y1="40" x2="30" y2="40" stroke="#22d3ee" strokeWidth="2" />
-        <line x1="15" y1="33" x2="15" y2="47" stroke="#22d3ee" strokeWidth="2" />
-        {/* Rotated outgoing light */}
-        <line x1="90" y1="40" x2="120" y2="40" stroke="#22d3ee" strokeWidth="2" />
-        <line x1="105" y1="32" x2="105" y2="48" stroke="#22d3ee" strokeWidth="2" transform="rotate(30, 105, 40)" />
-        {/* Rotation arrow */}
-        <path d="M 95,55 A 10,10 0 0,1 115,55" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
-        <polygon points="115,55 112,50 110,57" fill="#fbbf24" />
-      </svg>
-    ),
-    chirality: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Left-handed molecule */}
-        <g transform="translate(25, 40)">
-          <circle cx="0" cy="0" r="8" fill="#22c55e" opacity="0.8" />
-          <line x1="0" y1="-8" x2="0" y2="-20" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
-          <circle cx="0" cy="-24" r="4" fill="#3b82f6" />
-          <line x1="8" y1="0" x2="18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
-          <circle cx="22" cy="10" r="4" fill="#ef4444" />
-          <line x1="-8" y1="0" x2="-18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
-          <circle cx="-22" cy="10" r="4" fill="#fbbf24" />
-          <text x="-5" y="30" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">L</text>
-        </g>
-        {/* Mirror line */}
-        <line x1="60" y1="10" x2="60" y2="70" stroke={isDark ? '#475569' : '#94a3b8'} strokeWidth="1" strokeDasharray="4,2" />
-        {/* Right-handed molecule (mirror) */}
-        <g transform="translate(95, 40)">
-          <circle cx="0" cy="0" r="8" fill="#22c55e" opacity="0.8" />
-          <line x1="0" y1="-8" x2="0" y2="-20" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
-          <circle cx="0" cy="-24" r="4" fill="#3b82f6" />
-          <line x1="-8" y1="0" x2="-18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
-          <circle cx="-22" cy="10" r="4" fill="#ef4444" />
-          <line x1="8" y1="0" x2="18" y2="8" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="2" />
-          <circle cx="22" cy="10" r="4" fill="#fbbf24" />
-          <text x="-5" y="30" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">R</text>
-        </g>
-        {/* Mirror label */}
-        <text x="52" y="78" fill={isDark ? '#64748b' : '#94a3b8'} fontSize="6">mirror</text>
-      </svg>
-    ),
-    rayleigh: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Sun */}
-        <circle cx="10" cy="40" r="8" fill="#fbbf24" />
-        {/* Sun rays */}
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-          <line
-            key={i}
-            x1={10 + 10 * Math.cos(angle * Math.PI / 180)}
-            y1={40 + 10 * Math.sin(angle * Math.PI / 180)}
-            x2={10 + 14 * Math.cos(angle * Math.PI / 180)}
-            y2={40 + 14 * Math.sin(angle * Math.PI / 180)}
-            stroke="#fbbf24"
-            strokeWidth="1.5"
-          />
-        ))}
-        {/* Incident beam */}
-        <line x1="22" y1="40" x2="50" y2="40" stroke="#fff" strokeWidth="2" />
-        {/* Scattering particle */}
-        <circle cx="55" cy="40" r="4" fill={isDark ? '#475569' : '#94a3b8'} />
-        {/* Scattered blue light (perpendicular) */}
-        <line x1="55" y1="36" x2="55" y2="10" stroke="#3b82f6" strokeWidth="2" />
-        <line x1="55" y1="44" x2="55" y2="70" stroke="#3b82f6" strokeWidth="2" />
-        {/* Forward red light */}
-        <line x1="59" y1="40" x2="90" y2="40" stroke="#ef4444" strokeWidth="2" />
-        {/* Polarization indicators */}
-        <line x1="55" y1="18" x2="48" y2="18" stroke="#3b82f6" strokeWidth="1.5" />
-        <line x1="55" y1="18" x2="62" y2="18" stroke="#3b82f6" strokeWidth="1.5" />
-        {/* Labels */}
-        <text x="35" y="12" fill="#3b82f6" fontSize="7">blue</text>
-        <text x="95" y="43" fill="#ef4444" fontSize="7">red</text>
-        <text x="65" y="18" fill="#3b82f6" fontSize="6">⊥</text>
-      </svg>
-    ),
-    poincare: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Sphere */}
-        <ellipse cx="60" cy="40" rx="35" ry="35" fill="none" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="1.5" />
-        {/* Equator */}
-        <ellipse cx="60" cy="40" rx="35" ry="10" fill="none" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="1" strokeDasharray="3,2" />
-        {/* Vertical meridian */}
-        <ellipse cx="60" cy="40" rx="10" ry="35" fill="none" stroke={isDark ? '#60a5fa' : '#3b82f6'} strokeWidth="1" strokeDasharray="3,2" />
-        {/* North pole - RCP */}
-        <circle cx="60" cy="5" r="4" fill="#22d3ee" />
-        <text x="68" y="10" fill="#22d3ee" fontSize="6">R</text>
-        {/* South pole - LCP */}
-        <circle cx="60" cy="75" r="4" fill="#f472b6" />
-        <text x="68" y="75" fill="#f472b6" fontSize="6">L</text>
-        {/* H polarization */}
-        <circle cx="95" cy="40" r="3" fill="#fbbf24" />
-        <text x="100" y="43" fill="#fbbf24" fontSize="6">H</text>
-        {/* V polarization */}
-        <circle cx="25" cy="40" r="3" fill="#22c55e" />
-        <text x="10" y="43" fill="#22c55e" fontSize="6">V</text>
-        {/* Diagonal */}
-        <circle cx="60" cy="30" r="2" fill="#a855f7" />
-        {/* Trajectory arc */}
-        <path d="M 75,25 Q 85,40 75,55" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2,2" />
-        <polygon points="75,55 80,50 72,50" fill="#ef4444" />
-      </svg>
-    ),
-    photoelectric: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Photon wave packets */}
-        <g>
-          <rect x="5" y="35" width="15" height="10" fill="#fbbf24" opacity="0.3" rx="2" />
-          <path d="M 7,40 Q 10,35 13,40 Q 16,45 19,40" fill="none" stroke="#fbbf24" strokeWidth="1.5" />
-          <text x="7" y="55" fill="#fbbf24" fontSize="6">hν</text>
-        </g>
-        {/* Arrow */}
-        <line x1="22" y1="40" x2="38" y2="40" stroke="#fbbf24" strokeWidth="1.5" />
-        <polygon points="38,40 33,37 33,43" fill="#fbbf24" />
-        {/* Metal surface */}
-        <rect x="40" y="25" width="40" height="30" fill={isDark ? '#475569' : '#94a3b8'} rx="2" />
-        <text x="50" y="42" fill={isDark ? '#1e293b' : '#f1f5f9'} fontSize="7">Metal</text>
-        {/* Ejected electron */}
-        <circle cx="95" cy="30" r="4" fill="#22d3ee" />
-        <text x="100" y="33" fill="#22d3ee" fontSize="6">e⁻</text>
-        {/* Electron trajectory */}
-        <path d="M 80,35 Q 85,25 95,30" fill="none" stroke="#22d3ee" strokeWidth="1.5" />
-        {/* Energy equation */}
-        <text x="45" y="70" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="7">E = hν</text>
-      </svg>
-    ),
-    jones: (
-      <svg viewBox="0 0 120 80" className={className}>
-        {/* Input vector */}
-        <g transform="translate(15, 40)">
-          <rect x="-8" y="-20" width="16" height="40" fill={isDark ? 'rgba(34, 211, 238, 0.2)' : 'rgba(34, 211, 238, 0.3)'} stroke="#22d3ee" strokeWidth="1" rx="2" />
-          <text x="-4" y="-5" fill="#22d3ee" fontSize="8">E</text>
-          <text x="-4" y="10" fill="#22d3ee" fontSize="6">in</text>
-        </g>
-        {/* Arrow to matrix */}
-        <line x1="28" y1="40" x2="38" y2="40" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
-        {/* 2x2 Matrix */}
-        <g transform="translate(55, 40)">
-          <rect x="-18" y="-22" width="36" height="44" fill={isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.3)'} stroke="#8b5cf6" strokeWidth="1.5" rx="2" />
-          <text x="-12" y="-5" fill="#8b5cf6" fontSize="7">a  b</text>
-          <text x="-12" y="10" fill="#8b5cf6" fontSize="7">c  d</text>
-        </g>
-        {/* Arrow to output */}
-        <line x1="78" y1="40" x2="88" y2="40" stroke={isDark ? '#94a3b8' : '#64748b'} strokeWidth="1" />
-        {/* Output vector */}
-        <g transform="translate(105, 40)">
-          <rect x="-8" y="-20" width="16" height="40" fill={isDark ? 'rgba(251, 191, 36, 0.2)' : 'rgba(251, 191, 36, 0.3)'} stroke="#fbbf24" strokeWidth="1" rx="2" />
-          <text x="-5" y="-5" fill="#fbbf24" fontSize="8">E</text>
-          <text x="-6" y="10" fill="#fbbf24" fontSize="5">out</text>
-        </g>
-        {/* Equals sign */}
-        <text x="82" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">=</text>
-        {/* Multiplication sign */}
-        <text x="32" y="43" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="10">×</text>
-      </svg>
-    ),
-  }
-
-  return illustrations[type] || null
-}
-
 // Story Modal Component - 沉浸式故事阅读模式
 interface StoryModalProps {
   event: TimelineEvent
@@ -3351,190 +2456,6 @@ function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }: StoryM
   )
 }
 
-// Dual Track Card Component - 双轨卡片组件
-interface DualTrackCardProps {
-  event: TimelineEvent
-  isExpanded: boolean
-  onToggle: () => void
-  onReadStory: () => void
-  side: 'left' | 'right'
-}
-
-function DualTrackCard({ event, isExpanded, onToggle, onReadStory, side: _side }: DualTrackCardProps) {
-  const { theme } = useTheme()
-  const { i18n } = useTranslation()
-  const isZh = i18n.language === 'zh'
-  const category = CATEGORY_LABELS[event.category]
-
-  const isOpticsTrack = event.track === 'optics'
-  const trackColor = isOpticsTrack
-    ? { bg: theme === 'dark' ? 'bg-amber-500/10' : 'bg-amber-50', border: theme === 'dark' ? 'border-amber-500/30' : 'border-amber-200', hoverBorder: theme === 'dark' ? 'hover:border-amber-500/50' : 'hover:border-amber-400' }
-    : { bg: theme === 'dark' ? 'bg-cyan-500/10' : 'bg-cyan-50', border: theme === 'dark' ? 'border-cyan-500/30' : 'border-cyan-200', hoverBorder: theme === 'dark' ? 'hover:border-cyan-500/50' : 'hover:border-cyan-400' }
-
-  return (
-    <div
-      className={cn(
-        'rounded-xl border p-3 sm:p-4 transition-all cursor-pointer',
-        trackColor.bg,
-        trackColor.border,
-        trackColor.hoverBorder,
-        theme === 'dark' ? 'hover:shadow-lg hover:shadow-black/20' : 'hover:shadow-md'
-      )}
-      onClick={onToggle}
-    >
-      {/* Header */}
-      <div className="flex items-start gap-2">
-        <div className="flex-1 min-w-0">
-          {/* Badges */}
-          <div className="flex flex-wrap items-center gap-1.5 mb-2">
-            <Badge color={category.color} className="text-xs">
-              {isZh ? category.zh : category.en}
-            </Badge>
-            {event.importance === 1 && (
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            )}
-          </div>
-
-          {/* Title */}
-          <h3 className={cn(
-            'font-semibold text-sm sm:text-base mb-1 line-clamp-2',
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          )}>
-            {isZh ? event.titleZh : event.titleEn}
-          </h3>
-
-          {/* Scientist */}
-          {event.scientistEn && (
-            <p className={cn(
-              'text-xs sm:text-sm mb-1 flex items-center gap-1',
-              isOpticsTrack
-                ? theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                : theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-            )}>
-              {event.scientistBio?.portraitEmoji && (
-                <span className="text-sm">{event.scientistBio.portraitEmoji}</span>
-              )}
-              {isZh ? event.scientistZh : event.scientistEn}
-            </p>
-          )}
-
-          {/* Description (collapsed) */}
-          {!isExpanded && (
-            <p className={cn(
-              'text-xs line-clamp-2',
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            )}>
-              {isZh ? event.descriptionZh : event.descriptionEn}
-            </p>
-          )}
-        </div>
-
-        {/* Expand icon */}
-        <div className={cn(
-          'flex-shrink-0 p-1 rounded-full transition-colors',
-          theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-200'
-        )}>
-          {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-gray-400" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          )}
-        </div>
-      </div>
-
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className={cn(
-          'mt-3 pt-3 border-t',
-          theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
-        )}>
-          {/* Full description */}
-          <p className={cn(
-            'text-sm mb-3',
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-          )}>
-            {isZh ? event.descriptionZh : event.descriptionEn}
-          </p>
-
-          {/* Illustration */}
-          {event.illustrationType && (
-            <div className={cn(
-              'mb-3 p-2 rounded-lg flex items-center justify-center',
-              theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/50'
-            )}>
-              <ExperimentIllustration type={event.illustrationType} className="w-full max-w-[180px] h-auto" />
-            </div>
-          )}
-
-          {/* Details */}
-          {event.details && (
-            <div className="mb-3">
-              <h4 className={cn(
-                'text-xs font-semibold mb-1.5 flex items-center gap-1',
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              )}>
-                <Lightbulb className="w-3.5 h-3.5" />
-                {isZh ? '深入了解' : 'Learn More'}
-              </h4>
-              <ul className={cn(
-                'text-xs space-y-1 list-disc list-inside',
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              )}>
-                {(isZh ? event.details.zh : event.details.en).slice(0, 3).map((detail, i) => (
-                  <li key={i}>{detail}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Thinking Question */}
-          {event.thinkingQuestion && (
-            <div className={cn(
-              'mb-3 p-2 rounded-lg border-l-3',
-              theme === 'dark'
-                ? 'bg-purple-500/10 border-purple-500 text-purple-300'
-                : 'bg-purple-50 border-purple-500 text-purple-700'
-            )}>
-              <h4 className="text-xs font-semibold mb-1 flex items-center gap-1">
-                <HelpCircle className="w-3.5 h-3.5" />
-                {isZh ? '思考问题' : 'Think About It'}
-              </h4>
-              <p className="text-xs italic">
-                {isZh ? event.thinkingQuestion.zh : event.thinkingQuestion.en}
-              </p>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div className="flex flex-wrap gap-2">
-            {event.story && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onReadStory()
-                }}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
-                  isOpticsTrack
-                    ? theme === 'dark'
-                      ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-                      : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                    : theme === 'dark'
-                      ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
-                      : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
-                )}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                {isZh ? '阅读故事' : 'Read Story'}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
 // Tabs configuration
 const TABS = [
   { id: 'timeline', label: 'Timeline', labelZh: '时间线', icon: <Clock className="w-4 h-4" /> },
@@ -3547,7 +2468,6 @@ export function ChroniclesPage() {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
   const [activeTab, setActiveTab] = useState('timeline')
-  const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
@@ -3645,8 +2565,8 @@ export function ChroniclesPage() {
           </div>
         </div>
 
-        {/* Optical Overview Diagram - 光学全景图 (Static Panorama) */}
-        <OpticalOverviewDiagram />
+        {/* Mystery Flip Card Preview - 探秘翻转卡片预览 */}
+        <MysteryFlipCardPreview />
 
         {/* Tabs */}
         <div className="mb-6">
@@ -3747,146 +2667,14 @@ export function ChroniclesPage() {
             </div>
 
             {/* Timeline Exploration - 双轨探索体验 */}
-            <div className="mb-8">
-              <TimelineExploration
-                events={filteredEvents}
-                isZh={isZh}
-                onReadStory={(event) => {
-                  const idx = filteredEvents.findIndex(e => e.year === event.year && e.track === event.track)
-                  if (idx !== -1) handleOpenStory(idx)
-                }}
-              />
-            </div>
-
-            {/* Classic Dual Track Timeline - 经典双轨时间线 */}
-            <div className="relative">
-              {/* Track Labels - 轨道标签 */}
-              <div className="flex items-center justify-between mb-6">
-                <div className={cn(
-                  'flex-1 text-center py-2 rounded-l-lg border-r',
-                  theme === 'dark'
-                    ? 'bg-amber-500/10 border-amber-500/30'
-                    : 'bg-amber-50 border-amber-200'
-                )}>
-                  <div className="flex items-center justify-center gap-2">
-                    <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
-                    <span className={cn('font-semibold', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
-                      {isZh ? '广义光学' : 'General Optics'}
-                    </span>
-                  </div>
-                </div>
-                <div className={cn(
-                  'w-20 text-center py-2',
-                  theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
-                )}>
-                  <span className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
-                    {isZh ? '年份' : 'Year'}
-                  </span>
-                </div>
-                <div className={cn(
-                  'flex-1 text-center py-2 rounded-r-lg border-l',
-                  theme === 'dark'
-                    ? 'bg-cyan-500/10 border-cyan-500/30'
-                    : 'bg-cyan-50 border-cyan-200'
-                )}>
-                  <div className="flex items-center justify-center gap-2">
-                    <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
-                    <span className={cn('font-semibold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
-                      {isZh ? '偏振光' : 'Polarization'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Timeline with center axis */}
-              <div className="relative">
-                {/* Center vertical line */}
-                <div className={cn(
-                  'absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2',
-                  theme === 'dark' ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50' : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
-                )} />
-
-                {/* Events */}
-                {(() => {
-                  // Get all unique years from filtered events
-                  const years = [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
-
-                  return years.map((year) => {
-                    const opticsEvent = filteredEvents.find(e => e.year === year && e.track === 'optics')
-                    const polarizationEvent = filteredEvents.find(e => e.year === year && e.track === 'polarization')
-                    const opticsIndex = opticsEvent ? filteredEvents.findIndex(e => e === opticsEvent) : -1
-                    const polarizationIndex = polarizationEvent ? filteredEvents.findIndex(e => e === polarizationEvent) : -1
-
-                    return (
-                      <div key={year} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
-                        {/* Left side - Optics */}
-                        <div className="flex-1 pr-4 flex justify-end">
-                          {opticsEvent && (
-                            <div className="w-full max-w-md">
-                              <DualTrackCard
-                                event={opticsEvent}
-                                isExpanded={expandedEvent === opticsIndex}
-                                onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
-                                onReadStory={() => handleOpenStory(opticsIndex)}
-                                side="left"
-                              />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Center year marker */}
-                        <div className="w-20 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
-                          <div className={cn(
-                            'w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2',
-                            opticsEvent && polarizationEvent
-                              ? theme === 'dark'
-                                ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
-                                : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
-                              : opticsEvent
-                                ? theme === 'dark'
-                                  ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                                  : 'bg-amber-100 border-amber-500 text-amber-700'
-                                : theme === 'dark'
-                                  ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
-                                  : 'bg-cyan-100 border-cyan-500 text-cyan-700'
-                          )}>
-                            {year}
-                          </div>
-                          {/* Connector lines */}
-                          {opticsEvent && (
-                            <div className={cn(
-                              'absolute top-6 right-full w-4 h-0.5 mr-0',
-                              theme === 'dark' ? 'bg-amber-500/50' : 'bg-amber-400'
-                            )} />
-                          )}
-                          {polarizationEvent && (
-                            <div className={cn(
-                              'absolute top-6 left-full w-4 h-0.5 ml-0',
-                              theme === 'dark' ? 'bg-cyan-500/50' : 'bg-cyan-400'
-                            )} />
-                          )}
-                        </div>
-
-                        {/* Right side - Polarization */}
-                        <div className="flex-1 pl-4 flex justify-start">
-                          {polarizationEvent && (
-                            <div className="w-full max-w-md">
-                              <DualTrackCard
-                                event={polarizationEvent}
-                                isExpanded={expandedEvent === polarizationIndex}
-                                onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
-                                onReadStory={() => handleOpenStory(polarizationIndex)}
-                                side="right"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })
-                })()}
-              </div>
-            </div>
+            <TimelineExploration
+              events={filteredEvents}
+              isZh={isZh}
+              onReadStory={(event) => {
+                const idx = filteredEvents.findIndex(e => e.year === event.year && e.track === event.track)
+                if (idx !== -1) handleOpenStory(idx)
+              }}
+            />
           </>
         )}
 
