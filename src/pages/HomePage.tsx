@@ -762,19 +762,34 @@ export function HomePage() {
       <footer className={`mt-6 sm:mt-10 md:mt-12 text-center text-xs sm:text-sm relative z-10 ${
         theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
       }`}>
-        <p className="mb-4">
+        <p className="mb-6">
           PolarCraft
         </p>
-        {/* Open Wisdom Lab Logo */}
+        {/* Open Wisdom Lab Logo - Enhanced integration */}
         <div className="flex justify-center items-center">
-          <a
-            href="https://www.openwisdomlab.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-opacity hover:opacity-80"
-          >
-            <OpenWisdomLabLogo height={50} theme={theme} />
-          </a>
+          <div className={`relative px-8 py-5 rounded-2xl backdrop-blur-sm transition-all duration-300
+                          ${theme === 'dark'
+                            ? 'bg-slate-900/30 hover:bg-slate-900/50'
+                            : 'bg-white/30 hover:bg-white/50'
+                          }`}>
+            {/* Subtle border glow */}
+            <div className={`absolute inset-0 rounded-2xl border transition-all duration-300
+                            ${theme === 'dark'
+                              ? 'border-pink-500/20 hover:border-pink-500/40'
+                              : 'border-pink-400/20 hover:border-pink-400/40'
+                            }`}
+            />
+            {/* Logo link */}
+            <a
+              href="https://www.openwisdomlab.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+              aria-label="Visit Open Wisdom Lab"
+            >
+              <OpenWisdomLabLogo height={55} theme={theme} />
+            </a>
+          </div>
         </div>
       </footer>
     </div>
