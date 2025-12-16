@@ -7,7 +7,7 @@
  * - Right track: Polarization-specific history (偏振光专属旅程)
  */
 
-import { useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -16,7 +16,7 @@ import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
   FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Sun, Sparkles, HelpCircle, Map
+  Sun, Sparkles, HelpCircle
 } from 'lucide-react'
 
 // Mapping from diagram concepts to timeline years for navigation
@@ -37,468 +37,473 @@ const DIAGRAM_NODE_TO_YEAR: Record<string, number> = {
 }
 
 // ============================================
-// Optical Overview Diagram - 光学全景图 (Interactive Navigation Map)
+// Optical Panorama - 光学全景图 (Interactive Constellation Map)
+// 光学星图：全面系统展示光学学科体系与历史发展
 // ============================================
 
 interface OpticalOverviewDiagramProps {
   onNodeClick?: (year: number) => void
 }
 
-// Hover animation variants for SVG groups
-const hoverVariants = {
-  rest: { scale: 1 },
-  hover: { scale: 1.03, transition: { duration: 0.2 } }
+// 光学知识节点数据结构
+interface OpticalNode {
+  id: string
+  nameEn: string
+  nameZh: string
+  category: 'foundation' | 'geometric' | 'wave' | 'polarization' | 'quantum' | 'application'
+  year?: number
+  x: number  // 相对位置 (0-100)
+  y: number
+  size: 'large' | 'medium' | 'small'
+  description?: { en: string; zh: string }
+  connections?: string[]  // 连接到其他节点的id
 }
 
-const clickableNodeVariants = {
-  rest: { scale: 1, opacity: 1 },
-  hover: { scale: 1.08, opacity: 1, transition: { duration: 0.15 } }
+// 完整的光学知识图谱节点
+const OPTICAL_NODES: OpticalNode[] = [
+  // 基础层 - 光的本质
+  { id: 'light-nature', nameEn: 'Nature of Light', nameZh: '光的本质', category: 'foundation', x: 50, y: 8, size: 'large',
+    description: { en: 'The fundamental question: What is light?', zh: '根本问题：光是什么？' } },
+  { id: 'em-wave', nameEn: 'EM Wave', nameZh: '电磁波', category: 'foundation', year: 1865, x: 35, y: 18, size: 'medium',
+    connections: ['light-nature', 'wave-optics'] },
+  { id: 'photon', nameEn: 'Photon', nameZh: '光子', category: 'foundation', year: 1905, x: 65, y: 18, size: 'medium',
+    connections: ['light-nature', 'quantum-optics'] },
+
+  // 几何光学分支
+  { id: 'geometric-optics', nameEn: 'Geometric Optics', nameZh: '几何光学', category: 'geometric', x: 15, y: 32, size: 'large',
+    description: { en: 'Ray tracing and lens systems', zh: '光线追踪与透镜系统' } },
+  { id: 'snells-law', nameEn: "Snell's Law", nameZh: '斯涅尔定律', category: 'geometric', year: 1621, x: 8, y: 44, size: 'small',
+    connections: ['geometric-optics'] },
+  { id: 'reflection', nameEn: 'Reflection', nameZh: '反射', category: 'geometric', x: 15, y: 48, size: 'small',
+    connections: ['geometric-optics'] },
+  { id: 'lens-imaging', nameEn: 'Lens Imaging', nameZh: '透镜成像', category: 'geometric', year: 1665, x: 22, y: 44, size: 'small',
+    connections: ['geometric-optics'] },
+  { id: 'optical-instruments', nameEn: 'Instruments', nameZh: '光学仪器', category: 'geometric', x: 15, y: 56, size: 'small',
+    connections: ['geometric-optics', 'lens-imaging'] },
+
+  // 波动光学分支
+  { id: 'wave-optics', nameEn: 'Wave Optics', nameZh: '波动光学', category: 'wave', x: 40, y: 32, size: 'large',
+    description: { en: 'Interference, diffraction, and coherence', zh: '干涉、衍射与相干性' },
+    connections: ['em-wave'] },
+  { id: 'interference', nameEn: 'Interference', nameZh: '干涉', category: 'wave', year: 1801, x: 30, y: 44, size: 'small',
+    connections: ['wave-optics'] },
+  { id: 'diffraction', nameEn: 'Diffraction', nameZh: '衍射', category: 'wave', year: 1818, x: 38, y: 48, size: 'small',
+    connections: ['wave-optics'] },
+  { id: 'coherence', nameEn: 'Coherence', nameZh: '相干性', category: 'wave', x: 46, y: 44, size: 'small',
+    connections: ['wave-optics'] },
+  { id: 'huygens', nameEn: 'Huygens Principle', nameZh: '惠更斯原理', category: 'wave', year: 1690, x: 34, y: 56, size: 'small',
+    connections: ['wave-optics', 'diffraction'] },
+
+  // 偏振光学分支 - 核心高亮
+  { id: 'polarization', nameEn: 'Polarization', nameZh: '偏振光学', category: 'polarization', x: 60, y: 38, size: 'large',
+    description: { en: 'The transverse wave nature of light - Course Focus', zh: '光的横波特性 - 本课程核心' },
+    connections: ['wave-optics'] },
+  { id: 'birefringence', nameEn: 'Birefringence', nameZh: '双折射', category: 'polarization', year: 1669, x: 52, y: 50, size: 'medium',
+    connections: ['polarization'] },
+  { id: 'malus-law', nameEn: "Malus's Law", nameZh: '马吕斯定律', category: 'polarization', year: 1809, x: 60, y: 54, size: 'medium',
+    connections: ['polarization'] },
+  { id: 'waveplates', nameEn: 'Waveplates', nameZh: '波片', category: 'polarization', year: 1816, x: 68, y: 50, size: 'medium',
+    connections: ['polarization', 'birefringence'] },
+  { id: 'stokes-vectors', nameEn: 'Stokes Vectors', nameZh: '斯托克斯参量', category: 'polarization', year: 1852, x: 54, y: 62, size: 'small',
+    connections: ['polarization'] },
+  { id: 'mueller-matrix', nameEn: 'Mueller Matrix', nameZh: '穆勒矩阵', category: 'polarization', year: 1943, x: 62, y: 66, size: 'small',
+    connections: ['stokes-vectors'] },
+  { id: 'jones-calculus', nameEn: 'Jones Calculus', nameZh: '琼斯矩阵', category: 'polarization', year: 1941, x: 70, y: 62, size: 'small',
+    connections: ['polarization', 'waveplates'] },
+  { id: 'elliptical-pol', nameEn: 'Elliptical Pol.', nameZh: '椭圆偏振', category: 'polarization', x: 76, y: 54, size: 'small',
+    connections: ['polarization'] },
+  { id: 'brewster', nameEn: "Brewster's Angle", nameZh: '布儒斯特角', category: 'polarization', year: 1815, x: 48, y: 58, size: 'small',
+    connections: ['polarization', 'reflection'] },
+  { id: 'faraday-effect', nameEn: 'Faraday Effect', nameZh: '法拉第效应', category: 'polarization', year: 1845, x: 66, y: 58, size: 'small',
+    connections: ['polarization'] },
+
+  // 量子光学分支
+  { id: 'quantum-optics', nameEn: 'Quantum Optics', nameZh: '量子光学', category: 'quantum', x: 85, y: 32, size: 'large',
+    description: { en: 'Photon physics and quantum phenomena', zh: '光子物理与量子现象' },
+    connections: ['photon'] },
+  { id: 'photoelectric', nameEn: 'Photoelectric', nameZh: '光电效应', category: 'quantum', year: 1905, x: 80, y: 44, size: 'small',
+    connections: ['quantum-optics'] },
+  { id: 'entanglement', nameEn: 'Entanglement', nameZh: '量子纠缠', category: 'quantum', year: 2022, x: 88, y: 48, size: 'small',
+    connections: ['quantum-optics'] },
+  { id: 'single-photon', nameEn: 'Single Photon', nameZh: '单光子', category: 'quantum', x: 92, y: 44, size: 'small',
+    connections: ['quantum-optics'] },
+  { id: 'quantum-pol', nameEn: 'Quantum Polarimetry', nameZh: '量子偏振测量', category: 'quantum', year: 2023, x: 78, y: 56, size: 'medium',
+    connections: ['quantum-optics', 'polarization', 'entanglement'],
+    description: { en: 'Bridging classical polarization and quantum mechanics', zh: '连接经典偏振与量子力学' } },
+
+  // 应用层
+  { id: 'app-3d', nameEn: '3D Cinema', nameZh: '3D电影', category: 'application', x: 20, y: 78, size: 'small',
+    connections: ['polarization'] },
+  { id: 'app-lcd', nameEn: 'LCD Display', nameZh: 'LCD显示', category: 'application', x: 32, y: 82, size: 'small',
+    connections: ['polarization', 'waveplates'] },
+  { id: 'app-sunglasses', nameEn: 'Sunglasses', nameZh: '偏振太阳镜', category: 'application', x: 44, y: 78, size: 'small',
+    connections: ['malus-law'] },
+  { id: 'app-microscopy', nameEn: 'Pol. Microscopy', nameZh: '偏光显微镜', category: 'application', x: 56, y: 82, size: 'small',
+    connections: ['birefringence'] },
+  { id: 'app-fiber', nameEn: 'Fiber Optics', nameZh: '光纤通信', category: 'application', x: 68, y: 78, size: 'small',
+    connections: ['polarization'] },
+  { id: 'app-lidar', nameEn: 'LiDAR', nameZh: '激光雷达', category: 'application', x: 80, y: 82, size: 'small',
+    connections: ['polarization', 'quantum-pol'] },
+]
+
+// 类别颜色配置
+const CATEGORY_COLORS = {
+  foundation: { dark: { bg: '#1e1b4b', stroke: '#818cf8', text: '#a5b4fc' }, light: { bg: '#eef2ff', stroke: '#6366f1', text: '#4f46e5' } },
+  geometric: { dark: { bg: '#451a03', stroke: '#f59e0b', text: '#fbbf24' }, light: { bg: '#fffbeb', stroke: '#d97706', text: '#b45309' } },
+  wave: { dark: { bg: '#052e16', stroke: '#22c55e', text: '#4ade80' }, light: { bg: '#f0fdf4', stroke: '#16a34a', text: '#15803d' } },
+  polarization: { dark: { bg: '#164e63', stroke: '#22d3ee', text: '#67e8f9' }, light: { bg: '#cffafe', stroke: '#06b6d4', text: '#0891b2' } },
+  quantum: { dark: { bg: '#4c1d95', stroke: '#a78bfa', text: '#c4b5fd' }, light: { bg: '#ede9fe', stroke: '#8b5cf6', text: '#7c3aed' } },
+  application: { dark: { bg: '#1f2937', stroke: '#9ca3af', text: '#d1d5db' }, light: { bg: '#f3f4f6', stroke: '#6b7280', text: '#4b5563' } },
+}
+
+// 动画变体
+const nodeVariants = {
+  rest: { scale: 1 },
+  hover: { scale: 1.15, transition: { duration: 0.2, ease: 'easeOut' as const } }
+}
+
+const pulseVariants = {
+  animate: {
+    scale: [1, 1.2, 1],
+    opacity: [0.7, 0.3, 0.7],
+    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' as const }
+  }
+}
+
+const glowVariants = {
+  animate: {
+    opacity: [0.4, 0.8, 0.4],
+    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' as const }
+  }
 }
 
 function OpticalOverviewDiagram({ onNodeClick }: OpticalOverviewDiagramProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null)
 
-  const handleNodeClick = useCallback((nodeId: string) => {
-    const year = DIAGRAM_NODE_TO_YEAR[nodeId]
-    if (year && onNodeClick) {
+  const handleNodeClick = useCallback((node: OpticalNode) => {
+    if (node.year && onNodeClick) {
+      const year = DIAGRAM_NODE_TO_YEAR[node.id] || node.year
       onNodeClick(year)
     }
   }, [onNodeClick])
 
-  // Color schemes - Amber for General Optics, Cyan for Polarization
-  const amberColors = {
-    bgDark: '#451a03',
-    bgLight: '#fffbeb',
-    strokeDark: '#f59e0b',
-    strokeLight: '#d97706',
-    textDark: '#fbbf24',
-    textLight: '#b45309',
-    subtextDark: '#fcd34d',
-    subtextLight: '#92400e',
+  const getNodeColor = (category: string) => {
+    const colors = CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]
+    return theme === 'dark' ? colors.dark : colors.light
   }
 
-  const cyanColors = {
-    bgDark: '#164e63',
-    bgLight: '#cffafe',
-    strokeDark: '#22d3ee',
-    strokeLight: '#06b6d4',
-    textDark: '#22d3ee',
-    textLight: '#0891b2',
-    subtextDark: '#67e8f9',
-    subtextLight: '#0e7490',
+  const getNodeRadius = (size: string) => {
+    switch (size) {
+      case 'large': return 28
+      case 'medium': return 20
+      default: return 14
+    }
+  }
+
+  // 渲染连接线
+  const renderConnections = () => {
+    const connections: React.ReactElement[] = []
+    OPTICAL_NODES.forEach(node => {
+      if (node.connections) {
+        node.connections.forEach(targetId => {
+          const target = OPTICAL_NODES.find(n => n.id === targetId)
+          if (target) {
+            const isHighlighted = hoveredNode === node.id || hoveredNode === targetId
+            const isPolarizationPath = node.category === 'polarization' || target.category === 'polarization'
+            connections.push(
+              <motion.line
+                key={`${node.id}-${targetId}`}
+                x1={`${node.x}%`}
+                y1={`${node.y}%`}
+                x2={`${target.x}%`}
+                y2={`${target.y}%`}
+                stroke={isPolarizationPath
+                  ? (theme === 'dark' ? '#22d3ee' : '#06b6d4')
+                  : (theme === 'dark' ? '#475569' : '#cbd5e1')}
+                strokeWidth={isHighlighted ? 2 : 1}
+                strokeOpacity={isHighlighted ? 0.8 : 0.3}
+                strokeDasharray={isPolarizationPath ? undefined : '4,4'}
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.5, delay: 0.5 }}
+              />
+            )
+          }
+        })
+      }
+    })
+    return connections
+  }
+
+  // 渲染节点
+  const renderNode = (node: OpticalNode) => {
+    const colors = getNodeColor(node.category)
+    const radius = getNodeRadius(node.size)
+    const isHovered = hoveredNode === node.id
+    const isPolarization = node.category === 'polarization'
+    const isClickable = !!node.year && !!onNodeClick
+
+    return (
+      <motion.g
+        key={node.id}
+        initial="rest"
+        whileHover="hover"
+        variants={nodeVariants}
+        onMouseEnter={() => setHoveredNode(node.id)}
+        onMouseLeave={() => setHoveredNode(null)}
+        onClick={() => handleNodeClick(node)}
+        style={{ cursor: isClickable ? 'pointer' : 'default' }}
+      >
+        {/* 偏振光学节点的光晕效果 */}
+        {isPolarization && (
+          <motion.circle
+            cx={`${node.x}%`}
+            cy={`${node.y}%`}
+            r={radius + 12}
+            fill="none"
+            stroke={colors.stroke}
+            strokeWidth="2"
+            variants={pulseVariants}
+            animate="animate"
+          />
+        )}
+
+        {/* 大节点的外圈光晕 */}
+        {node.size === 'large' && (
+          <motion.circle
+            cx={`${node.x}%`}
+            cy={`${node.y}%`}
+            r={radius + 8}
+            fill={colors.stroke}
+            opacity={0.15}
+            variants={glowVariants}
+            animate="animate"
+          />
+        )}
+
+        {/* 节点主体 */}
+        <circle
+          cx={`${node.x}%`}
+          cy={`${node.y}%`}
+          r={radius}
+          fill={colors.bg}
+          stroke={colors.stroke}
+          strokeWidth={isPolarization ? 3 : 2}
+        />
+
+        {/* 节点名称 */}
+        <text
+          x={`${node.x}%`}
+          y={`${node.y}%`}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={node.size === 'large' ? 10 : node.size === 'medium' ? 8 : 7}
+          fontWeight={node.size === 'large' ? 'bold' : 'normal'}
+          fill={colors.text}
+        >
+          {isZh ? node.nameZh : node.nameEn}
+        </text>
+
+        {/* 年份标签 */}
+        {node.year && isHovered && (
+          <text
+            x={`${node.x}%`}
+            y={`${node.y + 5}%`}
+            textAnchor="middle"
+            fontSize="8"
+            fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
+          >
+            {node.year}
+          </text>
+        )}
+      </motion.g>
+    )
   }
 
   return (
     <div className={cn(
-      'mb-8 rounded-xl border overflow-hidden transition-all',
-      theme === 'dark' ? 'bg-slate-900/50 border-slate-700' : 'bg-white border-gray-200'
+      'mb-8 rounded-2xl border overflow-hidden',
+      theme === 'dark'
+        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 border-slate-600'
+        : 'bg-gradient-to-br from-white via-slate-50 to-cyan-50 border-gray-200'
     )}>
-      {/* Header */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className={cn(
-          'w-full flex items-center justify-between px-4 py-3 transition-colors',
-          theme === 'dark' ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'
-        )}
-      >
-        <div className="flex items-center gap-2">
-          <Map className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
-          <h3 className={cn('font-semibold text-base', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-            {isZh ? '光学全景图' : 'Optical Science Overview'}
-          </h3>
-          <span className={cn(
-            'text-xs px-2 py-0.5 rounded-full',
-            theme === 'dark' ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
-          )}>
-            {isZh ? '点击概念跳转' : 'Click to navigate'}
-          </span>
-        </div>
-        {isExpanded ? (
-          <ChevronUp className={cn('w-5 h-5', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')} />
-        ) : (
-          <ChevronDown className={cn('w-5 h-5', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')} />
-        )}
-      </button>
-
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className="px-4 pb-4">
-          {/* SVG Overview Diagram */}
-          <svg viewBox="0 0 800 420" className="w-full max-w-4xl mx-auto">
-            {/* Background */}
-            <rect width="800" height="420" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
-
-            {/* Title */}
-            <text x="400" y="30" fontSize="14" fill={theme === 'dark' ? '#e2e8f0' : '#1e293b'} textAnchor="middle" fontWeight="bold">
-              <title>{isZh ? '点击任意概念跳转到对应历史事件' : 'Click any concept to navigate to its historical event'}</title>
-              {isZh ? '光学学科体系 —— 偏振光在其中的位置' : 'Optics Hierarchy — Where Polarization Fits'}
-            </text>
-
-            {/* EM Spectrum Bar */}
-            <g transform="translate(50, 50)">
-              <text x="350" y="0" fontSize="10" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
-                {isZh ? '电磁波谱' : 'Electromagnetic Spectrum'}
-              </text>
-              {/* Spectrum gradient */}
-              <defs>
-                <linearGradient id="spectrum-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ff0080" />
-                  <stop offset="14%" stopColor="#ff0000" />
-                  <stop offset="28%" stopColor="#ff8800" />
-                  <stop offset="42%" stopColor="#ffff00" />
-                  <stop offset="57%" stopColor="#00ff00" />
-                  <stop offset="71%" stopColor="#0088ff" />
-                  <stop offset="85%" stopColor="#0000ff" />
-                  <stop offset="100%" stopColor="#8800ff" />
-                </linearGradient>
-              </defs>
-              <rect x="0" y="10" width="700" height="20" fill="url(#spectrum-gradient)" rx="4" opacity="0.8" />
-              {/* Visible light highlight */}
-              <rect x="200" y="8" width="300" height="24" fill="none" stroke={theme === 'dark' ? '#fff' : '#000'} strokeWidth="2" rx="4" strokeDasharray="4,2" />
-              <text x="350" y="50" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
-                {isZh ? '可见光 (380-700nm)' : 'Visible Light (380-700nm)'}
-              </text>
-              {/* Labels */}
-              <text x="50" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">γ/X-ray</text>
-              <text x="150" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">UV</text>
-              <text x="550" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">IR</text>
-              <text x="650" y="50" fontSize="8" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} textAnchor="middle">Radio</text>
-            </g>
-
-            {/* Main branches of Optics */}
-            {/* Geometric Optics - AMBER theme */}
-            <motion.g
-              transform="translate(50, 130)"
-              initial="rest"
-              whileHover="hover"
-              variants={hoverVariants}
-              style={{ cursor: 'pointer' }}
-            >
-              <title>{isZh ? '几何光学 - 光线追踪方法' : 'Geometric Optics - Ray Tracing Methods'}</title>
-              <rect
-                x="0" y="0" width="180" height="100" rx="8"
-                fill={theme === 'dark' ? amberColors.bgDark : amberColors.bgLight}
-                stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight}
-                strokeWidth="2"
-              />
-              <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? amberColors.textDark : amberColors.textLight} textAnchor="middle" fontWeight="bold">
-                {isZh ? '几何光学' : 'Geometric Optics'}
-              </text>
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('ray-tracing')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="90" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
-                  {isZh ? '光线追踪' : 'Ray Tracing'}
-                </text>
-              </motion.g>
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('snells-law')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>1621 - Snell</title>
-                  • {isZh ? '折射定律' : "Snell's Law"}
-                </text>
-              </motion.g>
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('lens-imaging')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>1665 - Newton</title>
-                  • {isZh ? '透镜成像' : 'Lens Imaging'}
-                </text>
-              </motion.g>
-              <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? '#78716c' : '#a8a29e'} textAnchor="middle">
-                • {isZh ? '光学仪器' : 'Optical Instruments'}
-              </text>
-            </motion.g>
-
-            {/* Wave Optics - Main box with AMBER theme, polarization sub-box with CYAN */}
-            <motion.g
-              transform="translate(260, 130)"
-              initial="rest"
-              whileHover="hover"
-              variants={hoverVariants}
-            >
-              <title>{isZh ? '波动光学 - 电磁波理论' : 'Wave Optics - Electromagnetic Wave Theory'}</title>
-              <rect
-                x="0" y="0" width="280" height="180" rx="8"
-                fill={theme === 'dark' ? amberColors.bgDark : amberColors.bgLight}
-                stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight}
-                strokeWidth="2"
-              />
-              <text x="140" y="25" fontSize="12" fill={theme === 'dark' ? amberColors.textDark : amberColors.textLight} textAnchor="middle" fontWeight="bold">
-                {isZh ? '波动光学' : 'Wave Optics'}
-              </text>
-              <text x="140" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
-                {isZh ? '电磁波理论' : 'Electromagnetic Wave Theory'}
-              </text>
-
-              {/* Polarization - highlighted sub-box with CYAN theme */}
-              <motion.g
-                initial="rest"
-                whileHover="hover"
-                variants={hoverVariants}
-                style={{ cursor: 'pointer' }}
-              >
-                <rect
-                  x="15" y="60" width="120" height="110" rx="6"
-                  fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight}
-                  stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight}
-                  strokeWidth="3"
-                />
-                <text x="75" y="80" fontSize="10" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle" fontWeight="bold">
-                  <title>{isZh ? '偏振光学 - 本课程核心' : 'Polarization Optics - Course Focus'}</title>
-                  {isZh ? '偏振光学 ⭐' : 'Polarization ⭐'}
-                </text>
-                <motion.g
-                  variants={clickableNodeVariants}
-                  onClick={() => handleNodeClick('malus-law')}
-                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-                >
-                  <text x="75" y="98" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                    <title>1809 - Malus</title>
-                    • {isZh ? '马吕斯定律' : "Malus's Law"}
-                  </text>
-                </motion.g>
-                <motion.g
-                  variants={clickableNodeVariants}
-                  onClick={() => handleNodeClick('birefringence')}
-                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-                >
-                  <text x="75" y="113" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                    <title>1669 - Bartholin</title>
-                    • {isZh ? '双折射' : 'Birefringence'}
-                  </text>
-                </motion.g>
-                <motion.g
-                  variants={clickableNodeVariants}
-                  onClick={() => handleNodeClick('waveplates')}
-                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-                >
-                  <text x="75" y="128" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                    <title>1816 - Fresnel</title>
-                    • {isZh ? '波片' : 'Waveplates'}
-                  </text>
-                </motion.g>
-                <text x="75" y="143" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle">
-                  • {isZh ? '椭圆偏振' : 'Elliptical Pol.'}
-                </text>
-                <motion.g
-                  variants={clickableNodeVariants}
-                  onClick={() => handleNodeClick('stokes-vectors')}
-                  style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-                >
-                  <text x="75" y="158" fontSize="7" fill={theme === 'dark' ? cyanColors.subtextDark : cyanColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                    <title>1852 - Stokes</title>
-                    • {isZh ? '斯托克斯参量' : 'Stokes Vectors'}
-                  </text>
-                </motion.g>
-              </motion.g>
-
-              {/* Other wave optics topics - AMBER subtler */}
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('interference')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="200" y="80" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>1801 - Young</title>
-                  • {isZh ? '干涉' : 'Interference'}
-                </text>
-              </motion.g>
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('diffraction')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="200" y="95" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>1801 - Young/Fresnel</title>
-                  • {isZh ? '衍射' : 'Diffraction'}
-                </text>
-              </motion.g>
-              <text x="200" y="110" fontSize="8" fill={theme === 'dark' ? '#78716c' : '#a8a29e'} textAnchor="middle">
-                • {isZh ? '相干性' : 'Coherence'}
-              </text>
-              <text x="200" y="125" fontSize="8" fill={theme === 'dark' ? '#78716c' : '#a8a29e'} textAnchor="middle">
-                • {isZh ? '散射' : 'Scattering'}
-              </text>
-            </motion.g>
-
-            {/* Quantum Optics - AMBER theme */}
-            <motion.g
-              transform="translate(570, 130)"
-              initial="rest"
-              whileHover="hover"
-              variants={hoverVariants}
-              style={{ cursor: 'pointer' }}
-            >
-              <title>{isZh ? '量子光学 - 光子理论' : 'Quantum Optics - Photon Theory'}</title>
-              <rect
-                x="0" y="0" width="180" height="100" rx="8"
-                fill={theme === 'dark' ? amberColors.bgDark : amberColors.bgLight}
-                stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight}
-                strokeWidth="2"
-              />
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('quantum-optics')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="90" y="25" fontSize="12" fill={theme === 'dark' ? amberColors.textDark : amberColors.textLight} textAnchor="middle" fontWeight="bold" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>1905 - Einstein</title>
-                  {isZh ? '量子光学' : 'Quantum Optics'}
-                </text>
-              </motion.g>
-              <text x="90" y="45" fontSize="9" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} textAnchor="middle">
-                {isZh ? '光子理论' : 'Photon Theory'}
-              </text>
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('photoelectric')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="90" y="60" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>1905 - Einstein</title>
-                  • {isZh ? '光电效应' : 'Photoelectric'}
-                </text>
-              </motion.g>
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('entanglement')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="90" y="75" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>2023 - Quantum Polarimetry</title>
-                  • {isZh ? '量子纠缠' : 'Entanglement'}
-                </text>
-              </motion.g>
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('single-photon')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="90" y="90" fontSize="8" fill={theme === 'dark' ? amberColors.subtextDark : amberColors.subtextLight} textAnchor="middle" textDecoration={onNodeClick ? 'underline' : 'none'}>
-                  <title>2023 - Single Photon Sources</title>
-                  • {isZh ? '单光子源' : 'Single Photon'}
-                </text>
-              </motion.g>
-            </motion.g>
-
-            {/* NEW: Quantum-Polarization connector - Bridging classical and modern */}
-            <g>
-              <title>{isZh ? '量子偏振测量 - 连接经典与现代' : 'Quantum Polarimetry - Bridging Classical & Modern'}</title>
-              {/* Dashed line from Quantum Optics to Polarization box */}
-              <path
-                d="M 570 200 Q 500 260 395 230"
-                fill="none"
-                stroke={theme === 'dark' ? '#a78bfa' : '#8b5cf6'}
-                strokeWidth="2"
-                strokeDasharray="6,4"
-                opacity="0.7"
-              />
-              {/* Label on the connector */}
-              <rect
-                x="455" y="235" width="100" height="22" rx="4"
-                fill={theme === 'dark' ? '#4c1d95' : '#ede9fe'}
-                stroke={theme === 'dark' ? '#a78bfa' : '#8b5cf6'}
-                strokeWidth="1"
-              />
-              <motion.g
-                variants={clickableNodeVariants}
-                onClick={() => handleNodeClick('entanglement')}
-                style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
-              >
-                <text x="505" y="250" fontSize="8" fill={theme === 'dark' ? '#c4b5fd' : '#7c3aed'} textAnchor="middle" fontWeight="500">
-                  <title>2023 - {isZh ? '量子偏振测量突破经典极限' : 'Quantum Polarimetry surpasses classical limits'}</title>
-                  {isZh ? '量子偏振测量' : 'Quantum Polarimetry'}
-                </text>
-              </motion.g>
-            </g>
-
-            {/* Applications section - CYAN theme */}
-            <g transform="translate(50, 360)">
-              <text x="0" y="0" fontSize="10" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} fontWeight="500">
-                {isZh ? '偏振光应用：' : 'Polarization Applications:'}
-              </text>
-              <g transform="translate(120, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
-                  {isZh ? '3D电影' : '3D Cinema'}
-                </text>
-              </g>
-              <g transform="translate(210, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
-                  {isZh ? 'LCD显示' : 'LCD Display'}
-                </text>
-              </g>
-              <g transform="translate(300, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
-                  {isZh ? '太阳镜' : 'Sunglasses'}
-                </text>
-              </g>
-              <g transform="translate(390, -8)">
-                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
-                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
-                  {isZh ? '偏振显微镜' : 'Pol. Microscopy'}
-                </text>
-              </g>
-              <g transform="translate(500, -8)">
-                <rect x="0" y="0" width="80" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
-                <text x="40" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
-                  {isZh ? '光通信' : 'Fiber Optics'}
-                </text>
-              </g>
-              <g transform="translate(590, -8)">
-                <rect x="0" y="0" width="100" height="20" rx="4" fill={theme === 'dark' ? cyanColors.bgDark : cyanColors.bgLight} stroke={theme === 'dark' ? cyanColors.strokeDark : cyanColors.strokeLight} strokeWidth="1" />
-                <text x="50" y="14" fontSize="8" fill={theme === 'dark' ? cyanColors.textDark : cyanColors.textLight} textAnchor="middle">
-                  {isZh ? '遥感测量' : 'Remote Sensing'}
-                </text>
-              </g>
-            </g>
-
-            {/* Connecting lines between boxes - Updated colors */}
-            <line x1="140" y1="230" x2="260" y2="220" stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight} strokeWidth="1.5" strokeDasharray="4,2" opacity="0.6" />
-            <line x1="540" y1="220" x2="570" y2="180" stroke={theme === 'dark' ? amberColors.strokeDark : amberColors.strokeLight} strokeWidth="1.5" strokeDasharray="4,2" opacity="0.6" />
-          </svg>
-
-          {/* Legend */}
-          <div className={cn(
-            'mt-4 p-3 rounded-lg text-xs',
-            theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-          )}>
-            <div className="flex flex-wrap items-center gap-4 mb-2">
-              <div className="flex items-center gap-1.5">
-                <div className={cn('w-3 h-3 rounded', theme === 'dark' ? 'bg-amber-500/50 border border-amber-500' : 'bg-amber-100 border border-amber-400')} />
-                <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-700'}>{isZh ? '广义光学' : 'General Optics'}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className={cn('w-3 h-3 rounded', theme === 'dark' ? 'bg-cyan-500/50 border border-cyan-500' : 'bg-cyan-100 border border-cyan-400')} />
-                <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'}>{isZh ? '偏振光（本课程重点）' : 'Polarization (Course Focus)'}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className={cn('text-xs underline', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>{isZh ? '带下划线' : 'Underlined'}</span>
-                <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}>{isZh ? '= 可点击跳转' : '= Clickable'}</span>
-              </div>
+      {/* 标题区域 */}
+      <div className={cn(
+        'px-6 py-4 border-b',
+        theme === 'dark' ? 'border-slate-700 bg-slate-900/50' : 'border-gray-100 bg-white/50'
+      )}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              'p-2 rounded-xl',
+              theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
+            )}>
+              <Sparkles className={cn('w-6 h-6', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
             </div>
-            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-              {isZh
-                ? '💡 偏振光学是波动光学的重要分支，研究光的横波特性。点击带下划线的概念可跳转到对应的历史事件。'
-                : '💡 Polarization optics is a key branch of wave optics, studying the transverse wave nature of light. Click underlined concepts to navigate to their historical events.'}
-            </p>
+            <div>
+              <h3 className={cn('font-bold text-lg', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                {isZh ? '光学全景图' : 'Optical Science Panorama'}
+              </h3>
+              <p className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                {isZh ? '探索光学知识体系的完整图景' : 'Explore the complete landscape of optical science'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={cn(
+              'text-xs px-3 py-1 rounded-full font-medium',
+              theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-700'
+            )}>
+              {isZh ? '点击节点跳转历史' : 'Click nodes to navigate'}
+            </span>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* 主图区域 */}
+      <div className="relative">
+        {/* 背景装饰 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* 星空背景点 */}
+          {theme === 'dark' && (
+            <>
+              {[...Array(50)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-white rounded-full"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    opacity: Math.random() * 0.5 + 0.1,
+                  }}
+                  animate={{
+                    opacity: [0.1, 0.5, 0.1],
+                  }}
+                  transition={{
+                    duration: 2 + Math.random() * 3,
+                    repeat: Infinity,
+                    delay: Math.random() * 2,
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </div>
+
+        {/* SVG 星图 */}
+        <svg viewBox="0 0 100 95" className="w-full" style={{ minHeight: '500px' }}>
+          {/* 渐变定义 */}
+          <defs>
+            <radialGradient id="center-glow" cx="50%" cy="10%" r="50%">
+              <stop offset="0%" stopColor={theme === 'dark' ? '#fbbf24' : '#f59e0b'} stopOpacity="0.3" />
+              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="polarization-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={theme === 'dark' ? '#22d3ee' : '#06b6d4'} stopOpacity="0.2" />
+              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+
+          {/* 中心光源光晕 */}
+          <ellipse cx="50" cy="8" rx="30" ry="15" fill="url(#center-glow)" />
+
+          {/* 偏振区域高亮 */}
+          <ellipse cx="62" cy="55" rx="20" ry="18" fill="url(#polarization-glow)" />
+
+          {/* 层次分隔线 */}
+          <line x1="5" y1="25" x2="95" y2="25" stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} strokeWidth="0.3" strokeDasharray="2,2" opacity="0.5" />
+          <line x1="5" y1="70" x2="95" y2="70" stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} strokeWidth="0.3" strokeDasharray="2,2" opacity="0.5" />
+
+          {/* 层次标签 */}
+          <text x="3" y="15" fontSize="3" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} fontStyle="italic">
+            {isZh ? '本质层' : 'Fundamentals'}
+          </text>
+          <text x="3" y="40" fontSize="3" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} fontStyle="italic">
+            {isZh ? '理论层' : 'Theory'}
+          </text>
+          <text x="3" y="80" fontSize="3" fill={theme === 'dark' ? '#64748b' : '#94a3b8'} fontStyle="italic">
+            {isZh ? '应用层' : 'Applications'}
+          </text>
+
+          {/* 连接线 */}
+          <g>{renderConnections()}</g>
+
+          {/* 节点 */}
+          <g>{OPTICAL_NODES.map(renderNode)}</g>
+        </svg>
+
+        {/* 悬停信息卡片 */}
+        {hoveredNode && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={cn(
+              'absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-3 rounded-xl shadow-lg max-w-sm',
+              theme === 'dark' ? 'bg-slate-800 border border-slate-600' : 'bg-white border border-gray-200'
+            )}
+          >
+            {(() => {
+              const node = OPTICAL_NODES.find(n => n.id === hoveredNode)
+              if (!node) return null
+              return (
+                <div className="text-center">
+                  <div className={cn('font-semibold', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                    {isZh ? node.nameZh : node.nameEn}
+                    {node.year && <span className={cn('ml-2 text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>({node.year})</span>}
+                  </div>
+                  {node.description && (
+                    <p className={cn('text-sm mt-1', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+                      {isZh ? node.description.zh : node.description.en}
+                    </p>
+                  )}
+                </div>
+              )
+            })()}
+          </motion.div>
+        )}
+      </div>
+
+      {/* 图例区域 */}
+      <div className={cn(
+        'px-6 py-4 border-t',
+        theme === 'dark' ? 'border-slate-700 bg-slate-900/30' : 'border-gray-100 bg-gray-50/50'
+      )}>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          {Object.entries(CATEGORY_COLORS).map(([key, _]) => {
+            const colors = getNodeColor(key)
+            const labels: Record<string, { en: string; zh: string }> = {
+              foundation: { en: 'Foundation', zh: '基础' },
+              geometric: { en: 'Geometric', zh: '几何光学' },
+              wave: { en: 'Wave', zh: '波动光学' },
+              polarization: { en: 'Polarization ⭐', zh: '偏振光学 ⭐' },
+              quantum: { en: 'Quantum', zh: '量子光学' },
+              application: { en: 'Applications', zh: '应用' },
+            }
+            return (
+              <div key={key} className="flex items-center gap-1.5">
+                <div
+                  className="w-3 h-3 rounded-full border-2"
+                  style={{ backgroundColor: colors.bg, borderColor: colors.stroke }}
+                />
+                <span className="text-xs" style={{ color: colors.text }}>
+                  {isZh ? labels[key].zh : labels[key].en}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+        <p className={cn(
+          'text-center text-xs mt-3',
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        )}>
+          {isZh
+            ? '💡 偏振光学是波动光学的核心分支，连接经典与量子。点击带年份的节点可跳转到对应历史事件。'
+            : '💡 Polarization optics bridges classical wave theory and quantum mechanics. Click dated nodes to navigate to historical events.'}
+        </p>
+      </div>
     </div>
   )
 }
