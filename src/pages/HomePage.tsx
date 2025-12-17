@@ -873,7 +873,7 @@ export function HomePage() {
         theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
       }`}>
         <p>
-          PolarCraft support by Open Wisdom Lab
+          PolarCraft supported by Open Wisdom Lab
         </p>
       </footer>
     </div>
