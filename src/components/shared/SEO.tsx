@@ -138,7 +138,7 @@ export const SEO_CONFIGS = {
   },
   cardgame: {
     title: 'PolarQuest Card Game',
-    titleZh: '偏振探秘卡牌游戏',
+    titleZh: '偏振光探秘卡牌游戏',
     description: 'Educational tabletop card game for 1-4 players. Learn polarization physics through 44 unique cards and optical missions.',
     descriptionZh: '1-4人教育桌游。通过44张独特卡牌和光学任务学习偏振光物理。'
   },
