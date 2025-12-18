@@ -43,12 +43,17 @@ function SeriesCard({ series, onClick }: SeriesCardProps) {
           : 'bg-white border border-gray-200 hover:border-pink-400 hover:shadow-xl'
       )}
     >
-      {/* Thumbnail */}
-      <div className="aspect-video relative overflow-hidden">
+      {/* Thumbnail - 16:9 aspect ratio with loading state */}
+      <div className={cn(
+        'aspect-video relative overflow-hidden',
+        theme === 'dark' ? 'bg-slate-900' : 'bg-gray-100'
+      )}>
         <SecureImageViewer
           src={series.thumbnail}
           alt={isZh ? series.nameZh : series.name}
           className="w-full h-full"
+          objectFit="cover"
+          showLoading={true}
         />
         {/* Overlay gradient */}
         <div className={cn(
@@ -117,12 +122,14 @@ function MediaCard({ media, onClick, viewMode = 'grid' }: MediaCardProps) {
             : 'hover:bg-gray-100'
         )}
       >
-        {/* Thumbnail */}
-        <div className="w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+        {/* Thumbnail - 16:9 aspect ratio to match source images */}
+        <div className="w-28 aspect-video rounded-lg overflow-hidden flex-shrink-0 relative bg-slate-800">
           <SecureImageViewer
             src={isVideo ? (media.thumbnail || '/images/video-placeholder.jpg') : media.path}
             alt={isZh ? media.nameZh : media.name}
             className="w-full h-full"
+            objectFit="cover"
+            showLoading={true}
           />
           {isVideo && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -165,18 +172,23 @@ function MediaCard({ media, onClick, viewMode = 'grid' }: MediaCardProps) {
       onClick={onClick}
       className={cn(
         'group relative rounded-lg overflow-hidden cursor-pointer transition-all',
-        'hover:scale-[1.03]',
+        'hover:scale-[1.02] hover:shadow-lg',
         theme === 'dark'
           ? 'bg-slate-800/50 border border-slate-700/50 hover:border-pink-500/50'
-          : 'bg-white border border-gray-200 hover:border-pink-300'
+          : 'bg-white border border-gray-200 hover:border-pink-300 hover:shadow-pink-100'
       )}
     >
-      {/* Thumbnail */}
-      <div className="aspect-video relative overflow-hidden">
+      {/* Thumbnail - 16:9 aspect ratio with proper background */}
+      <div className={cn(
+        'aspect-video relative overflow-hidden',
+        theme === 'dark' ? 'bg-slate-900' : 'bg-gray-100'
+      )}>
         <SecureImageViewer
           src={isVideo ? (media.thumbnail || '/images/video-placeholder.jpg') : media.path}
           alt={isZh ? media.nameZh : media.name}
           className="w-full h-full"
+          objectFit="cover"
+          showLoading={true}
         />
         {isVideo && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
@@ -261,8 +273,11 @@ function MediaModal({ media, onClose, seriesMedia, onNavigate }: MediaModalProps
           <X className="w-5 h-5" />
         </button>
 
-        {/* Media content */}
-        <div className="aspect-video">
+        {/* Media content - Use contain mode for modal to show full image without cropping */}
+        <div className={cn(
+          'aspect-video',
+          theme === 'dark' ? 'bg-slate-950' : 'bg-gray-900'
+        )}>
           {isVideo ? (
             <SecureVideoPlayer
               src={media.path}
@@ -277,6 +292,7 @@ function MediaModal({ media, onClose, seriesMedia, onNavigate }: MediaModalProps
               src={media.path}
               alt={isZh ? media.nameZh : media.name}
               className="w-full h-full"
+              objectFit="contain"
             />
           )}
         </div>
