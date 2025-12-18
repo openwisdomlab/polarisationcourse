@@ -5,7 +5,7 @@
  * - 关联到文创作品子模块
  */
 import type { ComponentType } from 'react'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -141,7 +141,8 @@ function MediaThumbnail({
   )
 }
 
-// 媒体模态框
+// 媒体模态框 - 优化版本
+// 移除黑框，自适应比例，支持手势导航
 function MediaModal({
   item,
   onClose,
@@ -149,6 +150,8 @@ function MediaModal({
   onNext,
   hasPrev,
   hasNext,
+  currentIndex,
+  totalCount,
 }: {
   item: MediaItem
   onClose: () => void
@@ -156,82 +159,209 @@ function MediaModal({
   onNext?: () => void
   hasPrev?: boolean
   hasNext?: boolean
+  currentIndex?: number
+  totalCount?: number
 }) {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
+  const [showInfo, setShowInfo] = useState(true)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
+  // 键盘导航
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && hasPrev && onPrev) onPrev()
+      if (e.key === 'ArrowRight' && hasNext && onNext) onNext()
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'i') setShowInfo(prev => !prev)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [hasPrev, hasNext, onPrev, onNext, onClose])
+
+  // 触摸手势
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX)
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return
+    const touchEnd = e.changedTouches[0].clientX
+    const diff = touchStart - touchEnd
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && hasNext && onNext) {
+        onNext()
+      } else if (diff < 0 && hasPrev && onPrev) {
+        onPrev()
+      }
+    }
+    setTouchStart(null)
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
       onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
+      {/* 顶部工具栏 */}
+      <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between z-10 bg-gradient-to-b from-black/60 to-transparent">
+        <div className="flex items-center gap-3">
+          {currentIndex !== undefined && totalCount !== undefined && (
+            <span className="text-white/80 text-sm font-medium bg-white/10 px-3 py-1 rounded-full">
+              {currentIndex + 1} / {totalCount}
+            </span>
+          )}
+          <span className="text-white/60 text-xs hidden sm:inline">
+            {isZh ? '← → 切换 | ESC 关闭 | I 信息' : '← → Navigate | ESC Close | I Info'}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowInfo(prev => !prev) }}
+            className={`p-2 rounded-full transition-colors ${showInfo ? 'bg-white/20 text-white' : 'bg-white/10 text-white/60 hover:text-white'}`}
+            title={isZh ? '切换信息显示' : 'Toggle info'}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+          <button
+            onClick={onClose}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* 媒体内容 - 自适应无黑框 */}
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
+        initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="relative max-w-4xl max-h-[90vh] w-full mx-4"
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="relative w-full h-full flex flex-col items-center justify-center p-4 sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 关闭按钮 */}
-        <button
-          onClick={onClose}
-          className="absolute -top-10 right-0 p-2 text-white/70 hover:text-white transition-colors"
-        >
-          <X className="w-6 h-6" />
-        </button>
-
-        {/* 媒体内容 */}
-        <div className="bg-slate-900 rounded-xl overflow-hidden shadow-2xl">
+        {/* 媒体容器 - 自适应比例 */}
+        <div className="relative flex-1 w-full flex items-center justify-center min-h-0">
           {item.type === 'video' ? (
             <video
               src={item.path}
               controls
               autoPlay
               loop
-              className="w-full max-h-[70vh] object-contain bg-black"
+              playsInline
+              className="max-w-full max-h-full w-auto h-auto rounded-lg shadow-2xl object-contain"
+              style={{ maxHeight: showInfo ? 'calc(100vh - 200px)' : 'calc(100vh - 120px)' }}
             />
           ) : (
-            <img
-              src={item.path}
-              alt={isZh ? item.nameZh : item.name}
-              className="w-full max-h-[70vh] object-contain"
-            />
+            <>
+              {!imageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-10 h-10 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              <motion.img
+                src={item.path}
+                alt={isZh ? item.nameZh : item.name}
+                className="max-w-full max-h-full w-auto h-auto rounded-lg shadow-2xl object-contain"
+                style={{
+                  maxHeight: showInfo ? 'calc(100vh - 200px)' : 'calc(100vh - 120px)',
+                  opacity: imageLoaded ? 1 : 0
+                }}
+                onLoad={() => setImageLoaded(true)}
+                layoutId={`media-${item.id}`}
+              />
+            </>
           )}
-
-          {/* 信息栏 */}
-          <div className="p-4 border-t border-slate-700">
-            <h3 className="text-lg font-semibold text-white">
-              {isZh ? item.nameZh : item.name}
-            </h3>
-            <p className="text-sm text-gray-400 mt-1">
-              {isZh ? item.descriptionZh : item.description}
-            </p>
-          </div>
         </div>
 
-        {/* 导航按钮 */}
-        {hasPrev && onPrev && (
-          <button
-            onClick={onPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 p-2
-              bg-white/10 hover:bg-white/20 rounded-full transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6 text-white" />
-          </button>
-        )}
-        {hasNext && onNext && (
-          <button
-            onClick={onNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 p-2
-              bg-white/10 hover:bg-white/20 rounded-full transition-colors"
-          >
-            <ChevronRight className="w-6 h-6 text-white" />
-          </button>
-        )}
+        {/* 信息面板 - 可折叠 */}
+        <AnimatePresence>
+          {showInfo && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="w-full max-w-2xl mt-4 p-4 bg-slate-900/90 backdrop-blur-sm rounded-xl border border-slate-700/50"
+            >
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                {item.category === 'art' ? (
+                  <Palette className="w-4 h-4 text-pink-400" />
+                ) : (
+                  <FlaskConical className="w-4 h-4 text-cyan-400" />
+                )}
+                {isZh ? item.nameZh : item.name}
+              </h3>
+              <p className="text-sm text-gray-300 mt-2 leading-relaxed">
+                {isZh ? item.descriptionZh : item.description}
+              </p>
+              <div className="flex items-center gap-2 mt-3">
+                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                  item.category === 'art'
+                    ? 'bg-pink-500/20 text-pink-300'
+                    : 'bg-cyan-500/20 text-cyan-300'
+                }`}>
+                  {item.category === 'art'
+                    ? (isZh ? '艺术创作' : 'Art')
+                    : (isZh ? '实验记录' : 'Experiment')}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {item.type === 'video' ? (isZh ? '视频' : 'Video') : (isZh ? '图片' : 'Image')}
+                </span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
+
+      {/* 导航按钮 - 优化响应式 */}
+      {hasPrev && onPrev && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onPrev() }}
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-3 sm:p-4
+            bg-white/10 hover:bg-white/20 active:bg-white/30 rounded-full transition-all
+            hover:scale-110 active:scale-95 group"
+        >
+          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:text-purple-300" />
+        </button>
+      )}
+      {hasNext && onNext && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onNext() }}
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-3 sm:p-4
+            bg-white/10 hover:bg-white/20 active:bg-white/30 rounded-full transition-all
+            hover:scale-110 active:scale-95 group"
+        >
+          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:text-purple-300" />
+        </button>
+      )}
+
+      {/* 底部导航指示器 */}
+      {totalCount && totalCount > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-2 bg-black/50 rounded-full">
+          {Array.from({ length: Math.min(totalCount, 10) }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-1.5 h-1.5 rounded-full transition-all ${
+                i === (currentIndex || 0) ? 'bg-purple-400 w-3' : 'bg-white/30'
+              }`}
+            />
+          ))}
+          {totalCount > 10 && (
+            <span className="text-xs text-white/50 ml-1">+{totalCount - 10}</span>
+          )}
+        </div>
+      )}
     </motion.div>
   )
 }
@@ -563,6 +693,8 @@ export function MediaGalleryPanel() {
             onNext={handleNext}
             hasPrev={selectedIndex > 0}
             hasNext={selectedIndex < (isExpanded ? displayedMedia : featuredMedia).length - 1}
+            currentIndex={selectedIndex}
+            totalCount={(isExpanded ? displayedMedia : featuredMedia).length}
           />
         )}
       </AnimatePresence>

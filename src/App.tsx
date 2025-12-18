@@ -43,8 +43,9 @@ export function App() {
         <Route path="/cardgame" element={<Navigate to="/games/card" replace />} />
         <Route path="/escape" element={<Navigate to="/games/escape" replace />} />
 
-        {/* Other modules */}
+        {/* Other modules - Demos with optional demo ID for deep linking */}
         <Route path="/demos" element={<DemosPage />} />
+        <Route path="/demos/:demoId" element={<DemosPage />} />
         <Route path="/hardware" element={<HardwarePage />} />
         <Route path="/merchandise" element={<MerchandisePage />} />
         <Route path="/chronicles" element={<ChroniclesPage />} />
