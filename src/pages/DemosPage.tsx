@@ -3,7 +3,7 @@
  * Enhanced with i18n, theme support, and improved interactivity indicators
  */
 import { useState, useEffect, Suspense, ReactNode } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -1590,36 +1590,80 @@ export function DemosPage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { isMobile, isTablet } = useIsMobile()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [activeDemo, setActiveDemo] = useState<string>('light-wave')
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
-  const [expandedUnit, setExpandedUnit] = useState<number | null>(0)
+  const { demoId: urlDemoId } = useParams<{ demoId?: string }>()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
-  // Handle URL query parameter for direct demo linking
-  // e.g., /demos?demo=malus-law will auto-select and expand that demo
+  // Determine initial demo from URL param or default
+  const getInitialDemo = () => {
+    // First check path param (/demos/:demoId)
+    if (urlDemoId && DEMOS.find(d => d.id === urlDemoId)) {
+      return urlDemoId
+    }
+    // Fallback to query param for backwards compatibility
+    const queryDemo = searchParams.get('demo')
+    if (queryDemo && DEMOS.find(d => d.id === queryDemo)) {
+      return queryDemo
+    }
+    return 'light-wave'
+  }
+
+  const [activeDemo, setActiveDemo] = useState<string>(getInitialDemo)
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
+  const [expandedUnit, setExpandedUnit] = useState<number | null>(() => {
+    const initialDemoId = getInitialDemo()
+    const demo = DEMOS.find(d => d.id === initialDemoId)
+    return demo?.unit ?? 0
+  })
+
+  // Handle URL changes for deep linking
+  // Supports both /demos/:demoId and /demos?demo=id (backwards compatible)
   useEffect(() => {
-    const demoParam = searchParams.get('demo')
-    if (demoParam) {
-      // Find the demo by ID
-      const targetDemo = DEMOS.find(d => d.id === demoParam)
-      if (targetDemo) {
-        // Set the active demo
-        setActiveDemo(demoParam)
-        // Expand the unit containing this demo
+    // If using path param
+    if (urlDemoId) {
+      const targetDemo = DEMOS.find(d => d.id === urlDemoId)
+      if (targetDemo && activeDemo !== urlDemoId) {
+        setActiveDemo(urlDemoId)
         setExpandedUnit(targetDemo.unit)
-        // Clear the URL parameter to allow normal navigation
-        // (but keep the demo selected)
-        setSearchParams({}, { replace: true })
       }
     }
-  }, [searchParams, setSearchParams])
-  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({
-    lifeScene: true,  // Life scene card expanded by default
-    physics: false,
-    experiment: false,
-    frontier: false,
-    diy: false,
-  })
+    // Legacy query param support - redirect to new URL format
+    const queryDemo = searchParams.get('demo')
+    if (queryDemo) {
+      const targetDemo = DEMOS.find(d => d.id === queryDemo)
+      if (targetDemo) {
+        // Redirect to new URL format, keeping other params
+        const newParams = new URLSearchParams(searchParams)
+        newParams.delete('demo')
+        const paramString = newParams.toString()
+        navigate(`/demos/${queryDemo}${paramString ? `?${paramString}` : ''}`, { replace: true })
+      }
+    }
+  }, [urlDemoId, searchParams, activeDemo, navigate])
+
+  // Tab-based deep linking - allows /demos/chromatic?tab=experiment
+  const getInitialExpandedCards = (): Record<string, boolean> => {
+    const tabParam = searchParams.get('tab')
+    const validTabs = ['lifeScene', 'physics', 'experiment', 'frontier', 'diy']
+    if (tabParam && validTabs.includes(tabParam)) {
+      return {
+        lifeScene: tabParam === 'lifeScene',
+        physics: tabParam === 'physics',
+        experiment: tabParam === 'experiment',
+        frontier: tabParam === 'frontier',
+        diy: tabParam === 'diy',
+      }
+    }
+    return {
+      lifeScene: true,  // Life scene card expanded by default
+      physics: false,
+      experiment: false,
+      frontier: false,
+      diy: false,
+    }
+  }
+
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>(getInitialExpandedCards)
   const [searchQuery, setSearchQuery] = useState('')
   const [difficultyLevel, setDifficultyLevel] = useState<DifficultyLevel>('application')
   const [showDifficultyChange, setShowDifficultyChange] = useState(false)
@@ -1834,6 +1878,10 @@ export function DemosPage() {
 
   const handleDemoChange = (demoId: string) => {
     setActiveDemo(demoId)
+    // Update URL to reflect the selected demo (keep query params for tabs etc.)
+    const paramString = searchParams.toString()
+    navigate(`/demos/${demoId}${paramString ? `?${paramString}` : ''}`, { replace: true })
+
     // Reset cards to collapsed when switching to a new (not previously visited) demo
     if (!visitedDemos.has(demoId)) {
       setExpandedCards({
@@ -1848,7 +1896,19 @@ export function DemosPage() {
   }
 
   const toggleCard = (card: string) => {
-    setExpandedCards(prev => ({ ...prev, [card]: !prev[card] }))
+    const newState = !expandedCards[card]
+    setExpandedCards(prev => ({ ...prev, [card]: newState }))
+
+    // Update URL with tab parameter for shareable links
+    const newParams = new URLSearchParams(searchParams)
+    if (newState) {
+      newParams.set('tab', card)
+    } else {
+      newParams.delete('tab')
+    }
+    const paramString = newParams.toString()
+    const demoPath = activeDemo ? `/demos/${activeDemo}` : '/demos'
+    navigate(`${demoPath}${paramString ? `?${paramString}` : ''}`, { replace: true })
   }
 
   const isCompact = isMobile || isTablet
