@@ -605,16 +605,19 @@ const COST_CONFIG = {
   medium: { labelEn: '$$', labelZh: '中等成本', icon: '$$' },
 }
 
-// Sub-module tabs
+// Sub-module tabs - 优化后的模块结构
+// 1. DIY实验 - 动手实验教程
+// 2. 文创展示 - 真实偏振艺术作品展示（图片/视频）+ 产品创意概念
+// 3. 作品展示 - 社区用户投稿作品（Gallery）
+// 4. 创作工坊 - 创作教程和资源
 const SUB_MODULE_TABS = [
   { id: 'diy', labelEn: 'DIY Experiments', labelZh: 'DIY实验', icon: <Beaker className="w-4 h-4" /> },
-  { id: 'showcase', labelEn: 'Art Showcase', labelZh: '文创展示', icon: <Film className="w-4 h-4" /> },
-  { id: 'creative', labelEn: 'Creative Products', labelZh: '偏振文创', icon: <Palette className="w-4 h-4" /> },
-  { id: 'gallery', labelEn: 'Works Gallery', labelZh: '作品展示', icon: <ImageIcon className="w-4 h-4" /> },
+  { id: 'showcase', labelEn: 'Art & Creations', labelZh: '作品与创意', icon: <Film className="w-4 h-4" /> },
+  { id: 'gallery', labelEn: 'Community Gallery', labelZh: '社区展示', icon: <ImageIcon className="w-4 h-4" /> },
   { id: 'workshop', labelEn: 'Creative Workshop', labelZh: '创作工坊', icon: <Scissors className="w-4 h-4" /> },
 ]
 
-// Creative products data
+// Creative products data - 产品创意概念（不含价格）
 interface CreativeProduct {
   id: string
   nameEn: string
@@ -623,7 +626,6 @@ interface CreativeProduct {
   descriptionZh: string
   category: 'art' | 'accessory' | 'decor' | 'kit'
   imageUrl?: string
-  price?: string
   featured?: boolean
 }
 
@@ -635,7 +637,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'Create stunning colorful art using tape and polarizers. Includes polarizing films and cellophane tape.',
     descriptionZh: '使用胶带和偏振片创作绚丽的彩色艺术作品。包含偏振膜和玻璃纸胶带。',
     category: 'kit',
-    price: '¥39',
     featured: true,
   },
   {
@@ -645,7 +646,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'Coasters that change colors when rotated - physics you can use every day!',
     descriptionZh: '旋转时变色的杯垫 - 每天都能使用的物理学！',
     category: 'decor',
-    price: '¥59',
   },
   {
     id: 'stress-viewer',
@@ -654,7 +654,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'A decorative frame with crossed polarizers - perfect for displaying stress patterns in plastic items.',
     descriptionZh: '带有正交偏振片的装饰相框 - 完美展示塑料物品中的应力图案。',
     category: 'decor',
-    price: '¥89',
     featured: true,
   },
   {
@@ -664,7 +663,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'Wearable physics! Mini polarizers that show color changes with rotation.',
     descriptionZh: '可穿戴的物理学！迷你偏振片，旋转时显示颜色变化。',
     category: 'accessory',
-    price: '¥49',
   },
   {
     id: 'lcd-rescue-kit',
@@ -673,7 +671,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'Learn how LCD screens work by safely disassembling and exploring old calculators.',
     descriptionZh: '通过安全拆解和探索旧计算器，学习LCD屏幕的工作原理。',
     category: 'kit',
-    price: '¥29',
   },
   {
     id: 'rainbow-window',
@@ -682,7 +679,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'Birefringent window film that creates rainbow patterns with sunlight.',
     descriptionZh: '双折射窗户贴膜，在阳光下创造彩虹图案。',
     category: 'art',
-    price: '¥35',
   },
   {
     id: 'polarimeter-diy',
@@ -691,7 +687,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'Build your own polarimeter to measure optical rotation of sugar solutions.',
     descriptionZh: '制作你自己的旋光仪，测量糖溶液的旋光度。',
     category: 'kit',
-    price: '¥79',
     featured: true,
   },
   {
@@ -701,7 +696,6 @@ const CREATIVE_PRODUCTS: CreativeProduct[] = [
     descriptionEn: 'A simple tool for mapping sky polarization patterns - like a bee!',
     descriptionZh: '一个简单的工具，用于绘制天空偏振图案 - 像蜜蜂一样！',
     category: 'kit',
-    price: '¥45',
   },
 ]
 
@@ -1332,19 +1326,11 @@ function ProductCard({ product }: { product: CreativeProduct }) {
         {isZh ? product.descriptionZh : product.descriptionEn}
       </p>
 
-      {/* Price and category */}
-      <div className="flex items-center justify-between">
+      {/* Category badge */}
+      <div className="flex items-center">
         <Badge color={category.color} size="sm">
           {isZh ? category.labelZh : category.labelEn}
         </Badge>
-        {product.price && (
-          <span className={cn(
-            'font-semibold',
-            theme === 'dark' ? 'text-teal-400' : 'text-teal-600'
-          )}>
-            {product.price}
-          </span>
-        )}
       </div>
     </div>
   )
@@ -1497,7 +1483,7 @@ export function ExperimentsPage() {
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
-  const [activeTab, setActiveTab] = useState<'diy' | 'showcase' | 'creative' | 'gallery' | 'workshop'>('diy')
+  const [activeTab, setActiveTab] = useState<'diy' | 'showcase' | 'gallery' | 'workshop'>('diy')
   const [selectedExperiment, setSelectedExperiment] = useState<Experiment | null>(null)
   const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'all'>('all')
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -1545,7 +1531,7 @@ export function ExperimentsPage() {
             }))}
             activeTab={activeTab}
             onChange={(id: string) => {
-              setActiveTab(id as 'diy' | 'creative' | 'gallery' | 'workshop')
+              setActiveTab(id as 'diy' | 'showcase' | 'gallery' | 'workshop')
               setFilterCategory('all')
               setFilterDifficulty('all')
             }}
@@ -1693,93 +1679,87 @@ export function ExperimentsPage() {
           </>
         )}
 
-        {/* Art Showcase Tab - Real Cultural Creations */}
+        {/* Art & Creations Tab - 作品与创意：合并展示真实作品和产品创意 */}
         {activeTab === 'showcase' && (
-          <CulturalShowcase />
-        )}
-
-        {/* Creative Products Tab */}
-        {activeTab === 'creative' && (
           <>
-            {/* Intro Banner */}
-            <div className={cn(
-              'rounded-2xl p-6 mb-8 border',
-              theme === 'dark'
-                ? 'bg-gradient-to-r from-violet-900/30 to-pink-900/30 border-violet-700/30'
-                : 'bg-gradient-to-r from-violet-50 to-pink-50 border-violet-200'
-            )}>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {/* Real Artworks from CulturalShowcase */}
+            <CulturalShowcase />
+
+            {/* Product Ideas Section - 产品创意概念（无价格） */}
+            <div className="mt-12">
+              <div className={cn(
+                'flex items-center gap-3 mb-6 pb-4 border-b',
+                theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+              )}>
                 <div className={cn(
-                  'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0',
+                  'w-10 h-10 rounded-lg flex items-center justify-center',
                   theme === 'dark' ? 'bg-violet-500/20' : 'bg-violet-100'
                 )}>
-                  <Palette className={cn('w-7 h-7', theme === 'dark' ? 'text-violet-400' : 'text-violet-600')} />
+                  <Palette className={cn('w-5 h-5', theme === 'dark' ? 'text-violet-400' : 'text-violet-600')} />
                 </div>
-                <div className="flex-1">
-                  <h2 className={cn(
-                    'text-lg font-semibold mb-1',
+                <div>
+                  <h3 className={cn(
+                    'text-lg font-semibold',
                     theme === 'dark' ? 'text-white' : 'text-gray-900'
                   )}>
-                    {isZh ? '偏振主题文创产品' : 'Polarization-Themed Creative Products'}
-                  </h2>
+                    {isZh ? '产品创意灵感' : 'Product Ideas & Inspiration'}
+                  </h3>
                   <p className={cn(
                     'text-sm',
                     theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   )}>
-                    {isZh
-                      ? '精心设计的偏振光艺术套装和装饰品，将物理学融入日常生活。'
-                      : 'Beautifully designed polarization art kits and decorations that bring physics into daily life.'}
+                    {isZh ? '偏振光艺术产品创意概念，激发你的创作灵感' : 'Creative concepts for polarization art products'}
                   </p>
                 </div>
               </div>
-            </div>
 
-            {/* Category Filter */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-              <button
-                onClick={() => setFilterCategory('all')}
-                className={cn(
-                  'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
-                  filterCategory === 'all'
-                    ? theme === 'dark'
-                      ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50'
-                      : 'bg-violet-100 text-violet-700 border border-violet-300'
-                    : theme === 'dark'
-                      ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
-                      : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                )}
-              >
-                {isZh ? '全部' : 'All'}
-              </button>
-              {(Object.keys(CATEGORY_CONFIG) as Array<keyof typeof CATEGORY_CONFIG>).map(cat => {
-                const config = CATEGORY_CONFIG[cat]
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setFilterCategory(cat)}
-                    className={cn(
-                      'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1',
-                      filterCategory === cat
-                        ? theme === 'dark'
-                          ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50'
-                          : 'bg-violet-100 text-violet-700 border border-violet-300'
-                        : theme === 'dark'
-                          ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
-                          : 'bg-gray-100 text-gray-600 hover:text-gray-900'
-                    )}
-                  >
-                    <span>{config.icon}</span>
-                    {isZh ? config.labelZh : config.labelEn}
-                  </button>
-                )
-              })}
-            </div>
+              {/* Category Filter */}
+              <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                <button
+                  onClick={() => setFilterCategory('all')}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
+                    filterCategory === 'all'
+                      ? theme === 'dark'
+                        ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50'
+                        : 'bg-violet-100 text-violet-700 border border-violet-300'
+                      : theme === 'dark'
+                        ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
+                        : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+                  )}
+                >
+                  {isZh ? '全部' : 'All'}
+                </button>
+                {(Object.keys(CATEGORY_CONFIG) as Array<keyof typeof CATEGORY_CONFIG>).map(cat => {
+                  const config = CATEGORY_CONFIG[cat]
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setFilterCategory(cat)}
+                      className={cn(
+                        'px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1',
+                        filterCategory === cat
+                          ? theme === 'dark'
+                            ? 'bg-violet-500/20 text-violet-400 border border-violet-500/50'
+                            : 'bg-violet-100 text-violet-700 border border-violet-300'
+                          : theme === 'dark'
+                            ? 'bg-slate-800 text-gray-400 hover:text-gray-200'
+                            : 'bg-gray-100 text-gray-600 hover:text-gray-900'
+                      )}
+                    >
+                      <span>{config.icon}</span>
+                      {isZh ? config.labelZh : config.labelEn}
+                    </button>
+                  )
+                })}
+              </div>
 
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {filteredProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {/* Products Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
             </div>
           </>
         )}

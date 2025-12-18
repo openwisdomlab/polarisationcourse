@@ -1459,11 +1459,49 @@ const UNITS: UnitInfo[] = [
 
 function DemoLoading() {
   const { t } = useTranslation()
+  const { theme } = useTheme()
+
   return (
-    <div className="flex items-center justify-center h-full min-h-[400px]">
+    <div className="flex flex-col items-center justify-center h-full min-h-[400px] animate-in fade-in duration-300">
+      {/* Skeleton placeholder for demo content */}
+      <div className={cn(
+        'w-full max-w-2xl rounded-xl p-6 mb-6',
+        theme === 'dark' ? 'bg-slate-800/30' : 'bg-gray-100/50'
+      )}>
+        {/* Skeleton for demo visualization area */}
+        <div className={cn(
+          'w-full aspect-[16/9] rounded-lg mb-4 animate-pulse',
+          theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-200'
+        )} />
+        {/* Skeleton for controls */}
+        <div className="flex gap-3 mb-3">
+          <div className={cn(
+            'h-8 w-24 rounded-lg animate-pulse',
+            theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-200'
+          )} />
+          <div className={cn(
+            'h-8 w-32 rounded-lg animate-pulse',
+            theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-200'
+          )} />
+        </div>
+        <div className={cn(
+          'h-4 w-3/4 rounded animate-pulse',
+          theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-200'
+        )} />
+      </div>
+
+      {/* Loading indicator */}
       <div className="text-center">
-        <div className="animate-spin w-12 h-12 border-4 border-cyan-400/30 border-t-cyan-400 rounded-full mx-auto mb-4" />
-        <p className="text-gray-400">{t('common.loading')}</p>
+        <div className={cn(
+          'w-10 h-10 border-3 border-t-cyan-400 rounded-full mx-auto mb-3 animate-spin',
+          theme === 'dark' ? 'border-cyan-400/20' : 'border-cyan-400/30'
+        )} />
+        <p className={cn(
+          'text-sm',
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        )}>
+          {t('common.loading')}
+        </p>
       </div>
     </div>
   )

@@ -31,6 +31,7 @@ function SeriesCard({ series, onClick }: SeriesCardProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
+  const description = isZh ? series.descriptionZh : series.description
 
   return (
     <div
@@ -43,9 +44,9 @@ function SeriesCard({ series, onClick }: SeriesCardProps) {
           : 'bg-white border border-gray-200 hover:border-pink-400 hover:shadow-xl'
       )}
     >
-      {/* Thumbnail - 16:9 aspect ratio with loading state */}
+      {/* Thumbnail - 4:3 aspect ratio for larger preview */}
       <div className={cn(
-        'aspect-video relative overflow-hidden',
+        'aspect-[4/3] relative overflow-hidden',
         theme === 'dark' ? 'bg-slate-900' : 'bg-gray-100'
       )}>
         <SecureImageViewer
@@ -57,40 +58,44 @@ function SeriesCard({ series, onClick }: SeriesCardProps) {
         />
         {/* Overlay gradient */}
         <div className={cn(
-          'absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent',
-          'opacity-0 group-hover:opacity-100 transition-opacity'
+          'absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent',
+          'opacity-0 group-hover:opacity-100 transition-opacity duration-300'
         )} />
         {/* Play icon overlay */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className={cn(
-            'w-14 h-14 rounded-full flex items-center justify-center',
-            'bg-pink-500/80 backdrop-blur-sm'
+            'w-16 h-16 rounded-full flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform duration-300',
+            'bg-pink-500/90 backdrop-blur-sm shadow-lg'
           )}>
-            <Play className="w-6 h-6 text-white ml-0.5" fill="white" />
+            <Play className="w-7 h-7 text-white ml-0.5" fill="white" />
           </div>
         </div>
         {/* Media count badge */}
         <div className={cn(
-          'absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium',
-          'bg-black/50 text-white backdrop-blur-sm'
+          'absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-medium',
+          'bg-black/60 text-white backdrop-blur-sm'
         )}>
           {series.mediaCount} {isZh ? '个媒体' : 'items'}
         </div>
       </div>
 
-      {/* Info */}
+      {/* Info - improved text display */}
       <div className="p-4">
         <h3 className={cn(
-          'font-semibold mb-1 group-hover:text-pink-500 transition-colors',
+          'font-semibold text-base mb-2 group-hover:text-pink-500 transition-colors',
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         )}>
           {isZh ? series.nameZh : series.name}
         </h3>
-        <p className={cn(
-          'text-sm line-clamp-2',
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-        )}>
-          {isZh ? series.descriptionZh : series.description}
+        {/* Description with tooltip for long text */}
+        <p
+          className={cn(
+            'text-sm line-clamp-3',
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          )}
+          title={description}
+        >
+          {description}
         </p>
       </div>
     </div>
@@ -167,62 +172,80 @@ function MediaCard({ media, onClick, viewMode = 'grid' }: MediaCardProps) {
     )
   }
 
+  const name = isZh ? media.nameZh : media.name
+  const description = isZh ? media.descriptionZh : media.description
+
   return (
     <div
       onClick={onClick}
       className={cn(
-        'group relative rounded-lg overflow-hidden cursor-pointer transition-all',
+        'group relative rounded-lg overflow-hidden cursor-pointer transition-all duration-300',
         'hover:scale-[1.02] hover:shadow-lg',
         theme === 'dark'
           ? 'bg-slate-800/50 border border-slate-700/50 hover:border-pink-500/50'
           : 'bg-white border border-gray-200 hover:border-pink-300 hover:shadow-pink-100'
       )}
     >
-      {/* Thumbnail - 16:9 aspect ratio with proper background */}
+      {/* Thumbnail - 4:3 aspect ratio for larger preview */}
       <div className={cn(
-        'aspect-video relative overflow-hidden',
+        'aspect-[4/3] relative overflow-hidden',
         theme === 'dark' ? 'bg-slate-900' : 'bg-gray-100'
       )}>
         <SecureImageViewer
           src={isVideo ? (media.thumbnail || '/images/video-placeholder.jpg') : media.path}
-          alt={isZh ? media.nameZh : media.name}
+          alt={name}
           className="w-full h-full"
           objectFit="cover"
           showLoading={true}
         />
         {isVideo && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-300">
             <div className={cn(
-              'w-10 h-10 rounded-full flex items-center justify-center transition-transform',
-              'bg-white/90 group-hover:scale-110'
+              'w-12 h-12 rounded-full flex items-center justify-center transition-transform duration-300',
+              'bg-white/90 group-hover:scale-110 shadow-lg'
             )}>
-              <Play className="w-5 h-5 text-pink-500 ml-0.5" fill="currentColor" />
+              <Play className="w-6 h-6 text-pink-500 ml-0.5" fill="currentColor" />
             </div>
           </div>
         )}
         {/* Featured badge */}
         {media.featured && (
           <div className="absolute top-2 left-2">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+            <Star className="w-5 h-5 text-yellow-400 fill-yellow-400 drop-shadow" />
           </div>
         )}
         {/* Type badge */}
         <div className={cn(
-          'absolute top-2 right-2 px-1.5 py-0.5 rounded text-xs',
-          'bg-black/50 text-white backdrop-blur-sm'
+          'absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-medium',
+          'bg-black/60 text-white backdrop-blur-sm'
         )}>
           {isVideo ? 'VIDEO' : 'IMG'}
         </div>
       </div>
 
-      {/* Info */}
+      {/* Info - improved text display with title tooltip */}
       <div className="p-3">
-        <h4 className={cn(
-          'text-sm font-medium truncate',
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        )}>
-          {isZh ? media.nameZh : media.name}
+        <h4
+          className={cn(
+            'text-sm font-medium mb-1',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}
+          title={name}
+        >
+          <span className="line-clamp-2">{name}</span>
         </h4>
+        {/* Description shown on hover or as subtitle */}
+        {description && (
+          <p
+            className={cn(
+              'text-xs line-clamp-2 opacity-70 group-hover:opacity-100 transition-opacity',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}
+            title={description}
+          >
+            {description}
+          </p>
+        )}
       </div>
     </div>
   )
