@@ -6,6 +6,7 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { MediaGalleryPanel } from './MediaGalleryPanel'
 
 // 波长到RGB颜色转换
 function wavelengthToRGB(wavelength: number): [number, number, number] {
@@ -600,6 +601,9 @@ export function ChromaticDemo() {
           </ul>
         </InfoCard>
       </div>
+
+      {/* 色偏振实例画廊 */}
+      <MediaGalleryPanel />
     </div>
   )
 }
