@@ -15,13 +15,13 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { Badge, Tabs, PersistentHeader } from '@/components/shared'
-import { ExperimentTools, EXPERIMENT_TOOLS } from '@/components/experiments'
+import { ExperimentTools, EXPERIMENT_TOOLS, CulturalShowcase } from '@/components/experiments'
 import {
   Beaker, Clock, DollarSign, AlertTriangle, ChevronRight,
   CheckCircle2, Star, Lightbulb, Camera, X,
   ShoppingBag, Eye, GraduationCap,
   Palette, ImageIcon, Sparkles, Package, Heart,
-  Scissors, Brush, Layers, Wrench, BookOpen
+  Scissors, Brush, Layers, Wrench, BookOpen, Film
 } from 'lucide-react'
 
 // Experiment difficulty and cost levels
@@ -608,6 +608,7 @@ const COST_CONFIG = {
 // Sub-module tabs
 const SUB_MODULE_TABS = [
   { id: 'diy', labelEn: 'DIY Experiments', labelZh: 'DIY实验', icon: <Beaker className="w-4 h-4" /> },
+  { id: 'showcase', labelEn: 'Art Showcase', labelZh: '文创展示', icon: <Film className="w-4 h-4" /> },
   { id: 'creative', labelEn: 'Creative Products', labelZh: '偏振文创', icon: <Palette className="w-4 h-4" /> },
   { id: 'gallery', labelEn: 'Works Gallery', labelZh: '作品展示', icon: <ImageIcon className="w-4 h-4" /> },
   { id: 'workshop', labelEn: 'Creative Workshop', labelZh: '创作工坊', icon: <Scissors className="w-4 h-4" /> },
@@ -1496,7 +1497,7 @@ export function ExperimentsPage() {
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
-  const [activeTab, setActiveTab] = useState<'diy' | 'creative' | 'gallery' | 'workshop'>('diy')
+  const [activeTab, setActiveTab] = useState<'diy' | 'showcase' | 'creative' | 'gallery' | 'workshop'>('diy')
   const [selectedExperiment, setSelectedExperiment] = useState<Experiment | null>(null)
   const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'all'>('all')
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -1690,6 +1691,11 @@ export function ExperimentsPage() {
           </div>
         </div>
           </>
+        )}
+
+        {/* Art Showcase Tab - Real Cultural Creations */}
+        {activeTab === 'showcase' && (
+          <CulturalShowcase />
         )}
 
         {/* Creative Products Tab */}

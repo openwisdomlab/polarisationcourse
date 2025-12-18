@@ -6,3 +6,4 @@
 export { PolarizerSource } from './PolarizerSource'
 export { MichelLevyChart } from './MichelLevyChart'
 export { ExperimentTools, EXPERIMENT_TOOLS } from './ExperimentTools'
+export { CulturalShowcase } from './CulturalShowcase'
