@@ -437,6 +437,9 @@ export function ChromaticDemo() {
         </p>
       </div>
 
+      {/* 真实实验场景展示 - 在交互演示上方 */}
+      <MediaGalleryPanel />
+
       {/* 主体内容 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
@@ -601,9 +604,6 @@ export function ChromaticDemo() {
           </ul>
         </InfoCard>
       </div>
-
-      {/* 色偏振实例画廊 */}
-      <MediaGalleryPanel />
     </div>
   )
 }
