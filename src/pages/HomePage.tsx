@@ -148,12 +148,12 @@ const MODULES: ModuleConfig[] = [
       gradientTo: 'rose-600',
       buttonText: 'white',
     },
-    mainRoute: '/creative',
+    mainRoute: '/experiments',
     quickLinks: [
-      { labelKey: 'link1', route: '/creative?tab=gallery' }, // Art gallery
-      { labelKey: 'link2', route: '/creative?tab=photography' }, // Polarization photography
-      { labelKey: 'link3', route: '/creative?tab=diy' }, // DIY experiments
-      { labelKey: 'link4', route: '/creative?tab=products' }, // Creative products
+      { labelKey: 'link1', route: '/experiments/diy' }, // DIY experiments
+      { labelKey: 'link2', route: '/experiments/showcase' }, // Art & Creations
+      { labelKey: 'link3', route: '/experiments/generator' }, // Art Generator
+      { labelKey: 'link4', route: '/experiments/gallery' }, // Community gallery
     ],
   },
   {

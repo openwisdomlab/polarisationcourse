@@ -70,7 +70,7 @@ export function App() {
         <Route path="/experiments/:tabId" element={<ExperimentsPage />} />
 
         {/* Legacy redirects */}
-        <Route path="/creative" element={<Navigate to="/experiments/showcase" replace />} />
+        <Route path="/creative" element={<Navigate to="/experiments" replace />} />
         <Route path="/simulation" element={<Navigate to="/lab" replace />} />
 
         {/* Calculation Workshop - 计算工坊 */}

@@ -9,26 +9,29 @@
  * 4. 创作工坊 - Creative workshop and tutorials
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { Badge, Tabs, PersistentHeader } from '@/components/shared'
+import { PolarizationArt, ArtGallery } from '@/components/shared/PolarizationArt'
+import type { PolarizationArtParams } from '@/data/types'
 import { ExperimentTools, EXPERIMENT_TOOLS, CulturalShowcase } from '@/components/experiments'
 import {
   Beaker, Clock, DollarSign, AlertTriangle, ChevronRight,
   CheckCircle2, Star, Lightbulb, Camera, X,
   ShoppingBag, Eye, GraduationCap,
   Palette, ImageIcon, Sparkles, Package, Heart,
-  Scissors, Brush, Layers, Wrench, BookOpen, Film
+  Scissors, Brush, Layers, Wrench, BookOpen, Film,
+  Wand2, Download, RefreshCw
 } from 'lucide-react'
 
 // Tab type definition
-type TabId = 'diy' | 'showcase' | 'gallery' | 'workshop'
+type TabId = 'diy' | 'showcase' | 'gallery' | 'workshop' | 'generator'
 
 // Valid tab IDs for route matching
-const VALID_TABS: TabId[] = ['diy', 'showcase', 'gallery', 'workshop']
+const VALID_TABS: TabId[] = ['diy', 'showcase', 'gallery', 'workshop', 'generator']
 
 // Experiment difficulty and cost levels
 type Difficulty = 'easy' | 'medium' | 'hard'
@@ -616,12 +619,223 @@ const COST_CONFIG = {
 // 2. 文创展示 - 真实偏振艺术作品展示（图片/视频）+ 产品创意概念
 // 3. 作品展示 - 社区用户投稿作品（Gallery）
 // 4. 创作工坊 - 创作教程和资源
+// 5. 艺术生成器 - 偏振艺术生成器
 const SUB_MODULE_TABS = [
   { id: 'diy', labelEn: 'DIY Experiments', labelZh: 'DIY实验', icon: <Beaker className="w-4 h-4" /> },
   { id: 'showcase', labelEn: 'Art & Creations', labelZh: '作品与创意', icon: <Film className="w-4 h-4" /> },
   { id: 'gallery', labelEn: 'Community Gallery', labelZh: '社区展示', icon: <ImageIcon className="w-4 h-4" /> },
   { id: 'workshop', labelEn: 'Creative Workshop', labelZh: '创作工坊', icon: <Scissors className="w-4 h-4" /> },
+  { id: 'generator', labelEn: 'Art Generator', labelZh: '艺术生成器', icon: <Wand2 className="w-4 h-4" /> },
 ]
+
+// ===== Art Generator Component (偏振艺术生成器) =====
+const ART_TYPES: { value: PolarizationArtParams['type']; labelEn: string; labelZh: string }[] = [
+  { value: 'interference', labelEn: 'Interference', labelZh: '干涉图案' },
+  { value: 'birefringence', labelEn: 'Birefringence', labelZh: '双折射' },
+  { value: 'stress', labelEn: 'Stress Pattern', labelZh: '应力条纹' },
+  { value: 'rotation', labelEn: 'Optical Rotation', labelZh: '旋光效应' },
+  { value: 'abstract', labelEn: 'Abstract', labelZh: '抽象艺术' },
+]
+
+const COLOR_PRESETS = [
+  { name: 'Neon', colors: ['#ff00ff', '#00ffff', '#ffff00'] },
+  { name: 'RGB', colors: ['#ff4444', '#44ff44', '#4444ff'] },
+  { name: 'Sunset', colors: ['#fbbf24', '#f97316', '#ef4444'] },
+  { name: 'Ocean', colors: ['#22d3ee', '#0891b2', '#0e7490'] },
+  { name: 'Aurora', colors: ['#a78bfa', '#8b5cf6', '#4ade80'] },
+  { name: 'Fire', colors: ['#ff6b6b', '#feca57', '#ff9ff3'] },
+]
+
+function ArtGenerator() {
+  const { theme } = useTheme()
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+
+  const [artType, setArtType] = useState<PolarizationArtParams['type']>('interference')
+  const [complexity, setComplexity] = useState(6)
+  const [colorPresetIdx, setColorPresetIdx] = useState(0)
+  const [seed, setSeed] = useState(Math.floor(Math.random() * 100000))
+
+  const params: PolarizationArtParams = useMemo(() => ({
+    type: artType,
+    colors: COLOR_PRESETS[colorPresetIdx].colors,
+    complexity
+  }), [artType, complexity, colorPresetIdx])
+
+  const regenerate = useCallback(() => {
+    setSeed(Math.floor(Math.random() * 100000))
+  }, [])
+
+  const downloadSVG = useCallback(() => {
+    const svg = document.getElementById('generated-art-svg')
+    if (!svg) return
+    const svgData = new XMLSerializer().serializeToString(svg)
+    const blob = new Blob([svgData], { type: 'image/svg+xml' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `polarization-art-${seed}.svg`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [seed])
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-6">
+      {/* Preview Panel */}
+      <div className={cn(
+        'aspect-square rounded-xl overflow-hidden border-2',
+        theme === 'dark' ? 'border-pink-500/30 bg-slate-900' : 'border-pink-400/50 bg-gray-50'
+      )}>
+        <PolarizationArt
+          params={params}
+          seed={seed}
+          width={600}
+          height={600}
+          className="w-full h-full"
+        />
+        {/* Hidden SVG for download */}
+        <div className="hidden">
+          <svg id="generated-art-svg" viewBox="0 0 600 600">
+            <PolarizationArt params={params} seed={seed} width={600} height={600} />
+          </svg>
+        </div>
+      </div>
+
+      {/* Controls Panel */}
+      <div className="space-y-6">
+        {/* Art Type */}
+        <div>
+          <label className={cn(
+            'block text-sm font-medium mb-2',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? '艺术类型' : 'Art Type'}
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {ART_TYPES.map(type => (
+              <button
+                key={type.value}
+                onClick={() => setArtType(type.value)}
+                className={cn(
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                  artType === type.value
+                    ? 'bg-pink-500 text-white'
+                    : theme === 'dark'
+                      ? 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                )}
+              >
+                {isZh ? type.labelZh : type.labelEn}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Complexity Slider */}
+        <div>
+          <label className={cn(
+            'block text-sm font-medium mb-2',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? '复杂度' : 'Complexity'}: {complexity}
+          </label>
+          <input
+            type="range"
+            min={3}
+            max={12}
+            value={complexity}
+            onChange={(e) => setComplexity(Number(e.target.value))}
+            className="w-full accent-pink-500"
+          />
+        </div>
+
+        {/* Color Preset */}
+        <div>
+          <label className={cn(
+            'block text-sm font-medium mb-2',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? '配色方案' : 'Color Preset'}
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {COLOR_PRESETS.map((preset, idx) => (
+              <button
+                key={preset.name}
+                onClick={() => setColorPresetIdx(idx)}
+                className={cn(
+                  'p-2 rounded-lg border-2 transition-all',
+                  colorPresetIdx === idx
+                    ? 'border-pink-500'
+                    : theme === 'dark' ? 'border-slate-600' : 'border-gray-200'
+                )}
+              >
+                <div className="flex gap-1 mb-1">
+                  {preset.colors.map((color, i) => (
+                    <div
+                      key={i}
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+                <span className={cn(
+                  'text-xs',
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                )}>
+                  {preset.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={regenerate}
+            className={cn(
+              'flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors',
+              theme === 'dark'
+                ? 'bg-slate-700 text-white hover:bg-slate-600'
+                : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+            )}
+          >
+            <RefreshCw className="w-4 h-4" />
+            {isZh ? '重新生成' : 'Regenerate'}
+          </button>
+          <button
+            onClick={downloadSVG}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            {isZh ? '下载 SVG' : 'Download SVG'}
+          </button>
+        </div>
+
+        {/* Info Box */}
+        <div className={cn(
+          'p-4 rounded-lg',
+          theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
+        )}>
+          <h4 className={cn(
+            'font-semibold text-sm mb-2',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? '关于偏振艺术' : 'About Polarization Art'}
+          </h4>
+          <p className={cn(
+            'text-sm',
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          )}>
+            {isZh
+              ? '每种图案都基于真实的偏振光学效应：干涉图案模拟光波叠加，双折射展示晶体分光，应力条纹来自光弹性效应，旋光效应则展示偏振面的旋转。'
+              : 'Each pattern is based on real polarization optics: interference simulates wave superposition, birefringence shows crystal splitting, stress patterns come from photoelasticity, and rotation shows polarization plane rotation.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // Creative products data - 产品创意概念（不含价格）
 interface CreativeProduct {
@@ -2028,6 +2242,81 @@ export function ExperimentsPage() {
                   </div>
                 </Link>
               </div>
+            </div>
+          </>
+        )}
+
+        {/* Art Generator Tab - 偏振艺术生成器 */}
+        {activeTab === 'generator' && (
+          <>
+            {/* Intro Banner */}
+            <div className={cn(
+              'rounded-2xl p-6 mb-8 border',
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-pink-900/30 to-rose-900/30 border-pink-700/30'
+                : 'bg-gradient-to-r from-pink-50 to-rose-50 border-pink-200'
+            )}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className={cn(
+                  'w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0',
+                  theme === 'dark' ? 'bg-pink-500/20' : 'bg-pink-100'
+                )}>
+                  <Wand2 className={cn('w-7 h-7', theme === 'dark' ? 'text-pink-400' : 'text-pink-600')} />
+                </div>
+                <div className="flex-1">
+                  <h2 className={cn(
+                    'text-lg font-semibold mb-1',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? '偏振艺术生成器' : 'Polarization Art Generator'}
+                  </h2>
+                  <p className={cn(
+                    'text-sm',
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  )}>
+                    {isZh
+                      ? '基于真实偏振光学原理，生成独特的抽象艺术作品。选择不同的物理效应类型、调整复杂度和配色，创造属于你的偏振艺术。'
+                      : 'Generate unique abstract artworks based on real polarization optics principles. Choose different physics effect types, adjust complexity and colors to create your own polarization art.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Art Generator Component */}
+            <div className={cn(
+              'rounded-2xl border p-6',
+              theme === 'dark'
+                ? 'bg-slate-800/50 border-slate-700'
+                : 'bg-white border-gray-200'
+            )}>
+              <ArtGenerator />
+            </div>
+
+            {/* Art Gallery Section */}
+            <div className={cn(
+              'rounded-2xl border p-6 mt-8',
+              theme === 'dark'
+                ? 'bg-slate-800/50 border-slate-700'
+                : 'bg-white border-gray-200'
+            )}>
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-pink-400' : 'text-pink-600')} />
+                <h3 className={cn(
+                  'text-lg font-semibold',
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                )}>
+                  {isZh ? '灵感画廊' : 'Inspiration Gallery'}
+                </h3>
+              </div>
+              <p className={cn(
+                'text-sm mb-6',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                {isZh
+                  ? '浏览程序生成的偏振艺术样例，获取创作灵感。'
+                  : 'Browse programmatically generated polarization art samples for inspiration.'}
+              </p>
+              <ArtGallery count={6} />
             </div>
           </>
         )}
