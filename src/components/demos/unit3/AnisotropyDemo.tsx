@@ -120,8 +120,8 @@ export function AnisotropyDemo() {
   return (
     <div className="flex flex-col lg:flex-row gap-3">
       {/* 可视化区域 */}
-      <div className="flex-1 min-h-[240px]">
-        <svg viewBox="0 0 400 320" className="w-full h-auto max-h-[300px]">
+      <div className="flex-1 min-h-[320px]">
+        <svg viewBox="0 0 400 320" className="w-full h-auto max-h-[420px]">
           <defs>
             {/* 渐变定义 */}
             <linearGradient id="aniso-beam-grad" x1="0%" y1="0%" x2="100%" y2="0%">

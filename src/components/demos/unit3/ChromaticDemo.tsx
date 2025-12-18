@@ -128,7 +128,7 @@ function OpticalPathDiagram({
   resultColor: string
 }) {
   return (
-    <svg viewBox="0 0 700 280" className="w-full h-auto">
+    <svg viewBox="0 0 700 280" className="w-full h-auto max-h-[320px]">
       <defs>
         <linearGradient id="whiteLight" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#ef4444" />
