@@ -98,7 +98,7 @@ export function InteractiveOpticalBenchDemo() {
       {/* 可视化区域 */}
       <div className="flex-1 min-w-0">
         <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/50">
-          <svg viewBox="0 0 100 70" className="w-full" style={{ background: '#0a0a1a' }}>
+          <svg viewBox="0 0 100 70" className="w-full h-auto max-h-[280px]" style={{ background: '#0a0a1a' }}>
             <defs>
               <LightBeamDefs />
               <pattern id="demo-grid" width="10" height="10" patternUnits="userSpaceOnUse">
