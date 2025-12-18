@@ -1,11 +1,14 @@
 /**
  * 色偏振媒体画廊面板
  * 渐进式呈现色偏振相关的图片和视频资源
+ * - 真实实验场景展示（照片/视频）
+ * - 关联到文创作品子模块
  */
 import type { ComponentType } from 'react'
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import {
   ChevronDown,
   Play,
@@ -14,11 +17,16 @@ import {
   ChevronRight,
   Sparkles,
   FlaskConical,
-  Palette
+  Palette,
+  ExternalLink,
+  Camera,
+  Film
 } from 'lucide-react'
 import {
   CULTURAL_MEDIA,
+  CULTURAL_SERIES,
   type CulturalMedia,
+  type CulturalSeries,
 } from '@/data/cultural-creations'
 import {
   POLARIZATION_RESOURCES,
@@ -258,6 +266,41 @@ function CategoryTab({
   )
 }
 
+// 文创系列链接卡片
+function SeriesLinkCard({
+  series,
+  isZh,
+}: {
+  series: CulturalSeries
+  isZh: boolean
+}) {
+  return (
+    <Link
+      to={`/experiments?tab=cultural&series=${series.id}`}
+      className="group flex items-center gap-3 p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50
+        hover:border-pink-500/50 hover:bg-slate-800 transition-all"
+    >
+      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-slate-900">
+        <img
+          src={series.thumbnail}
+          alt={isZh ? series.nameZh : series.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+          loading="lazy"
+        />
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="text-xs font-medium text-white truncate group-hover:text-pink-300 transition-colors">
+          {isZh ? series.nameZh : series.name}
+        </h4>
+        <p className="text-[10px] text-gray-500 truncate">
+          {series.mediaCount} {isZh ? '个媒体' : 'items'}
+        </p>
+      </div>
+      <ExternalLink className="w-3.5 h-3.5 text-gray-600 group-hover:text-pink-400 transition-colors flex-shrink-0" />
+    </Link>
+  )
+}
+
 // 主组件
 export function MediaGalleryPanel() {
   const { i18n } = useTranslation()
@@ -322,15 +365,15 @@ export function MediaGalleryPanel() {
   return (
     <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-purple-950/30
       border border-purple-500/20 overflow-hidden">
-      {/* 头部 */}
+      {/* 头部 - 可点击展开/折叠 */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-400" />
+          <Camera className="w-5 h-5 text-purple-400" />
           <h3 className="text-sm font-semibold text-white">
-            {isZh ? '色偏振实例展示' : 'Chromatic Polarization Examples'}
+            {isZh ? '真实实验场景' : 'Real Experiment Scenes'}
           </h3>
           <span className="text-xs text-gray-500">
             ({allMedia.all.length} {isZh ? '个' : 'items'})
@@ -344,31 +387,82 @@ export function MediaGalleryPanel() {
         </motion.div>
       </button>
 
-      {/* 精选预览（始终显示） */}
+      {/* 折叠状态 - 显示主要内容信息和缩略图 */}
       {!isExpanded && (
-        <div className="px-4 pb-4">
-          <p className="text-xs text-gray-500 mb-3">
-            {isZh ? '点击查看色偏振艺术与实验实例' : 'Click to explore chromatic polarization art and experiments'}
-          </p>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {featuredMedia.slice(0, 8).map((item, index) => (
-              <MediaThumbnail
-                key={item.id}
-                item={item}
-                isVideo={item.type === 'video'}
-                size="sm"
-                onClick={() => handleSelectItem(item, index)}
-              />
-            ))}
-            <motion.button
-              className="w-16 h-16 flex-shrink-0 rounded-lg border border-dashed border-slate-600
-                flex items-center justify-center text-gray-500 hover:text-gray-400
-                hover:border-slate-500 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              onClick={() => setIsExpanded(true)}
-            >
-              <span className="text-xs">+{allMedia.all.length - 8}</span>
-            </motion.button>
+        <div className="px-4 pb-4 space-y-4">
+          {/* 内容说明 */}
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/30">
+            <Film className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-300 leading-relaxed">
+                {isZh
+                  ? '包含实验室拍摄的色偏振照片和视频：应力双折射、保鲜膜干涉、透明胶带效果等真实实验记录，以及偏振艺术文创作品展示。'
+                  : 'Contains lab-captured chromatic polarization photos and videos: stress birefringence, plastic wrap interference, tape effects, and polarization art creations.'}
+              </p>
+              <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-500">
+                <span className="flex items-center gap-1">
+                  <FlaskConical className="w-3 h-3" />
+                  {allMedia.experiments.length} {isZh ? '实验记录' : 'experiments'}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Palette className="w-3 h-3" />
+                  {allMedia.art.length} {isZh ? '艺术作品' : 'artworks'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 缩略图预览 */}
+          <div>
+            <p className="text-[10px] text-gray-500 mb-2 uppercase tracking-wider">
+              {isZh ? '精选预览' : 'Featured Preview'}
+            </p>
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {featuredMedia.slice(0, 6).map((item, index) => (
+                <MediaThumbnail
+                  key={item.id}
+                  item={item}
+                  isVideo={item.type === 'video'}
+                  size="sm"
+                  onClick={() => handleSelectItem(item, index)}
+                />
+              ))}
+              <motion.button
+                className="w-16 h-16 flex-shrink-0 rounded-lg border border-dashed border-slate-600
+                  flex flex-col items-center justify-center text-gray-500 hover:text-gray-400
+                  hover:border-slate-500 transition-colors gap-0.5"
+                whileHover={{ scale: 1.05 }}
+                onClick={() => setIsExpanded(true)}
+              >
+                <span className="text-xs font-medium">+{allMedia.all.length - 6}</span>
+                <span className="text-[8px]">{isZh ? '更多' : 'more'}</span>
+              </motion.button>
+            </div>
+          </div>
+
+          {/* 文创作品链接 */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                {isZh ? '文创作品系列' : 'Art Series'}
+              </p>
+              <Link
+                to="/experiments?tab=cultural"
+                className="text-[10px] text-pink-400 hover:text-pink-300 flex items-center gap-1 transition-colors"
+              >
+                {isZh ? '查看全部' : 'View all'}
+                <ExternalLink className="w-2.5 h-2.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {CULTURAL_SERIES.slice(0, 2).map(series => (
+                <SeriesLinkCard
+                  key={series.id}
+                  series={series}
+                  isZh={isZh}
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -422,11 +516,37 @@ export function MediaGalleryPanel() {
                 ))}
               </div>
 
+              {/* 文创作品系列链接 */}
+              <div className="mt-4 pt-4 border-t border-slate-700/50">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-xs font-medium text-gray-400 flex items-center gap-2">
+                    <Palette className="w-3.5 h-3.5" />
+                    {isZh ? '相关文创作品系列' : 'Related Art Series'}
+                  </h4>
+                  <Link
+                    to="/experiments?tab=cultural"
+                    className="text-[10px] text-pink-400 hover:text-pink-300 flex items-center gap-1 transition-colors"
+                  >
+                    {isZh ? '浏览全部文创展示' : 'Browse all artworks'}
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </Link>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  {CULTURAL_SERIES.map(series => (
+                    <SeriesLinkCard
+                      key={series.id}
+                      series={series}
+                      isZh={isZh}
+                    />
+                  ))}
+                </div>
+              </div>
+
               {/* 提示 */}
               <p className="text-xs text-gray-500 mt-3 text-center">
                 {isZh
-                  ? '点击图片/视频查看详情，探索色偏振的美丽世界'
-                  : 'Click to view details and explore the beautiful world of chromatic polarization'}
+                  ? '点击图片/视频查看详情，或访问文创展示浏览更多作品'
+                  : 'Click to view details, or visit the art showcase for more'}
               </p>
             </div>
           </motion.div>
