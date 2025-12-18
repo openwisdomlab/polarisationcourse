@@ -37,6 +37,12 @@ export interface ResourceMetadata {
   videoUrl?: string // 对应视频URL
 }
 
+export interface ViewPairs {
+  front?: string
+  parallel?: string
+  crossed?: string
+}
+
 export interface PolarizationResource {
   id: string
   type: ResourceType
@@ -51,12 +57,22 @@ export interface PolarizationResource {
   metadata: ResourceMetadata
   // 序列特有属性
   frames?: SequenceFrame[]
-  // 多视图属性
-  views?: {
-    front?: string
-    parallel?: string
-    crossed?: string
-  }
+  // 多视图属性 (平行/正交偏振系统成对图片)
+  views?: ViewPairs
+  // 是否为旋光性物质（如白砂糖）
+  isChiral?: boolean
+  // 视频注解（用于动态应变查看器）
+  videoAnnotations?: VideoAnnotation[]
+}
+
+// 视频时间点注解
+export interface VideoAnnotation {
+  time: number // 秒
+  label: string
+  labelZh: string
+  description: string
+  descriptionZh: string
+  type: 'info' | 'important' | 'observation'
 }
 
 // ===== 应力分析资源 =====
@@ -285,6 +301,86 @@ export const PLASTIC_WRAP: PolarizationResource = {
     parallel: '/images/保鲜膜-平行偏振系统-正视图.jpg',
     crossed: '/images/保鲜膜-正交偏振系统-正视图.jpg',
   },
+  videoAnnotations: [
+    {
+      time: 0,
+      label: 'Initial State',
+      labelZh: '初始状态',
+      description: 'Observe the uniform color distribution in unstretched plastic wrap',
+      descriptionZh: '观察未拉伸保鲜膜的均匀颜色分布',
+      type: 'info',
+    },
+    {
+      time: 3,
+      label: 'Optical Axis',
+      labelZh: '光轴方向',
+      description: 'Notice how stretching creates a preferred optical axis direction',
+      descriptionZh: '注意拉伸如何产生光轴（Optical Axis）的优先方向',
+      type: 'important',
+    },
+    {
+      time: 6,
+      label: 'Color Change',
+      labelZh: '颜色变化',
+      description: 'Thickness changes from stretching alter interference colors',
+      descriptionZh: '厚度变化引起的颜色级数改变',
+      type: 'observation',
+    },
+    {
+      time: 10,
+      label: 'Rotation Effect',
+      labelZh: '旋转效果',
+      description: 'Rotating the sample shows how colors depend on angle relative to polarizers',
+      descriptionZh: '旋转样品显示颜色如何依赖于相对于偏振片的角度',
+      type: 'info',
+    },
+  ],
+}
+
+// 保鲜膜拉伸实验视频
+export const PLASTIC_WRAP_STRETCHING: PolarizationResource = {
+  id: 'plastic-wrap-stretching',
+  type: 'video',
+  title: 'Plastic Wrap Stretching Experiment',
+  titleZh: '保鲜膜拉伸实验',
+  description: 'Dynamic demonstration of how stretching affects birefringence in plastic wrap',
+  descriptionZh: '动态演示拉伸如何影响保鲜膜的双折射',
+  category: 'interference',
+  url: '/videos/实验-保鲜膜拉伸-正交偏振系统-旋转样品视频.mp4',
+  thumbnail: '/images/保鲜膜-正交偏振系统-正视图.jpg',
+  relatedModules: ['birefringence', 'waveplate', 'stress-optics'],
+  metadata: {
+    material: 'plastic wrap',
+    polarizationSystem: 'crossed',
+    hasVideo: true,
+    videoUrl: '/videos/实验-保鲜膜拉伸-正交偏振系统-旋转样品视频.mp4',
+  },
+  videoAnnotations: [
+    {
+      time: 0,
+      label: 'Initial State',
+      labelZh: '初始状态',
+      description: 'Observe the uniform color distribution in unstretched plastic wrap',
+      descriptionZh: '观察未拉伸保鲜膜的均匀颜色分布',
+      type: 'info',
+    },
+    {
+      time: 3,
+      label: 'Optical Axis Formation',
+      labelZh: '光轴形成',
+      description: 'Stretching creates molecular alignment and optical axis direction',
+      descriptionZh: '拉伸产生分子排列和光轴（Optical Axis）方向',
+      type: 'important',
+    },
+    {
+      time: 6,
+      label: 'Retardation Change',
+      labelZh: '延迟量变化',
+      description: 'Thickness reduction and stress increase change the retardation',
+      descriptionZh: '厚度减小和应力增加改变延迟量，引起颜色级数改变',
+      type: 'observation',
+    },
+  ],
 }
 
 // 透明胶带资源
@@ -460,20 +556,20 @@ export const WATER_BOTTLE: PolarizationResource = {
   },
 }
 
-// 白砂糖袋子
+// 白砂糖袋子 (旋光性物质)
 export const SUGAR_BAG: PolarizationResource = {
   id: 'sugar-bag',
   type: 'image',
-  title: 'Sugar Bag (Plastic)',
-  titleZh: '白砂糖袋子',
-  description: 'Plastic sugar bag showing stress patterns',
-  descriptionZh: '塑料砂糖袋显示应力图案',
+  title: 'Sugar Bag (Optical Rotation)',
+  titleZh: '白砂糖袋子（旋光性）',
+  description: 'Sugar is optically active - it rotates the polarization plane of light. The plastic bag also shows stress patterns.',
+  descriptionZh: '白砂糖具有旋光性 - 它会旋转光的偏振面。塑料袋同时显示应力图案。',
   category: 'daily',
   url: '/images/白砂糖袋子-正交偏振系统-正视图（横向）.jpg',
   thumbnail: '/images/白砂糖袋子正视图.jpg',
-  relatedModules: ['stress-analysis', 'daily-polarization'],
+  relatedModules: ['stress-analysis', 'daily-polarization', 'optical-rotation', 'food-quality'],
   metadata: {
-    material: 'plastic',
+    material: 'sugar + plastic',
     polarizationSystem: 'crossed',
     hasVideo: true,
     videoUrl: '/videos/实验-白砂糖袋子-正交偏振系统-旋转样品视频.mp4',
@@ -483,6 +579,7 @@ export const SUGAR_BAG: PolarizationResource = {
     parallel: '/images/白砂糖袋子-平行偏振系统-正视图.jpg',
     crossed: '/images/白砂糖袋子-正交偏振系统-正视图（横向）.jpg',
   },
+  isChiral: true, // 白砂糖是旋光性物质
 }
 
 // ===== 偏振系统参考图 =====
@@ -529,6 +626,7 @@ export const POLARIZATION_RESOURCES: PolarizationResource[] = [
   // Interference/Thickness
   PLASTIC_WRAP_THICKNESS,
   PLASTIC_WRAP,
+  PLASTIC_WRAP_STRETCHING, // Video resource
   CLEAR_TAPE,
   CLEAR_TAPE_X,
   CLEAR_TAPE_ARRAY,
@@ -575,6 +673,26 @@ export function getResourcesWithVideos(): PolarizationResource[] {
   return POLARIZATION_RESOURCES.filter(r => r.metadata.hasVideo)
 }
 
+/** Get resources with view pairs (parallel/crossed) */
+export function getResourcesWithViewPairs(): PolarizationResource[] {
+  return POLARIZATION_RESOURCES.filter(r => r.views && (r.views.parallel || r.views.crossed))
+}
+
+/** Get chiral (optically active) resources */
+export function getChiralResources(): PolarizationResource[] {
+  return POLARIZATION_RESOURCES.filter(r => r.isChiral)
+}
+
+/** Get resources with video annotations */
+export function getResourcesWithAnnotations(): PolarizationResource[] {
+  return POLARIZATION_RESOURCES.filter(r => r.videoAnnotations && r.videoAnnotations.length > 0)
+}
+
+/** Check if resource has view pair */
+export function hasViewPair(resource: PolarizationResource): boolean {
+  return !!(resource.views && resource.views.parallel && resource.views.crossed)
+}
+
 // ===== Statistics =====
 export const RESOURCE_STATS = {
   totalResources: POLARIZATION_RESOURCES.length,
@@ -590,4 +708,6 @@ export const RESOURCE_STATS = {
     sequence: getResourcesByType('sequence').length,
   },
   withVideos: getResourcesWithVideos().length,
+  withViewPairs: getResourcesWithViewPairs().length,
+  chiralResources: getChiralResources().length,
 }

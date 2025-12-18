@@ -18,7 +18,13 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Badge } from '@/components/shared'
-import { StressComparator, ThermalStressPlayer } from '@/components/gallery'
+import {
+  StressComparator,
+  ThermalStressPlayer,
+  SugarOpticalRotator,
+  PolarizationSystemToggle,
+} from '@/components/gallery'
+import { TEMPERED_GLASS } from '@/data/resource-gallery'
 import {
   Home, Camera, Monitor, HeartPulse, Satellite, Leaf, Factory,
   ChevronRight, Lightbulb, X, ExternalLink, BookOpen,
@@ -1021,6 +1027,48 @@ function ApplicationDetailModal({
               {isZh ? '热应力演变播放器' : 'Thermal Stress Player'}
             </h3>
             <ThermalStressPlayer showAnnotations={true} />
+          </div>
+        )}
+
+        {app.id === 'food-inspection' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <FlaskConical className="w-4 h-4" />
+              {isZh ? '旋光性测试演示' : 'Optical Rotation Demo'}
+            </h3>
+            <p className={cn(
+              'text-xs mb-3',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh
+                ? '白砂糖是右旋糖，会旋转偏振光方向。调整检偏器角度观察变化！'
+                : 'White sugar is dextrorotatory - it rotates polarized light. Adjust the analyzer angle to see the effect!'}
+            </p>
+            <SugarOpticalRotator showFormula={true} />
+          </div>
+        )}
+
+        {app.id === 'defect-detection' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <Eye className="w-4 h-4" />
+              {isZh ? '偏振系统切换' : 'Polarization System Toggle'}
+            </h3>
+            <p className={cn(
+              'text-xs mb-3',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh
+                ? '切换到正交偏振（暗场）模式可以清晰看到玻璃中的应力图案和表面缺陷'
+                : 'Switch to crossed polarizers (dark field) to clearly see stress patterns and surface defects in glass'}
+            </p>
+            <PolarizationSystemToggle resource={TEMPERED_GLASS} showLabel={false} />
           </div>
         )}
 
