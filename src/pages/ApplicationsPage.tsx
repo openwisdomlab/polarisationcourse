@@ -19,9 +19,16 @@ import { cn } from '@/lib/utils'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Badge } from '@/components/shared'
 import {
+  StressComparator,
+  ThermalStressPlayer,
+  SugarOpticalRotator,
+  PolarizationSystemToggle,
+} from '@/components/gallery'
+import { TEMPERED_GLASS } from '@/data/resource-gallery'
+import {
   Home, Camera, Monitor, HeartPulse, Satellite, Leaf, Factory,
   ChevronRight, Lightbulb, X, ExternalLink, BookOpen,
-  Eye, Atom, FlaskConical
+  Eye, Atom, FlaskConical, Flame
 } from 'lucide-react'
 
 // Application categories
@@ -333,6 +340,25 @@ const APPLICATIONS: Application[] = [
       zh: '现代汽车工厂使用偏振相机发现肉眼看不见的油漆缺陷！',
     },
     difficulty: 'medium',
+  },
+  {
+    id: 'thermal-stress-evolution',
+    nameEn: 'Thermal Stress Evolution',
+    nameZh: '热应力演变',
+    category: 'industry',
+    summaryEn: 'Observe how thermal stress develops and dissipates in glass during heating and cooling.',
+    summaryZh: '观察玻璃在加热冷却过程中热应力的产生与消散。',
+    principleEn: 'When glass is heated unevenly, different thermal expansion rates create internal stresses. These stresses make the glass birefringent, visible as colored patterns under crossed polarizers. As the glass cools uniformly, stress redistributes and gradually dissipates.',
+    principleZh: '当玻璃受热不均时，不同的热膨胀率产生内应力。这些应力使玻璃具有双折射性，在正交偏振下显示为彩色图案。当玻璃均匀冷却时，应力重新分布并逐渐消散。',
+    icon: '🔥',
+    examplesEn: ['Glass tempering quality control', 'Thermal shock analysis', 'Annealing process monitoring'],
+    examplesZh: ['玻璃钢化质量控制', '热冲击分析', '退火过程监测'],
+    relatedDemo: 'anisotropy',
+    funFact: {
+      en: 'You can create your own stress patterns by briefly heating ordinary glass with a lighter - but be careful!',
+      zh: '你可以用打火机短暂加热普通玻璃来创建自己的应力图案——但要小心！',
+    },
+    difficulty: 'easy',
   },
   // === Frontier Research (2020s) ===
   {
@@ -974,6 +1000,75 @@ function ApplicationDetailModal({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Interactive Gallery Components */}
+        {app.id === 'stress-analysis' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <Eye className="w-4 h-4" />
+              {isZh ? '实时对比' : 'Live Comparison'}
+            </h3>
+            <StressComparator showInfo={false} />
+          </div>
+        )}
+
+        {app.id === 'thermal-stress-evolution' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <Flame className="w-4 h-4" />
+              {isZh ? '热应力演变播放器' : 'Thermal Stress Player'}
+            </h3>
+            <ThermalStressPlayer showAnnotations={true} />
+          </div>
+        )}
+
+        {app.id === 'food-inspection' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <FlaskConical className="w-4 h-4" />
+              {isZh ? '旋光性测试演示' : 'Optical Rotation Demo'}
+            </h3>
+            <p className={cn(
+              'text-xs mb-3',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh
+                ? '白砂糖是右旋糖，会旋转偏振光方向。调整检偏器角度观察变化！'
+                : 'White sugar is dextrorotatory - it rotates polarized light. Adjust the analyzer angle to see the effect!'}
+            </p>
+            <SugarOpticalRotator showFormula={true} />
+          </div>
+        )}
+
+        {app.id === 'defect-detection' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <Eye className="w-4 h-4" />
+              {isZh ? '偏振系统切换' : 'Polarization System Toggle'}
+            </h3>
+            <p className={cn(
+              'text-xs mb-3',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh
+                ? '切换到正交偏振（暗场）模式可以清晰看到玻璃中的应力图案和表面缺陷'
+                : 'Switch to crossed polarizers (dark field) to clearly see stress patterns and surface defects in glass'}
+            </p>
+            <PolarizationSystemToggle resource={TEMPERED_GLASS} showLabel={false} />
           </div>
         )}
 

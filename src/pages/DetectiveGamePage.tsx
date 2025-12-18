@@ -62,6 +62,10 @@ import type { MysteryGuess, ObservationLog, MysteryElementType } from '@/compone
 // Import detective levels
 import { DETECTIVE_LEVELS } from '@/core/game2d/detectiveLevels'
 
+// Import gallery components and resources for real-world investigation
+import { PolarizationSystemToggle } from '@/components/gallery'
+import { WATER_BOTTLE, GLASSES } from '@/data/resource-gallery'
+
 // Import stores
 import {
   useDiscoveryStore,
@@ -113,6 +117,22 @@ export function DetectiveGamePage() {
 
   // Toast notification
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null)
+
+  // Real-world investigation state
+  const [showRealWorldPanel, setShowRealWorldPanel] = useState(false)
+  const [selectedRealObject, setSelectedRealObject] = useState<'bottle' | 'glasses'>('bottle')
+  const [hasFoundStressPattern, setHasFoundStressPattern] = useState<Record<string, boolean>>({})
+
+  // Handle real-world object mode change (crossed = stress revealed)
+  const handleRealWorldModeChange = (mode: 'parallel' | 'crossed') => {
+    if (mode === 'crossed') {
+      const objectKey = selectedRealObject
+      if (!hasFoundStressPattern[objectKey]) {
+        setHasFoundStressPattern(prev => ({ ...prev, [objectKey]: true }))
+        showToast(isZh ? '发现应力指纹！' : 'Stress fingerprint revealed!', 'success')
+      }
+    }
+  }
 
   // Current level
   const currentLevel = DETECTIVE_LEVELS[currentLevelIndex]
@@ -790,6 +810,22 @@ export function DetectiveGamePage() {
                 {isZh ? '推断' : 'Deduce'}
               </button>
             )}
+
+            <button
+              onClick={() => setShowRealWorldPanel(!showRealWorldPanel)}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-lg transition-all',
+                showRealWorldPanel
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                  : isDark
+                    ? 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                    : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+              )}
+              title={isZh ? '真实物证检验' : 'Real Evidence Examination'}
+            >
+              <Search className="w-4 h-4" />
+              {isZh ? '物证' : 'Evidence'}
+            </button>
           </div>
 
           {/* Hint Display */}
@@ -804,6 +840,106 @@ export function DetectiveGamePage() {
                 <Lightbulb className="w-4 h-4 inline mr-2" />
                 {isZh ? currentLevel.hintZh : currentLevel.hint}
               </p>
+            </div>
+          )}
+
+          {/* Real World Investigation Panel */}
+          {showRealWorldPanel && (
+            <div
+              className={cn(
+                'mt-4 p-4 rounded-xl max-w-lg',
+                isDark ? 'bg-slate-800/80 border border-emerald-500/30' : 'bg-white border border-emerald-200'
+              )}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={cn('font-bold flex items-center gap-2', isDark ? 'text-white' : 'text-slate-800')}>
+                  <Search className="w-4 h-4 text-emerald-400" />
+                  {isZh ? '物证检验台' : 'Evidence Examination'}
+                </h3>
+                <div className="flex gap-1">
+                  <span
+                    className={cn(
+                      'text-xs px-2 py-0.5 rounded',
+                      hasFoundStressPattern.bottle
+                        ? 'bg-green-500/20 text-green-400'
+                        : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
+                    )}
+                  >
+                    {isZh ? '瓶' : 'Bottle'}: {hasFoundStressPattern.bottle ? '✓' : '?'}
+                  </span>
+                  <span
+                    className={cn(
+                      'text-xs px-2 py-0.5 rounded',
+                      hasFoundStressPattern.glasses
+                        ? 'bg-green-500/20 text-green-400'
+                        : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
+                    )}
+                  >
+                    {isZh ? '镜' : 'Glasses'}: {hasFoundStressPattern.glasses ? '✓' : '?'}
+                  </span>
+                </div>
+              </div>
+
+              <p className={cn('text-xs mb-3', isDark ? 'text-slate-400' : 'text-slate-500')}>
+                {isZh
+                  ? '💡 提示：切换到正交偏振（暗场）模式，可以看到透明物体上隐藏的应力指纹！'
+                  : '💡 Tip: Switch to crossed polarizers (dark field) to reveal hidden stress fingerprints on transparent objects!'}
+              </p>
+
+              {/* Object selector */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => setSelectedRealObject('bottle')}
+                  className={cn(
+                    'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                    selectedRealObject === 'bottle'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
+                      : isDark
+                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  )}
+                >
+                  🍶 {isZh ? '矿泉水瓶' : 'Water Bottle'}
+                </button>
+                <button
+                  onClick={() => setSelectedRealObject('glasses')}
+                  className={cn(
+                    'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                    selectedRealObject === 'glasses'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
+                      : isDark
+                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  )}
+                >
+                  👓 {isZh ? '眼镜' : 'Glasses'}
+                </button>
+              </div>
+
+              {/* PolarizationSystemToggle for the selected object */}
+              <div className="rounded-lg overflow-hidden">
+                <PolarizationSystemToggle
+                  resource={selectedRealObject === 'bottle' ? WATER_BOTTLE : GLASSES}
+                  showLabel={false}
+                  defaultMode="parallel"
+                  onModeChange={handleRealWorldModeChange}
+                />
+              </div>
+
+              {/* Success message when stress pattern is found */}
+              {hasFoundStressPattern[selectedRealObject] && (
+                <div
+                  className={cn(
+                    'mt-3 p-2 rounded-lg text-xs text-center',
+                    isDark ? 'bg-green-500/20 text-green-300' : 'bg-green-50 text-green-700'
+                  )}
+                >
+                  <Sparkles className="w-3 h-3 inline mr-1" />
+                  {isZh
+                    ? `已发现 ${selectedRealObject === 'bottle' ? '矿泉水瓶' : '眼镜'} 的应力指纹！注入成型过程中产生的内应力清晰可见。`
+                    : `Stress fingerprint found on ${selectedRealObject}! Internal stress from injection molding is now visible.`}
+                </div>
+              )}
             </div>
           )}
         </div>
