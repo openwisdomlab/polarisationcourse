@@ -18,10 +18,11 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Badge } from '@/components/shared'
+import { StressComparator, ThermalStressPlayer } from '@/components/gallery'
 import {
   Home, Camera, Monitor, HeartPulse, Satellite, Leaf, Factory,
   ChevronRight, Lightbulb, X, ExternalLink, BookOpen,
-  Eye, Atom, FlaskConical
+  Eye, Atom, FlaskConical, Flame
 } from 'lucide-react'
 
 // Application categories
@@ -333,6 +334,25 @@ const APPLICATIONS: Application[] = [
       zh: '现代汽车工厂使用偏振相机发现肉眼看不见的油漆缺陷！',
     },
     difficulty: 'medium',
+  },
+  {
+    id: 'thermal-stress-evolution',
+    nameEn: 'Thermal Stress Evolution',
+    nameZh: '热应力演变',
+    category: 'industry',
+    summaryEn: 'Observe how thermal stress develops and dissipates in glass during heating and cooling.',
+    summaryZh: '观察玻璃在加热冷却过程中热应力的产生与消散。',
+    principleEn: 'When glass is heated unevenly, different thermal expansion rates create internal stresses. These stresses make the glass birefringent, visible as colored patterns under crossed polarizers. As the glass cools uniformly, stress redistributes and gradually dissipates.',
+    principleZh: '当玻璃受热不均时，不同的热膨胀率产生内应力。这些应力使玻璃具有双折射性，在正交偏振下显示为彩色图案。当玻璃均匀冷却时，应力重新分布并逐渐消散。',
+    icon: '🔥',
+    examplesEn: ['Glass tempering quality control', 'Thermal shock analysis', 'Annealing process monitoring'],
+    examplesZh: ['玻璃钢化质量控制', '热冲击分析', '退火过程监测'],
+    relatedDemo: 'anisotropy',
+    funFact: {
+      en: 'You can create your own stress patterns by briefly heating ordinary glass with a lighter - but be careful!',
+      zh: '你可以用打火机短暂加热普通玻璃来创建自己的应力图案——但要小心！',
+    },
+    difficulty: 'easy',
   },
   // === Frontier Research (2020s) ===
   {
@@ -974,6 +994,33 @@ function ApplicationDetailModal({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Interactive Gallery Components */}
+        {app.id === 'stress-analysis' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <Eye className="w-4 h-4" />
+              {isZh ? '实时对比' : 'Live Comparison'}
+            </h3>
+            <StressComparator showInfo={false} />
+          </div>
+        )}
+
+        {app.id === 'thermal-stress-evolution' && (
+          <div className="mb-6">
+            <h3 className={cn(
+              'text-sm font-semibold uppercase tracking-wider mb-3 flex items-center gap-2',
+              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+            )}>
+              <Flame className="w-4 h-4" />
+              {isZh ? '热应力演变播放器' : 'Thermal Stress Player'}
+            </h3>
+            <ThermalStressPlayer showAnnotations={true} />
           </div>
         )}
 

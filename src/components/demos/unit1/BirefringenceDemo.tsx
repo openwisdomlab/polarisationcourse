@@ -6,13 +6,16 @@ import { useState, useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Line, Text } from '@react-three/drei'
 import * as THREE from 'three'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   SliderControl,
   ControlPanel,
   ValueDisplay,
   InfoCard,
 } from '../DemoControls'
+import { ThicknessVisualizer, StressComparator } from '@/components/gallery'
+import { FlaskConical, Box, Beaker } from 'lucide-react'
 
 // 光源组件
 function LightSource({ position }: { position: [number, number, number] }) {
@@ -361,8 +364,43 @@ function PresetButton({
   )
 }
 
+// Tab component for switching views
+type DemoTab = 'theory' | 'lab'
+
+function TabButton({
+  active,
+  onClick,
+  children,
+  icon: Icon,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+  icon: typeof FlaskConical
+}) {
+  return (
+    <motion.button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+        active
+          ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
+          : 'bg-slate-700/50 text-gray-400 border border-slate-600/50 hover:border-slate-500'
+      }`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Icon className="w-4 h-4" />
+      {children}
+    </motion.button>
+  )
+}
+
 // 主演示组件
 export function BirefringenceDemo() {
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+
+  const [activeTab, setActiveTab] = useState<DemoTab>('theory')
   const [inputPolarization, setInputPolarization] = useState(45)
   const [animate, setAnimate] = useState(true)
 
@@ -382,134 +420,226 @@ export function BirefringenceDemo() {
       {/* 标题 */}
       <div className="text-center">
         <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
-          双折射效应 - 3D交互
+          {isZh ? '双折射效应 - 3D交互' : 'Birefringence - 3D Interactive'}
         </h2>
         <p className="text-gray-400 mt-1">
-          方解石晶体将一束光分裂为偏振方向垂直的o光和e光 · 拖动旋转视角
+          {isZh
+            ? '方解石晶体将一束光分裂为偏振方向垂直的o光和e光 · 拖动旋转视角'
+            : 'Calcite crystal splits light into o-ray and e-ray with perpendicular polarizations'}
         </p>
       </div>
 
-      {/* 3D可视化面板 */}
-      <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden" style={{ height: 400 }}>
-        <Canvas
-          camera={{ position: [0, 2, 8], fov: 50 }}
-          gl={{ antialias: true, pixelRatio: Math.min(window.devicePixelRatio, 2) }}
+      {/* Tab navigation */}
+      <div className="flex justify-center gap-2">
+        <TabButton
+          active={activeTab === 'theory'}
+          onClick={() => setActiveTab('theory')}
+          icon={Box}
         >
-          <BirefringenceScene inputPolarization={inputPolarization} animate={animate} />
-        </Canvas>
+          {isZh ? '理论演示' : 'Theory Demo'}
+        </TabButton>
+        <TabButton
+          active={activeTab === 'lab'}
+          onClick={() => setActiveTab('lab')}
+          icon={FlaskConical}
+        >
+          {isZh ? '真实实验室' : 'Real World Lab'}
+        </TabButton>
       </div>
 
-      {/* 控制和信息面板 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* 参数控制 */}
-        <ControlPanel title="参数控制">
-          <SliderControl
-            label="入射光偏振角度"
-            value={inputPolarization}
-            min={0}
-            max={90}
-            step={5}
-            unit="°"
-            onChange={setInputPolarization}
-            color="orange"
-          />
-          <div className="flex flex-wrap gap-2">
-            {presets.map((preset) => (
-              <PresetButton
-                key={preset.value}
-                label={preset.label}
-                isActive={inputPolarization === preset.value}
-                onClick={() => setInputPolarization(preset.value)}
-              />
-            ))}
-          </div>
-          <motion.button
-            onClick={() => setAnimate(!animate)}
-            className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              animate
-                ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
-                : 'bg-slate-700/50 text-gray-400 border border-slate-600'
-            }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+      <AnimatePresence mode="wait">
+        {activeTab === 'theory' ? (
+          <motion.div
+            key="theory"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="flex flex-col gap-6"
           >
-            {animate ? '⏸ 暂停动画' : '▶ 播放动画'}
-          </motion.button>
-        </ControlPanel>
+            {/* 3D可视化面板 */}
+            <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden" style={{ height: 400 }}>
+              <Canvas
+                camera={{ position: [0, 2, 8], fov: 50 }}
+                gl={{ antialias: true, pixelRatio: Math.min(window.devicePixelRatio, 2) }}
+              >
+                <BirefringenceScene inputPolarization={inputPolarization} animate={animate} />
+              </Canvas>
+            </div>
 
-        {/* 分量强度 */}
-        <ControlPanel title="分量强度">
-          <ValueDisplay
-            label="o光强度 (cos²θ)"
-            value={(oIntensity * 100).toFixed(1)}
-            unit="%"
-            color="red"
-          />
-          <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-red-500"
-              animate={{ width: `${oIntensity * 100}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-          <ValueDisplay
-            label="e光强度 (sin²θ)"
-            value={(eIntensity * 100).toFixed(1)}
-            unit="%"
-            color="green"
-          />
-          <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-green-500"
-              animate={{ width: `${eIntensity * 100}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-          <ValueDisplay label="总强度守恒" value="100" unit="%" color="cyan" />
-        </ControlPanel>
+            {/* 控制和信息面板 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* 参数控制 */}
+              <ControlPanel title={isZh ? "参数控制" : "Parameters"}>
+                <SliderControl
+                  label={isZh ? "入射光偏振角度" : "Input Polarization"}
+                  value={inputPolarization}
+                  min={0}
+                  max={90}
+                  step={5}
+                  unit="°"
+                  onChange={setInputPolarization}
+                  color="orange"
+                />
+                <div className="flex flex-wrap gap-2">
+                  {presets.map((preset) => (
+                    <PresetButton
+                      key={preset.value}
+                      label={preset.label}
+                      isActive={inputPolarization === preset.value}
+                      onClick={() => setInputPolarization(preset.value)}
+                    />
+                  ))}
+                </div>
+                <motion.button
+                  onClick={() => setAnimate(!animate)}
+                  className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    animate
+                      ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
+                      : 'bg-slate-700/50 text-gray-400 border border-slate-600'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {animate ? (isZh ? '⏸ 暂停动画' : '⏸ Pause') : (isZh ? '▶ 播放动画' : '▶ Play')}
+                </motion.button>
+              </ControlPanel>
 
-        {/* 晶体参数 */}
-        <ControlPanel title="方解石参数">
-          <div className="space-y-2 text-xs text-gray-400">
-            <div className="flex justify-between">
-              <span>o光折射率 (no):</span>
-              <span className="text-cyan-400 font-mono">1.6584</span>
+              {/* 分量强度 */}
+              <ControlPanel title={isZh ? "分量强度" : "Intensity"}>
+                <ValueDisplay
+                  label={isZh ? "o光强度 (cos²θ)" : "o-ray (cos²θ)"}
+                  value={(oIntensity * 100).toFixed(1)}
+                  unit="%"
+                  color="red"
+                />
+                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-red-500"
+                    animate={{ width: `${oIntensity * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <ValueDisplay
+                  label={isZh ? "e光强度 (sin²θ)" : "e-ray (sin²θ)"}
+                  value={(eIntensity * 100).toFixed(1)}
+                  unit="%"
+                  color="green"
+                />
+                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-green-500"
+                    animate={{ width: `${eIntensity * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <ValueDisplay label={isZh ? "总强度守恒" : "Total (conserved)"} value="100" unit="%" color="cyan" />
+              </ControlPanel>
+
+              {/* 晶体参数 */}
+              <ControlPanel title={isZh ? "方解石参数" : "Calcite Properties"}>
+                <div className="space-y-2 text-xs text-gray-400">
+                  <div className="flex justify-between">
+                    <span>{isZh ? 'o光折射率' : 'o-ray index'} (no):</span>
+                    <span className="text-cyan-400 font-mono">1.6584</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{isZh ? 'e光折射率' : 'e-ray index'} (ne):</span>
+                    <span className="text-cyan-400 font-mono">1.4864</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{isZh ? '双折射率差' : 'Birefringence'} (Δn):</span>
+                    <span className="text-purple-400 font-mono">0.172</span>
+                  </div>
+                  <div className="pt-2 border-t border-slate-700">
+                    <p className="text-gray-500">
+                      {isZh
+                        ? '方解石是典型的负单轴晶体，具有显著的双折射效应。'
+                        : 'Calcite is a typical negative uniaxial crystal with significant birefringence.'}
+                    </p>
+                  </div>
+                </div>
+              </ControlPanel>
             </div>
-            <div className="flex justify-between">
-              <span>e光折射率 (ne):</span>
-              <span className="text-cyan-400 font-mono">1.4864</span>
+
+            {/* 现实应用场景 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <InfoCard title={isZh ? "偏光显微镜" : "Polarization Microscopy"} color="cyan">
+                <p className="text-xs text-gray-300">
+                  {isZh
+                    ? '利用双折射原理观察矿物和生物样本的微观结构，不同晶体取向显示不同干涉色。'
+                    : 'Uses birefringence to observe minerals and biological samples, showing interference colors based on crystal orientation.'}
+                </p>
+              </InfoCard>
+              <InfoCard title={isZh ? "应力分析" : "Stress Analysis"} color="purple">
+                <p className="text-xs text-gray-300">
+                  {isZh
+                    ? '透明材料受力时产生应力双折射，用于检测玻璃、塑料中的内应力分布。'
+                    : 'Stressed transparent materials become birefringent, used to detect internal stress in glass and plastics.'}
+                </p>
+              </InfoCard>
+              <InfoCard title={isZh ? "宝石鉴定" : "Gem Identification"} color="orange">
+                <p className="text-xs text-gray-300">
+                  {isZh
+                    ? '通过方解石观察宝石的双像效应，可以鉴别天然宝石与仿制品。'
+                    : 'Observe double image effect through calcite to distinguish natural gems from imitations.'}
+                </p>
+              </InfoCard>
             </div>
-            <div className="flex justify-between">
-              <span>双折射率差 (Δn):</span>
-              <span className="text-purple-400 font-mono">0.172</span>
-            </div>
-            <div className="pt-2 border-t border-slate-700">
-              <p className="text-gray-500">
-                方解石是典型的负单轴晶体，具有显著的双折射效应。
+          </motion.div>
+        ) : (
+          <motion.div
+            key="lab"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="flex flex-col gap-6"
+          >
+            {/* Real World Lab content */}
+            <div className="bg-slate-900/50 rounded-xl border border-emerald-400/20 p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Beaker className="w-5 h-5 text-emerald-400" />
+                <h3 className="text-lg font-semibold text-white">
+                  {isZh ? '厚度与干涉色实验' : 'Thickness & Interference Color Experiment'}
+                </h3>
+              </div>
+              <p className="text-gray-400 text-sm mb-4">
+                {isZh
+                  ? '在正交偏振系统中，双折射材料的厚度直接影响观察到的干涉色。增加保鲜膜层数，观察颜色如何变化！'
+                  : 'In crossed polarizers, the thickness of birefringent materials directly affects the observed interference colors. Add layers of plastic wrap and observe the color changes!'}
               </p>
+              <ThicknessVisualizer showTheoryBar={true} showVideoButton={true} />
             </div>
-          </div>
-        </ControlPanel>
-      </div>
 
-      {/* 现实应用场景 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="偏光显微镜" color="cyan">
-          <p className="text-xs text-gray-300">
-            利用双折射原理观察矿物和生物样本的微观结构，不同晶体取向显示不同干涉色。
-          </p>
-        </InfoCard>
-        <InfoCard title="应力分析" color="purple">
-          <p className="text-xs text-gray-300">
-            透明材料受力时产生应力双折射，用于检测玻璃、塑料中的内应力分布。
-          </p>
-        </InfoCard>
-        <InfoCard title="宝石鉴定" color="orange">
-          <p className="text-xs text-gray-300">
-            通过方解石观察宝石的双像效应，可以鉴别天然宝石与仿制品。
-          </p>
-        </InfoCard>
-      </div>
+            {/* Stress comparison */}
+            <div className="bg-slate-900/50 rounded-xl border border-purple-400/20 p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <FlaskConical className="w-5 h-5 text-purple-400" />
+                <h3 className="text-lg font-semibold text-white">
+                  {isZh ? '玻璃应力对比' : 'Glass Stress Comparison'}
+                </h3>
+              </div>
+              <p className="text-gray-400 text-sm mb-4">
+                {isZh
+                  ? '钢化玻璃经过热处理产生预应力，在正交偏振下显示特征图案。拖动滑块对比钢化玻璃和普通玻璃的差异！'
+                  : 'Tempered glass has pre-stress from heat treatment, showing characteristic patterns under crossed polarizers. Drag the slider to compare tempered and ordinary glass!'}
+              </p>
+              <StressComparator />
+            </div>
+
+            {/* Tips card */}
+            <InfoCard title={isZh ? "实验提示" : "Experiment Tips"} color="green">
+              <ul className="text-xs text-gray-300 space-y-1 list-disc pl-4">
+                <li>{isZh ? '保鲜膜、透明胶带等塑料薄膜都具有双折射性' : 'Plastic wrap, clear tape and other thin films are birefringent'}</li>
+                <li>{isZh ? '颜色随厚度周期变化，形成Michel-Lévy色阶' : 'Colors change periodically with thickness, forming the Michel-Lévy scale'}</li>
+                <li>{isZh ? '旋转样品或偏振片可以看到颜色变化' : 'Rotate the sample or polarizer to see color changes'}</li>
+                <li>{isZh ? '应力大小与颜色数量成正比' : 'Stress magnitude is proportional to the number of colors'}</li>
+              </ul>
+            </InfoCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
