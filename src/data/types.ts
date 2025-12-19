@@ -204,6 +204,7 @@ export interface PolarizationArtParams {
   colors: string[]
   complexity: number // 1-10
   animated?: boolean
+  analyzerAngle?: number // 0-90 degrees (0 = parallel, 90 = crossed polarizers)
 }
 
 // =============================================================================

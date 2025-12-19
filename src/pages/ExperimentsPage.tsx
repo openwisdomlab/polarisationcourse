@@ -655,12 +655,14 @@ function ArtGenerator() {
   const [complexity, setComplexity] = useState(6)
   const [colorPresetIdx, setColorPresetIdx] = useState(0)
   const [seed, setSeed] = useState(Math.floor(Math.random() * 100000))
+  const [analyzerAngle, setAnalyzerAngle] = useState(90)
 
   const params: PolarizationArtParams = useMemo(() => ({
     type: artType,
     colors: COLOR_PRESETS[colorPresetIdx].colors,
-    complexity
-  }), [artType, complexity, colorPresetIdx])
+    complexity,
+    analyzerAngle
+  }), [artType, complexity, colorPresetIdx, analyzerAngle])
 
   const regenerate = useCallback(() => {
     setSeed(Math.floor(Math.random() * 100000))
@@ -747,6 +749,46 @@ function ArtGenerator() {
             onChange={(e) => setComplexity(Number(e.target.value))}
             className="w-full accent-pink-500"
           />
+        </div>
+
+        {/* Analyzer Angle Slider */}
+        <div>
+          <label className={cn(
+            'block text-sm font-medium mb-2',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? '检偏器角度' : 'Analyzer Angle'}: {analyzerAngle}°
+          </label>
+          <div className="flex items-center gap-3">
+            <span className={cn(
+              'text-xs',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh ? '平行' : 'Parallel'}
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={90}
+              value={analyzerAngle}
+              onChange={(e) => setAnalyzerAngle(Number(e.target.value))}
+              className="flex-1 accent-pink-500"
+            />
+            <span className={cn(
+              'text-xs',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh ? '交叉' : 'Crossed'}
+            </span>
+          </div>
+          <p className={cn(
+            'text-xs mt-1',
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          )}>
+            {isZh
+              ? '旋转虚拟检偏器以改变干涉颜色'
+              : 'Rotate the virtual analyzer to change interference colors'}
+          </p>
         </div>
 
         {/* Color Preset */}

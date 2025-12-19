@@ -22,33 +22,85 @@ function seededRandom(seed: number) {
 }
 
 /**
+ * Parse rgb string to components
+ */
+function parseRgb(rgbStr: string): { r: number; g: number; b: number } {
+  const match = rgbStr.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
+  if (match) {
+    return { r: parseInt(match[1]), g: parseInt(match[2]), b: parseInt(match[3]) }
+  }
+  return { r: 128, g: 128, b: 128 }
+}
+
+/**
+ * Get complementary color (invert towards white/bright for parallel polarizers)
+ */
+function getComplementaryColor(r: number, g: number, b: number): { r: number; g: number; b: number } {
+  // For parallel polarizers, colors shift towards complementary/brighter
+  return {
+    r: 255 - r,
+    g: 255 - g,
+    b: 255 - b
+  }
+}
+
+/**
+ * Interpolate between crossed polarizer color and parallel polarizer color
+ * based on analyzer angle (0 = parallel, 90 = crossed)
+ */
+function applyAnalyzerAngle(baseColor: string, analyzerAngle: number): string {
+  const { r, g, b } = parseRgb(baseColor)
+  const comp = getComplementaryColor(r, g, b)
+
+  // Normalize angle to 0-90 range
+  const angle = Math.max(0, Math.min(90, analyzerAngle))
+  // t = 1 at 90° (crossed, original color), t = 0 at 0° (parallel, complementary)
+  const t = angle / 90
+
+  // Also apply brightness modulation (darker at 45°, bright at 0° and 90°)
+  // This simulates the sin²(2θ) intensity variation
+  const brightnessAngle = (angle * 2) * Math.PI / 180
+  const brightnessFactor = 0.5 + 0.5 * Math.abs(Math.cos(brightnessAngle))
+
+  const newR = Math.round((r * t + comp.r * (1 - t)) * brightnessFactor + 255 * (1 - brightnessFactor) * 0.3)
+  const newG = Math.round((g * t + comp.g * (1 - t)) * brightnessFactor + 255 * (1 - brightnessFactor) * 0.3)
+  const newB = Math.round((b * t + comp.b * (1 - t)) * brightnessFactor + 255 * (1 - brightnessFactor) * 0.3)
+
+  return `rgb(${Math.min(255, newR)}, ${Math.min(255, newG)}, ${Math.min(255, newB)})`
+}
+
+/**
  * Calculate interference color based on optical path difference (OPD)
  * This approximates the Michel-Levy color chart used in polarized light microscopy
  * OPD in nm determines the interference color when viewed between crossed polarizers
  */
-function getInterferenceColor(opdNm: number): string {
+function getInterferenceColor(opdNm: number, analyzerAngle: number = 90): string {
   // First-order colors (0-550nm)
   // Second-order colors (550-1100nm)
   // Third-order colors (1100-1650nm)
   const opd = Math.abs(opdNm) % 1650 // Wrap around for higher orders
 
-  // Approximate Michel-Levy chart colors
-  if (opd < 50) return 'rgb(20, 20, 20)' // Black/dark gray
-  if (opd < 150) return 'rgb(80, 80, 80)' // Gray
-  if (opd < 250) return 'rgb(255, 255, 240)' // White/cream
-  if (opd < 350) return 'rgb(255, 255, 180)' // Pale yellow
-  if (opd < 450) return 'rgb(255, 200, 100)' // Orange
-  if (opd < 550) return 'rgb(255, 100, 100)' // Red (first order)
-  if (opd < 650) return 'rgb(180, 100, 255)' // Violet (second order begins)
-  if (opd < 750) return 'rgb(100, 150, 255)' // Blue
-  if (opd < 850) return 'rgb(100, 255, 200)' // Blue-green
-  if (opd < 950) return 'rgb(150, 255, 150)' // Green
-  if (opd < 1050) return 'rgb(255, 255, 100)' // Yellow
-  if (opd < 1150) return 'rgb(255, 150, 150)' // Pink/red (second order)
-  if (opd < 1250) return 'rgb(200, 150, 255)' // Violet (third order)
-  if (opd < 1350) return 'rgb(150, 200, 255)' // Blue
-  if (opd < 1450) return 'rgb(180, 255, 200)' // Green
-  return 'rgb(255, 220, 180)' // Pale orange
+  // Base Michel-Levy chart colors (for crossed polarizers at 90°)
+  let baseColor: string
+  if (opd < 50) baseColor = 'rgb(20, 20, 20)' // Black/dark gray
+  else if (opd < 150) baseColor = 'rgb(80, 80, 80)' // Gray
+  else if (opd < 250) baseColor = 'rgb(255, 255, 240)' // White/cream
+  else if (opd < 350) baseColor = 'rgb(255, 255, 180)' // Pale yellow
+  else if (opd < 450) baseColor = 'rgb(255, 200, 100)' // Orange
+  else if (opd < 550) baseColor = 'rgb(255, 100, 100)' // Red (first order)
+  else if (opd < 650) baseColor = 'rgb(180, 100, 255)' // Violet (second order begins)
+  else if (opd < 750) baseColor = 'rgb(100, 150, 255)' // Blue
+  else if (opd < 850) baseColor = 'rgb(100, 255, 200)' // Blue-green
+  else if (opd < 950) baseColor = 'rgb(150, 255, 150)' // Green
+  else if (opd < 1050) baseColor = 'rgb(255, 255, 100)' // Yellow
+  else if (opd < 1150) baseColor = 'rgb(255, 150, 150)' // Pink/red (second order)
+  else if (opd < 1250) baseColor = 'rgb(200, 150, 255)' // Violet (third order)
+  else if (opd < 1350) baseColor = 'rgb(150, 200, 255)' // Blue
+  else if (opd < 1450) baseColor = 'rgb(180, 255, 200)' // Green
+  else baseColor = 'rgb(255, 220, 180)' // Pale orange
+
+  // Apply analyzer angle transformation
+  return applyAnalyzerAngle(baseColor, analyzerAngle)
 }
 
 /**
@@ -80,15 +132,15 @@ export function PolarizationArt({
 }: PolarizationArtProps) {
   const elements = useMemo(() => {
     const random = seededRandom(seed)
-    const { type, colors, complexity } = params
+    const { type, colors, complexity, analyzerAngle = 90 } = params
 
     switch (type) {
       case 'interference':
-        return generateInterference(random, colors, complexity, width, height)
+        return generateInterference(random, colors, complexity, width, height, analyzerAngle)
       case 'birefringence':
-        return generateBirefringence(random, colors, complexity, width, height)
+        return generateBirefringence(random, colors, complexity, width, height, analyzerAngle)
       case 'stress':
-        return generateStress(random, colors, complexity, width, height)
+        return generateStress(random, colors, complexity, width, height, analyzerAngle)
       case 'rotation':
         return generateRotation(random, colors, complexity, width, height)
       case 'abstract':
@@ -113,6 +165,45 @@ export function PolarizationArt({
 }
 
 /**
+ * Generate organic wavy path for interference rings
+ * Creates natural-looking distortions similar to real mineral slices
+ */
+function generateWavyPath(
+  cx: number,
+  cy: number,
+  baseRadius: number,
+  waviness: number,
+  frequency: number,
+  _random: () => number,
+  seed: number
+): string {
+  const points: string[] = []
+  const segments = 72 // Number of points around the ring
+
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2
+    // Create organic waviness using multiple sine waves
+    const wave1 = Math.sin(angle * frequency) * waviness
+    const wave2 = Math.sin(angle * (frequency * 1.7) + seed) * waviness * 0.5
+    const wave3 = Math.sin(angle * (frequency * 2.3) + seed * 2) * waviness * 0.3
+    const distortion = wave1 + wave2 + wave3
+
+    const r = baseRadius + distortion
+    const x = cx + Math.cos(angle) * r
+    const y = cy + Math.sin(angle) * r
+
+    if (i === 0) {
+      points.push(`M ${x} ${y}`)
+    } else {
+      points.push(`L ${x} ${y}`)
+    }
+  }
+  points.push('Z')
+
+  return points.join(' ')
+}
+
+/**
  * Generate interference pattern (concentric rings with Michel-Levy colors)
  * Simulates the appearance of a wedge of birefringent material viewed between
  * crossed polarizers, where the optical path difference increases with radius.
@@ -125,7 +216,8 @@ function generateInterference(
   colors: string[],
   complexity: number,
   width: number,
-  height: number
+  height: number,
+  analyzerAngle: number = 90
 ) {
   const cx = width / 2 + (random() - 0.5) * 20
   const cy = height / 2 + (random() - 0.5) * 20
@@ -136,33 +228,45 @@ function generateInterference(
   const ringCount = Math.floor(complexity * 5)
   const opdPerRing = 120 // nm per ring (typical for quartz wedge)
 
+  // Complexity now controls waviness instead of just ring count
+  // Higher complexity = more organic/irregular shapes
+  const waviness = (maxRadius / ringCount) * (complexity / 10) * 0.8
+  const frequency = 3 + Math.floor(complexity / 3) // Wave frequency
+
   const rings = []
 
-  // Generate interference rings with proper colors
+  // Generate interference rings with proper colors and organic waviness
   for (let i = 0; i < ringCount; i++) {
     const radius = (maxRadius / ringCount) * (i + 1)
     const opd = i * opdPerRing + random() * 30 // Add slight randomness
-    const color = getInterferenceColor(opd)
+    const color = getInterferenceColor(opd, analyzerAngle)
     const strokeWidth = (maxRadius / ringCount) * 1.2
 
+    // Use wavy path for organic look (waviness increases with radius and complexity)
+    const ringWaviness = waviness * (0.3 + (i / ringCount) * 0.7)
+    const ringFreq = frequency + (random() - 0.5) * 2
+    const pathSeed = random() * 10
+
+    const path = generateWavyPath(cx, cy, radius, ringWaviness, ringFreq, random, pathSeed)
+
     rings.push(
-      <circle
+      <path
         key={i}
-        cx={cx}
-        cy={cy}
-        r={radius}
+        d={path}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth}
         opacity={0.8}
+        strokeLinejoin="round"
       />
     )
   }
 
   // Add isogyre cross pattern (dark cross seen in conoscopic figure)
   // This appears when viewing uniaxial crystal along optic axis
+  // Cross visibility depends on analyzer angle (most visible at 90°)
   if (complexity > 5) {
-    const crossOpacity = 0.4
+    const crossOpacity = 0.4 * (analyzerAngle / 90)
     rings.push(
       <g key="isogyre" opacity={crossOpacity}>
         <line x1={cx - maxRadius} y1={cy} x2={cx + maxRadius} y2={cy}
@@ -176,8 +280,8 @@ function generateInterference(
   // Add subtle polarization direction indicators at corners
   const indicatorSize = 15
   const indicators = [
-    { x: 10, y: 10, angle: 0, label: 'P' },     // Polarizer
-    { x: width - 25, y: 10, angle: 90, label: 'A' }, // Analyzer (crossed)
+    { x: 10, y: 10, angle: 0, label: 'P' },     // Polarizer (fixed at 0°)
+    { x: width - 25, y: 10, angle: analyzerAngle, label: 'A' }, // Analyzer (variable)
   ]
 
   indicators.forEach((ind, i) => {
@@ -195,6 +299,14 @@ function generateInterference(
     )
   })
 
+  // Add analyzer angle indicator
+  rings.push(
+    <text key="angle-label" x={width - 10} y={height - 10} textAnchor="end"
+      fill={colors[0]} fontSize="9" fontFamily="monospace" opacity={0.7}>
+      {analyzerAngle}°
+    </text>
+  )
+
   const defs = null
 
   return { defs, content: <g>{rings}</g> }
@@ -206,7 +318,8 @@ function generateBirefringence(
   colors: string[],
   complexity: number,
   width: number,
-  height: number
+  height: number,
+  analyzerAngle: number = 90
 ) {
   const elements = []
   const pathCount = Math.floor(complexity * 2)
@@ -220,14 +333,23 @@ function generateBirefringence(
     [width * 0.2, height * 0.5]
   ].map(p => p.join(',')).join(' ')
 
+  // Crystal opacity changes with analyzer angle
+  const crystalOpacity = 0.2 + (analyzerAngle / 90) * 0.2
+
   elements.push(
     <polygon
       key="crystal"
       points={crystalPoints}
       fill="url(#crystal-grad)"
-      opacity={0.3}
+      opacity={crystalOpacity}
     />
   )
+
+  // Beam brightness based on analyzer angle
+  // At 0° (parallel), o-ray and e-ray have different brightness
+  // At 90° (crossed), intensities differ based on polarization
+  const oRayBrightness = 0.3 + (analyzerAngle / 90) * 0.5
+  const eRayBrightness = 0.8 - (analyzerAngle / 90) * 0.2
 
   // Split light beams
   for (let i = 0; i < pathCount; i++) {
@@ -254,7 +376,7 @@ function generateBirefringence(
           y2={endY1}
           stroke={colors[1] || '#ff4444'}
           strokeWidth={2}
-          opacity={0.6}
+          opacity={oRayBrightness}
         />
         <line
           x1={splitX}
@@ -263,7 +385,7 @@ function generateBirefringence(
           y2={endY2}
           stroke={colors[2] || '#44ff44'}
           strokeWidth={2}
-          opacity={0.6}
+          opacity={eRayBrightness}
         />
       </g>
     )
@@ -295,15 +417,38 @@ function generateStress(
   _colors: string[],
   complexity: number,
   width: number,
-  height: number
+  height: number,
+  analyzerAngle: number = 90
 ) {
   const elements = []
   const cx = width / 2
   const cy = height / 2
 
+  // Background brightness varies with analyzer angle
+  // At 90° (crossed): dark background, bright fringes
+  // At 0° (parallel): bright background, dark fringes
+  const bgBrightness = Math.round(26 + (1 - analyzerAngle / 90) * 200)
+  const bgColor = `rgb(${bgBrightness}, ${bgBrightness}, ${Math.round(bgBrightness * 1.2)})`
+
+  // Add background rectangle
+  elements.push(
+    <rect
+      key="background"
+      x={0}
+      y={0}
+      width={width}
+      height={height}
+      fill={bgColor}
+    />
+  )
+
   // Sample outline (stressed object - beam with concentrated load)
   const beamWidth = width * 0.7
   const beamHeight = height * 0.4
+
+  // Sample fill brightness also varies with analyzer
+  const sampleBrightness = Math.round(40 + (1 - analyzerAngle / 90) * 180)
+
   elements.push(
     <rect
       key="sample"
@@ -311,10 +456,10 @@ function generateStress(
       y={cy - beamHeight / 2}
       width={beamWidth}
       height={beamHeight}
-      fill="none"
+      fill={`rgb(${sampleBrightness}, ${sampleBrightness}, ${Math.round(sampleBrightness * 1.1)})`}
       stroke="#444"
       strokeWidth={2}
-      opacity={0.5}
+      opacity={0.8}
     />
   )
 
@@ -335,9 +480,12 @@ function generateStress(
   const fringeCount = Math.floor(complexity * 4)
   const maxStressOPD = 1200 // Maximum OPD in nm at highest stress
 
+  // Fringe visibility/contrast varies with analyzer angle
+  const fringeOpacity = 0.3 + (analyzerAngle / 90) * 0.5
+
   for (let i = 1; i <= fringeCount; i++) {
     const opd = (i / fringeCount) * maxStressOPD
-    const color = getInterferenceColor(opd)
+    const color = getInterferenceColor(opd, analyzerAngle)
 
     // Create stress contour lines (elliptical/lobe pattern around load point)
     const lobeScale = 0.3 + (i / fringeCount) * 0.6
@@ -358,7 +506,7 @@ function generateStress(
         fill="none"
         stroke={color}
         strokeWidth={2 + random()}
-        opacity={0.7}
+        opacity={fringeOpacity}
       />
     )
 
@@ -376,14 +524,16 @@ function generateStress(
           fill="none"
           stroke={color}
           strokeWidth={1.5}
-          opacity={0.5}
+          opacity={fringeOpacity * 0.7}
         />
       )
     }
   }
 
   // Add isoclinic line (dark band indicating principal stress direction)
+  // Visibility depends on analyzer angle (most visible at specific angles)
   if (complexity > 4) {
+    const isoclinicOpacity = 0.3 * Math.sin(analyzerAngle * 2 * Math.PI / 180)
     elements.push(
       <line
         key="isoclinic"
@@ -393,16 +543,17 @@ function generateStress(
         y2={cy + beamHeight / 2}
         stroke="#000"
         strokeWidth={3}
-        opacity={0.3}
+        opacity={Math.abs(isoclinicOpacity)}
       />
     )
   }
 
-  // Legend
+  // Legend with angle display
   elements.push(
-    <g key="legend" transform={`translate(${width - 60}, ${height - 50})`}>
+    <g key="legend" transform={`translate(${width - 70}, ${height - 50})`}>
       <text fill="#888" fontSize="8" fontFamily="monospace">Isochromatic</text>
       <text fill="#888" fontSize="8" fontFamily="monospace" y="12">Fringes</text>
+      <text fill="#888" fontSize="8" fontFamily="monospace" y="24">A: {analyzerAngle}°</text>
     </g>
   )
 
