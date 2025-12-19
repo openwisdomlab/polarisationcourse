@@ -4863,24 +4863,31 @@ export function ChroniclesPage() {
                   const years = [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
 
                   return years.map((year) => {
-                    const opticsEvent = filteredEvents.find(e => e.year === year && e.track === 'optics')
-                    const polarizationEvent = filteredEvents.find(e => e.year === year && e.track === 'polarization')
-                    const opticsIndex = opticsEvent ? filteredEvents.findIndex(e => e === opticsEvent) : -1
-                    const polarizationIndex = polarizationEvent ? filteredEvents.findIndex(e => e === polarizationEvent) : -1
+                    // Get ALL events for this year per track (not just the first one)
+                    const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
+                    const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
+                    const hasOptics = opticsEvents.length > 0
+                    const hasPolarization = polarizationEvents.length > 0
 
                     return (
                       <div key={year} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
-                        {/* Left side - Optics */}
+                        {/* Left side - Optics (can have multiple events) */}
                         <div className="flex-1 pr-4 flex justify-end">
-                          {opticsEvent && (
-                            <div className="w-full max-w-md">
-                              <DualTrackCard
-                                event={opticsEvent}
-                                isExpanded={expandedEvent === opticsIndex}
-                                onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
-                                onReadStory={() => handleOpenStory(opticsIndex)}
-                                side="left"
-                              />
+                          {hasOptics && (
+                            <div className="w-full max-w-md space-y-3">
+                              {opticsEvents.map((opticsEvent) => {
+                                const opticsIndex = filteredEvents.findIndex(e => e === opticsEvent)
+                                return (
+                                  <DualTrackCard
+                                    key={opticsEvent.titleEn}
+                                    event={opticsEvent}
+                                    isExpanded={expandedEvent === opticsIndex}
+                                    onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
+                                    onReadStory={() => handleOpenStory(opticsIndex)}
+                                    side="left"
+                                  />
+                                )
+                              })}
                             </div>
                           )}
                         </div>
@@ -4889,11 +4896,11 @@ export function ChroniclesPage() {
                         <div className="w-20 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
                           <div className={cn(
                             'w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2',
-                            opticsEvent && polarizationEvent
+                            hasOptics && hasPolarization
                               ? theme === 'dark'
                                 ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
                                 : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
-                              : opticsEvent
+                              : hasOptics
                                 ? theme === 'dark'
                                   ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                                   : 'bg-amber-100 border-amber-500 text-amber-700'
@@ -4904,13 +4911,13 @@ export function ChroniclesPage() {
                             {year}
                           </div>
                           {/* Connector lines */}
-                          {opticsEvent && (
+                          {hasOptics && (
                             <div className={cn(
                               'absolute top-6 right-full w-4 h-0.5 mr-0',
                               theme === 'dark' ? 'bg-amber-500/50' : 'bg-amber-400'
                             )} />
                           )}
-                          {polarizationEvent && (
+                          {hasPolarization && (
                             <div className={cn(
                               'absolute top-6 left-full w-4 h-0.5 ml-0',
                               theme === 'dark' ? 'bg-cyan-500/50' : 'bg-cyan-400'
@@ -4918,17 +4925,23 @@ export function ChroniclesPage() {
                           )}
                         </div>
 
-                        {/* Right side - Polarization */}
+                        {/* Right side - Polarization (can have multiple events) */}
                         <div className="flex-1 pl-4 flex justify-start">
-                          {polarizationEvent && (
-                            <div className="w-full max-w-md">
-                              <DualTrackCard
-                                event={polarizationEvent}
-                                isExpanded={expandedEvent === polarizationIndex}
-                                onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
-                                onReadStory={() => handleOpenStory(polarizationIndex)}
-                                side="right"
-                              />
+                          {hasPolarization && (
+                            <div className="w-full max-w-md space-y-3">
+                              {polarizationEvents.map((polarizationEvent) => {
+                                const polarizationIndex = filteredEvents.findIndex(e => e === polarizationEvent)
+                                return (
+                                  <DualTrackCard
+                                    key={polarizationEvent.titleEn}
+                                    event={polarizationEvent}
+                                    isExpanded={expandedEvent === polarizationIndex}
+                                    onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
+                                    onReadStory={() => handleOpenStory(polarizationIndex)}
+                                    side="right"
+                                  />
+                                )
+                              })}
                             </div>
                           )}
                         </div>
