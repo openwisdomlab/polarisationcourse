@@ -1270,6 +1270,10 @@ export function Game2DPage() {
                   <span>{isZh ? '上一关' : 'Prev level'}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span>M</span>
+                  <span>{isZh ? '切换物理模式' : 'Toggle physics'}</span>
+                </div>
+                <div className="flex justify-between">
                   <span>Esc</span>
                   <span>{isZh ? '取消选择' : 'Deselect'}</span>
                 </div>
