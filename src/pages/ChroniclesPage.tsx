@@ -17,7 +17,7 @@ import {
   Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
   FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   Sun, Sparkles, HelpCircle, Zap, Image, Film, Play, Pause,
-  Camera, Beaker
+  Camera, Beaker, ArrowRight
 } from 'lucide-react'
 import {
   getResourceById,
@@ -1608,7 +1608,7 @@ Today, if you've ever seen the rainbow patterns in a stressed plastic ruler view
       ],
       featuredImages: [
         {
-          url: '/images/chromatic-polarization/透明胶条阵列-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.jpg',
           caption: 'Transparent tape array showing chromatic interference under crossed polarizers',
           captionZh: '透明胶条阵列在正交偏振系统下展示的色偏振干涉图案'
         },
@@ -4407,13 +4407,15 @@ function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }: StoryM
 // Dual Track Card Component - 双轨卡片组件
 interface DualTrackCardProps {
   event: TimelineEvent
+  eventIndex: number
   isExpanded: boolean
   onToggle: () => void
   onReadStory: () => void
+  onLinkTo?: (year: number, track: 'optics' | 'polarization') => void
   side: 'left' | 'right'
 }
 
-function DualTrackCard({ event, isExpanded, onToggle, onReadStory, side: _side }: DualTrackCardProps) {
+function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadStory, onLinkTo, side: _side }: DualTrackCardProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
@@ -4426,6 +4428,7 @@ function DualTrackCard({ event, isExpanded, onToggle, onReadStory, side: _side }
 
   return (
     <div
+      data-event-index={eventIndex}
       className={cn(
         'rounded-xl border p-3 sm:p-4 transition-all cursor-pointer',
         trackColor.bg,
@@ -4591,6 +4594,28 @@ function DualTrackCard({ event, isExpanded, onToggle, onReadStory, side: _side }
                 {isZh ? '阅读故事' : 'Read Story'}
               </button>
             )}
+            {event.linkTo && onLinkTo && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onLinkTo(event.linkTo!.year, event.linkTo!.trackTarget)
+                }}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                  event.linkTo.trackTarget === 'optics'
+                    ? theme === 'dark'
+                      ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                      : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                    : theme === 'dark'
+                      ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                      : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
+                )}
+                title={isZh ? event.linkTo.descriptionZh : event.linkTo.descriptionEn}
+              >
+                <ArrowRight className="w-3.5 h-3.5" />
+                {isZh ? `跳转 ${event.linkTo.year}` : `Go to ${event.linkTo.year}`}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -4652,6 +4677,31 @@ export function ChroniclesPage() {
     }
   }
 
+  // Navigate to linked event
+  const handleLinkTo = useCallback((year: number, track: 'optics' | 'polarization') => {
+    // Reset filter to show all events
+    setTrackFilter('all')
+    setFilter('')
+
+    // Find the target event in the full TIMELINE_EVENTS (sorted by year)
+    const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
+    const targetIndex = allEventsSorted.findIndex(
+      e => e.year === year && e.track === track
+    )
+
+    if (targetIndex !== -1) {
+      // Expand the target event
+      setExpandedEvent(targetIndex)
+
+      // Scroll to the target event after a short delay to allow re-render
+      setTimeout(() => {
+        const targetElement = document.querySelector(`[data-event-index="${targetIndex}"]`)
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 100)
+    }
+  }, [])
 
   return (
     <div className={cn(
@@ -4881,9 +4931,11 @@ export function ChroniclesPage() {
                                   <DualTrackCard
                                     key={opticsEvent.titleEn}
                                     event={opticsEvent}
+                                    eventIndex={opticsIndex}
                                     isExpanded={expandedEvent === opticsIndex}
                                     onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
                                     onReadStory={() => handleOpenStory(opticsIndex)}
+                                    onLinkTo={handleLinkTo}
                                     side="left"
                                   />
                                 )
@@ -4935,9 +4987,11 @@ export function ChroniclesPage() {
                                   <DualTrackCard
                                     key={polarizationEvent.titleEn}
                                     event={polarizationEvent}
+                                    eventIndex={polarizationIndex}
                                     isExpanded={expandedEvent === polarizationIndex}
                                     onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
                                     onReadStory={() => handleOpenStory(polarizationIndex)}
+                                    onLinkTo={handleLinkTo}
                                     side="right"
                                   />
                                 )
