@@ -794,78 +794,6 @@ Tragically, Malus would not live to see his law's full impact. He died just thre
   },
   {
     year: 1811,
-    titleEn: 'Brewster\'s Angle',
-    titleZh: '布儒斯特角',
-    descriptionEn: 'David Brewster discovers the angle at which reflected light is completely polarized.',
-    descriptionZh: '布儒斯特发现反射光完全偏振时的特定角度。',
-    scientistEn: 'David Brewster',
-    scientistZh: '大卫·布儒斯特',
-    category: 'discovery',
-    importance: 2,
-    track: 'polarization',
-    details: {
-      en: [
-        'At Brewster\'s angle, reflected light is 100% polarized',
-        'The angle depends on the refractive indices of both media',
-        'tan(θB) = n₂/n₁',
-        'This principle is used in polarizing windows and laser optics'
-      ],
-      zh: [
-        '在布儒斯特角下，反射光100%偏振',
-        '该角度取决于两种介质的折射率',
-        'tan(θB) = n₂/n₁',
-        '这一原理被用于偏振窗和激光光学'
-      ]
-    },
-    story: {
-      en: `In the misty hills of Scotland, 1811, a young Presbyterian minister named David Brewster spent his evenings not in prayer, but in the pursuit of light. His nervous disposition made preaching unbearable, but in science, he found his true calling.
-
-Inspired by Malus's discovery across the Channel, Brewster set up a simple experiment: a beam of light striking a glass plate at various angles, viewed through his precious calcite crystal. Most angles gave partial polarization. But then — at one precise angle — the reflected beam became perfectly polarized.
-
-Night after night, he varied the angle by fractions of a degree, varied the materials — water, glass, diamond — and always found that magical angle. And he discovered something remarkable: this angle depended only on the ratio of refractive indices.
-
-tan(θB) = n₂/n₁
-
-Such elegant simplicity! The "Brewster angle" — as it would be known — was not arbitrary but dictated by the very nature of the materials involved.
-
-Brewster would go on to live a long, prolific life, inventing the kaleidoscope (which made him famous but earned him little money) and pioneering photography. But perhaps his most lasting gift was this: a precise angle where nature reveals its hidden structure, used today in every laser system and countless optical instruments.
-
-The minister who couldn't preach had found a different kind of sermon — written in angles and light.`,
-      zh: `1811年，苏格兰雾气缭绕的山丘间，一位名叫大卫·布儒斯特的年轻长老会牧师，将夜晚的时光不是花在祈祷上，而是花在追寻光的奥秘上。他紧张的性格让他无法忍受布道，但在科学中，他找到了自己真正的使命。
-
-受到海峡对岸马吕斯发现的启发，布儒斯特设计了一个简单的实验：让光束以不同角度照射玻璃板，然后通过他珍贵的方解石晶体观察。大多数角度只能产生部分偏振。但突然——在一个精确的角度——反射光束变得完美偏振！
-
-一夜又一夜，他以零点几度的精度改变角度，更换材料——水、玻璃、钻石——总能找到那个神奇的角度。他发现了一个惊人的规律：这个角度只取决于折射率之比。
-
-tan(θB) = n₂/n₁
-
-如此优雅的简洁！这个后来被称为"布儒斯特角"的角度，并非随意，而是由材料的本质特性所决定。
-
-布儒斯特后来过着漫长而多产的一生，发明了万花筒（使他声名鹊起但没赚到多少钱），并开创了摄影技术。但也许他最持久的贡献是这个：一个自然界揭示其隐藏结构的精确角度，如今被应用于每一个激光系统和无数光学仪器中。
-
-那位无法布道的牧师找到了另一种布道——用角度和光写成。`
-    },
-    scientistBio: {
-      birthYear: 1781,
-      deathYear: 1868,
-      nationality: 'Scottish',
-      portraitEmoji: '🔬',
-      bioEn: 'Sir David Brewster was a Scottish physicist, mathematician, and inventor. Originally trained as a Presbyterian minister, he abandoned preaching due to stage fright. He invented the kaleidoscope, improved the stereoscope, and made fundamental discoveries in optics. He was knighted in 1831 and served as Principal of the University of Edinburgh.',
-      bioZh: '大卫·布儒斯特爵士是苏格兰物理学家、数学家和发明家。他最初受训成为长老会牧师，但因怯场而放弃布道。他发明了万花筒，改进了立体镜，并在光学领域做出了根本性发现。1831年被封为爵士，并担任爱丁堡大学校长。'
-    },
-    scene: {
-      location: 'Edinburgh, Scotland',
-      season: 'Spring',
-      mood: 'precision'
-    },
-    thinkingQuestion: {
-      en: 'Polarized sunglasses reduce glare from water and roads. How does Brewster\'s angle explain why they work so well?',
-      zh: '偏振太阳镜可以减少水面和道路的眩光。布儒斯特角如何解释它们为什么如此有效？'
-    },
-    illustrationType: 'reflection'
-  },
-  {
-    year: 1811,
     titleEn: 'Chromatic Polarization',
     titleZh: '色偏振现象',
     descriptionEn: 'François Arago discovers that thin crystalline plates between crossed polarizers display vivid interference colors — revealing the wave nature of polarized light.',
@@ -1912,7 +1840,7 @@ And there it was: tiny sparks in the receiving loop, synchronized with the trans
 
 But Hertz didn't stop there. He measured the wavelength by creating standing waves with a metal reflector. He showed the waves could be refracted by a prism of pitch. And crucially, he demonstrated that they were polarized — just like light.
 
-Hertz had proven that light was not unique. It was simply electromagnetic waves at very high frequencies. Radio waves were the same thing, just slower oscillations. The entire electromagnetic spectrum — from radio through infrared to visible light to X-rays — was unified.
+Hertz had confirmed that electromagnetic waves possess the same properties as light — reflection, refraction, and polarization. This proved that visible light is electromagnetic radiation at specific frequencies. Radio waves, infrared, visible light, and X-rays were all the same phenomenon — differing only in frequency. The electromagnetic spectrum was unified.
 
 When a journalist asked Hertz about practical applications, he famously replied: "It's of no use whatsoever." He couldn't imagine radio, television, or the wireless internet. He died in 1894 at just 36, from a bone disease.
 
@@ -1927,7 +1855,7 @@ Today, the unit of frequency — hertz — bears his name. Every WiFi signal, ev
 
 但赫兹没有止步于此。他通过用金属反射器创建驻波来测量波长。他展示了这些波可以被沥青棱镜折射。最关键的是，他证明了它们是偏振的——就像光一样。
 
-赫兹证明了光并非独一无二。它只是非常高频的电磁波。无线电波是同样的东西，只是更慢的振荡。整个电磁波谱——从无线电到红外再到可见光再到X射线——被统一了。
+赫兹证实了电磁波具有与光相同的性质——反射、折射和偏振。这证明了可见光是特定频率的电磁辐射。无线电波、红外线、可见光和X射线都是同一种现象——只是频率不同。电磁波谱被统一了。
 
 当一位记者问赫兹关于实际应用时，他著名地回答说："这完全没有用处。"他无法想象无线电、电视或无线互联网。他于1894年因骨病去世，年仅36岁。
 
@@ -2039,6 +1967,82 @@ Stokes gave us the language of polarization measurement; Poincaré gave us a map
     illustrationType: 'poincare'
   },
   {
+    year: 1896,
+    titleEn: 'Zeeman Effect',
+    titleZh: '塞曼效应',
+    descriptionEn: 'Pieter Zeeman discovers that spectral lines split in a magnetic field, with the split components being polarized — connecting magnetism, quantum mechanics, and polarization.',
+    descriptionZh: '彼得·塞曼发现磁场会使光谱线分裂，且分裂的成分是偏振的——将磁学、量子力学和偏振联系在一起。',
+    scientistEn: 'Pieter Zeeman',
+    scientistZh: '彼得·塞曼',
+    category: 'discovery',
+    importance: 1,
+    track: 'polarization',
+    details: {
+      en: [
+        'Spectral lines split into multiple components in a magnetic field',
+        'The split components are polarized: σ components (circularly polarized) and π component (linearly polarized)',
+        'Normal Zeeman effect: splitting into three lines (predicted by classical theory)',
+        'Anomalous Zeeman effect: more complex splitting (explained by electron spin)',
+        'Used in astrophysics to measure stellar magnetic fields',
+        'Foundation for magneto-optical spectroscopy'
+      ],
+      zh: [
+        '光谱线在磁场中分裂成多个分量',
+        '分裂的成分是偏振的：σ分量（圆偏振）和π分量（线偏振）',
+        '正常塞曼效应：分裂成三条线（经典理论预测）',
+        '反常塞曼效应：更复杂的分裂（由电子自旋解释）',
+        '用于天体物理学测量恒星磁场',
+        '磁光光谱学的基础'
+      ]
+    },
+    story: {
+      en: `In 1896, in Leiden, a young Dutch physicist named Pieter Zeeman was studying the effect of magnetic fields on light — a topic his mentor Lorentz had suggested might be worth investigating.
+
+Zeeman placed a sodium flame between the poles of a powerful electromagnet and observed the spectral lines through a high-quality spectrometer. When he switched on the magnet, the sharp yellow lines of sodium broadened. Looking more carefully, he saw they had split into multiple components.
+
+This was remarkable enough. But Zeeman discovered something even more profound: the split components were polarized. Looking along the magnetic field, the outer components were circularly polarized (one left-handed, one right-handed). Looking perpendicular to the field, the outer components were linearly polarized perpendicular to the field, while the central component was polarized parallel to it.
+
+Lorentz quickly provided a theoretical explanation based on classical electron theory, predicting a "normal" triplet splitting. But nature had more surprises: many elements showed more complex "anomalous" splitting that classical physics couldn't explain. It would take quantum mechanics — specifically the discovery of electron spin — to resolve this puzzle.
+
+Zeeman and Lorentz shared the 1902 Nobel Prize in Physics. Today, the Zeeman effect is one of the primary tools astronomers use to measure magnetic fields in distant stars and galaxies. When we map the magnetic field of the Sun or detect fields in distant neutron stars, we are using the same polarization signatures Zeeman first observed in his Leiden laboratory.`,
+      zh: `1896年，在莱顿，一位名叫彼得·塞曼的年轻荷兰物理学家正在研究磁场对光的影响——这是他的导师洛伦兹建议可能值得研究的课题。
+
+塞曼将钠火焰放在强电磁铁的两极之间，通过高质量分光镜观察光谱线。当他打开磁铁时，钠的明亮黄线变宽了。仔细观察，他发现它们已经分裂成多个分量。
+
+这已经够令人惊奇的了。但塞曼发现了更深刻的东西：分裂的分量是偏振的。沿着磁场方向观察，外侧分量是圆偏振的（一个左旋，一个右旋）。垂直于磁场观察，外侧分量是垂直于磁场的线偏振，而中心分量平行于磁场偏振。
+
+洛伦兹很快基于经典电子理论给出了理论解释，预测了"正常"的三重分裂。但自然界有更多惊喜：许多元素显示出更复杂的"反常"分裂，经典物理无法解释。需要量子力学——特别是电子自旋的发现——才能解决这个谜题。
+
+塞曼和洛伦兹共同获得1902年诺贝尔物理学奖。今天，塞曼效应是天文学家测量遥远恒星和星系磁场的主要工具之一。当我们绘制太阳的磁场图或探测遥远中子星的磁场时，我们使用的正是塞曼在莱顿实验室首次观察到的那些偏振特征。`
+    },
+    scientistBio: {
+      birthYear: 1865,
+      deathYear: 1943,
+      nationality: 'Dutch',
+      portraitEmoji: '🧲',
+      bioEn: 'Pieter Zeeman was a Dutch physicist who shared the 1902 Nobel Prize with his mentor Hendrik Lorentz for the discovery of the Zeeman effect. His work bridged classical electromagnetism and quantum mechanics.',
+      bioZh: '彼得·塞曼是荷兰物理学家，因发现塞曼效应而与导师洛伦兹共同获得1902年诺贝尔奖。他的工作连接了经典电磁学和量子力学。'
+    },
+    scene: {
+      location: 'Leiden, Netherlands',
+      season: 'Autumn',
+      mood: 'discovery'
+    },
+    references: [
+      { title: 'Zeeman, P. (1897). The Effect of Magnetisation on the Nature of Light Emitted by a Substance. Nature 55:347' }
+    ],
+    linkTo: {
+      year: 1845,
+      trackTarget: 'polarization',
+      descriptionEn: 'The Zeeman effect extends Faraday\'s magneto-optical discoveries to spectral lines',
+      descriptionZh: '塞曼效应将法拉第的磁光发现扩展到光谱线'
+    },
+    thinkingQuestion: {
+      en: 'Astronomers can measure the magnetic field strength of distant stars using the Zeeman effect. How is polarization the key to this measurement?',
+      zh: '天文学家可以利用塞曼效应测量遥远恒星的磁场强度。偏振是如何成为这种测量的关键的？'
+    }
+  },
+  {
     year: 1905,
     titleEn: 'Photon Concept and Photoelectric Effect',
     titleZh: '光子概念与光电效应',
@@ -2054,14 +2058,16 @@ Stokes gave us the language of polarization measurement; Poincaré gave us a map
         'Light behaves as discrete energy packets: E = hν',
         'Explained the photoelectric effect which classical wave theory could not',
         'Light exhibits both wave and particle properties (wave-particle duality)',
-        'Each photon carries polarization information',
+        'Each photon carries polarization information — a single photon\'s polarization cannot be split',
+        'Polarization states later became the first quantum bit (qubit) in Dirac\'s 1930 formalism',
         'Foundation for quantum optics and quantum polarimetry (2023 entry)'
       ],
       zh: [
         '光表现为离散的能量包：E = hν',
         '解释了经典波动理论无法解释的光电效应',
         '光表现出波粒二象性',
-        '每个光子携带偏振信息',
+        '每个光子携带偏振信息——单个光子的偏振不可分割',
+        '偏振态后来成为狄拉克1930年形式化中的第一个量子比特（qubit）',
         '量子光学和量子偏振测量的基础（见2023年条目）'
       ]
     },
@@ -2358,6 +2364,87 @@ Today, Mueller matrix polarimetry is a powerful diagnostic tool. From satellite 
     illustrationType: 'mueller'
   },
   {
+    year: 1956,
+    titleEn: 'Pancharatnam Geometric Phase',
+    titleZh: '潘查拉特南几何相位',
+    descriptionEn: 'S. Pancharatnam discovers that polarization states traversing a cyclic path on the Poincaré sphere acquire a geometric phase — a fundamental concept later generalized as Berry phase.',
+    descriptionZh: 'S. 潘查拉特南发现在庞加莱球上经历循环路径的偏振态会获得几何相位——这一基本概念后来被推广为贝里相位。',
+    scientistEn: 'Shivaramakrishnan Pancharatnam',
+    scientistZh: '希瓦拉马克里希南·潘查拉特南',
+    category: 'theory',
+    importance: 1,
+    track: 'polarization',
+    details: {
+      en: [
+        'When polarization state returns to its starting point via different paths, it acquires a phase difference',
+        'This "geometric phase" depends only on the path geometry on the Poincaré sphere',
+        'The phase equals half the solid angle subtended by the path',
+        'Rediscovered by Michael Berry in 1984 as a general quantum phenomenon',
+        'Foundation for geometric phase optics, metasurfaces, and optical vortex generation',
+        'Pancharatnam died tragically young at 35, his work largely forgotten until Berry\'s revival'
+      ],
+      zh: [
+        '当偏振态通过不同路径返回起点时，会获得相位差',
+        '这种"几何相位"只取决于在庞加莱球上的路径几何',
+        '相位等于路径所对应立体角的一半',
+        '1984年被迈克尔·贝里重新发现为普遍的量子现象',
+        '几何相位光学、超表面和光学涡旋产生的基础',
+        '潘查拉特南不幸在35岁英年早逝，他的工作直到贝里的复兴才被重新认识'
+      ]
+    },
+    story: {
+      en: `In 1956, a young Indian physicist at the Raman Research Institute in Bangalore made a discovery that would wait decades to be fully appreciated.
+
+Shivaramakrishnan Pancharatnam, only 22 years old, was investigating a peculiar question: what happens when polarized light undergoes a cycle of transformations and returns to its original polarization state? Classical optics suggested the light should be unchanged. But Pancharatnam discovered something deeper.
+
+When a polarization state traverses a closed loop on the Poincaré sphere — perhaps passing through horizontal, circular, and diagonal polarizations before returning to horizontal — it acquires an extra phase shift. This phase depends not on the physical path of the light, but purely on the geometry of the polarization cycle.
+
+Pancharatnam showed this "geometric phase" equals half the solid angle enclosed by the path on the Poincaré sphere. It was a beautiful result, connecting the geometry of polarization space to measurable optical effects.
+
+Tragically, Pancharatnam died in 1969 at only 35, and his work remained largely unknown outside India. Then in 1984, physicist Michael Berry independently discovered that quantum systems undergoing cyclic adiabatic evolution acquire a similar geometric phase. Berry generously acknowledged Pancharatnam's priority, and the phenomenon is now called the "Pancharatnam-Berry phase."
+
+Today, this geometric phase is the foundation for metasurface optics — flat lenses and holograms created by controlling the geometric phase pixel by pixel. Every metasurface-based device owes its existence to the insight of a young physicist in Bangalore who saw geometry where others saw only light.`,
+      zh: `1956年，班加罗尔拉曼研究所的一位年轻印度物理学家做出了一个需要数十年才能被充分理解的发现。
+
+年仅22岁的希瓦拉马克里希南·潘查拉特南正在研究一个特殊的问题：当偏振光经历一系列变换并返回其原始偏振态时会发生什么？经典光学认为光应该保持不变。但潘查拉特南发现了更深刻的东西。
+
+当一个偏振态在庞加莱球上遍历一个闭合回路——也许从水平偏振经过圆偏振和对角偏振，然后返回水平——它会获得一个额外的相位偏移。这个相位不取决于光的物理路径，而纯粹取决于偏振循环的几何形状。
+
+潘查拉特南证明这个"几何相位"等于路径在庞加莱球上所围成的立体角的一半。这是一个美丽的结果，将偏振空间的几何与可测量的光学效应联系起来。
+
+不幸的是，潘查拉特南于1969年去世，年仅35岁，他的工作在印度以外基本不为人知。然后在1984年，物理学家迈克尔·贝里独立发现经历循环绝热演化的量子系统会获得类似的几何相位。贝里慷慨地承认了潘查拉特南的优先权，这个现象现在被称为"潘查拉特南-贝里相位"。
+
+今天，这种几何相位是超表面光学的基础——通过逐像素控制几何相位创建的平面透镜和全息图。每一个基于超表面的器件都归功于班加罗尔那位年轻物理学家的洞见，他在别人只看到光的地方看到了几何。`
+    },
+    scientistBio: {
+      birthYear: 1934,
+      deathYear: 1969,
+      nationality: 'Indian',
+      portraitEmoji: '🔮',
+      bioEn: 'Shivaramakrishnan Pancharatnam was an Indian physicist who worked at the Raman Research Institute. His discovery of the geometric phase in optics was ahead of its time and was rediscovered by Michael Berry in 1984.',
+      bioZh: '希瓦拉马克里希南·潘查拉特南是印度物理学家，在拉曼研究所工作。他在光学中发现的几何相位超前于时代，并在1984年被迈克尔·贝里重新发现。'
+    },
+    scene: {
+      location: 'Bangalore, India',
+      season: 'Monsoon',
+      mood: 'geometric insight'
+    },
+    references: [
+      { title: 'Pancharatnam, S. (1956). Generalized theory of interference, and its applications. Proc. Indian Acad. Sci. 44:247-262' },
+      { title: 'Berry, M. V. (1984). Quantal Phase Factors Accompanying Adiabatic Changes. Proc. R. Soc. Lond. A 392:45-57' }
+    ],
+    linkTo: {
+      year: 2021,
+      trackTarget: 'polarization',
+      descriptionEn: 'Pancharatnam\'s geometric phase is the theoretical foundation for metasurface optics',
+      descriptionZh: '潘查拉特南的几何相位是超表面光学的理论基础'
+    },
+    thinkingQuestion: {
+      en: 'Why does a polarization state acquire a phase just from following a geometric path? How is this related to how flat metasurface lenses work?',
+      zh: '为什么偏振态仅仅从遵循几何路径就能获得相位？这与平面超表面透镜的工作原理有什么关系？'
+    }
+  },
+  {
     year: 1960,
     titleEn: 'Invention of the Laser',
     titleZh: '激光的发明',
@@ -2511,6 +2598,159 @@ The story of polarized light has become the story of modern communication. Barth
     illustrationType: 'lcd'
   },
   {
+    year: 1982,
+    titleEn: 'Aspect Experiment: Bell\'s Inequality',
+    titleZh: '阿斯佩实验：贝尔不等式验证',
+    descriptionEn: 'Alain Aspect and colleagues use entangled photon polarization to definitively test Bell\'s inequality, proving quantum entanglement is real.',
+    descriptionZh: '阿兰·阿斯佩及其同事利用纠缠光子的偏振关联确定性地验证贝尔不等式，证明量子纠缠是真实存在的。',
+    scientistEn: 'Alain Aspect, Philippe Grangier, Gérard Roger',
+    scientistZh: '阿兰·阿斯佩、菲利普·格朗日、热拉尔·罗杰',
+    category: 'experiment',
+    importance: 1,
+    track: 'polarization',
+    details: {
+      en: [
+        'Pairs of entangled photons with correlated polarizations are created from calcium atom cascades',
+        'Measuring one photon\'s polarization instantly determines the other\'s, regardless of distance',
+        'Bell\'s inequality predicts limits for classical (local hidden variable) correlations',
+        'Aspect\'s experiment violated Bell\'s inequality, ruling out local hidden variable theories',
+        'Time-varying analyzer switches eliminated the "locality loophole"',
+        'Foundation for quantum cryptography and quantum computing',
+        'Aspect shared the 2022 Nobel Prize in Physics for this work'
+      ],
+      zh: [
+        '从钙原子级联过程中产生具有相关偏振的纠缠光子对',
+        '测量一个光子的偏振会即时确定另一个的偏振，与距离无关',
+        '贝尔不等式预测了经典（局域隐变量）关联的限制',
+        '阿斯佩的实验违反了贝尔不等式，排除了局域隐变量理论',
+        '时变分析器开关消除了"局域性漏洞"',
+        '量子密码学和量子计算的基础',
+        '阿斯佩因此工作获得2022年诺贝尔物理学奖'
+      ]
+    },
+    story: {
+      en: `In 1982, at the Institut d'Optique outside Paris, a young physicist named Alain Aspect was about to settle one of the oldest debates in quantum mechanics — using nothing more sophisticated than photon polarization.
+
+The question had been posed by Einstein, Podolsky, and Rosen in 1935: can quantum mechanics really allow "spooky action at a distance"? If two photons are created together in an "entangled" state, quantum mechanics says their polarizations are correlated — measure one, and you instantly know the other, no matter how far apart they are.
+
+Einstein believed there must be hidden variables — predetermined answers the photons carry with them. In 1964, physicist John Bell proved that quantum mechanics and local hidden variable theories make different predictions that could be experimentally tested.
+
+Aspect designed a decisive experiment. Calcium atoms were excited to emit pairs of photons with entangled polarizations. Fast-switching analyzers could be rotated during the photons' flight, eliminating any possibility that information traveled between them. Thousands of measurements were made, and the correlations were calculated.
+
+The results were unambiguous: Bell's inequality was violated. Nature was quantum mechanical, not classical. The photons shared a mysterious correlation that could not be explained by any local hidden variable theory. Polarization, the same property that Malus had studied so carefully, was revealing the deepest mysteries of quantum reality.
+
+Aspect's experiment opened the door to quantum information science. Today, entangled photon pairs — their polarizations forever correlated — form the backbone of quantum cryptography and are being developed for quantum computing. The "spooky action" Einstein dismissed has become the foundation of a technological revolution.`,
+      zh: `1982年，在巴黎郊外的光学研究所，一位名叫阿兰·阿斯佩的年轻物理学家即将解决量子力学中最古老的争论之一——仅仅使用光子偏振这样简单的工具。
+
+这个问题是由爱因斯坦、波多尔斯基和罗森在1935年提出的：量子力学真的允许"幽灵般的超距作用"吗？如果两个光子在"纠缠"状态下一起产生，量子力学说它们的偏振是相关的——测量一个，你就立即知道另一个，无论它们相距多远。
+
+爱因斯坦相信一定存在隐变量——光子携带的预定答案。1964年，物理学家约翰·贝尔证明量子力学和局域隐变量理论做出不同的预测，这些预测可以通过实验验证。
+
+阿斯佩设计了一个决定性的实验。钙原子被激发以发射具有纠缠偏振的光子对。快速切换的分析器可以在光子飞行期间旋转，消除任何信息在它们之间传递的可能性。进行了数千次测量，并计算了关联性。
+
+结果是明确的：贝尔不等式被违反了。自然是量子力学的，而不是经典的。光子共享一种神秘的关联，任何局域隐变量理论都无法解释。偏振，马吕斯曾如此仔细研究的同一性质，正在揭示量子现实最深刻的奥秘。
+
+阿斯佩的实验打开了量子信息科学的大门。今天，纠缠光子对——它们的偏振永远相关——构成了量子密码学的支柱，并正在被开发用于量子计算。爱因斯坦所否定的"幽灵般的作用"已经成为一场技术革命的基础。`
+    },
+    scientistBio: {
+      birthYear: 1947,
+      nationality: 'French',
+      portraitEmoji: '⚛️',
+      bioEn: 'Alain Aspect is a French physicist who performed the definitive tests of Bell\'s inequality. His work on quantum entanglement using photon polarization earned him the 2022 Nobel Prize in Physics, shared with John Clauser and Anton Zeilinger.',
+      bioZh: '阿兰·阿斯佩是法国物理学家，进行了贝尔不等式的决定性验证。他利用光子偏振研究量子纠缠的工作使他获得了2022年诺贝尔物理学奖，与约翰·克劳泽和安东·塞林格共同分享。'
+    },
+    scene: {
+      location: 'Orsay, France',
+      season: 'Autumn',
+      mood: 'quantum revelation'
+    },
+    references: [
+      { title: 'Aspect, A., Grangier, P., & Roger, G. (1982). Experimental Realization of Einstein-Podolsky-Rosen-Bohm Gedankenexperiment. Physical Review Letters 49:91-94' },
+      { title: 'Bell, J. S. (1964). On the Einstein Podolsky Rosen Paradox. Physics 1:195-200' }
+    ],
+    linkTo: {
+      year: 2023,
+      trackTarget: 'polarization',
+      descriptionEn: 'Aspect\'s entangled photons enabled quantum polarimetry beyond classical limits',
+      descriptionZh: '阿斯佩的纠缠光子使量子偏振测量超越了经典极限'
+    },
+    thinkingQuestion: {
+      en: 'When two entangled photons are measured, they always show correlated polarizations, even when separated by vast distances. How does polarization reveal the "non-local" nature of quantum mechanics?',
+      zh: '当两个纠缠光子被测量时，即使相隔很远，它们总是显示相关的偏振。偏振如何揭示量子力学的"非定域"本质？'
+    }
+  },
+  {
+    year: 1992,
+    titleEn: 'Orbital Angular Momentum of Light',
+    titleZh: '光的轨道角动量',
+    descriptionEn: 'Les Allen and colleagues prove that light beams can carry orbital angular momentum independent of spin (polarization) — opening a new dimension in optical physics.',
+    descriptionZh: '莱斯·艾伦及其同事证明光束可以携带独立于自旋（偏振）的轨道角动量——为光学物理开辟了新维度。',
+    scientistEn: 'Les Allen, Marco Beijersbergen, Robert Spreeuw, J.P. Woerdman',
+    scientistZh: '莱斯·艾伦、马可·贝耶斯贝根、罗伯特·斯普鲁、J.P. 沃德曼',
+    category: 'theory',
+    importance: 1,
+    track: 'polarization',
+    details: {
+      en: [
+        'Light has two forms of angular momentum: spin (polarization, ±ℏ) and orbital (helical phase, ℓℏ)',
+        'Optical vortex beams carry orbital angular momentum with helical wavefronts',
+        'Spin-orbit interaction: the two angular momenta can couple and exchange',
+        'The Photon Spin Hall Effect arises from spin-orbit interaction',
+        'Enables optical tweezers to rotate microscopic objects',
+        'Opens possibilities for higher-dimensional quantum communication'
+      ],
+      zh: [
+        '光有两种角动量形式：自旋（偏振，±ℏ）和轨道（螺旋相位，ℓℏ）',
+        '光学涡旋光束携带具有螺旋波前的轨道角动量',
+        '自旋-轨道相互作用：两种角动量可以耦合和交换',
+        '光子自旋霍尔效应源于自旋-轨道相互作用',
+        '使光学镊子能够旋转微观物体',
+        '为更高维度的量子通信开辟了可能性'
+      ]
+    },
+    story: {
+      en: `In 1992, at the University of Leiden, physicists Les Allen and colleagues made a discovery that expanded our understanding of light beyond its familiar polarization.
+
+It had long been known that circularly polarized light carries spin angular momentum — each photon carries ±ℏ depending on its handedness. But Allen showed that light beams with helical phase fronts carry an additional form of angular momentum: orbital angular momentum (OAM).
+
+These "optical vortex" beams have a phase that winds around the beam axis like a corkscrew. A photon in such a beam carries orbital angular momentum ℓℏ, where ℓ can be any integer — not just ±1 like spin. The discovery meant photons have two independent angular momentum degrees of freedom.
+
+The implications were profound. Spin (polarization) and orbital angular momenta can interact — a phenomenon called spin-orbit coupling. This interaction gives rise to effects like the Photon Spin Hall Effect, where photons of different polarization states deflect in opposite directions.
+
+In optical tweezers, orbital angular momentum allows microscopic particles to be rotated, not just trapped. In quantum communications, the unlimited values of ℓ offer a vast state space for encoding information — potentially enabling secure communication channels with much higher capacity than polarization alone.
+
+Allen's discovery revealed that polarization is just one facet of light's angular momentum. The interplay between spin and orbital angular momentum has become one of the most active research areas in modern optics.`,
+      zh: `1992年，在莱顿大学，物理学家莱斯·艾伦及其同事做出了一项发现，将我们对光的理解扩展到了其熟悉的偏振之外。
+
+人们早已知道圆偏振光携带自旋角动量——每个光子根据其旋向携带±ℏ。但艾伦证明，具有螺旋相位前端的光束携带另一种形式的角动量：轨道角动量（OAM）。
+
+这些"光学涡旋"光束的相位像开瓶器一样围绕光束轴旋绕。这种光束中的光子携带轨道角动量ℓℏ，其中ℓ可以是任何整数——而不仅仅是像自旋那样的±1。这一发现意味着光子有两个独立的角动量自由度。
+
+其影响是深远的。自旋（偏振）和轨道角动量可以相互作用——这种现象被称为自旋-轨道耦合。这种相互作用产生了诸如光子自旋霍尔效应等效应，其中不同偏振态的光子向相反方向偏转。
+
+在光学镊子中，轨道角动量允许微观粒子被旋转，而不仅仅是被捕获。在量子通信中，ℓ的无限值提供了巨大的状态空间来编码信息——可能使安全通信信道的容量远高于仅使用偏振。
+
+艾伦的发现揭示了偏振只是光角动量的一个方面。自旋和轨道角动量之间的相互作用已成为现代光学中最活跃的研究领域之一。`
+    },
+    scientistBio: {
+      portraitEmoji: '🌀',
+      bioEn: 'Les Allen was a British-Australian physicist at the University of Leiden who discovered that light beams can carry orbital angular momentum. His work opened the field of singular optics and optical vortices.',
+      bioZh: '莱斯·艾伦是莱顿大学的英籍澳大利亚物理学家，发现光束可以携带轨道角动量。他的工作开创了奇异光学和光学涡旋领域。'
+    },
+    scene: {
+      location: 'Leiden, Netherlands',
+      season: 'Spring',
+      mood: 'paradigm expansion'
+    },
+    references: [
+      { title: 'Allen, L., Beijersbergen, M.W., Spreeuw, R.J.C., & Woerdman, J.P. (1992). Orbital angular momentum of light and the transformation of Laguerre-Gaussian laser modes. Physical Review A 45:8185' }
+    ],
+    thinkingQuestion: {
+      en: 'Polarization (spin) and orbital angular momentum are two independent properties of light. How might we use both together to increase the information capacity of optical communication?',
+      zh: '偏振（自旋）和轨道角动量是光的两个独立性质。我们如何同时使用两者来增加光通信的信息容量？'
+    }
+  },
+  {
     year: 2009,
     titleEn: 'RealD 3D Cinema',
     titleZh: 'RealD 3D 电影',
@@ -2589,13 +2829,90 @@ RealD的突破是圆偏振。系统不是按角度过滤（像线偏振器那样
     }
   },
   {
-    year: 2012,
+    year: 2008,
+    titleEn: 'Spin Hall Effect of Light',
+    titleZh: '光子自旋霍尔效应',
+    descriptionEn: 'First experimental observation of the photonic spin Hall effect — light of different polarizations (spins) deflects in opposite directions upon refraction or reflection.',
+    descriptionZh: '首次实验观测到光子自旋霍尔效应——不同偏振态（自旋）的光在折射或反射时向相反方向偏转。',
+    scientistEn: 'Onur Hosten, Paul Kwiat',
+    scientistZh: '奥努尔·霍斯滕、保罗·克维亚特',
+    category: 'experiment',
+    importance: 2,
+    track: 'polarization',
+    details: {
+      en: [
+        'Analogous to the electronic spin Hall effect in solids',
+        'Circularly polarized light deflects sideways upon refraction: opposite handedness deflects opposite ways',
+        'The effect is tiny (nanometer-scale) but measurable with weak measurement techniques',
+        'Arises from spin-orbit coupling in light — linking polarization to propagation direction',
+        'Applications in precision metrology and nanoscale optical manipulation',
+        'Connected to the geometric (Pancharatnam-Berry) phase of light'
+      ],
+      zh: [
+        '类似于固体中的电子自旋霍尔效应',
+        '圆偏振光在折射时横向偏转：相反旋向的光向相反方向偏转',
+        '效应很小（纳米级）但可以用弱测量技术测量',
+        '源于光的自旋-轨道耦合——将偏振与传播方向联系起来',
+        '应用于精密计量和纳米级光学操控',
+        '与光的几何（潘查拉特南-贝里）相位相关'
+      ]
+    },
+    story: {
+      en: `In 2008, physicists Onur Hosten and Paul Kwiat at the University of Illinois achieved a remarkable feat: they directly observed the spin Hall effect of light — a phenomenon predicted by theory but so subtle that it had never been measured.
+
+The electronic spin Hall effect, discovered in semiconductors, causes electrons with opposite spin to deflect in opposite directions. Theorists had predicted an analogous effect for photons: when light refracts at an interface, left-circularly and right-circularly polarized components should deflect sideways in opposite directions.
+
+The effect was minuscule — a displacement of about 1 nanometer, a million times smaller than the width of a human hair. To measure it, Hosten and Kwiat employed "weak measurement" — a quantum mechanical technique that can amplify tiny effects by carefully choosing what to measure.
+
+Using a prism and precise polarimetric detection, they watched as left- and right-circular polarizations separated by nanometers upon refraction. The spin of the photon — its circular polarization state — was directly influencing its trajectory.
+
+This "spin-orbit coupling" of light connects polarization to motion, just as it does for electrons in semiconductors. The discovery opened new possibilities for manipulating light at the nanoscale and for ultra-precise optical measurements.
+
+The photon spin Hall effect beautifully demonstrates how polarization isn't just a property of light — it actively shapes how light moves through the world.`,
+      zh: `2008年，伊利诺伊大学的物理学家奥努尔·霍斯滕和保罗·克维亚特完成了一项非凡的壮举：他们直接观测到了光的自旋霍尔效应——一种理论预测但如此微妙以至于从未被测量过的现象。
+
+电子自旋霍尔效应在半导体中被发现，它使具有相反自旋的电子向相反方向偏转。理论家们预测光子存在类似的效应：当光在界面折射时，左旋圆偏振和右旋圆偏振分量应该向相反方向横向偏转。
+
+这个效应极其微小——大约1纳米的位移，比人类头发的宽度小一百万倍。为了测量它，霍斯滕和克维亚特采用了"弱测量"——一种量子力学技术，通过仔细选择测量内容来放大微小效应。
+
+使用棱镜和精确的偏振测量检测，他们观察到左旋和右旋圆偏振在折射时分离了几纳米。光子的自旋——它的圆偏振态——直接影响着它的轨迹。
+
+光的这种"自旋-轨道耦合"将偏振与运动联系起来，就像它对半导体中的电子所做的那样。这一发现为在纳米尺度操控光和超精密光学测量开辟了新的可能性。
+
+光子自旋霍尔效应美丽地证明了偏振不仅仅是光的一种性质——它积极地塑造着光在世界中的运动方式。`
+    },
+    scientistBio: {
+      portraitEmoji: '↔️',
+      bioEn: 'Onur Hosten and Paul Kwiat at the University of Illinois performed the first direct measurement of the photonic spin Hall effect, demonstrating the intimate connection between light\'s polarization and its propagation.',
+      bioZh: '伊利诺伊大学的奥努尔·霍斯滕和保罗·克维亚特首次直接测量了光子自旋霍尔效应，展示了光的偏振与其传播之间的紧密联系。'
+    },
+    scene: {
+      location: 'University of Illinois, USA',
+      season: 'Winter',
+      mood: 'precision measurement'
+    },
+    references: [
+      { title: 'Hosten, O., & Kwiat, P. (2008). Observation of the Spin Hall Effect of Light via Weak Measurements. Science 319:787-790', url: 'https://doi.org/10.1126/science.1152697' }
+    ],
+    linkTo: {
+      year: 1992,
+      trackTarget: 'polarization',
+      descriptionEn: 'The spin Hall effect demonstrates spin-orbit coupling of light, connecting polarization to orbital angular momentum',
+      descriptionZh: '自旋霍尔效应展示了光的自旋-轨道耦合，将偏振与轨道角动量联系起来'
+    },
+    thinkingQuestion: {
+      en: 'The spin Hall effect shows that polarization affects how light bends. Could this be used to make optical devices that separate light by polarization without traditional polarizers?',
+      zh: '自旋霍尔效应表明偏振影响光的弯曲方式。这能否用于制造不使用传统偏振器而按偏振分离光的光学器件？'
+    }
+  },
+  {
+    year: 2008,
     titleEn: 'Mantis Shrimp Polarization Vision',
     titleZh: '螳螂虾偏振视觉',
     descriptionEn: 'Researchers discover mantis shrimp can detect circular polarization — a unique ability not found in any other animal.',
     descriptionZh: '研究人员发现螳螂虾能够探测圆偏振光——这是其他任何动物都没有的独特能力。',
-    scientistEn: 'Justin Marshall et al.',
-    scientistZh: '贾斯汀·马歇尔等',
+    scientistEn: 'Tsyr-Huei Chiou, Justin Marshall et al.',
+    scientistZh: '邱慈慧、贾斯汀·马歇尔等',
     category: 'discovery',
     importance: 2,
     track: 'polarization',
@@ -2603,18 +2920,20 @@ RealD的突破是圆偏振。系统不是按角度过滤（像线偏振器那样
       en: [
         'Mantis shrimp have 16 types of photoreceptors (humans have 3)',
         'They can see both linear and circular polarization',
+        'First definitive proof of circular polarization vision in any animal',
         'This enables unique underwater communication',
         'Inspires development of compact polarization cameras'
       ],
       zh: [
         '螳螂虾有16种光感受器（人类只有3种）',
         '它们能看到线偏振和圆偏振光',
+        '首次明确证明动物具有圆偏振视觉能力',
         '这使得独特的水下通信成为可能',
         '启发了紧凑型偏振相机的开发'
       ]
     },
     story: {
-      en: `In the shallow tropical waters of Australia, 2012, marine biologist Justin Marshall and his team made an extraordinary discovery. The mantis shrimp — already famous for its powerful strike — was hiding an even more remarkable secret.
+      en: `In 2008, a landmark paper in Current Biology by Tsyr-Huei Chiou, Justin Marshall and colleagues announced an extraordinary discovery. The mantis shrimp — already famous for its powerful strike — was hiding an even more remarkable secret.
 
 These small crustaceans possessed the most complex visual system ever discovered in nature. Not only could they see colors we cannot imagine, but they could also detect something no other animal had been proven to see: circularly polarized light.
 
@@ -2625,7 +2944,7 @@ Why would evolution bestow such an exotic ability? The answer lay in their secre
 The discovery sparked a revolution in bio-inspired optics. Engineers began designing cameras that could mimic the mantis shrimp's vision, detecting cancer cells and underwater mines with unprecedented clarity. Nature had solved the problem of polarization detection in ways human engineers had never imagined.
 
 In the rainbow-colored eyes of a small crustacean, three centuries of optical research found its most sophisticated natural expression.`,
-      zh: `2012年，在澳大利亚温暖的热带浅水中，海洋生物学家贾斯汀·马歇尔和他的团队有了一个非凡的发现。螳螂虾——已经因其强大的攻击力而闻名——隐藏着一个更加惊人的秘密。
+      zh: `2008年，《当代生物学》(Current Biology) 期刊上发表了一篇由邱慈慧、贾斯汀·马歇尔及其同事撰写的里程碑式论文，宣布了一个非凡的发现。螳螂虾——已经因其强大的攻击力而闻名——隐藏着一个更加惊人的秘密。
 
 这些小型甲壳类动物拥有自然界中发现的最复杂的视觉系统。它们不仅能看到我们无法想象的颜色，还能探测到没有其他动物被证明能看到的东西：圆偏振光。
 
@@ -2639,14 +2958,17 @@ In the rainbow-colored eyes of a small crustacean, three centuries of optical re
     },
     scientistBio: {
       portraitEmoji: '🦐',
-      bioEn: 'Justin Marshall is an Australian marine neuroscientist at the University of Queensland, specializing in visual ecology. His research on mantis shrimp vision has revealed unprecedented complexity in animal perception of light and color.',
-      bioZh: '贾斯汀·马歇尔是昆士兰大学的澳大利亚海洋神经科学家，专门研究视觉生态学。他对螳螂虾视觉的研究揭示了动物对光和颜色感知的前所未有的复杂性。'
+      bioEn: 'Tsyr-Huei Chiou and Justin Marshall are visual ecology researchers. Their 2008 Current Biology paper definitively proved that mantis shrimp can detect circular polarization, a capability unprecedented in the animal kingdom.',
+      bioZh: '邱慈慧和贾斯汀·马歇尔是视觉生态学研究者。他们2008年在《当代生物学》上发表的论文明确证明了螳螂虾能够探测圆偏振光，这是动物界前所未有的能力。'
     },
     scene: {
       location: 'Great Barrier Reef, Australia',
       season: 'Summer',
       mood: 'wonder'
     },
+    references: [
+      { title: 'Chiou, T.-H. et al. (2008). Circular Polarization Vision in a Stomatopod Crustacean. Current Biology 18(6):429-434', url: 'https://doi.org/10.1016/j.cub.2008.02.066' }
+    ],
     thinkingQuestion: {
       en: 'Evolution gave mantis shrimp the ability to see circular polarization. Why might this ability be useful for survival in the ocean?',
       zh: '进化使螳螂虾获得了看见圆偏振光的能力。为什么这种能力对于在海洋中生存可能有用？'
