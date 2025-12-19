@@ -2,10 +2,16 @@
  * 旋光性演示 - Unit 3
  * 演示糖溶液等手性物质对偏振面的旋转
  * 采用纯DOM + SVG + Framer Motion一体化设计
+ *
+ * 增强:
+ * - 溶液波动动画效果
+ * - 暗色模式文字对比度优化
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 
 // 旋光率数据 (deg/(dm·g/mL))
 const SPECIFIC_ROTATIONS: Record<string, { value: number; direction: 'd' | 'l' }> = {
@@ -49,11 +55,28 @@ function OpticalRotationDiagram({
           <stop offset="50%" stopColor="#0284c7" stopOpacity="0.15" />
           <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.3" />
         </linearGradient>
-        <linearGradient id="solutionGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.2 + concentration * 0.4} />
-          <stop offset="50%" stopColor="#f59e0b" stopOpacity={0.3 + concentration * 0.5} />
-          <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.2 + concentration * 0.4} />
+        {/* 增强的溶液渐变 - 更像真实液体 */}
+        <linearGradient id="solutionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#fcd34d" stopOpacity={0.15 + concentration * 0.35}>
+            <animate attributeName="stop-opacity" values={`${0.15 + concentration * 0.35};${0.25 + concentration * 0.4};${0.15 + concentration * 0.35}`} dur="3s" repeatCount="indefinite" />
+          </stop>
+          <stop offset="30%" stopColor="#fbbf24" stopOpacity={0.25 + concentration * 0.45}>
+            <animate attributeName="stop-opacity" values={`${0.25 + concentration * 0.45};${0.35 + concentration * 0.5};${0.25 + concentration * 0.45}`} dur="2.5s" repeatCount="indefinite" />
+          </stop>
+          <stop offset="70%" stopColor="#f59e0b" stopOpacity={0.35 + concentration * 0.5}>
+            <animate attributeName="stop-opacity" values={`${0.35 + concentration * 0.5};${0.45 + concentration * 0.55};${0.35 + concentration * 0.5}`} dur="2s" repeatCount="indefinite" />
+          </stop>
+          <stop offset="100%" stopColor="#d97706" stopOpacity={0.2 + concentration * 0.4}>
+            <animate attributeName="stop-opacity" values={`${0.2 + concentration * 0.4};${0.3 + concentration * 0.45};${0.2 + concentration * 0.4}`} dur="3.5s" repeatCount="indefinite" />
+          </stop>
         </linearGradient>
+        {/* 液体波纹效果 */}
+        <filter id="liquidWave" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02 0.05" numOctaves="2" seed="1" result="noise">
+            <animate attributeName="baseFrequency" values="0.02 0.05;0.025 0.06;0.02 0.05" dur="4s" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
         <filter id="lightGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="4" result="coloredBlur" />
           <feMerge>
@@ -61,6 +84,11 @@ function OpticalRotationDiagram({
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
+        {/* 气泡效果 */}
+        <radialGradient id="bubbleGradient" cx="30%" cy="30%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       {/* 背景 */}
@@ -121,7 +149,7 @@ function OpticalRotationDiagram({
           strokeWidth="2"
           rx="30"
         />
-        {/* 溶液 */}
+        {/* 溶液 - 带波动效果 */}
         <rect
           x={-75}
           y="-25"
@@ -129,7 +157,58 @@ function OpticalRotationDiagram({
           height="50"
           fill="url(#solutionGradient)"
           rx="25"
+          filter="url(#liquidWave)"
         />
+        {/* 气泡动画 */}
+        {concentration > 0.2 && (
+          <>
+            <motion.circle
+              cx={-50 + Math.random() * 20}
+              cy={10}
+              r={2}
+              fill="url(#bubbleGradient)"
+              animate={{
+                cy: [-15, -25],
+                opacity: [0.6, 0],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: 0,
+              }}
+            />
+            <motion.circle
+              cx={-20 + pathLength * 30}
+              cy={5}
+              r={3}
+              fill="url(#bubbleGradient)"
+              animate={{
+                cy: [-10, -22],
+                opacity: [0.5, 0],
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                delay: 0.8,
+              }}
+            />
+            <motion.circle
+              cx={10 + pathLength * 40}
+              cy={12}
+              r={2.5}
+              fill="url(#bubbleGradient)"
+              animate={{
+                cy: [-8, -20],
+                opacity: [0.7, 0],
+              }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                delay: 1.5,
+              }}
+            />
+          </>
+        )}
         {/* 标注 */}
         <text x={(pathLength * 60) / 2} y="50" textAnchor="middle" fill="#67e8f9" fontSize="11">
           样品管 (L={pathLength.toFixed(1)} dm)
@@ -344,6 +423,7 @@ function RotationChart({
 
 // 主演示组件
 export function OpticalRotationDemo() {
+  const { theme } = useTheme()
   const [substance, setSubstance] = useState('sucrose')
   const [concentration, setConcentration] = useState(0.3)
   const [pathLength, setPathLength] = useState(1.0)
@@ -364,14 +444,22 @@ export function OpticalRotationDemo() {
     { value: 'tartaric', label: '酒石酸', rotation: '+12.0°' },
   ]
 
+  // 主题相关样式
+  const textMuted = theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+
   return (
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+        <h2 className={cn(
+          "text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent",
+          theme === 'dark'
+            ? 'from-white via-cyan-100 to-white'
+            : 'from-gray-800 via-cyan-600 to-gray-800'
+        )}>
           旋光性交互演示
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={textMuted}>
           α = [α] × c × L —— 探索手性物质对偏振面的旋转效应
         </p>
       </div>
@@ -390,23 +478,28 @@ export function OpticalRotationDemo() {
           </div>
 
           {/* 测量结果摘要 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+          <div className={cn(
+            "rounded-xl border p-4",
+            theme === 'dark'
+              ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30'
+              : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 shadow-sm'
+          )}>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="p-3 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs mb-1">旋光角 α</div>
-                <div className={`font-mono text-xl ${rotationAngle >= 0 ? 'text-cyan-400' : 'text-pink-400'}`}>
+              <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
+                <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>旋光角 α</div>
+                <div className={cn("font-mono text-xl", rotationAngle >= 0 ? 'text-cyan-500' : 'text-pink-500')}>
                   {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
                 </div>
               </div>
-              <div className="p-3 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs mb-1">旋光方向</div>
-                <div className={`font-bold text-lg ${rotationAngle >= 0 ? 'text-cyan-400' : 'text-pink-400'}`}>
+              <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
+                <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>旋光方向</div>
+                <div className={cn("font-bold text-lg", rotationAngle >= 0 ? 'text-cyan-500' : 'text-pink-500')}>
                   {rotationAngle >= 0 ? '右旋 (d)' : '左旋 (l)'}
                 </div>
               </div>
-              <div className="p-3 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs mb-1">透过强度</div>
-                <div className="font-mono text-xl text-purple-400">
+              <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
+                <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>透过强度</div>
+                <div className={cn("font-mono text-xl", theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>
                   {(intensity * 100).toFixed(0)}%
                 </div>
               </div>
@@ -485,18 +578,18 @@ export function OpticalRotationDemo() {
 
           {/* 公式与参数 */}
           <ControlPanel title="计算公式">
-            <div className="p-3 bg-slate-900/50 rounded-lg text-center">
-              <div className="font-mono text-lg text-white mb-2">
+            <div className={cn("p-3 rounded-lg text-center", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
+              <div className={cn("font-mono text-lg mb-2", theme === 'dark' ? 'text-white' : 'text-gray-800')}>
                 α = [α] × c × L
               </div>
-              <div className="text-xs text-gray-400 space-y-1">
+              <div className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
                 <p>α = {specificRotation.toFixed(1)} × {concentration.toFixed(2)} × {pathLength.toFixed(1)}</p>
-                <p className={`font-mono ${rotationAngle >= 0 ? 'text-cyan-400' : 'text-pink-400'}`}>
+                <p className={cn("font-mono", rotationAngle >= 0 ? 'text-cyan-500' : 'text-pink-500')}>
                   α = {rotationAngle.toFixed(2)}°
                 </p>
               </div>
             </div>
-            <div className="mt-3 text-xs text-gray-500">
+            <div className={cn("mt-3 text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               <p>[α] = 比旋光度 (°/(dm·g/mL))</p>
               <p>c = 浓度 (g/mL)</p>
               <p>L = 光程 (dm)</p>

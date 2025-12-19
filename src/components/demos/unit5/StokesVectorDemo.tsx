@@ -2,6 +2,11 @@
  * 斯托克斯矢量演示 - Unit 5
  * 用四个参数 [S₀, S₁, S₂, S₃] 完整描述光的偏振状态
  * 重新设计：纯 DOM + SVG + Framer Motion，支持 i18n 和亮色/暗色主题
+ *
+ * 支持难度分层:
+ * - foundation: 简化显示，隐藏复杂公式，聚焦直观理解
+ * - application: 完整显示斯托克斯参数和可视化
+ * - research: 添加Mueller矩阵计算、高级分析
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
@@ -9,6 +14,14 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard, ValueDisplay } from '../DemoControls'
+
+// 难度级别类型
+type DifficultyLevel = 'foundation' | 'application' | 'research'
+
+// 组件属性接口
+interface StokesVectorDemoProps {
+  difficultyLevel?: DifficultyLevel
+}
 
 // 斯托克斯矢量类型
 interface StokesVector {
@@ -478,14 +491,95 @@ const PRESET_KEYS = [
   { i18nKey: 'demos.stokes.presets.naturalLight', angle: 0, ellipticity: 0, dop: 0, color: '#94a3b8' },
 ]
 
+// Mueller矩阵显示组件 (研究级别)
+function MuellerMatrixDisplay({ stokes, theme }: { stokes: StokesVector; theme: string }) {
+  const { S0, S1, S2, S3 } = stokes
+  const dop = Math.sqrt(S1 * S1 + S2 * S2 + S3 * S3) / (S0 + 0.001)
+
+  // 示例：计算通过线性偏振片（水平方向）后的斯托克斯矢量
+  // Mueller矩阵 for 水平偏振片
+  const M_H = [
+    [0.5, 0.5, 0, 0],
+    [0.5, 0.5, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]
+
+  // S' = M · S
+  const S_out = [
+    M_H[0][0] * S0 + M_H[0][1] * S1 + M_H[0][2] * S2 + M_H[0][3] * S3,
+    M_H[1][0] * S0 + M_H[1][1] * S1 + M_H[1][2] * S2 + M_H[1][3] * S3,
+    M_H[2][0] * S0 + M_H[2][1] * S1 + M_H[2][2] * S2 + M_H[2][3] * S3,
+    M_H[3][0] * S0 + M_H[3][1] * S1 + M_H[3][2] * S2 + M_H[3][3] * S3,
+  ]
+
+  return (
+    <div className={cn(
+      'rounded-xl border p-3',
+      theme === 'dark'
+        ? 'bg-slate-900/50 border-purple-400/20'
+        : 'bg-white border-purple-200 shadow-sm'
+    )}>
+      <h4 className={cn(
+        'text-sm font-medium mb-2',
+        theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
+      )}>Mueller矩阵计算示例</h4>
+
+      <div className="text-xs space-y-2">
+        {/* 输入矢量 */}
+        <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
+          <span className="text-gray-400">输入 S = </span>
+          <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
+            [{S0.toFixed(2)}, {S1.toFixed(2)}, {S2.toFixed(2)}, {S3.toFixed(2)}]
+          </span>
+        </div>
+
+        {/* Mueller矩阵 */}
+        <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
+          <div className="text-gray-400 mb-1">水平偏振片 M_H:</div>
+          <div className="font-mono text-[10px] leading-relaxed">
+            {M_H.map((row, i) => (
+              <div key={i} className={theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}>
+                [{row.map(v => v.toFixed(1)).join(', ')}]
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 输出矢量 */}
+        <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
+          <span className="text-gray-400">输出 S' = M·S = </span>
+          <span className={theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}>
+            [{S_out.map(v => v.toFixed(2)).join(', ')}]
+          </span>
+        </div>
+
+        {/* 透射率 */}
+        <div className="text-gray-400">
+          透射率: <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>
+            {((S_out[0] / S0) * 100).toFixed(1)}%
+          </span>
+          {dop > 0.99 && Math.abs(S1 / S0) > 0.5 && (
+            <span className="text-green-400 ml-2">(偏振方向匹配)</span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // 主演示组件
-export function StokesVectorDemo() {
+export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVectorDemoProps) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const [intensity, setIntensity] = useState(1)
   const [polarizationAngle, setPolarizationAngle] = useState(0)
   const [ellipticity, setEllipticity] = useState(0)
   const [dop, setDop] = useState(1)
+
+  // 判断难度级别
+  const isFoundation = difficultyLevel === 'foundation'
+  const isResearch = difficultyLevel === 'research'
 
   // 计算斯托克斯矢量
   const stokes = calculateStokes(intensity, polarizationAngle, ellipticity, dop)
@@ -588,43 +682,70 @@ export function StokesVectorDemo() {
         {/* 右侧：控制面板 */}
         <div className="space-y-3">
           <ControlPanel title={t('demos.stokes.ui.polarizationParams')}>
-            <SliderControl
-              label={t('demos.stokes.ui.lightIntensity')}
-              value={intensity}
-              min={0.1}
-              max={2}
-              step={0.1}
-              onChange={setIntensity}
-              color="cyan"
-            />
-            <SliderControl
-              label={t('demos.stokes.ui.polarizationAngle')}
-              value={polarizationAngle}
-              min={-90}
-              max={90}
-              step={5}
-              unit="°"
-              onChange={setPolarizationAngle}
-              color="orange"
-            />
-            <SliderControl
-              label={t('demos.stokes.ui.ellipticity')}
-              value={ellipticity}
-              min={-1}
-              max={1}
-              step={0.1}
-              onChange={setEllipticity}
-              color="cyan"
-            />
-            <SliderControl
-              label={t('demos.stokes.ui.dop')}
-              value={dop}
-              min={0}
-              max={1}
-              step={0.05}
-              onChange={setDop}
-              color="green"
-            />
+            {/* 基础级别简化控件 */}
+            {isFoundation ? (
+              <>
+                <SliderControl
+                  label="偏振角度"
+                  value={polarizationAngle}
+                  min={-90}
+                  max={90}
+                  step={15}
+                  unit="°"
+                  onChange={setPolarizationAngle}
+                  color="orange"
+                />
+                <SliderControl
+                  label="椭圆度 (圆/线)"
+                  value={ellipticity}
+                  min={-1}
+                  max={1}
+                  step={0.25}
+                  onChange={setEllipticity}
+                  color="cyan"
+                />
+              </>
+            ) : (
+              <>
+                <SliderControl
+                  label={t('demos.stokes.ui.lightIntensity')}
+                  value={intensity}
+                  min={0.1}
+                  max={2}
+                  step={0.1}
+                  onChange={setIntensity}
+                  color="cyan"
+                />
+                <SliderControl
+                  label={t('demos.stokes.ui.polarizationAngle')}
+                  value={polarizationAngle}
+                  min={-90}
+                  max={90}
+                  step={5}
+                  unit="°"
+                  onChange={setPolarizationAngle}
+                  color="orange"
+                />
+                <SliderControl
+                  label={t('demos.stokes.ui.ellipticity')}
+                  value={ellipticity}
+                  min={-1}
+                  max={1}
+                  step={0.1}
+                  onChange={setEllipticity}
+                  color="cyan"
+                />
+                <SliderControl
+                  label={t('demos.stokes.ui.dop')}
+                  value={dop}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  onChange={setDop}
+                  color="green"
+                />
+              </>
+            )}
           </ControlPanel>
 
           <ControlPanel title={t('demos.stokes.ui.presetStates')}>
@@ -650,51 +771,121 @@ export function StokesVectorDemo() {
             </div>
           </ControlPanel>
 
-          <ControlPanel title={t('demos.stokes.ui.calculatedValues')}>
-            <ValueDisplay label={t('demos.stokes.ui.azimuth')} value={params.angle.toFixed(1)} unit="°" />
-            <ValueDisplay
-              label={t('demos.stokes.ui.ellipticity')}
-              value={params.ellipticity.toFixed(2)}
-              color={params.ellipticity > 0 ? 'cyan' : params.ellipticity < 0 ? 'purple' : 'cyan'}
-            />
-            <ValueDisplay
-              label={t('demos.stokes.ui.handedness')}
-              value={
-                Math.abs(params.ellipticity) > 0.01
-                  ? (params.ellipticity > 0 ? t('demos.stokes.ui.rightHandedR') : t('demos.stokes.ui.leftHandedL'))
-                  : t('demos.stokes.types.linear')
-              }
-              color={params.ellipticity > 0 ? 'cyan' : params.ellipticity < 0 ? 'purple' : 'orange'}
-            />
-          </ControlPanel>
+          {/* 基础级别: 简化说明 */}
+          {isFoundation && (
+            <ControlPanel title="简单理解">
+              <div className="space-y-2 text-sm">
+                <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
+                  <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                    <strong className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>偏振类型:</strong> {params.type}
+                  </p>
+                </div>
+                <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
+                  <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                    椭圆度=0 → <strong className="text-orange-400">线偏振</strong>
+                  </p>
+                  <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                    椭圆度=±1 → <strong className="text-cyan-400">圆偏振</strong>
+                  </p>
+                </div>
+              </div>
+            </ControlPanel>
+          )}
+
+          {/* 非基础级别: 计算值 */}
+          {!isFoundation && (
+            <ControlPanel title={t('demos.stokes.ui.calculatedValues')}>
+              <ValueDisplay label={t('demos.stokes.ui.azimuth')} value={params.angle.toFixed(1)} unit="°" />
+              <ValueDisplay
+                label={t('demos.stokes.ui.ellipticity')}
+                value={params.ellipticity.toFixed(2)}
+                color={params.ellipticity > 0 ? 'cyan' : params.ellipticity < 0 ? 'purple' : 'cyan'}
+              />
+              <ValueDisplay
+                label={t('demos.stokes.ui.handedness')}
+                value={
+                  Math.abs(params.ellipticity) > 0.01
+                    ? (params.ellipticity > 0 ? t('demos.stokes.ui.rightHandedR') : t('demos.stokes.ui.leftHandedL'))
+                    : t('demos.stokes.types.linear')
+                }
+                color={params.ellipticity > 0 ? 'cyan' : params.ellipticity < 0 ? 'purple' : 'orange'}
+              />
+            </ControlPanel>
+          )}
+
+          {/* 研究级别: Mueller矩阵 */}
+          {isResearch && (
+            <MuellerMatrixDisplay stokes={stokes} theme={theme} />
+          )}
         </div>
       </div>
 
       {/* 底部知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <InfoCard title={t('demos.stokes.ui.stokesParams')} color="cyan">
-          <ul className={cn(
-            'text-xs space-y-0.5',
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          )}>
-            <li>• <strong className={theme === 'dark' ? 'text-white' : 'text-gray-800'}>S₀</strong>: {t('demos.stokes.ui.totalIntensity')}</li>
-            <li>• <strong className="text-red-400">S₁</strong>: {t('demos.stokes.ui.hvDiff')}</li>
-            <li>• <strong className="text-green-400">S₂</strong>: {t('demos.stokes.ui.pm45Diff')}</li>
-            <li>• <strong className="text-blue-400">S₃</strong>: {t('demos.stokes.ui.rlDiff')}</li>
-          </ul>
-        </InfoCard>
+      <div className={cn('grid gap-3', isResearch ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2')}>
+        {/* 基础级别: 简化知识卡片 */}
+        {isFoundation ? (
+          <>
+            <InfoCard title="偏振光类型" color="cyan">
+              <ul className={cn(
+                'text-xs space-y-1',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              )}>
+                <li>• <strong className="text-orange-400">线偏振</strong>: 电场只在一个方向振动</li>
+                <li>• <strong className="text-cyan-400">圆偏振</strong>: 电场旋转，描绘圆形</li>
+                <li>• <strong className="text-purple-400">椭圆偏振</strong>: 介于两者之间</li>
+              </ul>
+            </InfoCard>
+            <InfoCard title="庞加莱球" color="purple">
+              <p className={cn(
+                'text-xs',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              )}>
+                球面上每个点代表一种偏振状态。赤道是线偏振，两极是圆偏振。球心是自然光。
+              </p>
+            </InfoCard>
+          </>
+        ) : (
+          <>
+            <InfoCard title={t('demos.stokes.ui.stokesParams')} color="cyan">
+              <ul className={cn(
+                'text-xs space-y-0.5',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              )}>
+                <li>• <strong className={theme === 'dark' ? 'text-white' : 'text-gray-800'}>S₀</strong>: {t('demos.stokes.ui.totalIntensity')}</li>
+                <li>• <strong className="text-red-400">S₁</strong>: {t('demos.stokes.ui.hvDiff')}</li>
+                <li>• <strong className="text-green-400">S₂</strong>: {t('demos.stokes.ui.pm45Diff')}</li>
+                <li>• <strong className="text-blue-400">S₃</strong>: {t('demos.stokes.ui.rlDiff')}</li>
+              </ul>
+            </InfoCard>
 
-        <InfoCard title={t('demos.stokes.ui.poincareSphereInfo')} color="purple">
-          <ul className={cn(
-            'text-xs space-y-0.5',
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          )}>
-            <li>• <strong>{t('demos.stokes.ui.equator')}:</strong> {t('demos.stokes.ui.linearStates')}</li>
-            <li>• <strong>{t('demos.stokes.ui.northPole')}:</strong> {t('demos.stokes.ui.rcp')}</li>
-            <li>• <strong>{t('demos.stokes.ui.southPole')}:</strong> {t('demos.stokes.ui.lcp')}</li>
-            <li>• <strong>{t('demos.stokes.ui.center')}:</strong> {t('demos.stokes.ui.unpolarized')}</li>
-          </ul>
-        </InfoCard>
+            <InfoCard title={t('demos.stokes.ui.poincareSphereInfo')} color="purple">
+              <ul className={cn(
+                'text-xs space-y-0.5',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              )}>
+                <li>• <strong>{t('demos.stokes.ui.equator')}:</strong> {t('demos.stokes.ui.linearStates')}</li>
+                <li>• <strong>{t('demos.stokes.ui.northPole')}:</strong> {t('demos.stokes.ui.rcp')}</li>
+                <li>• <strong>{t('demos.stokes.ui.southPole')}:</strong> {t('demos.stokes.ui.lcp')}</li>
+                <li>• <strong>{t('demos.stokes.ui.center')}:</strong> {t('demos.stokes.ui.unpolarized')}</li>
+              </ul>
+            </InfoCard>
+
+            {/* 研究级别: Mueller矩阵知识卡片 */}
+            {isResearch && (
+              <InfoCard title="Mueller矩阵" color="orange">
+                <ul className={cn(
+                  'text-xs space-y-0.5',
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                )}>
+                  <li>• 4×4矩阵描述光学元件</li>
+                  <li>• S' = M·S (矩阵乘法)</li>
+                  <li>• 可级联: M_total = Mₙ·...·M₁</li>
+                  <li>• 包含去偏振效应</li>
+                </ul>
+              </InfoCard>
+            )}
+          </>
+        )}
       </div>
     </div>
   )
