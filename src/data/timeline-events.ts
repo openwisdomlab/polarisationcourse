@@ -71,6 +71,12 @@ export interface TimelineEvent {
       title?: string
       titleZh?: string
     }
+    // 多个视频资源（用于展示多个相关实验视频）
+    featuredVideos?: {
+      url: string
+      title?: string
+      titleZh?: string
+    }[]
     // 相关模块链接
     relatedModules?: string[]
   }
@@ -974,6 +980,34 @@ Today, if you've ever seen the rainbow patterns in a stressed plastic ruler view
         title: 'Rotating analyzer reveals changing interference colors',
         titleZh: '旋转检偏器揭示不断变化的干涉色'
       },
+      // 色偏振相关的多个实验视频
+      featuredVideos: [
+        {
+          url: '/videos/chromatic-polarization/实验-透明胶条（重叠阵列）-正交偏振系统-旋转偏振片视频.mp4',
+          title: 'Tape array - rotating analyzer shows color gradients',
+          titleZh: '透明胶阵列 - 旋转检偏器展示色彩渐变'
+        },
+        {
+          url: '/videos/chromatic-polarization/实验-保鲜膜3次重叠-正交偏振系统-旋转样品视频.mp4',
+          title: 'Plastic wrap layers - thickness changes color',
+          titleZh: '保鲜膜重叠 - 厚度变化产生不同颜色'
+        },
+        {
+          url: '/videos/chromatic-polarization/实验-打火机烧玻璃-正交偏振系统-长时间观察视频.mp4',
+          title: 'Glass heating - thermal stress evolution',
+          titleZh: '玻璃加热 - 热应力动态演变'
+        },
+        {
+          url: '/videos/chromatic-polarization/实验-透明胶条-正交偏振系统-旋转样品视频.mp4',
+          title: 'Tape rotation - angle-dependent colors',
+          titleZh: '透明胶旋转 - 角度相关的颜色变化'
+        },
+        {
+          url: '/videos/chromatic-polarization/实验-保鲜膜拉伸-正交偏振系统-旋转样品视频.mp4',
+          title: 'Plastic wrap stretching - stress birefringence',
+          titleZh: '保鲜膜拉伸 - 应力双折射效果'
+        }
+      ],
       relatedModules: ['birefringence', 'stress-analysis', 'photoelasticity', 'interference']
     }
   },

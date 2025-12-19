@@ -21,6 +21,7 @@ export interface ResourceGalleryProps {
 export function ResourceGallery({ resources, isZh, theme, compact = false }: ResourceGalleryProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [selectedImage, setSelectedImage] = useState<number>(0)
+  const [selectedVideo, setSelectedVideo] = useState<number>(0)
   const [activeTab, setActiveTab] = useState<'images' | 'video'>('images')
   const [isHovered, setIsHovered] = useState(false)
   const [showLightbox, setShowLightbox] = useState(false)
@@ -76,16 +77,57 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
 
   const allImages: ImageItem[] = [...featuredImgs, ...linkedImgs]
 
-  // 获取视频资源
-  const videoResource = resources.featuredVideo || linkedResources.find(r => r.type === 'video')
-  const videoUrl = resources.featuredVideo?.url || (videoResource as PolarizationResource | undefined)?.url
-  const videoTitle = resources.featuredVideo
-    ? (isZh ? resources.featuredVideo.titleZh : resources.featuredVideo.title)
-    : videoResource
-      ? (isZh ? videoResource.titleZh : videoResource.title)
-      : undefined
+  // 获取视频资源 - 支持多个视频
+  type VideoItem = {
+    url: string
+    title: string | undefined
+  }
 
-  const hasContent = allImages.length > 0 || videoUrl
+  // 合并所有视频来源：featuredVideos, featuredVideo, 以及 linkedResources 中的视频
+  const allVideos: VideoItem[] = []
+
+  // 优先使用 featuredVideos（多视频数组）
+  if (resources.featuredVideos && resources.featuredVideos.length > 0) {
+    resources.featuredVideos.forEach(v => {
+      allVideos.push({
+        url: v.url,
+        title: isZh ? v.titleZh : v.title
+      })
+    })
+  } else if (resources.featuredVideo) {
+    // 向后兼容：如果没有 featuredVideos，使用单个 featuredVideo
+    allVideos.push({
+      url: resources.featuredVideo.url,
+      title: isZh ? resources.featuredVideo.titleZh : resources.featuredVideo.title
+    })
+  }
+
+  // 添加 linkedResources 中的视频
+  linkedResources.filter(r => r.type === 'video').forEach(r => {
+    if (!allVideos.some(v => v.url === r.url)) {
+      allVideos.push({
+        url: r.url,
+        title: isZh ? r.titleZh : r.title
+      })
+    }
+  })
+
+  // 添加 linkedResources 中带有 videoUrl 的资源
+  linkedResources.forEach(r => {
+    if (r.metadata?.videoUrl && !allVideos.some(v => v.url === r.metadata.videoUrl)) {
+      allVideos.push({
+        url: r.metadata.videoUrl,
+        title: isZh ? r.titleZh : r.title
+      })
+    }
+  })
+
+  const hasVideos = allVideos.length > 0
+  const currentVideo = allVideos[selectedVideo] || allVideos[0]
+  const videoUrl = currentVideo?.url
+  const videoTitle = currentVideo?.title
+
+  const hasContent = allImages.length > 0 || hasVideos
 
   if (!hasContent) return null
 
@@ -193,7 +235,7 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
                     )}
 
                     {/* 视频指示器 */}
-                    {videoUrl && (
+                    {hasVideos && (
                       <motion.div
                         className={cn(
                           'absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium',
@@ -206,7 +248,10 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
                         transition={{ delay: 0.2 }}
                       >
                         <Play className="w-3 h-3" fill="currentColor" />
-                        {isZh ? '视频' : 'Video'}
+                        {allVideos.length > 1
+                          ? `${allVideos.length} ${isZh ? '视频' : 'Videos'}`
+                          : isZh ? '视频' : 'Video'
+                        }
                       </motion.div>
                     )}
                   </div>
@@ -241,7 +286,7 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
                         'ml-2 text-xs',
                         theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
                       )}>
-                        {allImages.length} {isZh ? '图' : 'images'}{videoUrl ? ` · 1 ${isZh ? '视频' : 'video'}` : ''}
+                        {allImages.length} {isZh ? '图' : 'images'}{hasVideos ? ` · ${allVideos.length} ${isZh ? '视频' : allVideos.length > 1 ? 'videos' : 'video'}` : ''}
                       </span>
                     </div>
                   </div>
@@ -327,7 +372,7 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
 
               <div className="px-3 py-3">
                 {/* Tab 切换 */}
-                {videoUrl && allImages.length > 0 && (
+                {hasVideos && allImages.length > 0 && (
                   <div className="flex gap-2 mb-3">
                     <motion.button
                       onClick={(e) => {
@@ -369,7 +414,7 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
                       whileTap={{ scale: 0.98 }}
                     >
                       <Film className="w-3.5 h-3.5" />
-                      {isZh ? '视频' : 'Video'}
+                      {isZh ? '视频' : 'Videos'} ({allVideos.length})
                     </motion.button>
                   </div>
                 )}
@@ -384,11 +429,11 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.2 }}
                     >
-                      {/* 主图 */}
+                      {/* 主图 - 使用 aspect-ratio 自适应填充 */}
                       <motion.div
                         className={cn(
-                          'relative rounded-lg overflow-hidden mb-2 cursor-pointer group',
-                          theme === 'dark' ? 'bg-black/50' : 'bg-gray-100'
+                          'relative rounded-lg overflow-hidden mb-2 cursor-pointer group aspect-video',
+                          theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
                         )}
                         onClick={(e) => {
                           e.stopPropagation()
@@ -401,7 +446,7 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
                           key={selectedImage}
                           src={allImages[selectedImage].url}
                           alt={allImages[selectedImage].caption || ''}
-                          className="w-full h-52 object-contain"
+                          className="w-full h-full object-cover"
                           initial={{ opacity: 0, scale: 1.05 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.3 }}
@@ -515,36 +560,122 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
                     </motion.div>
                   )}
 
-                  {/* 视频展示 */}
-                  {activeTab === 'video' && videoUrl && (
+                  {/* 视频展示 - 支持多视频 */}
+                  {activeTab === 'video' && hasVideos && (
                     <motion.div
                       key="video"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.2 }}
-                      className={cn(
-                        'relative rounded-lg overflow-hidden',
-                        theme === 'dark' ? 'bg-black/50' : 'bg-black'
-                      )}
                     >
-                      <video
-                        src={videoUrl}
-                        className="w-full h-52 object-contain bg-black"
-                        controls
-                        preload="metadata"
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                      {/* 视频播放器 - 使用 aspect-video 自适应 */}
+                      <div className={cn(
+                        'relative rounded-lg overflow-hidden aspect-video group',
+                        theme === 'dark' ? 'bg-slate-800' : 'bg-gray-900'
+                      )}>
+                        <video
+                          key={videoUrl}
+                          src={videoUrl}
+                          className="w-full h-full object-cover"
+                          controls
+                          preload="metadata"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        {/* 视频导航按钮 */}
+                        {allVideos.length > 1 && (
+                          <>
+                            <motion.button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedVideo(i => (i - 1 + allVideos.length) % allVideos.length)
+                              }}
+                              className={cn(
+                                'absolute left-1 top-1/2 -translate-y-1/2 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10',
+                                theme === 'dark'
+                                  ? 'bg-black/60 text-white hover:bg-black/80'
+                                  : 'bg-white/80 text-gray-700 hover:bg-white'
+                              )}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <ChevronLeft className="w-4 h-4" />
+                            </motion.button>
+                            <motion.button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedVideo(i => (i + 1) % allVideos.length)
+                              }}
+                              className={cn(
+                                'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10',
+                                theme === 'dark'
+                                  ? 'bg-black/60 text-white hover:bg-black/80'
+                                  : 'bg-white/80 text-gray-700 hover:bg-white'
+                              )}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </motion.button>
+                          </>
+                        )}
+                        {/* 视频计数 */}
+                        {allVideos.length > 1 && (
+                          <div className={cn(
+                            'absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-medium z-10',
+                            theme === 'dark'
+                              ? 'bg-black/60 text-white'
+                              : 'bg-white/80 text-gray-700'
+                          )}>
+                            {selectedVideo + 1} / {allVideos.length}
+                          </div>
+                        )}
+                      </div>
+                      {/* 视频标题 */}
                       {videoTitle && (
                         <div className={cn(
-                          'px-3 py-2 text-xs flex items-center gap-2',
+                          'mt-2 px-3 py-2 text-xs flex items-center gap-2 rounded-lg',
                           theme === 'dark'
                             ? 'bg-slate-800/90 text-gray-200'
                             : 'bg-gray-100 text-gray-700'
                         )}>
-                          <Film className="w-3.5 h-3.5 text-purple-400" />
-                          {videoTitle}
+                          <Film className="w-3.5 h-3.5 text-purple-400 flex-shrink-0" />
+                          <span className="line-clamp-2">{videoTitle}</span>
                         </div>
+                      )}
+                      {/* 视频缩略图列表 */}
+                      {allVideos.length > 1 && (
+                        <motion.div
+                          className="flex gap-1.5 mt-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                        >
+                          {allVideos.map((_, i) => (
+                            <motion.button
+                              key={i}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedVideo(i)
+                              }}
+                              className={cn(
+                                'flex-shrink-0 px-2 py-1 rounded-md text-xs font-medium border transition-all',
+                                selectedVideo === i
+                                  ? theme === 'dark'
+                                    ? 'border-purple-400 bg-purple-500/20 text-purple-300 shadow-md shadow-purple-500/20'
+                                    : 'border-purple-500 bg-purple-100 text-purple-700 shadow-md shadow-purple-500/20'
+                                  : theme === 'dark'
+                                    ? 'border-slate-600 text-gray-400 hover:text-gray-300 hover:border-slate-500'
+                                    : 'border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                              )}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <Film className="w-3 h-3 inline mr-1" />
+                              {i + 1}
+                            </motion.button>
+                          ))}
+                        </motion.div>
                       )}
                     </motion.div>
                   )}
@@ -659,8 +790,8 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
             theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
           )}>
             {isZh
-              ? `${allImages.length} 张图片${videoUrl ? '，1 个视频' : ''}`
-              : `${allImages.length} images${videoUrl ? ', 1 video' : ''}`
+              ? `${allImages.length} 张图片${hasVideos ? `，${allVideos.length} 个视频` : ''}`
+              : `${allImages.length} images${hasVideos ? `, ${allVideos.length} videos` : ''}`
             }
           </p>
         </div>
@@ -669,7 +800,7 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
       {/* 内容区 */}
       <div className="p-4">
         {/* Tab 切换 */}
-        {videoUrl && allImages.length > 0 && (
+        {hasVideos && allImages.length > 0 && (
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setActiveTab('images')}
@@ -701,24 +832,24 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
               )}
             >
               <Film className="w-4 h-4" />
-              {isZh ? '实验视频' : 'Experiment Video'}
+              {isZh ? '实验视频' : 'Experiment Videos'} ({allVideos.length})
             </button>
           </div>
         )}
 
         {/* 图片画廊 */}
-        {(activeTab === 'images' || !videoUrl) && allImages.length > 0 && (
+        {(activeTab === 'images' || !hasVideos) && allImages.length > 0 && (
           <div>
-            {/* 主图展示 */}
+            {/* 主图展示 - 使用 aspect-video 自适应 */}
             <div className={cn(
-              'relative rounded-xl overflow-hidden mb-4',
-              theme === 'dark' ? 'bg-black/40' : 'bg-white shadow-md'
+              'relative rounded-xl overflow-hidden mb-4 aspect-video',
+              theme === 'dark' ? 'bg-slate-800' : 'bg-white shadow-md'
             )}>
               <motion.img
                 key={selectedImage}
                 src={allImages[selectedImage].url}
                 alt={allImages[selectedImage].caption || ''}
-                className="w-full h-64 object-cover"
+                className="w-full h-full object-cover"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
@@ -789,25 +920,98 @@ export function ResourceGallery({ resources, isZh, theme, compact = false }: Res
           </div>
         )}
 
-        {/* 视频播放 */}
-        {activeTab === 'video' && videoUrl && (
-          <div className={cn(
-            'relative rounded-xl overflow-hidden',
-            theme === 'dark' ? 'bg-black' : 'bg-black'
-          )}>
-            <video
-              src={videoUrl}
-              className="w-full h-64 object-contain bg-black"
-              controls
-              preload="metadata"
-            />
+        {/* 视频播放 - 支持多视频 */}
+        {activeTab === 'video' && hasVideos && (
+          <div>
+            {/* 视频播放器 - 使用 aspect-video 自适应 */}
+            <div className={cn(
+              'relative rounded-xl overflow-hidden aspect-video group',
+              theme === 'dark' ? 'bg-slate-800' : 'bg-gray-900'
+            )}>
+              <video
+                key={videoUrl}
+                src={videoUrl}
+                className="w-full h-full object-cover"
+                controls
+                preload="metadata"
+              />
+              {/* 视频导航按钮 */}
+              {allVideos.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedVideo(i => (i - 1 + allVideos.length) % allVideos.length)}
+                    className={cn(
+                      'absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10',
+                      'bg-black/50 hover:bg-black/70 text-white'
+                    )}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedVideo(i => (i + 1) % allVideos.length)}
+                    className={cn(
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10',
+                      'bg-black/50 hover:bg-black/70 text-white'
+                    )}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+              {/* 视频计数 */}
+              {allVideos.length > 1 && (
+                <div className={cn(
+                  'absolute top-3 left-3 px-2 py-1 rounded-full text-xs z-10',
+                  'bg-black/50 text-white'
+                )}>
+                  {selectedVideo + 1} / {allVideos.length}
+                </div>
+              )}
+            </div>
+            {/* 视频标题 */}
             {videoTitle && (
               <div className={cn(
-                'px-4 py-2 text-sm',
+                'mt-2 px-4 py-2 text-sm flex items-center gap-2 rounded-lg',
                 theme === 'dark' ? 'bg-slate-800 text-gray-300' : 'bg-gray-100 text-gray-700'
               )}>
-                <Film className="w-4 h-4 inline mr-2 text-purple-400" />
-                {videoTitle}
+                <Film className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                <span className="line-clamp-2">{videoTitle}</span>
+              </div>
+            )}
+            {/* 视频选择网格 */}
+            {allVideos.length > 1 && (
+              <div className="grid grid-cols-5 gap-2 mt-4">
+                {allVideos.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedVideo(i)}
+                    className={cn(
+                      'p-2 rounded-lg border-2 transition-all text-center',
+                      selectedVideo === i
+                        ? theme === 'dark'
+                          ? 'border-purple-400 bg-purple-500/20 ring-2 ring-purple-400/30'
+                          : 'border-purple-500 bg-purple-100 ring-2 ring-purple-500/30'
+                        : theme === 'dark'
+                          ? 'border-slate-600 hover:border-slate-500 opacity-60 hover:opacity-100'
+                          : 'border-gray-200 hover:border-gray-300 opacity-60 hover:opacity-100'
+                    )}
+                  >
+                    <Film className={cn(
+                      'w-5 h-5 mx-auto mb-1',
+                      selectedVideo === i
+                        ? 'text-purple-400'
+                        : theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    )} />
+                    <span className={cn(
+                      'text-xs font-medium',
+                      selectedVideo === i
+                        ? theme === 'dark' ? 'text-purple-300' : 'text-purple-700'
+                        : theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    )}>
+                      {isZh ? `视频 ${i + 1}` : `Video ${i + 1}`}
+                    </span>
+                  </button>
+                ))}
               </div>
             )}
           </div>
