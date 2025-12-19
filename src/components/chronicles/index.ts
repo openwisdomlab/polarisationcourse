@@ -10,3 +10,4 @@ export { ExperimentIllustration, type ExperimentIllustrationProps } from './Expe
 export { ResourceGallery, type ResourceGalleryProps } from './ResourceGallery'
 export { StoryModal, type StoryModalProps } from './StoryModal'
 export { DualTrackCard, type DualTrackCardProps } from './DualTrackCard'
+export { CenturyNavigator } from './CenturyNavigator'

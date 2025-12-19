@@ -10,6 +10,7 @@
 import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { cn } from '@/lib/utils'
 import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
@@ -26,7 +27,8 @@ import { CATEGORY_LABELS } from '@/data/chronicles-constants'
 import {
   OpticalOverviewDiagram,
   DualTrackCard,
-  StoryModal
+  StoryModal,
+  CenturyNavigator
 } from '@/components/chronicles'
 
 const TABS = [
@@ -38,12 +40,16 @@ const TABS = [
 export function ChroniclesPage() {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
+  const { isMobile, isTablet } = useIsMobile()
   const isZh = i18n.language === 'zh'
   const [activeTab, setActiveTab] = useState('timeline')
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
+
+  // Use single-track layout on mobile/tablet
+  const useSingleTrack = isMobile || isTablet
 
   // Filter events by category and track
   const filteredEvents = TIMELINE_EVENTS.filter(e => {
@@ -264,152 +270,278 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Dual Track Timeline - 双轨时间线 */}
-            <div className="relative">
-              {/* Track Labels - 轨道标签 */}
-              <div className="flex items-center justify-between mb-6">
-                <div className={cn(
-                  'flex-1 text-center py-2 rounded-l-lg border-r',
-                  theme === 'dark'
-                    ? 'bg-amber-500/10 border-amber-500/30'
-                    : 'bg-amber-50 border-amber-200'
-                )}>
-                  <div className="flex items-center justify-center gap-2">
-                    <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
-                    <span className={cn('font-semibold', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
-                      {isZh ? '广义光学' : 'General Optics'}
-                    </span>
-                  </div>
-                </div>
-                <div className={cn(
-                  'w-20 text-center py-2',
-                  theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
-                )}>
-                  <span className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
-                    {isZh ? '年份' : 'Year'}
-                  </span>
-                </div>
-                <div className={cn(
-                  'flex-1 text-center py-2 rounded-r-lg border-l',
-                  theme === 'dark'
-                    ? 'bg-cyan-500/10 border-cyan-500/30'
-                    : 'bg-cyan-50 border-cyan-200'
-                )}>
-                  <div className="flex items-center justify-center gap-2">
-                    <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
-                    <span className={cn('font-semibold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
-                      {isZh ? '偏振光' : 'Polarization'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            {/* Century Navigator - 世纪导航 (Desktop only) */}
+            {!useSingleTrack && (
+              <CenturyNavigator events={filteredEvents} isZh={isZh} />
+            )}
 
-              {/* Timeline with center axis */}
+            {/* Mobile Single-Track Timeline - 移动端单轨时间线 */}
+            {useSingleTrack ? (
               <div className="relative">
-                {/* Center vertical line */}
+                {/* Mobile Track Tabs */}
                 <div className={cn(
-                  'absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2',
-                  theme === 'dark' ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50' : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
-                )} />
+                  'sticky top-16 z-20 flex items-center justify-center gap-2 mb-4 py-2',
+                  theme === 'dark' ? 'bg-slate-900/95' : 'bg-white/95',
+                  'backdrop-blur-sm'
+                )}>
+                  <button
+                    onClick={() => setTrackFilter('all')}
+                    className={cn(
+                      'flex-1 max-w-[100px] py-2 px-3 rounded-lg text-sm font-medium transition-all',
+                      trackFilter === 'all'
+                        ? theme === 'dark'
+                          ? 'bg-gradient-to-r from-amber-500/30 to-cyan-500/30 text-white'
+                          : 'bg-gradient-to-r from-amber-100 to-cyan-100 text-gray-900'
+                        : theme === 'dark'
+                          ? 'bg-slate-800 text-gray-400'
+                          : 'bg-gray-100 text-gray-600'
+                    )}
+                  >
+                    {isZh ? '全部' : 'All'}
+                  </button>
+                  <button
+                    onClick={() => setTrackFilter('optics')}
+                    className={cn(
+                      'flex-1 max-w-[100px] py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1.5',
+                      trackFilter === 'optics'
+                        ? 'bg-amber-500 text-white'
+                        : theme === 'dark'
+                          ? 'bg-slate-800 text-amber-400'
+                          : 'bg-amber-50 text-amber-700'
+                    )}
+                  >
+                    <Sun className="w-3.5 h-3.5" />
+                    {isZh ? '光学' : 'Optics'}
+                  </button>
+                  <button
+                    onClick={() => setTrackFilter('polarization')}
+                    className={cn(
+                      'flex-1 max-w-[100px] py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1.5',
+                      trackFilter === 'polarization'
+                        ? 'bg-cyan-500 text-white'
+                        : theme === 'dark'
+                          ? 'bg-slate-800 text-cyan-400'
+                          : 'bg-cyan-50 text-cyan-700'
+                    )}
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {isZh ? '偏振' : 'Polar'}
+                  </button>
+                </div>
 
-                {/* Events */}
-                {(() => {
-                  // Get all unique years from filtered events
-                  const years = [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
+                {/* Single-track vertical timeline */}
+                <div className="relative pl-8">
+                  {/* Left vertical line */}
+                  <div className={cn(
+                    'absolute left-3 top-0 bottom-0 w-0.5',
+                    theme === 'dark'
+                      ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50'
+                      : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
+                  )} />
 
-                  return years.map((year) => {
-                    // Get ALL events for this year per track (not just the first one)
-                    const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
-                    const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
-                    const hasOptics = opticsEvents.length > 0
-                    const hasPolarization = polarizationEvents.length > 0
-
-                    return (
-                      <div key={year} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
-                        {/* Left side - Optics (can have multiple events) */}
-                        <div className="flex-1 pr-4 flex justify-end">
-                          {hasOptics && (
-                            <div className="w-full max-w-md space-y-3">
-                              {opticsEvents.map((opticsEvent) => {
-                                const opticsIndex = filteredEvents.findIndex(e => e === opticsEvent)
-                                return (
-                                  <DualTrackCard
-                                    key={opticsEvent.titleEn}
-                                    event={opticsEvent}
-                                    eventIndex={opticsIndex}
-                                    isExpanded={expandedEvent === opticsIndex}
-                                    onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
-                                    onReadStory={() => handleOpenStory(opticsIndex)}
-                                    onLinkTo={handleLinkTo}
-                                    side="left"
-                                  />
-                                )
-                              })}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Center year marker */}
-                        <div className="w-20 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
-                          <div className={cn(
-                            'w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2',
-                            hasOptics && hasPolarization
-                              ? theme === 'dark'
-                                ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
-                                : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
-                              : hasOptics
-                                ? theme === 'dark'
-                                  ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                                  : 'bg-amber-100 border-amber-500 text-amber-700'
-                                : theme === 'dark'
-                                  ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
-                                  : 'bg-cyan-100 border-cyan-500 text-cyan-700'
-                          )}>
-                            {year}
-                          </div>
-                          {/* Connector lines */}
-                          {hasOptics && (
-                            <div className={cn(
-                              'absolute top-6 right-full w-4 h-0.5 mr-0',
-                              theme === 'dark' ? 'bg-amber-500/50' : 'bg-amber-400'
-                            )} />
-                          )}
-                          {hasPolarization && (
-                            <div className={cn(
-                              'absolute top-6 left-full w-4 h-0.5 ml-0',
-                              theme === 'dark' ? 'bg-cyan-500/50' : 'bg-cyan-400'
-                            )} />
-                          )}
-                        </div>
-
-                        {/* Right side - Polarization (can have multiple events) */}
-                        <div className="flex-1 pl-4 flex justify-start">
-                          {hasPolarization && (
-                            <div className="w-full max-w-md space-y-3">
-                              {polarizationEvents.map((polarizationEvent) => {
-                                const polarizationIndex = filteredEvents.findIndex(e => e === polarizationEvent)
-                                return (
-                                  <DualTrackCard
-                                    key={polarizationEvent.titleEn}
-                                    event={polarizationEvent}
-                                    eventIndex={polarizationIndex}
-                                    isExpanded={expandedEvent === polarizationIndex}
-                                    onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
-                                    onReadStory={() => handleOpenStory(polarizationIndex)}
-                                    onLinkTo={handleLinkTo}
-                                    side="right"
-                                  />
-                                )
-                              })}
-                            </div>
-                          )}
-                        </div>
+                  {/* Events */}
+                  {filteredEvents.map((event, idx) => (
+                    <div
+                      key={`${event.year}-${event.titleEn}`}
+                      id={`timeline-year-${event.year}`}
+                      className="relative mb-4 last:mb-0 scroll-mt-32"
+                    >
+                      {/* Year marker */}
+                      <div className={cn(
+                        'absolute -left-5 w-10 h-10 rounded-full flex items-center justify-center font-mono text-xs font-bold border-2',
+                        event.track === 'optics'
+                          ? theme === 'dark'
+                            ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                            : 'bg-amber-100 border-amber-500 text-amber-700'
+                          : theme === 'dark'
+                            ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
+                            : 'bg-cyan-100 border-cyan-500 text-cyan-700'
+                      )}>
+                        {String(event.year).slice(-2)}
                       </div>
-                    )
-                  })
-                })()}
+
+                      {/* Track indicator badge */}
+                      <div className="mb-1">
+                        <span className={cn(
+                          'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                          event.track === 'optics'
+                            ? theme === 'dark'
+                              ? 'bg-amber-500/20 text-amber-400'
+                              : 'bg-amber-100 text-amber-700'
+                            : theme === 'dark'
+                              ? 'bg-cyan-500/20 text-cyan-400'
+                              : 'bg-cyan-100 text-cyan-700'
+                        )}>
+                          {event.track === 'optics' ? (
+                            <><Sun className="w-3 h-3" /> {event.year}</>
+                          ) : (
+                            <><Sparkles className="w-3 h-3" /> {event.year}</>
+                          )}
+                        </span>
+                      </div>
+
+                      {/* Event card */}
+                      <DualTrackCard
+                        event={event}
+                        eventIndex={idx}
+                        isExpanded={expandedEvent === idx}
+                        onToggle={() => setExpandedEvent(expandedEvent === idx ? null : idx)}
+                        onReadStory={() => handleOpenStory(idx)}
+                        onLinkTo={handleLinkTo}
+                        side={event.track === 'optics' ? 'left' : 'right'}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Desktop Dual Track Timeline - 桌面端双轨时间线 */
+              <div className="relative">
+                {/* Track Labels - 轨道标签 */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className={cn(
+                    'flex-1 text-center py-2 rounded-l-lg border-r',
+                    theme === 'dark'
+                      ? 'bg-amber-500/10 border-amber-500/30'
+                      : 'bg-amber-50 border-amber-200'
+                  )}>
+                    <div className="flex items-center justify-center gap-2">
+                      <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
+                      <span className={cn('font-semibold', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
+                        {isZh ? '广义光学' : 'General Optics'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={cn(
+                    'w-20 text-center py-2',
+                    theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
+                  )}>
+                    <span className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                      {isZh ? '年份' : 'Year'}
+                    </span>
+                  </div>
+                  <div className={cn(
+                    'flex-1 text-center py-2 rounded-r-lg border-l',
+                    theme === 'dark'
+                      ? 'bg-cyan-500/10 border-cyan-500/30'
+                      : 'bg-cyan-50 border-cyan-200'
+                  )}>
+                    <div className="flex items-center justify-center gap-2">
+                      <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                      <span className={cn('font-semibold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
+                        {isZh ? '偏振光' : 'Polarization'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Timeline with center axis */}
+                <div className="relative">
+                  {/* Center vertical line */}
+                  <div className={cn(
+                    'absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2',
+                    theme === 'dark' ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50' : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
+                  )} />
+
+                  {/* Events */}
+                  {(() => {
+                    // Get all unique years from filtered events
+                    const years = [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
+
+                    return years.map((year) => {
+                      // Get ALL events for this year per track (not just the first one)
+                      const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
+                      const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
+                      const hasOptics = opticsEvents.length > 0
+                      const hasPolarization = polarizationEvents.length > 0
+
+                      return (
+                        <div key={year} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
+                          {/* Left side - Optics (can have multiple events) */}
+                          <div className="flex-1 pr-4 flex justify-end">
+                            {hasOptics && (
+                              <div className="w-full max-w-md space-y-3">
+                                {opticsEvents.map((opticsEvent) => {
+                                  const opticsIndex = filteredEvents.findIndex(e => e === opticsEvent)
+                                  return (
+                                    <DualTrackCard
+                                      key={opticsEvent.titleEn}
+                                      event={opticsEvent}
+                                      eventIndex={opticsIndex}
+                                      isExpanded={expandedEvent === opticsIndex}
+                                      onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
+                                      onReadStory={() => handleOpenStory(opticsIndex)}
+                                      onLinkTo={handleLinkTo}
+                                      side="left"
+                                    />
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Center year marker */}
+                          <div className="w-20 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
+                            <div className={cn(
+                              'w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2',
+                              hasOptics && hasPolarization
+                                ? theme === 'dark'
+                                  ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
+                                  : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
+                                : hasOptics
+                                  ? theme === 'dark'
+                                    ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                                    : 'bg-amber-100 border-amber-500 text-amber-700'
+                                  : theme === 'dark'
+                                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
+                                    : 'bg-cyan-100 border-cyan-500 text-cyan-700'
+                            )}>
+                              {year}
+                            </div>
+                            {/* Connector lines */}
+                            {hasOptics && (
+                              <div className={cn(
+                                'absolute top-6 right-full w-4 h-0.5 mr-0',
+                                theme === 'dark' ? 'bg-amber-500/50' : 'bg-amber-400'
+                              )} />
+                            )}
+                            {hasPolarization && (
+                              <div className={cn(
+                                'absolute top-6 left-full w-4 h-0.5 ml-0',
+                                theme === 'dark' ? 'bg-cyan-500/50' : 'bg-cyan-400'
+                              )} />
+                            )}
+                          </div>
+
+                          {/* Right side - Polarization (can have multiple events) */}
+                          <div className="flex-1 pl-4 flex justify-start">
+                            {hasPolarization && (
+                              <div className="w-full max-w-md space-y-3">
+                                {polarizationEvents.map((polarizationEvent) => {
+                                  const polarizationIndex = filteredEvents.findIndex(e => e === polarizationEvent)
+                                  return (
+                                    <DualTrackCard
+                                      key={polarizationEvent.titleEn}
+                                      event={polarizationEvent}
+                                      eventIndex={polarizationIndex}
+                                      isExpanded={expandedEvent === polarizationIndex}
+                                      onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
+                                      onReadStory={() => handleOpenStory(polarizationIndex)}
+                                      onLinkTo={handleLinkTo}
+                                      side="right"
+                                    />
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })
+                  })()}
+                </div>
+              </div>
+            )}
           </>
         )}
 

@@ -4,14 +4,16 @@
  */
 
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import {
   ChevronDown, ChevronUp, BookOpen,
-  ArrowRight, Lightbulb, Star, Camera, Film, HelpCircle
+  ArrowRight, Lightbulb, Star, Camera, Film, HelpCircle,
+  Play, FlaskConical
 } from 'lucide-react'
 import { Badge } from '@/components/shared'
-import { CATEGORY_LABELS } from '@/data/chronicles-constants'
+import { CATEGORY_LABELS, ILLUSTRATION_TO_DEMO_MAP, ILLUSTRATION_TO_BENCH_MAP } from '@/data/chronicles-constants'
 import type { TimelineEvent } from '@/data/timeline-events'
 import { ExperimentIllustration } from './ExperimentIllustration'
 import { ResourceGallery } from './ResourceGallery'
@@ -29,8 +31,13 @@ export interface DualTrackCardProps {
 export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadStory, onLinkTo, side: _side }: DualTrackCardProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
+  const navigate = useNavigate()
   const isZh = i18n.language === 'zh'
   const category = CATEGORY_LABELS[event.category]
+
+  // Get demo and bench links based on illustration type
+  const demoLink = event.illustrationType ? ILLUSTRATION_TO_DEMO_MAP[event.illustrationType] : null
+  const benchLink = event.illustrationType ? ILLUSTRATION_TO_BENCH_MAP[event.illustrationType] : null
 
   const isOpticsTrack = event.track === 'optics'
   const trackColor = isOpticsTrack
@@ -216,6 +223,47 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
                 {isZh ? '阅读故事' : 'Read Story'}
               </button>
             )}
+
+            {/* Go to Demo button - 去演示馆 */}
+            {demoLink && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate(demoLink.route)
+                }}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                  theme === 'dark'
+                    ? 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30'
+                    : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                )}
+                title={isZh ? demoLink.labelZh : demoLink.labelEn}
+              >
+                <Play className="w-3.5 h-3.5" />
+                {isZh ? '去演示馆' : 'View Demo'}
+              </button>
+            )}
+
+            {/* Recreate in Lab button - 在实验室复现 */}
+            {benchLink && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate(benchLink.route)
+                }}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                  theme === 'dark'
+                    ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                )}
+                title={isZh ? benchLink.labelZh : benchLink.labelEn}
+              >
+                <FlaskConical className="w-3.5 h-3.5" />
+                {isZh ? '复现实验' : 'Lab'}
+              </button>
+            )}
+
             {event.linkTo && onLinkTo && (
               <button
                 onClick={(e) => {

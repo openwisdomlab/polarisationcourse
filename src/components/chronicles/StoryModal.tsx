@@ -4,14 +4,15 @@
  */
 
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import {
   X, User, MapPin, Lightbulb, Star,
-  ChevronLeft, ChevronRight, Calendar
+  ChevronLeft, ChevronRight, Calendar, Play, FlaskConical
 } from 'lucide-react'
 import { Badge } from '@/components/shared'
-import { CATEGORY_LABELS } from '@/data/chronicles-constants'
+import { CATEGORY_LABELS, ILLUSTRATION_TO_DEMO_MAP, ILLUSTRATION_TO_BENCH_MAP } from '@/data/chronicles-constants'
 import type { TimelineEvent } from '@/data/timeline-events'
 import { ResourceGallery } from './ResourceGallery'
 
@@ -27,8 +28,13 @@ export interface StoryModalProps {
 export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }: StoryModalProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
+  const navigate = useNavigate()
   const isZh = i18n.language === 'zh'
   const category = CATEGORY_LABELS[event.category]
+
+  // Get demo and bench links based on illustration type
+  const demoLink = event.illustrationType ? ILLUSTRATION_TO_DEMO_MAP[event.illustrationType] : null
+  const benchLink = event.illustrationType ? ILLUSTRATION_TO_BENCH_MAP[event.illustrationType] : null
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -227,6 +233,59 @@ export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }:
                 isZh={isZh}
                 theme={theme}
               />
+            </div>
+          )}
+
+          {/* Action Buttons - 去演示馆 / 复现实验 */}
+          {(demoLink || benchLink) && (
+            <div className={cn(
+              'mt-6 p-4 rounded-xl border',
+              theme === 'dark'
+                ? 'bg-slate-800/50 border-slate-700'
+                : 'bg-gray-50 border-gray-200'
+            )}>
+              <h4 className={cn(
+                'text-sm font-semibold mb-3',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              )}>
+                {isZh ? '互动体验' : 'Interactive Experience'}
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {demoLink && (
+                  <button
+                    onClick={() => {
+                      onClose()
+                      navigate(demoLink.route)
+                    }}
+                    className={cn(
+                      'flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
+                      theme === 'dark'
+                        ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 border border-purple-500/30'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-300'
+                    )}
+                  >
+                    <Play className="w-4 h-4" />
+                    <span>{isZh ? '去演示馆体验' : 'View Interactive Demo'}</span>
+                  </button>
+                )}
+                {benchLink && (
+                  <button
+                    onClick={() => {
+                      onClose()
+                      navigate(benchLink.route)
+                    }}
+                    className={cn(
+                      'flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
+                      theme === 'dark'
+                        ? 'bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/30'
+                        : 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-300'
+                    )}
+                  >
+                    <FlaskConical className="w-4 h-4" />
+                    <span>{isZh ? '在实验室复现' : 'Recreate in Lab'}</span>
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>
