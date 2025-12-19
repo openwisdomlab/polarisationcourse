@@ -16,8 +16,13 @@ import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, Lightbulb, BookOpen, X, MapPin, Calendar,
   FlaskConical, Star, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Sun, Sparkles, HelpCircle, Zap
+  Sun, Sparkles, HelpCircle, Zap, Image, Film, Play, Pause,
+  Camera, Beaker
 } from 'lucide-react'
+import {
+  getResourceById,
+  type PolarizationResource
+} from '@/data/resource-gallery'
 
 // ============================================
 // Optical Panorama - 知识棱镜 (The Prism of Knowledge)
@@ -841,6 +846,24 @@ interface TimelineEvent {
   }
   // 实验配图 - 经典实验的可视化
   illustrationType?: 'prism' | 'double-slit' | 'calcite' | 'reflection' | 'polarizer' | 'lcd' | 'mantis' | 'wave' | 'birefringence' | 'nicol' | 'faraday' | 'chirality' | 'rayleigh' | 'poincare' | 'photoelectric' | 'jones' | 'snell' | 'lightspeed' | 'opticalactivity' | 'transverse' | 'stokes' | 'mueller' | 'medical' | 'metasurface' | 'quantum' | 'chromaticpol'
+  // 实验资源 - 关联的图片和视频资源（用于可展开的资源画廊）
+  experimentalResources?: {
+    // 资源ID数组，引用 resource-gallery.ts 中的资源
+    resourceIds?: string[]
+    // 特色资源（在时间线卡片中直接展示）
+    featuredImages?: {
+      url: string
+      caption?: string
+      captionZh?: string
+    }[]
+    featuredVideo?: {
+      url: string
+      title?: string
+      titleZh?: string
+    }
+    // 相关模块链接
+    relatedModules?: string[]
+  }
   // 双轨连接 - 跨轨道因果关系
   linkTo?: {
     year: number
@@ -1573,7 +1596,40 @@ Today, if you've ever seen the rainbow patterns in a stressed plastic ruler view
       descriptionEn: 'Arago\'s chromatic polarization provided key evidence for Fresnel\'s transverse wave theory',
       descriptionZh: '阿拉戈的色偏振为菲涅尔的横波理论提供了关键证据'
     },
-    illustrationType: 'chromaticpol'
+    illustrationType: 'chromaticpol',
+    // 色偏振实验资源 - 关联到 resource-gallery 中的多媒体资源
+    experimentalResources: {
+      resourceIds: [
+        'glass-heating-cooling',      // 玻璃应力加热冷却序列
+        'plastic-wrap-thickness',     // 保鲜膜厚度干涉色
+        'clear-tape-array',           // 透明胶阵列图案
+        'tempered-glass',             // 钢化玻璃应力图案
+        'plastic-wrap',               // 保鲜膜基础实验
+      ],
+      featuredImages: [
+        {
+          url: '/images/chromatic-polarization/透明胶条阵列-正交偏振系统-正视图.jpg',
+          caption: 'Transparent tape array showing chromatic interference under crossed polarizers',
+          captionZh: '透明胶条阵列在正交偏振系统下展示的色偏振干涉图案'
+        },
+        {
+          url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
+          caption: 'Stress patterns in tempered glass revealed by crossed polarizers',
+          captionZh: '正交偏振片揭示钢化玻璃中的应力图案'
+        },
+        {
+          url: '/images/chromatic-polarization/保鲜膜重叠4次-正交偏振系统-正视图.jpg',
+          caption: '4-layer plastic wrap showing color variation due to thickness changes',
+          captionZh: '四层保鲜膜因厚度变化产生的色彩干涉'
+        }
+      ],
+      featuredVideo: {
+        url: '/videos/chromatic-polarization/透明胶条阵列-正交偏振系统-旋转检偏器.mp4',
+        title: 'Rotating analyzer reveals changing interference colors',
+        titleZh: '旋转检偏器揭示不断变化的干涉色'
+      },
+      relatedModules: ['birefringence', 'stress-analysis', 'photoelasticity', 'interference']
+    }
   },
   {
     year: 1815,
@@ -3562,6 +3618,524 @@ function ExperimentIllustration({ type, className = '' }: { type: string; classN
   return illustrations[type] || null
 }
 
+// ============================================
+// ResourceGallery Component - 可展开的资源画廊
+// 展示与时间线事件相关的实验图片和视频
+// ============================================
+interface ResourceGalleryProps {
+  resources: TimelineEvent['experimentalResources']
+  isZh: boolean
+  theme: 'dark' | 'light'
+  compact?: boolean // 紧凑模式用于卡片内展示
+}
+
+function ResourceGallery({ resources, isZh, theme, compact = false }: ResourceGalleryProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<number>(0)
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [activeTab, setActiveTab] = useState<'images' | 'video'>('images')
+  const videoRef = React.useRef<HTMLVideoElement>(null)
+
+  if (!resources) return null
+
+  // 获取关联的资源数据
+  const linkedResources = resources.resourceIds
+    ?.map(id => getResourceById(id))
+    .filter((r): r is PolarizationResource => r !== undefined) || []
+
+  // 图片类型定义
+  type ImageItem = {
+    url: string
+    caption: string | undefined
+    type: 'featured' | 'sequence' | 'linked'
+  }
+
+  // 合并特色图片和资源库图片
+  const featuredImgs: ImageItem[] = (resources.featuredImages || []).map(img => ({
+    url: img.url,
+    caption: isZh ? img.captionZh : img.caption,
+    type: 'featured' as const
+  }))
+
+  const linkedImgs: ImageItem[] = linkedResources
+    .filter(r => r.type === 'image' || r.type === 'sequence')
+    .reduce<ImageItem[]>((acc, r) => {
+      if (r.type === 'sequence' && r.frames) {
+        const sequenceItems: ImageItem[] = r.frames.map(f => ({
+          url: f.url,
+          caption: isZh ? f.labelZh : f.label,
+          type: 'sequence' as const
+        }))
+        return [...acc, ...sequenceItems]
+      }
+      return [...acc, {
+        url: r.url,
+        caption: isZh ? r.titleZh : r.title,
+        type: 'linked' as const
+      }]
+    }, [])
+
+  const allImages: ImageItem[] = [...featuredImgs, ...linkedImgs]
+
+  // 获取视频资源
+  const videoResource = resources.featuredVideo || linkedResources.find(r => r.type === 'video')
+  const videoUrl = resources.featuredVideo?.url || (videoResource as PolarizationResource | undefined)?.url
+  const videoTitle = resources.featuredVideo
+    ? (isZh ? resources.featuredVideo.titleZh : resources.featuredVideo.title)
+    : videoResource
+      ? (isZh ? videoResource.titleZh : videoResource.title)
+      : undefined
+
+  const hasContent = allImages.length > 0 || videoUrl
+
+  if (!hasContent) return null
+
+  const toggleVideo = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause()
+      } else {
+        videoRef.current.play()
+      }
+      setIsVideoPlaying(!isVideoPlaying)
+    }
+  }
+
+  // 紧凑模式 - 用于时间线卡片展开时的内嵌展示
+  if (compact) {
+    return (
+      <div className={cn(
+        'mt-3 rounded-lg overflow-hidden border',
+        theme === 'dark'
+          ? 'bg-gradient-to-r from-cyan-900/20 to-purple-900/20 border-cyan-800/50'
+          : 'bg-gradient-to-r from-cyan-50 to-purple-50 border-cyan-200'
+      )}>
+        {/* 展开按钮 */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={cn(
+            'w-full flex items-center justify-between px-3 py-2 transition-colors',
+            theme === 'dark'
+              ? 'hover:bg-white/5'
+              : 'hover:bg-black/5'
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <div className={cn(
+              'p-1.5 rounded-md',
+              theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
+            )}>
+              <Camera className={cn(
+                'w-3.5 h-3.5',
+                theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+              )} />
+            </div>
+            <span className={cn(
+              'text-xs font-medium',
+              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'
+            )}>
+              {isZh ? '实验资源' : 'Experimental Resources'}
+            </span>
+            <span className={cn(
+              'text-xs px-1.5 py-0.5 rounded-full',
+              theme === 'dark'
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'bg-cyan-100 text-cyan-600'
+            )}>
+              {allImages.length} {isZh ? '图' : 'img'}{videoUrl ? ` + 1 ${isZh ? '视频' : 'vid'}` : ''}
+            </span>
+          </div>
+          <motion.div
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronDown className={cn(
+              'w-4 h-4',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )} />
+          </motion.div>
+        </button>
+
+        {/* 展开的内容 */}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="px-3 pb-3">
+                {/* Tab 切换 */}
+                {videoUrl && allImages.length > 0 && (
+                  <div className="flex gap-2 mb-2">
+                    <button
+                      onClick={() => setActiveTab('images')}
+                      className={cn(
+                        'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                        activeTab === 'images'
+                          ? theme === 'dark'
+                            ? 'bg-cyan-500/20 text-cyan-400'
+                            : 'bg-cyan-100 text-cyan-700'
+                          : theme === 'dark'
+                            ? 'text-gray-400 hover:text-gray-300'
+                            : 'text-gray-500 hover:text-gray-700'
+                      )}
+                    >
+                      <Image className="w-3 h-3" />
+                      {isZh ? '图片' : 'Images'} ({allImages.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('video')}
+                      className={cn(
+                        'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                        activeTab === 'video'
+                          ? theme === 'dark'
+                            ? 'bg-purple-500/20 text-purple-400'
+                            : 'bg-purple-100 text-purple-700'
+                          : theme === 'dark'
+                            ? 'text-gray-400 hover:text-gray-300'
+                            : 'text-gray-500 hover:text-gray-700'
+                      )}
+                    >
+                      <Film className="w-3 h-3" />
+                      {isZh ? '视频' : 'Video'}
+                    </button>
+                  </div>
+                )}
+
+                {/* 图片展示 */}
+                {(activeTab === 'images' || !videoUrl) && allImages.length > 0 && (
+                  <div>
+                    {/* 主图 */}
+                    <div className={cn(
+                      'relative rounded-lg overflow-hidden mb-2',
+                      theme === 'dark' ? 'bg-black/30' : 'bg-white'
+                    )}>
+                      <img
+                        src={allImages[selectedImage].url}
+                        alt={allImages[selectedImage].caption || ''}
+                        className="w-full h-32 object-cover"
+                      />
+                      {allImages[selectedImage].caption && (
+                        <div className={cn(
+                          'absolute bottom-0 left-0 right-0 px-2 py-1 text-xs',
+                          theme === 'dark'
+                            ? 'bg-black/70 text-gray-200'
+                            : 'bg-white/90 text-gray-700'
+                        )}>
+                          {allImages[selectedImage].caption}
+                        </div>
+                      )}
+                    </div>
+                    {/* 缩略图轮播 */}
+                    {allImages.length > 1 && (
+                      <div className="flex gap-1 overflow-x-auto pb-1">
+                        {allImages.slice(0, 8).map((img, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedImage(i)}
+                            className={cn(
+                              'flex-shrink-0 w-12 h-9 rounded overflow-hidden border-2 transition-all',
+                              selectedImage === i
+                                ? theme === 'dark'
+                                  ? 'border-cyan-400'
+                                  : 'border-cyan-500'
+                                : 'border-transparent opacity-60 hover:opacity-100'
+                            )}
+                          >
+                            <img src={img.url} alt="" className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                        {allImages.length > 8 && (
+                          <span className={cn(
+                            'flex items-center justify-center w-12 h-9 text-xs rounded',
+                            theme === 'dark'
+                              ? 'bg-slate-700 text-gray-400'
+                              : 'bg-gray-100 text-gray-500'
+                          )}>
+                            +{allImages.length - 8}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 视频展示 */}
+                {activeTab === 'video' && videoUrl && (
+                  <div className={cn(
+                    'relative rounded-lg overflow-hidden',
+                    theme === 'dark' ? 'bg-black/30' : 'bg-black'
+                  )}>
+                    <video
+                      ref={videoRef}
+                      src={videoUrl}
+                      className="w-full h-32 object-cover"
+                      onEnded={() => setIsVideoPlaying(false)}
+                    />
+                    <button
+                      onClick={toggleVideo}
+                      className={cn(
+                        'absolute inset-0 flex items-center justify-center',
+                        isVideoPlaying ? 'opacity-0 hover:opacity-100' : '',
+                        'transition-opacity bg-black/30'
+                      )}
+                    >
+                      <div className="p-3 rounded-full bg-white/20 backdrop-blur-sm">
+                        {isVideoPlaying ? (
+                          <Pause className="w-6 h-6 text-white" />
+                        ) : (
+                          <Play className="w-6 h-6 text-white" />
+                        )}
+                      </div>
+                    </button>
+                    {videoTitle && (
+                      <div className={cn(
+                        'absolute bottom-0 left-0 right-0 px-2 py-1 text-xs',
+                        'bg-black/70 text-gray-200'
+                      )}>
+                        {videoTitle}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    )
+  }
+
+  // 完整模式 - 用于 StoryModal 中的展示
+  return (
+    <div className={cn(
+      'rounded-xl border overflow-hidden',
+      theme === 'dark'
+        ? 'bg-gradient-to-br from-cyan-900/20 via-slate-800/50 to-purple-900/20 border-cyan-800/50'
+        : 'bg-gradient-to-br from-cyan-50 via-white to-purple-50 border-cyan-200'
+    )}>
+      {/* 标题栏 */}
+      <div className={cn(
+        'flex items-center gap-3 px-4 py-3 border-b',
+        theme === 'dark'
+          ? 'border-cyan-800/50 bg-black/20'
+          : 'border-cyan-200 bg-white/50'
+      )}>
+        <div className={cn(
+          'p-2 rounded-lg',
+          theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
+        )}>
+          <Beaker className={cn(
+            'w-5 h-5',
+            theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+          )} />
+        </div>
+        <div>
+          <h4 className={cn(
+            'text-sm font-semibold',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            {isZh ? '实验资源画廊' : 'Experimental Resources Gallery'}
+          </h4>
+          <p className={cn(
+            'text-xs',
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+          )}>
+            {isZh
+              ? `${allImages.length} 张图片${videoUrl ? '，1 个视频' : ''}`
+              : `${allImages.length} images${videoUrl ? ', 1 video' : ''}`
+            }
+          </p>
+        </div>
+      </div>
+
+      {/* 内容区 */}
+      <div className="p-4">
+        {/* Tab 切换 */}
+        {videoUrl && allImages.length > 0 && (
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setActiveTab('images')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                activeTab === 'images'
+                  ? theme === 'dark'
+                    ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                    : 'bg-cyan-100 text-cyan-700 border border-cyan-300'
+                  : theme === 'dark'
+                    ? 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              )}
+            >
+              <Image className="w-4 h-4" />
+              {isZh ? '实验图片' : 'Experiment Photos'} ({allImages.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('video')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                activeTab === 'video'
+                  ? theme === 'dark'
+                    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                    : 'bg-purple-100 text-purple-700 border border-purple-300'
+                  : theme === 'dark'
+                    ? 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              )}
+            >
+              <Film className="w-4 h-4" />
+              {isZh ? '实验视频' : 'Experiment Video'}
+            </button>
+          </div>
+        )}
+
+        {/* 图片画廊 */}
+        {(activeTab === 'images' || !videoUrl) && allImages.length > 0 && (
+          <div>
+            {/* 主图展示 */}
+            <div className={cn(
+              'relative rounded-xl overflow-hidden mb-4',
+              theme === 'dark' ? 'bg-black/40' : 'bg-white shadow-md'
+            )}>
+              <motion.img
+                key={selectedImage}
+                src={allImages[selectedImage].url}
+                alt={allImages[selectedImage].caption || ''}
+                className="w-full h-64 object-cover"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+              {allImages[selectedImage].caption && (
+                <div className={cn(
+                  'absolute bottom-0 left-0 right-0 px-4 py-3',
+                  theme === 'dark'
+                    ? 'bg-gradient-to-t from-black/80 to-transparent'
+                    : 'bg-gradient-to-t from-black/60 to-transparent'
+                )}>
+                  <p className="text-sm text-white">
+                    {allImages[selectedImage].caption}
+                  </p>
+                </div>
+              )}
+              {/* 导航按钮 */}
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImage(i => (i - 1 + allImages.length) % allImages.length)}
+                    className={cn(
+                      'absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full',
+                      'bg-black/50 hover:bg-black/70 text-white transition-colors'
+                    )}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedImage(i => (i + 1) % allImages.length)}
+                    className={cn(
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full',
+                      'bg-black/50 hover:bg-black/70 text-white transition-colors'
+                    )}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+              {/* 图片计数 */}
+              <div className={cn(
+                'absolute top-3 right-3 px-2 py-1 rounded-full text-xs',
+                'bg-black/50 text-white'
+              )}>
+                {selectedImage + 1} / {allImages.length}
+              </div>
+            </div>
+
+            {/* 缩略图网格 */}
+            <div className="grid grid-cols-6 gap-2">
+              {allImages.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImage(i)}
+                  className={cn(
+                    'aspect-video rounded-lg overflow-hidden border-2 transition-all',
+                    selectedImage === i
+                      ? theme === 'dark'
+                        ? 'border-cyan-400 ring-2 ring-cyan-400/30'
+                        : 'border-cyan-500 ring-2 ring-cyan-500/30'
+                      : 'border-transparent opacity-60 hover:opacity-100'
+                  )}
+                >
+                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 视频播放 */}
+        {activeTab === 'video' && videoUrl && (
+          <div className={cn(
+            'relative rounded-xl overflow-hidden',
+            theme === 'dark' ? 'bg-black' : 'bg-black'
+          )}>
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              className="w-full h-64 object-contain bg-black"
+              controls
+              onPlay={() => setIsVideoPlaying(true)}
+              onPause={() => setIsVideoPlaying(false)}
+              onEnded={() => setIsVideoPlaying(false)}
+            />
+            {videoTitle && (
+              <div className={cn(
+                'px-4 py-2 text-sm',
+                theme === 'dark' ? 'bg-slate-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+              )}>
+                <Film className="w-4 h-4 inline mr-2 text-purple-400" />
+                {videoTitle}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 相关模块链接 */}
+        {resources.relatedModules && resources.relatedModules.length > 0 && (
+          <div className={cn(
+            'mt-4 pt-4 border-t',
+            theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+          )}>
+            <p className={cn(
+              'text-xs mb-2',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh ? '相关学习模块：' : 'Related Learning Modules:'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {resources.relatedModules.map((module, i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    'px-2 py-1 text-xs rounded-full',
+                    theme === 'dark'
+                      ? 'bg-slate-700 text-gray-300'
+                      : 'bg-gray-100 text-gray-600'
+                  )}
+                >
+                  {module}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // Story Modal Component - 沉浸式故事阅读模式
 interface StoryModalProps {
   event: TimelineEvent
@@ -3764,6 +4338,17 @@ function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }: StoryM
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {/* Experimental Resources Gallery - 实验资源画廊 */}
+          {event.experimentalResources && (
+            <div className="mt-6">
+              <ResourceGallery
+                resources={event.experimentalResources}
+                isZh={isZh}
+                theme={theme}
+              />
             </div>
           )}
         </div>
@@ -3971,6 +4556,16 @@ function DualTrackCard({ event, isExpanded, onToggle, onReadStory, side: _side }
                 {isZh ? event.thinkingQuestion.zh : event.thinkingQuestion.en}
               </p>
             </div>
+          )}
+
+          {/* Compact Resource Gallery - 紧凑资源画廊 */}
+          {event.experimentalResources && (
+            <ResourceGallery
+              resources={event.experimentalResources}
+              isZh={isZh}
+              theme={theme}
+              compact
+            />
           )}
 
           {/* Action buttons */}
