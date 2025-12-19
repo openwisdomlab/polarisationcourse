@@ -3512,6 +3512,51 @@ function ExperimentIllustration({ type, className = '' }: { type: string; classN
         <text x="5" y="70" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="5">Δ &lt; SQL</text>
       </svg>
     ),
+    chromaticpol: (
+      <svg viewBox="0 0 120 80" className={className}>
+        {/* White light source */}
+        <circle cx="8" cy="40" r="5" fill="#fff" />
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+          <line
+            key={i}
+            x1={8 + 6 * Math.cos(angle * Math.PI / 180)}
+            y1={40 + 6 * Math.sin(angle * Math.PI / 180)}
+            x2={8 + 9 * Math.cos(angle * Math.PI / 180)}
+            y2={40 + 9 * Math.sin(angle * Math.PI / 180)}
+            stroke="#fff"
+            strokeWidth="1"
+          />
+        ))}
+        {/* First polarizer (vertical lines) */}
+        <rect x="22" y="20" width="8" height="40" fill={isDark ? 'rgba(34, 211, 238, 0.3)' : 'rgba(34, 211, 238, 0.4)'} stroke="#22d3ee" strokeWidth="1.5" />
+        <line x1="26" y1="22" x2="26" y2="58" stroke="#22d3ee" strokeWidth="2" strokeDasharray="3,2" />
+        {/* Thin crystal plate (mica) - with birefringence effect */}
+        <rect x="45" y="25" width="15" height="30" fill={isDark ? 'rgba(251, 191, 36, 0.2)' : 'rgba(251, 191, 36, 0.3)'} stroke={isDark ? '#fbbf24' : '#d97706'} strokeWidth="1.5" rx="2" />
+        {/* Crystal internal structure */}
+        <line x1="48" y1="28" x2="57" y2="52" stroke={isDark ? '#fbbf24' : '#d97706'} strokeWidth="1" opacity="0.5" />
+        <line x1="52" y1="28" x2="52" y2="52" stroke={isDark ? '#fbbf24' : '#d97706'} strokeWidth="1" opacity="0.5" />
+        {/* Second polarizer (horizontal lines - crossed) */}
+        <rect x="75" y="20" width="8" height="40" fill={isDark ? 'rgba(244, 114, 182, 0.3)' : 'rgba(244, 114, 182, 0.4)'} stroke="#f472b6" strokeWidth="1.5" />
+        <line x1="76" y1="40" x2="82" y2="40" stroke="#f472b6" strokeWidth="2" strokeDasharray="3,2" />
+        {/* Output interference colors (rainbow spectrum) */}
+        <rect x="95" y="28" width="20" height="5" fill="#ef4444" rx="1" />
+        <rect x="95" y="33" width="20" height="4" fill="#f97316" rx="1" />
+        <rect x="95" y="37" width="20" height="4" fill="#eab308" rx="1" />
+        <rect x="95" y="41" width="20" height="4" fill="#22c55e" rx="1" />
+        <rect x="95" y="45" width="20" height="4" fill="#3b82f6" rx="1" />
+        <rect x="95" y="49" width="20" height="4" fill="#8b5cf6" rx="1" />
+        {/* Light path arrows */}
+        <line x1="14" y1="40" x2="20" y2="40" stroke="#fff" strokeWidth="1.5" />
+        <line x1="32" y1="40" x2="43" y2="40" stroke="#22d3ee" strokeWidth="1.5" />
+        <line x1="62" y1="40" x2="73" y2="40" stroke={isDark ? '#fbbf24' : '#d97706'} strokeWidth="1.5" />
+        <line x1="85" y1="40" x2="93" y2="40" stroke="#f472b6" strokeWidth="1.5" />
+        {/* Labels */}
+        <text x="22" y="68" fill={isDark ? '#22d3ee' : '#0891b2'} fontSize="5">P₁</text>
+        <text x="48" y="68" fill={isDark ? '#fbbf24' : '#d97706'} fontSize="5">mica</text>
+        <text x="75" y="68" fill={isDark ? '#f472b6' : '#db2777'} fontSize="5">P₂⊥</text>
+        <text x="98" y="68" fill={isDark ? '#94a3b8' : '#64748b'} fontSize="5">colors</text>
+      </svg>
+    ),
   }
 
   return illustrations[type] || null
