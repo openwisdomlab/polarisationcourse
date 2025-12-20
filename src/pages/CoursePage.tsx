@@ -41,6 +41,11 @@ interface CourseUnit {
   icon: React.ReactNode
   color: string
   status: 'locked' | 'available' | 'completed'
+  sections?: {
+    id: string
+    titleKey: string
+    descriptionKey: string
+  }[]
   resources: {
     demos?: string[]
     games?: string[]
@@ -55,148 +60,146 @@ interface CourseUnit {
   learningObjectives?: string[]
 }
 
-// Course structure - progressive unlocking
+// Course structure based on PSRT curriculum - 5 main units
 const COURSE_UNITS: CourseUnit[] = [
   {
-    id: 'intro',
-    titleKey: 'course.units.intro.title',
-    subtitleKey: 'course.units.intro.subtitle',
-    descriptionKey: 'course.units.intro.description',
+    // 第一单元：光的偏振态及其调制和测量
+    id: 'unit1',
+    titleKey: 'course.units.unit1.title',
+    subtitleKey: 'course.units.unit1.subtitle',
+    descriptionKey: 'course.units.unit1.description',
     icon: <Lightbulb className="w-6 h-6" />,
     color: '#C9A227', // amber
     status: 'available',
+    sections: [
+      { id: '1.1', titleKey: 'course.units.unit1.s1.title', descriptionKey: 'course.units.unit1.s1.desc' },
+      { id: '1.2', titleKey: 'course.units.unit1.s2.title', descriptionKey: 'course.units.unit1.s2.desc' },
+      { id: '1.3', titleKey: 'course.units.unit1.s3.title', descriptionKey: 'course.units.unit1.s3.desc' },
+    ],
     resources: {
-      demos: ['light-wave', 'polarization-intro'],
+      demos: ['light-wave', 'polarization-intro', 'polarization-types', 'birefringence', 'malus-law'],
+      tools: ['/optical-studio?tab=devices'],
+      games: ['/games/2d?level=0', '/games/2d?level=1'],
     },
     attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.introPPT' },
-      { type: 'pdf', titleKey: 'course.attachments.introGuide' },
+      { type: 'ppt', titleKey: 'course.attachments.unit1PPT' },
+      { type: 'pdf', titleKey: 'course.attachments.unit1Guide' },
+      { type: 'link', titleKey: 'course.attachments.icelandSpar', url: 'https://en.wikipedia.org/wiki/Iceland_spar' },
     ],
     learningObjectives: [
-      'course.objectives.intro.1',
-      'course.objectives.intro.2',
-      'course.objectives.intro.3',
+      'course.objectives.unit1.1',
+      'course.objectives.unit1.2',
+      'course.objectives.unit1.3',
+      'course.objectives.unit1.4',
     ],
   },
   {
-    id: 'devices',
-    titleKey: 'course.units.devices.title',
-    subtitleKey: 'course.units.devices.subtitle',
-    descriptionKey: 'course.units.devices.description',
-    icon: <Atom className="w-6 h-6" />,
+    // 第二单元：界面反射的偏振特征
+    id: 'unit2',
+    titleKey: 'course.units.unit2.title',
+    subtitleKey: 'course.units.unit2.subtitle',
+    descriptionKey: 'course.units.unit2.description',
+    icon: <Zap className="w-6 h-6" />,
     color: '#6366F1', // indigo
     status: 'available',
     resources: {
-      tools: ['/optical-studio?tab=devices'],
-      demos: ['polarization-types'],
-    },
-    attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.devicesPPT' },
-    ],
-    learningObjectives: [
-      'course.objectives.devices.1',
-      'course.objectives.devices.2',
-    ],
-  },
-  {
-    id: 'malus',
-    titleKey: 'course.units.malus.title',
-    subtitleKey: 'course.units.malus.subtitle',
-    descriptionKey: 'course.units.malus.description',
-    icon: <Target className="w-6 h-6" />,
-    color: '#0891B2', // cyan
-    status: 'available',
-    resources: {
-      demos: ['malus-law'],
-      games: ['/games/2d?level=0'],
+      demos: ['fresnel-equations', 'brewster-angle'],
       experiments: ['/optical-studio?tab=experiments'],
     },
     attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.malusPPT' },
-      { type: 'link', titleKey: 'course.attachments.malusWiki', url: 'https://en.wikipedia.org/wiki/Malus%27s_law' },
+      { type: 'ppt', titleKey: 'course.attachments.unit2PPT' },
+      { type: 'link', titleKey: 'course.attachments.fresnelWiki', url: 'https://en.wikipedia.org/wiki/Fresnel_equations' },
+      { type: 'link', titleKey: 'course.attachments.brewsterWiki', url: 'https://en.wikipedia.org/wiki/Brewster%27s_angle' },
     ],
     learningObjectives: [
-      'course.objectives.malus.1',
-      'course.objectives.malus.2',
-      'course.objectives.malus.3',
+      'course.objectives.unit2.1',
+      'course.objectives.unit2.2',
+      'course.objectives.unit2.3',
     ],
   },
   {
-    id: 'birefringence',
-    titleKey: 'course.units.birefringence.title',
-    subtitleKey: 'course.units.birefringence.subtitle',
-    descriptionKey: 'course.units.birefringence.description',
-    icon: <Zap className="w-6 h-6" />,
-    color: '#F59E0B', // orange
+    // 第三单元：透明介质的偏振特征
+    id: 'unit3',
+    titleKey: 'course.units.unit3.title',
+    subtitleKey: 'course.units.unit3.subtitle',
+    descriptionKey: 'course.units.unit3.description',
+    icon: <Sparkles className="w-6 h-6" />,
+    color: '#0891B2', // cyan
     status: 'available',
+    sections: [
+      { id: '3.1', titleKey: 'course.units.unit3.s1.title', descriptionKey: 'course.units.unit3.s1.desc' },
+      { id: '3.2', titleKey: 'course.units.unit3.s2.title', descriptionKey: 'course.units.unit3.s2.desc' },
+    ],
     resources: {
-      demos: ['birefringence', 'waveplate'],
+      demos: ['anisotropy-stress', 'chromatic-polarization', 'optical-rotation', 'waveplate'],
+      experiments: ['/experiments/diy'],
       games: ['/games/2d?level=3'],
     },
     attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.birefringencePPT' },
+      { type: 'ppt', titleKey: 'course.attachments.unit3PPT' },
+      { type: 'pdf', titleKey: 'course.attachments.stressAnalysis' },
     ],
     learningObjectives: [
-      'course.objectives.birefringence.1',
-      'course.objectives.birefringence.2',
+      'course.objectives.unit3.1',
+      'course.objectives.unit3.2',
+      'course.objectives.unit3.3',
     ],
   },
   {
-    id: 'puzzles',
-    titleKey: 'course.units.puzzles.title',
-    subtitleKey: 'course.units.puzzles.subtitle',
-    descriptionKey: 'course.units.puzzles.description',
-    icon: <Gamepad2 className="w-6 h-6" />,
-    color: '#EC4899', // pink
+    // 第四单元：浑浊介质的偏振特征
+    id: 'unit4',
+    titleKey: 'course.units.unit4.title',
+    subtitleKey: 'course.units.unit4.subtitle',
+    descriptionKey: 'course.units.unit4.description',
+    icon: <Target className="w-6 h-6" />,
+    color: '#F59E0B', // orange
     status: 'available',
-    resources: {
-      games: ['/games/2d', '/games/3d', '/games/escape'],
-    },
-    learningObjectives: [
-      'course.objectives.puzzles.1',
-      'course.objectives.puzzles.2',
+    sections: [
+      { id: '4.1', titleKey: 'course.units.unit4.s1.title', descriptionKey: 'course.units.unit4.s1.desc' },
+      { id: '4.2', titleKey: 'course.units.unit4.s2.title', descriptionKey: 'course.units.unit4.s2.desc' },
     ],
-  },
-  {
-    id: 'creative',
-    titleKey: 'course.units.creative.title',
-    subtitleKey: 'course.units.creative.subtitle',
-    descriptionKey: 'course.units.creative.description',
-    icon: <Sparkles className="w-6 h-6" />,
-    color: '#10B981', // emerald
-    status: 'available',
     resources: {
-      experiments: ['/experiments/diy', '/experiments/showcase'],
-      tools: ['/experiments/generator'],
+      demos: ['rayleigh-scattering', 'mie-scattering'],
     },
     attachments: [
-      { type: 'pdf', titleKey: 'course.attachments.creativePDF' },
+      { type: 'ppt', titleKey: 'course.attachments.unit4PPT' },
+      { type: 'link', titleKey: 'course.attachments.mieTheory', url: 'https://en.wikipedia.org/wiki/Mie_scattering' },
     ],
     learningObjectives: [
-      'course.objectives.creative.1',
-      'course.objectives.creative.2',
+      'course.objectives.unit4.1',
+      'course.objectives.unit4.2',
+      'course.objectives.unit4.3',
     ],
   },
   {
-    id: 'research',
-    titleKey: 'course.units.research.title',
-    subtitleKey: 'course.units.research.subtitle',
-    descriptionKey: 'course.units.research.description',
+    // 第五单元：偏振光学技术和复杂结构介质物性的定量表征
+    id: 'unit5',
+    titleKey: 'course.units.unit5.title',
+    subtitleKey: 'course.units.unit5.subtitle',
+    descriptionKey: 'course.units.unit5.description',
     icon: <Telescope className="w-6 h-6" />,
     color: '#8B5CF6', // violet
     status: 'available',
+    sections: [
+      { id: '5.1', titleKey: 'course.units.unit5.s1.title', descriptionKey: 'course.units.unit5.s1.desc' },
+      { id: '5.2', titleKey: 'course.units.unit5.s2.title', descriptionKey: 'course.units.unit5.s2.desc' },
+      { id: '5.3', titleKey: 'course.units.unit5.s3.title', descriptionKey: 'course.units.unit5.s3.desc' },
+      { id: '5.4', titleKey: 'course.units.unit5.s4.title', descriptionKey: 'course.units.unit5.s4.desc' },
+    ],
     resources: {
-      tools: ['/lab?tab=tasks', '/calc'],
       demos: ['stokes-vector', 'mueller-matrix'],
+      tools: ['/calc/stokes', '/calc/mueller', '/calc/poincare', '/lab?tab=tasks'],
     },
     attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.researchPPT' },
+      { type: 'ppt', titleKey: 'course.attachments.unit5PPT' },
+      { type: 'pdf', titleKey: 'course.attachments.muellerGuide' },
       { type: 'link', titleKey: 'course.attachments.researchPapers' },
     ],
     learningObjectives: [
-      'course.objectives.research.1',
-      'course.objectives.research.2',
-      'course.objectives.research.3',
+      'course.objectives.unit5.1',
+      'course.objectives.unit5.2',
+      'course.objectives.unit5.3',
+      'course.objectives.unit5.4',
     ],
   },
 ]
@@ -406,6 +409,48 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
           <p className={`text-sm mb-4 mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             {t(unit.descriptionKey)}
           </p>
+
+          {/* Course sections */}
+          {unit.sections && unit.sections.length > 0 && (
+            <div className="mb-4">
+              <h4 className={`text-sm font-medium mb-2 ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                {t('course.sections')}
+              </h4>
+              <div className="space-y-2">
+                {unit.sections.map((section) => (
+                  <div
+                    key={section.id}
+                    className={`p-3 rounded-lg ${
+                      theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <span
+                        className="text-xs font-bold px-1.5 py-0.5 rounded"
+                        style={{ backgroundColor: `${unit.color}20`, color: unit.color }}
+                      >
+                        {section.id}
+                      </span>
+                      <div>
+                        <p className={`text-sm font-medium ${
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          {t(section.titleKey)}
+                        </p>
+                        <p className={`text-xs mt-0.5 ${
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
+                          {t(section.descriptionKey)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Learning objectives */}
           {unit.learningObjectives && (
