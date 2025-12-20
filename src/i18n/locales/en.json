@@ -382,6 +382,14 @@
       "autonomous": "Autonomous",
       "atmosphere": "Atmospheric"
     },
+    "path": {
+      "title": "Learning Path",
+      "viewAll": "View All Demos",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "locked": "Locked",
+      "available": "Available"
+    },
     "search": {
       "placeholder": "Search demos...",
       "results": "{{count}} result(s) found",
@@ -419,6 +427,41 @@
       "guided": "Guided Questions",
       "openEnded": "Open-ended Questions"
     }
+  },
+  "quiz": {
+    "title": "Knowledge Check",
+    "question": "Question {{current}}/{{total}}",
+    "submit": "Submit Answer",
+    "next": "Next",
+    "finish": "Finish",
+    "retry": "Try Again",
+    "showHint": "Show Hint",
+    "hideHint": "Hide Hint",
+    "explanation": "Explanation",
+    "score": "Score: {{score}}/{{total}}",
+    "excellent": "Excellent! 🎉",
+    "good": "Well Done!",
+    "keepLearning": "Keep Learning!",
+    "startQuiz": "Start Quiz",
+    "skipQuiz": "Skip Quiz"
+  },
+  "related": {
+    "title": "Related Demos",
+    "nextRecommended": "Recommended Next",
+    "viewAll": "View All Demos",
+    "sameUnit": "Same Unit",
+    "sameDifficulty": "Same Difficulty"
+  },
+  "progress": {
+    "title": "Learning Progress",
+    "completed": "Completed",
+    "total": "Total",
+    "streak": "Study Streak",
+    "days": "days",
+    "timeSpent": "Time Spent",
+    "minutes": "minutes",
+    "achievements": "Achievements",
+    "bookmarks": "Bookmarks"
   },
   "calc": {
     "title": "Calculation Workshop",

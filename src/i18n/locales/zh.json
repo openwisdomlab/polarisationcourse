@@ -382,6 +382,14 @@
       "autonomous": "自动驾驶",
       "atmosphere": "大气遥感"
     },
+    "path": {
+      "title": "学习路径",
+      "viewAll": "查看全部演示",
+      "completed": "已完成",
+      "inProgress": "进行中",
+      "locked": "未解锁",
+      "available": "可学习"
+    },
     "search": {
       "placeholder": "搜索演示...",
       "results": "找到 {{count}} 个结果",
@@ -419,6 +427,41 @@
       "guided": "引导问题",
       "openEnded": "开放性问题"
     }
+  },
+  "quiz": {
+    "title": "知识检验",
+    "question": "第 {{current}}/{{total}} 题",
+    "submit": "提交答案",
+    "next": "下一题",
+    "finish": "完成",
+    "retry": "重新测试",
+    "showHint": "显示提示",
+    "hideHint": "隐藏提示",
+    "explanation": "解析",
+    "score": "得分：{{score}}/{{total}}",
+    "excellent": "太棒了！🎉",
+    "good": "做得不错！",
+    "keepLearning": "继续加油！",
+    "startQuiz": "开始测验",
+    "skipQuiz": "跳过测验"
+  },
+  "related": {
+    "title": "相关演示",
+    "nextRecommended": "推荐下一个",
+    "viewAll": "查看全部演示",
+    "sameUnit": "同单元",
+    "sameDifficulty": "同难度"
+  },
+  "progress": {
+    "title": "学习进度",
+    "completed": "已完成",
+    "total": "总计",
+    "streak": "连续学习",
+    "days": "天",
+    "timeSpent": "学习时长",
+    "minutes": "分钟",
+    "achievements": "成就",
+    "bookmarks": "收藏"
   },
   "calc": {
     "title": "计算工坊",

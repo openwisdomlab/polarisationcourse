@@ -12,6 +12,8 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PersistentHeader } from '@/components/shared'
 import { PSRTIcon, ESRTIcon, ORICIcon, SURFIcon } from '@/components/icons'
+import { LearningPathMap } from '@/components/course'
+import { useCourseProgress } from '@/hooks'
 import {
   ChevronRight,
   BookOpen,
@@ -29,7 +31,10 @@ import {
   Target,
   Users,
   Telescope,
-  Zap
+  Zap,
+  TrendingUp,
+  Clock,
+  Flame
 } from 'lucide-react'
 
 // Course unit definition
@@ -1149,10 +1154,100 @@ function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
+// Progress Stats Component
+function ProgressStats({ theme }: { theme: 'dark' | 'light' }) {
+  const { t } = useTranslation()
+  const { progress, getOverallProgress } = useCourseProgress()
+
+  // 所有演示 ID
+  const allDemoIds = [
+    'light-wave', 'polarization-intro', 'polarization-types', 'optical-bench',
+    'polarization-state', 'malus', 'birefringence', 'waveplate',
+    'fresnel', 'brewster',
+    'anisotropy', 'chromatic', 'optical-rotation',
+    'rayleigh', 'mie-scattering', 'monte-carlo-scattering',
+    'stokes', 'mueller', 'jones', 'calculator', 'polarimetric-microscopy',
+  ]
+
+  const overallProgress = getOverallProgress(allDemoIds)
+  const timeSpentMinutes = Math.round(progress.totalTimeSpent / 60)
+
+  const stats = [
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      label: t('progress.completed'),
+      value: `${progress.completedDemos.length}/${allDemoIds.length}`,
+      color: '#22c55e',
+    },
+    {
+      icon: <Flame className="w-5 h-5" />,
+      label: t('progress.streak'),
+      value: `${progress.streakDays} ${t('progress.days')}`,
+      color: '#f59e0b',
+    },
+    {
+      icon: <Clock className="w-5 h-5" />,
+      label: t('progress.timeSpent'),
+      value: `${timeSpentMinutes} ${t('progress.minutes')}`,
+      color: '#6366f1',
+    },
+    {
+      icon: <BookOpen className="w-5 h-5" />,
+      label: t('progress.bookmarks'),
+      value: progress.bookmarkedDemos.length.toString(),
+      color: '#ec4899',
+    },
+  ]
+
+  return (
+    <div className={`rounded-2xl p-6 mb-8 ${
+      theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'
+    }`}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          {t('progress.title')}
+        </h3>
+        <div className={`text-sm font-medium ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`}>
+          {overallProgress}%
+        </div>
+      </div>
+
+      {/* 进度条 */}
+      <div className={`h-2 rounded-full mb-6 ${theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'}`}>
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500"
+          style={{ width: `${overallProgress}%` }}
+        />
+      </div>
+
+      {/* 统计数据 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map((stat, idx) => (
+          <div
+            key={idx}
+            className={`p-3 rounded-xl ${theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span style={{ color: stat.color }}>{stat.icon}</span>
+              <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                {stat.label}
+              </span>
+            </div>
+            <div className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {stat.value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function CoursePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const [_searchParams] = useSearchParams()
+  const { progress } = useCourseProgress()
 
   return (
     <div className={`min-h-screen ${
@@ -1172,8 +1267,22 @@ export function CoursePage() {
         {/* Hero section */}
         <CourseHero theme={theme} />
 
-        {/* Inquiry-based Exploration - Problem-driven learning */}
-        <InquiryExplorationSection theme={theme} />
+        {/* Progress Stats - 学习进度统计 */}
+        <ProgressStats theme={theme} />
+
+        {/* Learning Path Map and Inquiry side by side on desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Learning Path Map - 学习路径可视化 */}
+          <LearningPathMap
+            theme={theme}
+            completedDemos={progress.completedDemos}
+          />
+
+          {/* Inquiry-based Exploration - Problem-driven learning */}
+          <div className="lg:col-span-1">
+            <InquiryExplorationSection theme={theme} />
+          </div>
+        </div>
 
         {/* Home Experiments - Family-friendly experiments */}
         <HomeExperimentsSection theme={theme} />
