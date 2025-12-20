@@ -567,6 +567,167 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
   )
 }
 
+// PSRT Teaching Methods section component
+function TeachingMethodsSection({ theme }: { theme: 'dark' | 'light' }) {
+  const { t } = useTranslation()
+
+  const methods = [
+    {
+      stage: 'PSRT',
+      nameKey: 'course.methods.psrt.name',
+      descKey: 'course.methods.psrt.desc',
+      icon: '🌱',
+      color: '#22c55e', // green
+    },
+    {
+      stage: 'ESRT',
+      nameKey: 'course.methods.esrt.name',
+      descKey: 'course.methods.esrt.desc',
+      icon: '🔬',
+      color: '#06b6d4', // cyan
+    },
+    {
+      stage: 'ORIC',
+      nameKey: 'course.methods.oric.name',
+      descKey: 'course.methods.oric.desc',
+      icon: '🚀',
+      color: '#a855f7', // purple
+    },
+    {
+      stage: 'SURF',
+      nameKey: 'course.methods.surf.name',
+      descKey: 'course.methods.surf.desc',
+      icon: '🌍',
+      color: '#f59e0b', // amber
+    },
+  ]
+
+  const teachingSteps = [
+    { icon: '📚', nameKey: 'course.teaching.lecture', descKey: 'course.teaching.lectureDesc' },
+    { icon: '🔧', nameKey: 'course.teaching.practice', descKey: 'course.teaching.practiceDesc' },
+    { icon: '📊', nameKey: 'course.teaching.experiment', descKey: 'course.teaching.experimentDesc' },
+    { icon: '🔍', nameKey: 'course.teaching.research', descKey: 'course.teaching.researchDesc' },
+  ]
+
+  return (
+    <div className="mb-12">
+      <h2 className={`text-2xl font-bold mb-6 ${
+        theme === 'dark' ? 'text-white' : 'text-gray-900'
+      }`}>
+        {t('course.methods.title')}
+      </h2>
+
+      {/* Research learning stages */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {methods.map((method, i) => (
+          <div
+            key={i}
+            className={`rounded-xl p-4 border transition-all hover:scale-105 ${
+              theme === 'dark'
+                ? 'bg-slate-800/50 border-slate-700'
+                : 'bg-white border-gray-200'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">{method.icon}</span>
+              <span
+                className="text-sm font-bold px-2 py-0.5 rounded"
+                style={{ backgroundColor: `${method.color}20`, color: method.color }}
+              >
+                {method.stage}
+              </span>
+            </div>
+            <h4 className={`text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              {t(method.nameKey)}
+            </h4>
+            <p className={`text-xs ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            }`}>
+              {t(method.descKey)}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Teaching steps */}
+      <div className={`rounded-xl p-6 ${
+        theme === 'dark' ? 'bg-slate-800/30' : 'bg-gray-50'
+      }`}>
+        <h3 className={`text-lg font-semibold mb-4 ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>
+          {t('course.teaching.title')}
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {teachingSteps.map((step, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <span className="text-xl">{step.icon}</span>
+              <div>
+                <p className={`text-sm font-medium ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {t(step.nameKey)}
+                </p>
+                <p className={`text-xs ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {t(step.descKey)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Applications section component
+function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
+  const { t } = useTranslation()
+
+  const applications = [
+    { icon: '🌊', nameKey: 'course.apps.ocean', color: '#0ea5e9' },
+    { icon: '🏥', nameKey: 'course.apps.biomedical', color: '#ec4899' },
+    { icon: '🔬', nameKey: 'course.apps.materials', color: '#8b5cf6' },
+    { icon: '🏭', nameKey: 'course.apps.industry', color: '#f59e0b' },
+    { icon: '🚗', nameKey: 'course.apps.autonomous', color: '#22c55e' },
+    { icon: '🌤️', nameKey: 'course.apps.atmosphere', color: '#06b6d4' },
+  ]
+
+  return (
+    <div className="mb-12">
+      <h2 className={`text-2xl font-bold mb-6 ${
+        theme === 'dark' ? 'text-white' : 'text-gray-900'
+      }`}>
+        {t('course.apps.title')}
+      </h2>
+
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+        {applications.map((app, i) => (
+          <div
+            key={i}
+            className={`rounded-xl p-4 text-center border transition-all hover:scale-105 ${
+              theme === 'dark'
+                ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
+                : 'bg-white border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <span className="text-3xl mb-2 block">{app.icon}</span>
+            <p className={`text-xs font-medium ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              {t(app.nameKey)}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Resources section component
 function ResourcesSection({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
@@ -704,6 +865,12 @@ export function CoursePage() {
       <main className="max-w-5xl mx-auto px-4 py-8">
         {/* Hero section */}
         <CourseHero theme={theme} />
+
+        {/* PSRT Teaching Methods */}
+        <TeachingMethodsSection theme={theme} />
+
+        {/* Applications */}
+        <ApplicationsSection theme={theme} />
 
         {/* Course units */}
         <div className="mb-12">

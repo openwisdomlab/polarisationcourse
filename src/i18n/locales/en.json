@@ -254,6 +254,45 @@
       "description": "Continue your journey through the fascinating world of polarized light",
       "playGames": "Play Games",
       "joinResearch": "Join Research"
+    },
+    "methods": {
+      "title": "Research-Based Learning Model",
+      "psrt": {
+        "name": "Problem-Driven",
+        "desc": "Expand vision, spark interest, research entry"
+      },
+      "esrt": {
+        "name": "Rotational Training",
+        "desc": "Open exploration, skill development"
+      },
+      "oric": {
+        "name": "Original Research",
+        "desc": "Open mentoring, cross-discipline innovation"
+      },
+      "surf": {
+        "name": "Global Mentors",
+        "desc": "Industry internship, frontier research"
+      }
+    },
+    "teaching": {
+      "title": "Four Teaching Components",
+      "lecture": "Lectures",
+      "lectureDesc": "Basics and experimental phenomena",
+      "practice": "Hands-on Practice",
+      "practiceDesc": "Replicate and extend course content",
+      "experiment": "Formal Experiments",
+      "experimentDesc": "Scientific research methodology",
+      "research": "Independent Research",
+      "researchDesc": "Self-directed research projects"
+    },
+    "apps": {
+      "title": "Application Domains",
+      "ocean": "Ocean Sensing",
+      "biomedical": "Biomedical",
+      "materials": "Materials",
+      "industry": "Industrial",
+      "autonomous": "Autonomous",
+      "atmosphere": "Atmospheric"
     }
   },
   "calc": {
