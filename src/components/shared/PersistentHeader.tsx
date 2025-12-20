@@ -67,6 +67,14 @@ const MODULE_THEMES: Record<string, {
     textDark: 'text-[#10B981]',
     textLight: 'text-emerald-600',
   },
+  // Course module theme
+  course: {
+    primary: '#F59E0B',
+    primaryLight: '#FBBF24',
+    gradient: 'from-[#F59E0B] to-orange-500',
+    textDark: 'text-[#F59E0B]',
+    textLight: 'text-amber-600',
+  },
   // Game-specific themes
   game3d: {
     primary: '#F59E0B',
@@ -86,7 +94,7 @@ const MODULE_THEMES: Record<string, {
 
 interface PersistentHeaderProps {
   /** Module key for icon and theming */
-  moduleKey?: ModuleIconKey | 'game3d' | 'game2d'
+  moduleKey?: ModuleIconKey | 'game3d' | 'game2d' | 'course'
   /** Module name translation key */
   moduleNameKey?: string
   /** Custom module name (overrides translation) */

@@ -83,6 +83,142 @@
       "subtitle": "Coming Soon",
       "description": "Open science data platform: polarization experimental data, spectral data, user-contributed datasets—coming soon, stay tuned.",
       "cta": "Coming Soon"
+    },
+    "courseEntry": "Course",
+    "courseBanner": {
+      "badge": "New Course",
+      "title": "A New World Under Polarized Light",
+      "description": "Shenzhen 01 Academy Innovation Challenge Camp course - A gamified education and scientific practice platform for polarization optics with progressive experiments, historical stories, and frontier research."
+    }
+  },
+  "course": {
+    "title": "A New World Under Polarized Light",
+    "badge": "Shenzhen 01 Academy Innovation Challenge Camp",
+    "description": "This is Shenzhen 01 Academy Innovation Challenge Camp course, providing a gamified education and scientific practice platform for polarization optics. Content includes progressive polarization optics course experiments and related historical stories, polarization devices and basic optical paths, as well as polarization optics theory and computational simulation. The platform also provides advanced features including gamified puzzle challenges, classroom portfolio showcase, and virtual research group for participating in frontier scientific research.",
+    "startLearning": "Start Learning",
+    "viewHistory": "View History",
+    "curriculum": "Course Curriculum",
+    "unit": "Unit",
+    "learningObjectives": "Learning Objectives",
+    "demo": "Demo",
+    "game": "Game",
+    "experiment": "Experiment",
+    "tool": "Tool",
+    "stats": {
+      "units": "{{count}} Units",
+      "games": "Puzzle Games",
+      "experiments": "Interactive Experiments",
+      "community": "Research Community"
+    },
+    "units": {
+      "intro": {
+        "title": "Introduction to Light",
+        "subtitle": "Light Waves & Polarization Basics",
+        "description": "Discover what light is and how it can be polarized. Learn about electromagnetic waves and the nature of polarization through interactive demonstrations."
+      },
+      "devices": {
+        "title": "Polarization Devices",
+        "subtitle": "Polarizers, Wave Plates & Crystals",
+        "description": "Explore the key optical devices used to manipulate polarized light, from simple polarizer films to birefringent crystals."
+      },
+      "malus": {
+        "title": "Malus's Law",
+        "subtitle": "Intensity Through Polarizers",
+        "description": "Understand and verify Malus's Law through experiments. Learn how light intensity changes when passing through polarizers at different angles."
+      },
+      "birefringence": {
+        "title": "Birefringence",
+        "subtitle": "Double Refraction & Wave Plates",
+        "description": "Discover how certain crystals split light into two beams and how wave plates modify polarization state."
+      },
+      "puzzles": {
+        "title": "Polarization Puzzles",
+        "subtitle": "Game Challenges & Strategy",
+        "description": "Apply your knowledge in interactive puzzle games. Use polarization principles to solve light-path challenges."
+      },
+      "creative": {
+        "title": "Creative Applications",
+        "subtitle": "Art, DIY & Photography",
+        "description": "Create beautiful polarization art, explore DIY experiments, and learn polarization photography techniques."
+      },
+      "research": {
+        "title": "Frontier Research",
+        "subtitle": "Virtual Lab & Advanced Topics",
+        "description": "Join the virtual research group, explore advanced polarimetry topics, and work on real research problems."
+      }
+    },
+    "objectives": {
+      "intro": {
+        "1": "Understand electromagnetic waves and light properties",
+        "2": "Learn what polarization means and its types",
+        "3": "Observe polarization in everyday life"
+      },
+      "devices": {
+        "1": "Identify key polarization optical devices",
+        "2": "Understand how each device affects light"
+      },
+      "malus": {
+        "1": "State and explain Malus's Law mathematically",
+        "2": "Predict intensity changes through crossed polarizers",
+        "3": "Verify the law through interactive experiments"
+      },
+      "birefringence": {
+        "1": "Explain the birefringence phenomenon",
+        "2": "Understand ordinary and extraordinary rays"
+      },
+      "puzzles": {
+        "1": "Apply polarization knowledge to solve puzzles",
+        "2": "Develop strategic thinking in optical systems"
+      },
+      "creative": {
+        "1": "Create polarization art and effects",
+        "2": "Master DIY polarization experiments"
+      },
+      "research": {
+        "1": "Understand Stokes vectors and Mueller matrices",
+        "2": "Apply professional calculation tools",
+        "3": "Participate in research-style learning"
+      }
+    },
+    "attachments": {
+      "introPPT": "Introduction Slides",
+      "introGuide": "Study Guide",
+      "devicesPPT": "Device Overview",
+      "malusPPT": "Malus's Law Slides",
+      "malusWiki": "Wikipedia Reference",
+      "birefringencePPT": "Birefringence Slides",
+      "creativePDF": "Creative Projects Guide",
+      "researchPPT": "Research Methods",
+      "researchPapers": "Recommended Papers"
+    },
+    "resources": {
+      "title": "Learning Resources",
+      "references": {
+        "title": "References",
+        "description": "Academic and Wikipedia resources for deeper learning",
+        "link1": "Polarization (waves)",
+        "link2": "Malus's Law",
+        "link3": "Birefringence"
+      },
+      "tutorials": {
+        "title": "Interactive Tutorials",
+        "description": "Hands-on demos and design tools",
+        "link1": "Demo Gallery",
+        "link2": "Optical Design Studio",
+        "link3": "Historical Stories"
+      },
+      "community": {
+        "title": "Community",
+        "description": "Join the research community and share your work",
+        "link1": "Research Community",
+        "link2": "Creative Gallery"
+      }
+    },
+    "cta": {
+      "title": "Ready to Explore?",
+      "description": "Continue your journey through the fascinating world of polarized light",
+      "playGames": "Play Games",
+      "joinResearch": "Join Research"
     }
   },
   "calc": {

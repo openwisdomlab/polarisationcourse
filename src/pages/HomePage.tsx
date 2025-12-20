@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { ModuleIconMap, type ModuleIconKey, PolarCraftLogo } from '@/components/icons'
+import { ModuleIconMap, type ModuleIconKey, PolarCraftLogo, CourseIcon } from '@/components/icons'
 import { LightBeamEffect } from '@/components/effects'
 
 // Polarization angle colors for visual effect (based on polarization physics)
@@ -811,8 +811,22 @@ export function HomePage() {
         ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
         : 'bg-gradient-to-br from-[#f0f9ff] via-[#e0f2fe] to-[#f0f9ff]'
     }`}>
-      {/* Settings */}
-      <div className="fixed top-4 right-4 z-50">
+      {/* Settings and Course Entry */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+        {/* Course Entry - Prominent Button */}
+        <Link
+          to="/course"
+          className={`group relative flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 ${
+            theme === 'dark'
+              ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-900/30 hover:shadow-amber-600/40'
+              : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50'
+          }`}
+        >
+          <CourseIcon size={20} />
+          <span className="hidden sm:inline">{t('home.courseEntry')}</span>
+          {/* Animated glow effect */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 opacity-0 group-hover:opacity-30 blur-xl transition-opacity" />
+        </Link>
         <LanguageThemeSwitcher />
       </div>
 
@@ -867,6 +881,112 @@ export function HomePage() {
         moduleRefs={moduleRefsMap.current}
         iconRefs={iconRefsMap.current}
       />
+
+      {/* Course Banner - Below the 6 cards */}
+      <div className="max-w-6xl w-full relative z-10 px-2 mt-8">
+        <Link
+          to="/course"
+          className={`group block relative overflow-hidden rounded-2xl p-6 md:p-8 transition-all duration-500 hover:-translate-y-1 ${
+            theme === 'dark'
+              ? 'bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 border border-amber-500/20 hover:border-amber-500/50'
+              : 'bg-gradient-to-r from-amber-50/90 via-orange-50/90 to-amber-50/90 border border-amber-300/50 hover:border-amber-400'
+          }`}
+          style={{
+            boxShadow: theme === 'dark'
+              ? '0 20px 60px rgba(201, 162, 39, 0.15)'
+              : '0 20px 60px rgba(245, 158, 11, 0.2)',
+          }}
+        >
+          {/* Animated background pattern */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: `repeating-linear-gradient(
+                  45deg,
+                  transparent,
+                  transparent 10px,
+                  ${theme === 'dark' ? 'rgba(201, 162, 39, 0.3)' : 'rgba(245, 158, 11, 0.2)'} 10px,
+                  ${theme === 'dark' ? 'rgba(201, 162, 39, 0.3)' : 'rgba(245, 158, 11, 0.2)'} 11px
+                )`,
+              }}
+            />
+            {/* Animated light rays */}
+            {[0, 1, 2].map(i => (
+              <div
+                key={i}
+                className="absolute h-full w-20 opacity-20 animate-pulse"
+                style={{
+                  left: `${20 + i * 30}%`,
+                  background: `linear-gradient(90deg, transparent, ${
+                    theme === 'dark' ? 'rgba(201, 162, 39, 0.4)' : 'rgba(245, 158, 11, 0.3)'
+                  }, transparent)`,
+                  animationDelay: `${i * 0.5}s`,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+            {/* Icon */}
+            <div className="flex-shrink-0">
+              <div className={`p-4 rounded-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${
+                theme === 'dark'
+                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20'
+                  : 'bg-gradient-to-br from-amber-100 to-orange-100'
+              }`}>
+                <CourseIcon size={48} />
+              </div>
+            </div>
+
+            {/* Text content */}
+            <div className="flex-1 text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                  theme === 'dark'
+                    ? 'bg-amber-500/20 text-amber-400'
+                    : 'bg-amber-500/20 text-amber-700'
+                }`}>
+                  {t('home.courseBanner.badge')}
+                </span>
+              </div>
+              <h3 className={`text-xl md:text-2xl font-bold mb-2 ${
+                theme === 'dark'
+                  ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400'
+                  : 'text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600'
+              }`}>
+                {t('home.courseBanner.title')}
+              </h3>
+              <p className={`text-sm md:text-base max-w-2xl ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>
+                {t('home.courseBanner.description')}
+              </p>
+            </div>
+
+            {/* CTA Arrow */}
+            <div className="flex-shrink-0">
+              <div className={`p-3 rounded-full transition-all duration-300 group-hover:translate-x-2 ${
+                theme === 'dark'
+                  ? 'bg-amber-500/20 text-amber-400 group-hover:bg-amber-500/30'
+                  : 'bg-amber-500/20 text-amber-600 group-hover:bg-amber-500/30'
+              }`}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Hover glow effect */}
+          <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
+            theme === 'dark'
+              ? 'shadow-[inset_0_0_40px_rgba(201,162,39,0.15)]'
+              : 'shadow-[inset_0_0_40px_rgba(245,158,11,0.1)]'
+          }`} />
+        </Link>
+      </div>
 
       {/* Footer */}
       <footer className={`mt-6 sm:mt-10 md:mt-12 text-center text-xs sm:text-sm relative z-10 ${
