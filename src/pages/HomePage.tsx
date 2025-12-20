@@ -818,14 +818,14 @@ export function HomePage() {
           to="/course"
           className={`group relative flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 ${
             theme === 'dark'
-              ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-900/30 hover:shadow-amber-600/40'
-              : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50'
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-900/30 hover:shadow-blue-600/40'
+              : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50'
           }`}
         >
           <CourseIcon size={20} />
           <span className="hidden sm:inline">{t('home.courseEntry')}</span>
           {/* Animated glow effect */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 opacity-0 group-hover:opacity-30 blur-xl transition-opacity" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-30 blur-xl transition-opacity" />
         </Link>
         <LanguageThemeSwitcher />
       </div>
@@ -884,108 +884,183 @@ export function HomePage() {
 
       {/* Course Banner - Below the 6 cards */}
       <div className="max-w-6xl w-full relative z-10 px-2 mt-8">
-        <Link
-          to="/course"
-          className={`group block relative overflow-hidden rounded-2xl p-6 md:p-8 transition-all duration-500 hover:-translate-y-1 ${
-            theme === 'dark'
-              ? 'bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 border border-amber-500/20 hover:border-amber-500/50'
-              : 'bg-gradient-to-r from-amber-50/90 via-orange-50/90 to-amber-50/90 border border-amber-300/50 hover:border-amber-400'
-          }`}
-          style={{
-            boxShadow: theme === 'dark'
-              ? '0 20px 60px rgba(201, 162, 39, 0.15)'
-              : '0 20px 60px rgba(245, 158, 11, 0.2)',
-          }}
-        >
-          {/* Animated background pattern */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div
-              className="absolute inset-0 opacity-10"
-              style={{
-                backgroundImage: `repeating-linear-gradient(
-                  45deg,
-                  transparent,
-                  transparent 10px,
-                  ${theme === 'dark' ? 'rgba(201, 162, 39, 0.3)' : 'rgba(245, 158, 11, 0.2)'} 10px,
-                  ${theme === 'dark' ? 'rgba(201, 162, 39, 0.3)' : 'rgba(245, 158, 11, 0.2)'} 11px
-                )`,
-              }}
-            />
-            {/* Animated light rays */}
-            {[0, 1, 2].map(i => (
-              <div
-                key={i}
-                className="absolute h-full w-20 opacity-20 animate-pulse"
-                style={{
-                  left: `${20 + i * 30}%`,
-                  background: `linear-gradient(90deg, transparent, ${
-                    theme === 'dark' ? 'rgba(201, 162, 39, 0.4)' : 'rgba(245, 158, 11, 0.3)'
-                  }, transparent)`,
-                  animationDelay: `${i * 0.5}s`,
-                }}
-              />
-            ))}
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <h2 className={`text-lg font-bold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              {t('home.coursesSection.title')}
+            </h2>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${
+              theme === 'dark' ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
+            }`}>
+              P-SRT
+            </span>
           </div>
+          <Link
+            to="/course"
+            className={`text-sm flex items-center gap-1 transition-colors ${
+              theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+            }`}
+          >
+            {t('home.coursesSection.viewAll')}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
 
-          {/* Content */}
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
-            {/* Icon */}
-            <div className="flex-shrink-0">
-              <div className={`p-4 rounded-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${
+        {/* Course List */}
+        <div className="space-y-3">
+          {/* Course 1 - Main Course */}
+          <Link
+            to="/course"
+            className={`group block relative overflow-hidden rounded-xl p-5 transition-all duration-300 hover:-translate-y-0.5 ${
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 border border-blue-500/20 hover:border-blue-500/40'
+                : 'bg-gradient-to-r from-blue-50/90 via-indigo-50/90 to-blue-50/90 border border-blue-200 hover:border-blue-300'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              {/* Course Icon */}
+              <div className={`flex-shrink-0 p-3 rounded-xl transition-transform group-hover:scale-105 ${
                 theme === 'dark'
-                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20'
-                  : 'bg-gradient-to-br from-amber-100 to-orange-100'
+                  ? 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20'
+                  : 'bg-gradient-to-br from-blue-100 to-indigo-100'
               }`}>
-                <CourseIcon size={48} />
+                <CourseIcon size={36} />
               </div>
-            </div>
 
-            {/* Text content */}
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                  theme === 'dark'
-                    ? 'bg-amber-500/20 text-amber-400'
-                    : 'bg-amber-500/20 text-amber-700'
+              {/* Course Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                    theme === 'dark' ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
+                  }`}>
+                    P-SRT
+                  </span>
+                  <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                    5 {t('course.units.label')} · 17 {t('course.demos.label')}
+                  </span>
+                </div>
+                <h3 className={`font-bold mb-0.5 ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}>
-                  {t('home.courseBanner.badge')}
-                </span>
+                  {t('home.courseBanner.title')}
+                </h3>
+                <p className={`text-sm line-clamp-1 ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  {t('home.courseBanner.description')}
+                </p>
               </div>
-              <h3 className={`text-xl md:text-2xl font-bold mb-2 ${
-                theme === 'dark'
-                  ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400'
-                  : 'text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600'
-              }`}>
-                {t('home.courseBanner.title')}
-              </h3>
-              <p className={`text-sm md:text-base max-w-2xl ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                {t('home.courseBanner.description')}
-              </p>
-            </div>
 
-            {/* CTA Arrow */}
-            <div className="flex-shrink-0">
-              <div className={`p-3 rounded-full transition-all duration-300 group-hover:translate-x-2 ${
-                theme === 'dark'
-                  ? 'bg-amber-500/20 text-amber-400 group-hover:bg-amber-500/30'
-                  : 'bg-amber-500/20 text-amber-600 group-hover:bg-amber-500/30'
+              {/* Arrow */}
+              <div className={`flex-shrink-0 p-2 rounded-full transition-all group-hover:translate-x-1 ${
+                theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
               }`}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
             </div>
+          </Link>
+
+          {/* Course 2 - Coming Soon */}
+          <div
+            className={`relative overflow-hidden rounded-xl p-5 opacity-60 ${
+              theme === 'dark'
+                ? 'bg-slate-800/50 border border-slate-700'
+                : 'bg-gray-50 border border-gray-200'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              {/* Course Icon */}
+              <div className={`flex-shrink-0 p-3 rounded-xl ${
+                theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
+              }`}>
+                <svg className="w-9 h-9" viewBox="0 0 36 36" fill="none">
+                  <circle cx="18" cy="18" r="14" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeDasharray="4 4" />
+                  <path d="M18 12v8M14 16h8" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+
+              {/* Course Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                    theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-700'
+                  }`}>
+                    E-SRT
+                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded ${
+                    theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {t('common.comingSoon')}
+                  </span>
+                </div>
+                <h3 className={`font-bold mb-0.5 ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {t('home.coursesSection.course2.title')}
+                </h3>
+                <p className={`text-sm line-clamp-1 ${
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                }`}>
+                  {t('home.coursesSection.course2.description')}
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Hover glow effect */}
-          <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
-            theme === 'dark'
-              ? 'shadow-[inset_0_0_40px_rgba(201,162,39,0.15)]'
-              : 'shadow-[inset_0_0_40px_rgba(245,158,11,0.1)]'
-          }`} />
-        </Link>
+          {/* Course 3 - Coming Soon */}
+          <div
+            className={`relative overflow-hidden rounded-xl p-5 opacity-60 ${
+              theme === 'dark'
+                ? 'bg-slate-800/50 border border-slate-700'
+                : 'bg-gray-50 border border-gray-200'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              {/* Course Icon */}
+              <div className={`flex-shrink-0 p-3 rounded-xl ${
+                theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
+              }`}>
+                <svg className="w-9 h-9" viewBox="0 0 36 36" fill="none">
+                  <circle cx="18" cy="18" r="14" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeDasharray="4 4" />
+                  <path d="M18 12v8M14 16h8" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+
+              {/* Course Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                    theme === 'dark' ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-700'
+                  }`}>
+                    ORIC
+                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded ${
+                    theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {t('common.comingSoon')}
+                  </span>
+                </div>
+                <h3 className={`font-bold mb-0.5 ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {t('home.coursesSection.course3.title')}
+                </h3>
+                <p className={`text-sm line-clamp-1 ${
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                }`}>
+                  {t('home.coursesSection.course3.description')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}

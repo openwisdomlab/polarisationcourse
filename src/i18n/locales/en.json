@@ -89,6 +89,18 @@
       "badge": "New Course",
       "title": "A New World Under Polarized Light",
       "description": "Shenzhen 01 Academy Innovation Challenge Camp course - A gamified education and scientific practice platform for polarization optics with progressive experiments, historical stories, and frontier research."
+    },
+    "coursesSection": {
+      "title": "Courses",
+      "viewAll": "View All",
+      "course2": {
+        "title": "Polarization Experiments Lab",
+        "description": "Hands-on experimental training with advanced polarization measurement techniques and instruments."
+      },
+      "course3": {
+        "title": "Frontier Research in Polarization",
+        "description": "Advanced research topics in full-polarization imaging, Mueller matrices, and biomedical applications."
+      }
     }
   },
   "course": {
@@ -99,6 +111,12 @@
     "viewHistory": "View History",
     "curriculum": "Course Curriculum",
     "unit": "Unit",
+    "units": {
+      "label": "Units"
+    },
+    "demos": {
+      "label": "Demos"
+    },
     "sections": "Topics",
     "learningObjectives": "Learning Objectives",
     "demo": "Demo",
@@ -278,6 +296,17 @@
       "description": "Continue your journey through the fascinating world of polarized light",
       "playGames": "Play Games",
       "joinResearch": "Join Research"
+    },
+    "inquiry": {
+      "title": "Exploration Questions",
+      "badge": "Problem-Driven",
+      "description": "Start your journey with these fascinating questions. Each question leads to interactive demos and puzzle games that help you discover the answers through exploration.",
+      "explore": "Explore",
+      "play": "Play",
+      "q1": "What exactly is polarization? Why can't we see it with naked eyes?",
+      "q2": "Why does Iceland spar create two images? What makes crystals split light?",
+      "q3": "Why do polarized sunglasses reduce glare? What's special about reflected light?",
+      "q4": "Why is the sky blue and sunsets orange? How does light scatter?"
     },
     "methods": {
       "title": "Research-Based Learning Model",

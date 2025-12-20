@@ -11,6 +11,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PersistentHeader } from '@/components/shared'
+import { PSRTIcon, ESRTIcon, ORICIcon, SURFIcon } from '@/components/icons'
 import {
   ChevronRight,
   BookOpen,
@@ -259,18 +260,25 @@ function CourseHero({ theme }: { theme: 'dark' | 'light' }) {
       {/* Content */}
       <div className={`relative z-10 p-8 md:p-12 ${theme === 'dark' ? 'bg-slate-900/80' : 'bg-white/80'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 rounded-full bg-gradient-to-br from-amber-400 to-orange-500">
+          <div className="p-2 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500">
             <GraduationCap className="w-6 h-6 text-white" />
           </div>
-          <span className={`text-sm font-medium ${theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}`}>
+          <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+            theme === 'dark'
+              ? 'bg-blue-500/20 text-blue-400'
+              : 'bg-blue-500/20 text-blue-700'
+          }`}>
+            P-SRT
+          </span>
+          <span className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
             {t('course.badge')}
           </span>
         </div>
 
         <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${
           theme === 'dark'
-            ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-pink-400'
-            : 'text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-pink-600'
+            ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400'
+            : 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600'
         }`}>
           {t('course.title')}
         </h1>
@@ -311,7 +319,7 @@ function CourseHero({ theme }: { theme: 'dark' | 'light' }) {
 
         {/* CTA buttons */}
         <div className="flex flex-wrap gap-4">
-          <button className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform">
+          <button className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform">
             <Play className="w-5 h-5" />
             {t('course.startLearning')}
           </button>
@@ -573,31 +581,31 @@ function TeachingMethodsSection({ theme }: { theme: 'dark' | 'light' }) {
 
   const methods = [
     {
-      stage: 'PSRT',
+      stage: 'P-SRT',
       nameKey: 'course.methods.psrt.name',
       descKey: 'course.methods.psrt.desc',
-      icon: '🌱',
+      Icon: PSRTIcon,
       color: '#22c55e', // green
     },
     {
-      stage: 'ESRT',
+      stage: 'E-SRT',
       nameKey: 'course.methods.esrt.name',
       descKey: 'course.methods.esrt.desc',
-      icon: '🔬',
+      Icon: ESRTIcon,
       color: '#06b6d4', // cyan
     },
     {
       stage: 'ORIC',
       nameKey: 'course.methods.oric.name',
       descKey: 'course.methods.oric.desc',
-      icon: '🚀',
+      Icon: ORICIcon,
       color: '#a855f7', // purple
     },
     {
       stage: 'SURF',
       nameKey: 'course.methods.surf.name',
       descKey: 'course.methods.surf.desc',
-      icon: '🌍',
+      Icon: SURFIcon,
       color: '#f59e0b', // amber
     },
   ]
@@ -622,14 +630,24 @@ function TeachingMethodsSection({ theme }: { theme: 'dark' | 'light' }) {
         {methods.map((method, i) => (
           <div
             key={i}
-            className={`rounded-xl p-4 border transition-all hover:scale-105 ${
+            className={`rounded-xl p-4 border transition-all hover:scale-105 hover:-translate-y-1 ${
               theme === 'dark'
-                ? 'bg-slate-800/50 border-slate-700'
-                : 'bg-white border-gray-200'
+                ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
+                : 'bg-white border-gray-200 hover:border-gray-300'
             }`}
+            style={{
+              boxShadow: theme === 'dark'
+                ? `0 4px 20px ${method.color}15`
+                : `0 4px 20px ${method.color}10`,
+            }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">{method.icon}</span>
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="p-2 rounded-lg"
+                style={{ backgroundColor: `${method.color}15` }}
+              >
+                <method.Icon size={28} primaryColor={method.color} />
+              </div>
               <span
                 className="text-sm font-bold px-2 py-0.5 rounded"
                 style={{ backgroundColor: `${method.color}20`, color: method.color }}
@@ -843,6 +861,142 @@ function ResourcesSection({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
+// Inquiry-based exploration section - research questions that drive learning
+function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
+  const { t } = useTranslation()
+
+  const inquiryQuestions = [
+    {
+      question: t('course.inquiry.q1'),
+      unitLink: 'unit1',
+      icon: '🔍',
+      color: '#3B82F6', // blue
+      demoLink: '/demos/polarization-intro',
+      gameLink: '/game2d?level=0',
+    },
+    {
+      question: t('course.inquiry.q2'),
+      unitLink: 'unit1',
+      icon: '💎',
+      color: '#8B5CF6', // purple
+      demoLink: '/demos/birefringence',
+      gameLink: '/game2d?level=16',
+    },
+    {
+      question: t('course.inquiry.q3'),
+      unitLink: 'unit2',
+      icon: '🪞',
+      color: '#06B6D4', // cyan
+      demoLink: '/demos/brewster',
+      gameLink: null,
+    },
+    {
+      question: t('course.inquiry.q4'),
+      unitLink: 'unit4',
+      icon: '🌅',
+      color: '#F59E0B', // amber
+      demoLink: '/demos/rayleigh',
+      gameLink: null,
+    },
+  ]
+
+  return (
+    <div className="mb-12">
+      <div className="flex items-center gap-3 mb-6">
+        <h2 className={`text-2xl font-bold ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>
+          {t('course.inquiry.title')}
+        </h2>
+        <span className={`text-xs px-2 py-1 rounded-full ${
+          theme === 'dark' ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
+        }`}>
+          {t('course.inquiry.badge')}
+        </span>
+      </div>
+
+      <p className={`text-sm mb-6 max-w-3xl ${
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      }`}>
+        {t('course.inquiry.description')}
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {inquiryQuestions.map((item, i) => (
+          <div
+            key={i}
+            className={`group relative rounded-xl p-5 border transition-all duration-300 hover:-translate-y-1 ${
+              theme === 'dark'
+                ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
+                : 'bg-white border-gray-200 hover:border-gray-300'
+            }`}
+            style={{
+              boxShadow: theme === 'dark'
+                ? `0 4px 20px ${item.color}10`
+                : `0 4px 20px ${item.color}08`,
+            }}
+          >
+            {/* Question icon */}
+            <div className="flex items-start gap-4">
+              <div
+                className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-xl"
+                style={{ backgroundColor: `${item.color}15` }}
+              >
+                {item.icon}
+              </div>
+              <div className="flex-1">
+                <p className={`font-medium mb-3 ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {item.question}
+                </p>
+
+                {/* Quick action buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    to={item.demoLink}
+                    onClick={e => e.stopPropagation()}
+                    className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all hover:scale-105 ${
+                      theme === 'dark'
+                        ? 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-900/50'
+                        : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'
+                    }`}
+                  >
+                    <FlaskConical className="w-3 h-3" />
+                    {t('course.inquiry.explore')}
+                  </Link>
+                  {item.gameLink && (
+                    <Link
+                      to={item.gameLink}
+                      onClick={e => e.stopPropagation()}
+                      className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all hover:scale-105 ${
+                        theme === 'dark'
+                          ? 'bg-pink-900/30 text-pink-400 hover:bg-pink-900/50'
+                          : 'bg-pink-50 text-pink-700 hover:bg-pink-100'
+                      }`}
+                    >
+                      <Gamepad2 className="w-3 h-3" />
+                      {t('course.inquiry.play')}
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Subtle glow on hover */}
+            <div
+              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+              style={{
+                boxShadow: `inset 0 0 20px ${item.color}10`
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function CoursePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
@@ -865,6 +1019,9 @@ export function CoursePage() {
       <main className="max-w-5xl mx-auto px-4 py-8">
         {/* Hero section */}
         <CourseHero theme={theme} />
+
+        {/* Inquiry-based Exploration - Problem-driven learning */}
+        <InquiryExplorationSection theme={theme} />
 
         {/* PSRT Teaching Methods */}
         <TeachingMethodsSection theme={theme} />
@@ -898,8 +1055,8 @@ export function CoursePage() {
         {/* Footer CTA */}
         <div className={`mt-12 p-8 rounded-2xl text-center ${
           theme === 'dark'
-            ? 'bg-gradient-to-r from-amber-900/30 via-orange-900/30 to-pink-900/30'
-            : 'bg-gradient-to-r from-amber-50 via-orange-50 to-pink-50'
+            ? 'bg-gradient-to-r from-blue-900/30 via-indigo-900/30 to-violet-900/30'
+            : 'bg-gradient-to-r from-blue-50 via-indigo-50 to-violet-50'
         }`}>
           <h3 className={`text-xl font-bold mb-3 ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -912,7 +1069,7 @@ export function CoursePage() {
           <div className="flex justify-center gap-4 flex-wrap">
             <Link
               to="/games"
-              className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform"
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform"
             >
               <Gamepad2 className="w-5 h-5" />
               {t('course.cta.playGames')}

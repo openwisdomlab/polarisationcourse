@@ -780,8 +780,8 @@ export function CourseIcon({ className, size = 48, primaryColor, secondaryColor 
     >
       <defs>
         <linearGradient id="course-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={primaryColor || '#F59E0B'} />
-          <stop offset="100%" stopColor={secondaryColor || '#D97706'} />
+          <stop offset="0%" stopColor={primaryColor || '#3B82F6'} />
+          <stop offset="100%" stopColor={secondaryColor || '#1D4ED8'} />
         </linearGradient>
         <linearGradient id="course-light" x1="0%" y1="100%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#ff4444" stopOpacity="0.8" />
@@ -907,6 +907,291 @@ export function OpenDataIcon({ className, size = 48, primaryColor, secondaryColo
   )
 }
 
+// =================================================================
+// Learning Mode Icons - PSRT, ESRT, ORIC, SURF
+// Custom SVG icons for research-oriented learning stages
+// =================================================================
+
+// PSRT - Problem-driven Scientific Research Training (Foundation level)
+// Icon: Seedling with light rays - represents growth and discovery
+export function PSRTIcon({ className, size = 32, primaryColor }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      className={cn('transition-all duration-300', className)}
+    >
+      <defs>
+        <linearGradient id="psrt-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor={primaryColor || '#22c55e'} />
+          <stop offset="100%" stopColor="#86efac" />
+        </linearGradient>
+        <filter id="psrt-glow">
+          <feGaussianBlur stdDeviation="1" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Soil/ground */}
+      <path
+        d="M4 26 Q16 28, 28 26"
+        fill="none"
+        stroke="url(#psrt-grad)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      {/* Main stem */}
+      <path
+        d="M16 26 L16 14"
+        stroke="url(#psrt-grad)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      {/* Left leaf */}
+      <path
+        d="M16 18 Q10 16, 8 12 Q10 14, 16 16"
+        fill="url(#psrt-grad)"
+        opacity="0.8"
+      />
+      {/* Right leaf */}
+      <path
+        d="M16 14 Q22 12, 24 8 Q22 10, 16 12"
+        fill="url(#psrt-grad)"
+        opacity="0.9"
+      />
+      {/* Light rays from top */}
+      <path
+        d="M16 4 L16 8"
+        stroke="url(#psrt-grad)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        filter="url(#psrt-glow)"
+        opacity="0.7"
+      />
+      <path
+        d="M10 6 L12 9"
+        stroke="url(#psrt-grad)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path
+        d="M22 6 L20 9"
+        stroke="url(#psrt-grad)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      {/* Question mark accent */}
+      <circle cx="26" cy="20" r="4" fill="none" stroke="url(#psrt-grad)" strokeWidth="1.5" opacity="0.6" />
+      <text x="24.5" y="22.5" fontSize="6" fill="url(#psrt-grad)" fontWeight="bold" opacity="0.7">?</text>
+    </svg>
+  )
+}
+
+// ESRT - Experimental Science Research Training (Application level)
+// Icon: Microscope with light beam - represents hands-on experimentation
+export function ESRTIcon({ className, size = 32, primaryColor }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      className={cn('transition-all duration-300', className)}
+    >
+      <defs>
+        <linearGradient id="esrt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={primaryColor || '#06b6d4'} />
+          <stop offset="100%" stopColor="#67e8f9" />
+        </linearGradient>
+        <filter id="esrt-glow">
+          <feGaussianBlur stdDeviation="1" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Microscope eyepiece */}
+      <rect x="13" y="4" width="6" height="4" rx="1" fill="url(#esrt-grad)" />
+      {/* Microscope tube */}
+      <path
+        d="M14 8 L14 14 L10 14 L10 16 L22 16 L22 14 L18 14 L18 8"
+        fill="none"
+        stroke="url(#esrt-grad)"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      {/* Objective lens */}
+      <rect x="14" y="16" width="4" height="3" rx="0.5" fill="url(#esrt-grad)" opacity="0.8" />
+      {/* Stage */}
+      <rect x="8" y="22" width="16" height="2" rx="1" fill="url(#esrt-grad)" />
+      {/* Base */}
+      <path
+        d="M6 28 L26 28 L24 24 L8 24 Z"
+        fill="url(#esrt-grad)"
+        opacity="0.6"
+      />
+      {/* Light beam from objective */}
+      <path
+        d="M16 19 L16 22"
+        stroke="url(#esrt-grad)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        filter="url(#esrt-glow)"
+        opacity="0.9"
+      />
+      <circle cx="16" cy="21" r="2" fill="url(#esrt-grad)" opacity="0.3" filter="url(#esrt-glow)" />
+      {/* Measurement scale marks */}
+      <path d="M25 12 L27 12" stroke="url(#esrt-grad)" strokeWidth="1" opacity="0.5" />
+      <path d="M25 14 L28 14" stroke="url(#esrt-grad)" strokeWidth="1" opacity="0.5" />
+      <path d="M25 16 L27 16" stroke="url(#esrt-grad)" strokeWidth="1" opacity="0.5" />
+    </svg>
+  )
+}
+
+// ORIC - Original Research & Innovation Contribution (Research level)
+// Icon: Rocket with trajectory - represents frontier exploration
+export function ORICIcon({ className, size = 32, primaryColor }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      className={cn('transition-all duration-300', className)}
+    >
+      <defs>
+        <linearGradient id="oric-grad" x1="100%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stopColor={primaryColor || '#a855f7'} />
+          <stop offset="100%" stopColor="#d8b4fe" />
+        </linearGradient>
+        <linearGradient id="oric-flame" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#f97316" />
+        </linearGradient>
+        <filter id="oric-glow">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Rocket body */}
+      <path
+        d="M16 4 Q20 8, 20 16 L18 20 L14 20 L12 16 Q12 8, 16 4"
+        fill="url(#oric-grad)"
+      />
+      {/* Rocket window */}
+      <circle cx="16" cy="12" r="2.5" fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.7" />
+      <circle cx="16" cy="12" r="1" fill="#fff" opacity="0.5" />
+      {/* Left fin */}
+      <path
+        d="M12 16 L8 22 L12 20"
+        fill="url(#oric-grad)"
+        opacity="0.8"
+      />
+      {/* Right fin */}
+      <path
+        d="M20 16 L24 22 L20 20"
+        fill="url(#oric-grad)"
+        opacity="0.8"
+      />
+      {/* Flame */}
+      <path
+        d="M14 20 L16 28 L18 20"
+        fill="url(#oric-flame)"
+        filter="url(#oric-glow)"
+      />
+      <path
+        d="M15 20 L16 25 L17 20"
+        fill="#fef3c7"
+        opacity="0.8"
+      />
+      {/* Trajectory trail */}
+      <path
+        d="M6 28 Q10 24, 14 22"
+        fill="none"
+        stroke="url(#oric-grad)"
+        strokeWidth="1"
+        strokeDasharray="2 2"
+        opacity="0.4"
+      />
+      {/* Stars */}
+      <circle cx="6" cy="8" r="1" fill="url(#oric-grad)" opacity="0.5" />
+      <circle cx="26" cy="6" r="0.8" fill="url(#oric-grad)" opacity="0.4" />
+      <circle cx="28" cy="14" r="0.6" fill="url(#oric-grad)" opacity="0.3" />
+    </svg>
+  )
+}
+
+// SURF - Student Undergraduate Research Fellowship (Advanced Research)
+// Icon: Globe with network connections - represents global research impact
+export function SURFIcon({ className, size = 32, primaryColor }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      className={cn('transition-all duration-300', className)}
+    >
+      <defs>
+        <linearGradient id="surf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={primaryColor || '#f59e0b'} />
+          <stop offset="100%" stopColor="#fcd34d" />
+        </linearGradient>
+        <filter id="surf-glow">
+          <feGaussianBlur stdDeviation="1" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Globe outline */}
+      <circle cx="16" cy="16" r="11" fill="none" stroke="url(#surf-grad)" strokeWidth="2" />
+      {/* Latitude lines */}
+      <ellipse cx="16" cy="16" rx="11" ry="4" fill="none" stroke="url(#surf-grad)" strokeWidth="1" opacity="0.4" />
+      <ellipse cx="16" cy="16" rx="11" ry="8" fill="none" stroke="url(#surf-grad)" strokeWidth="1" opacity="0.3" />
+      {/* Longitude line */}
+      <ellipse cx="16" cy="16" rx="4" ry="11" fill="none" stroke="url(#surf-grad)" strokeWidth="1" opacity="0.4" />
+      {/* Network nodes */}
+      <circle cx="10" cy="12" r="2" fill="url(#surf-grad)" filter="url(#surf-glow)" />
+      <circle cx="22" cy="14" r="2" fill="url(#surf-grad)" filter="url(#surf-glow)" />
+      <circle cx="14" cy="22" r="2" fill="url(#surf-grad)" filter="url(#surf-glow)" />
+      <circle cx="20" cy="20" r="1.5" fill="url(#surf-grad)" opacity="0.7" />
+      {/* Connection lines */}
+      <path d="M10 12 L22 14" stroke="url(#surf-grad)" strokeWidth="1" opacity="0.6" />
+      <path d="M22 14 L20 20" stroke="url(#surf-grad)" strokeWidth="1" opacity="0.6" />
+      <path d="M20 20 L14 22" stroke="url(#surf-grad)" strokeWidth="1" opacity="0.6" />
+      <path d="M14 22 L10 12" stroke="url(#surf-grad)" strokeWidth="1" opacity="0.6" />
+      {/* Wave/signal emanating */}
+      <path
+        d="M26 8 Q28 10, 26 12"
+        fill="none"
+        stroke="url(#surf-grad)"
+        strokeWidth="1"
+        opacity="0.5"
+      />
+      <path
+        d="M28 6 Q31 10, 28 14"
+        fill="none"
+        stroke="url(#surf-grad)"
+        strokeWidth="1"
+        opacity="0.3"
+      />
+    </svg>
+  )
+}
+
 // Export a map for easy lookup - all 9 homepage modules + extras
 export const ModuleIconMap = {
   // 9 main homepage modules
@@ -922,6 +1207,11 @@ export const ModuleIconMap = {
   openData: OpenDataIcon,
   // Course module
   course: CourseIcon,
+  // Learning mode icons
+  psrt: PSRTIcon,
+  esrt: ESRTIcon,
+  oric: ORICIcon,
+  surf: SURFIcon,
   // Legacy/alternate names for backward compatibility
   deviceLibrary: DeviceLibraryIcon,
   opticalBench: OpticalBenchIcon,
