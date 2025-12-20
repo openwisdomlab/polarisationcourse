@@ -6,7 +6,7 @@
  * - 2D Puzzle Game
  * - 3D Voxel Game
  * - Card Game
- * - Escape Room (coming soon)
+ * - Escape Room
  */
 
 import { Link } from 'react-router-dom'
@@ -58,9 +58,9 @@ const GAME_MODES: ModuleTab[] = [
     icon: DoorOpen,
     label: 'Escape Room',
     labelZh: '密室逃脱',
-    description: 'Solve optical puzzles to escape the lab',
-    descriptionZh: '解开光学谜题，逃出实验室',
-    status: 'coming-soon',
+    description: 'Story-driven adventure with 5 themed rooms',
+    descriptionZh: '剧情驱动的冒险，穿越5个主题密室',
+    status: 'active',
   },
 ]
 
