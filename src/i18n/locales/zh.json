@@ -254,6 +254,45 @@
       "description": "继续你在偏振光奇妙世界的旅程",
       "playGames": "开始游戏",
       "joinResearch": "加入研究"
+    },
+    "methods": {
+      "title": "研究型学习模式",
+      "psrt": {
+        "name": "问题驱动",
+        "desc": "开拓视野、激发志趣，科研入门"
+      },
+      "esrt": {
+        "name": "轮转研究训练",
+        "desc": "开放寻找志趣，科研能力提升"
+      },
+      "oric": {
+        "name": "自主原创研究",
+        "desc": "开放导师、不限学科，主动创新"
+      },
+      "surf": {
+        "name": "全球顶尖导师",
+        "desc": "科技企业实习，瞄准前沿科研"
+      }
+    },
+    "teaching": {
+      "title": "四大教学环节",
+      "lecture": "课堂授课",
+      "lectureDesc": "基础知识和实验现象介绍",
+      "practice": "动手实践",
+      "practiceDesc": "重复课程内容并自行拓展",
+      "experiment": "规范实验",
+      "experimentDesc": "科学研究规范化模式",
+      "research": "自主科研",
+      "researchDesc": "自选课题开展科研"
+    },
+    "apps": {
+      "title": "应用领域",
+      "ocean": "海洋探测",
+      "biomedical": "生物医学",
+      "materials": "材料分析",
+      "industry": "工业检测",
+      "autonomous": "自动驾驶",
+      "atmosphere": "大气遥感"
     }
   },
   "calc": {
