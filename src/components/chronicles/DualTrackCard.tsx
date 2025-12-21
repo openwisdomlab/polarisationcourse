@@ -27,10 +27,11 @@ export interface DualTrackCardProps {
   onToggle: () => void
   onReadStory: () => void
   onLinkTo?: (year: number, track: 'optics' | 'polarization') => void
+  onHighlightCourses?: (year: number, track: 'optics' | 'polarization') => void
   side: 'left' | 'right'
 }
 
-export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadStory, onLinkTo, side: _side }: DualTrackCardProps) {
+export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadStory, onLinkTo, onHighlightCourses, side: _side }: DualTrackCardProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const navigate = useNavigate()
@@ -61,7 +62,13 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
         trackColor.hoverBorder,
         theme === 'dark' ? 'hover:shadow-lg hover:shadow-black/20' : 'hover:shadow-md'
       )}
-      onClick={onToggle}
+      onClick={() => {
+        onToggle()
+        // Highlight related courses when clicking on an event
+        if (onHighlightCourses) {
+          onHighlightCourses(event.year, event.track)
+        }
+      }}
     >
       {/* Header */}
       <div className="flex items-start gap-2">

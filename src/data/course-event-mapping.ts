@@ -297,6 +297,37 @@ export function getDemoCountByEvent(year: number, track: 'optics' | 'polarizatio
 }
 
 /**
+ * 根据选中的事件过滤相关的演示
+ * @param selectedEvents 选中的事件列表 [{year, track}]
+ * @returns 匹配的演示ID集合
+ */
+export function filterDemosByEvents(
+  selectedEvents: Array<{ year: number; track: 'optics' | 'polarization' }>
+): Set<string> {
+  const matchedDemos = new Set<string>()
+
+  selectedEvents.forEach(event => {
+    const mappings = COURSE_EVENT_MAPPINGS.filter(
+      m => m.eventYear === event.year && m.eventTrack === event.track
+    )
+    mappings.forEach(m => {
+      matchedDemos.add(m.demoId)
+    })
+  })
+
+  return matchedDemos
+}
+
+/**
+ * 获取演示关联的所有事件（包含完整事件信息）
+ * @param demoId 演示ID
+ * @returns 关联的事件映射列表
+ */
+export function getEventMappingsByDemo(demoId: string): CourseEventMapping[] {
+  return COURSE_EVENT_MAPPINGS.filter(m => m.demoId === demoId)
+}
+
+/**
  * 单元标题映射
  */
 export const UNIT_INFO = [

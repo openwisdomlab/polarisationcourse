@@ -23,7 +23,7 @@ import {
 // Data imports
 import { TIMELINE_EVENTS, type TimelineEvent } from '@/data/timeline-events'
 import { CATEGORY_LABELS } from '@/data/chronicles-constants'
-import { filterEventsByDemos } from '@/data/course-event-mapping'
+import { filterEventsByDemos, filterDemosByEvents } from '@/data/course-event-mapping'
 
 // Component imports
 import {
@@ -51,6 +51,7 @@ export function ChroniclesPage() {
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
   const [selectedDemos, setSelectedDemos] = useState<string[]>([]) // 课程筛选状态
+  const [highlightedDemos, setHighlightedDemos] = useState<Set<string>>(new Set()) // 事件点击高亮的课程模块
 
   // Use single-track layout on mobile/tablet
   const useSingleTrack = isMobile || isTablet
@@ -78,6 +79,45 @@ export function ChroniclesPage() {
   // 处理课程筛选变化
   const handleFilterChange = useCallback((demos: string[]) => {
     setSelectedDemos(demos)
+  }, [])
+
+  // 处理从CourseNavigator点击事件跳转到时间线
+  const handleEventClickFromNav = useCallback((year: number, track: 'optics' | 'polarization') => {
+    // Reset filters to show all events
+    setTrackFilter('all')
+    setFilter('')
+    setSelectedDemos([])
+
+    // Find the target event in the filtered events
+    const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
+    const targetIndex = allEventsSorted.findIndex(
+      e => e.year === year && e.track === track
+    )
+
+    if (targetIndex !== -1) {
+      // Expand the target event
+      setExpandedEvent(targetIndex)
+
+      // Scroll to the target event after a short delay to allow re-render
+      setTimeout(() => {
+        const targetElement = document.querySelector(`[data-event-index="${targetIndex}"]`)
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 100)
+    }
+  }, [])
+
+  // 处理点击时间线事件，高亮相关课程模块
+  const handleEventClickForHighlight = useCallback((year: number, track: 'optics' | 'polarization') => {
+    // Get related demos for this event
+    const relatedDemos = filterDemosByEvents([{ year, track }])
+    setHighlightedDemos(relatedDemos)
+
+    // Clear after 5 seconds
+    setTimeout(() => {
+      setHighlightedDemos(new Set())
+    }, 5000)
   }, [])
 
   // Get unique scientists from events
@@ -326,6 +366,8 @@ export function ChroniclesPage() {
               <CourseNavigator
                 selectedDemos={selectedDemos}
                 onFilterChange={handleFilterChange}
+                highlightedDemos={highlightedDemos}
+                onEventClick={handleEventClickFromNav}
               />
             )}
 
@@ -447,6 +489,7 @@ export function ChroniclesPage() {
                         onToggle={() => setExpandedEvent(expandedEvent === idx ? null : idx)}
                         onReadStory={() => handleOpenStory(idx)}
                         onLinkTo={handleLinkTo}
+                        onHighlightCourses={handleEventClickForHighlight}
                         side={event.track === 'optics' ? 'left' : 'right'}
                       />
                     </div>
@@ -531,6 +574,7 @@ export function ChroniclesPage() {
                                       onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
                                       onReadStory={() => handleOpenStory(opticsIndex)}
                                       onLinkTo={handleLinkTo}
+                                      onHighlightCourses={handleEventClickForHighlight}
                                       side="left"
                                     />
                                   )
@@ -587,6 +631,7 @@ export function ChroniclesPage() {
                                       onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
                                       onReadStory={() => handleOpenStory(polarizationIndex)}
                                       onLinkTo={handleLinkTo}
+                                      onHighlightCourses={handleEventClickForHighlight}
                                       side="right"
                                     />
                                   )
