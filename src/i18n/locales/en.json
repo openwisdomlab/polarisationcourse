@@ -419,6 +419,8 @@
     },
     "collection": {
       "title": "Insight Collection",
+      "sectionTitle": "Optical Items Collection",
+      "badge": "Achievement System",
       "description": "Collect optical devices by completing demos and quizzes",
       "collected": "Collected",
       "all": "All",

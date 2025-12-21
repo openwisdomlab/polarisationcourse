@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PersistentHeader } from '@/components/shared'
 import { PSRTIcon, ESRTIcon, ORICIcon, SURFIcon } from '@/components/icons'
-import { LearningPathMap } from '@/components/course'
+import { WorldMap, InsightCollection } from '@/components/course'
 import { useCourseProgress } from '@/hooks'
 import {
   ChevronRight,
@@ -1002,6 +1002,37 @@ function HomeExperimentsSection({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
+// Insight Collection Section - 光学道具收集系统包装器
+function InsightCollectionSection({ theme, completedDemos }: { theme: 'dark' | 'light'; completedDemos: string[] }) {
+  const { t } = useTranslation()
+  const { progress } = useCourseProgress()
+
+  return (
+    <div className="mb-12">
+      <div className="flex items-center gap-3 mb-6">
+        <h2 className={`text-2xl font-bold ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>
+          {t('course.collection.sectionTitle')}
+        </h2>
+        <span className={`text-xs px-2 py-1 rounded-full ${
+          theme === 'dark' ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+        }`}>
+          {t('course.collection.badge')}
+        </span>
+      </div>
+
+      <InsightCollection
+        theme={theme}
+        completedDemos={completedDemos}
+        quizScores={progress.quizScores || {}}
+        streakDays={progress.streakDays || 0}
+        variant="full"
+      />
+    </div>
+  )
+}
+
 // Inquiry-based exploration section - research questions that drive learning
 function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
@@ -1270,10 +1301,10 @@ export function CoursePage() {
         {/* Progress Stats - 学习进度统计 */}
         <ProgressStats theme={theme} />
 
-        {/* Learning Path Map and Inquiry side by side on desktop */}
+        {/* World Map - 游戏化学习地图 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Learning Path Map - 学习路径可视化 */}
-          <LearningPathMap
+          {/* World Map - 游戏化学习地图（替代原有的 LearningPathMap） */}
+          <WorldMap
             theme={theme}
             completedDemos={progress.completedDemos}
           />
@@ -1283,6 +1314,9 @@ export function CoursePage() {
             <InquiryExplorationSection theme={theme} />
           </div>
         </div>
+
+        {/* Insight Collection - 光学道具收集与成就系统 */}
+        <InsightCollectionSection theme={theme} completedDemos={progress.completedDemos} />
 
         {/* Home Experiments - Family-friendly experiments */}
         <HomeExperimentsSection theme={theme} />

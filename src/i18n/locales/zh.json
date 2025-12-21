@@ -419,6 +419,8 @@
     },
     "collection": {
       "title": "灵感收集册",
+      "sectionTitle": "光学道具收集",
+      "badge": "成就系统",
       "description": "完成演示和测验，收集光学道具",
       "collected": "已收集",
       "all": "全部",
