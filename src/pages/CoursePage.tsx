@@ -11,7 +11,6 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PersistentHeader } from '@/components/shared'
-import { PSRTIcon, ESRTIcon, ORICIcon, SURFIcon } from '@/components/icons'
 import { WorldMap, InsightCollection } from '@/components/course'
 import { useCourseProgress } from '@/hooks'
 import {
@@ -21,20 +20,19 @@ import {
   FlaskConical,
   Lightbulb,
   FileText,
-  ExternalLink,
   Play,
-  Lock,
   CheckCircle,
   Star,
   Sparkles,
   GraduationCap,
   Target,
-  Users,
   Telescope,
   Zap,
   TrendingUp,
   Clock,
-  Flame
+  Flame,
+  ArrowRight,
+  Users
 } from 'lucide-react'
 
 // Course unit definition
@@ -45,11 +43,11 @@ interface CourseUnit {
   descriptionKey: string
   icon: React.ReactNode
   color: string
-  status: 'locked' | 'available' | 'completed'
   sections?: {
     id: string
     titleKey: string
     descriptionKey: string
+    demoLink?: string  // Link to related demo
   }[]
   resources: {
     demos?: string[]
@@ -58,14 +56,14 @@ interface CourseUnit {
     tools?: string[]
   }
   attachments?: {
-    type: 'ppt' | 'pdf' | 'doc' | 'link'
+    type: 'ppt' | 'pdf' | 'doc'
     titleKey: string
-    url?: string
   }[]
   learningObjectives?: string[]
 }
 
 // Course structure based on PSRT curriculum - 5 main units
+// All units are accessible for open exploration (no lock/unlock system)
 const COURSE_UNITS: CourseUnit[] = [
   {
     // 第一单元：光的偏振态及其调制和测量
@@ -75,21 +73,19 @@ const COURSE_UNITS: CourseUnit[] = [
     descriptionKey: 'course.units.unit1.description',
     icon: <Lightbulb className="w-6 h-6" />,
     color: '#C9A227', // amber
-    status: 'available',
     sections: [
-      { id: '1.1', titleKey: 'course.units.unit1.s1.title', descriptionKey: 'course.units.unit1.s1.desc' },
-      { id: '1.2', titleKey: 'course.units.unit1.s2.title', descriptionKey: 'course.units.unit1.s2.desc' },
-      { id: '1.3', titleKey: 'course.units.unit1.s3.title', descriptionKey: 'course.units.unit1.s3.desc' },
+      { id: '1.1', titleKey: 'course.units.unit1.s1.title', descriptionKey: 'course.units.unit1.s1.desc', demoLink: '/demos/light-wave' },
+      { id: '1.2', titleKey: 'course.units.unit1.s2.title', descriptionKey: 'course.units.unit1.s2.desc', demoLink: '/demos/birefringence' },
+      { id: '1.3', titleKey: 'course.units.unit1.s3.title', descriptionKey: 'course.units.unit1.s3.desc', demoLink: '/demos/malus' },
     ],
     resources: {
       demos: ['light-wave', 'polarization-intro', 'polarization-types', 'birefringence', 'malus'],
       tools: ['/optical-studio?tab=devices'],
-      games: ['/games/2d?level=0', '/games/2d?level=1', '/games/2d?level=16', '/games/2d?level=17'],
+      games: ['/game2d?level=0', '/game2d?level=1', '/game2d?level=16', '/game2d?level=17'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit1PPT' },
       { type: 'pdf', titleKey: 'course.attachments.unit1Guide' },
-      { type: 'link', titleKey: 'course.attachments.icelandSpar', url: 'https://en.wikipedia.org/wiki/Iceland_spar' },
     ],
     learningObjectives: [
       'course.objectives.unit1.1',
@@ -106,15 +102,16 @@ const COURSE_UNITS: CourseUnit[] = [
     descriptionKey: 'course.units.unit2.description',
     icon: <Zap className="w-6 h-6" />,
     color: '#6366F1', // indigo
-    status: 'available',
+    sections: [
+      { id: '2.1', titleKey: 'course.units.unit2.s1.title', descriptionKey: 'course.units.unit2.s1.desc', demoLink: '/demos/fresnel' },
+      { id: '2.2', titleKey: 'course.units.unit2.s2.title', descriptionKey: 'course.units.unit2.s2.desc', demoLink: '/demos/brewster' },
+    ],
     resources: {
       demos: ['fresnel', 'brewster'],
       experiments: ['/optical-studio?tab=experiments'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit2PPT' },
-      { type: 'link', titleKey: 'course.attachments.fresnelWiki', url: 'https://en.wikipedia.org/wiki/Fresnel_equations' },
-      { type: 'link', titleKey: 'course.attachments.brewsterWiki', url: 'https://en.wikipedia.org/wiki/Brewster%27s_angle' },
     ],
     learningObjectives: [
       'course.objectives.unit2.1',
@@ -130,15 +127,14 @@ const COURSE_UNITS: CourseUnit[] = [
     descriptionKey: 'course.units.unit3.description',
     icon: <Sparkles className="w-6 h-6" />,
     color: '#0891B2', // cyan
-    status: 'available',
     sections: [
-      { id: '3.1', titleKey: 'course.units.unit3.s1.title', descriptionKey: 'course.units.unit3.s1.desc' },
-      { id: '3.2', titleKey: 'course.units.unit3.s2.title', descriptionKey: 'course.units.unit3.s2.desc' },
+      { id: '3.1', titleKey: 'course.units.unit3.s1.title', descriptionKey: 'course.units.unit3.s1.desc', demoLink: '/demos/chromatic' },
+      { id: '3.2', titleKey: 'course.units.unit3.s2.title', descriptionKey: 'course.units.unit3.s2.desc', demoLink: '/demos/optical-rotation' },
     ],
     resources: {
       demos: ['anisotropy', 'chromatic', 'optical-rotation', 'waveplate'],
-      experiments: ['/experiments/diy'],
-      games: ['/games/2d?level=3'],
+      experiments: ['/optical-studio?tab=experiments'],
+      games: ['/game2d?level=3'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit3PPT' },
@@ -158,17 +154,15 @@ const COURSE_UNITS: CourseUnit[] = [
     descriptionKey: 'course.units.unit4.description',
     icon: <Target className="w-6 h-6" />,
     color: '#F59E0B', // orange
-    status: 'available',
     sections: [
-      { id: '4.1', titleKey: 'course.units.unit4.s1.title', descriptionKey: 'course.units.unit4.s1.desc' },
-      { id: '4.2', titleKey: 'course.units.unit4.s2.title', descriptionKey: 'course.units.unit4.s2.desc' },
+      { id: '4.1', titleKey: 'course.units.unit4.s1.title', descriptionKey: 'course.units.unit4.s1.desc', demoLink: '/demos/rayleigh' },
+      { id: '4.2', titleKey: 'course.units.unit4.s2.title', descriptionKey: 'course.units.unit4.s2.desc', demoLink: '/demos/mie-scattering' },
     ],
     resources: {
       demos: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit4PPT' },
-      { type: 'link', titleKey: 'course.attachments.mieTheory', url: 'https://en.wikipedia.org/wiki/Mie_scattering' },
     ],
     learningObjectives: [
       'course.objectives.unit4.1',
@@ -184,12 +178,11 @@ const COURSE_UNITS: CourseUnit[] = [
     descriptionKey: 'course.units.unit5.description',
     icon: <Telescope className="w-6 h-6" />,
     color: '#8B5CF6', // violet
-    status: 'available',
     sections: [
-      { id: '5.1', titleKey: 'course.units.unit5.s1.title', descriptionKey: 'course.units.unit5.s1.desc' },
-      { id: '5.2', titleKey: 'course.units.unit5.s2.title', descriptionKey: 'course.units.unit5.s2.desc' },
-      { id: '5.3', titleKey: 'course.units.unit5.s3.title', descriptionKey: 'course.units.unit5.s3.desc' },
-      { id: '5.4', titleKey: 'course.units.unit5.s4.title', descriptionKey: 'course.units.unit5.s4.desc' },
+      { id: '5.1', titleKey: 'course.units.unit5.s1.title', descriptionKey: 'course.units.unit5.s1.desc', demoLink: '/demos/stokes' },
+      { id: '5.2', titleKey: 'course.units.unit5.s2.title', descriptionKey: 'course.units.unit5.s2.desc', demoLink: '/demos/mueller' },
+      { id: '5.3', titleKey: 'course.units.unit5.s3.title', descriptionKey: 'course.units.unit5.s3.desc', demoLink: '/demos/jones' },
+      { id: '5.4', titleKey: 'course.units.unit5.s4.title', descriptionKey: 'course.units.unit5.s4.desc', demoLink: '/demos/polarimetric-microscopy' },
     ],
     resources: {
       demos: ['stokes', 'mueller', 'jones', 'polarimetric-microscopy'],
@@ -198,7 +191,6 @@ const COURSE_UNITS: CourseUnit[] = [
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit5PPT' },
       { type: 'pdf', titleKey: 'course.attachments.muellerGuide' },
-      { type: 'link', titleKey: 'course.attachments.researchPapers' },
     ],
     learningObjectives: [
       'course.objectives.unit5.1',
@@ -345,33 +337,23 @@ function CourseHero({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
-// Course unit card component
+// Course unit card component - all units accessible for open exploration
 function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const statusIcon = unit.status === 'completed'
-    ? <CheckCircle className="w-5 h-5 text-emerald-500" />
-    : unit.status === 'locked'
-      ? <Lock className="w-5 h-5 text-gray-400" />
-      : <Star className="w-5 h-5" style={{ color: unit.color }} />
-
   return (
     <div
-      className={`rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
-        unit.status === 'locked'
-          ? 'opacity-60'
-          : 'hover:-translate-y-1 hover:shadow-lg cursor-pointer'
-      } ${
+      className={`rounded-2xl border-2 transition-all duration-300 overflow-hidden hover:-translate-y-1 hover:shadow-lg cursor-pointer ${
         theme === 'dark'
           ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
           : 'bg-white border-gray-200 hover:border-gray-400'
       }`}
       style={{
-        borderColor: unit.status !== 'locked' && isExpanded ? unit.color : undefined,
-        boxShadow: unit.status !== 'locked' && isExpanded ? `0 0 30px ${unit.color}30` : undefined,
+        borderColor: isExpanded ? unit.color : undefined,
+        boxShadow: isExpanded ? `0 0 30px ${unit.color}30` : undefined,
       }}
-      onClick={() => unit.status !== 'locked' && setIsExpanded(!isExpanded)}
+      onClick={() => setIsExpanded(!isExpanded)}
     >
       {/* Unit header */}
       <div className="p-5">
@@ -392,7 +374,7 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
               }`}>
                 {t('course.unit')} {index + 1}
               </span>
-              {statusIcon}
+              <Star className="w-5 h-5" style={{ color: unit.color }} />
             </div>
             <h3 className={`text-lg font-bold mb-1 ${
               theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -414,7 +396,7 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
       </div>
 
       {/* Expanded content */}
-      {isExpanded && unit.status !== 'locked' && (
+      {isExpanded && (
         <div className={`px-5 pb-5 pt-0 border-t ${
           theme === 'dark' ? 'border-slate-700' : 'border-gray-100'
         }`}>
@@ -422,7 +404,7 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
             {t(unit.descriptionKey)}
           </p>
 
-          {/* Course sections */}
+          {/* Course sections - clickable to link to demos */}
           {unit.sections && unit.sections.length > 0 && (
             <div className="mb-4">
               <h4 className={`text-sm font-medium mb-2 ${
@@ -432,10 +414,14 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
               </h4>
               <div className="space-y-2">
                 {unit.sections.map((section) => (
-                  <div
+                  <Link
                     key={section.id}
-                    className={`p-3 rounded-lg ${
-                      theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'
+                    to={section.demoLink || '#'}
+                    onClick={e => e.stopPropagation()}
+                    className={`block p-3 rounded-lg transition-all hover:scale-[1.02] ${
+                      theme === 'dark'
+                        ? 'bg-slate-700/50 hover:bg-slate-700'
+                        : 'bg-gray-50 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-start gap-2">
@@ -445,7 +431,7 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
                       >
                         {section.id}
                       </span>
-                      <div>
+                      <div className="flex-1">
                         <p className={`text-sm font-medium ${
                           theme === 'dark' ? 'text-white' : 'text-gray-900'
                         }`}>
@@ -457,8 +443,13 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
                           {t(section.descriptionKey)}
                         </p>
                       </div>
+                      <ArrowRight
+                        className={`w-4 h-4 flex-shrink-0 ${
+                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                        }`}
+                      />
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -549,28 +540,22 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
             ))}
           </div>
 
-          {/* Attachments */}
+          {/* Attachments - internal documents only */}
           {unit.attachments && unit.attachments.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {unit.attachments.map((att, i) => (
-                <a
+                <span
                   key={i}
-                  href={att.url || '#'}
                   onClick={e => e.stopPropagation()}
-                  target={att.type === 'link' ? '_blank' : undefined}
-                  rel={att.type === 'link' ? 'noopener noreferrer' : undefined}
-                  className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
+                  className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 cursor-default ${
                     theme === 'dark'
-                      ? 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-slate-700 text-gray-300'
+                      : 'bg-gray-100 text-gray-600'
                   }`}
                 >
-                  {att.type === 'link'
-                    ? <ExternalLink className="w-3 h-3" />
-                    : <FileText className="w-3 h-3" />
-                  }
+                  <FileText className="w-3 h-3" />
                   {t(att.titleKey)}
-                </a>
+                </span>
               ))}
             </div>
           )}
@@ -580,287 +565,217 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
   )
 }
 
-// PSRT Teaching Methods section component
-function TeachingMethodsSection({ theme }: { theme: 'dark' | 'light' }) {
-  const { t } = useTranslation()
-
-  const methods = [
-    {
-      stage: 'P-SRT',
-      nameKey: 'course.methods.psrt.name',
-      descKey: 'course.methods.psrt.desc',
-      Icon: PSRTIcon,
-      color: '#22c55e', // green
-    },
-    {
-      stage: 'E-SRT',
-      nameKey: 'course.methods.esrt.name',
-      descKey: 'course.methods.esrt.desc',
-      Icon: ESRTIcon,
-      color: '#06b6d4', // cyan
-    },
-    {
-      stage: 'ORIC',
-      nameKey: 'course.methods.oric.name',
-      descKey: 'course.methods.oric.desc',
-      Icon: ORICIcon,
-      color: '#a855f7', // purple
-    },
-    {
-      stage: 'SURF',
-      nameKey: 'course.methods.surf.name',
-      descKey: 'course.methods.surf.desc',
-      Icon: SURFIcon,
-      color: '#f59e0b', // amber
-    },
-  ]
-
-  const teachingSteps = [
-    { icon: '📚', nameKey: 'course.teaching.lecture', descKey: 'course.teaching.lectureDesc' },
-    { icon: '🔧', nameKey: 'course.teaching.practice', descKey: 'course.teaching.practiceDesc' },
-    { icon: '📊', nameKey: 'course.teaching.experiment', descKey: 'course.teaching.experimentDesc' },
-    { icon: '🔍', nameKey: 'course.teaching.research', descKey: 'course.teaching.researchDesc' },
-  ]
-
+// Custom SVG icons for application areas
+function OceanIcon({ className, color }: { className?: string; color?: string }) {
   return (
-    <div className="mb-12">
-      <h2 className={`text-2xl font-bold mb-6 ${
-        theme === 'dark' ? 'text-white' : 'text-gray-900'
-      }`}>
-        {t('course.methods.title')}
-      </h2>
-
-      {/* Research learning stages */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {methods.map((method, i) => (
-          <div
-            key={i}
-            className={`rounded-xl p-4 border transition-all hover:scale-105 hover:-translate-y-1 ${
-              theme === 'dark'
-                ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
-                : 'bg-white border-gray-200 hover:border-gray-300'
-            }`}
-            style={{
-              boxShadow: theme === 'dark'
-                ? `0 4px 20px ${method.color}15`
-                : `0 4px 20px ${method.color}10`,
-            }}
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div
-                className="p-2 rounded-lg"
-                style={{ backgroundColor: `${method.color}15` }}
-              >
-                <method.Icon size={28} primaryColor={method.color} />
-              </div>
-              <span
-                className="text-sm font-bold px-2 py-0.5 rounded"
-                style={{ backgroundColor: `${method.color}20`, color: method.color }}
-              >
-                {method.stage}
-              </span>
-            </div>
-            <h4 className={`text-sm font-medium mb-1 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
-              {t(method.nameKey)}
-            </h4>
-            <p className={`text-xs ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              {t(method.descKey)}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Teaching steps */}
-      <div className={`rounded-xl p-6 ${
-        theme === 'dark' ? 'bg-slate-800/30' : 'bg-gray-50'
-      }`}>
-        <h3 className={`text-lg font-semibold mb-4 ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        }`}>
-          {t('course.teaching.title')}
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {teachingSteps.map((step, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <span className="text-xl">{step.icon}</span>
-              <div>
-                <p className={`text-sm font-medium ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
-                  {t(step.nameKey)}
-                </p>
-                <p className={`text-xs ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                  {t(step.descKey)}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
+      <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
+      <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
+    </svg>
   )
 }
 
-// Applications section component
+function BiomedicalIcon({ className, color }: { className?: string; color?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v4" />
+      <path d="M12 18v4" />
+      <path d="M4.93 4.93l2.83 2.83" />
+      <path d="M16.24 16.24l2.83 2.83" />
+      <path d="M2 12h4" />
+      <path d="M18 12h4" />
+      <path d="M4.93 19.07l2.83-2.83" />
+      <path d="M16.24 7.76l2.83-2.83" />
+      <circle cx="12" cy="12" r="4" />
+    </svg>
+  )
+}
+
+function MaterialsIcon({ className, color }: { className?: string; color?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+    </svg>
+  )
+}
+
+function IndustryIcon({ className, color }: { className?: string; color?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+      <path d="M17 18h1" />
+      <path d="M12 18h1" />
+      <path d="M7 18h1" />
+    </svg>
+  )
+}
+
+function AutonomousIcon({ className, color }: { className?: string; color?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8c-.4.5-.6 1.1-.6 1.7V16c0 .6.4 1 1 1h2" />
+      <circle cx="7" cy="17" r="2" />
+      <circle cx="17" cy="17" r="2" />
+    </svg>
+  )
+}
+
+function AtmosphereIcon({ className, color }: { className?: string; color?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  )
+}
+
+// Applications section component - redesigned with proper icons and cases
 function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
 
   const applications = [
-    { icon: '🌊', nameKey: 'course.apps.ocean', color: '#0ea5e9' },
-    { icon: '🏥', nameKey: 'course.apps.biomedical', color: '#ec4899' },
-    { icon: '🔬', nameKey: 'course.apps.materials', color: '#8b5cf6' },
-    { icon: '🏭', nameKey: 'course.apps.industry', color: '#f59e0b' },
-    { icon: '🚗', nameKey: 'course.apps.autonomous', color: '#22c55e' },
-    { icon: '🌤️', nameKey: 'course.apps.atmosphere', color: '#06b6d4' },
+    {
+      icon: OceanIcon,
+      nameKey: 'course.apps.ocean',
+      descKey: 'course.apps.oceanDesc',
+      caseKey: 'course.apps.oceanCase',
+      color: '#0ea5e9',
+      demoLink: '/demos/rayleigh',
+    },
+    {
+      icon: BiomedicalIcon,
+      nameKey: 'course.apps.biomedical',
+      descKey: 'course.apps.biomedicalDesc',
+      caseKey: 'course.apps.biomedicalCase',
+      color: '#ec4899',
+      demoLink: '/demos/optical-rotation',
+    },
+    {
+      icon: MaterialsIcon,
+      nameKey: 'course.apps.materials',
+      descKey: 'course.apps.materialsDesc',
+      caseKey: 'course.apps.materialsCase',
+      color: '#8b5cf6',
+      demoLink: '/demos/chromatic',
+    },
+    {
+      icon: IndustryIcon,
+      nameKey: 'course.apps.industry',
+      descKey: 'course.apps.industryDesc',
+      caseKey: 'course.apps.industryCase',
+      color: '#f59e0b',
+      demoLink: '/optical-studio?tab=experiments',
+    },
+    {
+      icon: AutonomousIcon,
+      nameKey: 'course.apps.autonomous',
+      descKey: 'course.apps.autonomousDesc',
+      caseKey: 'course.apps.autonomousCase',
+      color: '#22c55e',
+      demoLink: '/demos/mie-scattering',
+    },
+    {
+      icon: AtmosphereIcon,
+      nameKey: 'course.apps.atmosphere',
+      descKey: 'course.apps.atmosphereDesc',
+      caseKey: 'course.apps.atmosphereCase',
+      color: '#06b6d4',
+      demoLink: '/demos/rayleigh',
+    },
   ]
 
   return (
     <div className="mb-12">
-      <h2 className={`text-2xl font-bold mb-6 ${
-        theme === 'dark' ? 'text-white' : 'text-gray-900'
-      }`}>
-        {t('course.apps.title')}
-      </h2>
-
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-        {applications.map((app, i) => (
-          <div
-            key={i}
-            className={`rounded-xl p-4 text-center border transition-all hover:scale-105 ${
-              theme === 'dark'
-                ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
-                : 'bg-white border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <span className="text-3xl mb-2 block">{app.icon}</span>
-            <p className={`text-xs font-medium ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              {t(app.nameKey)}
-            </p>
-          </div>
-        ))}
+      <div className="flex items-center gap-3 mb-6">
+        <h2 className={`text-2xl font-bold ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>
+          {t('course.apps.title')}
+        </h2>
+        <span className={`text-xs px-2 py-1 rounded-full ${
+          theme === 'dark' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+        }`}>
+          {t('course.apps.badge')}
+        </span>
       </div>
-    </div>
-  )
-}
 
-// Resources section component
-function ResourcesSection({ theme }: { theme: 'dark' | 'light' }) {
-  const { t } = useTranslation()
-
-  const resources = [
-    {
-      titleKey: 'course.resources.references.title',
-      descriptionKey: 'course.resources.references.description',
-      icon: <BookOpen className="w-6 h-6" />,
-      color: '#C9A227',
-      links: [
-        { labelKey: 'course.resources.references.link1', url: 'https://en.wikipedia.org/wiki/Polarization_(waves)' },
-        { labelKey: 'course.resources.references.link2', url: 'https://en.wikipedia.org/wiki/Malus%27s_law' },
-        { labelKey: 'course.resources.references.link3', url: 'https://en.wikipedia.org/wiki/Birefringence' },
-      ],
-    },
-    {
-      titleKey: 'course.resources.tutorials.title',
-      descriptionKey: 'course.resources.tutorials.description',
-      icon: <GraduationCap className="w-6 h-6" />,
-      color: '#6366F1',
-      internalLinks: [
-        { labelKey: 'course.resources.tutorials.link1', route: '/demos' },
-        { labelKey: 'course.resources.tutorials.link2', route: '/optical-studio' },
-        { labelKey: 'course.resources.tutorials.link3', route: '/chronicles' },
-      ],
-    },
-    {
-      titleKey: 'course.resources.community.title',
-      descriptionKey: 'course.resources.community.description',
-      icon: <Users className="w-6 h-6" />,
-      color: '#10B981',
-      internalLinks: [
-        { labelKey: 'course.resources.community.link1', route: '/lab?tab=community' },
-        { labelKey: 'course.resources.community.link2', route: '/experiments/gallery' },
-      ],
-    },
-  ]
-
-  return (
-    <div className="mt-12">
-      <h2 className={`text-2xl font-bold mb-6 ${
-        theme === 'dark' ? 'text-white' : 'text-gray-900'
+      <p className={`text-sm mb-6 max-w-3xl ${
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
       }`}>
-        {t('course.resources.title')}
-      </h2>
+        {t('course.apps.description')}
+      </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {resources.map((resource, i) => (
-          <div
-            key={i}
-            className={`rounded-2xl p-6 border transition-all hover:-translate-y-1 ${
-              theme === 'dark'
-                ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
-                : 'bg-white border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-              style={{ backgroundColor: `${resource.color}20` }}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {applications.map((app, i) => {
+          const IconComponent = app.icon
+          return (
+            <Link
+              key={i}
+              to={app.demoLink}
+              className={`group rounded-xl p-5 border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+                theme === 'dark'
+                  ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+              style={{
+                boxShadow: theme === 'dark'
+                  ? `0 4px 20px ${app.color}08`
+                  : `0 4px 20px ${app.color}05`,
+              }}
             >
-              <span style={{ color: resource.color }}>{resource.icon}</span>
-            </div>
-
-            <h3 className={`text-lg font-bold mb-2 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
-              {t(resource.titleKey)}
-            </h3>
-
-            <p className={`text-sm mb-4 ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              {t(resource.descriptionKey)}
-            </p>
-
-            <div className="space-y-2">
-              {resource.links?.map((link, j) => (
-                <a
-                  key={j}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center gap-2 text-sm transition-colors ${
-                    theme === 'dark'
-                      ? 'text-gray-400 hover:text-cyan-400'
-                      : 'text-gray-600 hover:text-cyan-600'
-                  }`}
+              <div className="flex items-start gap-4">
+                {/* Icon */}
+                <div
+                  className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                  style={{ backgroundColor: `${app.color}15` }}
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  {t(link.labelKey)}
-                </a>
-              ))}
-              {resource.internalLinks?.map((link, j) => (
-                <Link
-                  key={j}
-                  to={link.route}
-                  className={`flex items-center gap-2 text-sm transition-colors ${
-                    theme === 'dark'
-                      ? 'text-gray-400 hover:text-cyan-400'
-                      : 'text-gray-600 hover:text-cyan-600'
+                  <IconComponent className="w-6 h-6" color={app.color} />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <h3 className={`font-semibold mb-1 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    {t(app.nameKey)}
+                  </h3>
+                  <p className={`text-xs mb-2 ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    {t(app.descKey)}
+                  </p>
+
+                  {/* Case example */}
+                  <div
+                    className={`text-xs px-2 py-1 rounded-md inline-flex items-center gap-1.5 ${
+                      theme === 'dark' ? 'bg-slate-700/50 text-gray-300' : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    <FlaskConical className="w-3 h-3" style={{ color: app.color }} />
+                    {t(app.caseKey)}
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <ArrowRight
+                  className={`w-4 h-4 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
                   }`}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                  {t(link.labelKey)}
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
+                />
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
@@ -1321,9 +1236,6 @@ export function CoursePage() {
         {/* Home Experiments - Family-friendly experiments */}
         <HomeExperimentsSection theme={theme} />
 
-        {/* PSRT Teaching Methods */}
-        <TeachingMethodsSection theme={theme} />
-
         {/* Applications */}
         <ApplicationsSection theme={theme} />
 
@@ -1347,8 +1259,8 @@ export function CoursePage() {
           </div>
         </div>
 
-        {/* Resources section */}
-        <ResourcesSection theme={theme} />
+        {/* Resources section - temporarily hidden until substantive content is added */}
+        {/* <ResourcesSection theme={theme} /> */}
 
         {/* Footer CTA */}
         <div className={`mt-12 p-8 rounded-2xl text-center ${

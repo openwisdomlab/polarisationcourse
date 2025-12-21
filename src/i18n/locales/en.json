@@ -151,7 +151,15 @@
       "unit2": {
         "title": "Polarization in Interface Reflection",
         "subtitle": "Fresnel Equations & Brewster's Angle",
-        "description": "Learn about polarization characteristics of interface reflection, quantitative formulas for perpendicular and parallel polarization components (Fresnel equations), their relationship with incident angle and refractive indices; understand Brewster's angle where parallel polarization reflection is zero, and its applications."
+        "description": "Learn about polarization characteristics of interface reflection, quantitative formulas for perpendicular and parallel polarization components (Fresnel equations), their relationship with incident angle and refractive indices; understand Brewster's angle where parallel polarization reflection is zero, and its applications.",
+        "s1": {
+          "title": "Fresnel Equations",
+          "desc": "Study the polarization characteristics of interface reflection and refraction"
+        },
+        "s2": {
+          "title": "Brewster's Angle",
+          "desc": "Explore the special angle where reflected light is completely polarized"
+        }
       },
       "unit3": {
         "title": "Polarization in Transparent Media",
@@ -376,12 +384,26 @@
     },
     "apps": {
       "title": "Application Domains",
+      "badge": "Real Cases",
+      "description": "Polarized light technology has wide applications from ocean sensing to biomedical, from materials analysis to autonomous driving. Click to explore related demos.",
       "ocean": "Ocean Sensing",
+      "oceanDesc": "Analyze particle scattering in seawater using polarized light for ocean ecosystem monitoring",
+      "oceanCase": "Plankton Monitoring",
       "biomedical": "Biomedical",
-      "materials": "Materials",
-      "industry": "Industrial",
-      "autonomous": "Autonomous",
-      "atmosphere": "Atmospheric"
+      "biomedicalDesc": "Polarization microscopy and optical rotation in medical diagnosis",
+      "biomedicalCase": "Blood Glucose Detection",
+      "materials": "Materials Analysis",
+      "materialsDesc": "Analyze internal stress distribution through stress birefringence",
+      "materialsCase": "Photoelastic Stress Analysis",
+      "industry": "Industrial Inspection",
+      "industryDesc": "Polarization imaging in industrial quality control",
+      "industryCase": "Surface Defect Detection",
+      "autonomous": "Autonomous Driving",
+      "autonomousDesc": "Polarization cameras enhance environmental perception in autonomous systems",
+      "autonomousCase": "Foggy Obstacle Detection",
+      "atmosphere": "Atmospheric Remote Sensing",
+      "atmosphereDesc": "Utilize atmospheric polarization for weather observation and air quality monitoring",
+      "atmosphereCase": "PM2.5 Concentration Monitoring"
     },
     "path": {
       "title": "Learning Path",
