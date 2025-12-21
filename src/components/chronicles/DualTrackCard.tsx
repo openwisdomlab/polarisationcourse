@@ -3,6 +3,7 @@
  * 展示时间线事件的简要信息，支持展开查看详情
  */
 
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -10,13 +11,14 @@ import { cn } from '@/lib/utils'
 import {
   ChevronDown, ChevronUp, BookOpen,
   ArrowRight, Lightbulb, Star, Camera, Film, HelpCircle,
-  Play, FlaskConical
+  Play, FlaskConical, GraduationCap
 } from 'lucide-react'
 import { Badge } from '@/components/shared'
 import { CATEGORY_LABELS, ILLUSTRATION_TO_DEMO_MAP, ILLUSTRATION_TO_BENCH_MAP } from '@/data/chronicles-constants'
 import type { TimelineEvent } from '@/data/timeline-events'
 import { ExperimentIllustration } from './ExperimentIllustration'
 import { ResourceGallery } from './ResourceGallery'
+import { getDemosByEvent, UNIT_INFO } from '@/data/course-event-mapping'
 
 export interface DualTrackCardProps {
   event: TimelineEvent
@@ -38,6 +40,11 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
   // Get demo and bench links based on illustration type
   const demoLink = event.illustrationType ? ILLUSTRATION_TO_DEMO_MAP[event.illustrationType] : null
   const benchLink = event.illustrationType ? ILLUSTRATION_TO_BENCH_MAP[event.illustrationType] : null
+
+  // 获取关联的课程模块
+  const relatedDemos = useMemo(() => {
+    return getDemosByEvent(event.year, event.track)
+  }, [event.year, event.track])
 
   const isOpticsTrack = event.track === 'optics'
   const trackColor = isOpticsTrack
@@ -77,6 +84,18 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
             )}
             {event.importance === 1 && (
               <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            )}
+            {/* 关联课程标记 */}
+            {relatedDemos.length > 0 && (
+              <span className={cn(
+                'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium',
+                theme === 'dark'
+                  ? 'bg-blue-500/20 text-blue-300'
+                  : 'bg-blue-100 text-blue-600'
+              )} title={isZh ? `关联 ${relatedDemos.length} 个课程模块` : `Related to ${relatedDemos.length} course module${relatedDemos.length > 1 ? 's' : ''}`}>
+                <GraduationCap className="w-3 h-3" />
+                <span>{relatedDemos.length}</span>
+              </span>
             )}
           </div>
 
@@ -198,6 +217,49 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
               theme={theme}
               compact
             />
+          )}
+
+          {/* 关联课程模块 */}
+          {relatedDemos.length > 0 && (
+            <div className="mb-3">
+              <h4 className={cn(
+                'text-xs font-semibold mb-1.5 flex items-center gap-1',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              )}>
+                <GraduationCap className="w-3.5 h-3.5" />
+                {isZh ? '相关课程模块' : 'Related Course Modules'}
+              </h4>
+              <div className="flex flex-wrap gap-1.5">
+                {relatedDemos.map((demo) => {
+                  const unitInfo = UNIT_INFO.find(u => u.id === demo.unit)
+                  return (
+                    <button
+                      key={demo.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        navigate(demo.route)
+                      }}
+                      className={cn(
+                        'inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors',
+                        theme === 'dark'
+                          ? 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      )}
+                      style={{
+                        borderLeft: `3px solid ${unitInfo?.color || '#6366F1'}`
+                      }}
+                    >
+                      <span className="truncate max-w-[120px]">
+                        {isZh ? demo.titleZh : demo.titleEn}
+                      </span>
+                      {demo.relevance === 'primary' && (
+                        <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400 flex-shrink-0" />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           )}
 
           {/* Action buttons */}

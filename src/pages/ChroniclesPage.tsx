@@ -7,7 +7,7 @@
  * - Right track: Polarization-specific history (偏振光专属旅程)
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -16,12 +16,14 @@ import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, MapPin, Calendar,
   FlaskConical, BookOpen,
-  Sun, Sparkles, Camera, Film
+  Sun, Sparkles, Camera, Film,
+  Filter
 } from 'lucide-react'
 
 // Data imports
 import { TIMELINE_EVENTS, type TimelineEvent } from '@/data/timeline-events'
 import { CATEGORY_LABELS } from '@/data/chronicles-constants'
+import { filterEventsByDemos } from '@/data/course-event-mapping'
 
 // Component imports
 import {
@@ -48,16 +50,35 @@ export function ChroniclesPage() {
   const [filter, setFilter] = useState<string>('')
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
+  const [selectedDemos, setSelectedDemos] = useState<string[]>([]) // 课程筛选状态
 
   // Use single-track layout on mobile/tablet
   const useSingleTrack = isMobile || isTablet
 
-  // Filter events by category and track
-  const filteredEvents = TIMELINE_EVENTS.filter(e => {
-    const categoryMatch = !filter || e.category === filter
-    const trackMatch = trackFilter === 'all' || e.track === trackFilter
-    return categoryMatch && trackMatch
-  }).sort((a, b) => a.year - b.year)
+  // 计算被课程筛选匹配的事件集合
+  const matchedEventKeys = useMemo(() => {
+    if (selectedDemos.length === 0) return null
+    return filterEventsByDemos(selectedDemos, TIMELINE_EVENTS)
+  }, [selectedDemos])
+
+  // Filter events by category, track, and selected course modules
+  const filteredEvents = useMemo(() => {
+    return TIMELINE_EVENTS.filter(e => {
+      const categoryMatch = !filter || e.category === filter
+      const trackMatch = trackFilter === 'all' || e.track === trackFilter
+
+      // 课程筛选：如果有选中的课程模块，只显示匹配的事件
+      const courseMatch = matchedEventKeys === null ||
+        matchedEventKeys.has(`${e.year}-${e.track}`)
+
+      return categoryMatch && trackMatch && courseMatch
+    }).sort((a, b) => a.year - b.year)
+  }, [filter, trackFilter, matchedEventKeys])
+
+  // 处理课程筛选变化
+  const handleFilterChange = useCallback((demos: string[]) => {
+    setSelectedDemos(demos)
+  }, [])
 
   // Get unique scientists from events
   const scientists = TIMELINE_EVENTS.filter(e => e.scientistBio?.bioEn).reduce((acc, event) => {
@@ -232,6 +253,35 @@ export function ChroniclesPage() {
               </button>
             </div>
 
+            {/* Course filter status banner */}
+            {selectedDemos.length > 0 && (
+              <div className={cn(
+                'flex items-center justify-between mb-4 p-3 rounded-lg',
+                theme === 'dark' ? 'bg-blue-900/30 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'
+              )}>
+                <div className="flex items-center gap-2">
+                  <Filter className={cn('w-4 h-4', theme === 'dark' ? 'text-blue-400' : 'text-blue-600')} />
+                  <span className={cn('text-sm font-medium', theme === 'dark' ? 'text-blue-300' : 'text-blue-700')}>
+                    {isZh
+                      ? `正在显示 ${selectedDemos.length} 个课程模块相关的 ${filteredEvents.length} 个历史事件`
+                      : `Showing ${filteredEvents.length} events related to ${selectedDemos.length} course module${selectedDemos.length > 1 ? 's' : ''}`
+                    }
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSelectedDemos([])}
+                  className={cn(
+                    'px-3 py-1 rounded-md text-xs font-medium transition-colors',
+                    theme === 'dark'
+                      ? 'bg-blue-500/20 text-blue-300 hover:bg-blue-500/30'
+                      : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                  )}
+                >
+                  {isZh ? '清除筛选' : 'Clear Filter'}
+                </button>
+              </div>
+            )}
+
             {/* Category filters */}
             <div className={cn(
               'flex flex-wrap items-center gap-2 mb-6 p-3 rounded-lg',
@@ -273,7 +323,10 @@ export function ChroniclesPage() {
 
             {/* Course Navigator - 课程导航 (Desktop only, left side) */}
             {!useSingleTrack && (
-              <CourseNavigator />
+              <CourseNavigator
+                selectedDemos={selectedDemos}
+                onFilterChange={handleFilterChange}
+              />
             )}
 
             {/* Century Navigator - 世纪导航 (Desktop only, right side) */}

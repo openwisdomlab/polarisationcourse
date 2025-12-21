@@ -1,10 +1,14 @@
 /**
- * CourseNavigator - 课程导航组件
- * 在时间线左侧提供快速跳转到不同课程单元的导航条
- * 设计参考右侧的 CenturyNavigator，但带有增强的交互效果
+ * CourseNavigator - 课程导航组件 (重构版)
+ *
+ * 功能：
+ * 1. 显示所有课程单元和演示的层级结构
+ * 2. 支持复选框多选课程模块进行筛选历史事件
+ * 3. 显示每个模块关联的历史事件数量
+ * 4. 多对多关系：一个演示可关联多个事件，一个事件可关联多个演示
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -14,208 +18,131 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  GraduationCap,
+  History,
+  Filter,
+  X,
+  Check,
+  Square,
+  CheckSquare,
+  FlaskConical,
+  Play,
+  Eye,
   Lightbulb,
   Zap,
   Sparkles,
   Target,
   Telescope,
-  BookOpen,
-  Play,
-  CheckCircle,
-  FlaskConical,
-  Gamepad2,
-  ChevronDown,
-  GraduationCap,
-  History,
-  Calendar
+  Beaker
 } from 'lucide-react'
 
-// Import timeline events for finding event indices
-import { TIMELINE_EVENTS } from '@/data/timeline-events'
+// 导入课程-事件映射数据
+import {
+  UNIT_INFO,
+  getEventCountByDemo,
+  getDemosByUnit,
+} from '@/data/course-event-mapping'
 
-// Timeline event reference for linking courses to historical discoveries
-interface TimelineEventRef {
-  year: number
-  titleEn: string
-  titleZh: string
-  track: 'optics' | 'polarization'
-  scientist?: string
-  scientistZh?: string
-}
-
-// Course unit data matching CoursePage structure with timeline links
-const COURSE_UNITS = [
-  {
-    id: 'unit1',
-    icon: Lightbulb,
-    color: '#C9A227', // amber
-    demos: ['light-wave', 'polarization-intro', 'polarization-types', 'birefringence', 'malus'],
-    games: ['/game2d?level=0', '/game2d?level=1'],
-    // 关联时间线事件: 偏振发现与马吕斯定律
-    timelineEvents: [
-      { year: 1808, titleEn: 'Discovery of Polarization', titleZh: '反射偏振的发现', track: 'polarization' as const, scientist: 'Malus', scientistZh: '马吕斯' },
-      { year: 1809, titleEn: "Malus's Law", titleZh: '马吕斯定律', track: 'polarization' as const, scientist: 'Malus', scientistZh: '马吕斯' },
-      { year: 1669, titleEn: 'Double Refraction', titleZh: '双折射发现', track: 'polarization' as const, scientist: 'Bartholin', scientistZh: '巴托林' },
-      { year: 1817, titleEn: 'Transverse Wave Theory', titleZh: '菲涅尔横波理论', track: 'optics' as const, scientist: 'Fresnel', scientistZh: '菲涅尔' },
-    ] as TimelineEventRef[],
-  },
-  {
-    id: 'unit2',
-    icon: Zap,
-    color: '#6366F1', // indigo
-    demos: ['fresnel', 'brewster'],
-    games: [],
-    // 关联时间线事件: 界面反射与布儒斯特角
-    timelineEvents: [
-      { year: 1812, titleEn: "Brewster's Angle", titleZh: '布儒斯特角', track: 'polarization' as const, scientist: 'Brewster', scientistZh: '布儒斯特' },
-      { year: 1621, titleEn: "Snell's Law", titleZh: '斯涅尔折射定律', track: 'optics' as const, scientist: 'Snell', scientistZh: '斯涅尔' },
-      { year: 1817, titleEn: 'Fresnel Equations', titleZh: '菲涅尔方程', track: 'optics' as const, scientist: 'Fresnel', scientistZh: '菲涅尔' },
-    ] as TimelineEventRef[],
-  },
-  {
-    id: 'unit3',
-    icon: Sparkles,
-    color: '#0891B2', // cyan
-    demos: ['anisotropy', 'chromatic', 'optical-rotation', 'waveplate'],
-    games: ['/game2d?level=3'],
-    // 关联时间线事件: 透明介质中的偏振
-    timelineEvents: [
-      { year: 1811, titleEn: 'Chromatic Polarization', titleZh: '色偏振现象', track: 'polarization' as const, scientist: 'Arago', scientistZh: '阿拉戈' },
-      { year: 1812, titleEn: 'Optical Activity', titleZh: '旋光性发现', track: 'polarization' as const, scientist: 'Biot', scientistZh: '毕奥' },
-      { year: 1845, titleEn: 'Faraday Rotation', titleZh: '法拉第旋光效应', track: 'polarization' as const, scientist: 'Faraday', scientistZh: '法拉第' },
-    ] as TimelineEventRef[],
-  },
-  {
-    id: 'unit4',
-    icon: Target,
-    color: '#F59E0B', // orange
-    demos: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering'],
-    games: [],
-    // 关联时间线事件: 散射与天空偏振
-    timelineEvents: [
-      { year: 1871, titleEn: 'Rayleigh Scattering', titleZh: '瑞利散射', track: 'polarization' as const, scientist: 'Rayleigh', scientistZh: '瑞利' },
-    ] as TimelineEventRef[],
-  },
-  {
-    id: 'unit5',
-    icon: Telescope,
-    color: '#8B5CF6', // violet
-    demos: ['stokes', 'mueller', 'jones', 'polarimetric-microscopy'],
-    games: [],
-    // 关联时间线事件: 偏振测量理论
-    timelineEvents: [
-      { year: 1852, titleEn: 'Stokes Parameters', titleZh: '斯托克斯参数', track: 'polarization' as const, scientist: 'Stokes', scientistZh: '斯托克斯' },
-      { year: 1892, titleEn: 'Poincaré Sphere', titleZh: '庞加莱球', track: 'polarization' as const, scientist: 'Poincaré', scientistZh: '庞加莱' },
-      { year: 1941, titleEn: 'Jones Calculus', titleZh: '琼斯矢量', track: 'polarization' as const, scientist: 'Jones', scientistZh: '琼斯' },
-      { year: 1943, titleEn: 'Mueller Calculus', titleZh: '穆勒矩阵', track: 'polarization' as const, scientist: 'Mueller', scientistZh: '穆勒' },
-    ] as TimelineEventRef[],
-  },
-]
+// 单元图标映射
+const UNIT_ICONS = [Lightbulb, Zap, Sparkles, Beaker, Target, Telescope]
 
 interface CourseNavigatorProps {
   className?: string
+  selectedDemos: string[]
+  onFilterChange: (selectedDemos: string[]) => void
 }
 
-export function CourseNavigator({ className }: CourseNavigatorProps) {
+export function CourseNavigator({
+  className,
+  selectedDemos,
+  onFilterChange
+}: CourseNavigatorProps) {
   const { theme } = useTheme()
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const navigate = useNavigate()
   const isZh = i18n.language === 'zh'
   const { progress } = useCourseProgress()
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [activeUnit, setActiveUnit] = useState<string | null>(null)
-  const [hoveredUnit, setHoveredUnit] = useState<string | null>(null)
-  const [showQuickActions, setShowQuickActions] = useState<string | null>(null)
 
-  // Calculate unit progress
-  const getUnitProgress = (unitId: string) => {
-    const unit = COURSE_UNITS.find(u => u.id === unitId)
-    if (!unit) return 0
-    const completed = unit.demos.filter(d => progress.completedDemos.includes(d)).length
-    return Math.round((completed / unit.demos.length) * 100)
-  }
+  // 状态管理
+  const [isExpanded, setIsExpanded] = useState(false)          // 移动端展开/折叠
+  const [expandedUnits, setExpandedUnits] = useState<Set<number>>(new Set([0])) // 展开的单元
+  const [isFilterMode, setIsFilterMode] = useState(false)       // 是否处于筛选模式
 
-  // Get unit title
-  const getUnitTitle = (unitId: string) => {
-    return t(`course.units.${unitId}.title`)
-  }
+  // 计算选中的演示数量和是否有筛选
+  const hasFilter = selectedDemos.length > 0
+  const filterCount = selectedDemos.length
 
-  // Get unit subtitle
-  const getUnitSubtitle = (unitId: string) => {
-    return t(`course.units.${unitId}.subtitle`)
-  }
+  // 按单元分组的演示
+  const demosByUnit = useMemo(() => {
+    return UNIT_INFO.map(unit => ({
+      ...unit,
+      demos: getDemosByUnit(unit.id),
+      Icon: UNIT_ICONS[unit.id] || FlaskConical
+    }))
+  }, [])
 
-  // Handle unit click
-  const handleUnitClick = (unitId: string) => {
-    if (activeUnit === unitId) {
-      setShowQuickActions(showQuickActions === unitId ? null : unitId)
-    } else {
-      setActiveUnit(unitId)
-      setShowQuickActions(unitId)
-    }
-  }
-
-  // Navigate to course page with unit focus
-  const navigateToCourse = (unitId: string) => {
-    navigate(`/course?unit=${unitId}`)
-  }
-
-  // Navigate to first demo of unit
-  const navigateToDemo = (unitId: string) => {
-    const unit = COURSE_UNITS.find(u => u.id === unitId)
-    if (unit && unit.demos.length > 0) {
-      navigate(`/demos/${unit.demos[0]}`)
-    }
-  }
-
-  // Navigate to first game of unit
-  const navigateToGame = (unitId: string) => {
-    const unit = COURSE_UNITS.find(u => u.id === unitId)
-    if (unit && unit.games.length > 0) {
-      navigate(unit.games[0])
-    }
-  }
-
-  // Navigate to a specific timeline event by year and track
-  const scrollToTimelineEvent = (year: number, track: 'optics' | 'polarization') => {
-    // Sort events by year to find the correct index
-    const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
-    const targetIndex = allEventsSorted.findIndex(
-      e => e.year === year && e.track === track
-    )
-
-    if (targetIndex !== -1) {
-      // First try to scroll to the year marker
-      const yearElement = document.getElementById(`timeline-year-${year}`)
-      if (yearElement) {
-        yearElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  // 切换单元展开/折叠
+  const toggleUnit = useCallback((unitId: number) => {
+    setExpandedUnits(prev => {
+      const next = new Set(prev)
+      if (next.has(unitId)) {
+        next.delete(unitId)
+      } else {
+        next.add(unitId)
       }
+      return next
+    })
+  }, [])
 
-      // Then try to highlight the specific event card
-      setTimeout(() => {
-        const targetElement = document.querySelector(`[data-event-index="${targetIndex}"]`)
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          // Add a brief highlight animation
-          targetElement.classList.add('ring-2', 'ring-amber-400', 'ring-offset-2')
-          setTimeout(() => {
-            targetElement.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2')
-          }, 2000)
-        }
-      }, 100)
-    }
-  }
+  // 切换演示选择
+  const toggleDemo = useCallback((demoId: string) => {
+    const newSelected = selectedDemos.includes(demoId)
+      ? selectedDemos.filter(id => id !== demoId)
+      : [...selectedDemos, demoId]
+    onFilterChange(newSelected)
+  }, [selectedDemos, onFilterChange])
 
-  // Close quick actions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setShowQuickActions(null)
+  // 选择整个单元的所有演示
+  const selectUnit = useCallback((unitId: number) => {
+    const unitDemos = getDemosByUnit(unitId).map(d => d.id)
+    const allSelected = unitDemos.every(id => selectedDemos.includes(id))
+
+    if (allSelected) {
+      // 取消选择该单元所有演示
+      onFilterChange(selectedDemos.filter(id => !unitDemos.includes(id)))
+    } else {
+      // 选择该单元所有演示
+      const newSelected = [...new Set([...selectedDemos, ...unitDemos])]
+      onFilterChange(newSelected)
     }
-    if (showQuickActions) {
-      document.addEventListener('click', handleClickOutside)
-      return () => document.removeEventListener('click', handleClickOutside)
-    }
-  }, [showQuickActions])
+  }, [selectedDemos, onFilterChange])
+
+  // 清除所有筛选
+  const clearFilter = useCallback(() => {
+    onFilterChange([])
+    setIsFilterMode(false)
+  }, [onFilterChange])
+
+  // 检查单元是否全选
+  const isUnitSelected = useCallback((unitId: number) => {
+    const unitDemos = getDemosByUnit(unitId).map(d => d.id)
+    return unitDemos.every(id => selectedDemos.includes(id))
+  }, [selectedDemos])
+
+  // 检查单元是否部分选择
+  const isUnitPartiallySelected = useCallback((unitId: number) => {
+    const unitDemos = getDemosByUnit(unitId).map(d => d.id)
+    const someSelected = unitDemos.some(id => selectedDemos.includes(id))
+    const allSelected = unitDemos.every(id => selectedDemos.includes(id))
+    return someSelected && !allSelected
+  }, [selectedDemos])
+
+  // 获取演示的进度状态
+  const isDemoCompleted = useCallback((demoId: string) => {
+    return progress.completedDemos.includes(demoId)
+  }, [progress.completedDemos])
 
   return (
     <div className={cn(
@@ -223,7 +150,7 @@ export function CourseNavigator({ className }: CourseNavigatorProps) {
       'flex flex-col items-start gap-1',
       className
     )}>
-      {/* Toggle button for mobile */}
+      {/* 移动端切换按钮 */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
@@ -236,371 +163,304 @@ export function CourseNavigator({ className }: CourseNavigatorProps) {
         {isExpanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
       </button>
 
-      {/* Header label */}
+      {/* 主容器 */}
       <div className={cn(
-        'hidden md:flex items-center gap-1.5 mb-2 px-2',
         'transition-all duration-300',
-        isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-full md:opacity-100 md:translate-x-0'
-      )}>
-        <GraduationCap className={cn(
-          'w-4 h-4',
-          theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-        )} />
-        <span className={cn(
-          'text-xs font-semibold',
-          theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-        )}>
-          {isZh ? '课程导航' : 'Course'}
-        </span>
-      </div>
-
-      {/* Navigator bar */}
-      <div className={cn(
-        'flex flex-col gap-1.5 transition-all duration-300',
         'md:opacity-100 md:translate-x-0',
         isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-full md:opacity-100 md:translate-x-0',
         'pointer-events-auto'
       )}>
-        {COURSE_UNITS.map((unit, index) => {
-          const Icon = unit.icon
-          const unitProgress = getUnitProgress(unit.id)
-          const isActive = activeUnit === unit.id
-          const isHovered = hoveredUnit === unit.id
-          const isQuickActionsOpen = showQuickActions === unit.id
-          const hasGames = unit.games.length > 0
+        {/* 头部：标题和筛选控制 */}
+        <div className={cn(
+          'flex items-center justify-between gap-2 mb-2 px-2 py-1.5 rounded-lg',
+          theme === 'dark' ? 'bg-slate-800/90' : 'bg-white/90',
+          'shadow-sm'
+        )}>
+          <div className="flex items-center gap-1.5">
+            <GraduationCap className={cn(
+              'w-4 h-4',
+              theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+            )} />
+            <span className={cn(
+              'text-xs font-semibold',
+              theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+            )}>
+              {isZh ? '课程章节' : 'Chapters'}
+            </span>
+          </div>
 
-          return (
-            <div key={unit.id} className="relative">
-              <motion.button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleUnitClick(unit.id)
-                }}
-                onMouseEnter={() => setHoveredUnit(unit.id)}
-                onMouseLeave={() => setHoveredUnit(null)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+          <div className="flex items-center gap-1">
+            {/* 筛选模式切换 */}
+            <button
+              onClick={() => setIsFilterMode(!isFilterMode)}
+              className={cn(
+                'p-1.5 rounded-md transition-all',
+                isFilterMode
+                  ? 'bg-blue-500 text-white'
+                  : theme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+              )}
+              title={isZh ? '筛选历史事件' : 'Filter timeline events'}
+            >
+              <Filter className="w-3.5 h-3.5" />
+            </button>
+
+            {/* 清除筛选 */}
+            {hasFilter && (
+              <button
+                onClick={clearFilter}
                 className={cn(
-                  'group relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-                  'shadow-sm hover:shadow-lg min-w-[140px]',
-                  isActive || isQuickActionsOpen
-                    ? theme === 'dark'
-                      ? 'text-white border-2'
-                      : 'text-gray-900 border-2'
-                    : theme === 'dark'
-                      ? 'bg-slate-800/90 text-gray-400 hover:text-white hover:bg-slate-700 border border-transparent'
-                      : 'bg-white/90 text-gray-600 hover:text-gray-900 hover:bg-gray-50 border border-transparent'
+                  'p-1.5 rounded-md transition-all flex items-center gap-1',
+                  theme === 'dark'
+                    ? 'text-red-400 hover:bg-red-900/30'
+                    : 'text-red-500 hover:bg-red-50'
                 )}
-                style={{
-                  backgroundColor: isActive || isQuickActionsOpen
-                    ? `${unit.color}20`
-                    : undefined,
-                  borderColor: isActive || isQuickActionsOpen ? unit.color : undefined,
-                }}
+                title={isZh ? '清除筛选' : 'Clear filter'}
               >
-                {/* Icon with colored background */}
-                <div
-                  className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center"
-                  style={{ backgroundColor: `${unit.color}30` }}
-                >
-                  <Icon className="w-3.5 h-3.5" style={{ color: unit.color }} />
-                </div>
+                <X className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-medium">{filterCount}</span>
+              </button>
+            )}
+          </div>
+        </div>
 
-                {/* Unit number */}
-                <span className="font-mono whitespace-nowrap">
-                  {isZh ? `第${index + 1}单元` : `Unit ${index + 1}`}
+        {/* 筛选状态提示 */}
+        <AnimatePresence>
+          {hasFilter && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className={cn(
+                'mb-2 px-2 py-1.5 rounded-md text-xs',
+                theme === 'dark' ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'
+              )}
+            >
+              <div className="flex items-center gap-1.5">
+                <Eye className="w-3 h-3" />
+                <span>
+                  {isZh
+                    ? `显示 ${filterCount} 个模块相关事件`
+                    : `Showing events for ${filterCount} module${filterCount > 1 ? 's' : ''}`
+                  }
                 </span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-                {/* Progress indicator */}
-                <div className="flex-1 flex items-center justify-end gap-1">
-                  {unitProgress === 100 ? (
-                    <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                  ) : (
-                    <div className="relative w-8 h-1.5 rounded-full overflow-hidden bg-gray-200 dark:bg-slate-700">
-                      <div
-                        className="absolute inset-y-0 left-0 rounded-full transition-all"
-                        style={{
-                          width: `${unitProgress}%`,
-                          backgroundColor: unit.color,
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
+        {/* 课程单元列表 */}
+        <div className={cn(
+          'flex flex-col gap-1 max-h-[60vh] overflow-y-auto pr-1',
+          'scrollbar-thin scrollbar-thumb-gray-400/50 scrollbar-track-transparent'
+        )}>
+          {demosByUnit.map((unit) => {
+            const Icon = unit.Icon
+            const isExpanded = expandedUnits.has(unit.id)
+            const isSelected = isUnitSelected(unit.id)
+            const isPartial = isUnitPartiallySelected(unit.id)
 
-                {/* Expand indicator */}
-                <ChevronDown
-                  className={cn(
-                    'w-3 h-3 transition-transform',
-                    isQuickActionsOpen ? 'rotate-180' : ''
-                  )}
-                  style={{ color: unit.color }}
-                />
-
-                {/* Glow effect on hover */}
+            return (
+              <div key={unit.id} className="relative">
+                {/* 单元标题行 */}
                 <div
                   className={cn(
-                    'absolute inset-0 rounded-lg opacity-0 transition-opacity pointer-events-none',
-                    isHovered || isActive ? 'opacity-100' : ''
+                    'group flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-all cursor-pointer',
+                    'shadow-sm hover:shadow-md',
+                    theme === 'dark'
+                      ? 'bg-slate-800/90 text-gray-300 hover:bg-slate-700'
+                      : 'bg-white/90 text-gray-700 hover:bg-gray-50',
+                    isSelected && 'ring-2 ring-offset-1',
+                    isPartial && 'ring-1 ring-offset-1'
                   )}
                   style={{
-                    boxShadow: `0 0 20px ${unit.color}30, inset 0 0 10px ${unit.color}10`,
+                    borderLeftWidth: '3px',
+                    borderLeftColor: unit.color,
+                    ...(isSelected || isPartial ? { ringColor: unit.color } : {})
                   }}
-                />
-              </motion.button>
+                >
+                  {/* 筛选模式：复选框 */}
+                  {isFilterMode && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        selectUnit(unit.id)
+                      }}
+                      className={cn(
+                        'flex-shrink-0 p-0.5 rounded transition-colors',
+                        theme === 'dark' ? 'hover:bg-slate-600' : 'hover:bg-gray-200'
+                      )}
+                    >
+                      {isSelected ? (
+                        <CheckSquare className="w-4 h-4" style={{ color: unit.color }} />
+                      ) : isPartial ? (
+                        <div className="relative">
+                          <Square className="w-4 h-4" style={{ color: unit.color }} />
+                          <div
+                            className="absolute inset-1 rounded-sm"
+                            style={{ backgroundColor: unit.color }}
+                          />
+                        </div>
+                      ) : (
+                        <Square className="w-4 h-4 text-gray-400" />
+                      )}
+                    </button>
+                  )}
 
-              {/* Extended tooltip with unit details */}
-              <AnimatePresence>
-                {isHovered && !isQuickActionsOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.15 }}
+                  {/* 单元图标 */}
+                  <div
+                    className="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center"
+                    style={{ backgroundColor: `${unit.color}20` }}
+                  >
+                    <Icon className="w-3 h-3" style={{ color: unit.color }} />
+                  </div>
+
+                  {/* 单元标题 */}
+                  <div
+                    className="flex-1 min-w-0 cursor-pointer"
+                    onClick={() => toggleUnit(unit.id)}
+                  >
+                    <div className="font-medium truncate text-[11px]">
+                      {isZh ? unit.titleZh : unit.titleEn}
+                    </div>
+                    <div className={cn(
+                      'text-[10px]',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    )}>
+                      {unit.demos.length} {isZh ? '演示' : 'demos'}
+                    </div>
+                  </div>
+
+                  {/* 展开/折叠按钮 */}
+                  <button
+                    onClick={() => toggleUnit(unit.id)}
                     className={cn(
-                      'absolute left-full ml-3 top-0 w-72 p-3 rounded-lg shadow-xl z-50',
-                      'pointer-events-auto',
-                      theme === 'dark'
-                        ? 'bg-slate-900 border border-slate-700'
-                        : 'bg-white border border-gray-200'
+                      'flex-shrink-0 p-0.5 rounded transition-colors',
+                      theme === 'dark' ? 'hover:bg-slate-600' : 'hover:bg-gray-200'
                     )}
                   >
-                    {/* Unit title */}
-                    <div className="flex items-start gap-2 mb-2">
-                      <div
-                        className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: `${unit.color}20` }}
-                      >
-                        <Icon className="w-4 h-4" style={{ color: unit.color }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className={cn(
-                          'text-sm font-bold leading-tight',
-                          theme === 'dark' ? 'text-white' : 'text-gray-900'
-                        )}>
-                          {getUnitTitle(unit.id)}
-                        </h4>
-                        <p className={cn(
-                          'text-xs mt-0.5',
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                        )}>
-                          {getUnitSubtitle(unit.id)}
-                        </p>
-                      </div>
-                    </div>
+                    {isExpanded ? (
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                </div>
 
-                    {/* Demo count */}
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className={cn(
-                        'flex items-center gap-1',
-                        theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                      )}>
-                        <FlaskConical className="w-3 h-3" />
-                        {unit.demos.length} {isZh ? '演示' : 'demos'}
-                      </span>
-                      {hasGames && (
-                        <span className={cn(
-                          'flex items-center gap-1',
-                          theme === 'dark' ? 'text-pink-400' : 'text-pink-600'
-                        )}>
-                          <Gamepad2 className="w-3 h-3" />
-                          {unit.games.length} {isZh ? '游戏' : 'games'}
-                        </span>
+                {/* 演示列表 */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className={cn(
+                        'ml-3 mt-1 pl-2 border-l-2 space-y-0.5',
                       )}
-                    </div>
+                      style={{ borderColor: `${unit.color}40` }}
+                      >
+                        {unit.demos.map((demo) => {
+                          const isSelected = selectedDemos.includes(demo.id)
+                          const eventCount = getEventCountByDemo(demo.id)
+                          const isCompleted = isDemoCompleted(demo.id)
 
-                    {/* Timeline events - 关联历史事件 */}
-                    {unit.timelineEvents && unit.timelineEvents.length > 0 && (
-                      <div className="mt-3 pt-2 border-t border-dashed border-gray-600/30">
-                        <div className="flex items-center gap-1.5 mb-2">
-                          <History className={cn(
-                            'w-3 h-3',
-                            theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                          )} />
-                          <span className={cn(
-                            'text-xs font-medium',
-                            theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                          )}>
-                            {isZh ? '关联历史事件' : 'Related Historical Events'}
-                          </span>
-                        </div>
-                        <div className="space-y-1.5 max-h-32 overflow-y-auto">
-                          {unit.timelineEvents.slice(0, 4).map((event, eventIdx) => (
-                            <button
-                              key={eventIdx}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                scrollToTimelineEvent(event.year, event.track)
-                              }}
+                          return (
+                            <div
+                              key={demo.id}
                               className={cn(
-                                'w-full flex items-center gap-2 px-2 py-1 rounded text-left transition-colors',
-                                'hover:bg-amber-500/10 group/event',
-                                theme === 'dark'
-                                  ? 'text-gray-300 hover:text-amber-300'
-                                  : 'text-gray-600 hover:text-amber-700'
+                                'group flex items-center gap-1.5 px-1.5 py-1 rounded text-[11px] transition-all',
+                                isSelected
+                                  ? theme === 'dark'
+                                    ? 'bg-blue-900/30 text-blue-300'
+                                    : 'bg-blue-50 text-blue-700'
+                                  : theme === 'dark'
+                                    ? 'hover:bg-slate-700/50 text-gray-400'
+                                    : 'hover:bg-gray-100 text-gray-600'
                               )}
                             >
-                              <span className={cn(
-                                'flex-shrink-0 w-10 text-[10px] font-mono px-1 py-0.5 rounded',
-                                event.track === 'polarization'
-                                  ? theme === 'dark' ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'
-                                  : theme === 'dark' ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'
-                              )}>
-                                {event.year}
+                              {/* 筛选模式：复选框 */}
+                              {isFilterMode && (
+                                <button
+                                  onClick={() => toggleDemo(demo.id)}
+                                  className="flex-shrink-0"
+                                >
+                                  {isSelected ? (
+                                    <CheckSquare className="w-3.5 h-3.5" style={{ color: unit.color }} />
+                                  ) : (
+                                    <Square className="w-3.5 h-3.5 text-gray-400" />
+                                  )}
+                                </button>
+                              )}
+
+                              {/* 完成状态 */}
+                              {!isFilterMode && isCompleted && (
+                                <Check className="w-3 h-3 text-emerald-500 flex-shrink-0" />
+                              )}
+
+                              {/* 演示标题 */}
+                              <span
+                                className={cn(
+                                  'flex-1 truncate cursor-pointer',
+                                  isCompleted && !isFilterMode && 'line-through opacity-60'
+                                )}
+                                onClick={() => {
+                                  if (isFilterMode) {
+                                    toggleDemo(demo.id)
+                                  } else {
+                                    navigate(demo.route)
+                                  }
+                                }}
+                              >
+                                {isZh ? demo.titleZh : demo.titleEn}
                               </span>
-                              <span className="flex-1 text-[11px] leading-tight truncate">
-                                {isZh ? event.titleZh : event.titleEn}
-                              </span>
-                              <Calendar className="w-3 h-3 opacity-0 group-hover/event:opacity-100 transition-opacity" />
-                            </button>
-                          ))}
-                        </div>
-                        {unit.timelineEvents.length > 4 && (
-                          <p className={cn(
-                            'text-[10px] text-center mt-1',
-                            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                          )}>
-                            +{unit.timelineEvents.length - 4} {isZh ? '更多事件' : 'more events'}
-                          </p>
-                        )}
+
+                              {/* 关联事件数量 */}
+                              {eventCount > 0 && (
+                                <span className={cn(
+                                  'flex-shrink-0 px-1 py-0.5 rounded text-[9px] font-medium',
+                                  theme === 'dark'
+                                    ? 'bg-amber-900/30 text-amber-400'
+                                    : 'bg-amber-50 text-amber-600'
+                                )}>
+                                  <History className="w-2.5 h-2.5 inline mr-0.5" />
+                                  {eventCount}
+                                </span>
+                              )}
+
+                              {/* 跳转到演示 */}
+                              {!isFilterMode && (
+                                <button
+                                  onClick={() => navigate(demo.route)}
+                                  className={cn(
+                                    'flex-shrink-0 p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity',
+                                    theme === 'dark' ? 'hover:bg-slate-600' : 'hover:bg-gray-200'
+                                  )}
+                                >
+                                  <Play className="w-3 h-3" style={{ color: unit.color }} />
+                                </button>
+                              )}
+                            </div>
+                          )
+                        })}
                       </div>
-                    )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )
+          })}
+        </div>
 
-                    {/* Progress bar */}
-                    <div className="mt-2">
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
-                          {isZh ? '进度' : 'Progress'}
-                        </span>
-                        <span style={{ color: unit.color }}>{unitProgress}%</span>
-                      </div>
-                      <div className={cn(
-                        'h-1.5 rounded-full overflow-hidden',
-                        theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
-                      )}>
-                        <div
-                          className="h-full rounded-full transition-all"
-                          style={{
-                            width: `${unitProgress}%`,
-                            backgroundColor: unit.color,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Quick action buttons */}
-              <AnimatePresence>
-                {isQuickActionsOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className={cn(
-                      'mt-1 ml-2 pl-3 border-l-2 space-y-1',
-                    )}
-                    style={{ borderColor: `${unit.color}50` }}
-                    >
-                      {/* View Course */}
-                      <motion.button
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.05 }}
-                        onClick={() => navigateToCourse(unit.id)}
-                        className={cn(
-                          'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs w-full transition-colors',
-                          theme === 'dark'
-                            ? 'hover:bg-slate-700 text-gray-300'
-                            : 'hover:bg-gray-100 text-gray-600'
-                        )}
-                      >
-                        <BookOpen className="w-3.5 h-3.5" style={{ color: unit.color }} />
-                        <span>{isZh ? '查看课程' : 'View Course'}</span>
-                      </motion.button>
-
-                      {/* Start Demo */}
-                      <motion.button
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 }}
-                        onClick={() => navigateToDemo(unit.id)}
-                        className={cn(
-                          'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs w-full transition-colors',
-                          theme === 'dark'
-                            ? 'hover:bg-slate-700 text-gray-300'
-                            : 'hover:bg-gray-100 text-gray-600'
-                        )}
-                      >
-                        <FlaskConical className="w-3.5 h-3.5 text-cyan-500" />
-                        <span>{isZh ? '开始演示' : 'Start Demo'}</span>
-                      </motion.button>
-
-                      {/* Play Game (if available) */}
-                      {hasGames && (
-                        <motion.button
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.15 }}
-                          onClick={() => navigateToGame(unit.id)}
-                          className={cn(
-                            'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs w-full transition-colors',
-                            theme === 'dark'
-                              ? 'hover:bg-slate-700 text-gray-300'
-                              : 'hover:bg-gray-100 text-gray-600'
-                          )}
-                        >
-                          <Gamepad2 className="w-3.5 h-3.5 text-pink-500" />
-                          <span>{isZh ? '开始游戏' : 'Play Game'}</span>
-                        </motion.button>
-                      )}
-
-                      {/* View History - scroll to first timeline event */}
-                      {unit.timelineEvents && unit.timelineEvents.length > 0 && (
-                        <motion.button
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: hasGames ? 0.2 : 0.15 }}
-                          onClick={() => {
-                            const firstEvent = unit.timelineEvents[0]
-                            scrollToTimelineEvent(firstEvent.year, firstEvent.track)
-                          }}
-                          className={cn(
-                            'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs w-full transition-colors',
-                            theme === 'dark'
-                              ? 'hover:bg-slate-700 text-gray-300'
-                              : 'hover:bg-gray-100 text-gray-600'
-                          )}
-                        >
-                          <History className="w-3.5 h-3.5 text-amber-500" />
-                          <span>{isZh ? '查看历史' : 'View History'}</span>
-                          <span className={cn(
-                            'ml-auto text-[10px] font-mono',
-                            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                          )}>
-                            {unit.timelineEvents[0].year}
-                          </span>
-                        </motion.button>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )
-        })}
-
-        {/* View all courses button */}
+        {/* 底部：开始学习按钮 */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-2"
+          className="mt-3"
         >
           <Link
             to="/course"
@@ -616,28 +476,6 @@ export function CourseNavigator({ className }: CourseNavigatorProps) {
             <span>{isZh ? '开始学习' : 'Start Learning'}</span>
           </Link>
         </motion.div>
-      </div>
-
-      {/* Progress indicator line */}
-      <div className={cn(
-        'hidden md:block absolute right-0 top-10 bottom-10 w-0.5 rounded-full translate-x-3',
-        theme === 'dark'
-          ? 'bg-gradient-to-b from-amber-500/30 via-indigo-500/30 to-violet-500/30'
-          : 'bg-gradient-to-b from-amber-300 via-indigo-300 to-violet-300'
-      )}>
-        {/* Active indicator */}
-        {activeUnit && (
-          <motion.div
-            layoutId="activeUnitIndicator"
-            className={cn(
-              'absolute w-2 h-2 rounded-full translate-x-[-3px] transition-all duration-300'
-            )}
-            style={{
-              backgroundColor: COURSE_UNITS.find(u => u.id === activeUnit)?.color,
-              top: `${(COURSE_UNITS.findIndex(u => u.id === activeUnit) / (COURSE_UNITS.length - 1)) * 100}%`,
-            }}
-          />
-        )}
       </div>
     </div>
   )
