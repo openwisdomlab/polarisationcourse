@@ -27,7 +27,8 @@ import {
   Info,
   Beaker,
   GraduationCap,
-  History
+  History,
+  Clock
 } from 'lucide-react'
 import {
   PSRT_CURRICULUM,
@@ -43,6 +44,7 @@ import { COURSE_DEMOS } from '@/data/course-event-mapping'
 
 interface ChroniclesPSRTViewProps {
   theme: 'dark' | 'light'
+  onNavigateToEvent?: (year: number, track: 'optics' | 'polarization') => void
 }
 
 // 单元图标映射
@@ -59,12 +61,14 @@ function TimelineEventCard({
   event,
   theme,
   relevance,
-  connectionDescription
+  connectionDescription,
+  onNavigate
 }: {
   event: TimelineEvent
   theme: 'dark' | 'light'
   relevance: 'primary' | 'secondary'
   connectionDescription: string
+  onNavigate?: () => void
 }) {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
@@ -80,8 +84,11 @@ function TimelineEventCard({
     <div
       className={`rounded-lg p-3 border-l-4 transition-all ${
         theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-      } ${relevance === 'primary' ? 'opacity-100' : 'opacity-70'}`}
+      } ${relevance === 'primary' ? 'opacity-100' : 'opacity-70'} ${
+        onNavigate ? 'cursor-pointer hover:ring-2 hover:ring-cyan-500/50' : ''
+      }`}
       style={{ borderLeftColor: categoryColors[event.category] }}
+      onClick={onNavigate}
     >
       <div className="flex items-center gap-2 mb-1">
         <Calendar className="w-4 h-4 text-gray-400" />
@@ -100,6 +107,14 @@ function TimelineEventCard({
         {relevance === 'primary' && (
           <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">
             核心
+          </span>
+        )}
+        {onNavigate && (
+          <span className={`ml-auto text-xs px-1.5 py-0.5 rounded flex items-center gap-1 ${
+            theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-600'
+          }`}>
+            <Clock className="w-3 h-3" />
+            {isZh ? '时间线' : 'Timeline'}
           </span>
         )}
       </div>
@@ -189,11 +204,13 @@ function DemoCard({
 function SectionContent({
   section,
   unitColor,
-  theme
+  theme,
+  onNavigateToEvent
 }: {
   section: CourseSection
   unitColor: string
   theme: 'dark' | 'light'
+  onNavigateToEvent?: (year: number, track: 'optics' | 'polarization') => void
 }) {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
@@ -226,6 +243,11 @@ function SectionContent({
           <h4 className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {isZh ? '历史发现' : 'Historical Discoveries'}
           </h4>
+          {onNavigateToEvent && (
+            <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+              ({isZh ? '点击跳转时间线' : 'Click to view in timeline'})
+            </span>
+          )}
         </div>
         <div className="space-y-3">
           {relatedEvents.map(({ event, relevance, connectionDescription }) => (
@@ -235,6 +257,7 @@ function SectionContent({
               theme={theme}
               relevance={relevance}
               connectionDescription={connectionDescription}
+              onNavigate={onNavigateToEvent ? () => onNavigateToEvent(event.year, event.track) : undefined}
             />
           ))}
         </div>
@@ -397,13 +420,15 @@ function SectionCard({
   unitColor,
   theme,
   isExpanded,
-  onToggle
+  onToggle,
+  onNavigateToEvent
 }: {
   section: CourseSection
   unitColor: string
   theme: 'dark' | 'light'
   isExpanded: boolean
   onToggle: () => void
+  onNavigateToEvent?: (year: number, track: 'optics' | 'polarization') => void
 }) {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
@@ -470,7 +495,7 @@ function SectionCard({
               theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
             }`}>
               <div className="pt-4">
-                <SectionContent section={section} unitColor={unitColor} theme={theme} />
+                <SectionContent section={section} unitColor={unitColor} theme={theme} onNavigateToEvent={onNavigateToEvent} />
               </div>
             </div>
           </motion.div>
@@ -487,7 +512,8 @@ function UnitCard({
   isExpanded,
   onToggle,
   expandedSectionId,
-  onSectionToggle
+  onSectionToggle,
+  onNavigateToEvent
 }: {
   unit: CourseUnit
   theme: 'dark' | 'light'
@@ -495,6 +521,7 @@ function UnitCard({
   onToggle: () => void
   expandedSectionId: string | null
   onSectionToggle: (sectionId: string) => void
+  onNavigateToEvent?: (year: number, track: 'optics' | 'polarization') => void
 }) {
   const { i18n, t } = useTranslation()
   const isZh = i18n.language === 'zh'
@@ -624,6 +651,7 @@ function UnitCard({
                     theme={theme}
                     isExpanded={expandedSectionId === section.id}
                     onToggle={() => onSectionToggle(section.id)}
+                    onNavigateToEvent={onNavigateToEvent}
                   />
                 ))}
               </div>
@@ -702,7 +730,7 @@ function UnitCard({
 }
 
 // 主组件
-export function ChroniclesPSRTView({ theme }: ChroniclesPSRTViewProps) {
+export function ChroniclesPSRTView({ theme, onNavigateToEvent }: ChroniclesPSRTViewProps) {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
@@ -796,6 +824,7 @@ export function ChroniclesPSRTView({ theme }: ChroniclesPSRTViewProps) {
             onToggle={() => handleUnitToggle(unit.id)}
             expandedSectionId={expandedSectionId}
             onSectionToggle={handleSectionToggle}
+            onNavigateToEvent={onNavigateToEvent}
           />
         ))}
       </div>
