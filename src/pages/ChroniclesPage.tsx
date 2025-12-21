@@ -16,8 +16,7 @@ import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, User, MapPin, Calendar,
   FlaskConical, BookOpen,
-  Sun, Sparkles, Camera, Film,
-  Filter
+  Sun, Sparkles, Camera, Film
 } from 'lucide-react'
 
 // Data imports
@@ -31,8 +30,10 @@ import {
   DualTrackCard,
   StoryModal,
   CenturyNavigator,
-  CourseNavigator,
-  ChroniclesPSRTView
+  DemoNavigator,
+  ChapterSelector,
+  ChroniclesPSRTView,
+  DEMO_ITEMS
 } from '@/components/chronicles'
 
 const TABS = [
@@ -53,13 +54,18 @@ export function ChroniclesPage() {
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
   const [selectedSections, setSelectedSections] = useState<string[]>([]) // P-SRT章节筛选状态
-  const [highlightedSections, setHighlightedSections] = useState<Set<string>>(new Set()) // 事件点击高亮的课程章节
+  const [highlightedSections, setHighlightedSections] = useState<Set<string>>(new Set()) // 事件点击高亮的课程章节 (reserved for future use)
+  const [selectedDemos, setSelectedDemos] = useState<string[]>([]) // 演示筛选状态
+  const [highlightedDemos, setHighlightedDemos] = useState<Set<string>>(new Set()) // 事件点击高亮的演示
+
+  // Suppress unused variable warning (highlightedSections is set but not yet used after removing CourseNavigator)
+  void highlightedSections
 
   // Use single-track layout on mobile/tablet
   const useSingleTrack = isMobile || isTablet
 
   // 计算被P-SRT章节筛选匹配的事件集合
-  const matchedEventKeys = useMemo(() => {
+  const matchedEventKeysFromSections = useMemo(() => {
     if (selectedSections.length === 0) return null
 
     // Get all events related to selected sections
@@ -78,6 +84,43 @@ export function ChroniclesPage() {
 
     return eventKeys
   }, [selectedSections])
+
+  // 计算被演示筛选匹配的事件集合
+  const matchedEventKeysFromDemos = useMemo(() => {
+    if (selectedDemos.length === 0) return null
+
+    // Get all events related to selected demos
+    const eventKeys = new Set<string>()
+    selectedDemos.forEach(demoId => {
+      const demo = DEMO_ITEMS.find(d => d.id === demoId)
+      if (demo?.relatedEvents) {
+        demo.relatedEvents.forEach(ref => {
+          eventKeys.add(`${ref.year}-${ref.track}`)
+        })
+      }
+    })
+
+    return eventKeys
+  }, [selectedDemos])
+
+  // 合并两种筛选的事件集合 (交集或并集)
+  const matchedEventKeys = useMemo(() => {
+    // If neither filter is active, return null (show all)
+    if (!matchedEventKeysFromSections && !matchedEventKeysFromDemos) return null
+
+    // If only one filter is active, return that one
+    if (!matchedEventKeysFromSections) return matchedEventKeysFromDemos
+    if (!matchedEventKeysFromDemos) return matchedEventKeysFromSections
+
+    // If both are active, return intersection (events that match both)
+    const intersection = new Set<string>()
+    matchedEventKeysFromSections.forEach(key => {
+      if (matchedEventKeysFromDemos.has(key)) {
+        intersection.add(key)
+      }
+    })
+    return intersection
+  }, [matchedEventKeysFromSections, matchedEventKeysFromDemos])
 
   // Filter events by category, track, and selected course modules
   const filteredEvents = useMemo(() => {
@@ -98,12 +141,18 @@ export function ChroniclesPage() {
     setSelectedSections(sections)
   }, [])
 
-  // 处理从CourseNavigator点击事件跳转到时间线
+  // 处理演示筛选变化
+  const handleDemoFilterChange = useCallback((demos: string[]) => {
+    setSelectedDemos(demos)
+  }, [])
+
+  // 处理从导航点击事件跳转到时间线
   const handleEventClickFromNav = useCallback((year: number, track: 'optics' | 'polarization') => {
     // Reset filters to show all events
     setTrackFilter('all')
     setFilter('')
     setSelectedSections([])
+    setSelectedDemos([])
 
     // Find the target event in the filtered events
     const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
@@ -125,16 +174,26 @@ export function ChroniclesPage() {
     }
   }, [])
 
-  // 处理点击时间线事件，高亮相关P-SRT章节
+  // 处理点击时间线事件，高亮相关P-SRT章节和演示
   const handleEventClickForHighlight = useCallback((year: number, track: 'optics' | 'polarization') => {
     // Get related sections for this event using getSectionsForEvent
     const mappings = getSectionsForEvent(year, track)
     const relatedSections = new Set(mappings.map(m => m.sectionId))
     setHighlightedSections(relatedSections)
 
+    // Get related demos for this event
+    const relatedDemos = new Set<string>()
+    DEMO_ITEMS.forEach(demo => {
+      if (demo.relatedEvents?.some(e => e.year === year && e.track === track)) {
+        relatedDemos.add(demo.id)
+      }
+    })
+    setHighlightedDemos(relatedDemos)
+
     // Clear after 5 seconds
     setTimeout(() => {
       setHighlightedSections(new Set())
+      setHighlightedDemos(new Set())
     }, 5000)
   }, [])
 
@@ -271,6 +330,14 @@ export function ChroniclesPage() {
 
         {activeTab === 'timeline' && (
           <>
+            {/* P-SRT Course Chapter Selector - 顶部课程章节选择器 */}
+            <ChapterSelector
+              selectedSections={selectedSections}
+              onFilterChange={handleFilterChange}
+              matchedEventCount={filteredEvents.length}
+              className="mb-4"
+            />
+
             {/* Track filters */}
             <div className={cn(
               'flex flex-wrap items-center gap-2 mb-4 p-3 rounded-lg',
@@ -322,35 +389,6 @@ export function ChroniclesPage() {
               </button>
             </div>
 
-            {/* Course filter status banner */}
-            {selectedSections.length > 0 && (
-              <div className={cn(
-                'flex items-center justify-between mb-4 p-3 rounded-lg',
-                theme === 'dark' ? 'bg-blue-900/30 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'
-              )}>
-                <div className="flex items-center gap-2">
-                  <Filter className={cn('w-4 h-4', theme === 'dark' ? 'text-blue-400' : 'text-blue-600')} />
-                  <span className={cn('text-sm font-medium', theme === 'dark' ? 'text-blue-300' : 'text-blue-700')}>
-                    {isZh
-                      ? `正在显示 ${selectedSections.length} 个P-SRT章节相关的 ${filteredEvents.length} 个历史事件`
-                      : `Showing ${filteredEvents.length} events related to ${selectedSections.length} P-SRT section${selectedSections.length > 1 ? 's' : ''}`
-                    }
-                  </span>
-                </div>
-                <button
-                  onClick={() => setSelectedSections([])}
-                  className={cn(
-                    'px-3 py-1 rounded-md text-xs font-medium transition-colors',
-                    theme === 'dark'
-                      ? 'bg-blue-500/20 text-blue-300 hover:bg-blue-500/30'
-                      : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                  )}
-                >
-                  {isZh ? '清除筛选' : 'Clear Filter'}
-                </button>
-              </div>
-            )}
-
             {/* Category filters */}
             <div className={cn(
               'flex flex-wrap items-center gap-2 mb-6 p-3 rounded-lg',
@@ -390,12 +428,12 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Course Navigator - P-SRT课程大纲导航 (Desktop only, left side) */}
+            {/* Demo Navigator - 光学演示馆导航 (Desktop only, left side) */}
             {!useSingleTrack && (
-              <CourseNavigator
-                selectedSections={selectedSections}
-                onFilterChange={handleFilterChange}
-                highlightedSections={highlightedSections}
+              <DemoNavigator
+                selectedDemos={selectedDemos}
+                onFilterChange={handleDemoFilterChange}
+                highlightedDemos={highlightedDemos}
                 onEventClick={handleEventClickFromNav}
               />
             )}
