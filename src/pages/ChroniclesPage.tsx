@@ -28,7 +28,8 @@ import {
   OpticalOverviewDiagram,
   DualTrackCard,
   StoryModal,
-  CenturyNavigator
+  CenturyNavigator,
+  CourseNavigator
 } from '@/components/chronicles'
 
 const TABS = [
@@ -270,7 +271,12 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Century Navigator - 世纪导航 (Desktop only) */}
+            {/* Course Navigator - 课程导航 (Desktop only, left side) */}
+            {!useSingleTrack && (
+              <CourseNavigator />
+            )}
+
+            {/* Century Navigator - 世纪导航 (Desktop only, right side) */}
             {!useSingleTrack && (
               <CenturyNavigator events={filteredEvents} isZh={isZh} />
             )}
