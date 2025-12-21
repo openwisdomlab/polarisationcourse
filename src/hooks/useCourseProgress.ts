@@ -10,6 +10,12 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+import { COURSE_DEMOS } from '@/data/course-event-mapping'
+
+// Foundation-level demo IDs for achievement tracking
+const FOUNDATION_DEMO_IDS = COURSE_DEMOS
+  .filter(demo => demo.difficulty === 'foundation')
+  .map(demo => demo.id)
 
 // 进度数据接口
 export interface CourseProgress {
@@ -252,7 +258,7 @@ export function useCourseProgress() {
       { id: 'first-demo', earned: progress.completedDemos.length >= 1 },
       { id: 'five-demos', earned: progress.completedDemos.length >= 5 },
       { id: 'ten-demos', earned: progress.completedDemos.length >= 10 },
-      { id: 'all-foundation', earned: false }, // 需要具体实现
+      { id: 'all-foundation', earned: FOUNDATION_DEMO_IDS.every(id => progress.completedDemos.includes(id)) },
       { id: 'quiz-master', earned: Object.values(progress.quizScores).some(q => q.score === q.maxScore) },
       { id: 'week-streak', earned: progress.streakDays >= 7 },
       { id: 'bookworm', earned: progress.bookmarkedDemos.length >= 3 },
