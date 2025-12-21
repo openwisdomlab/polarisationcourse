@@ -885,11 +885,11 @@ function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
             }}
           />
 
-          {/* Dispersed spectrum rays */}
+          {/* Dispersed spectrum rays - subtle effect to avoid blocking text */}
           {rays.map((ray, i) => {
             const startX = 130
             const startY = 60
-            const endX = 800
+            const endX = 300 // Shortened rays to avoid blocking text
             const radians = (ray.angle * Math.PI) / 180
             const endY = startY + Math.tan(radians) * (endX - startX)
 
@@ -901,33 +901,32 @@ function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
                 x2={endX}
                 y2={endY}
                 stroke={ray.color}
-                strokeWidth="2.5"
-                filter="url(#rayGlow)"
+                strokeWidth="1.5"
                 style={{
-                  strokeDasharray: '700',
-                  strokeDashoffset: isHovered ? '0' : '700',
-                  transition: `stroke-dashoffset 0.8s ease ${ray.delay}s`,
-                  opacity: isHovered ? 0.7 : 0,
+                  strokeDasharray: '200',
+                  strokeDashoffset: isHovered ? '0' : '200',
+                  transition: `stroke-dashoffset 0.6s ease ${ray.delay}s`,
+                  opacity: isHovered ? 0.35 : 0,
                 }}
               />
             )
           })}
 
-          {/* Sparkle particles along rays */}
-          {isHovered && rays.map((ray, i) => {
-            const positions = [0.3, 0.5, 0.7]
+          {/* Sparkle particles along rays - reduced to match shorter rays */}
+          {isHovered && rays.slice(0, 3).map((ray, i) => {
+            const positions = [0.4, 0.7]
             return positions.map((pos, j) => {
               const startX = 130
               const startY = 60
               const radians = (ray.angle * Math.PI) / 180
-              const x = startX + (800 - startX) * pos
+              const x = startX + (300 - startX) * pos
               const y = startY + Math.tan(radians) * (x - startX)
               return (
                 <circle
                   key={`${i}-${j}`}
                   cx={x}
                   cy={y}
-                  r="2"
+                  r="1.5"
                   fill={ray.color}
                   style={{
                     opacity: 0,
@@ -940,17 +939,16 @@ function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
         </svg>
       </div>
 
-      {/* Rainbow gradient overlay following mouse */}
+      {/* Rainbow gradient overlay following mouse - subtle effect */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: isHovered
             ? `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%,
-                rgba(255, 100, 100, 0.1) 0%,
-                rgba(255, 200, 100, 0.08) 20%,
-                rgba(100, 255, 100, 0.06) 40%,
-                rgba(100, 200, 255, 0.04) 60%,
-                transparent 80%)`
+                rgba(255, 100, 100, 0.05) 0%,
+                rgba(255, 200, 100, 0.04) 20%,
+                rgba(100, 255, 100, 0.03) 40%,
+                transparent 60%)`
             : 'none',
           opacity: isHovered ? 1 : 0,
           transition: 'opacity 0.4s ease',

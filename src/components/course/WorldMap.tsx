@@ -20,7 +20,6 @@ import {
   Target,
   Telescope,
   BookOpen,
-  Lock,
   ChevronRight,
 } from 'lucide-react'
 
@@ -34,7 +33,7 @@ interface WorldNode {
   color: string
   demos: string[]
   prereqs: string[]
-  status: 'locked' | 'available' | 'in-progress' | 'completed'
+  status: 'available' | 'in-progress' | 'completed'
   progress: number
   // 地图位置（相对于 SVG 视口）
   x: number
@@ -195,20 +194,11 @@ function MapNode({
 }) {
   const { t, i18n } = useTranslation()
   const lang = i18n.language === 'zh' ? 'zh' : 'en'
-  const isClickable = node.status !== 'locked'
+  const isClickable = true // All nodes are accessible for open exploration
 
-  // 根据状态选择不同的视觉效果
+  // 根据状态选择不同的视觉效果 - 所有节点默认可访问
   const nodeVisual = useMemo(() => {
     switch (node.status) {
-      case 'locked':
-        // 锁定：迷雾中的宝箱
-        return {
-          bgColor: theme === 'dark' ? '#1e293b' : '#e2e8f0',
-          borderColor: '#64748b',
-          iconColor: '#64748b',
-          glowColor: 'transparent',
-          emoji: '📦',
-        }
       case 'available':
         // 可用：发光的入口
         return {
@@ -249,40 +239,19 @@ function MapNode({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'spring', stiffness: 200, delay: node.unitNum * 0.1 }}
     >
-      {/* 发光效果 */}
-      {node.status !== 'locked' && (
-        <motion.circle
-          cx={node.x}
-          cy={node.y}
-          r={isHovered ? 50 : 40}
-          fill={nodeVisual.glowColor}
-          animate={
-            node.status === 'in-progress'
-              ? { r: [40, 50, 40], opacity: [0.3, 0.6, 0.3] }
-              : {}
-          }
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-      )}
-
-      {/* 迷雾效果（锁定状态） */}
-      {node.status === 'locked' && (
-        <motion.g>
-          <defs>
-            <filter id={`fog-${node.id}`} x="-50%" y="-50%" width="200%" height="200%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed={node.unitNum} />
-              <feDisplacementMap in="SourceGraphic" scale="10" />
-            </filter>
-          </defs>
-          <circle
-            cx={node.x}
-            cy={node.y}
-            r="45"
-            fill={theme === 'dark' ? 'rgba(15, 23, 42, 0.8)' : 'rgba(241, 245, 249, 0.8)'}
-            style={{ filter: `url(#fog-${node.id})` }}
-          />
-        </motion.g>
-      )}
+      {/* 发光效果 - 所有节点可见 */}
+      <motion.circle
+        cx={node.x}
+        cy={node.y}
+        r={isHovered ? 50 : 40}
+        fill={nodeVisual.glowColor}
+        animate={
+          node.status === 'in-progress'
+            ? { r: [40, 50, 40], opacity: [0.3, 0.6, 0.3] }
+            : {}
+        }
+        transition={{ duration: 2, repeat: Infinity }}
+      />
 
       {/* 进度环 */}
       <circle
@@ -331,9 +300,7 @@ function MapNode({
           className="w-full h-full flex items-center justify-center"
           style={{ color: nodeVisual.iconColor }}
         >
-          {node.status === 'locked' ? (
-            <Lock className="w-5 h-5" />
-          ) : node.status === 'completed' ? (
+          {node.status === 'completed' ? (
             <motion.span
               className="text-lg"
               animate={{ rotate: [0, 10, -10, 0] }}
@@ -419,11 +386,11 @@ function MapNode({
               fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
               fontSize="10"
             >
-              {node.status === 'locked'
-                ? t('course.path.locked')
-                : node.status === 'completed'
-                  ? `✓ ${t('course.path.completed')}`
-                  : `${node.progress}% ${t('course.path.inProgress')}`
+              {node.status === 'completed'
+                ? `✓ ${t('course.path.completed')}`
+                : node.status === 'in-progress'
+                  ? `${node.progress}% ${t('course.path.inProgress')}`
+                  : t('course.worldMap.available')
               }
             </text>
           </motion.g>
@@ -442,7 +409,7 @@ export function WorldMap({
   const navigate = useNavigate()
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
 
-  // 计算每个节点的状态和进度
+  // 计算每个节点的状态和进度 - 所有节点默认可访问
   const nodesWithProgress = useMemo(() => {
     return WORLD_NODES.map(node => {
       const completedInUnit = node.demos.filter(d => completedDemos.includes(d)).length
@@ -450,32 +417,22 @@ export function WorldMap({
         ? Math.round((completedInUnit / node.demos.length) * 100)
         : 0
 
-      const prereqsMet = node.prereqs.every(prereqId => {
-        const prereqNode = WORLD_NODES.find(n => n.id === prereqId)
-        if (!prereqNode) return true
-        const prereqCompleted = prereqNode.demos.filter(d => completedDemos.includes(d)).length
-        return prereqCompleted >= prereqNode.demos.length * 0.5
-      })
-
-      let status: WorldNode['status'] = 'locked'
-      if (node.prereqs.length === 0 || prereqsMet) {
-        if (progress === 100) {
-          status = 'completed'
-        } else if (progress > 0) {
-          status = 'in-progress'
-        } else {
-          status = 'available'
-        }
+      // 所有节点默认可访问，不再有锁定状态
+      let status: WorldNode['status'] = 'available'
+      if (progress === 100) {
+        status = 'completed'
+      } else if (progress > 0) {
+        status = 'in-progress'
       }
 
       return { ...node, status, progress } as WorldNode
     })
   }, [completedDemos])
 
-  // 处理节点点击
+  // 处理节点点击 - 所有节点可点击
   const handleNodeClick = (nodeId: string) => {
     const node = nodesWithProgress.find(n => n.id === nodeId)
-    if (node && node.status !== 'locked') {
+    if (node) {
       if (onNodeClick) {
         onNodeClick(nodeId)
       } else {
@@ -484,14 +441,13 @@ export function WorldMap({
     }
   }
 
-  // 渲染连接线
+  // 渲染连接线 - 所有连接线默认可见
   const renderConnections = () => {
     return CONNECTIONS.map(conn => {
       const fromNode = nodesWithProgress.find(n => n.id === conn.from)
       const toNode = nodesWithProgress.find(n => n.id === conn.to)
       if (!fromNode || !toNode) return null
 
-      const isActive = fromNode.status !== 'locked' && toNode.status !== 'locked'
       const isCompleted = fromNode.status === 'completed' && toNode.status === 'completed'
 
       // 计算贝塞尔曲线控制点
@@ -505,15 +461,8 @@ export function WorldMap({
               Q ${midX} ${midY}
               ${toNode.x} ${toNode.y - 32}`}
           fill="none"
-          stroke={
-            isCompleted
-              ? '#22c55e'
-              : isActive
-                ? toNode.color
-                : theme === 'dark' ? '#334155' : '#e2e8f0'
-          }
+          stroke={isCompleted ? '#22c55e' : toNode.color}
           strokeWidth="3"
-          strokeDasharray={isActive ? '0' : '8 4'}
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -588,7 +537,7 @@ export function WorldMap({
         </svg>
       </div>
 
-      {/* 图例 */}
+      {/* 图例 - 移除锁定状态，所有内容开放探索 */}
       <div className={`mt-4 flex flex-wrap justify-center gap-4 text-xs ${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
       }`}>
@@ -608,10 +557,6 @@ export function WorldMap({
         <div className="flex items-center gap-1.5">
           <span>🔮</span>
           <span>{t('course.worldMap.available')}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="opacity-50">📦</span>
-          <span>{t('course.path.locked')}</span>
         </div>
       </div>
 

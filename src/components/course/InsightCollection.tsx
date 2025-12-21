@@ -15,7 +15,6 @@ import {
   Award,
   Gem,
   Star,
-  Lock,
   FlaskConical,
   Gamepad2,
   Trophy,
@@ -304,12 +303,12 @@ function ItemCard({
 
   return (
     <motion.div
-      className={`relative rounded-xl p-3 border-2 transition-all ${
+      className={`relative rounded-xl p-3 border-2 transition-all cursor-pointer ${
         item.unlocked
-          ? `${rarityConfig.bgColor} cursor-pointer`
+          ? `${rarityConfig.bgColor}`
           : theme === 'dark'
-            ? 'bg-slate-800/30 border-slate-700/50 cursor-not-allowed'
-            : 'bg-gray-100/50 border-gray-200/50 cursor-not-allowed'
+            ? 'bg-slate-800/30 border-slate-700/50'
+            : 'bg-gray-100/50 border-gray-200/50'
       }`}
       style={{
         borderColor: item.unlocked ? rarityConfig.color : undefined,
@@ -317,13 +316,13 @@ function ItemCard({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={item.unlocked ? onClick : undefined}
-      whileHover={item.unlocked ? { scale: 1.05, y: -4 } : {}}
+      onClick={onClick}
+      whileHover={{ scale: 1.03, y: -2 }}
     >
-      {/* 锁定遮罩 */}
+      {/* 未解锁状态 - 显示半透明效果但不阻止点击查看 */}
       {!item.unlocked && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/20 z-10">
-          <Lock className="w-6 h-6 text-gray-400" />
+        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/10 z-10 pointer-events-none">
+          <span className="text-xs text-gray-400">{/* 待收集 */}</span>
         </div>
       )}
 
