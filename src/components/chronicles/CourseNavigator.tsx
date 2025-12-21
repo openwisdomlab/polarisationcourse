@@ -1,19 +1,17 @@
 /**
- * CourseNavigator - 课程导航组件 (重构版 v2)
+ * CourseNavigator - P-SRT课程大纲导航组件 (重构版 v3)
  *
- * 新设计原则：
- * 1. 以课程为整体导航结构，层级清晰：课程 → 单元 → 模块 → 历史事件
- * 2. 点击课程模块，优先显示关联的历史事件列表
- * 3. 从事件列表可进入具体的学习模块
- * 4. 鼠标悬停显示详细信息
- * 5. 支持双向交互：点击时间线事件可高亮相关课程模块
+ * 设计原则：
+ * 1. 以P-SRT课程大纲为导航结构：单元 → 章节 → 关联事件
+ * 2. 优选设计：点击课程章节自动筛选时间线事件
+ * 3. 次选设计：展开查看关联历史事件列表
+ * 4. 双向交互：点击时间线事件高亮相关课程模块
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
-import { useCourseProgress } from '@/hooks'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -24,7 +22,6 @@ import {
   GraduationCap,
   History,
   X,
-  Check,
   FlaskConical,
   Play,
   Lightbulb,
@@ -32,87 +29,86 @@ import {
   Sparkles,
   Target,
   Telescope,
-  Beaker,
-  Clock,
   Star,
   Sun,
   ExternalLink,
-  Info
+  Filter
 } from 'lucide-react'
 
-// Import course-event mapping data
+// Import P-SRT curriculum data
 import {
-  UNIT_INFO,
-  getEventCountByDemo,
-  getDemosByUnit,
-  getEventMappingsByDemo,
-  type CourseEventMapping
-} from '@/data/course-event-mapping'
+  PSRT_CURRICULUM,
+  PSRT_EVENT_MAPPINGS,
+  getDifficultyColor,
+  getDifficultyIcon
+} from '@/data/psrt-curriculum'
 import { TIMELINE_EVENTS } from '@/data/timeline-events'
 
 // Unit icon mapping
-const UNIT_ICONS = [Lightbulb, Zap, Sparkles, Beaker, Target, Telescope]
-
-// Difficulty labels
-const DIFFICULTY_LABELS = {
-  foundation: { en: 'Foundation', zh: '基础层', color: 'emerald' },
-  application: { en: 'Application', zh: '应用层', color: 'blue' },
-  research: { en: 'Research', zh: '研究层', color: 'purple' }
+import type { LucideIcon } from 'lucide-react'
+const UNIT_ICONS: Record<string, LucideIcon> = {
+  'unit1': Lightbulb,
+  'unit2': Zap,
+  'unit3': Sparkles,
+  'unit4': Target,
+  'unit5': Telescope
 }
 
 interface CourseNavigatorProps {
   className?: string
-  selectedDemos: string[]
-  onFilterChange: (selectedDemos: string[]) => void
-  highlightedDemos?: Set<string>  // Demos highlighted from timeline event click
+  selectedSections: string[]  // Selected section IDs for filtering
+  onFilterChange: (selectedSections: string[]) => void
+  highlightedSections?: Set<string>  // Sections highlighted from timeline event click
   onEventClick?: (year: number, track: 'optics' | 'polarization') => void  // Callback to scroll to event
 }
 
 export function CourseNavigator({
   className,
-  selectedDemos,
+  selectedSections,
   onFilterChange,
-  highlightedDemos,
+  highlightedSections,
   onEventClick
 }: CourseNavigatorProps) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const navigate = useNavigate()
   const isZh = i18n.language === 'zh'
-  const { progress } = useCourseProgress()
 
   // State management
   const [isExpanded, setIsExpanded] = useState(false)          // Mobile expand/collapse
-  const [expandedUnits, setExpandedUnits] = useState<Set<number>>(new Set([0])) // Expanded units
-  const [expandedDemo, setExpandedDemo] = useState<string | null>(null)  // Currently expanded demo showing events
-  const [hoveredDemo, setHoveredDemo] = useState<string | null>(null)    // Currently hovered demo for tooltip
+  const [expandedUnits, setExpandedUnits] = useState<Set<string>>(new Set(['unit1'])) // Expanded units
+  const [expandedSection, setExpandedSection] = useState<string | null>(null)  // Currently expanded section showing events
 
-  // Selected demos count
-  const hasFilter = selectedDemos.length > 0
-  const filterCount = selectedDemos.length
+  // Selected sections count
+  const hasFilter = selectedSections.length > 0
+  const filterCount = selectedSections.length
 
-  // Demos grouped by unit
-  const demosByUnit = useMemo(() => {
-    return UNIT_INFO.map(unit => ({
-      ...unit,
-      demos: getDemosByUnit(unit.id),
-      Icon: UNIT_ICONS[unit.id] || FlaskConical
-    }))
+  // Get events for a section
+  const getEventsForSection = useCallback((sectionId: string) => {
+    const section = PSRT_CURRICULUM
+      .flatMap(unit => unit.sections)
+      .find(s => s.id === sectionId)
+
+    if (!section) return []
+
+    return section.relatedEvents.map(ref => {
+      const event = TIMELINE_EVENTS.find(
+        e => e.year === ref.year && e.track === ref.track
+      )
+      return event ? { ...ref, event } : null
+    }).filter((e): e is NonNullable<typeof e> => e !== null)
   }, [])
 
-  // Get event details for a demo
-  const getEventsForDemo = useCallback((demoId: string) => {
-    const mappings = getEventMappingsByDemo(demoId)
-    return mappings.map(mapping => {
-      const event = TIMELINE_EVENTS.find(
-        e => e.year === mapping.eventYear && e.track === mapping.eventTrack
-      )
-      return event ? { ...mapping, event } : null
-    }).filter((e): e is CourseEventMapping & { event: typeof TIMELINE_EVENTS[0] } => e !== null)
+  // Get event count for a section
+  const getEventCountForSection = useCallback((sectionId: string) => {
+    const section = PSRT_CURRICULUM
+      .flatMap(unit => unit.sections)
+      .find(s => s.id === sectionId)
+    return section?.relatedEvents.length || 0
   }, [])
 
   // Toggle unit expand/collapse
-  const toggleUnit = useCallback((unitId: number) => {
+  const toggleUnit = useCallback((unitId: string) => {
     setExpandedUnits(prev => {
       const next = new Set(prev)
       if (next.has(unitId)) {
@@ -124,18 +120,18 @@ export function CourseNavigator({
     })
   }, [])
 
-  // Toggle demo selection for filtering
-  const toggleDemoFilter = useCallback((demoId: string, e: React.MouseEvent) => {
+  // Toggle section selection for filtering (优选设计)
+  const toggleSectionFilter = useCallback((sectionId: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    const newSelected = selectedDemos.includes(demoId)
-      ? selectedDemos.filter(id => id !== demoId)
-      : [...selectedDemos, demoId]
+    const newSelected = selectedSections.includes(sectionId)
+      ? selectedSections.filter(id => id !== sectionId)
+      : [...selectedSections, sectionId]
     onFilterChange(newSelected)
-  }, [selectedDemos, onFilterChange])
+  }, [selectedSections, onFilterChange])
 
-  // Toggle demo expand to show events
-  const toggleDemoExpand = useCallback((demoId: string) => {
-    setExpandedDemo(prev => prev === demoId ? null : demoId)
+  // Toggle section expand to show events (次选设计)
+  const toggleSectionExpand = useCallback((sectionId: string) => {
+    setExpandedSection(prev => prev === sectionId ? null : sectionId)
   }, [])
 
   // Clear all filters
@@ -143,15 +139,10 @@ export function CourseNavigator({
     onFilterChange([])
   }, [onFilterChange])
 
-  // Check if demo is completed
-  const isDemoCompleted = useCallback((demoId: string) => {
-    return progress.completedDemos.includes(demoId)
-  }, [progress.completedDemos])
-
-  // Check if demo is highlighted from event click
-  const isDemoHighlighted = useCallback((demoId: string) => {
-    return highlightedDemos?.has(demoId) ?? false
-  }, [highlightedDemos])
+  // Check if section is highlighted from event click
+  const isSectionHighlighted = useCallback((sectionId: string) => {
+    return highlightedSections?.has(sectionId) ?? false
+  }, [highlightedSections])
 
 
   return (
@@ -195,7 +186,7 @@ export function CourseNavigator({
               'text-xs font-semibold',
               theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
             )}>
-              {isZh ? '课程导航' : 'Course Navigation'}
+              {isZh ? 'P-SRT课程大纲' : 'P-SRT Outline'}
             </span>
           </div>
 
@@ -219,7 +210,7 @@ export function CourseNavigator({
 
         {/* Highlighted from event indicator */}
         <AnimatePresence>
-          {highlightedDemos && highlightedDemos.size > 0 && (
+          {highlightedSections && highlightedSections.size > 0 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -233,8 +224,8 @@ export function CourseNavigator({
                 <History className="w-3 h-3" />
                 <span>
                   {isZh
-                    ? `事件关联 ${highlightedDemos.size} 个模块`
-                    : `${highlightedDemos.size} module${highlightedDemos.size > 1 ? 's' : ''} related to event`
+                    ? `事件关联 ${highlightedSections.size} 个章节`
+                    : `${highlightedSections.size} section${highlightedSections.size > 1 ? 's' : ''} related to event`
                   }
                 </span>
               </div>
@@ -255,11 +246,11 @@ export function CourseNavigator({
               )}
             >
               <div className="flex items-center gap-1.5">
-                <Clock className="w-3 h-3" />
+                <Filter className="w-3 h-3" />
                 <span>
                   {isZh
-                    ? `筛选 ${filterCount} 个模块的事件`
-                    : `Filtering events for ${filterCount} module${filterCount > 1 ? 's' : ''}`
+                    ? `筛选 ${filterCount} 个章节的事件`
+                    : `Filtering events for ${filterCount} section${filterCount > 1 ? 's' : ''}`
                   }
                 </span>
               </div>
@@ -267,14 +258,15 @@ export function CourseNavigator({
           )}
         </AnimatePresence>
 
-        {/* Course unit list */}
+        {/* P-SRT Course unit list */}
         <div className={cn(
           'flex flex-col gap-1 max-h-[60vh] overflow-y-auto pr-1',
           'scrollbar-thin scrollbar-thumb-gray-400/50 scrollbar-track-transparent'
         )}>
-          {demosByUnit.map((unit) => {
-            const Icon = unit.Icon
+          {PSRT_CURRICULUM.map((unit) => {
+            const UnitIcon = UNIT_ICONS[unit.id] || FlaskConical
             const isUnitExpanded = expandedUnits.has(unit.id)
+            const unitEventCount = PSRT_EVENT_MAPPINGS.filter(m => m.unitId === unit.id).length
 
             return (
               <div key={unit.id} className="relative">
@@ -298,19 +290,19 @@ export function CourseNavigator({
                     className="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center"
                     style={{ backgroundColor: `${unit.color}20` }}
                   >
-                    <Icon className="w-3 h-3" style={{ color: unit.color }} />
+                    <UnitIcon className="w-3 h-3" color={unit.color} />
                   </div>
 
                   {/* Unit title */}
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate text-[11px]">
-                      {isZh ? unit.titleZh : unit.titleEn}
+                      {isZh ? `${unit.unitNumber}. ${unit.titleZh}` : `${unit.unitNumber}. ${unit.titleEn}`}
                     </div>
                     <div className={cn(
                       'text-[10px]',
                       theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
                     )}>
-                      {unit.demos.length} {isZh ? '模块' : 'modules'}
+                      {unit.sections.length} {isZh ? '章节' : 'sections'} · {unitEventCount} {isZh ? '事件' : 'events'}
                     </div>
                   </div>
 
@@ -329,7 +321,7 @@ export function CourseNavigator({
                   </button>
                 </div>
 
-                {/* Demo list */}
+                {/* Section list */}
                 <AnimatePresence>
                   {isUnitExpanded && (
                     <motion.div
@@ -344,19 +336,17 @@ export function CourseNavigator({
                       )}
                       style={{ borderColor: `${unit.color}40` }}
                       >
-                        {unit.demos.map((demo) => {
-                          const isSelected = selectedDemos.includes(demo.id)
-                          const eventCount = getEventCountByDemo(demo.id)
-                          const isCompleted = isDemoCompleted(demo.id)
-                          const isHighlighted = isDemoHighlighted(demo.id)
-                          const isDemoExpanded = expandedDemo === demo.id
-                          const isHovered = hoveredDemo === demo.id
-                          const events = isDemoExpanded ? getEventsForDemo(demo.id) : []
-                          const difficultyInfo = DIFFICULTY_LABELS[demo.difficulty]
+                        {unit.sections.map((section) => {
+                          const isSelected = selectedSections.includes(section.id)
+                          const eventCount = getEventCountForSection(section.id)
+                          const isHighlighted = isSectionHighlighted(section.id)
+                          const isSectionExpanded = expandedSection === section.id
+                          const events = isSectionExpanded ? getEventsForSection(section.id) : []
+                          const difficultyColor = getDifficultyColor(section.difficulty)
 
                           return (
-                            <div key={demo.id} className="relative">
-                              {/* Demo row */}
+                            <div key={section.id} className="relative">
+                              {/* Section row */}
                               <div
                                 className={cn(
                                   'group flex items-center gap-1.5 px-1.5 py-1.5 rounded text-[11px] transition-all cursor-pointer',
@@ -372,28 +362,41 @@ export function CourseNavigator({
                                         ? 'hover:bg-slate-700/50 text-gray-400'
                                         : 'hover:bg-gray-100 text-gray-600'
                                 )}
-                                onClick={() => toggleDemoExpand(demo.id)}
-                                onMouseEnter={() => setHoveredDemo(demo.id)}
-                                onMouseLeave={() => setHoveredDemo(null)}
+                                onClick={() => toggleSectionExpand(section.id)}
                               >
-                                {/* Completed state */}
-                                {isCompleted && (
-                                  <Check className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-                                )}
+                                {/* Section number badge */}
+                                <span
+                                  className="flex-shrink-0 text-[9px] font-bold px-1 py-0.5 rounded"
+                                  style={{
+                                    backgroundColor: `${unit.color}20`,
+                                    color: unit.color
+                                  }}
+                                >
+                                  {section.id}
+                                </span>
 
-                                {/* Demo title */}
-                                <span className={cn(
-                                  'flex-1 truncate',
-                                  isCompleted && 'line-through opacity-60'
-                                )}>
-                                  {isZh ? demo.titleZh : demo.titleEn}
+                                {/* Section title */}
+                                <span className="flex-1 truncate">
+                                  {isZh ? section.titleZh : section.titleEn}
+                                </span>
+
+                                {/* Difficulty badge */}
+                                <span
+                                  className="flex-shrink-0 text-[8px] px-1 py-0.5 rounded"
+                                  style={{
+                                    backgroundColor: `${difficultyColor}20`,
+                                    color: difficultyColor
+                                  }}
+                                  title={getDifficultyIcon(section.difficulty)}
+                                >
+                                  {getDifficultyIcon(section.difficulty)}
                                 </span>
 
                                 {/* Event count badge */}
                                 {eventCount > 0 && (
                                   <span className={cn(
                                     'flex-shrink-0 px-1 py-0.5 rounded text-[9px] font-medium flex items-center gap-0.5',
-                                    isDemoExpanded
+                                    isSectionExpanded
                                       ? theme === 'dark'
                                         ? 'bg-amber-500/30 text-amber-300'
                                         : 'bg-amber-100 text-amber-700'
@@ -406,9 +409,9 @@ export function CourseNavigator({
                                   </span>
                                 )}
 
-                                {/* Filter toggle */}
+                                {/* Filter toggle (优选设计) */}
                                 <button
-                                  onClick={(e) => toggleDemoFilter(demo.id, e)}
+                                  onClick={(e) => toggleSectionFilter(section.id, e)}
                                   className={cn(
                                     'flex-shrink-0 p-0.5 rounded transition-all',
                                     isSelected
@@ -418,15 +421,15 @@ export function CourseNavigator({
                                       : 'opacity-0 group-hover:opacity-100',
                                     theme === 'dark' ? 'hover:bg-slate-600' : 'hover:bg-gray-200'
                                   )}
-                                  title={isZh ? '筛选此模块的事件' : 'Filter events for this module'}
+                                  title={isZh ? '筛选此章节的事件' : 'Filter events for this section'}
                                 >
-                                  <Clock className="w-3 h-3" />
+                                  <Filter className="w-3 h-3" />
                                 </button>
 
                                 {/* Expand indicator */}
                                 {eventCount > 0 && (
                                   <span className="flex-shrink-0">
-                                    {isDemoExpanded ? (
+                                    {isSectionExpanded ? (
                                       <ChevronUp className="w-3 h-3" />
                                     ) : (
                                       <ChevronDown className="w-3 h-3" />
@@ -435,78 +438,9 @@ export function CourseNavigator({
                                 )}
                               </div>
 
-                              {/* Hover tooltip with detailed info */}
+                              {/* Expanded event list (次选设计) */}
                               <AnimatePresence>
-                                {isHovered && !isDemoExpanded && (
-                                  <motion.div
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -10 }}
-                                    className={cn(
-                                      'absolute left-full ml-2 top-0 z-50 p-2 rounded-lg shadow-lg min-w-[180px] max-w-[220px]',
-                                      theme === 'dark'
-                                        ? 'bg-slate-800 border border-slate-700'
-                                        : 'bg-white border border-gray-200'
-                                    )}
-                                  >
-                                    <div className="flex items-start gap-2 mb-1.5">
-                                      <Info className={cn(
-                                        'w-3.5 h-3.5 flex-shrink-0 mt-0.5',
-                                        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                                      )} />
-                                      <div>
-                                        <div className={cn(
-                                          'font-medium text-xs',
-                                          theme === 'dark' ? 'text-white' : 'text-gray-900'
-                                        )}>
-                                          {isZh ? demo.titleZh : demo.titleEn}
-                                        </div>
-                                        <div className={cn(
-                                          'text-[10px] mt-0.5',
-                                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                                        )}>
-                                          {isZh ? unit.titleZh : unit.titleEn}
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Difficulty badge */}
-                                    <div className="flex items-center gap-1.5 mb-1.5">
-                                      <span className={cn(
-                                        'px-1.5 py-0.5 rounded text-[9px] font-medium',
-                                        difficultyInfo.color === 'emerald'
-                                          ? theme === 'dark' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-50 text-emerald-700'
-                                          : difficultyInfo.color === 'blue'
-                                            ? theme === 'dark' ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-700'
-                                            : theme === 'dark' ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-50 text-purple-700'
-                                      )}>
-                                        {isZh ? difficultyInfo.zh : difficultyInfo.en}
-                                      </span>
-                                      {eventCount > 0 && (
-                                        <span className={cn(
-                                          'px-1.5 py-0.5 rounded text-[9px] font-medium flex items-center gap-0.5',
-                                          theme === 'dark' ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-50 text-amber-700'
-                                        )}>
-                                          <History className="w-2.5 h-2.5" />
-                                          {eventCount} {isZh ? '事件' : 'events'}
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    {/* Quick action */}
-                                    <div className={cn(
-                                      'text-[10px] pt-1.5 border-t',
-                                      theme === 'dark' ? 'border-slate-700 text-gray-500' : 'border-gray-100 text-gray-400'
-                                    )}>
-                                      {isZh ? '点击查看关联历史事件' : 'Click to view related events'}
-                                    </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-
-                              {/* Expanded event list */}
-                              <AnimatePresence>
-                                {isDemoExpanded && events.length > 0 && (
+                                {isSectionExpanded && events.length > 0 && (
                                   <motion.div
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
@@ -530,10 +464,10 @@ export function CourseNavigator({
                                       {/* Event items */}
                                       {events.map((eventData) => (
                                         <button
-                                          key={`${eventData.eventYear}-${eventData.eventTrack}`}
+                                          key={`${eventData.year}-${eventData.track}`}
                                           onClick={(e) => {
                                             e.stopPropagation()
-                                            onEventClick?.(eventData.eventYear, eventData.eventTrack)
+                                            onEventClick?.(eventData.year, eventData.track)
                                           }}
                                           className={cn(
                                             'w-full flex items-start gap-1.5 p-1.5 rounded-md text-left transition-all',
@@ -545,11 +479,11 @@ export function CourseNavigator({
                                           {/* Track indicator */}
                                           <div className={cn(
                                             'flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-0.5',
-                                            eventData.eventTrack === 'optics'
+                                            eventData.track === 'optics'
                                               ? theme === 'dark' ? 'bg-amber-500/20' : 'bg-amber-100'
                                               : theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
                                           )}>
-                                            {eventData.eventTrack === 'optics'
+                                            {eventData.track === 'optics'
                                               ? <Sun className="w-2.5 h-2.5 text-amber-500" />
                                               : <Sparkles className="w-2.5 h-2.5 text-cyan-500" />
                                             }
@@ -562,7 +496,7 @@ export function CourseNavigator({
                                                 'font-mono text-[10px]',
                                                 theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
                                               )}>
-                                                {eventData.eventYear}
+                                                {eventData.year}
                                               </span>
                                               {eventData.relevance === 'primary' && (
                                                 <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
@@ -584,21 +518,25 @@ export function CourseNavigator({
                                         </button>
                                       ))}
 
-                                      {/* Go to demo button */}
+                                      {/* Quick filter button for this section */}
                                       <button
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          navigate(demo.route)
-                                        }}
+                                        onClick={(e) => toggleSectionFilter(section.id, e)}
                                         className={cn(
                                           'w-full flex items-center justify-center gap-1.5 mt-2 py-1.5 rounded-md text-[10px] font-medium transition-colors',
-                                          theme === 'dark'
-                                            ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30'
-                                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                                          isSelected
+                                            ? theme === 'dark'
+                                              ? 'bg-blue-500/30 text-blue-300 hover:bg-blue-500/40'
+                                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                            : theme === 'dark'
+                                              ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30'
+                                              : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                                         )}
                                       >
-                                        <Play className="w-3 h-3" />
-                                        {isZh ? '进入学习模块' : 'Enter Learning Module'}
+                                        <Filter className="w-3 h-3" />
+                                        {isSelected
+                                          ? (isZh ? '取消筛选' : 'Remove Filter')
+                                          : (isZh ? '筛选时间线' : 'Filter Timeline')
+                                        }
                                       </button>
                                     </div>
                                   </motion.div>
@@ -634,7 +572,7 @@ export function CourseNavigator({
             )}
           >
             <Play className="w-3.5 h-3.5" />
-            <span>{isZh ? '进入课程' : 'Start Course'}</span>
+            <span>{isZh ? '进入完整课程' : 'Full Course'}</span>
           </button>
         </motion.div>
       </div>
