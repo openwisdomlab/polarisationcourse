@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
@@ -770,37 +770,69 @@ function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
-// Spectrum colors for prism dispersion effect (visible light spectrum)
-const SPECTRUM_COLORS = [
-  '#ff0000', // Red (longer wavelength)
-  '#ff8800', // Orange
-  '#ffff00', // Yellow
-  '#00ff00', // Green
-  '#00ffff', // Cyan
-  '#0088ff', // Blue
-  '#8800ff', // Violet (shorter wavelength)
-]
-
-// Course Card with Prism Dispersion Effect
+// Course Card with Crossed Polarizers Animation - demonstrates Malus's Law
+// Shows polarized light passing through two polarizers, with intensity following I = I₀ × cos²θ
 interface CourseCardProps {
   theme: 'dark' | 'light'
   children: React.ReactNode
   to: string
 }
 
-function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
+function CourseCardWithPolarizers({ theme, children, to }: CourseCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [analyzerAngle, setAnalyzerAngle] = useState(0)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const cardRef = useRef<HTMLAnchorElement>(null)
+  const animationRef = useRef<number | null>(null)
 
-  // Generate animated ray paths
-  const rays = useMemo(() => {
-    return SPECTRUM_COLORS.map((color, i) => ({
-      color,
-      angle: -15 + i * 5, // Spread from -15 to +15 degrees
-      delay: i * 0.05,
-    }))
-  }, [])
+  // Animate analyzer rotation on hover
+  useEffect(() => {
+    if (isHovered) {
+      const startTime = Date.now()
+      const animate = () => {
+        const elapsed = Date.now() - startTime
+        // Complete rotation in 4 seconds
+        const angle = (elapsed / 4000) * 360 % 360
+        setAnalyzerAngle(angle)
+        animationRef.current = requestAnimationFrame(animate)
+      }
+      animationRef.current = requestAnimationFrame(animate)
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+      setAnalyzerAngle(0)
+    }
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [isHovered])
+
+  // Calculate Malus's Law intensity: I = I₀ × cos²(θ)
+  const malusIntensity = Math.pow(Math.cos((analyzerAngle * Math.PI) / 180), 2)
+
+  // Get polarization color based on angle (smooth transition through polarization colors)
+  const getPolarizationColor = (angle: number) => {
+    const normalizedAngle = ((angle % 180) + 180) % 180
+    // 0° → red, 45° → orange, 90° → green, 135° → blue
+    if (normalizedAngle < 45) {
+      const t = normalizedAngle / 45
+      return `rgb(${255}, ${Math.round(68 + t * 102)}, ${Math.round(68 - t * 68)})`
+    } else if (normalizedAngle < 90) {
+      const t = (normalizedAngle - 45) / 45
+      return `rgb(${Math.round(255 - t * 187)}, ${Math.round(170 + t * 85)}, ${Math.round(t * 68)})`
+    } else if (normalizedAngle < 135) {
+      const t = (normalizedAngle - 90) / 45
+      return `rgb(${Math.round(68 - t * 68)}, ${Math.round(255 - t * 119)}, ${Math.round(68 + t * 68)})`
+    } else {
+      const t = (normalizedAngle - 135) / 45
+      return `rgb(${Math.round(t * 187)}, ${Math.round(136 - t * 68)}, ${Math.round(136 + t * 119)})`
+    }
+  }
+
+  const currentColor = getPolarizationColor(analyzerAngle)
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (cardRef.current) {
@@ -824,7 +856,7 @@ function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
     >
-      {/* Prism SVG Animation */}
+      {/* Crossed Polarizers SVG Animation */}
       <div
         className="absolute inset-0 pointer-events-none overflow-hidden"
         style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.4s ease' }}
@@ -836,19 +868,20 @@ function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
         >
           <defs>
             {/* Gradient for incident light beam */}
-            <linearGradient id="incidentBeam" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="white" stopOpacity="0" />
-              <stop offset="50%" stopColor="white" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="white" stopOpacity="0.9" />
+            <linearGradient id="polarizedBeam" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={currentColor} stopOpacity="0" />
+              <stop offset="30%" stopColor={currentColor} stopOpacity="0.8" />
+              <stop offset="100%" stopColor={currentColor} stopOpacity="0.9" />
             </linearGradient>
-            {/* Prism fill gradient */}
-            <linearGradient id="prismFill" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={theme === 'dark' ? '#60a5fa' : '#3b82f6'} stopOpacity="0.3" />
-              <stop offset="100%" stopColor={theme === 'dark' ? '#818cf8' : '#6366f1'} stopOpacity="0.4" />
+            {/* Gradient for transmitted beam (intensity varies with Malus's Law) */}
+            <linearGradient id="transmittedBeam" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={currentColor} stopOpacity={0.9 * malusIntensity} />
+              <stop offset="70%" stopColor={currentColor} stopOpacity={0.6 * malusIntensity} />
+              <stop offset="100%" stopColor={currentColor} stopOpacity="0" />
             </linearGradient>
-            {/* Glow filter for rays */}
-            <filter id="rayGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+            {/* Glow filter */}
+            <filter id="polarizerGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
               <feMerge>
                 <feMergeNode in="coloredBlur" />
                 <feMergeNode in="SourceGraphic" />
@@ -856,101 +889,203 @@ function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
             </filter>
           </defs>
 
-          {/* Incident white light beam */}
-          <line
-            x1="0"
-            y1="60"
-            x2="120"
-            y2="60"
-            stroke="url(#incidentBeam)"
-            strokeWidth="3"
-            style={{
-              strokeDasharray: '120',
-              strokeDashoffset: isHovered ? '0' : '120',
-              transition: 'stroke-dashoffset 0.6s ease',
-            }}
-          />
-
-          {/* Prism triangle */}
-          <polygon
-            points="100,30 130,90 70,90"
-            fill="url(#prismFill)"
-            stroke={theme === 'dark' ? '#60a5fa' : '#3b82f6'}
-            strokeWidth="1.5"
-            style={{
-              transform: isHovered ? 'scale(1)' : 'scale(0.8)',
-              transformOrigin: '100px 60px',
-              transition: 'transform 0.4s ease',
-              opacity: isHovered ? 1 : 0.5,
-            }}
-          />
-
-          {/* Dispersed spectrum rays - subtle effect to avoid blocking text */}
-          {rays.map((ray, i) => {
-            const startX = 130
-            const startY = 60
-            const endX = 300 // Shortened rays to avoid blocking text
-            const radians = (ray.angle * Math.PI) / 180
-            const endY = startY + Math.tan(radians) * (endX - startX)
-
-            return (
-              <line
-                key={i}
-                x1={startX}
-                y1={startY}
-                x2={endX}
-                y2={endY}
-                stroke={ray.color}
-                strokeWidth="1.5"
-                style={{
-                  strokeDasharray: '200',
-                  strokeDashoffset: isHovered ? '0' : '200',
-                  transition: `stroke-dashoffset 0.6s ease ${ray.delay}s`,
-                  opacity: isHovered ? 0.35 : 0,
-                }}
-              />
-            )
-          })}
-
-          {/* Sparkle particles along rays - reduced to match shorter rays */}
-          {isHovered && rays.slice(0, 3).map((ray, i) => {
-            const positions = [0.4, 0.7]
-            return positions.map((pos, j) => {
-              const startX = 130
-              const startY = 60
-              const radians = (ray.angle * Math.PI) / 180
-              const x = startX + (300 - startX) * pos
-              const y = startY + Math.tan(radians) * (x - startX)
+          {/* Polarized light wave - E-field oscillation (before polarizer) */}
+          <g style={{ opacity: isHovered ? 0.6 : 0, transition: 'opacity 0.3s ease' }}>
+            {[...Array(8)].map((_, i) => {
+              const x = 10 + i * 12
+              const amplitude = 15 * Math.sin((Date.now() / 200 + i) * 0.5)
               return (
-                <circle
-                  key={`${i}-${j}`}
-                  cx={x}
-                  cy={y}
-                  r="1.5"
-                  fill={ray.color}
+                <line
+                  key={`wave-${i}`}
+                  x1={x}
+                  y1={60 - amplitude}
+                  x2={x}
+                  y2={60 + amplitude}
+                  stroke={currentColor}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
                   style={{
-                    opacity: 0,
-                    animation: isHovered ? `sparkle 2s ease-in-out ${ray.delay + j * 0.2}s infinite` : 'none',
+                    opacity: 0.3 + i * 0.08,
                   }}
                 />
               )
-            })
-          })}
+            })}
+          </g>
+
+          {/* First Polarizer (fixed at 0°) - vertical lines */}
+          <g transform="translate(100, 60)">
+            <rect
+              x="-8"
+              y="-30"
+              width="16"
+              height="60"
+              fill={theme === 'dark' ? 'rgba(100, 150, 255, 0.15)' : 'rgba(50, 100, 200, 0.1)'}
+              stroke={theme === 'dark' ? 'rgba(100, 150, 255, 0.5)' : 'rgba(50, 100, 200, 0.4)'}
+              strokeWidth="1"
+              rx="2"
+            />
+            {/* Polarizer lines (vertical = 0°) */}
+            {[-20, -10, 0, 10, 20].map((y) => (
+              <line
+                key={y}
+                x1="-5"
+                y1={y}
+                x2="5"
+                y2={y}
+                stroke={theme === 'dark' ? 'rgba(150, 200, 255, 0.7)' : 'rgba(50, 100, 200, 0.6)'}
+                strokeWidth="1.5"
+                transform="rotate(0)"
+              />
+            ))}
+            {/* Label */}
+            <text
+              y="45"
+              textAnchor="middle"
+              fill={theme === 'dark' ? 'rgba(150, 200, 255, 0.6)' : 'rgba(50, 100, 200, 0.5)'}
+              fontSize="8"
+              fontFamily="monospace"
+            >
+              P₁
+            </text>
+          </g>
+
+          {/* Light beam between polarizers - intensity from Malus's Law */}
+          <line
+            x1="108"
+            y1="60"
+            x2="192"
+            y2="60"
+            stroke="url(#polarizedBeam)"
+            strokeWidth={2 + malusIntensity * 2}
+            filter="url(#polarizerGlow)"
+            style={{
+              strokeDasharray: '100',
+              strokeDashoffset: isHovered ? '0' : '100',
+              transition: 'stroke-dashoffset 0.5s ease',
+            }}
+          />
+
+          {/* Second Polarizer (Analyzer - rotating) */}
+          <g transform={`translate(200, 60) rotate(${analyzerAngle})`}>
+            <rect
+              x="-8"
+              y="-30"
+              width="16"
+              height="60"
+              fill={theme === 'dark' ? 'rgba(100, 150, 255, 0.15)' : 'rgba(50, 100, 200, 0.1)'}
+              stroke={currentColor}
+              strokeWidth="1"
+              rx="2"
+              style={{ opacity: 0.5 + malusIntensity * 0.5 }}
+            />
+            {/* Polarizer lines (rotating) */}
+            {[-20, -10, 0, 10, 20].map((y) => (
+              <line
+                key={y}
+                x1="-5"
+                y1={y}
+                x2="5"
+                y2={y}
+                stroke={currentColor}
+                strokeWidth="1.5"
+                style={{ opacity: 0.6 + malusIntensity * 0.4 }}
+              />
+            ))}
+          </g>
+          {/* Analyzer label (outside rotation) */}
+          <text
+            x="200"
+            y="105"
+            textAnchor="middle"
+            fill={currentColor}
+            fontSize="8"
+            fontFamily="monospace"
+            style={{ opacity: 0.6 }}
+          >
+            P₂ ({Math.round(analyzerAngle)}°)
+          </text>
+
+          {/* Transmitted beam after analyzer - intensity follows cos²θ */}
+          <line
+            x1="208"
+            y1="60"
+            x2="320"
+            y2="60"
+            stroke="url(#transmittedBeam)"
+            strokeWidth={1 + malusIntensity * 3}
+            filter="url(#polarizerGlow)"
+            style={{
+              opacity: malusIntensity,
+              transition: 'opacity 0.1s ease',
+            }}
+          />
+
+          {/* Intensity indicator */}
+          <g transform="translate(350, 60)">
+            <text
+              textAnchor="start"
+              fill={theme === 'dark' ? 'rgba(200, 220, 255, 0.5)' : 'rgba(50, 80, 150, 0.5)'}
+              fontSize="9"
+              fontFamily="monospace"
+              y="4"
+            >
+              I = I₀cos²θ
+            </text>
+            <text
+              textAnchor="start"
+              fill={currentColor}
+              fontSize="11"
+              fontFamily="monospace"
+              fontWeight="bold"
+              y="20"
+              style={{ opacity: 0.8 }}
+            >
+              {Math.round(malusIntensity * 100)}%
+            </text>
+          </g>
+
+          {/* Extinction indicator when crossed (near 90° or 270°) */}
+          {malusIntensity < 0.1 && (
+            <g transform="translate(260, 60)">
+              <circle
+                r="12"
+                fill="none"
+                stroke={theme === 'dark' ? 'rgba(255, 100, 100, 0.6)' : 'rgba(200, 50, 50, 0.5)'}
+                strokeWidth="1.5"
+                strokeDasharray="4 2"
+              />
+              <line
+                x1="-8"
+                y1="-8"
+                x2="8"
+                y2="8"
+                stroke={theme === 'dark' ? 'rgba(255, 100, 100, 0.6)' : 'rgba(200, 50, 50, 0.5)'}
+                strokeWidth="1.5"
+              />
+              <text
+                y="30"
+                textAnchor="middle"
+                fill={theme === 'dark' ? 'rgba(255, 100, 100, 0.7)' : 'rgba(200, 50, 50, 0.6)'}
+                fontSize="8"
+                fontFamily="monospace"
+              >
+                消光
+              </text>
+            </g>
+          )}
         </svg>
       </div>
 
-      {/* Rainbow gradient overlay following mouse - subtle effect */}
+      {/* Polarization color gradient overlay following mouse */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: isHovered
             ? `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%,
-                rgba(255, 100, 100, 0.05) 0%,
-                rgba(255, 200, 100, 0.04) 20%,
-                rgba(100, 255, 100, 0.03) 40%,
-                transparent 60%)`
+                ${currentColor.replace('rgb', 'rgba').replace(')', ', 0.08)')} 0%,
+                transparent 50%)`
             : 'none',
-          opacity: isHovered ? 1 : 0,
+          opacity: isHovered ? malusIntensity : 0,
           transition: 'opacity 0.4s ease',
         }}
       />
@@ -960,12 +1095,12 @@ function CourseCardWithPrism({ theme, children, to }: CourseCardProps) {
         {children}
       </div>
 
-      {/* Edge highlight on hover */}
+      {/* Edge highlight on hover - color changes with polarization */}
       <div
         className="absolute inset-0 rounded-xl pointer-events-none"
         style={{
           boxShadow: isHovered
-            ? 'inset 0 0 20px rgba(100, 200, 255, 0.15), inset 0 0 40px rgba(150, 100, 255, 0.1)'
+            ? `inset 0 0 20px ${currentColor.replace('rgb', 'rgba').replace(')', ', 0.15)')}, inset 0 0 40px ${currentColor.replace('rgb', 'rgba').replace(')', ', 0.08)')}`
             : 'none',
           transition: 'box-shadow 0.4s ease',
         }}
@@ -1117,8 +1252,8 @@ export function HomePage() {
 
         {/* Course List */}
         <div className="space-y-3">
-          {/* Course 1 - Main Course with Prism Dispersion Effect */}
-          <CourseCardWithPrism theme={theme} to="/course">
+          {/* Course 1 - Main Course with Crossed Polarizers Animation */}
+          <CourseCardWithPolarizers theme={theme} to="/course">
             <div className="flex items-center gap-4">
               {/* Course Icon */}
               <div className={`flex-shrink-0 p-3 rounded-xl transition-transform group-hover:scale-105 ${
@@ -1162,7 +1297,7 @@ export function HomePage() {
                 </svg>
               </div>
             </div>
-          </CourseCardWithPrism>
+          </CourseCardWithPolarizers>
 
           {/* Course 2 - Coming Soon */}
           <div
