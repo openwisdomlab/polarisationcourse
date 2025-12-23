@@ -5,3 +5,4 @@
  */
 
 export { MuseumHomepage } from './MuseumHomepage'
+export { GalleryHero } from './GalleryHero'
