@@ -6,3 +6,5 @@
 
 export { MuseumHomepage } from './MuseumHomepage'
 export { GalleryHero } from './GalleryHero'
+export { LightPathOdyssey } from './LightPathOdyssey'
+export { KnowledgeMap } from './KnowledgeMap'

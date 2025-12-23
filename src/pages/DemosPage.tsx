@@ -2130,7 +2130,7 @@ export function DemosPage() {
             {!isCompact && (
               <>
                 <Link
-                  to="/game"
+                  to="/games"
                   className={cn(
                     'flex items-center gap-2 px-4 py-2 rounded-lg transition-all',
                     theme === 'dark'
@@ -2142,7 +2142,7 @@ export function DemosPage() {
                   <span>{t('common.game')}</span>
                 </Link>
                 <Link
-                  to="/demos"
+                  to="/course"
                   className={cn(
                     'flex items-center gap-2 px-4 py-2 rounded-lg',
                     theme === 'dark' ? 'text-cyan-400 bg-cyan-400/15' : 'text-cyan-600 bg-cyan-100'
