@@ -3696,5 +3696,75 @@
       "rayleighFeatures": "瑞利散射特性",
       "naturalExplanation": "自然现象解释"
     }
+  },
+  "museum": {
+    "badge": "偏振演示馆 • Polarization Demo Gallery",
+    "title": "探索光的奥秘",
+    "subtitle": "从马吕斯定律到偏振成像，穿越 6 个展厅，体验 17 个交互式演示",
+    "cta": "开始探索",
+    "demos": "个演示",
+    "stats": {
+      "halls": "展厅",
+      "demos": "演示",
+      "levels": "难度等级"
+    },
+    "halls": {
+      "title": "展厅导览",
+      "description": "从基础到前沿，循序渐进探索偏振光学的奇妙世界",
+      "basics": {
+        "title": "光学基础",
+        "subtitle": "认识电磁波与偏振的基本概念，奠定光学探索的基础"
+      },
+      "fundamentals": {
+        "title": "偏振基础",
+        "subtitle": "马吕斯定律、双折射、波片——掌握偏振光学的核心原理"
+      },
+      "reflection": {
+        "title": "界面反射",
+        "subtitle": "菲涅尔方程与布儒斯特角——探索光在界面的偏振行为"
+      },
+      "media": {
+        "title": "透明介质",
+        "subtitle": "应力双折射、色偏振、旋光——发现介质中的偏振现象"
+      },
+      "scattering": {
+        "title": "光散射",
+        "subtitle": "瑞利散射与米氏散射——理解天空为何是蓝色的"
+      },
+      "polarimetry": {
+        "title": "偏振测量",
+        "subtitle": "斯托克斯向量与穆勒矩阵——掌握偏振光的完整表征方法"
+      }
+    },
+    "featured": {
+      "badge": "精选推荐",
+      "title": "不可错过的演示",
+      "explore": "立即体验",
+      "malus": {
+        "description": "经典的马吕斯定律演示——了解偏振片为何能控制光的强度"
+      },
+      "birefringence": {
+        "description": "冰洲石的神奇双像——探索晶体的双折射现象"
+      },
+      "rayleigh": {
+        "description": "天空为什么是蓝色的？夕阳为何是红色的？瑞利散射揭示答案"
+      }
+    },
+    "levels": {
+      "title": "选择你的学习路径",
+      "description": "每个演示都有三种难度级别，适合不同背景的学习者",
+      "foundation": {
+        "title": "基础层",
+        "description": "通过简单解释发现现象，无需公式，强调'为什么'而非'如何计算'"
+      },
+      "application": {
+        "title": "应用层",
+        "description": "带有定量公式的实践实验，专注测量原理和实验设计"
+      },
+      "research": {
+        "title": "研究层",
+        "description": "前沿研究方法与严谨的学术处理，高级理论和研究视角"
+      }
+    }
   }
 }

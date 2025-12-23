@@ -3508,5 +3508,75 @@
       "rayleighFeatures": "Rayleigh Scattering Features",
       "naturalExplanation": "Natural Phenomena Explanation"
     }
+  },
+  "museum": {
+    "badge": "Polarization Demo Gallery",
+    "title": "Discover the Secrets of Light",
+    "subtitle": "From Malus's Law to polarimetric imaging, explore 6 halls with 17+ interactive demonstrations",
+    "cta": "Start Exploring",
+    "demos": "demos",
+    "stats": {
+      "halls": "Halls",
+      "demos": "Demos",
+      "levels": "Difficulty Levels"
+    },
+    "halls": {
+      "title": "Exhibition Guide",
+      "description": "From fundamentals to frontiers, progressively explore the fascinating world of polarization optics",
+      "basics": {
+        "title": "Optical Basics",
+        "subtitle": "Understand electromagnetic waves and basic polarization concepts"
+      },
+      "fundamentals": {
+        "title": "Polarization Fundamentals",
+        "subtitle": "Malus's Law, birefringence, waveplates—master core polarization principles"
+      },
+      "reflection": {
+        "title": "Interface Reflection",
+        "subtitle": "Fresnel equations and Brewster's angle—explore polarization at interfaces"
+      },
+      "media": {
+        "title": "Transparent Media",
+        "subtitle": "Stress birefringence, chromatic polarization, optical rotation—discover polarization in media"
+      },
+      "scattering": {
+        "title": "Light Scattering",
+        "subtitle": "Rayleigh and Mie scattering—understand why the sky is blue"
+      },
+      "polarimetry": {
+        "title": "Polarimetry",
+        "subtitle": "Stokes vectors and Mueller matrices—master complete polarization characterization"
+      }
+    },
+    "featured": {
+      "badge": "Featured",
+      "title": "Must-See Demonstrations",
+      "explore": "Explore Now",
+      "malus": {
+        "description": "The classic Malus's Law demo—understand how polarizers control light intensity"
+      },
+      "birefringence": {
+        "description": "The magical double image of calcite—explore crystal birefringence"
+      },
+      "rayleigh": {
+        "description": "Why is the sky blue? Why are sunsets red? Rayleigh scattering reveals the answer"
+      }
+    },
+    "levels": {
+      "title": "Choose Your Learning Path",
+      "description": "Each demo offers three difficulty levels for learners of different backgrounds",
+      "foundation": {
+        "title": "Foundation",
+        "description": "Discover phenomena through simple explanations. No formulas needed!"
+      },
+      "application": {
+        "title": "Application",
+        "description": "Hands-on experiments with quantitative formulas and measurement principles"
+      },
+      "research": {
+        "title": "Research",
+        "description": "Frontier research methods with rigorous academic treatment"
+      }
+    }
   }
 }

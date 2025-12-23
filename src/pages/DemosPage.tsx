@@ -41,6 +41,9 @@ import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/Interacti
 import { ElectromagneticWaveDemo } from '@/components/demos/basics/ElectromagneticWaveDemo'
 import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/PolarizationTypesUnifiedDemo'
 
+// Museum Homepage
+import { MuseumHomepage } from '@/components/museum'
+
 // Icon components
 function PhysicsIcon() {
   return (
@@ -1714,8 +1717,8 @@ export function DemosPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
-  // Determine initial demo from URL param or default
-  const getInitialDemo = () => {
+  // Determine initial demo from URL param or show museum homepage
+  const getInitialDemo = (): string | null => {
     // First check path param (/demos/:demoId)
     if (urlDemoId && DEMOS.find(d => d.id === urlDemoId)) {
       return urlDemoId
@@ -1725,13 +1728,25 @@ export function DemosPage() {
     if (queryDemo && DEMOS.find(d => d.id === queryDemo)) {
       return queryDemo
     }
-    return 'light-wave'
+    // Check if unit param is specified (from museum hall navigation)
+    const unitParam = searchParams.get('unit')
+    if (unitParam !== null) {
+      const unitNum = parseInt(unitParam)
+      const firstDemoInUnit = DEMOS.find(d => d.unit === unitNum)
+      if (firstDemoInUnit) {
+        return firstDemoInUnit.id
+      }
+    }
+    // Return null to show museum homepage
+    return null
   }
 
-  const [activeDemo, setActiveDemo] = useState<string>(getInitialDemo)
+  const [activeDemo, setActiveDemo] = useState<string | null>(getInitialDemo)
+  const [showMuseumHomepage, setShowMuseumHomepage] = useState<boolean>(() => getInitialDemo() === null)
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   const [expandedUnit, setExpandedUnit] = useState<number | null>(() => {
     const initialDemoId = getInitialDemo()
+    if (!initialDemoId) return null
     const demo = DEMOS.find(d => d.id === initialDemoId)
     return demo?.unit ?? 0
   })
@@ -1998,9 +2013,18 @@ export function DemosPage() {
 
   const handleDemoChange = (demoId: string) => {
     setActiveDemo(demoId)
+    setShowMuseumHomepage(false) // Hide museum homepage when a demo is selected
     // Update URL to reflect the selected demo (keep query params for tabs etc.)
-    const paramString = searchParams.toString()
+    const newParams = new URLSearchParams(searchParams)
+    newParams.delete('unit') // Remove unit param when selecting a specific demo
+    const paramString = newParams.toString()
     navigate(`/demos/${demoId}${paramString ? `?${paramString}` : ''}`, { replace: true })
+
+    // Expand the unit containing this demo
+    const demo = DEMOS.find(d => d.id === demoId)
+    if (demo) {
+      setExpandedUnit(demo.unit)
+    }
 
     // Reset cards to collapsed when switching to a new (not previously visited) demo
     if (!visitedDemos.has(demoId)) {
@@ -2014,6 +2038,15 @@ export function DemosPage() {
       setVisitedDemos(prev => new Set(prev).add(demoId))
     }
   }
+
+  // Navigate back to museum homepage (available for "Back to Overview" button)
+  const _handleShowMuseumHomepage = () => {
+    setShowMuseumHomepage(true)
+    setActiveDemo(null)
+    navigate('/demos', { replace: true })
+  }
+  // Export for potential future use
+  void _handleShowMuseumHomepage
 
   const toggleCard = (card: string) => {
     const newState = !expandedCards[card]
@@ -2032,11 +2065,16 @@ export function DemosPage() {
   }
 
   const isCompact = isMobile || isTablet
-  const currentDemo = DEMOS.find((d) => d.id === activeDemo)
+  const currentDemo = activeDemo ? DEMOS.find((d) => d.id === activeDemo) : null
   const DemoComponent = currentDemo?.component
   // For Unit 0 (Optical Basics), don't apply difficulty-based content variations
   const effectiveDifficultyLevel = currentDemo?.unit === 0 ? undefined : difficultyLevel
-  const demoInfo = getDemoInfo(t, effectiveDifficultyLevel)[activeDemo]
+  const demoInfo = activeDemo ? getDemoInfo(t, effectiveDifficultyLevel)[activeDemo] : null
+
+  // Show museum homepage if no demo is selected
+  if (showMuseumHomepage) {
+    return <MuseumHomepage />
+  }
 
   return (
     <div
@@ -2589,7 +2627,7 @@ export function DemosPage() {
                   >
                     <div className="space-y-4">
                       {/* Illustration or placeholder */}
-                      {LIFE_SCENE_ILLUSTRATIONS[activeDemo] ? (
+                      {activeDemo && LIFE_SCENE_ILLUSTRATIONS[activeDemo] ? (
                         <div
                           className={cn(
                             'rounded-lg p-3 border overflow-hidden',
