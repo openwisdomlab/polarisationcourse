@@ -1,3 +1,6 @@
 export { LightWaveDemo } from './LightWaveDemo'
 export { PolarizationIntroDemo } from './PolarizationIntroDemo'
 export { PolarizationTypesDemo } from './PolarizationTypesDemo'
+export { ElectromagneticSpectrumDemo } from './ElectromagneticSpectrumDemo'
+export { ThreePolarizersDemo } from './ThreePolarizersDemo'
+export { MalusLawGraphDemo } from './MalusLawGraphDemo'

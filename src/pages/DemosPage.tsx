@@ -38,6 +38,9 @@ import { LIFE_SCENE_ILLUSTRATIONS } from '@/components/demos/LifeSceneIllustrati
 import { PolarizationIntroDemo } from '@/components/demos/basics/PolarizationIntroDemo'
 import { PolarizationTypesDemo } from '@/components/demos/basics/PolarizationTypesDemo'
 import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/InteractiveOpticalBenchDemo'
+import { ElectromagneticSpectrumDemo } from '@/components/demos/basics/ElectromagneticSpectrumDemo'
+import { ThreePolarizersDemo } from '@/components/demos/basics/ThreePolarizersDemo'
+import { MalusLawGraphDemo } from '@/components/demos/basics/MalusLawGraphDemo'
 
 // Icon components
 function PhysicsIcon() {
@@ -546,6 +549,81 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
       details: [],
     },
     diy: getDiy(t, 'basics.demos.opticalBench'),
+    visualType: '2D',
+  },
+  'em-spectrum': {
+    questions: getQuestions(t, 'basics.demos.emSpectrum', difficultyLevel),
+    lifeScene: getLifeScene(t, 'basics.demos.emSpectrum', difficultyLevel),
+    physics: {
+      principle: t('basics.demos.emSpectrum.physics.principle'),
+      formula: t('basics.demos.emSpectrum.physics.formula'),
+      details: [
+        t('basics.demos.emSpectrum.physics.details.0'),
+        t('basics.demos.emSpectrum.physics.details.1'),
+        t('basics.demos.emSpectrum.physics.details.2'),
+      ],
+    },
+    experiment: {
+      title: t('basics.demos.emSpectrum.title'),
+      example: t('basics.demos.emSpectrum.description'),
+      details: [],
+    },
+    frontier: {
+      title: t('basics.demos.emSpectrum.title'),
+      example: t('basics.demos.emSpectrum.description'),
+      details: [],
+    },
+    diy: getDiy(t, 'basics.demos.emSpectrum'),
+    visualType: '2D',
+  },
+  'three-polarizers': {
+    questions: getQuestions(t, 'basics.demos.threePolarizers', difficultyLevel),
+    lifeScene: getLifeScene(t, 'basics.demos.threePolarizers', difficultyLevel),
+    physics: {
+      principle: t('basics.demos.threePolarizers.physics.principle'),
+      formula: t('basics.demos.threePolarizers.physics.formula'),
+      details: [
+        t('basics.demos.threePolarizers.physics.details.0'),
+        t('basics.demos.threePolarizers.physics.details.1'),
+        t('basics.demos.threePolarizers.physics.details.2'),
+      ],
+    },
+    experiment: {
+      title: t('basics.demos.threePolarizers.title'),
+      example: t('basics.demos.threePolarizers.description'),
+      details: [],
+    },
+    frontier: {
+      title: t('basics.demos.threePolarizers.title'),
+      example: t('basics.demos.threePolarizers.description'),
+      details: [],
+    },
+    diy: getDiy(t, 'basics.demos.threePolarizers'),
+    visualType: '2D',
+  },
+  'malus-graph': {
+    questions: getQuestions(t, 'basics.demos.malusGraph', difficultyLevel),
+    lifeScene: getLifeScene(t, 'basics.demos.malusGraph', difficultyLevel),
+    physics: {
+      principle: t('basics.demos.malusGraph.physics.principle'),
+      formula: t('basics.demos.malusGraph.physics.formula'),
+      details: [
+        t('basics.demos.malusGraph.physics.details.0'),
+        t('basics.demos.malusGraph.physics.details.1'),
+        t('basics.demos.malusGraph.physics.details.2'),
+      ],
+    },
+    experiment: {
+      title: t('basics.demos.malusGraph.title'),
+      example: t('basics.demos.malusGraph.description'),
+      details: [],
+    },
+    frontier: {
+      title: t('basics.demos.malusGraph.title'),
+      example: t('basics.demos.malusGraph.description'),
+      details: [],
+    },
+    diy: getDiy(t, 'basics.demos.malusGraph'),
     visualType: '2D',
   },
   'polarization-state': {
@@ -1301,6 +1379,33 @@ const DEMOS: DemoItem[] = [
     descriptionKey: 'basics.demos.opticalBench.description',
     visualType: '2D',
     difficulty: 'application', // 交互式实验设计
+  },
+  {
+    id: 'em-spectrum',
+    titleKey: 'basics.demos.emSpectrum.title',
+    unit: 0,
+    component: ElectromagneticSpectrumDemo,
+    descriptionKey: 'basics.demos.emSpectrum.description',
+    visualType: '2D',
+    difficulty: 'foundation', // 电磁波谱基础认识
+  },
+  {
+    id: 'three-polarizers',
+    titleKey: 'basics.demos.threePolarizers.title',
+    unit: 0,
+    component: ThreePolarizersDemo,
+    descriptionKey: 'basics.demos.threePolarizers.description',
+    visualType: '2D',
+    difficulty: 'application', // 三偏振片悖论,深入理解马吕斯定律
+  },
+  {
+    id: 'malus-graph',
+    titleKey: 'basics.demos.malusGraph.title',
+    unit: 0,
+    component: MalusLawGraphDemo,
+    descriptionKey: 'basics.demos.malusGraph.description',
+    visualType: '2D',
+    difficulty: 'application', // cos²(θ)曲线可视化
   },
   // Unit 1
   {
