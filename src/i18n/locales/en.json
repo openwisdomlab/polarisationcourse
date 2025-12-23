@@ -757,6 +757,8 @@
       "rightClick": "Delete block",
       "rKey": "Rotate block (change direction/angle)",
       "vKey": "Toggle polarized vision mode",
+      "hKey": "Show/hide this help panel",
+      "escKey": "Exit first-person mode / Deselect",
       "numberKeys": "Select block type",
       "cameraControls": "Camera Controls",
       "cKey": "Switch camera mode (First-person/Isometric/Top-down)",
