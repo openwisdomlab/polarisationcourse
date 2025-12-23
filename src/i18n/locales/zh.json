@@ -3368,6 +3368,14 @@
           "observation": "中间偏振片不是「解除阻挡」——它将偏振方向分两小步旋转，而不是一大步被阻挡！"
         }
       },
+      "emWave": {
+        "title": "电磁波",
+        "description": "探索光作为电磁波以及完整的电磁波谱"
+      },
+      "polarizationTypesUnified": {
+        "title": "偏振类型与三偏振片悖论",
+        "description": "探索偏振类型和有趣的三偏振片实验"
+      },
       "malusGraph": {
         "title": "马吕斯定律图",
         "description": "cos²(θ)强度关系的交互式可视化",

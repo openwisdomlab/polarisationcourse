@@ -3242,6 +3242,14 @@
           ],
           "observation": "Your measurements should follow the cos² curve! Small deviations come from imperfect polarizers and measurement uncertainty."
         }
+      },
+      "emWave": {
+        "title": "Electromagnetic Waves",
+        "description": "Explore light as electromagnetic waves and the full electromagnetic spectrum"
+      },
+      "polarizationTypesUnified": {
+        "title": "Polarization & The Three-Polarizer Paradox",
+        "description": "Explore polarization types and the fascinating three-polarizer experiment"
       }
     }
   },
