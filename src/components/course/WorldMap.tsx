@@ -404,10 +404,12 @@ export function WorldMap({
   theme,
   completedDemos,
   onNodeClick,
+  variant = 'default',
 }: WorldMapProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
+  const isCompact = variant === 'compact'
 
   // 计算每个节点的状态和进度 - 所有节点默认可访问
   const nodesWithProgress = useMemo(() => {
@@ -462,7 +464,7 @@ export function WorldMap({
               ${toNode.x} ${toNode.y - 32}`}
           fill="none"
           stroke={isCompleted ? '#22c55e' : toNode.color}
-          strokeWidth="3"
+          strokeWidth={isCompact ? 2 : 3}
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -473,13 +475,13 @@ export function WorldMap({
   }
 
   return (
-    <div className={`rounded-2xl p-6 ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+    <div className={`rounded-2xl ${isCompact ? 'p-4' : 'p-6'} ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <h3 className={`${isCompact ? 'text-sm' : 'text-lg'} font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {t('course.worldMap.title')}
           </h3>
-          <span className={`text-xs px-2 py-1 rounded-full ${
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
             theme === 'dark' ? 'bg-violet-500/20 text-violet-400' : 'bg-violet-100 text-violet-700'
           }`}>
             {t('course.worldMap.badge')}
@@ -487,21 +489,21 @@ export function WorldMap({
         </div>
         <Link
           to="/demos"
-          className={`text-sm flex items-center gap-1 ${
+          className={`text-xs flex items-center gap-0.5 ${
             theme === 'dark' ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-500'
           }`}
         >
           {t('course.path.viewAll')}
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
 
-      {/* 地图主体 */}
-      <div className="overflow-x-auto">
+      {/* 地图主体 - 压缩版本使用更小的视口 */}
+      <div className={`overflow-x-auto ${isCompact ? 'max-h-[280px]' : ''}`}>
         <svg
           viewBox="0 0 400 460"
-          className="w-full max-w-lg mx-auto"
-          style={{ minWidth: '300px' }}
+          className={`w-full ${isCompact ? 'max-w-xs' : 'max-w-lg'} mx-auto`}
+          style={{ minWidth: isCompact ? '200px' : '300px' }}
         >
           {/* 背景装饰 */}
           <defs>
@@ -537,16 +539,17 @@ export function WorldMap({
         </svg>
       </div>
 
-      {/* 图例 - 移除锁定状态，所有内容开放探索 */}
-      <div className={`mt-4 flex flex-wrap justify-center gap-4 text-xs ${
+      {/* 图例 - 压缩版本使用更紧凑的布局 */}
+      <div className={`${isCompact ? 'mt-2' : 'mt-4'} flex flex-wrap justify-center gap-3 text-[10px] ${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
       }`}>
-        <div className="flex items-center gap-1.5">
-          <span className="text-base">💎</span>
+        <div className="flex items-center gap-1">
+          <span className={isCompact ? 'text-xs' : 'text-base'}>💎</span>
           <span>{t('course.path.completed')}</span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <motion.span
+            className={isCompact ? 'text-xs' : ''}
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
           >
@@ -554,15 +557,10 @@ export function WorldMap({
           </motion.span>
           <span>{t('course.path.inProgress')}</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span>🔮</span>
+        <div className="flex items-center gap-1">
+          <span className={isCompact ? 'text-xs' : ''}>🔮</span>
           <span>{t('course.worldMap.available')}</span>
         </div>
-      </div>
-
-      {/* 快捷提示 */}
-      <div className={`mt-4 text-center text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
-        {t('course.worldMap.hint')}
       </div>
     </div>
   )

@@ -14,9 +14,10 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 import { cn } from '@/lib/utils'
 import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
-  Clock, User, MapPin,
+  Clock, MapPin,
   FlaskConical, BookOpen, Compass,
-  Sun, Sparkles, Camera, Film
+  Sun, Sparkles, Camera, Film,
+  Users, Share2
 } from 'lucide-react'
 
 // Data imports
@@ -42,8 +43,8 @@ import {
 const TABS = [
   { id: 'timeline', label: 'Timeline', labelZh: '时间线', icon: <Clock className="w-4 h-4" /> },
   { id: 'psrt', label: 'P-SRT Course', labelZh: 'P-SRT课程', icon: <BookOpen className="w-4 h-4" /> },
-  { id: 'scientists', label: 'Scientists', labelZh: '科学家网络', icon: <User className="w-4 h-4" /> },
-  { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Sparkles className="w-4 h-4" /> },
+  { id: 'scientists', label: 'Scientists', labelZh: '科学家网络', icon: <Users className="w-4 h-4" /> },
+  { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Share2 className="w-4 h-4" /> },
   { id: 'exploration', label: 'Exploration', labelZh: '探索模式', icon: <Compass className="w-4 h-4" /> },
   { id: 'experiments', label: 'Key Experiments', labelZh: '关键实验', icon: <FlaskConical className="w-4 h-4" /> },
 ]

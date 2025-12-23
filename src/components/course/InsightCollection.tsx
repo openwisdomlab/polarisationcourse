@@ -62,7 +62,7 @@ export interface Achievement {
   }
 }
 
-// 预定义的光学道具
+// 预定义的光学道具 - 重新设计更多样化的图标
 export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
   // Unit 0 - 基础
   {
@@ -72,7 +72,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'A basic polarizer that filters light by polarization',
       zh: '最基础的偏振器件，可过滤特定偏振方向的光'
     },
-    icon: '🔲',
+    icon: '◫',
     category: 'polarizer',
     rarity: 'common',
     unlockCondition: { type: 'demo', targetId: 'polarization-intro' },
@@ -85,7 +85,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Allows you to see the wave nature of light',
       zh: '让你能看到光的波动本质'
     },
-    icon: '〰️',
+    icon: '∿',
     category: 'wave',
     rarity: 'common',
     unlockCondition: { type: 'demo', targetId: 'light-wave' },
@@ -100,7 +100,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'A magical crystal that creates double images',
       zh: '能产生双像的神奇晶体'
     },
-    icon: '💎',
+    icon: '◇',
     category: 'crystal',
     rarity: 'rare',
     unlockCondition: { type: 'demo', targetId: 'birefringence' },
@@ -113,7 +113,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Measures light intensity with cos² precision',
       zh: '用 cos² 精度测量光强'
     },
-    icon: '🔬',
+    icon: '⊙',
     category: 'lens',
     rarity: 'rare',
     unlockCondition: { type: 'demo', targetId: 'malus' },
@@ -126,7 +126,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Converts linear polarization to circular',
       zh: '将线偏振转换为圆偏振'
     },
-    icon: '🌀',
+    icon: '◎',
     category: 'wave',
     rarity: 'epic',
     unlockCondition: { type: 'demo', targetId: 'waveplate' },
@@ -141,7 +141,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Reveals the secrets of interface reflection',
       zh: '揭示界面反射的秘密'
     },
-    icon: '🔺',
+    icon: '△',
     category: 'crystal',
     rarity: 'rare',
     unlockCondition: { type: 'demo', targetId: 'fresnel' },
@@ -154,7 +154,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'A window that creates perfectly polarized light',
       zh: '产生完美偏振光的窗口'
     },
-    icon: '🪟',
+    icon: '▢',
     category: 'lens',
     rarity: 'epic',
     unlockCondition: { type: 'demo', targetId: 'brewster' },
@@ -169,7 +169,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Reveals hidden stress in materials as colors',
       zh: '将材料中的隐藏应力显示为彩色'
     },
-    icon: '🌈',
+    icon: '⬡',
     category: 'detector',
     rarity: 'rare',
     unlockCondition: { type: 'demo', targetId: 'chromatic' },
@@ -182,7 +182,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Rotates polarization through optically active media',
       zh: '通过旋光性介质旋转偏振方向'
     },
-    icon: '🍬',
+    icon: '↻',
     category: 'special',
     rarity: 'epic',
     unlockCondition: { type: 'demo', targetId: 'optical-rotation' },
@@ -197,7 +197,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Recreates the blue sky and red sunset',
       zh: '重现蓝天和红色日落'
     },
-    icon: '🌅',
+    icon: '☀',
     category: 'special',
     rarity: 'rare',
     unlockCondition: { type: 'demo', targetId: 'rayleigh' },
@@ -210,7 +210,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Creates beautiful Mie scattering effects',
       zh: '产生美丽的米氏散射效果'
     },
-    icon: '☁️',
+    icon: '※',
     category: 'special',
     rarity: 'epic',
     unlockCondition: { type: 'demo', targetId: 'mie-scattering' },
@@ -225,7 +225,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Measures complete polarization state',
       zh: '测量完整的偏振态'
     },
-    icon: '📊',
+    icon: '⊞',
     category: 'detector',
     rarity: 'epic',
     unlockCondition: { type: 'demo', targetId: 'stokes' },
@@ -238,7 +238,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'The ultimate tool for polarization analysis',
       zh: '偏振分析的终极工具'
     },
-    icon: '🔢',
+    icon: '⬢',
     category: 'special',
     rarity: 'legendary',
     unlockCondition: { type: 'demo', targetId: 'mueller' },
@@ -251,7 +251,7 @@ export const OPTICAL_ITEMS: Omit<OpticalItem, 'unlocked' | 'unlockedAt'>[] = [
       en: 'Visualizes all polarization states in 3D',
       zh: '在3D空间可视化所有偏振态'
     },
-    icon: '🌐',
+    icon: '⊛',
     category: 'special',
     rarity: 'legendary',
     unlockCondition: { type: 'quiz', targetId: 'stokes' },
@@ -267,14 +267,14 @@ const RARITY_CONFIG = {
   legendary: { color: '#f59e0b', label: { en: 'Legendary', zh: '传说' }, bgColor: 'bg-amber-100 dark:bg-amber-900/30' },
 }
 
-// 类别配置
+// 类别配置 - 使用更多样化的图标
 const CATEGORY_CONFIG = {
-  polarizer: { icon: '🔲', label: { en: 'Polarizers', zh: '偏振器' } },
-  wave: { icon: '〰️', label: { en: 'Wave Optics', zh: '波动光学' } },
-  crystal: { icon: '💎', label: { en: 'Crystals', zh: '晶体' } },
-  lens: { icon: '🔬', label: { en: 'Lenses', zh: '透镜' } },
-  detector: { icon: '📊', label: { en: 'Detectors', zh: '探测器' } },
-  special: { icon: '✨', label: { en: 'Special', zh: '特殊' } },
+  polarizer: { icon: '◫', label: { en: 'Polarizers', zh: '偏振器' }, color: '#3b82f6' },
+  wave: { icon: '∿', label: { en: 'Wave Optics', zh: '波动光学' }, color: '#06b6d4' },
+  crystal: { icon: '◇', label: { en: 'Crystals', zh: '晶体' }, color: '#8b5cf6' },
+  lens: { icon: '⊙', label: { en: 'Lenses', zh: '透镜' }, color: '#22c55e' },
+  detector: { icon: '⊞', label: { en: 'Detectors', zh: '探测器' }, color: '#f59e0b' },
+  special: { icon: '⬢', label: { en: 'Special', zh: '特殊' }, color: '#ec4899' },
 }
 
 interface InsightCollectionProps {
@@ -286,7 +286,7 @@ interface InsightCollectionProps {
   onItemClick?: (itemId: string) => void
 }
 
-// 单个道具卡片
+// 单个道具卡片 - 紧凑版
 function ItemCard({
   item,
   theme,
@@ -299,11 +299,12 @@ function ItemCard({
   onClick?: () => void
 }) {
   const rarityConfig = RARITY_CONFIG[item.rarity]
+  const categoryConfig = CATEGORY_CONFIG[item.category]
   const [isHovered, setIsHovered] = useState(false)
 
   return (
     <motion.div
-      className={`relative rounded-xl p-3 border-2 transition-all cursor-pointer ${
+      className={`relative rounded-lg p-2 border transition-all cursor-pointer ${
         item.unlocked
           ? `${rarityConfig.bgColor}`
           : theme === 'dark'
@@ -312,40 +313,37 @@ function ItemCard({
       }`}
       style={{
         borderColor: item.unlocked ? rarityConfig.color : undefined,
-        boxShadow: isHovered && item.unlocked ? `0 0 20px ${rarityConfig.color}30` : undefined,
+        boxShadow: isHovered && item.unlocked ? `0 0 12px ${rarityConfig.color}30` : undefined,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
-      whileHover={{ scale: 1.03, y: -2 }}
+      whileHover={{ scale: 1.02 }}
     >
-      {/* 未解锁状态 - 显示半透明效果但不阻止点击查看 */}
+      {/* 未解锁状态 */}
       {!item.unlocked && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/10 z-10 pointer-events-none">
-          <span className="text-xs text-gray-400">{/* 待收集 */}</span>
-        </div>
+        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10 z-10 pointer-events-none" />
       )}
 
-      {/* 稀有度光效 */}
-      {item.unlocked && item.rarity !== 'common' && (
+      {/* 稀有度光效 - 简化版 */}
+      {item.unlocked && item.rarity === 'legendary' && (
         <motion.div
-          className="absolute inset-0 rounded-xl pointer-events-none"
+          className="absolute inset-0 rounded-lg pointer-events-none"
           style={{
-            background: `radial-gradient(circle at 50% 0%, ${rarityConfig.color}30 0%, transparent 60%)`,
+            background: `radial-gradient(circle at 50% 0%, ${rarityConfig.color}25 0%, transparent 50%)`,
           }}
-          animate={
-            item.rarity === 'legendary'
-              ? { opacity: [0.5, 1, 0.5] }
-              : {}
-          }
+          animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 2, repeat: Infinity }}
         />
       )}
 
-      {/* 道具图标 */}
+      {/* 道具图标 - 紧凑版 */}
       <motion.div
-        className="text-3xl text-center mb-2"
-        style={{ filter: item.unlocked ? 'none' : 'grayscale(100%)' }}
+        className="text-xl text-center mb-1"
+        style={{
+          filter: item.unlocked ? 'none' : 'grayscale(100%)',
+          color: item.unlocked ? categoryConfig.color : '#64748b',
+        }}
         animate={
           item.unlocked && item.rarity === 'legendary'
             ? { rotate: [0, 5, -5, 0] }
@@ -356,8 +354,8 @@ function ItemCard({
         {item.icon}
       </motion.div>
 
-      {/* 道具名称 */}
-      <h4 className={`text-xs font-medium text-center truncate ${
+      {/* 道具名称 - 紧凑版 */}
+      <h4 className={`text-[10px] font-medium text-center leading-tight line-clamp-2 ${
         item.unlocked
           ? theme === 'dark' ? 'text-white' : 'text-gray-900'
           : 'text-gray-400'
@@ -365,27 +363,14 @@ function ItemCard({
         {item.name[lang]}
       </h4>
 
-      {/* 稀有度标签 */}
-      <div className="text-center mt-1">
-        <span
-          className="text-[10px] px-1.5 py-0.5 rounded-full"
-          style={{
-            backgroundColor: `${rarityConfig.color}20`,
-            color: item.unlocked ? rarityConfig.color : '#64748b',
-          }}
-        >
-          {rarityConfig.label[lang]}
-        </span>
-      </div>
-
-      {/* 传说级闪光 */}
+      {/* 传说级标记 */}
       {item.unlocked && item.rarity === 'legendary' && (
         <motion.div
-          className="absolute top-1 right-1"
+          className="absolute -top-1 -right-1"
           animate={{ rotate: 360 }}
           transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
         >
-          <Star className="w-4 h-4 text-amber-400" fill="currentColor" />
+          <Star className="w-3 h-3 text-amber-400" fill="currentColor" />
         </motion.div>
       )}
     </motion.div>
@@ -494,34 +479,28 @@ export function InsightCollection({
 
   return (
     <div className={`rounded-2xl overflow-hidden ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'}`}>
-      {/* 头部 */}
-      <div className={`p-6 border-b ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'}`}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500">
-              <Trophy className="w-6 h-6 text-white" />
+      {/* 头部 - 压缩版本 */}
+      <div className={`p-4 border-b ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'}`}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500">
+              <Trophy className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              <h3 className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 {t('course.collection.title')}
               </h3>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                {t('course.collection.description')}
-              </p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold" style={{ color: '#f59e0b' }}>
+            <div className="text-lg font-bold" style={{ color: '#f59e0b' }}>
               {stats.unlocked}/{stats.total}
-            </div>
-            <div className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-              {t('course.collection.collected')}
             </div>
           </div>
         </div>
 
         {/* 进度条 */}
-        <div className={`h-3 rounded-full ${theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'}`}>
+        <div className={`h-2 rounded-full ${theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'}`}>
           <motion.div
             className="h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"
             initial={{ width: 0 }}
@@ -529,14 +508,23 @@ export function InsightCollection({
             transition={{ duration: 1 }}
           />
         </div>
+
+        {/* 稀有度统计 - 紧凑版 */}
+        <div className="flex justify-between mt-2 text-[10px]">
+          {Object.entries(stats.byRarity).map(([rarity, count]) => (
+            <span key={rarity} style={{ color: RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG].color }}>
+              {RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG].label[lang]}: {count}
+            </span>
+          ))}
+        </div>
       </div>
 
-      {/* 类别过滤器 */}
-      <div className={`px-6 py-3 flex gap-2 overflow-x-auto ${
+      {/* 类别过滤器 - 紧凑版 */}
+      <div className={`px-4 py-2 flex gap-1.5 overflow-x-auto ${
         theme === 'dark' ? 'bg-slate-800/30' : 'bg-gray-50'
       }`}>
         <button
-          className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-all ${
+          className={`px-2.5 py-1 rounded-full text-xs whitespace-nowrap transition-all ${
             selectedCategory === null
               ? 'bg-amber-500 text-white'
               : theme === 'dark'
@@ -550,7 +538,7 @@ export function InsightCollection({
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
           <button
             key={key}
-            className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap flex items-center gap-1.5 transition-all ${
+            className={`px-2.5 py-1 rounded-full text-xs whitespace-nowrap flex items-center gap-1 transition-all ${
               selectedCategory === key
                 ? 'bg-amber-500 text-white'
                 : theme === 'dark'
@@ -558,16 +546,19 @@ export function InsightCollection({
                   : 'bg-white text-gray-600 hover:bg-gray-100'
             }`}
             onClick={() => setSelectedCategory(key)}
+            style={{
+              borderLeft: selectedCategory === key ? 'none' : `2px solid ${config.color}30`,
+            }}
           >
-            <span>{config.icon}</span>
+            <span style={{ color: selectedCategory === key ? 'inherit' : config.color }}>{config.icon}</span>
             {config.label[lang]}
           </button>
         ))}
       </div>
 
-      {/* 道具网格 */}
-      <div className="p-6">
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+      {/* 道具网格 - 紧凑版 */}
+      <div className="p-4">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2 max-h-[200px] overflow-y-auto">
           {displayItems.map(item => (
             <ItemCard
               key={item.id}

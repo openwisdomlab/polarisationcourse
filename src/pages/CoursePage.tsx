@@ -917,26 +917,12 @@ function HomeExperimentsSection({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
-// Insight Collection Section - 光学道具收集系统包装器
+// Insight Collection Section - 光学道具收集系统包装器（压缩版）
 function InsightCollectionSection({ theme, completedDemos }: { theme: 'dark' | 'light'; completedDemos: string[] }) {
-  const { t } = useTranslation()
   const { progress } = useCourseProgress()
 
   return (
-    <div className="mb-12">
-      <div className="flex items-center gap-3 mb-6">
-        <h2 className={`text-2xl font-bold ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        }`}>
-          {t('course.collection.sectionTitle')}
-        </h2>
-        <span className={`text-xs px-2 py-1 rounded-full ${
-          theme === 'dark' ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
-        }`}>
-          {t('course.collection.badge')}
-        </span>
-      </div>
-
+    <div className="mb-6">
       <InsightCollection
         theme={theme}
         completedDemos={completedDemos}
@@ -948,7 +934,7 @@ function InsightCollectionSection({ theme, completedDemos }: { theme: 'dark' | '
   )
 }
 
-// Inquiry-based exploration section - research questions that drive learning
+// Inquiry-based exploration section - research questions that drive learning (compressed)
 function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
 
@@ -1004,95 +990,73 @@ function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
   ]
 
   return (
-    <div className="mb-12">
-      <div className="flex items-center gap-3 mb-6">
-        <h2 className={`text-2xl font-bold ${
+    <div className={`rounded-2xl p-4 h-full ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'}`}>
+      <div className="flex items-center gap-2 mb-3">
+        <h3 className={`text-sm font-bold ${
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         }`}>
           {t('course.inquiry.title')}
-        </h2>
-        <span className={`text-xs px-2 py-1 rounded-full ${
+        </h3>
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
           theme === 'dark' ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
         }`}>
           {t('course.inquiry.badge')}
         </span>
       </div>
 
-      <p className={`text-sm mb-6 max-w-3xl ${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      }`}>
-        {t('course.inquiry.description')}
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-2 max-h-[320px] overflow-y-auto pr-1">
         {inquiryQuestions.map((item, i) => (
           <div
             key={i}
-            className={`group relative rounded-xl p-5 border transition-all duration-300 hover:-translate-y-1 ${
+            className={`group relative rounded-lg p-2.5 border transition-all duration-200 hover:-translate-y-0.5 ${
               theme === 'dark'
-                ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
-                : 'bg-white border-gray-200 hover:border-gray-300'
+                ? 'bg-slate-700/30 border-slate-600/50 hover:border-slate-500'
+                : 'bg-gray-50 border-gray-100 hover:border-gray-200'
             }`}
-            style={{
-              boxShadow: theme === 'dark'
-                ? `0 4px 20px ${item.color}10`
-                : `0 4px 20px ${item.color}08`,
-            }}
           >
-            {/* Question icon */}
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-2.5">
               <div
-                className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-xl"
+                className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-sm"
                 style={{ backgroundColor: `${item.color}15` }}
               >
                 {item.icon}
               </div>
-              <div className="flex-1">
-                <p className={`font-medium mb-3 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+              <div className="flex-1 min-w-0">
+                <p className={`text-xs font-medium leading-tight truncate ${
+                  theme === 'dark' ? 'text-gray-200' : 'text-gray-800'
                 }`}>
                   {item.question}
                 </p>
-
-                {/* Quick action buttons */}
-                <div className="flex flex-wrap gap-2">
+              </div>
+              <div className="flex gap-1 flex-shrink-0">
+                <Link
+                  to={item.demoLink}
+                  onClick={e => e.stopPropagation()}
+                  className={`p-1.5 rounded-md transition-all hover:scale-110 ${
+                    theme === 'dark'
+                      ? 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-900/50'
+                      : 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100'
+                  }`}
+                  title={t('course.inquiry.explore')}
+                >
+                  <FlaskConical className="w-3 h-3" />
+                </Link>
+                {item.gameLink && (
                   <Link
-                    to={item.demoLink}
+                    to={item.gameLink}
                     onClick={e => e.stopPropagation()}
-                    className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all hover:scale-105 ${
+                    className={`p-1.5 rounded-md transition-all hover:scale-110 ${
                       theme === 'dark'
-                        ? 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-900/50'
-                        : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'
+                        ? 'bg-pink-900/30 text-pink-400 hover:bg-pink-900/50'
+                        : 'bg-pink-50 text-pink-600 hover:bg-pink-100'
                     }`}
+                    title={t('course.inquiry.play')}
                   >
-                    <FlaskConical className="w-3 h-3" />
-                    {t('course.inquiry.explore')}
+                    <Gamepad2 className="w-3 h-3" />
                   </Link>
-                  {item.gameLink && (
-                    <Link
-                      to={item.gameLink}
-                      onClick={e => e.stopPropagation()}
-                      className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all hover:scale-105 ${
-                        theme === 'dark'
-                          ? 'bg-pink-900/30 text-pink-400 hover:bg-pink-900/50'
-                          : 'bg-pink-50 text-pink-700 hover:bg-pink-100'
-                      }`}
-                    >
-                      <Gamepad2 className="w-3 h-3" />
-                      {t('course.inquiry.play')}
-                    </Link>
-                  )}
-                </div>
+                )}
               </div>
             </div>
-
-            {/* Subtle glow on hover */}
-            <div
-              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-              style={{
-                boxShadow: `inset 0 0 20px ${item.color}10`
-              }}
-            />
           </div>
         ))}
       </div>
@@ -1216,38 +1180,15 @@ export function CoursePage() {
         {/* Progress Stats - 学习进度统计 */}
         <ProgressStats theme={theme} />
 
-        {/* World Map - 游戏化学习地图 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* World Map - 游戏化学习地图（替代原有的 LearningPathMap） */}
-          <WorldMap
-            theme={theme}
-            completedDemos={progress.completedDemos}
-          />
-
-          {/* Inquiry-based Exploration - Problem-driven learning */}
-          <div className="lg:col-span-1">
-            <InquiryExplorationSection theme={theme} />
-          </div>
-        </div>
-
-        {/* Insight Collection - 光学道具收集与成就系统 */}
-        <InsightCollectionSection theme={theme} completedDemos={progress.completedDemos} />
-
-        {/* Home Experiments - Family-friendly experiments */}
-        <HomeExperimentsSection theme={theme} />
-
-        {/* Applications */}
-        <ApplicationsSection theme={theme} />
-
-        {/* Course units */}
-        <div className="mb-12">
-          <h2 className={`text-2xl font-bold mb-6 ${
+        {/* Course units - 课程大纲 (positioned above exploration map) */}
+        <div className="mb-6">
+          <h2 className={`text-lg font-bold mb-4 ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
             {t('course.curriculum')}
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {COURSE_UNITS.map((unit, index) => (
               <UnitCard
                 key={unit.id}
@@ -1258,6 +1199,30 @@ export function CoursePage() {
             ))}
           </div>
         </div>
+
+        {/* World Map + Inquiry Exploration - 探索地图和探索问题（压缩高度） */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          {/* World Map - 游戏化学习地图（压缩版本） */}
+          <WorldMap
+            theme={theme}
+            completedDemos={progress.completedDemos}
+            variant="compact"
+          />
+
+          {/* Inquiry-based Exploration - Problem-driven learning（压缩版本） */}
+          <div className="lg:col-span-1">
+            <InquiryExplorationSection theme={theme} />
+          </div>
+        </div>
+
+        {/* Insight Collection - 光学道具收集与成就系统（压缩版本） */}
+        <InsightCollectionSection theme={theme} completedDemos={progress.completedDemos} />
+
+        {/* Home Experiments - Family-friendly experiments */}
+        <HomeExperimentsSection theme={theme} />
+
+        {/* Applications */}
+        <ApplicationsSection theme={theme} />
 
         {/* Resources section - temporarily hidden until substantive content is added */}
         {/* <ResourcesSection theme={theme} /> */}
