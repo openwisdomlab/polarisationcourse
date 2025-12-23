@@ -42,7 +42,7 @@ import {
   Zap,
   ExternalLink
 } from 'lucide-react'
-import { LightPathOdyssey } from './LightPathOdyssey'
+import { PrinciplesVisualization } from './PrinciplesVisualization'
 
 // Exhibition hall configuration for each unit
 interface ExhibitionHall {
@@ -1373,8 +1373,8 @@ export function MuseumHomepage() {
       {/* Quick Start Guide */}
       <QuickStartSection />
 
-      {/* Light Path Odyssey - Creative polarization learning journey */}
-      <LightPathOdyssey />
+      {/* Four Fundamental Principles of Polarization */}
+      <PrinciplesVisualization />
 
       {/* Exhibition Halls */}
       <div id="exhibition-halls">
