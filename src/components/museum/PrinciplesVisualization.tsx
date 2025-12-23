@@ -478,7 +478,7 @@ function PrincipleCard({
 // Main component
 export function PrinciplesVisualization() {
   const navigate = useNavigate()
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { theme } = useTheme()
   const isZh = i18n.language.startsWith('zh')
 
