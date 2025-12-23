@@ -3054,6 +3054,194 @@
           ],
           "observation": "At 45°, 25% of light gets through (cos²45° × cos²45° = 0.25). The middle filter doesn't 'unblock' - it rotates the polarization partway, letting some through each filter!"
         }
+      },
+      "emSpectrum": {
+        "title": "Electromagnetic Spectrum",
+        "description": "Explore the full electromagnetic spectrum from radio waves to gamma rays",
+        "lifeScene": {
+          "title": "The Invisible Rainbow",
+          "title_foundation": "Colors You Can't See!",
+          "title_research": "Electromagnetic Radiation Across 15 Orders of Magnitude",
+          "imageAlt": "Full electromagnetic spectrum showing radio waves, microwaves, infrared, visible light, UV, X-rays and gamma rays",
+          "hook": "Visible light is less than 0.0035% of all electromagnetic radiation! What else is out there that we can't see?",
+          "hook_foundation": "You know about red, orange, yellow, green, blue, violet light. But there's SO much more light you can't see! WiFi, X-rays, and even the warmth from your body - all invisible 'colors'!",
+          "hook_research": "The electromagnetic spectrum spans from ~3 Hz (ELF waves) to >10²⁵ Hz (ultra-high-energy gamma rays), covering over 20 orders of magnitude in frequency. Each regime exhibits distinct generation mechanisms, propagation characteristics, and matter interactions.",
+          "facts": [
+            "Radio waves can be kilometers long, while gamma rays are smaller than atoms",
+            "All EM waves travel at the same speed in vacuum: c = 3×10⁸ m/s",
+            "Your eyes only detect wavelengths between 380-700 nanometers"
+          ],
+          "facts_foundation": [
+            "Radio waves are as big as buildings! Gamma rays are tinier than atoms!",
+            "All these invisible 'colors' travel at the speed of light",
+            "Your eyes only see a tiny slice of the huge EM rainbow"
+          ],
+          "facts_research": [
+            "Energy scales from ~10⁻¹² eV (radio) to >10²⁰ eV (highest-energy cosmic gamma)",
+            "Atmosphere is transparent only in optical and radio 'windows'; other bands require space-based observation",
+            "Blackbody spectrum peaks at λ_max = 2898 μm·K/T (Wien's law)"
+          ]
+        },
+        "physics": {
+          "principle": "All electromagnetic waves are fundamentally the same phenomenon - oscillating electric and magnetic fields - differing only in wavelength and frequency",
+          "formula": "c = λf, E = hf",
+          "details": [
+            "Wavelength and frequency are inversely related: c = λf",
+            "Shorter wavelengths mean higher energy photons: E = hf",
+            "Different wavelengths interact differently with matter"
+          ]
+        },
+        "questions": {
+          "leading": "What determines whether electromagnetic radiation is visible, a radio wave, or an X-ray?",
+          "guided": [
+            "Why can radio waves pass through walls but visible light cannot?",
+            "What is the relationship between wavelength and energy?"
+          ],
+          "openEnded": [
+            "How do we 'see' things using non-visible EM radiation?",
+            "Why is the visible spectrum in that particular range?"
+          ]
+        },
+        "diy": {
+          "title": "Detect Different EM Radiation",
+          "materials": [
+            "TV remote control (infrared source)",
+            "Smartphone camera",
+            "Radio receiver"
+          ],
+          "steps": [
+            "Point a TV remote at your phone camera while pressing buttons - see the IR LED glow!",
+            "Use a radio to detect EM waves from space (static includes cosmic background radiation)",
+            "Notice how glass blocks UV (you can't get sunburn through a window)"
+          ],
+          "observation": "Different wavelengths of EM radiation require different detectors. Your phone camera can see infrared that your eyes cannot!"
+        }
+      },
+      "threePolarizers": {
+        "title": "Three Polarizer Paradox",
+        "description": "The surprising effect of adding a polarizer between crossed polarizers",
+        "lifeScene": {
+          "title": "Adding Light by Adding a Filter",
+          "title_foundation": "The Magic of Adding More Blockers!",
+          "title_research": "Non-Commutative Projection Operators in Sequential Measurement",
+          "imageAlt": "Three polarizers showing how adding a middle 45° polarizer lets light through crossed polarizers",
+          "hook": "Two crossed polarizers block ALL light. Add a third polarizer between them... and light comes through! How can adding another filter increase light?",
+          "hook_foundation": "Imagine two sunglasses blocking all light. Now put a third pair between them - suddenly you can see! That's exactly what happens with polarizers!",
+          "hook_research": "The three-polarizer experiment demonstrates that projection operators do not commute. While P₉₀°P₀° = 0 (zero transmission), P₉₀°P₄₅°P₀° ≠ 0, yielding 12.5% transmission for unpolarized input.",
+          "facts": [
+            "Crossed polarizers at 90° transmit zero light",
+            "A 45° polarizer between them transmits 12.5% of unpolarized light",
+            "Each polarizer changes the polarization direction, not just filters it"
+          ],
+          "facts_foundation": [
+            "Two filters at 90° = complete darkness",
+            "Add a filter at 45° between them = light appears!",
+            "The middle filter 'rotates' the polarization step by step"
+          ],
+          "facts_research": [
+            "For unpolarized input: I₁ = 0.5I₀ (first polarizer), I₂ = I₁cos²(45°) = 0.25I₀, I₃ = I₂cos²(45°) = 0.125I₀",
+            "Maximum transmission with single intermediate polarizer is 12.5%",
+            "With N intermediate polarizers, transmission approaches 50% as N → ∞"
+          ]
+        },
+        "physics": {
+          "principle": "A polarizer does not just filter - it projects the incident polarization state onto its transmission axis, changing the polarization direction",
+          "formula": "I_out = I_in × cos²(θ₁) × cos²(θ₂)",
+          "details": [
+            "Each polarizer projects light onto its axis, changing polarization direction",
+            "Two 45° steps transmit 25% each: 0.5 × 0.5 × 0.5 = 12.5% total",
+            "The order of polarizers matters - operators do not commute"
+          ]
+        },
+        "questions": {
+          "leading": "Why does adding a third polarizer between crossed polarizers allow light through?",
+          "guided": [
+            "What is the transmission through each polarizer?",
+            "What angle gives maximum transmission for the middle polarizer?"
+          ],
+          "openEnded": [
+            "What would happen with 4, 5, or 10 equally-spaced polarizers?",
+            "How is this related to quantum measurement?"
+          ]
+        },
+        "diy": {
+          "title": "Three Polarizer Experiment",
+          "materials": [
+            "Three polarizing films (from old 3D glasses or LCD screens)",
+            "Bright light source",
+            "Protractor for measuring angles"
+          ],
+          "steps": [
+            "Stack two polarizers and rotate until darkness (90° crossed)",
+            "Insert third polarizer between them",
+            "Rotate the middle polarizer to find maximum transmission (45°)",
+            "Try different angles and observe the intensity change"
+          ],
+          "observation": "The middle polarizer doesn't 'unblock' light - it rotates polarization in two small steps instead of one large blocked step!"
+        }
+      },
+      "malusGraph": {
+        "title": "Malus's Law Graph",
+        "description": "Interactive visualization of the cos²(θ) intensity relationship",
+        "lifeScene": {
+          "title": "The Cosine Squared Rule",
+          "title_foundation": "Why Sunglasses Don't Block Everything!",
+          "title_research": "Intensity Transfer Function of Linear Polarizers",
+          "imageAlt": "Graph showing cos²(θ) curve with interactive angle adjustment and corresponding light intensity",
+          "hook": "Rotate a polarizer and light dims - but not linearly! The intensity follows cos²(θ). Why this specific function?",
+          "hook_foundation": "Tilt your head while wearing polarized sunglasses - glare changes! The brightness follows a special pattern called cos² (cosine squared).",
+          "hook_research": "The cos²θ dependence arises from the scalar product of the E-field with the polarizer transmission axis. Since intensity is proportional to |E|², and the transmitted component is E₀cosθ, we get I = I₀cos²θ.",
+          "facts": [
+            "At θ=0°: full transmission (100%)",
+            "At θ=45°: half transmission (50%)",
+            "At θ=90°: zero transmission (0%)"
+          ],
+          "facts_foundation": [
+            "Aligned polarizers: all light gets through (100%)",
+            "At 45° angle: half the light passes (50%)",
+            "At 90° (crossed): no light passes (0%)"
+          ],
+          "facts_research": [
+            "I(θ) = I₀cos²θ arises from projection of E-field onto transmission axis",
+            "Symmetry: I(θ) = I(180° - θ) for linear polarizers",
+            "For partially polarized light: I(θ) = (I₀/2)(1 + DOP·cos²θ)"
+          ]
+        },
+        "physics": {
+          "principle": "The transmitted intensity through a polarizer follows Malus's Law: I = I₀cos²(θ), where θ is the angle between the light's polarization and the polarizer's transmission axis",
+          "formula": "I = I₀ × cos²(θ)",
+          "details": [
+            "cos(θ) gives the E-field component along the transmission axis",
+            "Intensity is proportional to E², hence cos²(θ)",
+            "The curve is symmetric about θ = 90°"
+          ]
+        },
+        "questions": {
+          "leading": "Why does light intensity through a polarizer follow cos²(θ) and not just cos(θ)?",
+          "guided": [
+            "What is the transmission at θ = 30° and θ = 60°?",
+            "Why is the graph symmetric about 90°?"
+          ],
+          "openEnded": [
+            "How is this curve related to the physics of light waves?",
+            "Design an experiment to verify Malus's Law quantitatively"
+          ]
+        },
+        "diy": {
+          "title": "Measure Malus's Law",
+          "materials": [
+            "Two polarizing films",
+            "Light meter app on smartphone",
+            "Protractor"
+          ],
+          "steps": [
+            "Set up polarizers with phone camera behind",
+            "Measure light intensity at 0°, 30°, 45°, 60°, 90°",
+            "Plot your measurements against cos²(θ)",
+            "Compare with the theoretical curve"
+          ],
+          "observation": "Your measurements should follow the cos² curve! Small deviations come from imperfect polarizers and measurement uncertainty."
+        }
       }
     }
   },
