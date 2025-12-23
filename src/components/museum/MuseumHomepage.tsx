@@ -67,8 +67,8 @@ const EXHIBITION_HALLS: ExhibitionHall[] = [
     color: '#fbbf24', // Amber
     glowColor: 'rgba(251, 191, 36, 0.4)',
     bgGradient: 'from-amber-500/20 via-amber-400/10 to-transparent',
-    demos: ['electromagnetic-wave', 'polarization-intro', 'polarization-types', 'interactive-bench'],
-    featured: 'electromagnetic-wave'
+    demos: ['em-wave', 'polarization-intro', 'polarization-types-unified', 'optical-bench'],
+    featured: 'em-wave'
   },
   {
     id: 'polarization-fundamentals',
@@ -79,8 +79,8 @@ const EXHIBITION_HALLS: ExhibitionHall[] = [
     color: '#22d3ee', // Cyan
     glowColor: 'rgba(34, 211, 238, 0.4)',
     bgGradient: 'from-cyan-500/20 via-cyan-400/10 to-transparent',
-    demos: ['polarization-state', 'malus-law', 'birefringence', 'waveplate'],
-    featured: 'malus-law'
+    demos: ['polarization-state', 'malus', 'birefringence', 'waveplate'],
+    featured: 'malus'
   },
   {
     id: 'interface-reflection',
@@ -115,7 +115,7 @@ const EXHIBITION_HALLS: ExhibitionHall[] = [
     color: '#f472b6', // Pink
     glowColor: 'rgba(244, 114, 182, 0.4)',
     bgGradient: 'from-pink-500/20 via-pink-400/10 to-transparent',
-    demos: ['rayleigh', 'mie', 'monte-carlo'],
+    demos: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering'],
     featured: 'rayleigh'
   },
   {
@@ -127,8 +127,8 @@ const EXHIBITION_HALLS: ExhibitionHall[] = [
     color: '#60a5fa', // Blue
     glowColor: 'rgba(96, 165, 250, 0.4)',
     bgGradient: 'from-blue-500/20 via-blue-400/10 to-transparent',
-    demos: ['stokes-vector', 'mueller-matrix', 'jones-matrix', 'polarimetric-microscopy'],
-    featured: 'stokes-vector'
+    demos: ['stokes', 'mueller', 'jones', 'polarimetric-microscopy'],
+    featured: 'stokes'
   }
 ]
 
@@ -563,8 +563,8 @@ function FeaturedDemos({ onSelectDemo }: { onSelectDemo: (demoId: string) => voi
 
   const featuredDemos = [
     {
-      id: 'malus-law',
-      titleKey: 'demos.malusLaw.title',
+      id: 'malus',
+      titleKey: 'demos.malus.title',
       descriptionKey: 'museum.featured.malus.description',
       icon: Target,
       color: '#22d3ee'
