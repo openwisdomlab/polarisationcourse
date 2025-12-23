@@ -42,6 +42,7 @@ import {
   Zap,
   ExternalLink
 } from 'lucide-react'
+import { KnowledgeMap } from './KnowledgeMap'
 
 // Exhibition hall configuration for each unit
 interface ExhibitionHall {
@@ -1371,6 +1372,9 @@ export function MuseumHomepage() {
 
       {/* Quick Start Guide */}
       <QuickStartSection />
+
+      {/* Knowledge Map - Interactive learning journey visualization */}
+      <KnowledgeMap />
 
       {/* Exhibition Halls */}
       <div id="exhibition-halls">

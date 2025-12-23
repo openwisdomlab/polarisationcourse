@@ -3652,5 +3652,61 @@
       "tagline": "Discover the invisible world of polarized light",
       "copyright": "PolarCraft Educational Platform"
     }
+  },
+  "knowledgeMap": {
+    "badge": "Knowledge Constellation",
+    "title": "Polarization Learning Journey",
+    "description": "Explore the complete knowledge map of polarized light—from fundamental waves to advanced polarimetry",
+    "choosePath": "Choose a learning path or explore freely",
+    "instructions": "Click a node to see details, double-click to start the demo",
+    "startDemo": "Start Demo",
+    "nextSteps": "Next steps",
+    "difficulty": {
+      "foundation": "Foundation",
+      "application": "Application",
+      "research": "Research"
+    },
+    "legend": {
+      "title": "Difficulty",
+      "foundation": "Foundation - Visual exploration",
+      "application": "Application - Quantitative experiments",
+      "research": "Research - Advanced theory"
+    },
+    "paths": {
+      "quickStart": {
+        "name": "Quick Start",
+        "desc": "A 30-minute tour of essential polarization concepts—perfect for beginners"
+      },
+      "deepDive": {
+        "name": "Deep Dive",
+        "desc": "A comprehensive journey from electromagnetic waves to Mueller matrices"
+      },
+      "applications": {
+        "name": "Real World",
+        "desc": "Focus on practical applications—photography, materials, atmospheric science"
+      }
+    },
+    "nodes": {
+      "emWave": "Understand electromagnetic waves as the foundation of light",
+      "polarizationIntro": "Discover how light can vibrate in specific directions",
+      "polarizationTypes": "Explore linear, circular, and elliptical polarization",
+      "opticalBench": "Design and simulate your own optical experiments",
+      "polarizationState": "Visualize polarization states in 3D space",
+      "malus": "The classic cos² law that governs polarizer transmission",
+      "birefringence": "How crystals split light into two polarized beams",
+      "waveplate": "Transform polarization states with phase retardation",
+      "fresnel": "Mathematical description of reflection and transmission",
+      "brewster": "The angle where reflected light becomes perfectly polarized",
+      "anisotropy": "See stress patterns through crossed polarizers",
+      "chromatic": "When birefringence creates a rainbow of colors",
+      "opticalRotation": "How chiral molecules rotate polarization",
+      "rayleigh": "Why the sky is blue and sunsets are red",
+      "mieScattering": "Scattering by larger particles—fog, clouds, milk",
+      "monteCarloScattering": "Simulating light transport in complex media",
+      "stokes": "A 4-component vector describing any polarization state",
+      "jones": "2×2 matrices for coherent polarization transformations",
+      "mueller": "4×4 matrices for complete polarimetric analysis",
+      "polarimetricMicroscopy": "Using polarization to reveal hidden structures"
+    }
   }
 }

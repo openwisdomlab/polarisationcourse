@@ -3840,5 +3840,61 @@
       "tagline": "发现偏振光的隐形世界",
       "copyright": "PolarCraft 教育平台"
     }
+  },
+  "knowledgeMap": {
+    "badge": "知识星图",
+    "title": "偏振光学习之旅",
+    "description": "探索偏振光的完整知识图谱——从基础波动到高级偏振测量",
+    "choosePath": "选择一条学习路径，或自由探索",
+    "instructions": "点击节点查看详情，双击进入演示",
+    "startDemo": "开始演示",
+    "nextSteps": "下一步",
+    "difficulty": {
+      "foundation": "基础层",
+      "application": "应用层",
+      "research": "研究层"
+    },
+    "legend": {
+      "title": "难度等级",
+      "foundation": "基础层 - 视觉化探索",
+      "application": "应用层 - 量化实验",
+      "research": "研究层 - 高级理论"
+    },
+    "paths": {
+      "quickStart": {
+        "name": "快速入门",
+        "desc": "30 分钟了解偏振光核心概念——适合初学者"
+      },
+      "deepDive": {
+        "name": "深度探索",
+        "desc": "从电磁波到穆勒矩阵的完整学习旅程"
+      },
+      "applications": {
+        "name": "实际应用",
+        "desc": "聚焦实际应用——摄影、材料、大气科学"
+      }
+    },
+    "nodes": {
+      "emWave": "理解电磁波——光的本质基础",
+      "polarizationIntro": "发现光如何在特定方向振动",
+      "polarizationTypes": "探索线偏振、圆偏振和椭圆偏振",
+      "opticalBench": "设计和模拟你自己的光学实验",
+      "polarizationState": "在三维空间中可视化偏振态",
+      "malus": "控制偏振片透射率的经典 cos² 定律",
+      "birefringence": "晶体如何将光分成两束偏振光",
+      "waveplate": "用相位延迟变换偏振态",
+      "fresnel": "反射和透射的数学描述",
+      "brewster": "反射光变为完全偏振的角度",
+      "anisotropy": "通过正交偏振片观察应力图案",
+      "chromatic": "当双折射产生彩虹般的颜色",
+      "opticalRotation": "手性分子如何旋转偏振方向",
+      "rayleigh": "天空为什么是蓝色？日落为什么是红色？",
+      "mieScattering": "大颗粒的散射——雾、云、牛奶",
+      "monteCarloScattering": "模拟复杂介质中的光传输",
+      "stokes": "描述任意偏振态的四分量矢量",
+      "jones": "相干偏振变换的 2×2 矩阵",
+      "mueller": "完整偏振分析的 4×4 矩阵",
+      "polarimetricMicroscopy": "利用偏振揭示隐藏结构"
+    }
   }
 }
