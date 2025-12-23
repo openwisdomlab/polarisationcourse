@@ -416,6 +416,30 @@ function LawVisualization({ lawId, isActive }: { lawId: string; isActive: boolea
   }
 }
 
+// Extended descriptions for each law
+const LAW_EXTENDED_INFO: Record<string, { principleKey: string; exampleKey: string; applicationKey: string }> = {
+  'orthogonality': {
+    principleKey: 'museum.laws.orthogonality.principle',
+    exampleKey: 'museum.laws.orthogonality.example',
+    applicationKey: 'museum.laws.orthogonality.application',
+  },
+  'malus': {
+    principleKey: 'museum.laws.malus.principle',
+    exampleKey: 'museum.laws.malus.example',
+    applicationKey: 'museum.laws.malus.application',
+  },
+  'birefringence': {
+    principleKey: 'museum.laws.birefringence.principle',
+    exampleKey: 'museum.laws.birefringence.example',
+    applicationKey: 'museum.laws.birefringence.application',
+  },
+  'interference': {
+    principleKey: 'museum.laws.interference.principle',
+    exampleKey: 'museum.laws.interference.example',
+    applicationKey: 'museum.laws.interference.application',
+  },
+}
+
 // Law Card Component
 function LawCard({
   law,
@@ -433,6 +457,7 @@ function LawCard({
   const { t } = useTranslation()
   const { theme } = useTheme()
   const Icon = law.icon
+  const extendedInfo = LAW_EXTENDED_INFO[law.id]
 
   return (
     <div
@@ -444,7 +469,7 @@ function LawCard({
       )}
       style={{
         boxShadow: isHovered
-          ? `0 15px 30px -8px ${law.glowColor}, 0 0 0 1px ${law.color}30`
+          ? `0 10px 20px -5px ${law.glowColor}, 0 0 0 1px ${law.color}30`
           : 'none'
       }}
       onMouseEnter={() => onHover(law.id)}
@@ -462,35 +487,35 @@ function LawCard({
       />
 
       {/* Content */}
-      <div className="relative p-4 h-full flex flex-col">
+      <div className="relative p-3 h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-start gap-3 mb-3">
+        <div className="flex items-start gap-2 mb-2">
           {/* Icon */}
           <div
             className={cn(
-              "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+              "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
               "transition-all duration-300 group-hover:scale-110"
             )}
             style={{
               backgroundColor: `${law.color}15`,
-              boxShadow: isHovered ? `0 0 20px ${law.glowColor}` : 'none'
+              boxShadow: isHovered ? `0 0 15px ${law.glowColor}` : 'none'
             }}
           >
             <span style={{ color: law.color }}>
-              <Icon className="w-5 h-5 transition-transform duration-300 group-hover:rotate-6" />
+              <Icon className="w-4 h-4 transition-transform duration-300 group-hover:rotate-6" />
             </span>
           </div>
 
           {/* Title */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h3 className={cn(
-              "text-sm font-semibold mb-1",
+              "text-xs font-semibold mb-0.5 truncate",
               theme === 'dark' ? "text-white" : "text-slate-900"
             )}>
               {t(law.titleKey)}
             </h3>
             <p className={cn(
-              "text-xs line-clamp-2",
+              "text-[10px] line-clamp-2 leading-tight",
               theme === 'dark' ? "text-slate-400" : "text-slate-600"
             )}>
               {t(law.descriptionKey)}
@@ -498,10 +523,10 @@ function LawCard({
           </div>
         </div>
 
-        {/* Visualization Area */}
+        {/* Compact Visualization Area */}
         <div
           className={cn(
-            "flex-1 rounded-lg overflow-hidden min-h-[100px]",
+            "rounded-lg overflow-hidden h-[70px] mb-2",
             theme === 'dark' ? "bg-slate-900/50" : "bg-slate-100/50"
           )}
         >
@@ -511,12 +536,36 @@ function LawCard({
         {/* Formula (if applicable) */}
         {law.formulaKey && (
           <div className={cn(
-            "mt-2 text-center text-xs font-mono",
-            theme === 'dark' ? "text-slate-400" : "text-slate-500"
+            "text-center text-[10px] font-mono mb-1.5 px-2 py-0.5 rounded",
+            theme === 'dark' ? "text-amber-400 bg-amber-500/10" : "text-amber-600 bg-amber-100"
           )}>
             {t(law.formulaKey)}
           </div>
         )}
+
+        {/* Extended info section */}
+        <div className={cn(
+          "text-[9px] space-y-1 pt-1 border-t",
+          theme === 'dark' ? "border-slate-700 text-slate-500" : "border-slate-200 text-slate-500"
+        )}>
+          {/* Principle */}
+          <div className="flex items-start gap-1">
+            <span style={{ color: law.color }} className="font-medium flex-shrink-0">▸</span>
+            <span className="line-clamp-1">{t(extendedInfo.principleKey, '原理说明')}</span>
+          </div>
+          {/* Example */}
+          <div className="flex items-start gap-1">
+            <span className="text-emerald-500 font-medium flex-shrink-0">◦</span>
+            <span className="line-clamp-1">{t(extendedInfo.exampleKey, '生活实例')}</span>
+          </div>
+          {/* Application - only show on hover */}
+          {isHovered && (
+            <div className="flex items-start gap-1">
+              <span className="text-blue-500 font-medium flex-shrink-0">★</span>
+              <span className="line-clamp-1">{t(extendedInfo.applicationKey, '应用场景')}</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -555,11 +604,11 @@ export function PolarizationLawsSection({ onSelectDemo }: PolarizationLawsSectio
         : "bg-gradient-to-br from-slate-100 via-white to-slate-50 border border-slate-200"
     )}>
       {/* Header */}
-      <div className="px-4 py-3 border-b border-opacity-20 border-slate-500 flex items-center justify-between">
+      <div className="px-3 py-2 border-b border-opacity-20 border-slate-500 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Info className="w-4 h-4 text-cyan-400" />
+          <Info className="w-3.5 h-3.5 text-cyan-400" />
           <h3 className={cn(
-            "text-sm font-semibold",
+            "text-xs font-semibold",
             theme === 'dark' ? "text-white" : "text-slate-900"
           )}>
             {t('museum.laws.title', '偏振四大定律')}
@@ -568,16 +617,16 @@ export function PolarizationLawsSection({ onSelectDemo }: PolarizationLawsSectio
 
         {/* Subtitle */}
         <span className={cn(
-          "text-xs",
+          "text-[10px]",
           theme === 'dark' ? "text-slate-500" : "text-slate-400"
         )}>
           {t('museum.laws.subtitle', '点击探索详细演示')}
         </span>
       </div>
 
-      {/* Laws Grid */}
-      <div className="p-4">
-        <div className="grid grid-cols-2 gap-4">
+      {/* Laws Grid - more compact */}
+      <div className="p-2">
+        <div className="grid grid-cols-2 gap-2">
           {POLARIZATION_LAWS.map((law) => (
             <LawCard
               key={law.id}
@@ -593,11 +642,11 @@ export function PolarizationLawsSection({ onSelectDemo }: PolarizationLawsSectio
 
       {/* Footer hint */}
       <div className={cn(
-        "px-4 py-2 border-t border-opacity-20 border-slate-500 flex items-center justify-center gap-1 text-xs",
+        "px-3 py-1.5 border-t border-opacity-20 border-slate-500 flex items-center justify-center gap-1 text-[10px]",
         theme === 'dark' ? "text-slate-500" : "text-slate-400"
       )}>
         <span>{t('museum.laws.hint', '这四大定律构成了偏振光学的理论基础')}</span>
-        <ChevronRight className="w-3 h-3" />
+        <ChevronRight className="w-2.5 h-2.5" />
       </div>
     </div>
   )

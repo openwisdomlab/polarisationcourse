@@ -527,13 +527,16 @@ function MapVisualization({
         />
       ))}
 
-      {/* Nodes */}
+      {/* Nodes - base layer (non-hovered) */}
       {nodes.map(node => {
         const unit = UNITS[node.unit]
         const size = getNodeSize(node.importance)
         const isHovered = hoveredNode === node.id
         const isSelected = selectedNode === node.id
         const isInPath = isNodeInPath(node.id)
+
+        // Skip hovered node in base layer, render it in top layer
+        if (isHovered) return null
 
         return (
           <g
@@ -557,51 +560,142 @@ function MapVisualization({
 
             {/* Main node circle */}
             <circle
-              r={size * 0.12 * (isHovered || isSelected ? 1.3 : 1)}
+              r={size * 0.12 * (isSelected ? 1.3 : 1)}
               fill={theme === 'dark' ? '#1e293b' : '#ffffff'}
               stroke={unit.color}
-              strokeWidth={isHovered || isSelected || isInPath ? 0.5 : 0.3}
-              filter={isHovered || isSelected ? `url(#glow-${unit.id})` : 'none'}
+              strokeWidth={isSelected || isInPath ? 0.5 : 0.3}
+              filter={isSelected ? `url(#glow-${unit.id})` : 'none'}
               className="transition-all duration-200"
             />
 
             {/* Inner colored dot */}
             <circle
-              r={size * 0.06 * (isHovered || isSelected ? 1.2 : 1)}
+              r={size * 0.06 * (isSelected ? 1.2 : 1)}
               fill={unit.color}
-              opacity={isHovered || isSelected || isInPath ? 1 : 0.7}
+              opacity={isSelected || isInPath ? 1 : 0.7}
               className="transition-all duration-200"
             />
 
-            {/* Node label - only show on hover or if it's a core node */}
-            {(isHovered || isSelected || node.importance === 'core') && (
-              <text
-                y={size * 0.2 + 2}
-                textAnchor="middle"
-                fill={theme === 'dark' ? '#e2e8f0' : '#334155'}
-                fontSize="2.5"
-                fontWeight={isHovered || isSelected ? 'bold' : 'normal'}
-                className="pointer-events-none select-none"
-              >
-                {t(node.titleKey)}
-              </text>
-            )}
-
-            {/* Difficulty badge */}
-            {isHovered && (
-              <g transform="translate(2, -2)">
-                <circle
-                  r="1.5"
-                  fill={
-                    node.difficulty === 'foundation' ? '#22c55e' :
-                    node.difficulty === 'application' ? '#3b82f6' : '#a855f7'
-                  }
+            {/* Node label - only show if it's a core node or selected */}
+            {(isSelected || node.importance === 'core') && (
+              <g>
+                {/* Text background for better readability */}
+                <rect
+                  x={-15}
+                  y={size * 0.2 + 0.5}
+                  width={30}
+                  height={3.5}
+                  rx={0.5}
+                  fill={theme === 'dark' ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.9)'}
+                  className="pointer-events-none"
                 />
+                <text
+                  y={size * 0.2 + 3}
+                  textAnchor="middle"
+                  fill={theme === 'dark' ? '#e2e8f0' : '#334155'}
+                  fontSize="2.5"
+                  fontWeight={isSelected ? 'bold' : 'normal'}
+                  className="pointer-events-none select-none"
+                >
+                  {t(node.titleKey)}
+                </text>
               </g>
             )}
           </g>
         )
       })}
+
+      {/* Hovered node - rendered on top layer for proper z-order */}
+      {hoveredNode && (() => {
+        const node = nodes.find(n => n.id === hoveredNode)
+        if (!node) return null
+
+        const unit = UNITS[node.unit]
+        const size = getNodeSize(node.importance)
+        // Note: isSelected and isInPath are intentionally not used here
+        // as the hovered node always gets the "active" styling
+        void selectedNode
+        void isNodeInPath
+
+        return (
+          <g
+            key={`hovered-${node.id}`}
+            transform={`translate(${node.x}, ${node.y})`}
+            className="cursor-pointer"
+            onMouseEnter={() => onNodeHover(node.id)}
+            onMouseLeave={() => onNodeHover(null)}
+            onClick={() => onNodeClick(node.id)}
+          >
+            {/* Outer glow ring for core nodes */}
+            {node.importance === 'core' && (
+              <circle
+                r={size * 0.18}
+                fill="none"
+                stroke={unit.color}
+                strokeWidth="0.3"
+                opacity={0.3 + Math.sin(time * 0.05) * 0.2}
+              />
+            )}
+
+            {/* Main node circle - larger on hover */}
+            <circle
+              r={size * 0.12 * 1.3}
+              fill={theme === 'dark' ? '#1e293b' : '#ffffff'}
+              stroke={unit.color}
+              strokeWidth={0.5}
+              filter={`url(#glow-${unit.id})`}
+              className="transition-all duration-200"
+            />
+
+            {/* Inner colored dot */}
+            <circle
+              r={size * 0.06 * 1.2}
+              fill={unit.color}
+              opacity={1}
+              className="transition-all duration-200"
+            />
+
+            {/* Node label with background - always show on hover */}
+            <g>
+              {/* Text background for better readability */}
+              <rect
+                x={-18}
+                y={size * 0.25}
+                width={36}
+                height={4}
+                rx={1}
+                fill={theme === 'dark' ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)'}
+                stroke={unit.color}
+                strokeWidth={0.2}
+                className="pointer-events-none"
+              />
+              <text
+                y={size * 0.25 + 3}
+                textAnchor="middle"
+                fill={theme === 'dark' ? '#e2e8f0' : '#334155'}
+                fontSize="2.8"
+                fontWeight="bold"
+                className="pointer-events-none select-none"
+              >
+                {t(node.titleKey)}
+              </text>
+            </g>
+
+            {/* Difficulty badge */}
+            <g transform="translate(2.5, -2.5)">
+              <circle
+                r="1.8"
+                fill={
+                  node.difficulty === 'foundation' ? '#22c55e' :
+                  node.difficulty === 'application' ? '#3b82f6' : '#a855f7'
+                }
+                stroke={theme === 'dark' ? '#1e293b' : '#ffffff'}
+                strokeWidth={0.3}
+              />
+            </g>
+          </g>
+        )
+      })()}
 
       {/* Unit labels */}
       {UNITS.map(unit => {

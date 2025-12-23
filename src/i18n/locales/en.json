@@ -3658,20 +3658,32 @@
       "hint": "These four laws form the theoretical foundation of polarization optics",
       "orthogonality": {
         "title": "Orthogonality",
-        "description": "Light polarized at 90° difference can coexist without interference—they are completely independent"
+        "description": "Light polarized at 90° difference can coexist without interference—they are completely independent",
+        "principle": "Perpendicularly polarized waves are orthogonal in space and cannot interact",
+        "example": "Polarized sunglasses block water surface glare",
+        "application": "3D cinema, LCD displays, polarization microscopy"
       },
       "malus": {
         "title": "Malus's Law",
         "description": "When polarized light passes through an analyzer, the transmitted intensity follows the cos² relationship",
-        "formula": "I = I₀ × cos²θ"
+        "formula": "I = I₀ × cos²θ",
+        "principle": "Transmitted intensity is proportional to the square of cosine of the angle",
+        "example": "Rotate a polarizer to observe periodic brightness changes",
+        "application": "Light intensity modulators, polarization analyzers, optical communication"
       },
       "birefringence": {
         "title": "Birefringence",
-        "description": "Anisotropic crystals split light into two perpendicularly polarized beams: ordinary ray (o-ray) and extraordinary ray (e-ray)"
+        "description": "Anisotropic crystals split light into two perpendicularly polarized beams: ordinary ray (o-ray) and extraordinary ray (e-ray)",
+        "principle": "Light has different refractive indices along different crystal axes",
+        "example": "Calcite crystal produces double images",
+        "application": "Polarizing prisms, waveplate manufacturing, stress analysis"
       },
       "interference": {
         "title": "Interference",
-        "description": "Same-phase light waves add constructively (bright), opposite-phase waves cancel destructively (dark)"
+        "description": "Same-phase light waves add constructively (bright), opposite-phase waves cancel destructively (dark)",
+        "principle": "Phase difference determines result: 0° enhances, 180° cancels",
+        "example": "Colorful fringes on soap bubbles",
+        "application": "Interference filters, holography, precision measurement"
       }
     }
   },

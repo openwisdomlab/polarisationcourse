@@ -3846,20 +3846,32 @@
       "hint": "这四大定律构成了偏振光学的理论基础",
       "orthogonality": {
         "title": "正交性",
-        "description": "偏振方向相差90°的光可以共存而不干涉——它们完全独立"
+        "description": "偏振方向相差90°的光可以共存而不干涉——它们完全独立",
+        "principle": "垂直偏振的光波在空间上正交，无法相互作用",
+        "example": "偏光太阳镜阻挡水面反射眩光",
+        "application": "3D电影、液晶显示、偏振显微镜"
       },
       "malus": {
         "title": "马吕斯定律",
         "description": "偏振光通过检偏器时，透射光强遵循cos²关系",
-        "formula": "I = I₀ × cos²θ"
+        "formula": "I = I₀ × cos²θ",
+        "principle": "透射强度与偏振方向夹角余弦平方成正比",
+        "example": "转动偏振片，观察亮度周期性变化",
+        "application": "光强调制器、偏振分析仪、光通信"
       },
       "birefringence": {
         "title": "双折射",
-        "description": "各向异性晶体将光分成两束垂直偏振的光：寻常光（o光）和非寻常光（e光）"
+        "description": "各向异性晶体将光分成两束垂直偏振的光：寻常光（o光）和非寻常光（e光）",
+        "principle": "光在晶体中沿不同方向有不同折射率",
+        "example": "冰洲石晶体产生双像现象",
+        "application": "偏光棱镜、波片制造、应力分析"
       },
       "interference": {
         "title": "干涉",
-        "description": "同相光波相加增强（明亮），反相光波相消（黑暗）"
+        "description": "同相光波相加增强（明亮），反相光波相消（黑暗）",
+        "principle": "相位差决定叠加结果：0°增强，180°抵消",
+        "example": "肥皂泡的彩色条纹",
+        "application": "干涉滤光片、全息术、精密测量"
       }
     }
   },

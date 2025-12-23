@@ -639,7 +639,7 @@ function AtmosphereIcon({ className, color }: { className?: string; color?: stri
   )
 }
 
-// Applications section component - redesigned with proper icons and cases
+// Applications section component - redesigned with proper icons and cases (compact version)
 function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
 
@@ -695,83 +695,55 @@ function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
   ]
 
   return (
-    <div className="mb-12">
-      <div className="flex items-center gap-3 mb-6">
-        <h2 className={`text-2xl font-bold ${
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-3">
+        <h2 className={`text-lg font-bold ${
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         }`}>
           {t('course.apps.title')}
         </h2>
-        <span className={`text-xs px-2 py-1 rounded-full ${
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
           theme === 'dark' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
         }`}>
           {t('course.apps.badge')}
         </span>
       </div>
 
-      <p className={`text-sm mb-6 max-w-3xl ${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      }`}>
-        {t('course.apps.description')}
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
         {applications.map((app, i) => {
           const IconComponent = app.icon
           return (
             <Link
               key={i}
               to={app.demoLink}
-              className={`group rounded-xl p-5 border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+              className={`group rounded-lg p-2.5 border transition-all duration-200 hover:-translate-y-0.5 ${
                 theme === 'dark'
                   ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
                   : 'bg-white border-gray-200 hover:border-gray-300'
               }`}
-              style={{
-                boxShadow: theme === 'dark'
-                  ? `0 4px 20px ${app.color}08`
-                  : `0 4px 20px ${app.color}05`,
-              }}
             >
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col items-center text-center">
                 {/* Icon */}
                 <div
-                  className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-transform group-hover:scale-110"
                   style={{ backgroundColor: `${app.color}15` }}
                 >
-                  <IconComponent className="w-6 h-6" color={app.color} />
+                  <IconComponent className="w-4.5 h-4.5" color={app.color} />
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold mb-1 ${
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    {t(app.nameKey)}
-                  </h3>
-                  <p className={`text-xs mb-2 ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    {t(app.descKey)}
-                  </p>
+                {/* Name */}
+                <h3 className={`text-[11px] font-medium line-clamp-1 ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {t(app.nameKey)}
+                </h3>
 
-                  {/* Case example */}
-                  <div
-                    className={`text-xs px-2 py-1 rounded-md inline-flex items-center gap-1.5 ${
-                      theme === 'dark' ? 'bg-slate-700/50 text-gray-300' : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    <FlaskConical className="w-3 h-3" style={{ color: app.color }} />
-                    {t(app.caseKey)}
-                  </div>
-                </div>
-
-                {/* Arrow */}
-                <ArrowRight
-                  className={`w-4 h-4 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                  }`}
-                />
+                {/* Case - compact */}
+                <span className={`text-[9px] mt-0.5 line-clamp-1 ${
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                }`}>
+                  {t(app.caseKey)}
+                </span>
               </div>
             </Link>
           )
@@ -781,7 +753,7 @@ function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
-// Home experiments section - family-friendly experiments from curriculum
+// Home experiments section - family-friendly experiments from curriculum (compact version)
 function HomeExperimentsSection({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
 
@@ -830,86 +802,75 @@ function HomeExperimentsSection({ theme }: { theme: 'dark' | 'light' }) {
   ]
 
   return (
-    <div className="mb-12">
-      <div className="flex items-center gap-3 mb-6">
-        <h2 className={`text-2xl font-bold ${
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-3">
+        <h2 className={`text-lg font-bold ${
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         }`}>
           {t('course.homeExperiments.title')}
         </h2>
-        <span className={`text-xs px-2 py-1 rounded-full ${
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
           theme === 'dark' ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-100 text-pink-700'
         }`}>
           {t('course.homeExperiments.badge')}
         </span>
       </div>
 
-      <p className={`text-sm mb-6 max-w-3xl ${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      }`}>
-        {t('course.homeExperiments.description')}
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {experiments.map((exp) => (
           <div
             key={exp.id}
-            className={`rounded-xl p-5 border transition-all duration-300 hover:-translate-y-1 ${
+            className={`rounded-lg p-3 border transition-all duration-200 hover:-translate-y-0.5 ${
               theme === 'dark'
                 ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
                 : 'bg-white border-gray-200 hover:border-gray-300'
             }`}
           >
-            <div className="flex items-start gap-3 mb-3">
+            <div className="flex items-center gap-2 mb-2">
               <div
-                className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-xl"
+                className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-sm"
                 style={{ backgroundColor: `${exp.color}15` }}
               >
                 {exp.icon}
               </div>
-              <div>
-                <h3 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              <div className="flex-1 min-w-0">
+                <h3 className={`text-sm font-medium truncate ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {t(exp.titleKey)}
                 </h3>
-                <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  {t('course.unit')} {exp.unit}
-                </span>
               </div>
+              <Link
+                to={exp.demoLink}
+                className={`flex-shrink-0 p-1.5 rounded-md transition-all hover:scale-110 ${
+                  theme === 'dark'
+                    ? 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-900/50'
+                    : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'
+                }`}
+              >
+                <FlaskConical className="w-3 h-3" />
+              </Link>
             </div>
 
-            <p className={`text-sm mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-[11px] mb-2 line-clamp-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               {t(exp.descriptionKey)}
             </p>
 
-            <div className="mb-3">
-              <span className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                {t('course.homeExperiments.materials')}:
-              </span>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {exp.materialsKeys.map((key, i) => (
-                  <span
-                    key={i}
-                    className={`text-xs px-2 py-0.5 rounded-full ${
-                      theme === 'dark' ? 'bg-slate-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {t(key)}
-                  </span>
-                ))}
-              </div>
+            <div className="flex flex-wrap gap-1">
+              {exp.materialsKeys.slice(0, 2).map((key, i) => (
+                <span
+                  key={i}
+                  className={`text-[10px] px-1.5 py-0.5 rounded ${
+                    theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  {t(key)}
+                </span>
+              ))}
+              {exp.materialsKeys.length > 2 && (
+                <span className={`text-[10px] ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                  +{exp.materialsKeys.length - 2}
+                </span>
+              )}
             </div>
-
-            <Link
-              to={exp.demoLink}
-              className={`text-xs px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-all hover:scale-105 ${
-                theme === 'dark'
-                  ? 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-900/50'
-                  : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'
-              }`}
-            >
-              <FlaskConical className="w-3 h-3" />
-              {t('course.homeExperiments.learnMore')}
-            </Link>
           </div>
         ))}
       </div>
