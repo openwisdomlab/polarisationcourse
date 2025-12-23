@@ -21,8 +21,8 @@ A comprehensive educational platform that transforms the invisible world of pola
 
 - **Chronicles of Light** - Journey through the history of polarization discoveries
 - **Optical Design Studio** - Device library (80+ components) + interactive light path designer
-- **Polarization Demo Gallery** - 19 interactive physics demonstrations across 6 units
-- **PolarQuest Game Hub** - 2D puzzles, 3D voxel games, card battles, and escape rooms
+- **Polarization Demo Gallery** - 21 interactive physics demonstrations across 6 units
+- **PolarQuest Game Hub** - 2D puzzles, 3D voxel games, card battles, escape rooms, and detective mysteries
 - **Creative Workshop** - Polarization art, photography, and DIY experiments
 - **Virtual Lab Group** - Research tasks, applications database, and calculation tools
 
@@ -30,7 +30,7 @@ A comprehensive educational platform that transforms the invisible world of pola
 
 - **Real Physics Engine** - Malus's Law, birefringence, wave interference, Jones/Mueller calculus
 - **Calculation Workshop** - Jones, Stokes, Mueller calculators + Poincaré sphere viewer
-- **Multiple Game Modes** - 2D puzzles (11 levels), 3D voxel (5 tutorials), card game, escape room
+- **Multiple Game Modes** - 2D puzzles (11 levels), 3D voxel (5 tutorials), card game, escape room, detective game
 - **3-Tier Difficulty System** - Foundation, Application, and Research content levels
 - **Interactive Simulations** - Real-time light propagation with polarization visualization
 - **Bilingual Support** - Full English and Chinese interface
@@ -67,7 +67,7 @@ npm run preview  # Preview production build
 | `/` | Home | Landing page with 6 creative module navigation |
 | `/chronicles` | Chronicles of Light | History of polarization discoveries |
 | `/optical-studio` | Optical Design Studio | Device library + light path designer |
-| `/demos` | Demo Gallery | 19 interactive physics demonstrations |
+| `/demos` | Demo Gallery | 21 interactive physics demonstrations |
 | `/games` | PolarQuest Hub | Game center with multiple modes |
 | `/creative` | Creative Workshop | Art, photography, and DIY projects |
 | `/lab` | Virtual Lab Group | Research tasks and community |
@@ -81,6 +81,7 @@ npm run preview  # Preview production build
 | `/games/3d` | 3D voxel puzzle (5 tutorial levels) |
 | `/games/card` | Polarization card game |
 | `/games/escape` | Light chamber escape room |
+| `/games/detective` | Detective mystery game |
 
 #### Calculation Workshop
 
@@ -250,16 +251,16 @@ A comprehensive polarized light art design tool combining Device Library and Opt
 
 ### Course Curriculum
 
-The educational platform covers 6 units of polarization optics with 19 interactive demos:
+The educational platform covers 6 units of polarization optics with 21 interactive demos:
 
 | Unit | Topic | Demos |
 |------|-------|-------|
-| 0 | Optical Fundamentals | Light Wave, Polarization Intro, Polarization Types, Interactive Optical Bench |
+| 0 | Optical Fundamentals | EM Wave, Polarization Intro, Polarization Types, Interactive Optical Bench |
 | 1 | Light Polarization | Polarization State, Malus's Law, Birefringence, Waveplate |
 | 2 | Interface Reflection | Fresnel Equations, Brewster's Angle |
-| 3 | Transparent Media | Chromatic Polarization, Optical Rotation, Anisotropy (Stress) |
-| 4 | Turbid Media Scattering | Mie Scattering, Rayleigh Scattering |
-| 5 | Full Polarimetry | Stokes Vectors, Mueller Matrices, Jones Matrices, Polarization Calculator |
+| 3 | Transparent Media | Anisotropy (Stress), Chromatic Polarization, Optical Rotation |
+| 4 | Turbid Media Scattering | Mie Scattering, Rayleigh Scattering, Monte Carlo Scattering |
+| 5 | Full Polarimetry | Stokes Vectors, Mueller Matrices, Jones Matrices, Polarization Calculator, Polarimetric Microscopy |
 
 #### Difficulty Levels
 
@@ -335,8 +336,8 @@ MIT License
 
 - **光的编年史** - 穿越偏振发现的历史之旅
 - **光学设计室** - 器件图鉴（80+组件）+ 交互式光路设计器
-- **偏振演示馆** - 6个单元共19个交互式物理演示
-- **偏振光探秘游戏中心** - 2D解谜、3D体素游戏、卡牌对战、密室逃脱
+- **偏振演示馆** - 6个单元共21个交互式物理演示
+- **偏振光探秘游戏中心** - 2D解谜、3D体素游戏、卡牌对战、密室逃脱、侦探推理
 - **偏振造物局** - 偏振艺术、摄影与DIY实验
 - **虚拟课题组：光研社** - 研究任务、应用数据库和计算工具
 
@@ -344,7 +345,7 @@ MIT License
 
 - **真实物理引擎** - 马吕斯定律、双折射、波干涉、Jones/Mueller矩阵运算
 - **计算工坊** - Jones、Stokes、Mueller计算器 + Poincaré球查看器
-- **多种游戏模式** - 2D解谜（11关）、3D体素（5教程）、卡牌游戏、密室逃脱
+- **多种游戏模式** - 2D解谜（11关）、3D体素（5教程）、卡牌游戏、密室逃脱、侦探游戏
 - **三级难度系统** - 基础层、应用层、研究层三种内容级别
 - **交互式仿真** - 实时光传播与偏振可视化
 - **双语支持** - 完整的中英文界面
@@ -381,7 +382,7 @@ npm run preview  # 预览生产构建
 | `/` | 首页 | 带6大创意模块导航的首页 |
 | `/chronicles` | 光的编年史 | 偏振发现的历史之旅 |
 | `/optical-studio` | 光学设计室 | 器件图鉴 + 光路设计器 |
-| `/demos` | 演示馆 | 19个交互式物理演示 |
+| `/demos` | 演示馆 | 21个交互式物理演示 |
 | `/games` | 游戏中心 | 多模式游戏中心 |
 | `/creative` | 偏振造物局 | 艺术、摄影与DIY项目 |
 | `/lab` | 虚拟课题组 | 研究任务和社区 |
@@ -395,6 +396,7 @@ npm run preview  # 预览生产构建
 | `/games/3d` | 3D体素解谜（5个教程关卡） |
 | `/games/card` | 偏振卡牌游戏 |
 | `/games/escape` | 光之密室逃脱 |
+| `/games/detective` | 侦探推理游戏 |
 
 #### 计算工坊
 
@@ -564,16 +566,16 @@ npm run preview  # 预览生产构建
 
 ### 课程大纲
 
-教育平台涵盖6个偏振光学单元，共19个交互式演示：
+教育平台涵盖6个偏振光学单元，共21个交互式演示：
 
 | 单元 | 主题 | 演示 |
 |------|------|------|
-| 0 | 光学基础 | 光波、偏振简介、偏振类型、交互式光学平台 |
+| 0 | 光学基础 | 电磁波、偏振简介、偏振类型、交互式光学平台 |
 | 1 | 光的偏振 | 偏振态、马吕斯定律、双折射、波片 |
 | 2 | 界面反射 | 菲涅尔方程、布儒斯特角 |
-| 3 | 透明介质 | 色偏振、旋光性、应力双折射 |
-| 4 | 浑浊介质散射 | 米氏散射、瑞利散射 |
-| 5 | 全偏振测量 | 斯托克斯矢量、穆勒矩阵、Jones矩阵、偏振计算器 |
+| 3 | 透明介质 | 应力双折射、色偏振、旋光性 |
+| 4 | 浑浊介质散射 | 米氏散射、瑞利散射、蒙特卡洛散射 |
+| 5 | 全偏振测量 | 斯托克斯矢量、穆勒矩阵、Jones矩阵、偏振计算器、偏振显微镜 |
 
 #### 难度级别
 
