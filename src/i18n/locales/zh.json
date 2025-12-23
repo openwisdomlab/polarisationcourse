@@ -3765,6 +3765,79 @@
         "title": "研究层",
         "description": "前沿研究方法与严谨的学术处理，高级理论和研究视角"
       }
+    },
+    "quickStart": {
+      "title": "快速入门",
+      "description": "三种方式探索演示馆",
+      "explore": {
+        "title": "自由探索",
+        "description": "浏览所有演示，选择你感兴趣的主题"
+      },
+      "guided": {
+        "title": "循序渐进",
+        "description": "跟随课程设计，从基础到进阶"
+      },
+      "challenge": {
+        "title": "挑战模式",
+        "description": "通过互动测验检验你的理解"
+      }
+    },
+    "applications": {
+      "title": "偏振无处不在",
+      "description": "从日常生活到前沿科学，偏振光技术无处不在",
+      "items": {
+        "sunglasses": {
+          "title": "偏光太阳镜",
+          "description": "减少反射表面的眩光"
+        },
+        "lcd": {
+          "title": "液晶显示屏",
+          "description": "你的手机和电脑屏幕都使用偏振光"
+        },
+        "medical": {
+          "title": "医学成像",
+          "description": "检测癌细胞和组织异常"
+        },
+        "ocean": {
+          "title": "海洋科学",
+          "description": "监测海洋生态系统和水质"
+        },
+        "3d": {
+          "title": "3D 电影",
+          "description": "创造沉浸式立体视觉体验"
+        },
+        "stress": {
+          "title": "应力分析",
+          "description": "可视化材料内部的机械应力"
+        }
+      }
+    },
+    "facts": {
+      "title": "你知道吗？",
+      "items": {
+        "bees": "蜜蜂利用天空的偏振光导航，即使在阴天也能找到方向",
+        "vikings": "维京人可能使用过'太阳石'（方解石晶体）在海上导航",
+        "mantis": "螳螂虾能看到圆偏振光——这是其他动物没有的超能力",
+        "cuttlefish": "乌贼通过偏振皮肤图案交流，这对它们的捕食者是隐形的",
+        "lcd": "液晶屏的每个像素都使用两片交叉偏振片来控制光线",
+        "rainbows": "彩虹是部分偏振的——试着用偏光太阳镜观察彩虹！"
+      }
+    },
+    "footer": {
+      "explore": "探索",
+      "resources": "资源",
+      "community": "社区",
+      "demoGallery": "演示馆",
+      "opticalStudio": "光学设计室",
+      "puzzleGame": "解谜游戏",
+      "documentation": "文档",
+      "api": "API 参考",
+      "github": "GitHub",
+      "forum": "论坛",
+      "discord": "Discord",
+      "contribute": "参与贡献",
+      "tagline": "发现偏振光的隐形世界",
+      "copyright": "PolarCraft 教育平台"
     }
   }
 }

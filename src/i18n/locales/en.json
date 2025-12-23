@@ -3577,6 +3577,79 @@
         "title": "Research",
         "description": "Frontier research methods with rigorous academic treatment"
       }
+    },
+    "quickStart": {
+      "title": "Quick Start Guide",
+      "description": "Three ways to explore the Demo Gallery",
+      "explore": {
+        "title": "Free Exploration",
+        "description": "Browse all demos, pick what interests you"
+      },
+      "guided": {
+        "title": "Guided Tour",
+        "description": "Follow the curriculum from basics to advanced"
+      },
+      "challenge": {
+        "title": "Challenge Mode",
+        "description": "Test your understanding with interactive quizzes"
+      }
+    },
+    "applications": {
+      "title": "Why Polarization Matters",
+      "description": "From everyday life to cutting-edge science, polarization is everywhere",
+      "items": {
+        "sunglasses": {
+          "title": "Polarized Sunglasses",
+          "description": "Reduce glare from reflective surfaces"
+        },
+        "lcd": {
+          "title": "LCD Displays",
+          "description": "Your phone and computer screens use polarized light"
+        },
+        "medical": {
+          "title": "Medical Imaging",
+          "description": "Detect cancer cells and tissue abnormalities"
+        },
+        "ocean": {
+          "title": "Ocean Science",
+          "description": "Monitor marine ecosystems and water quality"
+        },
+        "3d": {
+          "title": "3D Cinema",
+          "description": "Create immersive stereoscopic experiences"
+        },
+        "stress": {
+          "title": "Stress Analysis",
+          "description": "Visualize mechanical stress in materials"
+        }
+      }
+    },
+    "facts": {
+      "title": "Did You Know?",
+      "items": {
+        "bees": "Bees use polarized light from the sky to navigate, even on cloudy days",
+        "vikings": "Vikings may have used 'sunstones' (calcite crystals) to navigate the seas",
+        "mantis": "Mantis shrimp can see circular polarization—a superpower no other animal has",
+        "cuttlefish": "Cuttlefish communicate using polarized skin patterns invisible to their predators",
+        "lcd": "Every pixel in your LCD screen uses two crossed polarizers to control light",
+        "rainbows": "Rainbows are partially polarized—try viewing one through polarized sunglasses!"
+      }
+    },
+    "footer": {
+      "explore": "Explore",
+      "resources": "Resources",
+      "community": "Community",
+      "demoGallery": "Demo Gallery",
+      "opticalStudio": "Optical Design Studio",
+      "puzzleGame": "Puzzle Game",
+      "documentation": "Documentation",
+      "api": "API Reference",
+      "github": "GitHub",
+      "forum": "Forum",
+      "discord": "Discord",
+      "contribute": "Contribute",
+      "tagline": "Discover the invisible world of polarized light",
+      "copyright": "PolarCraft Educational Platform"
     }
   }
 }

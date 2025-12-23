@@ -21,11 +21,26 @@ import {
   Target,
   Play,
   ChevronRight,
+  ChevronLeft,
   Eye,
   Lightbulb,
   FlaskConical,
   Microscope,
-  Atom
+  Atom,
+  Compass,
+  BookOpen,
+  Trophy,
+  Glasses,
+  Monitor,
+  Heart,
+  Ship,
+  Clapperboard,
+  Wrench,
+  Github,
+  MessageCircle,
+  FileText,
+  Zap,
+  ExternalLink
 } from 'lucide-react'
 
 // Exhibition hall configuration for each unit
@@ -801,6 +816,514 @@ function LearningPath() {
   )
 }
 
+// Quick Start Section
+function QuickStartSection() {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const navigate = useNavigate()
+
+  const startModes = [
+    {
+      id: 'explore',
+      icon: Compass,
+      titleKey: 'museum.quickStart.explore.title',
+      descriptionKey: 'museum.quickStart.explore.description',
+      color: '#22d3ee',
+      action: () => navigate('/demos')
+    },
+    {
+      id: 'guided',
+      icon: BookOpen,
+      titleKey: 'museum.quickStart.guided.title',
+      descriptionKey: 'museum.quickStart.guided.description',
+      color: '#a78bfa',
+      action: () => navigate('/demos?unit=0')
+    },
+    {
+      id: 'challenge',
+      icon: Trophy,
+      titleKey: 'museum.quickStart.challenge.title',
+      descriptionKey: 'museum.quickStart.challenge.description',
+      color: '#f59e0b',
+      action: () => navigate('/game2d')
+    }
+  ]
+
+  return (
+    <section className={cn(
+      "py-16 px-6",
+      theme === 'dark' ? "bg-slate-800/50" : "bg-slate-100/50"
+    )}>
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+          <h2 className={cn(
+            "text-2xl md:text-3xl font-bold mb-3",
+            theme === 'dark' ? "text-white" : "text-slate-900"
+          )}>
+            {t('museum.quickStart.title')}
+          </h2>
+          <p className={cn(
+            "text-base",
+            theme === 'dark' ? "text-slate-400" : "text-slate-600"
+          )}>
+            {t('museum.quickStart.description')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {startModes.map((mode, index) => {
+            const Icon = mode.icon
+            return (
+              <button
+                key={mode.id}
+                onClick={mode.action}
+                className={cn(
+                  "group relative p-6 rounded-xl text-left transition-all duration-300",
+                  "hover:scale-[1.02] hover:shadow-lg",
+                  theme === 'dark'
+                    ? "bg-slate-800 hover:bg-slate-700 border border-slate-700"
+                    : "bg-white hover:bg-white border border-slate-200"
+                )}
+                style={{
+                  animationDelay: `${index * 100}ms`
+                }}
+              >
+                {/* Icon */}
+                <div
+                  className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
+                  style={{ backgroundColor: `${mode.color}20` }}
+                >
+                  <Icon className="w-6 h-6" style={{ color: mode.color }} />
+                </div>
+
+                {/* Title */}
+                <h3 className={cn(
+                  "text-lg font-semibold mb-2",
+                  theme === 'dark' ? "text-white" : "text-slate-900"
+                )}>
+                  {t(mode.titleKey)}
+                </h3>
+
+                {/* Description */}
+                <p className={cn(
+                  "text-sm",
+                  theme === 'dark' ? "text-slate-400" : "text-slate-600"
+                )}>
+                  {t(mode.descriptionKey)}
+                </p>
+
+                {/* Arrow indicator */}
+                <div className={cn(
+                  "absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                )}>
+                  <ChevronRight className="w-5 h-5" style={{ color: mode.color }} />
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Why Polarization Matters Section
+function ApplicationsSection() {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+
+  const applications = [
+    { id: 'sunglasses', icon: Glasses, color: '#22d3ee' },
+    { id: 'lcd', icon: Monitor, color: '#a78bfa' },
+    { id: 'medical', icon: Heart, color: '#f43f5e' },
+    { id: 'ocean', icon: Ship, color: '#3b82f6' },
+    { id: '3d', icon: Clapperboard, color: '#f59e0b' },
+    { id: 'stress', icon: Wrench, color: '#10b981' }
+  ]
+
+  return (
+    <section className={cn(
+      "py-16 px-6",
+      theme === 'dark' ? "bg-slate-900" : "bg-white"
+    )}>
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className={cn(
+            "text-2xl md:text-3xl font-bold mb-3",
+            theme === 'dark' ? "text-white" : "text-slate-900"
+          )}>
+            {t('museum.applications.title')}
+          </h2>
+          <p className={cn(
+            "text-base max-w-xl mx-auto",
+            theme === 'dark' ? "text-slate-400" : "text-slate-600"
+          )}>
+            {t('museum.applications.description')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {applications.map((app) => {
+            const Icon = app.icon
+            return (
+              <div
+                key={app.id}
+                className={cn(
+                  "group p-4 rounded-xl text-center transition-all duration-300 cursor-pointer",
+                  "hover:scale-105",
+                  theme === 'dark'
+                    ? "bg-slate-800/50 hover:bg-slate-800"
+                    : "bg-slate-50 hover:bg-slate-100"
+                )}
+              >
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 transition-transform group-hover:scale-110"
+                  style={{
+                    backgroundColor: `${app.color}15`,
+                    boxShadow: `0 0 20px ${app.color}20`
+                  }}
+                >
+                  <Icon className="w-6 h-6" style={{ color: app.color }} />
+                </div>
+                <h4 className={cn(
+                  "text-sm font-medium mb-1",
+                  theme === 'dark' ? "text-white" : "text-slate-900"
+                )}>
+                  {t(`museum.applications.items.${app.id}.title`)}
+                </h4>
+                <p className={cn(
+                  "text-xs",
+                  theme === 'dark' ? "text-slate-500" : "text-slate-500"
+                )}>
+                  {t(`museum.applications.items.${app.id}.description`)}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Fun Facts Carousel
+function FactsCarousel() {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const [currentFactIndex, setCurrentFactIndex] = useState(0)
+
+  const facts = [
+    { id: 'bees', emoji: '🐝' },
+    { id: 'vikings', emoji: '⛵' },
+    { id: 'mantis', emoji: '🦐' },
+    { id: 'cuttlefish', emoji: '🦑' },
+    { id: 'lcd', emoji: '📱' },
+    { id: 'rainbows', emoji: '🌈' }
+  ]
+
+  const nextFact = useCallback(() => {
+    setCurrentFactIndex((prev) => (prev + 1) % facts.length)
+  }, [facts.length])
+
+  const prevFact = useCallback(() => {
+    setCurrentFactIndex((prev) => (prev - 1 + facts.length) % facts.length)
+  }, [facts.length])
+
+  // Auto-advance carousel
+  useEffect(() => {
+    const interval = setInterval(nextFact, 6000)
+    return () => clearInterval(interval)
+  }, [nextFact])
+
+  const currentFact = facts[currentFactIndex]
+
+  return (
+    <section className={cn(
+      "py-16 px-6 relative overflow-hidden",
+      theme === 'dark'
+        ? "bg-gradient-to-r from-cyan-900/20 via-purple-900/20 to-pink-900/20"
+        : "bg-gradient-to-r from-cyan-50 via-purple-50 to-pink-50"
+    )}>
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <svg className="w-full h-full">
+          <pattern id="facts-pattern" width="60" height="60" patternUnits="userSpaceOnUse">
+            <circle cx="30" cy="30" r="2" fill="currentColor" />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#facts-pattern)" />
+        </svg>
+      </div>
+
+      <div className="max-w-4xl mx-auto relative">
+        <div className="text-center mb-8">
+          <div className={cn(
+            "inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-4",
+            theme === 'dark'
+              ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+              : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+          )}>
+            <Zap className="w-4 h-4" />
+            {t('museum.facts.title')}
+          </div>
+        </div>
+
+        {/* Carousel */}
+        <div className="relative flex items-center justify-center min-h-[140px]">
+          {/* Previous button */}
+          <button
+            onClick={prevFact}
+            className={cn(
+              "absolute left-0 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+              theme === 'dark'
+                ? "bg-slate-800 hover:bg-slate-700 text-white"
+                : "bg-white hover:bg-slate-50 text-slate-900 shadow-lg"
+            )}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* Fact card */}
+          <div className={cn(
+            "max-w-2xl mx-12 p-6 rounded-2xl text-center",
+            theme === 'dark' ? "bg-slate-800/80" : "bg-white/80"
+          )}>
+            <div className="text-4xl mb-4">{currentFact.emoji}</div>
+            <p className={cn(
+              "text-lg",
+              theme === 'dark' ? "text-slate-200" : "text-slate-700"
+            )}>
+              {t(`museum.facts.items.${currentFact.id}`)}
+            </p>
+          </div>
+
+          {/* Next button */}
+          <button
+            onClick={nextFact}
+            className={cn(
+              "absolute right-0 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+              theme === 'dark'
+                ? "bg-slate-800 hover:bg-slate-700 text-white"
+                : "bg-white hover:bg-slate-50 text-slate-900 shadow-lg"
+            )}
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Dots indicator */}
+        <div className="flex justify-center gap-2 mt-6">
+          {facts.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentFactIndex(index)}
+              className={cn(
+                "w-2 h-2 rounded-full transition-all duration-300",
+                index === currentFactIndex
+                  ? theme === 'dark' ? "bg-cyan-400 w-6" : "bg-cyan-500 w-6"
+                  : theme === 'dark' ? "bg-slate-600" : "bg-slate-300"
+              )}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Footer Section
+function MuseumFooter() {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const navigate = useNavigate()
+
+  return (
+    <footer className={cn(
+      "py-12 px-6 border-t",
+      theme === 'dark'
+        ? "bg-slate-900 border-slate-800"
+        : "bg-slate-50 border-slate-200"
+    )}>
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          {/* Brand */}
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                <Eye className="w-4 h-4 text-white" />
+              </div>
+              <span className={cn(
+                "font-bold text-lg",
+                theme === 'dark' ? "text-white" : "text-slate-900"
+              )}>
+                PolarCraft
+              </span>
+            </div>
+            <p className={cn(
+              "text-sm mb-4",
+              theme === 'dark' ? "text-slate-400" : "text-slate-600"
+            )}>
+              {t('museum.footer.tagline')}
+            </p>
+            {/* Polarization visual */}
+            <div className="flex gap-1">
+              {POLARIZATION_COLORS.map((color, i) => (
+                <div
+                  key={i}
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: color, opacity: 0.8 }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Explore links */}
+          <div>
+            <h4 className={cn(
+              "font-semibold mb-4",
+              theme === 'dark' ? "text-white" : "text-slate-900"
+            )}>
+              {t('museum.footer.explore')}
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => navigate('/demos')}
+                  className={cn(
+                    "text-sm hover:underline",
+                    theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  {t('museum.footer.demoGallery')}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/optical-studio')}
+                  className={cn(
+                    "text-sm hover:underline",
+                    theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  {t('museum.footer.opticalStudio')}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/game2d')}
+                  className={cn(
+                    "text-sm hover:underline",
+                    theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  {t('museum.footer.puzzleGame')}
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className={cn(
+              "font-semibold mb-4",
+              theme === 'dark' ? "text-white" : "text-slate-900"
+            )}>
+              {t('museum.footer.resources')}
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href="/course"
+                  className={cn(
+                    "text-sm hover:underline flex items-center gap-1",
+                    theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  <FileText className="w-3 h-3" />
+                  {t('museum.footer.documentation')}
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/openwisdomlab/polarisation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "text-sm hover:underline flex items-center gap-1",
+                    theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  <Github className="w-3 h-3" />
+                  {t('museum.footer.github')}
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Community */}
+          <div>
+            <h4 className={cn(
+              "font-semibold mb-4",
+              theme === 'dark' ? "text-white" : "text-slate-900"
+            )}>
+              {t('museum.footer.community')}
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => navigate('/chronicles')}
+                  className={cn(
+                    "text-sm hover:underline flex items-center gap-1",
+                    theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  <MessageCircle className="w-3 h-3" />
+                  {t('museum.footer.forum')}
+                </button>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/openwisdomlab/polarisation/blob/main/CONTRIBUTING.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "text-sm hover:underline flex items-center gap-1",
+                    theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  {t('museum.footer.contribute')}
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className={cn(
+          "pt-6 border-t flex flex-col md:flex-row justify-between items-center gap-4",
+          theme === 'dark' ? "border-slate-800" : "border-slate-200"
+        )}>
+          <p className={cn(
+            "text-sm",
+            theme === 'dark' ? "text-slate-500" : "text-slate-500"
+          )}>
+            © 2024 {t('museum.footer.copyright')}
+          </p>
+          <div className="flex items-center gap-4">
+            <span className={cn(
+              "text-xs",
+              theme === 'dark' ? "text-slate-600" : "text-slate-400"
+            )}>
+              Made with physics and love
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
 // Main Museum Homepage Component
 export function MuseumHomepage() {
   const navigate = useNavigate()
@@ -832,6 +1355,9 @@ export function MuseumHomepage() {
       {/* Panoramic Hero */}
       <PanoramicHero onExplore={handleExplore} />
 
+      {/* Quick Start Guide */}
+      <QuickStartSection />
+
       {/* Exhibition Halls */}
       <div id="exhibition-halls">
         <ExhibitionHalls onSelectHall={handleSelectHall} />
@@ -840,8 +1366,17 @@ export function MuseumHomepage() {
       {/* Featured Demos */}
       <FeaturedDemos onSelectDemo={handleSelectDemo} />
 
+      {/* Why Polarization Matters */}
+      <ApplicationsSection />
+
+      {/* Fun Facts Carousel */}
+      <FactsCarousel />
+
       {/* Learning Path */}
       <LearningPath />
+
+      {/* Footer */}
+      <MuseumFooter />
     </div>
   )
 }
