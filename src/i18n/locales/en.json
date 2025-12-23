@@ -3651,6 +3651,28 @@
       "contribute": "Contribute",
       "tagline": "Discover the invisible world of polarized light",
       "copyright": "PolarCraft Educational Platform"
+    },
+    "laws": {
+      "title": "Four Laws of Polarization",
+      "subtitle": "Click to explore detailed demonstrations",
+      "hint": "These four laws form the theoretical foundation of polarization optics",
+      "orthogonality": {
+        "title": "Orthogonality",
+        "description": "Light polarized at 90° difference can coexist without interference—they are completely independent"
+      },
+      "malus": {
+        "title": "Malus's Law",
+        "description": "When polarized light passes through an analyzer, the transmitted intensity follows the cos² relationship",
+        "formula": "I = I₀ × cos²θ"
+      },
+      "birefringence": {
+        "title": "Birefringence",
+        "description": "Anisotropic crystals split light into two perpendicularly polarized beams: ordinary ray (o-ray) and extraordinary ray (e-ray)"
+      },
+      "interference": {
+        "title": "Interference",
+        "description": "Same-phase light waves add constructively (bright), opposite-phase waves cancel destructively (dark)"
+      }
     }
   },
   "knowledgeMap": {

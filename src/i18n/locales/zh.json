@@ -3839,6 +3839,28 @@
       "contribute": "参与贡献",
       "tagline": "发现偏振光的隐形世界",
       "copyright": "PolarCraft 教育平台"
+    },
+    "laws": {
+      "title": "偏振四大定律",
+      "subtitle": "点击探索详细演示",
+      "hint": "这四大定律构成了偏振光学的理论基础",
+      "orthogonality": {
+        "title": "正交性",
+        "description": "偏振方向相差90°的光可以共存而不干涉——它们完全独立"
+      },
+      "malus": {
+        "title": "马吕斯定律",
+        "description": "偏振光通过检偏器时，透射光强遵循cos²关系",
+        "formula": "I = I₀ × cos²θ"
+      },
+      "birefringence": {
+        "title": "双折射",
+        "description": "各向异性晶体将光分成两束垂直偏振的光：寻常光（o光）和非寻常光（e光）"
+      },
+      "interference": {
+        "title": "干涉",
+        "description": "同相光波相加增强（明亮），反相光波相消（黑暗）"
+      }
     }
   },
   "knowledgeMap": {
