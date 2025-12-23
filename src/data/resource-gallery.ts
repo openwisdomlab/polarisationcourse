@@ -7,6 +7,10 @@
  * - interference: 干涉/厚度效应（保鲜膜、透明胶的色彩变化）
  * - art: 偏振艺术（文创作品）
  * - daily: 日常物品（眼镜、矿泉水瓶等）
+ * - birefringence: 双折射实验（冰洲石/方解石）
+ * - brewster: 布儒斯特角实验
+ * - scattering: 散射实验（米氏散射、瑞利散射）
+ * - rotation: 旋光性实验
  *
  * 类型:
  * - image: 单张图片
@@ -15,7 +19,7 @@
  */
 
 // ===== Types =====
-export type ResourceCategory = 'stress' | 'interference' | 'art' | 'daily'
+export type ResourceCategory = 'stress' | 'interference' | 'art' | 'daily' | 'birefringence' | 'brewster' | 'scattering' | 'rotation'
 export type ResourceType = 'image' | 'video' | 'sequence'
 export type PolarizationSystem = 'parallel' | 'crossed' | 'front' | 'none'
 
@@ -614,6 +618,286 @@ export const POLARIZATION_SYSTEM_CROSSED: PolarizationResource = {
   },
 }
 
+// ===== 布儒斯特角实验资源 (Brewster's Angle Experiments) =====
+
+export const BREWSTER_APPARATUS: PolarizationResource = {
+  id: 'brewster-apparatus',
+  type: 'image',
+  title: 'Brewster Angle Reflection Apparatus',
+  titleZh: '布儒斯特角反射装置',
+  description: 'Front view of the experimental apparatus for demonstrating Brewster\'s angle polarization',
+  descriptionZh: '演示布儒斯特角偏振的实验装置正视图',
+  category: 'brewster',
+  url: '/images/brewster/反射装置正视图.jpg',
+  thumbnail: '/images/brewster/反射装置正视图.jpg',
+  relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
+  metadata: {
+    polarizationSystem: 'front',
+  },
+}
+
+export const BREWSTER_HORIZONTAL_DARK_SPOT: PolarizationResource = {
+  id: 'brewster-horizontal-dark-spot',
+  type: 'image',
+  title: 'Brewster Angle - Horizontal Polarization Dark Spot',
+  titleZh: '布儒斯特角 - 横向绿色光束暗点现象',
+  description: 'Demonstration of the dark spot phenomenon at Brewster\'s angle with horizontally polarized green laser beam',
+  descriptionZh: '使用横向偏振绿色激光演示布儒斯特角下的暗点现象',
+  category: 'brewster',
+  url: '/images/brewster/横向绿色光束暗点现象.jpg',
+  thumbnail: '/images/brewster/横向绿色光束暗点现象.jpg',
+  relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
+  metadata: {
+    polarizationSystem: 'parallel',
+  },
+}
+
+export const BREWSTER_VERTICAL_DARK_SPOT: PolarizationResource = {
+  id: 'brewster-vertical-dark-spot',
+  type: 'image',
+  title: 'Brewster Angle - Vertical Polarization Dark Spot',
+  titleZh: '布儒斯特角 - 纵向绿色光束暗点现象',
+  description: 'Demonstration of the dark spot phenomenon at Brewster\'s angle with vertically polarized green laser beam',
+  descriptionZh: '使用纵向偏振绿色激光演示布儒斯特角下的暗点现象',
+  category: 'brewster',
+  url: '/images/brewster/纵向绿色光束暗点现象.jpg',
+  thumbnail: '/images/brewster/纵向绿色光束暗点现象.jpg',
+  relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
+  metadata: {
+    polarizationSystem: 'crossed',
+  },
+}
+
+// ===== 冰洲石双折射实验资源 (Calcite Birefringence Experiments) =====
+
+export const CALCITE_DOUBLE_REFRACTION: PolarizationResource = {
+  id: 'calcite-double-refraction',
+  type: 'image',
+  title: 'Calcite Double Refraction',
+  titleZh: '冰洲石双折射成像',
+  description: 'Classic demonstration of double refraction in Iceland spar (calcite) crystal',
+  descriptionZh: '冰洲石（方解石）晶体双折射成像的经典演示',
+  category: 'birefringence',
+  url: '/images/calcite/双折射成像.jpg',
+  thumbnail: '/images/calcite/双折射成像.jpg',
+  relatedModules: ['birefringence', 'polarization-intro', 'waveplate'],
+  metadata: {
+    material: 'calcite',
+    polarizationSystem: 'none',
+  },
+}
+
+export const CALCITE_POLARIZER_SEQUENCE: PolarizationResource = {
+  id: 'calcite-polarizer-sequence',
+  type: 'sequence',
+  title: 'Calcite through Rotating Polarizer',
+  titleZh: '偏振片不同角度观察冰洲石',
+  description: 'Sequence showing calcite double image as viewed through polarizers at different angles (0°, 70°, 90°, 135°)',
+  descriptionZh: '通过不同角度偏振片观察冰洲石双像的变化序列（0°、70°、90°、135°）',
+  category: 'birefringence',
+  url: '/images/calcite/0度偏振片看冰洲石的像.jpg',
+  thumbnail: '/images/calcite/0度偏振片看冰洲石的像.jpg',
+  relatedModules: ['birefringence', 'malus', 'polarization-intro'],
+  metadata: {
+    material: 'calcite',
+    polarizationSystem: 'crossed',
+  },
+  frames: [
+    { time: 0, label: '0° Polarizer', labelZh: '0度偏振片', url: '/images/calcite/0度偏振片看冰洲石的像.jpg' },
+    { time: 1, label: '70° Polarizer', labelZh: '70度偏振片', url: '/images/calcite/70度偏振片看冰洲石的像.jpg' },
+    { time: 2, label: '90° Polarizer', labelZh: '90度偏振片', url: '/images/calcite/90度偏振片看冰洲石的像.jpg' },
+    { time: 3, label: '135° Polarizer', labelZh: '135度偏振片', url: '/images/calcite/135度偏振片看冰洲石的像.jpg' },
+  ],
+}
+
+export const CALCITE_STACKED: PolarizationResource = {
+  id: 'calcite-stacked',
+  type: 'image',
+  title: 'Stacked Calcite Crystals (4 Images)',
+  titleZh: '堆叠冰洲石形成四个像',
+  description: 'Two calcite crystals stacked in specific orientation create four separate images',
+  descriptionZh: '两块冰洲石以特定方向堆叠，产生四个分离的像',
+  category: 'birefringence',
+  url: '/images/calcite/堆叠两个冰洲石特定情况成四个像.jpg',
+  thumbnail: '/images/calcite/堆叠两个冰洲石特定情况成四个像.jpg',
+  relatedModules: ['birefringence', 'waveplate'],
+  metadata: {
+    material: 'calcite',
+    polarizationSystem: 'none',
+  },
+}
+
+export const CALCITE_LASER_RED_BEAMS: PolarizationResource = {
+  id: 'calcite-laser-red-beams',
+  type: 'image',
+  title: 'Calcite with Green Laser - Red Beam Phenomenon',
+  titleZh: '冰洲石绿色激光产生红色光束',
+  description: 'Green laser passing through calcite produces red-colored split beams due to frequency effects',
+  descriptionZh: '绿色激光穿过冰洲石后产生红色分裂光束现象',
+  category: 'birefringence',
+  url: '/images/calcite/绿色激光入射所成红色四条光束像.jpg',
+  thumbnail: '/images/calcite/绿色激光入射所成红色四条光束像.jpg',
+  relatedModules: ['birefringence', 'waveplate'],
+  metadata: {
+    material: 'calcite',
+    polarizationSystem: 'none',
+  },
+}
+
+export const CALCITE_LASER_RED_BEAMS_2: PolarizationResource = {
+  id: 'calcite-laser-red-beams-2',
+  type: 'image',
+  title: 'Calcite with Green Laser - Red Beam (Alternate View)',
+  titleZh: '冰洲石绿色激光红色光束（另一视角）',
+  description: 'Alternative view of green laser through calcite producing red beam patterns',
+  descriptionZh: '绿色激光穿过冰洲石产生红色光束的另一视角',
+  category: 'birefringence',
+  url: '/images/calcite/绿色激光入射所成红色四条光束像（1）.jpg',
+  thumbnail: '/images/calcite/绿色激光入射所成红色四条光束像（1）.jpg',
+  relatedModules: ['birefringence', 'waveplate'],
+  metadata: {
+    material: 'calcite',
+    polarizationSystem: 'none',
+  },
+}
+
+// ===== 旋光性实验资源 (Optical Rotation Experiments) =====
+
+export const OPTICAL_ROTATION_SETUP: PolarizationResource = {
+  id: 'optical-rotation-setup',
+  type: 'image',
+  title: 'Optical Rotation Experimental Setup',
+  titleZh: '旋光性实验装置示意图',
+  description: 'Experimental apparatus for demonstrating optical rotation with room lights on',
+  descriptionZh: '旋光性实验装置示意图（室内照明下）',
+  category: 'rotation',
+  url: '/images/optical-rotation/室内照明、未开启光源时的装置示意图.jpg',
+  thumbnail: '/images/optical-rotation/室内照明、未开启光源时的装置示意图.jpg',
+  relatedModules: ['optical-rotation', 'chromatic', 'polarization-intro'],
+  metadata: {
+    polarizationSystem: 'front',
+  },
+}
+
+export const OPTICAL_ROTATION_WHITE_LIGHT: PolarizationResource = {
+  id: 'optical-rotation-white-light',
+  type: 'image',
+  title: 'Optical Rotation with White Light',
+  titleZh: '白光光源旋光实验',
+  description: 'Optical rotation experiment using white light source through polarizer',
+  descriptionZh: '使用白光光源并通过偏振片的旋光实验',
+  category: 'rotation',
+  url: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.jpg',
+  thumbnail: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.jpg',
+  relatedModules: ['optical-rotation', 'chromatic'],
+  metadata: {
+    polarizationSystem: 'crossed',
+  },
+  isChiral: true,
+}
+
+export const OPTICAL_ROTATION_LASER_FRONT: PolarizationResource = {
+  id: 'optical-rotation-laser-front',
+  type: 'image',
+  title: 'Optical Rotation with Lasers - Front View',
+  titleZh: '激光旋光实验（正视图）',
+  description: 'Front view of optical rotation using green and red lasers through polarizer',
+  descriptionZh: '使用绿色和红色激光通过偏振片的旋光实验正视图',
+  category: 'rotation',
+  url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.jpg',
+  thumbnail: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.jpg',
+  relatedModules: ['optical-rotation', 'chromatic'],
+  metadata: {
+    polarizationSystem: 'crossed',
+  },
+  isChiral: true,
+}
+
+export const OPTICAL_ROTATION_LASER_TOP: PolarizationResource = {
+  id: 'optical-rotation-laser-top',
+  type: 'image',
+  title: 'Optical Rotation with Lasers - Top View',
+  titleZh: '激光旋光实验（俯视图）',
+  description: 'Top view of optical rotation using green and red lasers through polarizer',
+  descriptionZh: '使用绿色和红色激光通过偏振片的旋光实验俯视图',
+  category: 'rotation',
+  url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的俯视图.jpg',
+  thumbnail: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的俯视图.jpg',
+  relatedModules: ['optical-rotation', 'chromatic'],
+  metadata: {
+    polarizationSystem: 'crossed',
+  },
+  isChiral: true,
+}
+
+export const OPTICAL_ROTATION_NO_POLARIZER: PolarizationResource = {
+  id: 'optical-rotation-no-polarizer',
+  type: 'image',
+  title: 'Optical Rotation Setup - Without Polarizer',
+  titleZh: '旋光实验（相机前无偏振片）',
+  description: 'Top view of optical rotation experiment without polarizer in front of camera',
+  descriptionZh: '旋光实验俯视图（相机前无偏振片）',
+  category: 'rotation',
+  url: '/images/optical-rotation/旋光实验相机前无偏振片顶角俯视图.jpg',
+  thumbnail: '/images/optical-rotation/旋光实验相机前无偏振片顶角俯视图.jpg',
+  relatedModules: ['optical-rotation', 'chromatic'],
+  metadata: {
+    polarizationSystem: 'none',
+  },
+  isChiral: true,
+}
+
+export const OPTICAL_ROTATION_WITH_POLARIZER: PolarizationResource = {
+  id: 'optical-rotation-with-polarizer',
+  type: 'image',
+  title: 'Optical Rotation Setup - With Polarizer',
+  titleZh: '旋光实验（相机前有偏振片）',
+  description: 'Top view of optical rotation experiment with polarizer in front of camera',
+  descriptionZh: '旋光实验俯视图（相机前有偏振片）',
+  category: 'rotation',
+  url: '/images/optical-rotation/旋光实验相机前有偏振片顶角俯视图.jpg',
+  thumbnail: '/images/optical-rotation/旋光实验相机前有偏振片顶角俯视图.jpg',
+  relatedModules: ['optical-rotation', 'chromatic'],
+  metadata: {
+    polarizationSystem: 'crossed',
+  },
+  isChiral: true,
+}
+
+// ===== 散射实验资源 (Scattering Experiments) =====
+
+export const SCATTERING_MIE_CONCENTRATION: PolarizationResource = {
+  id: 'scattering-mie-concentration',
+  type: 'image',
+  title: 'Mie Scattering - Concentration Comparison',
+  titleZh: '米氏散射 - 不同浓度对比',
+  description: 'Transmitted light through 80nm microsphere suspensions at different concentrations (decreasing from left to right)',
+  descriptionZh: '80nm微球悬浊液在不同浓度下的透射光实物图（由左至右浓度递减）',
+  category: 'scattering',
+  url: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.jpg',
+  thumbnail: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.jpg',
+  relatedModules: ['mie-scattering', 'rayleigh', 'monte-carlo-scattering'],
+  metadata: {
+    polarizationSystem: 'none',
+  },
+}
+
+export const SCATTERING_PARTICLE_SIZE: PolarizationResource = {
+  id: 'scattering-particle-size',
+  type: 'image',
+  title: 'Scattering by Different Particle Sizes',
+  titleZh: '不同粒径散射效果对比',
+  description: 'Comparison of scattering effects by particles of different sizes: 80nm, 300nm, and 3μm microspheres',
+  descriptionZh: '不同粒径微球（80nm、300nm、3μm）的散射效果对比',
+  category: 'scattering',
+  url: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.jpg',
+  thumbnail: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.jpg',
+  relatedModules: ['mie-scattering', 'rayleigh', 'monte-carlo-scattering'],
+  metadata: {
+    polarizationSystem: 'none',
+  },
+}
+
 // ===== All Resources Export =====
 export const POLARIZATION_RESOURCES: PolarizationResource[] = [
   // Stress Analysis
@@ -639,6 +923,26 @@ export const POLARIZATION_RESOURCES: PolarizationResource[] = [
   // System References
   POLARIZATION_SYSTEM_PARALLEL,
   POLARIZATION_SYSTEM_CROSSED,
+  // Brewster's Angle Experiments
+  BREWSTER_APPARATUS,
+  BREWSTER_HORIZONTAL_DARK_SPOT,
+  BREWSTER_VERTICAL_DARK_SPOT,
+  // Calcite Birefringence Experiments
+  CALCITE_DOUBLE_REFRACTION,
+  CALCITE_POLARIZER_SEQUENCE,
+  CALCITE_STACKED,
+  CALCITE_LASER_RED_BEAMS,
+  CALCITE_LASER_RED_BEAMS_2,
+  // Optical Rotation Experiments
+  OPTICAL_ROTATION_SETUP,
+  OPTICAL_ROTATION_WHITE_LIGHT,
+  OPTICAL_ROTATION_LASER_FRONT,
+  OPTICAL_ROTATION_LASER_TOP,
+  OPTICAL_ROTATION_NO_POLARIZER,
+  OPTICAL_ROTATION_WITH_POLARIZER,
+  // Scattering Experiments
+  SCATTERING_MIE_CONCENTRATION,
+  SCATTERING_PARTICLE_SIZE,
 ]
 
 // ===== Helper Functions =====
@@ -701,6 +1005,10 @@ export const RESOURCE_STATS = {
     interference: getResourcesByCategory('interference').length,
     art: getResourcesByCategory('art').length,
     daily: getResourcesByCategory('daily').length,
+    birefringence: getResourcesByCategory('birefringence').length,
+    brewster: getResourcesByCategory('brewster').length,
+    scattering: getResourcesByCategory('scattering').length,
+    rotation: getResourcesByCategory('rotation').length,
   },
   byType: {
     image: getResourcesByType('image').length,

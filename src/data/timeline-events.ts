@@ -447,11 +447,20 @@ Little did he know that this transparent stone from the frozen north would one d
     // 双折射现象的现代实验演示
     experimentalResources: {
       resourceIds: [
-        'tempered-glass',          // 钢化玻璃应力图案展示双折射
-        'plastic-wrap',            // 保鲜膜双折射
-        'plastic-wrap-thickness',  // 不同厚度的双折射色彩
+        'calcite-double-refraction',  // 冰洲石双折射成像 (新增)
+        'calcite-polarizer-sequence', // 偏振片不同角度观察冰洲石 (新增)
+        'calcite-stacked',            // 堆叠冰洲石四个像 (新增)
+        'calcite-laser-red-beams',    // 绿色激光红色光束 (新增)
+        'tempered-glass',             // 钢化玻璃应力图案展示双折射
+        'plastic-wrap',               // 保鲜膜双折射
+        'plastic-wrap-thickness',     // 不同厚度的双折射色彩
       ],
       featuredImages: [
+        {
+          url: '/images/calcite/双折射成像.jpg',
+          caption: 'Classic calcite double refraction - Iceland spar crystal creating two images',
+          captionZh: '经典冰洲石双折射——冰洲石晶体产生双像'
+        },
         {
           url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
           caption: 'Stress-induced birefringence in tempered glass - modern manifestation of Bartholin\'s discovery',
@@ -1022,7 +1031,29 @@ Brewster went on to invent the kaleidoscope and contribute to photography, but h
       en: 'Why do fishermen often wear polarized sunglasses? How does Brewster\'s angle help explain this?',
       zh: '为什么渔民经常戴偏振太阳镜？布儒斯特角如何帮助解释这一点？'
     },
-    illustrationType: 'reflection'
+    illustrationType: 'reflection',
+    // 布儒斯特角实验演示
+    experimentalResources: {
+      resourceIds: [
+        'brewster-apparatus',           // 布儒斯特角反射装置 (新增)
+        'brewster-horizontal-dark-spot', // 横向偏振暗点现象 (新增)
+        'brewster-vertical-dark-spot',   // 纵向偏振暗点现象 (新增)
+        'glasses',                       // 偏振太阳镜效果
+      ],
+      featuredImages: [
+        {
+          url: '/images/brewster/反射装置正视图.jpg',
+          caption: 'Brewster angle reflection apparatus - demonstrating complete polarization at specific angle',
+          captionZh: '布儒斯特角反射装置——演示特定角度下的完全偏振'
+        },
+        {
+          url: '/images/brewster/横向绿色光束暗点现象.jpg',
+          caption: 'Dark spot phenomenon with horizontally polarized green laser at Brewster angle',
+          captionZh: '横向偏振绿色激光在布儒斯特角下的暗点现象'
+        }
+      ],
+      relatedModules: ['brewster', 'fresnel', 'polarization-intro']
+    }
   },
   {
     year: 1815,
@@ -1121,9 +1152,25 @@ Today, measuring optical rotation remains a standard technique in chemistry and 
     // 旋光性的现代实验演示
     experimentalResources: {
       resourceIds: [
-        'sugar-bag',               // 白砂糖的旋光性
+        'optical-rotation-setup',        // 旋光实验装置 (新增)
+        'optical-rotation-white-light',  // 白光旋光实验 (新增)
+        'optical-rotation-laser-front',  // 激光旋光正视图 (新增)
+        'optical-rotation-laser-top',    // 激光旋光俯视图 (新增)
+        'optical-rotation-with-polarizer', // 有偏振片 (新增)
+        'optical-rotation-no-polarizer', // 无偏振片对比 (新增)
+        'sugar-bag',                     // 白砂糖的旋光性
       ],
       featuredImages: [
+        {
+          url: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.jpg',
+          caption: 'Optical rotation experiment with white light through polarizer',
+          captionZh: '白光通过偏振片的旋光实验'
+        },
+        {
+          url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.jpg',
+          caption: 'Optical rotation with green and red lasers - different wavelengths rotate by different amounts',
+          captionZh: '绿色和红色激光的旋光——不同波长旋转量不同'
+        },
         {
           url: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.jpg',
           caption: 'Sugar demonstrating optical rotation - the chiral molecules rotate the polarization plane',
@@ -1135,7 +1182,7 @@ Today, measuring optical rotation remains a standard technique in chemistry and 
         title: 'Optical rotation by sugar - Biot\'s discovery demonstrated',
         titleZh: '白砂糖的旋光性——毕奥发现的演示'
       },
-      relatedModules: ['optical-rotation', 'daily-polarization']
+      relatedModules: ['optical-rotation', 'chromatic', 'daily-polarization']
     }
   },
   {
@@ -1813,6 +1860,22 @@ The Tyndall effect, as it came to be known, remains a fundamental phenomenon in 
     thinkingQuestion: {
       en: 'Why does adding milk to water make it appear blue when viewed from the side but orange/yellow when viewed through it? How does this relate to sunsets?',
       zh: '为什么在水中加入牛奶后，从侧面看呈蓝色，但透过它看却呈橙黄色？这与日落有什么关系？'
+    },
+    illustrationType: 'rayleigh',
+    // 廷德尔效应实验演示
+    experimentalResources: {
+      resourceIds: [
+        'scattering-mie-concentration',  // 不同浓度微球散射 (新增)
+        'scattering-particle-size',      // 不同粒径散射对比 (新增)
+      ],
+      featuredImages: [
+        {
+          url: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.jpg',
+          caption: 'Transmitted light through colloidal suspensions at different concentrations',
+          captionZh: '不同浓度胶体悬浊液的透射光对比'
+        }
+      ],
+      relatedModules: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering']
     }
   },
   {
@@ -1883,7 +1946,22 @@ Rayleigh's work showed that polarization isn't just a laboratory curiosity — i
       en: 'If you look at the sky through polarized sunglasses, what changes do you notice? Why is the effect strongest at 90° from the sun?',
       zh: '如果你通过偏振太阳镜看天空，你注意到什么变化？为什么在距太阳90°的方向效果最强？'
     },
-    illustrationType: 'rayleigh'
+    illustrationType: 'rayleigh',
+    // 瑞利散射实验演示
+    experimentalResources: {
+      resourceIds: [
+        'scattering-mie-concentration',  // 不同浓度微球散射 (新增)
+        'scattering-particle-size',      // 不同粒径散射对比 (新增)
+      ],
+      featuredImages: [
+        {
+          url: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.jpg',
+          caption: 'Scattering comparison: 80nm vs 300nm vs 3μm particles - demonstrating Rayleigh to Mie transition',
+          captionZh: '散射对比：80nm vs 300nm vs 3μm 颗粒——展示从瑞利散射到米氏散射的过渡'
+        }
+      ],
+      relatedModules: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering']
+    }
   },
   {
     year: 1875,

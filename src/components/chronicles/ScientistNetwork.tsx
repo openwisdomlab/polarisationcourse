@@ -15,6 +15,7 @@ import {
   type ScientistRelation,
   type RelationType
 } from '@/data/scientist-network'
+import { NodeIcon, getPrimaryField, getEraFromYear } from '@/components/icons/NodeIcons'
 
 type ViewMode = 'network' | 'list'
 
@@ -262,7 +263,15 @@ export function ScientistNetwork({ theme, onNavigateToEvent, externalSelectedSci
                 >
                   {/* Scientist header */}
                   <div className="flex items-start gap-3 mb-3">
-                    <span className="text-3xl">{scientist.emoji}</span>
+                    <div className="flex-shrink-0">
+                      <NodeIcon
+                        type="scientist"
+                        field={getPrimaryField(scientist.fields)}
+                        era={getEraFromYear(scientist.birthYear)}
+                        size={40}
+                        isSelected={selectedScientist === scientist.id}
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <h4 className={cn(
                         'font-bold truncate',
@@ -514,14 +523,23 @@ export function ScientistNetwork({ theme, onNavigateToEvent, externalSelectedSci
                     filter={isSelected ? 'url(#glow)' : undefined}
                   />
 
-                  {/* Emoji */}
-                  <text
-                    y="0.8"
-                    textAnchor="middle"
-                    className="text-[3px]"
+                  {/* Field-based icon using foreignObject */}
+                  <foreignObject
+                    x="-1.5"
+                    y="-1.5"
+                    width="3"
+                    height="3"
+                    style={{ overflow: 'visible' }}
                   >
-                    {scientist.emoji}
-                  </text>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                      <NodeIcon
+                        type="scientist"
+                        field={getPrimaryField(scientist.fields)}
+                        size={3}
+                        isSelected={isSelected}
+                      />
+                    </div>
+                  </foreignObject>
 
                   {/* Name label */}
                   <text
@@ -558,7 +576,15 @@ export function ScientistNetwork({ theme, onNavigateToEvent, externalSelectedSci
               {/* Scientist header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedScientistData.emoji}</span>
+                  <div className="flex-shrink-0">
+                    <NodeIcon
+                      type="scientist"
+                      field={getPrimaryField(selectedScientistData.fields)}
+                      era={getEraFromYear(selectedScientistData.birthYear)}
+                      size={40}
+                      isSelected={true}
+                    />
+                  </div>
                   <div>
                     <h4 className={cn(
                       'font-bold',
@@ -662,10 +688,18 @@ export function ScientistNetwork({ theme, onNavigateToEvent, externalSelectedSci
                         <div className="flex items-center gap-2">
                           <span>{style.icon}</span>
                           <span className={cn(
-                            'font-medium',
+                            'font-medium flex items-center gap-1',
                             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                           )}>
-                            {isFrom ? '→' : '←'} {otherScientist?.emoji} {isZh ? otherScientist?.nameZh : otherScientist?.nameEn}
+                            {isFrom ? '→' : '←'}
+                            {otherScientist && (
+                              <NodeIcon
+                                type="scientist"
+                                field={getPrimaryField(otherScientist.fields)}
+                                size={18}
+                              />
+                            )}
+                            {isZh ? otherScientist?.nameZh : otherScientist?.nameEn}
                           </span>
                         </div>
                         <p className={cn(

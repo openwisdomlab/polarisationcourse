@@ -22,6 +22,7 @@ import {
   type ConceptConnection,
   type ConnectionType
 } from '@/data/concept-network'
+import { NodeIcon, type ConceptStatus as NodeConceptStatus } from '@/components/icons/NodeIcons'
 
 type ViewMode = 'network' | 'list'
 
@@ -252,7 +253,14 @@ export function ConceptNetwork({ theme, onNavigateToEvent, onFilterByYears }: Co
                 >
                   {/* Concept header */}
                   <div className="flex items-start gap-3 mb-3">
-                    <span className="text-3xl">{concept.icon || '💡'}</span>
+                    <div className="flex-shrink-0">
+                      <NodeIcon
+                        type="concept"
+                        status={concept.status as NodeConceptStatus}
+                        size={40}
+                        isSelected={selectedConcept === concept.id}
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <h4 className={cn(
                         'font-bold truncate',
@@ -480,14 +488,23 @@ export function ConceptNetwork({ theme, onNavigateToEvent, onFilterByYears }: Co
                       filter={isSelected ? 'url(#concept-glow)' : undefined}
                     />
 
-                    {/* Icon */}
-                    <text
-                      y="0.8"
-                      textAnchor="middle"
-                      className="text-[2.5px]"
+                    {/* Status-based icon using foreignObject */}
+                    <foreignObject
+                      x="-1.5"
+                      y="-1.5"
+                      width="3"
+                      height="3"
+                      style={{ overflow: 'visible' }}
                     >
-                      {concept.icon || '💡'}
-                    </text>
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                        <NodeIcon
+                          type="concept"
+                          status={concept.status as NodeConceptStatus}
+                          size={3}
+                          isSelected={isSelected}
+                        />
+                      </div>
+                    </foreignObject>
 
                     {/* Label */}
                     <text
@@ -740,7 +757,11 @@ export function ConceptNetwork({ theme, onNavigateToEvent, onFilterByYears }: Co
             return (
               <>
                 <div className="flex items-center gap-2 mb-1">
-                  <span>{concept.icon}</span>
+                  <NodeIcon
+                    type="concept"
+                    status={concept.status as NodeConceptStatus}
+                    size={20}
+                  />
                   <span className="font-medium">
                     {isZh ? concept.labelZh : concept.labelEn}
                   </span>
