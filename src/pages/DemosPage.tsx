@@ -41,8 +41,8 @@ import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/Interacti
 import { ElectromagneticWaveDemo } from '@/components/demos/basics/ElectromagneticWaveDemo'
 import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/PolarizationTypesUnifiedDemo'
 
-// Museum Homepage
-import { MuseumHomepage } from '@/components/museum'
+// Museum Components
+import { GalleryHero } from '@/components/museum'
 
 // Icon components
 function PhysicsIcon() {
@@ -2070,10 +2070,8 @@ export function DemosPage() {
   const effectiveDifficultyLevel = currentDemo?.unit === 0 ? undefined : difficultyLevel
   const demoInfo = activeDemo ? getDemoInfo(t, effectiveDifficultyLevel)[activeDemo] : null
 
-  // Show museum homepage if no demo is selected
-  if (showMuseumHomepage) {
-    return <MuseumHomepage />
-  }
+  // When no demo is selected, show gallery hero in the main content area
+  // instead of full-screen museum homepage - keeps left navigation visible
 
   return (
     <div
@@ -2098,21 +2096,23 @@ export function DemosPage() {
         showSettings={false}
         rightContent={
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Back to Museum Homepage button */}
-            <button
-              onClick={handleShowMuseumHomepage}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200',
-                'text-sm font-medium',
-                theme === 'dark'
-                  ? 'text-cyan-400 hover:bg-cyan-400/15 border border-cyan-400/30 hover:border-cyan-400/50'
-                  : 'text-cyan-600 hover:bg-cyan-100 border border-cyan-500/30 hover:border-cyan-500/50'
-              )}
-              title={t('museum.backToGallery', '返回演示馆')}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {!isCompact && <span>{t('museum.backToGallery', '返回演示馆')}</span>}
-            </button>
+            {/* Back to Gallery button - only show when viewing a demo */}
+            {currentDemo && !showMuseumHomepage && (
+              <button
+                onClick={handleShowMuseumHomepage}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200',
+                  'text-sm font-medium',
+                  theme === 'dark'
+                    ? 'text-cyan-400 hover:bg-cyan-400/15 border border-cyan-400/30 hover:border-cyan-400/50'
+                    : 'text-cyan-600 hover:bg-cyan-100 border border-cyan-500/30 hover:border-cyan-500/50'
+                )}
+                title={t('museum.backToGallery', '返回演示馆')}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {!isCompact && <span>{t('museum.backToGallery', '返回演示馆')}</span>}
+              </button>
+            )}
             {/* Mobile menu button */}
             {isCompact && (
               <button
@@ -2410,6 +2410,17 @@ export function DemosPage() {
           "flex-1",
           isCompact ? "ml-0 p-3" : "ml-64 p-6"
         )}>
+          {/* Show Gallery Hero when no demo is selected, otherwise show demo content */}
+          {showMuseumHomepage || !currentDemo ? (
+            <div className="max-w-[1400px] mx-auto">
+              <GalleryHero
+                onSelectDemo={handleDemoChange}
+                onSelectUnit={(unit) => setExpandedUnit(unit)}
+                isCompact={isCompact}
+              />
+            </div>
+          ) : (
+          <>
           {/* Sticky Difficulty Selector Bar - Only show for Units 1-5, not for Unit 0 (Optical Basics) */}
           {currentDemo?.unit !== 0 && (
             <div className={cn(
@@ -2993,6 +3004,8 @@ export function DemosPage() {
               </div>
             )}
           </div>
+          </>
+          )}
         </main>
       </div>
     </div>
