@@ -1235,6 +1235,90 @@ The revolution he sparked continues to this day. Every polarizing sunglasses len
     }
   },
   {
+    year: 1822,
+    titleEn: 'Fresnel\'s Circular Polarization Theory',
+    titleZh: '菲涅尔圆偏振理论',
+    descriptionEn: 'Fresnel explains optical rotation by proposing that linearly polarized light entering an optically active medium splits into left- and right-circular components traveling at different speeds.',
+    descriptionZh: '菲涅尔通过提出线偏振光进入旋光介质后分解为左旋和右旋圆偏振分量且两者传播速度不同，解释了旋光性。',
+    scientistEn: 'Augustin-Jean Fresnel',
+    scientistZh: '奥古斯丁-让·菲涅尔',
+    category: 'theory',
+    importance: 2,
+    track: 'polarization',
+    details: {
+      en: [
+        'Linearly polarized light is the superposition of left- and right-circular polarized components',
+        'In optically active media (like quartz), these two components travel at different speeds',
+        'The speed difference creates a phase shift, rotating the plane of linear polarization',
+        'Rotation angle θ ∝ path length × (n_L - n_R) where n_L and n_R are refractive indices for left and right circular light',
+        'Unified understanding of optical activity in both crystals and chiral solutions',
+        'This decomposition is now fundamental to understanding chiral optics'
+      ],
+      zh: [
+        '线偏振光是左旋和右旋圆偏振分量的叠加',
+        '在旋光介质（如石英）中，这两个分量以不同速度传播',
+        '速度差导致相位差，使线偏振面旋转',
+        '旋转角θ ∝ 路径长度 × (n_L - n_R)，其中n_L和n_R是左旋和右旋光的折射率',
+        '统一理解了晶体和手性溶液中的旋光性',
+        '这种分解现在是理解手性光学的基础'
+      ]
+    },
+    story: {
+      en: `In 1822, Augustin Fresnel tackled one of the most puzzling optical phenomena of his time: why did certain crystals and solutions rotate the plane of polarized light?
+
+Arago had discovered the effect in quartz in 1811. Biot had shown that sugar solutions did the same. But why? What was happening to the light?
+
+Fresnel's insight was breathtaking in its elegance. He proposed that linearly polarized light could be mathematically decomposed into two circularly polarized components — one rotating clockwise (right-circular), the other counter-clockwise (left-circular). In ordinary materials, these two components travel at identical speeds and recombine unchanged.
+
+But in optically active materials — quartz crystals, sugar solutions, turpentine — something special happens. The two circular components travel at slightly different speeds. When they recombine after passing through the material, they form linearly polarized light again, but the plane of polarization has rotated.
+
+The rotation angle depends on the difference in speeds (refractive indices) and the path length through the material. Fresnel had explained optical rotation through the geometry of circular polarization!
+
+This theoretical framework unified the phenomena observed by Arago and Biot. It also laid the groundwork for understanding molecular chirality — the "handedness" of molecules that Pasteur would explore decades later.
+
+Fresnel's circular polarization decomposition remains one of the most powerful conceptual tools in optical physics, connecting polarization, symmetry, and molecular structure.`,
+      zh: `1822年，奥古斯丁·菲涅尔解决了他那个时代最令人困惑的光学现象之一：为什么某些晶体和溶液会旋转偏振光的振动面？
+
+阿拉戈于1811年在石英中发现了这种效应。毕奥证明糖溶液也有同样的效果。但为什么呢？光发生了什么？
+
+菲涅尔的洞见以其优雅令人叹为观止。他提出，线偏振光可以在数学上分解为两个圆偏振分量——一个顺时针旋转（右旋圆偏振），另一个逆时针旋转（左旋圆偏振）。在普通材料中，这两个分量以相同速度传播，重新组合后保持不变。
+
+但在旋光材料——石英晶体、糖溶液、松节油——中，发生了特殊的事情。两个圆偏振分量以略微不同的速度传播。当它们穿过材料后重新组合时，再次形成线偏振光，但偏振面已经旋转了。
+
+旋转角度取决于速度（折射率）的差异和通过材料的路径长度。菲涅尔通过圆偏振的几何学解释了旋光性！
+
+这个理论框架统一了阿拉戈和毕奥观察到的现象。它也为理解分子手性——巴斯德几十年后将探索的分子"偏手性"——奠定了基础。
+
+菲涅尔的圆偏振分解仍然是光学物理中最强大的概念工具之一，将偏振、对称性和分子结构联系在一起。`
+    },
+    scientistBio: {
+      birthYear: 1788,
+      deathYear: 1827,
+      nationality: 'French',
+      portraitEmoji: '🔄',
+      bioEn: 'Augustin-Jean Fresnel revolutionized optics with his wave theory of light. His explanation of optical rotation using circular polarization components demonstrated the power of mathematical physics to reveal hidden symmetries in nature.',
+      bioZh: '奥古斯丁-让·菲涅尔以其光的波动理论彻底改变了光学。他用圆偏振分量解释旋光性，展示了数学物理学揭示自然界隐藏对称性的力量。'
+    },
+    scene: {
+      location: 'Paris, France',
+      season: 'Spring',
+      mood: 'mathematical elegance'
+    },
+    references: [
+      { title: 'Fresnel, A. (1822). Mémoire sur la double réfraction que les rayons lumineux éprouvent en traversant les aiguilles de cristal de roche' }
+    ],
+    linkTo: {
+      year: 1811,
+      trackTarget: 'polarization',
+      descriptionEn: 'Fresnel explained the optical rotation phenomenon Arago had discovered in quartz',
+      descriptionZh: '菲涅尔解释了阿拉戈在石英中发现的旋光现象'
+    },
+    thinkingQuestion: {
+      en: 'How can breaking linearly polarized light into two circular components explain rotation? What happens to the superposition when one component travels faster?',
+      zh: '将线偏振光分解为两个圆偏振分量如何解释旋光？当一个分量传播更快时，叠加会发生什么？'
+    }
+  },
+  {
     year: 1828,
     titleEn: 'Nicol Prism',
     titleZh: '尼科尔棱镜',
@@ -1645,6 +1729,91 @@ S₀给出总强度。S₁描述水平与垂直的倾向。S₂捕捉对角线�
       zh: '斯托克斯为什么用四个参数，而描述偏振（除强度外）只需要三个独立量？是什么约束将它们联系在一起？'
     },
     illustrationType: 'stokes'
+  },
+  {
+    year: 1870,
+    titleEn: 'Tyndall Effect',
+    titleZh: '廷德尔效应',
+    descriptionEn: 'John Tyndall discovers that light passing through a colloidal suspension scatters short wavelengths more strongly, with the scattered light being polarized.',
+    descriptionZh: '约翰·廷德尔发现光穿过胶体悬浮液时，短波长散射更强烈，且散射光具有偏振特性。',
+    scientistEn: 'John Tyndall',
+    scientistZh: '约翰·廷德尔',
+    category: 'experiment',
+    importance: 2,
+    track: 'optics',
+    details: {
+      en: [
+        'Light scattering by particles comparable to or smaller than light wavelength',
+        'Blue light scatters more strongly than red light in colloids',
+        'Scattered light is partially polarized perpendicular to the incident beam',
+        'Observed in smoke, fog, milk, and dilute particle suspensions',
+        'Direct experimental precursor to Rayleigh\'s theoretical explanation',
+        'Used today to detect particles in air quality monitoring and laser optics'
+      ],
+      zh: [
+        '光被与光波长相当或更小的颗粒散射',
+        '蓝光在胶体中的散射比红光更强烈',
+        '散射光部分偏振，偏振方向垂直于入射光束',
+        '在烟雾、雾气、牛奶和稀释的颗粒悬浮液中观察到',
+        '瑞利理论解释的直接实验先驱',
+        '今天用于空气质量监测和激光光学中的颗粒检测'
+      ]
+    },
+    story: {
+      en: `In 1869-1870, at the Royal Institution in London, John Tyndall — the brilliant Irish physicist who would later become one of the era's great science communicators — was experimenting with light and particles.
+
+Tyndall shone a beam of white light through various solutions and suspensions. What he observed was beautiful and systematic: when tiny particles were present, the beam became visible from the side, and it was distinctly blue!
+
+Using sensitive instruments, Tyndall discovered that this scattered light was polarized. By rotating a Nicol prism, he could dramatically reduce or enhance the visibility of the scattered beam. The polarization was maximum at 90° to the original beam direction.
+
+"The blue light is polarized," Tyndall wrote with excitement. "The vibrations are all in one plane."
+
+Tyndall called this phenomenon "the blue of the sky brought down into the laboratory." He correctly intuited that the same physics governing his laboratory experiments explained why the sky is blue during the day and red at sunset.
+
+What Tyndall observed experimentally, Lord Rayleigh would explain mathematically just a year later. Rayleigh showed that the intensity of scattered light varies as the inverse fourth power of wavelength — blue light (short wavelength) scatters about 10 times more strongly than red light (long wavelength).
+
+The Tyndall effect, as it came to be known, remains a fundamental phenomenon in optics. From detecting air pollution to studying cosmic dust, from analyzing milk homogeneity to guiding laser beams through optical fibers — Tyndall's discovery continues to illuminate our understanding of light-matter interactions.`,
+      zh: `1869-1870年，在伦敦皇家研究所，约翰·廷德尔——这位杰出的爱尔兰物理学家后来成为那个时代最伟大的科学传播者之一——正在实验光与颗粒的相互作用。
+
+廷德尔让一束白光穿过各种溶液和悬浮液。他观察到的现象既美丽又系统：当微小颗粒存在时，光束从侧面变得可见，而且明显呈蓝色！
+
+使用灵敏的仪器，廷德尔发现这种散射光是偏振的。通过旋转尼科尔棱镜，他可以显著减少或增强散射光束的可见度。偏振在与原始光束方向成90°时达到最大。
+
+"蓝光是偏振的，"廷德尔兴奋地写道。"振动都在一个平面上。"
+
+廷德尔称这一现象为"被带进实验室的天空的蓝色"。他正确地直觉到，控制他实验室实验的物理学原理解释了为什么天空在白天是蓝色的，而在日落时是红色的。
+
+廷德尔通过实验观察到的现象，瑞利勋爵仅一年后就用数学解释了。瑞利证明散射光的强度与波长的四次方成反比——蓝光（短波长）的散射比红光（长波长）强大约10倍。
+
+廷德尔效应，正如人们后来称呼的那样，仍然是光学中的基本现象。从检测空气污染到研究宇宙尘埃，从分析牛奶均质性到引导激光束通过光纤——廷德尔的发现继续照亮我们对光-物质相互作用的理解。`
+    },
+    scientistBio: {
+      birthYear: 1820,
+      deathYear: 1893,
+      nationality: 'Irish',
+      portraitEmoji: '☁️',
+      bioEn: 'John Tyndall was an Irish physicist and prominent science communicator. Besides the Tyndall effect, he demonstrated the greenhouse effect of atmospheric gases, explained why the sky is blue, and pioneered the study of radiant heat. He was known for his dramatic public lectures at the Royal Institution.',
+      bioZh: '约翰·廷德尔是爱尔兰物理学家和杰出的科学传播者。除了廷德尔效应外，他还证明了大气气体的温室效应，解释了为什么天空是蓝色的，并开创了辐射热的研究。他以在皇家研究所的戏剧性公开讲座而闻名。'
+    },
+    scene: {
+      location: 'Royal Institution, London',
+      season: 'Winter',
+      mood: 'experimental discovery'
+    },
+    references: [
+      { title: 'Tyndall, J. (1869). On the blue colour of the sky, the polarization of sky-light, and on the polarization of light by cloudy matter generally. Philosophical Magazine' },
+      { title: 'Tyndall, J. (1870). On the action of rays of high refrangibility upon gaseous matter' }
+    ],
+    linkTo: {
+      year: 1871,
+      trackTarget: 'polarization',
+      descriptionEn: 'Tyndall\'s experimental observations were theoretically explained by Lord Rayleigh the following year',
+      descriptionZh: '廷德尔的实验观察在次年被瑞利勋爵从理论上解释'
+    },
+    thinkingQuestion: {
+      en: 'Why does adding milk to water make it appear blue when viewed from the side but orange/yellow when viewed through it? How does this relate to sunsets?',
+      zh: '为什么在水中加入牛奶后，从侧面看呈蓝色，但透过它看却呈橙黄色？这与日落有什么关系？'
+    }
   },
   {
     year: 1871,
@@ -2119,6 +2288,92 @@ Einstein's insight opened the door to quantum optics. A century later, entangled
       zh: '光同时表现为波（有偏振）和粒子（光子）。怎么可能同时是两者？'
     },
     illustrationType: 'photoelectric'
+  },
+  {
+    year: 1908,
+    titleEn: 'Mie Scattering Theory',
+    titleZh: '米氏散射理论',
+    descriptionEn: 'Gustav Mie develops a complete solution to Maxwell\'s equations for light scattering by spherical particles of any size, extending beyond the Rayleigh limit.',
+    descriptionZh: '古斯塔夫·米通过求解麦克斯韦方程组，建立了任意尺寸球形颗粒散射光的完整理论，超越了瑞利散射的适用范围。',
+    scientistEn: 'Gustav Mie',
+    scientistZh: '古斯塔夫·米',
+    category: 'theory',
+    importance: 2,
+    track: 'optics',
+    details: {
+      en: [
+        'Complete analytical solution for electromagnetic scattering by spherical particles',
+        'Extends Rayleigh scattering to particles comparable to or larger than wavelength',
+        'Explains white appearance of clouds (large water droplets) vs blue sky (small molecules)',
+        'Predicts complex angular patterns of scattered light intensity and polarization',
+        'Mie scattering is wavelength-independent when particles >> wavelength (hence white clouds)',
+        'Critical for atmospheric optics, radar meteorology, and remote sensing',
+        'Used in cancer diagnostics, paint formulation, and astronomical observations'
+      ],
+      zh: [
+        '球形颗粒电磁散射的完整解析解',
+        '将瑞利散射扩展到与波长相当或更大的颗粒',
+        '解释了云的白色外观（大水滴）与蓝天（小分子）的区别',
+        '预测散射光强度和偏振的复杂角度分布',
+        '当颗粒远大于波长时，米氏散射与波长无关（因此云是白色的）',
+        '对大气光学、雷达气象学和遥感至关重要',
+        '用于癌症诊断、涂料配方和天文观测'
+      ]
+    },
+    story: {
+      en: `In 1908, Gustav Mie — a German physicist at the University of Greifswald — tackled a problem that had puzzled scientists since Rayleigh's work three decades earlier: what happens when particles are not small compared to the wavelength of light?
+
+Rayleigh's theory worked beautifully for molecules in the atmosphere, explaining the blue sky. But clouds are made of water droplets far larger than light wavelength, yet they appear white, not blue. Why?
+
+Mie approached the problem with mathematical rigor. He solved Maxwell's equations exactly for a plane wave striking a homogeneous sphere of arbitrary size. The solution was a formidable series of spherical harmonics — pages of complex mathematics — but the physics it revealed was profound.
+
+When particles are much smaller than wavelength (Rayleigh regime), scattering goes as 1/λ⁴, strongly favoring blue light. But as particles grow larger than the wavelength, the scattering efficiency plateaus and becomes roughly equal for all visible wavelengths. Large particles scatter all colors equally — hence white clouds!
+
+Mie's theory also revealed beautiful angular patterns in scattered light. The glory effect seen around aircraft shadows on clouds, the corona around the sun or moon, the complex colors in opal gemstones — all are Mie scattering phenomena.
+
+Perhaps most importantly for polarization, Mie showed how the degree of polarization depends on particle size and viewing angle. Large particles produce more complex polarization patterns than Rayleigh's simple perpendicular polarization.
+
+Today, Mie theory is essential for climate science (understanding aerosol effects), medical diagnostics (detecting cancer cells by their scattering), and even cosmetics (designing the perfect shimmer in makeup). The humble water droplet, analyzed through Mie's mathematics, unlocked secrets of light-matter interaction at all scales.`,
+      zh: `1908年，古斯塔夫·米——格赖夫斯瓦尔德大学的德国物理学家——解决了一个自瑞利工作三十年来一直困扰科学家的问题：当颗粒与光波长相比不再是微小时会发生什么？
+
+瑞利的理论对大气中的分子非常有效，解释了蓝天。但云是由远大于光波长的水滴组成的，却呈现白色而非蓝色。为什么？
+
+米以严格的数学方法处理这个问题。他精确求解了平面波照射任意大小均匀球体的麦克斯韦方程组。解是一个复杂的球谐函数级数——数页复杂的数学——但它揭示的物理学是深刻的。
+
+当颗粒远小于波长（瑞利区域）时，散射强度与1/λ⁴成正比，强烈偏向蓝光。但当颗粒变得比波长更大时，散射效率趋于平坦，对所有可见光波长大致相等。大颗粒均匀散射所有颜色——因此云是白色的！
+
+米的理论还揭示了散射光的美丽角度分布。在云层上飞机阴影周围看到的宝光效应、太阳或月亮周围的日冕、蛋白石宝石中的复杂颜色——都是米氏散射现象。
+
+对于偏振来说最重要的是，米展示了偏振度如何取决于颗粒尺寸和观察角度。大颗粒产生比瑞利简单的垂直偏振更复杂的偏振图案。
+
+今天，米氏理论对气候科学（理解气溶胶效应）、医学诊断（通过散射检测癌细胞）甚至化妆品（设计化妆品中完美的闪光效果）都至关重要。这个普通的水滴，通过米的数学分析，解锁了所有尺度上光-物质相互作用的秘密。`
+    },
+    scientistBio: {
+      birthYear: 1868,
+      deathYear: 1957,
+      nationality: 'German',
+      portraitEmoji: '☁️',
+      bioEn: 'Gustav Adolf Feodor Wilhelm Ludwig Mie was a German physicist best known for his solution of the electromagnetic scattering problem for spheres. He also made contributions to electrodynamics and the theory of matter. The Mie scattering solution remains one of the most widely used results in optical physics.',
+      bioZh: '古斯塔夫·阿道夫·费奥多尔·威廉·路德维希·米是德国物理学家，以其球形颗粒电磁散射问题的求解而闻名。他还对电动力学和物质理论做出了贡献。米氏散射解至今仍是光学物理中使用最广泛的结果之一。'
+    },
+    scene: {
+      location: 'University of Greifswald, Germany',
+      season: 'Spring',
+      mood: 'mathematical triumph'
+    },
+    references: [
+      { title: 'Mie, G. (1908). Beiträge zur Optik trüber Medien, speziell kolloidaler Metallösungen. Annalen der Physik 330(3):377-445', url: 'https://doi.org/10.1002/andp.19083300302' }
+    ],
+    linkTo: {
+      year: 1871,
+      trackTarget: 'polarization',
+      descriptionEn: 'Mie theory extends Rayleigh scattering to particles of any size',
+      descriptionZh: '米氏理论将瑞利散射扩展到任意尺寸的颗粒'
+    },
+    thinkingQuestion: {
+      en: 'Clouds are white because water droplets are large (Mie scattering). The sky is blue because air molecules are small (Rayleigh scattering). What happens at sunrise and sunset?',
+      zh: '云是白色的因为水滴很大（米氏散射）。天空是蓝色的因为空气分子很小（瑞利散射）。日出和日落时会发生什么？'
+    }
   },
   {
     year: 1929,

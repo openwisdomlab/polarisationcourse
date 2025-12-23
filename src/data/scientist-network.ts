@@ -421,6 +421,52 @@ export const SCIENTISTS: Scientist[] = [
     },
     eventYears: [1947]
   },
+  // === 新增散射科学家 ===
+  {
+    id: 'tyndall',
+    nameEn: 'John Tyndall',
+    nameZh: '约翰·廷德尔',
+    birthYear: 1820,
+    deathYear: 1893,
+    nationality: 'Irish',
+    emoji: '☁️',
+    fields: ['optics'],
+    keyContributions: {
+      en: ['Tyndall effect (1870)', 'Light scattering experiments', 'Greenhouse effect demonstration'],
+      zh: ['廷德尔效应 (1870)', '光散射实验', '温室效应演示']
+    },
+    eventYears: [1870]
+  },
+  {
+    id: 'rayleigh',
+    nameEn: 'Lord Rayleigh',
+    nameZh: '瑞利勋爵',
+    birthYear: 1842,
+    deathYear: 1919,
+    nationality: 'English',
+    emoji: '🌤️',
+    fields: ['optics', 'polarization'],
+    keyContributions: {
+      en: ['Rayleigh scattering theory (1871)', 'Explained sky blue color and polarization', 'Nobel Prize 1904'],
+      zh: ['瑞利散射理论 (1871)', '解释天空蓝色和偏振', '1904年诺贝尔奖']
+    },
+    eventYears: [1871]
+  },
+  {
+    id: 'mie',
+    nameEn: 'Gustav Mie',
+    nameZh: '古斯塔夫·米',
+    birthYear: 1868,
+    deathYear: 1957,
+    nationality: 'German',
+    emoji: '☁️',
+    fields: ['optics'],
+    keyContributions: {
+      en: ['Mie scattering theory (1908)', 'Exact solution for spherical particle scattering'],
+      zh: ['米氏散射理论 (1908)', '球形颗粒散射的精确解']
+    },
+    eventYears: [1908]
+  },
 ]
 
 // 科学家关系数据
@@ -686,6 +732,52 @@ export const SCIENTIST_RELATIONS: ScientistRelation[] = [
     descriptionEn: 'Gabor\'s holography is based on wave interference principles',
     descriptionZh: '盖博的全息术基于波干涉原理',
     year: 1947
+  },
+  // === 散射科学家关系 ===
+  // 瑞利解释廷德尔的实验观察
+  {
+    from: 'tyndall',
+    to: 'rayleigh',
+    type: 'influenced',
+    descriptionEn: 'Tyndall\'s experimental observations inspired Rayleigh\'s theoretical explanation of scattering',
+    descriptionZh: '廷德尔的实验观察启发了瑞利的散射理论解释',
+    year: 1871
+  },
+  // 米发展瑞利的理论
+  {
+    from: 'rayleigh',
+    to: 'mie',
+    type: 'built-upon',
+    descriptionEn: 'Mie extended Rayleigh scattering to particles of any size',
+    descriptionZh: '米将瑞利散射扩展到任意尺寸的颗粒',
+    year: 1908
+  },
+  // 廷德尔与法拉第在皇家研究所的联系
+  {
+    from: 'faraday',
+    to: 'tyndall',
+    type: 'collaborator',
+    descriptionEn: 'Tyndall succeeded Faraday at the Royal Institution and continued his legacy',
+    descriptionZh: '廷德尔在皇家研究所接替法拉第并延续其遗产',
+    year: 1867
+  },
+  // 瑞利与麦克斯韦的联系
+  {
+    from: 'maxwell',
+    to: 'rayleigh',
+    type: 'influenced',
+    descriptionEn: 'Rayleigh applied Maxwell\'s electromagnetic theory to explain light scattering',
+    descriptionZh: '瑞利应用麦克斯韦电磁理论解释光散射',
+    year: 1871
+  },
+  // 米与麦克斯韦的联系
+  {
+    from: 'maxwell',
+    to: 'mie',
+    type: 'built-upon',
+    descriptionEn: 'Mie derived his scattering solution directly from Maxwell\'s equations',
+    descriptionZh: '米直接从麦克斯韦方程组推导出他的散射解',
+    year: 1908
   },
 ]
 
