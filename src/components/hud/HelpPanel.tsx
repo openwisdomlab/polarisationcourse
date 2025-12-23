@@ -39,6 +39,8 @@ export function HelpPanel() {
               <li><strong className="text-gray-200">Right Click</strong> - {t('game.helpPanel.rightClick')}</li>
               <li><strong className="text-gray-200">R</strong> - {t('game.helpPanel.rKey')}</li>
               <li><strong className="text-gray-200">V</strong> - {t('game.helpPanel.vKey')}</li>
+              <li><strong className="text-gray-200">H</strong> - {t('game.helpPanel.hKey')}</li>
+              <li><strong className="text-gray-200">Esc</strong> - {t('game.helpPanel.escKey')}</li>
               <li><strong className="text-gray-200">1-7</strong> - {t('game.helpPanel.numberKeys')}</li>
             </ul>
           </section>
