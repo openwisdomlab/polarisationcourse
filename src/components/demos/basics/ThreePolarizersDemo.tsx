@@ -3,9 +3,11 @@
  * 展示经典的"三偏振片悖论"：在两个正交偏振片之间插入45°偏振片可以让光通过
  * 参考图片：偏振片（起偏器/检偏器）和马吕斯定律的应用
  */
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { Volume2, VolumeX } from 'lucide-react'
+import { useHapticAudio } from '@/hooks/useHapticAudio'
 import {
   ControlPanel,
   SliderControl,
@@ -179,6 +181,34 @@ export function ThreePolarizersDemo() {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
+  // Haptic audio for precision feedback
+  const {
+    checkAngle,
+    initAudio,
+    isAudioEnabled,
+    toggleAudio,
+  } = useHapticAudio({
+    snapAngles: [0, 30, 45, 60, 90, 120, 135, 150, 180],
+    angleThreshold: 2.5,
+    volume: 0.12,
+    pitchVariation: true,
+  })
+
+  // Initialize audio on first interaction
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      initAudio()
+      document.removeEventListener('click', handleFirstInteraction)
+      document.removeEventListener('keydown', handleFirstInteraction)
+    }
+    document.addEventListener('click', handleFirstInteraction)
+    document.addEventListener('keydown', handleFirstInteraction)
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction)
+      document.removeEventListener('keydown', handleFirstInteraction)
+    }
+  }, [initAudio])
+
   // 状态
   const [polarizer1Angle, setPolarizer1Angle] = useState(0) // 起偏器
   const [polarizer2Angle, setPolarizer2Angle] = useState<number | null>(45) // 中间偏振片（可选）
@@ -187,6 +217,12 @@ export function ThreePolarizersDemo() {
   const [showPolarization, setShowPolarization] = useState(true)
   const [showFormulas, setShowFormulas] = useState(true)
   const [selectedPreset, setSelectedPreset] = useState<number | null>(1)
+
+  // Handle angle changes with haptic feedback
+  const handleAngleChange = useCallback((setter: (v: number) => void, value: number) => {
+    setter(value)
+    checkAngle(value)
+  }, [checkAngle])
 
   // 计算光强
   const calculations = useMemo(() => {
@@ -527,7 +563,7 @@ export function ThreePolarizersDemo() {
               step={5}
               unit="°"
               onChange={(v) => {
-                setPolarizer1Angle(v)
+                handleAngleChange(setPolarizer1Angle, v)
                 setSelectedPreset(null)
               }}
               color="cyan"
@@ -555,7 +591,7 @@ export function ThreePolarizersDemo() {
                   step={5}
                   unit="°"
                   onChange={(v) => {
-                    setPolarizer2Angle(v)
+                    handleAngleChange((val) => setPolarizer2Angle(val), v)
                     setSelectedPreset(null)
                   }}
                   color="orange"
@@ -571,7 +607,7 @@ export function ThreePolarizersDemo() {
               step={5}
               unit="°"
               onChange={(v) => {
-                setPolarizer3Angle(v)
+                handleAngleChange(setPolarizer3Angle, v)
                 setSelectedPreset(null)
               }}
               color="green"
@@ -589,6 +625,26 @@ export function ThreePolarizersDemo() {
               checked={showFormulas}
               onChange={setShowFormulas}
             />
+
+            {/* Audio Feedback Toggle */}
+            <div className="pt-2 border-t border-slate-700/50 mt-2">
+              <button
+                onClick={toggleAudio}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full transition-colors ${
+                  isAudioEnabled
+                    ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                    : 'bg-slate-700/50 text-gray-400 hover:bg-slate-700'
+                }`}
+                title={isZh ? '切换精密角度音效反馈' : 'Toggle precision angle audio feedback'}
+              >
+                {isAudioEnabled ? (
+                  <Volume2 className="w-4 h-4" />
+                ) : (
+                  <VolumeX className="w-4 h-4" />
+                )}
+                <span>{isZh ? '角度咔哒声' : 'Angle Clicks'}</span>
+              </button>
+            </div>
           </ControlPanel>
 
           {showFormulas && (

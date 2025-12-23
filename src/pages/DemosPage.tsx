@@ -40,7 +40,10 @@ import { PolarizationTypesDemo } from '@/components/demos/basics/PolarizationTyp
 import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/InteractiveOpticalBenchDemo'
 import { ElectromagneticSpectrumDemo } from '@/components/demos/basics/ElectromagneticSpectrumDemo'
 import { ThreePolarizersDemo } from '@/components/demos/basics/ThreePolarizersDemo'
-import { MalusLawGraphDemo } from '@/components/demos/basics/MalusLawGraphDemo'
+// Unified demos (merged versions)
+// Note: MalusLawGraphDemo removed - functionality integrated into unit1/MalusLawDemo
+import { ElectromagneticWaveDemo } from '@/components/demos/basics/ElectromagneticWaveDemo'
+import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/PolarizationTypesUnifiedDemo'
 
 // Icon components
 function PhysicsIcon() {
@@ -601,31 +604,7 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
     diy: getDiy(t, 'basics.demos.threePolarizers'),
     visualType: '2D',
   },
-  'malus-graph': {
-    questions: getQuestions(t, 'basics.demos.malusGraph', difficultyLevel),
-    lifeScene: getLifeScene(t, 'basics.demos.malusGraph', difficultyLevel),
-    physics: {
-      principle: t('basics.demos.malusGraph.physics.principle'),
-      formula: t('basics.demos.malusGraph.physics.formula'),
-      details: [
-        t('basics.demos.malusGraph.physics.details.0'),
-        t('basics.demos.malusGraph.physics.details.1'),
-        t('basics.demos.malusGraph.physics.details.2'),
-      ],
-    },
-    experiment: {
-      title: t('basics.demos.malusGraph.title'),
-      example: t('basics.demos.malusGraph.description'),
-      details: [],
-    },
-    frontier: {
-      title: t('basics.demos.malusGraph.title'),
-      example: t('basics.demos.malusGraph.description'),
-      details: [],
-    },
-    diy: getDiy(t, 'basics.demos.malusGraph'),
-    visualType: '2D',
-  },
+  // Note: 'malus-graph' removed - functionality integrated into unit1/MalusLawDemo
   'polarization-state': {
     questions: getQuestions(t, 'demos.polarizationState', difficultyLevel),
     lifeScene: getLifeScene(t, 'demos.polarizationState', difficultyLevel),
@@ -1344,14 +1323,15 @@ function DifficultySelector({
 
 const DEMOS: DemoItem[] = [
   // Unit 0 - Optical Basics
+  // Unified: 电磁波 + 电磁波谱 (merged into one comprehensive demo)
   {
-    id: 'light-wave',
-    titleKey: 'basics.demos.lightWave.title',
+    id: 'em-wave',
+    titleKey: 'basics.demos.emWave.title',
     unit: 0,
-    component: LightWaveDemo,
-    descriptionKey: 'basics.demos.lightWave.description',
+    component: ElectromagneticWaveDemo,
+    descriptionKey: 'basics.demos.emWave.description',
     visualType: '2D',
-    difficulty: 'foundation', // 基础概念,波动现象可视化
+    difficulty: 'foundation', // 电磁波可视化 + 波谱（统一演示）
   },
   {
     id: 'polarization-intro',
@@ -1362,14 +1342,15 @@ const DEMOS: DemoItem[] = [
     visualType: '2D',
     difficulty: 'foundation', // 初步认识偏振,生活场景引入
   },
+  // Unified: 偏振类型 + 三偏振片悖论 (merged into one comprehensive demo)
   {
-    id: 'polarization-types',
-    titleKey: 'basics.demos.polarizationTypes.title',
+    id: 'polarization-types-unified',
+    titleKey: 'basics.demos.polarizationTypesUnified.title',
     unit: 0,
-    component: PolarizationTypesDemo,
-    descriptionKey: 'basics.demos.polarizationTypes.description',
+    component: PolarizationTypesUnifiedDemo,
+    descriptionKey: 'basics.demos.polarizationTypesUnified.description',
     visualType: '2D',
-    difficulty: 'application', // 三种偏振态的定量区分
+    difficulty: 'application', // 偏振类型 + 三偏振片悖论（统一演示）
   },
   {
     id: 'optical-bench',
@@ -1380,33 +1361,13 @@ const DEMOS: DemoItem[] = [
     visualType: '2D',
     difficulty: 'application', // 交互式实验设计
   },
-  {
-    id: 'em-spectrum',
-    titleKey: 'basics.demos.emSpectrum.title',
-    unit: 0,
-    component: ElectromagneticSpectrumDemo,
-    descriptionKey: 'basics.demos.emSpectrum.description',
-    visualType: '2D',
-    difficulty: 'foundation', // 电磁波谱基础认识
-  },
-  {
-    id: 'three-polarizers',
-    titleKey: 'basics.demos.threePolarizers.title',
-    unit: 0,
-    component: ThreePolarizersDemo,
-    descriptionKey: 'basics.demos.threePolarizers.description',
-    visualType: '2D',
-    difficulty: 'application', // 三偏振片悖论,深入理解马吕斯定律
-  },
-  {
-    id: 'malus-graph',
-    titleKey: 'basics.demos.malusGraph.title',
-    unit: 0,
-    component: MalusLawGraphDemo,
-    descriptionKey: 'basics.demos.malusGraph.description',
-    visualType: '2D',
-    difficulty: 'application', // cos²(θ)曲线可视化
-  },
+  // Legacy demos kept for backward compatibility (can be accessed directly)
+  // Note: These are now included in unified demos above
+  // - light-wave → merged into em-wave
+  // - em-spectrum → merged into em-wave
+  // - polarization-types → merged into polarization-types-unified
+  // - three-polarizers → merged into polarization-types-unified
+  // - malus-graph → functionality exists in unit1/MalusLawDemo
   // Unit 1
   {
     id: 'polarization-state',
