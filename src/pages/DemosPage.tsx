@@ -2048,19 +2048,46 @@ export function DemosPage() {
   }
 
   const toggleCard = (card: string) => {
-    const newState = !expandedCards[card]
-    setExpandedCards(prev => ({ ...prev, [card]: newState }))
+    // Physics, experiment, frontier are linked - they expand/collapse together
+    const linkedCards = ['physics', 'experiment', 'frontier']
+    const isLinkedCard = linkedCards.includes(card)
 
-    // Update URL with tab parameter for shareable links
-    const newParams = new URLSearchParams(searchParams)
-    if (newState) {
-      newParams.set('tab', card)
+    if (isLinkedCard) {
+      // Toggle all three linked cards together
+      const newState = !expandedCards[card]
+      setExpandedCards(prev => ({
+        ...prev,
+        physics: newState,
+        experiment: newState,
+        frontier: newState,
+      }))
+
+      // Update URL with tab parameter for shareable links
+      const newParams = new URLSearchParams(searchParams)
+      if (newState) {
+        newParams.set('tab', card)
+      } else {
+        newParams.delete('tab')
+      }
+      const paramString = newParams.toString()
+      const demoPath = activeDemo ? `/demos/${activeDemo}` : '/demos'
+      navigate(`${demoPath}${paramString ? `?${paramString}` : ''}`, { replace: true })
     } else {
-      newParams.delete('tab')
+      // Other cards (lifeScene, diy) toggle independently
+      const newState = !expandedCards[card]
+      setExpandedCards(prev => ({ ...prev, [card]: newState }))
+
+      // Update URL with tab parameter for shareable links
+      const newParams = new URLSearchParams(searchParams)
+      if (newState) {
+        newParams.set('tab', card)
+      } else {
+        newParams.delete('tab')
+      }
+      const paramString = newParams.toString()
+      const demoPath = activeDemo ? `/demos/${activeDemo}` : '/demos'
+      navigate(`${demoPath}${paramString ? `?${paramString}` : ''}`, { replace: true })
     }
-    const paramString = newParams.toString()
-    const demoPath = activeDemo ? `/demos/${activeDemo}` : '/demos'
-    navigate(`${demoPath}${paramString ? `?${paramString}` : ''}`, { replace: true })
   }
 
   const isCompact = isMobile || isTablet
@@ -2719,7 +2746,8 @@ export function DemosPage() {
                   </CollapsibleCard>
                 )}
 
-                {/* Physics, Experiment, Frontier cards in a grid */}
+                {/* Physics, Experiment, Frontier cards in a grid - hide for Unit 0 (Optical Basics) */}
+                {currentDemo?.unit !== 0 && (
                 <div className={cn(
                   "grid gap-3",
                   isCompact ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3 gap-4"
@@ -2895,6 +2923,7 @@ export function DemosPage() {
                   </div>
                 </CollapsibleCard>
                 </div>
+                )}
 
                 {/* DIY card - full width, at bottom */}
                 {demoInfo.diy && (
