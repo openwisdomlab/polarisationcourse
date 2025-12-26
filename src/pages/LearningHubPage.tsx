@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PersistentHeader } from '@/components/shared'
@@ -19,28 +19,20 @@ import {
   BookOpen,
   Gamepad2,
   FlaskConical,
-  Lightbulb,
   History,
   Calculator,
   Microscope,
   ChevronRight,
   Sparkles,
-  Target,
-  Zap,
   Star,
-  Lock,
-  Unlock,
   Play,
   Eye,
-  Map,
-  Users,
   Award,
   TrendingUp
 } from 'lucide-react'
 
 // Learning path types
 type LearningPath = 'explorer' | 'builder' | 'researcher'
-type DiscoveryLevel = 'novice' | 'apprentice' | 'journeyman' | 'master'
 
 interface LearningModule {
   id: string
@@ -213,9 +205,8 @@ const DISCOVERY_MILESTONES = [
 ]
 
 export default function LearningHubPage() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { theme } = useTheme()
-  const navigate = useNavigate()
   const isDark = theme === 'dark'
   const isZh = i18n.language === 'zh'
 
