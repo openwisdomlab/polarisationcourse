@@ -3,7 +3,15 @@
  * 核心/扩展/样品 三套配置
  */
 
-import type { BOMItem, BOMConfig } from '../types'
+import type { BOMItem, BOMConfig, BOMCategory } from '../types'
+import type { BadgeColor } from '@/components/shared/SearchFilter'
+
+// Type for category labels
+interface CategoryLabel {
+  label: string
+  labelZh: string
+  color: BadgeColor
+}
 
 // ===== Core BOM - Essential Components =====
 const CORE_BOM_ITEMS: BOMItem[] = [
@@ -680,7 +688,7 @@ export function exportBOMToCSV(config: BOMConfig, language: 'en' | 'zh' = 'en'):
 }
 
 // Category labels
-export const BOM_CATEGORIES = {
+export const BOM_CATEGORIES: Record<BOMCategory, CategoryLabel> = {
   core: { label: 'Core', labelZh: '核心', color: 'cyan' },
   extension: { label: 'Extension', labelZh: '扩展', color: 'purple' },
   sample: { label: 'Sample', labelZh: '样品', color: 'green' },

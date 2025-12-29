@@ -183,10 +183,13 @@ export function FilterBar({ children, className }: FilterBarProps) {
   )
 }
 
+// Badge color type - exported for use in data definitions
+export type BadgeColor = 'gray' | 'green' | 'blue' | 'yellow' | 'orange' | 'red' | 'purple' | 'cyan' | 'pink'
+
 // Reusable badge component
 interface BadgeProps {
   children: React.ReactNode
-  color?: 'gray' | 'green' | 'blue' | 'yellow' | 'orange' | 'red' | 'purple' | 'cyan' | 'pink'
+  color?: BadgeColor
   size?: 'sm' | 'md'
   className?: string
 }

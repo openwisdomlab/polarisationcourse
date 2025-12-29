@@ -1,3 +1,4 @@
+// Core pages - exported for potential non-lazy imports
 export { GamePage } from './GamePage'
 export { Game2DPage } from './Game2DPage'
 export { HomePage } from './HomePage'
@@ -9,10 +10,6 @@ export { GameHubPage } from './GameHubPage'
 export { EscapeRoomPage } from './EscapeRoomPage'
 export { ChroniclesPage } from './ChroniclesPage'
 export { LabPage } from './LabPage'
-export { DevicesPage } from './DevicesPage'
-export { BenchPage } from './BenchPage'
-export { OpticalDesignStudioPage } from './OpticalDesignStudioPage'
-export { OpticalDesignStudioPageV2 } from './OpticalDesignStudioPageV2'
 export { OpticalDesignPage } from './OpticalDesignPage'
 export { ApplicationsPage } from './ApplicationsPage'
 export { ExperimentsPage } from './ExperimentsPage'
@@ -24,3 +21,7 @@ export { MuellerCalculatorPage } from './MuellerCalculatorPage'
 export { DetectiveGamePage } from './DetectiveGamePage'
 export { CoursePage } from './CoursePage'
 export { default as LearningHubPage } from './LearningHubPage'
+
+// Legacy pages - deprecated, kept for reference
+// DevicesPage, BenchPage, OpticalDesignStudioPage, OpticalDesignStudioPageV2
+// These have been consolidated into OpticalDesignPage

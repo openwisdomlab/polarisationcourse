@@ -12,6 +12,7 @@ import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
+import { SEO } from '@/components/shared/SEO'
 
 // Demo components
 import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
@@ -2101,14 +2102,21 @@ export function DemosPage() {
   // instead of full-screen museum homepage - keeps left navigation visible
 
   return (
-    <div
-      className={cn(
-        'min-h-screen',
-        theme === 'dark' ? 'bg-[#0a0a0f] text-gray-200' : 'bg-[#f8fafc] text-gray-800'
-      )}
-    >
-      {/* Navigation Header with Persistent Logo */}
-      <PersistentHeader
+    <>
+      <SEO
+        title="Interactive Physics Demos - PolarCraft"
+        titleZh="交互式物理演示 - PolarCraft"
+        description="Explore 20+ interactive polarization physics demos covering Malus's Law, birefringence, Fresnel equations, and more."
+        descriptionZh="探索20多个交互式偏振物理演示，涵盖马吕斯定律、双折射、菲涅尔方程等。"
+      />
+      <div
+        className={cn(
+          'min-h-screen',
+          theme === 'dark' ? 'bg-[#0a0a0f] text-gray-200' : 'bg-[#f8fafc] text-gray-800'
+        )}
+      >
+        {/* Navigation Header with Persistent Logo */}
+        <PersistentHeader
         moduleKey="formulaLab"
         moduleNameKey="home.formulaLab.title"
         variant="glass"
@@ -3036,7 +3044,10 @@ export function DemosPage() {
           </>
           )}
         </main>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
+
+export default DemosPage

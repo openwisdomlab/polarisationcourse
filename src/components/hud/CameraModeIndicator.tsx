@@ -28,6 +28,7 @@ export function CameraModeIndicator() {
   return (
     <button
       onClick={cycleMode}
+      aria-label={`${t('game.cameraMode')}: ${t(MODE_KEYS[cameraMode])}. ${t('game.pressCToChange')}`}
       title="Press C to cycle camera modes"
       className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm
                  bg-black/70 border border-cyan-400/30 text-gray-300

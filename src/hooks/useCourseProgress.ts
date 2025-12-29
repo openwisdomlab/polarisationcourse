@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { COURSE_DEMOS } from '@/data/course-event-mapping'
+import { logger } from '@/lib/logger'
 
 // Foundation-level demo IDs for achievement tracking
 const FOUNDATION_DEMO_IDS = COURSE_DEMOS
@@ -77,7 +78,7 @@ const loadProgress = (): CourseProgress => {
       return { ...DEFAULT_PROGRESS, ...parsed }
     }
   } catch (e) {
-    console.warn('Failed to load course progress:', e)
+    logger.warn('Failed to load course progress:', e)
   }
   return DEFAULT_PROGRESS
 }
@@ -87,7 +88,7 @@ const saveProgress = (progress: CourseProgress) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
   } catch (e) {
-    console.warn('Failed to save course progress:', e)
+    logger.warn('Failed to save course progress:', e)
   }
 }
 

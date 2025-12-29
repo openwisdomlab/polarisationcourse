@@ -8,6 +8,7 @@ import {
   createDefaultBlockState
 } from '@/core/types'
 import { World, TUTORIAL_LEVELS, LevelData } from '@/core/World'
+import { logger } from '@/lib/logger'
 
 export type CameraMode = 'first-person' | 'isometric' | 'top-down'
 export type VisionMode = 'normal' | 'polarized'
@@ -116,31 +117,31 @@ export const useGameStore = create<GameState>()(
     loadLevel: (index: number) => {
       const { world } = get()
       if (!world) {
-        console.error('Cannot load level: World not initialized. Call initWorld() first.')
+        logger.error('Cannot load level: World not initialized. Call initWorld() first.')
         return
       }
 
       // Validate index is a valid number
       if (typeof index !== 'number' || isNaN(index) || !isFinite(index)) {
-        console.error(`Invalid level index: ${index}. Index must be a valid number.`)
+        logger.error(`Invalid level index: ${index}. Index must be a valid number.`)
         return
       }
 
       // Validate index is within bounds
       if (index < 0 || index >= TUTORIAL_LEVELS.length) {
-        console.error(`Level index ${index} out of bounds. Valid range: 0-${TUTORIAL_LEVELS.length - 1}.`)
+        logger.error(`Level index ${index} out of bounds. Valid range: 0-${TUTORIAL_LEVELS.length - 1}.`)
         return
       }
 
       const level = TUTORIAL_LEVELS[index]
       if (!level) {
-        console.error(`Level at index ${index} is undefined.`)
+        logger.error(`Level at index ${index} is undefined.`)
         return
       }
 
       // Validate level structure
       if (!level.blocks || !Array.isArray(level.blocks)) {
-        console.error(`Level ${index} has invalid structure: missing or invalid blocks array.`)
+        logger.error(`Level ${index} has invalid structure: missing or invalid blocks array.`)
         return
       }
 
@@ -204,13 +205,13 @@ export const useGameStore = create<GameState>()(
     rotateBlockAt: (position: BlockPosition) => {
       const { world } = get()
       if (!world) {
-        console.error('Cannot rotate block: World not initialized.')
+        logger.error('Cannot rotate block: World not initialized.')
         return
       }
 
       // Validate position
       if (!position || typeof position.x !== 'number' || typeof position.y !== 'number' || typeof position.z !== 'number') {
-        console.error('Invalid block position for rotation:', position)
+        logger.error('Invalid block position for rotation:', position)
         return
       }
 
@@ -295,25 +296,25 @@ export const useGameStore = create<GameState>()(
 
       // If no sensor positions are defined, level cannot be completed
       if (goal.sensorPositions.length === 0) {
-        console.warn('Level has no sensor positions defined in goal.')
+        logger.warn('Level has no sensor positions defined in goal.')
         return false
       }
 
       const allActivated = goal.sensorPositions.every(pos => {
         // Validate position object
         if (!pos || typeof pos.x !== 'number' || typeof pos.y !== 'number' || typeof pos.z !== 'number') {
-          console.error('Invalid sensor position in level goal:', pos)
+          logger.error('Invalid sensor position in level goal:', pos)
           return false
         }
 
         const block = world.getBlock(pos.x, pos.y, pos.z)
         if (!block) {
-          console.error(`No block found at sensor position (${pos.x}, ${pos.y}, ${pos.z}).`)
+          logger.error(`No block found at sensor position (${pos.x}, ${pos.y}, ${pos.z}).`)
           return false
         }
 
         if (block.type !== 'sensor') {
-          console.error(`Block at (${pos.x}, ${pos.y}, ${pos.z}) is not a sensor. Found: ${block.type}`)
+          logger.error(`Block at (${pos.x}, ${pos.y}, ${pos.z}) is not a sensor. Found: ${block.type}`)
           return false
         }
 

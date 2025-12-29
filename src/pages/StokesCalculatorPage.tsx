@@ -761,3 +761,5 @@ export function StokesCalculatorPage() {
     </div>
   )
 }
+
+export default StokesCalculatorPage

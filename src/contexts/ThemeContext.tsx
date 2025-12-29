@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { logger } from '@/lib/logger'
 
 type Theme = 'dark' | 'light'
 
@@ -18,7 +19,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         if (saved === 'light' || saved === 'dark') return saved
       } catch (error) {
         // localStorage may be unavailable in private browsing mode or if storage is full
-        console.warn('Unable to access localStorage for theme:', error)
+        logger.warn('Unable to access localStorage for theme:', error)
       }
     }
     return 'dark'
@@ -65,7 +66,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('polarcraft-theme', theme)
     } catch (error) {
       // localStorage may be unavailable in private browsing mode or if storage quota is exceeded
-      console.warn('Unable to save theme to localStorage:', error)
+      logger.warn('Unable to save theme to localStorage:', error)
     }
   }, [theme])
 

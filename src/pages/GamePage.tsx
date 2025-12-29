@@ -180,3 +180,5 @@ export function GamePage() {
     </div>
   )
 }
+
+export default GamePage

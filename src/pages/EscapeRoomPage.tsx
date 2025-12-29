@@ -1396,3 +1396,5 @@ export function EscapeRoomPage() {
     </div>
   )
 }
+
+export default EscapeRoomPage

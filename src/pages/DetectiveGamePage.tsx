@@ -272,7 +272,7 @@ export function DetectiveGamePage() {
 
     setComponentStates((prev) => {
       const current = prev[id] || {}
-      let newValue: any
+      let newValue: number | 'left' | 'right'
 
       if (property === 'rotationAmount') {
         newValue = (current.rotationAmount ?? component.rotationAmount ?? 45) === 45 ? 90 : 45
@@ -1061,3 +1061,5 @@ export function DetectiveGamePage() {
     </div>
   )
 }
+
+export default DetectiveGamePage

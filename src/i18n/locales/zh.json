@@ -719,6 +719,10 @@
     "firstPerson": "第一人称",
     "isometric": "等轴测",
     "topDown": "俯视图",
+    "toggleVisionMode": "切换偏振视觉模式",
+    "pressCToChange": "按C键切换",
+    "showBasicBlocks": "显示基础方块",
+    "showAdvancedBlocks": "显示高级方块",
     "blocks": {
       "emitter": "光源",
       "polarizer": "偏振片",

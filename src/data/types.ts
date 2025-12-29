@@ -49,11 +49,13 @@ export interface ConfigurationStep {
   notesZh?: string
 }
 
+export type BOMCategory = 'core' | 'extension' | 'sample' | 'consumable'
+
 export interface BOMItem {
   id: string
   name: string
   nameZh: string
-  category: 'core' | 'extension' | 'sample' | 'consumable'
+  category: BOMCategory
   quantity: number
   unitPrice?: number
   currency?: string

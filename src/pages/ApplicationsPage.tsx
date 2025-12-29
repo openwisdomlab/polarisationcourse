@@ -1373,3 +1373,5 @@ export function ApplicationsPage() {
     </div>
   )
 }
+
+export default ApplicationsPage

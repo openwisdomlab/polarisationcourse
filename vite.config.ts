@@ -17,7 +17,19 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-      }
-    }
-  }
+      },
+      output: {
+        manualChunks: {
+          // React core
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // 3D rendering (Three.js ecosystem - largest chunk)
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
+          // Animation library
+          'vendor-motion': ['framer-motion'],
+          // State management and i18n
+          'vendor-utils': ['zustand', 'i18next', 'react-i18next'],
+        },
+      },
+    },
+  },
 });

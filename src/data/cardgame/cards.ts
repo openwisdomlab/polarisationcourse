@@ -5,6 +5,14 @@
  */
 
 import type { GameCard, CardType } from '../types'
+import type { BadgeColor } from '@/components/shared/SearchFilter'
+
+// Type for label entries with color
+interface LabelEntry {
+  label: string
+  labelZh: string
+  color: BadgeColor
+}
 
 // ===== 光源卡 Light Source Cards (8张) =====
 const LIGHT_SOURCE_CARDS: GameCard[] = [
@@ -722,8 +730,8 @@ export function getCardsByRarity(rarity: GameCard['rarity']): GameCard[] {
   return ALL_CARDS.filter(c => c.rarity === rarity)
 }
 
-// Card type labels
-export const CARD_TYPE_LABELS = {
+// Card type labels with proper typing
+export const CARD_TYPE_LABELS: Record<CardType, LabelEntry> = {
   'light-source': { label: 'Light Source', labelZh: '光源', color: 'yellow' },
   'optical-element': { label: 'Optical Element', labelZh: '光学元件', color: 'cyan' },
   'effect': { label: 'Effect', labelZh: '效果', color: 'purple' },
@@ -731,8 +739,8 @@ export const CARD_TYPE_LABELS = {
   'event': { label: 'Event', labelZh: '事件', color: 'orange' }
 }
 
-// Rarity labels
-export const RARITY_LABELS = {
+// Rarity labels with proper typing
+export const RARITY_LABELS: Record<GameCard['rarity'], LabelEntry> = {
   common: { label: 'Common', labelZh: '普通', color: 'gray' },
   uncommon: { label: 'Uncommon', labelZh: '稀有', color: 'green' },
   rare: { label: 'Rare', labelZh: '珍贵', color: 'blue' },

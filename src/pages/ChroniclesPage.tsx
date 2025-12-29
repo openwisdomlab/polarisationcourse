@@ -884,3 +884,5 @@ export function ChroniclesPage() {
     </div>
   )
 }
+
+export default ChroniclesPage

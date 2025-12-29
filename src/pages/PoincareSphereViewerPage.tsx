@@ -624,3 +624,5 @@ export function PoincareSphereViewerPage() {
     </div>
   )
 }
+
+export default PoincareSphereViewerPage

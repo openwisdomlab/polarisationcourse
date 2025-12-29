@@ -74,6 +74,8 @@ export function BlockSelector() {
       {/* 展开/收起按钮 */}
       <button
         onClick={() => setShowAdvanced(!showAdvanced)}
+        aria-label={showAdvanced ? t('game.showBasicBlocks') : t('game.showAdvancedBlocks')}
+        aria-expanded={showAdvanced}
         className={cn(
           "px-3 py-1 rounded-lg text-xs font-bold transition-all",
           "bg-slate-800/80 border border-slate-600/50",
@@ -108,6 +110,8 @@ export function BlockSelector() {
             <button
               key={type}
               onClick={() => setSelectedBlockType(type)}
+              aria-label={`${t(labelKey)} (${key})`}
+              aria-pressed={selectedBlockType === type}
               className={cn(
                 "relative flex flex-col items-center justify-center flex-shrink-0",
                 "bg-slate-700/60 border-2 border-slate-600/50 rounded-lg",

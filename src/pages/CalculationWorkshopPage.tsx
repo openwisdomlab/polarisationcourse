@@ -251,3 +251,5 @@ export function CalculationWorkshopPage() {
     </div>
   )
 }
+
+export default CalculationWorkshopPage

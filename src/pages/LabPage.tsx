@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
-import { Tabs, Badge, PersistentHeader } from '@/components/shared'
+import { Tabs, Badge, PersistentHeader, SEO } from '@/components/shared'
 import { ResearchTaskModal } from '@/components/lab'
 import { useLabStore } from '@/stores/labStore'
 import {
@@ -635,14 +635,21 @@ export function LabPage() {
   }
 
   return (
-    <div className={cn(
-      'min-h-screen',
-      theme === 'dark'
-        ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
-        : 'bg-gradient-to-br from-[#fefce8] via-[#fef9c3] to-[#fefce8]'
-    )}>
-      {/* Header with Persistent Logo */}
-      <PersistentHeader
+    <>
+      <SEO
+        title="Virtual Lab Group - PolarCraft"
+        titleZh="虚拟课题组 - PolarCraft"
+        description="Experience graduate-level research simulation with polarization experiments, data analysis, and scientific publications."
+        descriptionZh="体验研究生级别的研究模拟，包括偏振实验、数据分析和科学出版。"
+      />
+      <div className={cn(
+        'min-h-screen',
+        theme === 'dark'
+          ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
+          : 'bg-gradient-to-br from-[#fefce8] via-[#fef9c3] to-[#fefce8]'
+      )}>
+        {/* Header with Persistent Logo */}
+        <PersistentHeader
         moduleKey="labGroup"
         moduleName={isZh ? '虚拟课题组' : 'Virtual Lab Group'}
         variant="glass"
@@ -1073,8 +1080,11 @@ export function LabPage() {
         )}
       </main>
 
-      {/* Research Task Modal */}
-      <ResearchTaskModal />
-    </div>
+        {/* Research Task Modal */}
+        <ResearchTaskModal />
+      </div>
+    </>
   )
 }
+
+export default LabPage

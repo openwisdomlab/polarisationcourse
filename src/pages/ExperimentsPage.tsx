@@ -14,6 +14,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
+import { logger } from '@/lib/logger'
 import { Badge, Tabs, PersistentHeader } from '@/components/shared'
 import { PolarizationArt, ArtGallery, MATERIAL_PRESETS } from '@/components/shared/PolarizationArt'
 import type { PolarizationArtParams, CrystalAxisMode } from '@/data/types'
@@ -864,7 +865,7 @@ function ArtGenerator() {
         ? '已导出动画帧数据！您可以使用在线工具（如 ezgif.com）将PNG序列转换为GIF。'
         : 'Animation frame data exported! Use online tools (like ezgif.com) to convert PNG sequences to GIF.')
     } catch (error) {
-      console.error('GIF export error:', error)
+      logger.error('GIF export error:', error)
     } finally {
       setIsExportingGif(false)
     }
@@ -2777,3 +2778,5 @@ export function ExperimentsPage() {
     </div>
   )
 }
+
+export default ExperimentsPage

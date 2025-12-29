@@ -437,7 +437,7 @@ function BOMTable({ config, language }: BOMTableProps) {
                   )}
                 </td>
                 <td className="py-2 px-3">
-                  <Badge color={catInfo.color as any} size="sm">
+                  <Badge color={catInfo.color} size="sm">
                     {isZh ? catInfo.labelZh : catInfo.label}
                   </Badge>
                 </td>
@@ -864,3 +864,5 @@ export function HardwarePage() {
     </div>
   )
 }
+
+export default HardwarePage

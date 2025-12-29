@@ -282,3 +282,5 @@ export function GameHubPage() {
     </div>
   )
 }
+
+export default GameHubPage

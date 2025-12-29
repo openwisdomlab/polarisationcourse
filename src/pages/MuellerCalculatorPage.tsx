@@ -979,3 +979,5 @@ export function MuellerCalculatorPage() {
     </div>
   )
 }
+
+export default MuellerCalculatorPage

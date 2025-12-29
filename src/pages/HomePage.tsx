@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
@@ -314,7 +314,7 @@ interface ModuleCardProps {
   registerIconRef?: (key: string, ref: HTMLDivElement | null) => void
 }
 
-function ModuleCard({ module, index, isBeamTarget, onHoverStart, onHoverEnd, registerRef, registerIconRef }: ModuleCardProps) {
+const ModuleCard = memo(function ModuleCard({ module, index, isBeamTarget, onHoverStart, onHoverEnd, registerRef, registerIconRef }: ModuleCardProps) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const [isHovered, setIsHovered] = useState(false)
@@ -630,7 +630,7 @@ function ModuleCard({ module, index, isBeamTarget, onHoverStart, onHoverEnd, reg
       )}
     </div>
   )
-}
+})
 
 // Animated polarization background component
 function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
@@ -1406,3 +1406,5 @@ export function HomePage() {
     </div>
   )
 }
+
+export default HomePage

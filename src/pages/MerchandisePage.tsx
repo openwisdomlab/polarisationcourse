@@ -877,3 +877,5 @@ export function MerchandisePage() {
     </div>
   )
 }
+
+export default MerchandisePage

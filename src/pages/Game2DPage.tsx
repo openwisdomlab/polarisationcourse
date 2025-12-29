@@ -37,6 +37,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
+import { SEO } from '@/components/shared/SEO'
 
 // Import shared modules
 import { getPolarizationColor, POLARIZATION_DISPLAY_CONFIG } from '@/lib/polarization'
@@ -511,7 +512,7 @@ export function Game2DPage() {
         angle: c.angle,
         polarizationAngle: c.polarizationAngle,
         rotationAmount: c.rotationAmount,
-        phaseShift: (c as any).phaseShift,
+        phaseShift: c.phaseShift,
       }
     })
     setComponentStates(initialStates)
@@ -775,16 +776,23 @@ export function Game2DPage() {
   }
 
   return (
-    <div
-      className={cn(
-        'min-h-screen flex flex-col',
-        isDark
-          ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
-          : 'bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100'
-      )}
-    >
-      {/* Header with Persistent Logo */}
-      <PersistentHeader
+    <>
+      <SEO
+        title="2D Puzzle Game - PolarCraft"
+        titleZh="2D益智游戏 - PolarCraft"
+        description="Play 2D polarization puzzles with mirrors, splitters, and rotators. Learn Malus's Law through interactive gameplay."
+        descriptionZh="通过镜子、分束器和旋转器玩2D偏振益智游戏。在互动游戏中学习马吕斯定律。"
+      />
+      <div
+        className={cn(
+          'min-h-screen flex flex-col',
+          isDark
+            ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
+            : 'bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100'
+        )}
+      >
+        {/* Header with Persistent Logo */}
+        <PersistentHeader
         moduleKey="polarquest"
         moduleName="PolarCraft 2D"
         variant="solid"
@@ -1505,6 +1513,9 @@ export function Game2DPage() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </>
   )
 }
+
+export default Game2DPage

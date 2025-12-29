@@ -872,3 +872,5 @@ export function JonesCalculatorPage() {
     </div>
   )
 }
+
+export default JonesCalculatorPage

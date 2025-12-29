@@ -719,6 +719,10 @@
     "firstPerson": "First Person",
     "isometric": "Isometric",
     "topDown": "Top Down",
+    "toggleVisionMode": "Toggle polarization vision mode",
+    "pressCToChange": "Press C to change",
+    "showBasicBlocks": "Show basic blocks",
+    "showAdvancedBlocks": "Show advanced blocks",
     "blocks": {
       "emitter": "Emitter",
       "polarizer": "Polarizer",

@@ -25,6 +25,24 @@ interface SEOProps {
   }
 }
 
+// Schema.org structured data types
+interface SchemaOrgOffer {
+  '@type': 'Offer'
+  price: string
+  priceCurrency: string
+  availability: string
+}
+
+interface SchemaOrgData {
+  '@context': string
+  '@type': 'WebPage' | 'Product'
+  name: string
+  description: string
+  url: string
+  offers?: SchemaOrgOffer
+  category?: string
+}
+
 export function SEO({
   title,
   titleZh,
@@ -86,12 +104,12 @@ export function SEO({
       document.head.appendChild(scriptTag)
     }
 
-    const structuredData: any = {
+    const structuredData: SchemaOrgData = {
       '@context': 'https://schema.org',
       '@type': type === 'product' && productData ? 'Product' : 'WebPage',
       name: fullTitle,
       description: finalDescription,
-      url: url || window.location.href
+      url: url || (typeof window !== 'undefined' ? window.location.href : '')
     }
 
     // Add product-specific data

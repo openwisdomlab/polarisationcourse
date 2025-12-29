@@ -1223,3 +1223,5 @@ export function CoursePage() {
     </div>
   )
 }
+
+export default CoursePage

@@ -28,6 +28,7 @@ import {
   halfWavePlateMatrix,
   quarterWavePlateMatrix,
 } from '@/core/JonesCalculus'
+import { logger } from '@/lib/logger'
 
 // ============================================
 // Types
@@ -760,7 +761,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(designs))
         } catch (e) {
-          console.error('Failed to save designs:', e)
+          logger.error('Failed to save designs:', e)
         }
 
         return {
@@ -799,7 +800,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(designs))
         } catch (e) {
-          console.error('Failed to delete design:', e)
+          logger.error('Failed to delete design:', e)
         }
 
         return {
@@ -840,7 +841,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
         get().saveToHistory()
         return true
       } catch (e) {
-        console.error('Failed to import design:', e)
+        logger.error('Failed to import design:', e)
         return false
       }
     },
@@ -853,7 +854,7 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
           set({ savedDesigns: designs })
         }
       } catch (e) {
-        console.error('Failed to load saved designs:', e)
+        logger.error('Failed to load saved designs:', e)
       }
     },
 

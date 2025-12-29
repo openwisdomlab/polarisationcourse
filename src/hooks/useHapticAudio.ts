@@ -12,6 +12,7 @@
  */
 
 import { useCallback, useRef, useEffect, useState } from 'react'
+import { logger } from '@/lib/logger'
 
 // Default special angles that trigger audio feedback
 export const DEFAULT_SNAP_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315, 360]
@@ -171,7 +172,7 @@ export function useHapticAudio(options: HapticAudioOptions = {}) {
 
       stateRef.current.isInitialized = true
     } catch (error) {
-      console.warn('Failed to initialize haptic audio:', error)
+      logger.warn('Failed to initialize haptic audio:', error)
     }
   }, [])
 

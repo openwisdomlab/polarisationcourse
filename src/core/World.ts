@@ -20,6 +20,7 @@ import {
   PolarizationAngle
 } from './types';
 import { LightPhysics, WaveLight } from './LightPhysics';
+import { logger } from '@/lib/logger';
 
 // 方块键值生成
 function posKey(x: number, y: number, z: number): string {
@@ -30,7 +31,7 @@ function posKey(x: number, y: number, z: number): string {
 function parseKey(key: string): BlockPosition {
   const parts = key.split(',');
   if (parts.length !== 3) {
-    console.error(`Invalid position key format: "${key}". Expected "x,y,z" format.`);
+    logger.error(`Invalid position key format: "${key}". Expected "x,y,z" format.`);
     return { x: 0, y: 0, z: 0 };
   }
 
@@ -40,7 +41,7 @@ function parseKey(key: string): BlockPosition {
   const z = Number(zStr);
 
   if (isNaN(x) || isNaN(y) || isNaN(z)) {
-    console.error(`Invalid position key values: "${key}". Coordinates must be valid numbers.`);
+    logger.error(`Invalid position key values: "${key}". Coordinates must be valid numbers.`);
     return { x: 0, y: 0, z: 0 };
   }
 
@@ -277,7 +278,7 @@ export class World {
       // Calculate next position
       const dir = DIRECTION_VECTORS[light.direction];
       if (!dir) {
-        console.error(`Invalid light direction: "${light.direction}". Skipping.`);
+        logger.error(`Invalid light direction: "${light.direction}". Skipping.`);
         continue;
       }
 
@@ -327,7 +328,7 @@ export class World {
     }
 
     if (iterations >= maxIterations) {
-      console.warn(`Light propagation reached maximum iterations (${maxIterations}). Consider optimizing the optical setup.`);
+      logger.warn(`Light propagation reached maximum iterations (${maxIterations}). Consider optimizing the optical setup.`);
     }
 
     // Calculate coherent interference at each position and convert to legacy format
@@ -531,7 +532,7 @@ export class World {
     // 计算下一个位置
     const dir = DIRECTION_VECTORS[light.direction];
     if (!dir) {
-      console.error(`Invalid light direction: "${light.direction}". Light propagation stopped.`);
+      logger.error(`Invalid light direction: "${light.direction}". Light propagation stopped.`);
       return;
     }
 

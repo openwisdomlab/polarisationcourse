@@ -504,12 +504,13 @@ export class JonesVector {
 
   /**
    * Convert intensity to game integer scale (0-15)
+   * For linear polarization with amplitude A, intensity = A²
+   * amplitude 1 → intensity 1 → maxIntensity
    */
   getIntensityScaled(maxIntensity: number = 15): number {
-    // Normalize assuming max amplitude of ~1 per component
-    // Intensity max would be ~2 for max amplitude 1 per component
-    const normalizedIntensity = Math.min(this.intensity, 2) / 2;
-    return Math.floor(normalizedIntensity * maxIntensity);
+    // intensity = |Ex|² + |Ey|² = amplitude² for linear polarization
+    // Scale: intensity 1 → maxIntensity, capped at maxIntensity
+    return Math.min(maxIntensity, Math.round(this.intensity * maxIntensity));
   }
 
   /**

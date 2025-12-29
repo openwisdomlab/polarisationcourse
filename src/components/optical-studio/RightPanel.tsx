@@ -546,7 +546,7 @@ function DeviceDetailSection({ device, onClose, onAddToBench }: DeviceDetailSect
 
   const handleAddToBench = () => {
     if (device.benchComponentType) {
-      addComponent(device.benchComponentType as any)
+      addComponent(device.benchComponentType)
       onAddToBench?.()
     }
   }

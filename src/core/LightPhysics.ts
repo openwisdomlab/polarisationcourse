@@ -15,6 +15,7 @@ import {
   BlockState,
   OPPOSITE_DIRECTION
 } from './types';
+import { logger } from '@/lib/logger';
 
 import {
   JonesVector,
@@ -125,7 +126,7 @@ export class LightPhysics {
     for (const light of lights) {
       // Validate light packet has required properties
       if (!light || typeof light.direction !== 'string' || typeof light.polarization !== 'number') {
-        console.error('Invalid light packet in interference calculation:', light);
+        logger.error('Invalid light packet in interference calculation:', light);
         continue;
       }
 
@@ -316,7 +317,7 @@ export class LightPhysics {
   private static normalizeAngle(angle: number): PolarizationAngle {
     // Validate input is a valid number
     if (isNaN(angle) || !isFinite(angle)) {
-      console.error(`Invalid angle value: ${angle}. Defaulting to 0.`);
+      logger.error(`Invalid angle value: ${angle}. Defaulting to 0.`);
       return 0;
     }
 
@@ -328,7 +329,7 @@ export class LightPhysics {
 
     // Safety check - validAngles should never be empty, but validate anyway
     if (validAngles.length === 0) {
-      console.error('No valid polarization angles defined. Defaulting to 0.');
+      logger.error('No valid polarization angles defined. Defaulting to 0.');
       return 0;
     }
 
@@ -359,13 +360,13 @@ export class LightPhysics {
 
     // Validate baseFacing is a valid horizontal direction
     if (baseIndex === -1) {
-      console.error(`Invalid base facing direction: "${baseFacing}". Defaulting to "north".`);
+      logger.error(`Invalid base facing direction: "${baseFacing}". Defaulting to "north".`);
       return 'north';
     }
 
     // Validate rotation is a valid number
     if (isNaN(rotation) || !isFinite(rotation)) {
-      console.error(`Invalid rotation value: ${rotation}. Defaulting to 0.`);
+      logger.error(`Invalid rotation value: ${rotation}. Defaulting to 0.`);
       return baseFacing;
     }
 

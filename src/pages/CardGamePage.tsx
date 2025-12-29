@@ -792,10 +792,10 @@ export function CardGamePage() {
             </h3>
 
             <div className="flex gap-2 mb-3">
-              <Badge color={CARD_TYPE_LABELS[selectedCard.type].color as any}>
+              <Badge color={CARD_TYPE_LABELS[selectedCard.type].color}>
                 {isZh ? CARD_TYPE_LABELS[selectedCard.type].labelZh : CARD_TYPE_LABELS[selectedCard.type].label}
               </Badge>
-              <Badge color={RARITY_LABELS[selectedCard.rarity].color as any}>
+              <Badge color={RARITY_LABELS[selectedCard.rarity].color}>
                 {isZh ? RARITY_LABELS[selectedCard.rarity].labelZh : RARITY_LABELS[selectedCard.rarity].label}
               </Badge>
             </div>
@@ -852,3 +852,5 @@ export function CardGamePage() {
     </div>
   )
 }
+
+export default CardGamePage

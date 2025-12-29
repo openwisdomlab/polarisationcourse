@@ -11,6 +11,8 @@ export function VisionModeIndicator() {
   return (
     <button
       onClick={toggleVisionMode}
+      aria-label={t('game.toggleVisionMode')}
+      aria-pressed={isPolarized}
       className={cn(
         "px-4 py-3 rounded-lg text-sm transition-all duration-300",
         "border cursor-pointer",
