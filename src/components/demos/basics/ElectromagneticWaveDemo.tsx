@@ -79,8 +79,9 @@ const SPECTRUM_REGIONS: SpectrumRegion[] = [
     id: 'infrared',
     name: 'Infrared',
     nameZh: '红外线',
-    wavelengthRange: [1e-3, 7e-7],
-    frequencyRange: [3e11, 4.3e14],
+    // 红外线: 1mm (1e-3) 到 780nm (7.8e-7)，与可见光红端相接
+    wavelengthRange: [1e-3, 7.8e-7],
+    frequencyRange: [3e11, 3.85e14],
     color: '#ff4444',
     gradientStart: '#ffdd00',
     gradientEnd: '#ff0000',
@@ -97,8 +98,9 @@ const SPECTRUM_REGIONS: SpectrumRegion[] = [
     id: 'visible',
     name: 'Visible Light',
     nameZh: '可见光',
-    wavelengthRange: [7e-7, 4e-7],
-    frequencyRange: [4.3e14, 7.5e14],
+    // 可见光: 780nm (7.8e-7) 到 380nm (3.8e-7)，标准人眼可见范围
+    wavelengthRange: [7.8e-7, 3.8e-7],
+    frequencyRange: [3.85e14, 7.89e14],
     color: '#00ff00',
     gradientStart: '#ff0000',
     gradientEnd: '#8b00ff',
@@ -115,8 +117,9 @@ const SPECTRUM_REGIONS: SpectrumRegion[] = [
     id: 'ultraviolet',
     name: 'Ultraviolet',
     nameZh: '紫外线',
-    wavelengthRange: [4e-7, 1e-8],
-    frequencyRange: [7.5e14, 3e16],
+    // 紫外线: 380nm (3.8e-7) 到 10nm (1e-8)，与可见光紫端相接
+    wavelengthRange: [3.8e-7, 1e-8],
+    frequencyRange: [7.89e14, 3e16],
     color: '#8b00ff',
     gradientStart: '#8b00ff',
     gradientEnd: '#4400ff',
@@ -240,6 +243,9 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
   const animationDuration = speed > 0 ? 4 / speed : 1000
 
   // Wave path generation
+  // 科学说明：电磁波中E场和B场同相位（同时达到最大和最小值），
+  // 两者振动方向相互垂直，且都垂直于传播方向。
+  // 真空中 |B| = |E|/c，但为了可视化目的，B场振幅按比例缩小显示。
   const wavePaths = useMemo(() => {
     const generatePath = (
       phaseOffset: number,
@@ -253,9 +259,11 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
 
       for (let x = 0; x <= width; x += 2) {
         const waveX = (x + phaseOffset) / pixelsPerWavelength * 2 * Math.PI
+        // E场和B场使用相同的sin函数（同相位），只是振动方向不同
+        // E场在垂直平面振动（y方向），B场在水平平面振动（用y偏移模拟z方向）
         const y = isVertical
-          ? centerY + amplitude * amplitudeScale * Math.cos(waveX)
-          : centerY - amplitude * amplitudeScale * Math.sin(waveX)
+          ? centerY + amplitude * amplitudeScale * Math.sin(waveX)  // B场同相位
+          : centerY - amplitude * amplitudeScale * Math.sin(waveX)  // E场
         points.push(`${x + 50},${y}`)
       }
 
@@ -396,7 +404,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                       </text>
                     </g>
 
-                    <text x="600" y="30" fill="#6b7280" fontSize="11">c = 3×10⁸ m/s</text>
+                    <text x="600" y="30" fill="#6b7280" fontSize="11">c ≈ 2.998×10⁸ m/s</text>
                     <rect x="600" y="40" width="60" height="20" rx="4" fill={waveColor} opacity="0.8" />
                   </svg>
                 </div>
@@ -482,7 +490,8 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
 
                 <div className="pt-2 border-t border-slate-700">
                   <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
-                  <ValueDisplay label={t('demoUi.common.frequency')} value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
+                  {/* 使用精确光速值 c = 2.998×10^8 m/s 计算频率 f = c/λ */}
+                  <ValueDisplay label={t('demoUi.common.frequency')} value={`${(2.998e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
                 </div>
 
                 {/* Quick switch to spectrum */}

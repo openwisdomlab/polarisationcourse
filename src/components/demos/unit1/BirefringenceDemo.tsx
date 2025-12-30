@@ -252,6 +252,13 @@ function DetectorScreen({
 }
 
 // 3D场景
+/**
+ * 双折射强度分配遵循马吕斯定律：
+ * - θ为入射偏振方向与晶体光轴的夹角
+ * - o光强度：I_o = I_0 × cos²θ （偏振方向垂直于主截面的分量）
+ * - e光强度：I_e = I_0 × sin²θ （偏振方向在主截面内的分量）
+ * - 能量守恒：I_o + I_e = I_0 × (cos²θ + sin²θ) = I_0
+ */
 function BirefringenceScene({
   inputPolarization,
   animate,
@@ -260,7 +267,9 @@ function BirefringenceScene({
   animate: boolean
 }) {
   const radians = (inputPolarization * Math.PI) / 180
+  // o光强度 = cos²θ（马吕斯定律）
   const oIntensity = Math.pow(Math.cos(radians), 2)
+  // e光强度 = sin²θ（与o光互补，总和为1）
   const eIntensity = Math.pow(Math.sin(radians), 2)
 
   return (

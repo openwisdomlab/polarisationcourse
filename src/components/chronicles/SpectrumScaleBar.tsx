@@ -156,16 +156,17 @@ export function SpectrumScaleBar({ activeBranch, theme, isZh, onHover }: Spectru
           )}
         </AnimatePresence>
 
-        {/* 波长刻度 - 在光谱下方 */}
+        {/* 波长刻度 - 在光谱下方
+            科学数据来源：标准电磁波谱分类 */}
         <div className="absolute left-0 right-0 top-[82px] flex justify-between px-4">
           {[
-            { pos: 5, label: '1m+', labelZh: '无线电' },
-            { pos: 20, label: 'cm', labelZh: '微波' },
-            { pos: 35, label: 'μm', labelZh: '红外' },
-            { pos: 45, label: '380-700nm', labelZh: '可见光' },
-            { pos: 60, label: '10-400nm', labelZh: '紫外' },
+            { pos: 5, label: '>1m', labelZh: '无线电' },
+            { pos: 20, label: '1mm-1m', labelZh: '微波' },
+            { pos: 35, label: '780nm-1mm', labelZh: '红外' },
+            { pos: 45, label: '380-780nm', labelZh: '可见光' },
+            { pos: 60, label: '10-380nm', labelZh: '紫外' },
             { pos: 75, label: '0.01-10nm', labelZh: 'X射线' },
-            { pos: 92, label: '<0.01nm', labelZh: '伽马' },
+            { pos: 92, label: '<0.01nm', labelZh: 'γ射线' },
           ].map((scale, index) => (
             <motion.div
               key={index}
