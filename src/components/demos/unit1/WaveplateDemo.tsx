@@ -61,18 +61,26 @@ function WaveplateCanvas({
   const animationRef = useRef<number | undefined>(undefined)
 
   // 计算输出偏振态
+  // 圆偏振旋向约定（物理学惯例）：
+  // - 右旋(RCP)：从光源方向看，电场矢量顺时针旋转
+  // - 左旋(LCP)：从光源方向看，电场矢量逆时针旋转
+  // 当线偏振光入射λ/4波片，相对快轴角度为+45°时产生右旋圆偏振，-45°(即135°)时产生左旋圆偏振
   const outputState = useMemo(() => {
     const relativeAngle = ((inputAngle - fastAxisAngle) % 180 + 180) % 180
 
     if (waveplateType === 'quarter') {
-      if (Math.abs(relativeAngle - 45) < 5 || Math.abs(relativeAngle - 135) < 5) {
-        return { type: 'circular-r' as PolarizationState, angle: 0 }
+      // 相对角度45°→右旋圆偏振，135°→左旋圆偏振
+      if (Math.abs(relativeAngle - 45) < 5) {
+        return { type: 'circular-r' as PolarizationState, angle: 0 }  // 右旋
+      } else if (Math.abs(relativeAngle - 135) < 5) {
+        return { type: 'circular-l' as PolarizationState, angle: 0 }  // 左旋
       } else if (relativeAngle < 5 || Math.abs(relativeAngle - 90) < 5 || Math.abs(relativeAngle - 180) < 5) {
         return { type: 'linear' as PolarizationState, angle: inputAngle }
       } else {
         return { type: 'elliptical' as PolarizationState, angle: inputAngle }
       }
     } else {
+      // λ/2波片：输出角度 = 2×快轴角度 - 输入角度
       const outputAngle = ((2 * fastAxisAngle - inputAngle) % 180 + 180) % 180
       return { type: 'linear' as PolarizationState, angle: outputAngle }
     }

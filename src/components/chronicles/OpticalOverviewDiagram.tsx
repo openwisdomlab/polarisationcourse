@@ -163,42 +163,68 @@ export function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagra
                 stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
                 strokeWidth="1.5"
               />
-              {/* 动态色散光线 */}
+              {/* 动态色散光线 - 科学说明：
+                  棱镜色散遵循斯涅尔定律，短波长(紫色)折射率更大，偏折更多
+                  从上到下依次为：红(700nm)→橙→黄→绿→蓝→紫(380nm) */}
+              {/* 红光 - 折射最小，偏向最上 */}
               <motion.line
-                x1="20" y1="14" x2="30" y2="8"
-                stroke="#f97316"
+                x1="20" y1="14" x2="30" y2="6"
+                stroke="#ef4444"
                 strokeWidth="2"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               />
+              {/* 橙光 */}
               <motion.line
-                x1="21" y1="17" x2="30" y2="17"
-                stroke="#22c55e"
+                x1="20" y1="15" x2="30" y2="10"
+                stroke="#f97316"
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+              />
+              {/* 黄光 */}
+              <motion.line
+                x1="21" y1="16" x2="30" y2="14"
+                stroke="#eab308"
                 strokeWidth="2"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               />
+              {/* 绿光 */}
               <motion.line
-                x1="21" y1="20" x2="30" y2="23"
-                stroke="#22d3ee"
-                strokeWidth="2.5"
+                x1="21" y1="17" x2="30" y2="18"
+                stroke="#22c55e"
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.25 }}
+              />
+              {/* 蓝光 */}
+              <motion.line
+                x1="21" y1="19" x2="30" y2="23"
+                stroke="#3b82f6"
+                strokeWidth="2"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               />
+              {/* 紫光 - 折射最大，偏向最下 */}
               <motion.line
-                x1="20" y1="22" x2="30" y2="28"
-                stroke="#a855f7"
+                x1="20" y1="21" x2="30" y2="28"
+                stroke="#8b5cf6"
                 strokeWidth="2"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
+                transition={{ duration: 0.5, delay: 0.35 }}
               />
               <defs>
                 <linearGradient id="prism-grad-dark" x1="0%" y1="0%" x2="100%" y2="100%">

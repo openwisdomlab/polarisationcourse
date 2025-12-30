@@ -13,15 +13,29 @@ export const CATEGORY_COLORS = {
   application: { dark: { bg: '#1f2937', stroke: '#9ca3af', text: '#d1d5db' }, light: { bg: '#f3f4f6', stroke: '#6b7280', text: '#4b5563' } },
 }
 
-// 分支对应的光谱区域
+/**
+ * 分支对应的光谱区域
+ *
+ * 科学说明：这是一种概念性/教学性映射，而非严格的物理对应关系。
+ * 实际上，光学的各个分支并不严格对应特定的电磁波谱区域：
+ * - 几何光学：适用于波长远小于物体尺寸的情况，在整个可见光谱都有效
+ * - 波动光学：衍射和干涉效应在波长与物体尺寸可比时显著
+ * - 偏振光学：是光的横波特性，适用于所有电磁波
+ * - 量子光学：处理单光子行为，能量尺度由E=hν决定
+ *
+ * 这里的映射是为了在可视化中建立直观的"尺度-分支"关联。
+ */
 export const BRANCH_SPECTRUM_REGIONS = {
-  geometric: { start: 22, end: 38, label: 'mm-μm' },
-  wave: { start: 36, end: 52, label: 'μm-nm' },
-  polarization: { start: 48, end: 68, label: 'nm scale' },
-  quantum: { start: 66, end: 82, label: 'photon' },
+  geometric: { start: 22, end: 38, label: 'mm-μm' },  // 宏观尺度，光线近似
+  wave: { start: 36, end: 52, label: 'μm-nm' },       // 波长尺度，衍射干涉
+  polarization: { start: 48, end: 68, label: 'nm scale' }, // 光波矢量尺度
+  quantum: { start: 66, end: 82, label: 'photon' },   // 单光子/量子尺度
 }
 
-// 分支在光谱上的位置映射（横向排列映射到光谱）
+/**
+ * 分支在光谱上的位置映射（横向排列映射到光谱）
+ * 这是UI可视化用的位置参数，center值表示在光谱条上的百分比位置
+ */
 export const BRANCH_SPECTRUM_POSITIONS = {
   geometric: { center: 30, labelEn: 'Geometric', labelZh: '几何光学' },
   wave: { center: 44, labelEn: 'Wave', labelZh: '波动光学' },
