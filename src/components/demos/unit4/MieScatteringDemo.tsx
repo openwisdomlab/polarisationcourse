@@ -33,31 +33,83 @@ function wavelengthToRGB(wavelength: number): string {
   return `rgb(${Math.round(R * 255)}, ${Math.round(G * 255)}, ${Math.round(B * 255)})`
 }
 
-// 米氏散射相函数（简化模型）
+// 米氏散射相函数（改进的Henyey-Greenstein近似）
+// 参考：Henyey, L. G., & Greenstein, J. L. (1941). Diffuse radiation in the Galaxy
 function miePhaseFunction(angle: number, sizeParameter: number): number {
   const theta = (angle * Math.PI) / 180
   const x = sizeParameter
+  const cosTheta = Math.cos(theta)
 
-  // 简化的米氏散射相函数
-  // 前向散射增强随粒径增大
-  const forwardScatter = Math.pow(1 + Math.cos(theta), x / 2)
-  const backScatter = 0.1 + 0.3 * Math.pow((1 - Math.cos(theta)) / 2, 2)
+  // 根据尺寸参数计算不对称因子 g（前向散射程度）
+  // g = 0: 各向同性; g → 1: 强前向散射; g → -1: 强后向散射
+  // 米氏散射的g随x增大而增大
+  let g: number
+  if (x < 0.1) {
+    // 瑞利区：近乎各向同性
+    g = 0.1 * x
+  } else if (x < 1) {
+    // 过渡区
+    g = 0.1 + 0.6 * x
+  } else if (x < 10) {
+    // 米氏区：前向散射逐渐增强
+    g = 0.7 + 0.025 * x
+  } else {
+    // 几何光学区：强前向散射
+    g = Math.min(0.95, 0.7 + 0.03 * Math.sqrt(x))
+  }
 
-  // 归一化
-  const total = forwardScatter + backScatter
-  return (forwardScatter / total)
+  // Henyey-Greenstein相函数
+  // P(θ) = (1 - g²) / (1 + g² - 2g·cos(θ))^(3/2)
+  const gSquared = g * g
+  const denominator = Math.pow(1 + gSquared - 2 * g * cosTheta, 1.5)
+  let hgPhase = (1 - gSquared) / (4 * Math.PI * denominator)
+
+  // 添加衍射峰（大粒子特征）
+  if (x > 1) {
+    // 衍射峰宽度随x减小
+    const diffractionWidth = Math.max(0.05, 2 / x)
+    const diffractionPeak = Math.exp(-theta * theta / (2 * diffractionWidth * diffractionWidth))
+    // 衍射贡献随x增大而增强
+    const diffractionStrength = Math.min(2, x / 5)
+    hgPhase += diffractionPeak * diffractionStrength
+  }
+
+  // 添加后向散射（彩虹/光晕效应）
+  // 在大粒子情况下，约138°-142°附近有增强（主虹角度）
+  if (x > 5) {
+    const rainbowAngle = 138 * Math.PI / 180
+    const rainbowWidth = 0.15
+    const rainbowPeak = Math.exp(-Math.pow(theta - rainbowAngle, 2) / (2 * rainbowWidth * rainbowWidth))
+    hgPhase += rainbowPeak * 0.3 * (x / 20)
+  }
+
+  return hgPhase
 }
 
-// 散射强度随尺寸参数变化
+// 散射效率因子 Q_sca 随尺寸参数变化
+// 基于米氏理论的近似公式
 function mieIntensity(sizeParameter: number): number {
-  // 米氏散射效率在x≈4时达到峰值
-  if (sizeParameter < 0.1) {
-    return Math.pow(sizeParameter, 4) // 瑞利区
-  } else if (sizeParameter < 10) {
-    // 米氏区 - 振荡行为简化
-    return 2 + Math.sin(sizeParameter) * 0.5
+  const x = sizeParameter
+
+  if (x < 0.01) {
+    // 极小粒子：瑞利散射 Q ∝ x⁴
+    return Math.pow(x, 4) * 1000
+  } else if (x < 0.3) {
+    // 瑞利区过渡
+    return Math.pow(x, 4) * 8 / 3
+  } else if (x < 10) {
+    // 米氏区：展示特征振荡（干涉效应）
+    // Q_sca 在 x ≈ 4 达到第一个峰值约 3.8
+    // 振荡周期大约为 π
+    const oscillation = 1 + 0.8 * Math.sin(x * 1.2) * Math.exp(-x / 15)
+    // 基线从瑞利区上升到几何光学极限2
+    const baseline = 2 * (1 - Math.exp(-x / 2))
+    return baseline * oscillation + 0.5
   } else {
-    return 2 // 几何光学区
+    // 几何光学区：Q → 2（几何截面的两倍，因衍射贡献）
+    // 仍有微小振荡但逐渐衰减
+    const dampedOscillation = 0.2 * Math.sin(x * 0.5) * Math.exp(-x / 30)
+    return 2 + dampedOscillation
   }
 }
 
@@ -88,15 +140,23 @@ function MieScatteringDiagram({
   // 找到最大强度用于归一化
   const maxIntensity = Math.max(...scatterAngles.map((s) => s.intensity))
 
-  // 生成散射图形路径
+  // 生成散射图形路径 - 使用对数坐标以更好显示动态范围
   const scatterPath = useMemo(() => {
     const cx = 300
     const cy = 200
-    const maxRadius = 120
+    const maxRadius = 130
+    const minRadius = 25
+
+    // 使用对数坐标来显示强度的大动态范围
+    const logMax = Math.log10(maxIntensity + 1e-10)
+    const logMin = Math.log10(Math.min(...scatterAngles.map((s) => s.intensity + 1e-10)))
+    const logRange = logMax - logMin || 1
 
     const points = scatterAngles.map((s) => {
-      const normalizedIntensity = s.intensity / maxIntensity
-      const r = 30 + normalizedIntensity * maxRadius
+      // 对数归一化
+      const logIntensity = Math.log10(s.intensity + 1e-10)
+      const normalizedIntensity = (logIntensity - logMin) / logRange
+      const r = minRadius + normalizedIntensity * maxRadius
       const rad = ((s.angle - 90) * Math.PI) / 180
       return {
         x: cx + r * Math.cos(rad),
@@ -235,17 +295,26 @@ function MieScatteringDiagram({
         </text>
       </g>
 
-      {/* 粒子尺寸比较 */}
-      <g transform="translate(480, 80)">
-        <rect x="-40" y="-15" width="110" height="90" fill="rgba(30,41,59,0.8)" rx="6" />
-        <text x="15" y="5" textAnchor="middle" fill="#94a3b8" fontSize="10">尺寸比较</text>
+      {/* 粒子与波长比较 */}
+      <g transform="translate(480, 70)">
+        <rect x="-40" y="-15" width="115" height="110" fill="rgba(30,41,59,0.9)" rx="6" stroke="#374151" strokeWidth="1" />
+        <text x="17" y="5" textAnchor="middle" fill="#94a3b8" fontSize="10">尺寸比较</text>
 
         {/* 粒子 */}
-        <circle cx="15" cy="35" r={Math.max(3, Math.min(15, particleSize * 10))} fill="#94a3b8" />
-        <text x="15" y="60" textAnchor="middle" fill="#64748b" fontSize="9">r={particleSize.toFixed(2)}μm</text>
+        <circle cx="17" cy="35" r={Math.max(3, Math.min(20, particleSize * 12))} fill="#94a3b8" opacity="0.8" />
+        <text x="17" y="62" textAnchor="middle" fill="#64748b" fontSize="9">r = {particleSize.toFixed(3)} μm</text>
 
-        {/* 波长指示 */}
-        <line x1="-20" y1="35" x2="50" y2="35" stroke={lightColor} strokeWidth="1" strokeDasharray="2 2" opacity="0.5" />
+        {/* 波长指示（用正弦波表示） */}
+        <g transform="translate(-25, 80)">
+          <text x="42" y="-5" textAnchor="middle" fill={lightColor} fontSize="8">λ = {wavelength} nm</text>
+          <path
+            d={`M 0 0 ${Array.from({ length: 20 }, (_, i) => `L ${i * 4} ${Math.sin(i * 0.8) * 5}`).join(' ')}`}
+            fill="none"
+            stroke={lightColor}
+            strokeWidth="1.5"
+            opacity="0.7"
+          />
+        </g>
       </g>
     </svg>
   )

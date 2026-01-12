@@ -218,24 +218,41 @@ function OpticalRotationDiagram({
         </text>
       </g>
 
-      {/* 偏振面旋转指示 - 沿管路 */}
-      {[0, 0.25, 0.5, 0.75, 1].map((t, i) => {
+      {/* 偏振面旋转指示 - 沿管路显示螺旋演化 */}
+      {[0, 0.2, 0.4, 0.6, 0.8, 1].map((t, i) => {
         const x = 240 + t * (100 + pathLength * 60)
         const currentAngle = rotationAngle * t
         const color = isRightRotation ? '#22d3ee' : '#f472b6'
+        // 渐变透明度使演化过程更清晰
+        const opacity = 0.3 + t * 0.5
         return (
           <g key={i} transform={`translate(${x}, 150)`}>
+            {/* 偏振方向线 */}
             <motion.line
-              x1="-10"
+              x1="-12"
               y1="0"
-              x2="10"
+              x2="12"
               y2="0"
               stroke={color}
-              strokeWidth="2"
+              strokeWidth="2.5"
               transform={`rotate(${currentAngle})`}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
-              transition={{ delay: i * 0.1 }}
+              animate={{ opacity }}
+              transition={{ delay: i * 0.08 }}
+            />
+            {/* 垂直方向参考线（辅助理解旋转） */}
+            <motion.line
+              x1="0"
+              y1="-8"
+              x2="0"
+              y2="8"
+              stroke={color}
+              strokeWidth="1"
+              strokeDasharray="2 2"
+              transform={`rotate(${currentAngle})`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: opacity * 0.4 }}
+              transition={{ delay: i * 0.08 }}
             />
           </g>
         )
@@ -566,14 +583,29 @@ export function OpticalRotationDemo() {
               color="purple"
             />
 
-            <motion.button
-              className="w-full py-2 mt-2 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 rounded-lg border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setAnalyzerAngle(Math.round(rotationAngle))}
-            >
-              对准消光位置
-            </motion.button>
+            <div className="flex gap-2 mt-2">
+              <motion.button
+                className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 rounded-lg border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors text-sm"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setAnalyzerAngle(Math.round(rotationAngle))}
+              >
+                最亮位置 (平行)
+              </motion.button>
+              <motion.button
+                className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 rounded-lg border border-purple-500/30 hover:bg-purple-500/30 transition-colors text-sm"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  // 消光位置：检偏器与偏振方向垂直（差90°）
+                  const extinctionAngle = rotationAngle - 90
+                  // 保持在 -90 到 90 范围内
+                  setAnalyzerAngle(Math.round(extinctionAngle > 90 ? extinctionAngle - 180 : extinctionAngle < -90 ? extinctionAngle + 180 : extinctionAngle))
+                }}
+              >
+                消光位置 (正交)
+              </motion.button>
+            </div>
           </ControlPanel>
 
           {/* 公式与参数 */}

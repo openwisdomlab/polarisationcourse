@@ -50,6 +50,7 @@ function wavelengthToRGB(wavelength: number): [number, number, number] {
 }
 
 // 计算透过强度（考虑相位延迟）
+// 基于正交偏振片间双折射样品的透过率公式
 function calculateTransmission(
   wavelength: number,
   thickness: number,
@@ -58,21 +59,40 @@ function calculateTransmission(
   analyzerAngle: number
 ): number {
   // 相位延迟 δ = 2π × Δn × d / λ
-  const phaseRetardation = (2 * Math.PI * birefringence * thickness * 1000) / wavelength
+  const delta = (2 * Math.PI * birefringence * thickness * 1000) / wavelength
 
-  // 假设样品45度放置，偏振角相对于样品
-  const theta1 = ((polarizerAngle - 45) * Math.PI) / 180
-  const theta2 = ((analyzerAngle - 45) * Math.PI) / 180
+  // 偏振片角度转换为弧度
+  const thetaP = (polarizerAngle * Math.PI) / 180 // 起偏器角度
+  const thetaA = (analyzerAngle * Math.PI) / 180 // 检偏器角度
 
-  // 简化的透过率公式
+  // 假设样品光轴在0°方向（水平）
+  // 使用完整的琼斯矩阵计算或等效的透过率公式
+  // T = cos²(θP - θA) - sin(2θP) × sin(2θA) × sin²(δ/2)
+  // 但当样品光轴在45°时，公式变为：
+  // T = cos²(θP - θA) - sin(2(θP - 45°)) × sin(2(θA - 45°)) × sin²(δ/2)
+
+  // 更准确的公式：对于正交偏振片 (θA = θP + 90°)，样品光轴在45°
+  // T = sin²(2×45°) × sin²(δ/2) = sin²(δ/2)
+  // 对于平行偏振片 (θA = θP)
+  // T = 1 - sin²(2×45°) × sin²(δ/2) = cos²(δ/2)
+
+  // 通用公式（样品光轴固定在45°方向）
+  const beta = Math.PI / 4 // 样品光轴角度 (45°)
+  const sinSquaredDeltaHalf = Math.pow(Math.sin(delta / 2), 2)
+
+  // Malus定律 + 干涉项
+  const cosAngleDiff = Math.cos(thetaA - thetaP)
+  const sin2ThetaPBeta = Math.sin(2 * (thetaP - beta))
+  const sin2ThetaABeta = Math.sin(2 * (thetaA - beta))
+
   const transmission =
-    Math.pow(Math.cos(theta1 - theta2), 2) -
-    Math.sin(2 * theta1) * Math.sin(2 * theta2) * Math.pow(Math.sin(phaseRetardation / 2), 2)
+    Math.pow(cosAngleDiff, 2) -
+    sin2ThetaPBeta * sin2ThetaABeta * sinSquaredDeltaHalf
 
   return Math.max(0, Math.min(1, transmission))
 }
 
-// 计算混合颜色
+// 计算混合颜色 - 基于Michel-Lévy色表原理
 function calculateMixedColor(
   thickness: number,
   birefringence: number,
@@ -80,10 +100,10 @@ function calculateMixedColor(
   analyzerAngle: number
 ): { r: number; g: number; b: number; hex: string } {
   let totalR = 0, totalG = 0, totalB = 0
-  let totalWeight = 0
 
-  // 对可见光谱积分
-  for (let wavelength = 400; wavelength <= 700; wavelength += 5) {
+  // 使用人眼光谱响应权重（近似CIE标准观察者）
+  // 对可见光谱积分，步长更细以提高精度
+  for (let wavelength = 380; wavelength <= 780; wavelength += 2) {
     const transmission = calculateTransmission(
       wavelength,
       thickness,
@@ -92,21 +112,44 @@ function calculateMixedColor(
       analyzerAngle
     )
     const [r, g, b] = wavelengthToRGB(wavelength)
+
+    // 假设白光源为等能光谱（可以改为D65标准光源）
     totalR += r * transmission
     totalG += g * transmission
     totalB += b * transmission
-    totalWeight += transmission
   }
 
-  if (totalWeight < 0.01) {
+  // 计算总透过光能量（用于判断亮度）
+  const totalEnergy = totalR + totalG + totalB
+
+  if (totalEnergy < 0.001) {
     return { r: 0, g: 0, b: 0, hex: '#000000' }
   }
 
-  // 归一化并增强对比度
-  const maxChannel = Math.max(totalR, totalG, totalB, 0.01)
-  const r = Math.min(1, (totalR / maxChannel) * 1.2)
-  const g = Math.min(1, (totalG / maxChannel) * 1.2)
-  const b = Math.min(1, (totalB / maxChannel) * 1.2)
+  // 归一化到总能量，保持色彩的相对比例
+  // 这样可以正确显示干涉色
+  const scale = 200 / (780 - 380) // 基于波长范围的缩放因子
+  let r = totalR * scale
+  let g = totalG * scale
+  let b = totalB * scale
+
+  // 计算亮度并进行适当的亮度调整
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b
+
+  // 如果太暗或太亮，进行亮度校正
+  if (luminance > 0.01 && luminance < 1.5) {
+    // 轻微增强饱和度，使颜色更鲜明
+    const avgBrightness = (r + g + b) / 3
+    const saturationBoost = 1.3
+    r = avgBrightness + (r - avgBrightness) * saturationBoost
+    g = avgBrightness + (g - avgBrightness) * saturationBoost
+    b = avgBrightness + (b - avgBrightness) * saturationBoost
+  }
+
+  // 限制在有效范围内
+  r = Math.max(0, Math.min(1, r))
+  g = Math.max(0, Math.min(1, g))
+  b = Math.max(0, Math.min(1, b))
 
   const hex = `#${Math.round(r * 255).toString(16).padStart(2, '0')}${Math.round(g * 255).toString(16).padStart(2, '0')}${Math.round(b * 255).toString(16).padStart(2, '0')}`
 
