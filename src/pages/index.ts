@@ -22,5 +22,9 @@ export { DetectiveGamePage } from './DetectiveGamePage'
 export { CoursePage } from './CoursePage'
 export { default as LearningHubPage } from './LearningHubPage'
 
+// Exploration pages - 问题驱动的探索系统
+export { default as ExplorePage } from './ExplorePage'
+export { default as ExplorationNodePage } from './ExplorationNodePage'
+
 // Note: Legacy pages (DevicesPage, BenchPage, OpticalDesignStudioPage, OpticalDesignStudioPageV2)
 // have been removed and consolidated into OpticalDesignPage
