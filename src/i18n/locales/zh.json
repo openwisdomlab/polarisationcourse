@@ -231,6 +231,86 @@
       "screenPolarizerDesc": "在屏幕前旋转偏振片"
     },
     "keyExperiment": "核心实验",
+    "eras": {
+      "era1": {
+        "title": "发现之初",
+        "subtitle": "折射、棱镜与双像",
+        "description": "在这个开创性的时代，科学家们首次发现光可以被分离和分解。牛顿的棱镜实验揭示了光谱的秘密，而巴多林的冰洲石展示了神秘的双折射现象——为理解光的波动性和偏振奠定了基础。"
+      },
+      "era2": {
+        "title": "偏振黄金时代",
+        "subtitle": "定律、理论与基础发现",
+        "description": "19世纪初见证了偏振发现的爆发。马吕斯发现反射光是偏振的，布儒斯特确定了偏振角，菲涅尔证明了光是横波。这个时代建立了我们今天仍在使用的大部分基本定律。"
+      },
+      "era3": {
+        "title": "数学形式化",
+        "subtitle": "斯托克斯、穆勒与定量方法",
+        "description": "科学家们发展出严格的数学工具来描述偏振。斯托克斯参数和穆勒矩阵能够完整表征任何偏振态，而瑞利通过散射理论解释了为什么天空是蓝色的。"
+      },
+      "era4": {
+        "title": "现代应用",
+        "subtitle": "LCD屏幕、成像及更多",
+        "description": "偏振技术通过液晶显示器和成像系统进入日常生活。全偏振显微镜和遥感技术在医学、海洋学和自动驾驶领域开辟了新前沿。"
+      }
+    },
+    "discoveries": {
+      "snell": "斯涅尔折射定律",
+      "newton": "牛顿棱镜实验",
+      "bartholin": "双折射的发现",
+      "huygens": "光的波动理论",
+      "malus": "偏振现象的发现",
+      "arago": "色偏振",
+      "brewster": "布儒斯特角",
+      "biot": "旋光现象",
+      "fresnel": "横波理论",
+      "faraday": "磁光效应",
+      "pasteur": "分子手性",
+      "stokes": "斯托克斯参数",
+      "rayleigh": "瑞利散射",
+      "poincare": "庞加莱球",
+      "polaroid": "宝丽来偏光片",
+      "jones": "Jones矩阵方法",
+      "mueller": "Mueller矩阵",
+      "laser": "第一台激光器",
+      "lcd": "液晶显示技术",
+      "polarimetry": "偏振成像技术"
+    },
+    "scientists": {
+      "snell": "威理博·斯涅尔",
+      "newton": "艾萨克·牛顿",
+      "bartholin": "拉斯穆·巴多林",
+      "huygens": "克里斯蒂安·惠更斯",
+      "malus": "艾蒂安-路易·马吕斯",
+      "arago": "弗朗索瓦·阿拉戈",
+      "brewster": "大卫·布儒斯特",
+      "biot": "让-巴蒂斯特·毕奥",
+      "fresnel": "奥古斯丁-让·菲涅尔",
+      "faraday": "迈克尔·法拉第",
+      "pasteur": "路易·巴斯德",
+      "stokes": "乔治·斯托克斯",
+      "rayleigh": "瑞利勋爵",
+      "poincare": "亨利·庞加莱",
+      "land": "埃德温·兰德",
+      "jones": "R·克拉克·琼斯",
+      "mueller": "汉斯·穆勒",
+      "maiman": "西奥多·梅曼",
+      "lcd": "多位发明家",
+      "modern": "现代研究者"
+    },
+    "links": {
+      "birefringence": "双折射演示",
+      "lightWave": "光波演示",
+      "malus": "马吕斯定律",
+      "brewster": "布儒斯特角",
+      "opticalStudio": "光学设计室",
+      "game2d": "2D解谜游戏",
+      "rayleigh": "瑞利散射",
+      "stokes": "Stokes矢量",
+      "poincare": "庞加莱球",
+      "calc": "计算工具",
+      "microscopy": "偏振显微镜",
+      "mueller": "Mueller矩阵"
+    },
     "resType": {
       "demo": "演示",
       "experiment": "实验",

@@ -231,6 +231,86 @@
       "screenPolarizerDesc": "Rotate a polarizer over screen"
     },
     "keyExperiment": "Key Experiment",
+    "eras": {
+      "era1": {
+        "title": "Dawn of Discovery",
+        "subtitle": "Refraction, Prisms & Double Images",
+        "description": "In this pioneering era, scientists first discovered that light could be split and separated. Newton's prism revealed the spectrum, while Bartholin's calcite showed the mysterious double refraction—laying the foundation for understanding light's wave nature and polarization."
+      },
+      "era2": {
+        "title": "Golden Age of Polarization",
+        "subtitle": "Laws, Theories & Fundamental Discoveries",
+        "description": "The early 19th century saw an explosion of polarization discoveries. Malus found that reflected light is polarized, Brewster identified the polarization angle, and Fresnel proved light is a transverse wave. This era established most fundamental laws we still use today."
+      },
+      "era3": {
+        "title": "Mathematical Formalism",
+        "subtitle": "Stokes, Mueller & Quantitative Methods",
+        "description": "Scientists developed rigorous mathematical tools to describe polarization. Stokes parameters and Mueller matrices enabled complete characterization of any polarization state, while Rayleigh explained why the sky is blue through scattering theory."
+      },
+      "era4": {
+        "title": "Modern Applications",
+        "subtitle": "LCD Screens, Imaging & Beyond",
+        "description": "Polarization technology entered daily life through LCD displays and imaging systems. Full-polarization microscopy and remote sensing opened new frontiers in medicine, oceanography, and autonomous driving."
+      }
+    },
+    "discoveries": {
+      "snell": "Snell's Law of Refraction",
+      "newton": "Newton's Prism Experiment",
+      "bartholin": "Discovery of Birefringence",
+      "huygens": "Wave Theory of Light",
+      "malus": "Discovery of Polarization",
+      "arago": "Chromatic Polarization",
+      "brewster": "Brewster's Angle",
+      "biot": "Optical Rotation",
+      "fresnel": "Transverse Wave Theory",
+      "faraday": "Magneto-Optical Effect",
+      "pasteur": "Molecular Chirality",
+      "stokes": "Stokes Parameters",
+      "rayleigh": "Rayleigh Scattering",
+      "poincare": "Poincaré Sphere",
+      "polaroid": "Polaroid Film",
+      "jones": "Jones Calculus",
+      "mueller": "Mueller Matrices",
+      "laser": "First Laser",
+      "lcd": "LCD Technology",
+      "polarimetry": "Polarimetric Imaging"
+    },
+    "scientists": {
+      "snell": "Willebrord Snell",
+      "newton": "Isaac Newton",
+      "bartholin": "Rasmus Bartholin",
+      "huygens": "Christiaan Huygens",
+      "malus": "Étienne-Louis Malus",
+      "arago": "François Arago",
+      "brewster": "David Brewster",
+      "biot": "Jean-Baptiste Biot",
+      "fresnel": "Augustin-Jean Fresnel",
+      "faraday": "Michael Faraday",
+      "pasteur": "Louis Pasteur",
+      "stokes": "George Stokes",
+      "rayleigh": "Lord Rayleigh",
+      "poincare": "Henri Poincaré",
+      "land": "Edwin Land",
+      "jones": "R. Clark Jones",
+      "mueller": "Hans Mueller",
+      "maiman": "Theodore Maiman",
+      "lcd": "Various Inventors",
+      "modern": "Modern Researchers"
+    },
+    "links": {
+      "birefringence": "Birefringence Demo",
+      "lightWave": "Light Wave",
+      "malus": "Malus's Law",
+      "brewster": "Brewster's Angle",
+      "opticalStudio": "Optical Studio",
+      "game2d": "2D Puzzle Game",
+      "rayleigh": "Rayleigh Scattering",
+      "stokes": "Stokes Vector",
+      "poincare": "Poincaré Sphere",
+      "calc": "Calculation Tools",
+      "microscopy": "Polarimetric Microscopy",
+      "mueller": "Mueller Matrix"
+    },
     "resType": {
       "demo": "Demo",
       "experiment": "Exp",
