@@ -81,11 +81,10 @@ export function App() {
         <Route path="/hardware" element={<HardwarePage />} />
         <Route path="/merchandise" element={<MerchandisePage />} />
 
-        {/* Chronicles - 光的编年史 */}
-        {/* 新版渐进式探索入口 (默认) */}
-        <Route path="/chronicles" element={<LightExplorerPage />} />
-        {/* 完整版编年史 (高级用户) */}
-        <Route path="/chronicles/full" element={<ChroniclesPage />} />
+        {/* Chronicles - 光的编年史 (时间线为主) */}
+        <Route path="/chronicles" element={<ChroniclesPage />} />
+        {/* 渐进式探索入口 (可选) */}
+        <Route path="/chronicles/explore" element={<LightExplorerPage />} />
 
         <Route path="/course" element={<CoursePage />} />
         <Route path="/learn" element={<LearningHubPage />} />

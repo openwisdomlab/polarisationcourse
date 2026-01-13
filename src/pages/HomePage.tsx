@@ -14,6 +14,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { PolarWorldLogo } from '@/components/icons'
 import { PolarizedLightHero } from '@/components/effects'
 import { useCourseProgress } from '@/hooks'
+import { cn } from '@/lib/utils'
 import {
   Play,
   Lightbulb,
@@ -614,18 +615,13 @@ export function HomePage() {
         }`}>
           <div className="flex items-center gap-3">
             <PolarWorldLogo size={40} theme={theme} />
-            <div className="hidden sm:block">
-              <span className={`font-bold text-base ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              }`}>
-                {t('home.title')}
-              </span>
-              <span className={`block text-[10px] ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-              }`}>
-                {t('home.subtitle')}
-              </span>
-            </div>
+            <span className={`hidden sm:block font-bold text-lg ${
+              theme === 'dark'
+                ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400'
+                : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-violet-600'
+            }`}>
+              PolarCraft
+            </span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -637,73 +633,90 @@ export function HomePage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 pt-20 pb-12">
-        {/* Polarized Light Demonstration Effect */}
-        <div className="mb-8">
-          <PolarizedLightHero height={180} className="shadow-xl" />
+        {/* Hero Section - Redesigned for Impact */}
+        <div className="relative mb-12">
+          {/* Dramatic background glow */}
+          <div className="absolute inset-0 -z-10">
+            <div className={cn(
+              'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px]',
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-cyan-500/20 via-blue-500/15 to-violet-500/20'
+                : 'bg-gradient-to-r from-cyan-400/15 via-blue-400/10 to-violet-400/15'
+            )} />
+          </div>
+
+          {/* Main Hero Content */}
+          <div className="text-center pt-8 pb-6">
+            {/* Bold Title with Glow Effect */}
+            <h1 className={cn(
+              'text-5xl sm:text-6xl md:text-7xl font-black tracking-tight mb-4',
+              'text-transparent bg-clip-text',
+              theme === 'dark'
+                ? 'bg-gradient-to-br from-white via-cyan-200 to-violet-300'
+                : 'bg-gradient-to-br from-gray-900 via-cyan-700 to-violet-700'
+            )}
+              style={{
+                textShadow: theme === 'dark'
+                  ? '0 0 60px rgba(34, 211, 238, 0.4), 0 0 120px rgba(139, 92, 246, 0.3)'
+                  : 'none'
+              }}
+            >
+              PolarCraft
+            </h1>
+
+            {/* Animated tagline */}
+            <p className={cn(
+              'text-lg sm:text-xl md:text-2xl font-medium mb-6',
+              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+            )}>
+              {t('home.subtitle')}
+            </p>
+
+            {/* Description */}
+            <p className={cn(
+              'text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-8',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            )}>
+              {t('home.description')}
+            </p>
+
+            {/* CTA Buttons - More prominent */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                onClick={() => {
+                  const firstDemo = LEARNING_STAGES[0].demos[0]
+                  if (firstDemo) navigate(firstDemo.link)
+                }}
+                className={cn(
+                  'group px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3',
+                  'bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-500 text-white',
+                  'hover:scale-105 transition-all duration-300',
+                  'shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40'
+                )}
+              >
+                <Play className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                {t('home.startLearning')}
+              </button>
+              <Link
+                to="/demos"
+                className={cn(
+                  'px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3',
+                  'border-2 transition-all duration-300 hover:scale-105',
+                  theme === 'dark'
+                    ? 'border-cyan-500/50 text-cyan-300 hover:border-cyan-400 hover:bg-cyan-500/10'
+                    : 'border-cyan-400 text-cyan-700 hover:border-cyan-500 hover:bg-cyan-50'
+                )}
+              >
+                <Eye className="w-6 h-6" />
+                {t('home.quick.demos')}
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Hero Section */}
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-6">
-            <PolarWorldLogo size={100} theme={theme} animated={true} />
-          </div>
-          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 ${
-            theme === 'dark'
-              ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400'
-              : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-violet-600'
-          }`}>
-            {t('home.title')}
-          </h1>
-          <p className={`text-sm mb-2 ${
-            theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-          }`}>
-            {t('home.subtitle')}
-          </p>
-          <p className={`text-sm sm:text-base max-w-2xl mx-auto leading-relaxed ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            {t('home.description')}
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap justify-center gap-4 mt-6">
-            <button
-              onClick={() => {
-                // 智能化入口：有进度则继续学习，无进度则显示引导
-                if (progress.completedDemos.length > 0) {
-                  // 找到第一个未完成的 demo
-                  const allDemos = LEARNING_STAGES.flatMap(s => s.demos)
-                  const nextDemo = allDemos.find(d => !progress.completedDemos.includes(d.id))
-                  if (nextDemo) {
-                    navigate(nextDemo.link)
-                  } else {
-                    // 全部完成，去高级内容
-                    navigate('/demos/stokes')
-                  }
-                } else {
-                  // 新用户显示引导选择
-                  setShowGuidedStart(true)
-                }
-              }}
-              className="px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-blue-500/25"
-            >
-              <Play className="w-5 h-5" />
-              {progress.completedDemos.length > 0
-                ? t('home.continueLearning')
-                : t('home.tryNow')}
-            </button>
-            <Link
-              to="/course"
-              className={`px-6 py-3 rounded-full border-2 font-medium flex items-center gap-2 hover:scale-105 transition-transform ${
-                theme === 'dark'
-                  ? 'border-violet-500/50 text-violet-300 hover:border-violet-400 hover:bg-violet-500/10'
-                  : 'border-violet-300 text-violet-600 hover:border-violet-500 hover:bg-violet-50'
-              }`}
-            >
-              <BookOpen className="w-5 h-5" />
-              {t('home.courseSyllabus')}
-            </Link>
-          </div>
+        {/* Interactive Polarized Light Demo */}
+        <div className="mb-10">
+          <PolarizedLightHero height={200} className="shadow-2xl rounded-2xl" />
         </div>
 
         {/* Learning Journey - Three Stages (简化预览，点击进入课程大纲) */}
@@ -750,8 +763,7 @@ export function HomePage() {
         <footer className={`mt-12 text-center text-xs ${
           theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
         }`}>
-          <p>偏振光下的新世界 · 深圳零一学院颠覆创新挑战营</p>
-          <p className="mt-1 opacity-60">A New World Under Polarized Light · Open Wisdom Lab</p>
+          <p className="opacity-60">© 2025 PolarCraft - A New World Under Polarized Light</p>
         </footer>
       </main>
 

@@ -216,7 +216,7 @@ export function LightExplorerPage() {
                   : 'Visit the full Chronicles of Light with timeline, scientist networks, knowledge graphs and more.'}
               </p>
               <Link
-                to="/chronicles/full"
+                to="/chronicles"
                 className={cn(
                   'inline-flex items-center gap-2 text-sm font-medium transition-colors',
                   theme === 'dark'
