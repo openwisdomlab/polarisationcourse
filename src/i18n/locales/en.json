@@ -188,9 +188,13 @@
     },
     "startStage": "Start This Stage",
     "startLearning": "Start Learning",
+    "tryNow": "Try Now",
+    "continueLearning": "Continue Learning",
     "explore": "Explore Freely",
     "viewCourse": "View Course",
+    "courseSyllabus": "Course Syllabus",
     "learningJourney": "Learning Journey",
+    "viewAll": "View All",
     "quickAccess": "Quick Access",
     "quick": {
       "games": "Games",

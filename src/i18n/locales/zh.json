@@ -188,9 +188,13 @@
     },
     "startStage": "开始学习本阶段",
     "startLearning": "开始学习",
+    "tryNow": "立即体验",
+    "continueLearning": "继续学习",
     "explore": "自由探索",
     "viewCourse": "查看课程",
+    "courseSyllabus": "课程大纲",
     "learningJourney": "学习路径",
+    "viewAll": "查看全部",
     "quickAccess": "快捷入口",
     "quick": {
       "games": "游戏",
