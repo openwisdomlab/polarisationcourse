@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 import { ListItem } from '@/components/demos/DemoControls'
 import { DemoErrorBoundary } from '@/components/demos/DemoErrorBoundary'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft } from 'lucide-react'
+import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft, ExternalLink } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
 import { SEO } from '@/components/shared/SEO'
@@ -92,6 +92,15 @@ const DIYIcon = memo(function DIYIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  )
+})
+
+// P2: External resources icon
+const ResourcesIcon = memo(function ResourcesIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+      <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
     </svg>
   )
 })
@@ -282,6 +291,13 @@ interface DemoInfo {
   }
   diagram?: ReactNode
   visualType: '2D' | '3D' // Indicates whether demo uses 2D or 3D visualization
+  // P2: 外部资源延伸阅读
+  resources?: {
+    videos?: Array<{ title: string; url: string; source: string }>
+    articles?: Array<{ title: string; url: string; source: string }>
+    papers?: Array<{ title: string; url: string; authors?: string }>
+    tools?: Array<{ title: string; url: string; description: string }>
+  }
 }
 
 // 根据难度级别获取适当的内容
@@ -673,6 +689,15 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
     diy: getDiy(t, 'demos.malus'),
     diagram: <MalusDiagram />,
     visualType: '2D',
+    // P2: 外部资源延伸阅读
+    resources: {
+      videos: [
+        { title: t('demos.malus.resources.videos.0.title'), url: 'https://www.youtube.com/watch?v=zcqZHYo7ONs', source: 'Physics Girl' },
+      ],
+      articles: [
+        { title: t('demos.malus.resources.articles.0.title'), url: 'https://en.wikipedia.org/wiki/Polarizer', source: 'Wikipedia' },
+      ],
+    },
   },
   birefringence: {
     questions: getQuestions(t, 'demos.birefringence', difficultyLevel),
@@ -1533,15 +1558,54 @@ interface UnitInfo {
   num: number
   titleKey: string
   color: string
+  isAdvanced?: boolean // P1: 标记为高级内容
+  stage: number // P2: 所属学习阶段
 }
 
+// P2: 学习阶段配置 - 三阶段认知旅程
+interface LearningStageConfig {
+  id: number
+  titleKey: string
+  subtitleKey: string
+  color: string
+  gradient: string
+  units: number[]
+}
+
+const LEARNING_STAGES: LearningStageConfig[] = [
+  {
+    id: 1,
+    titleKey: 'course.stages.stage1.title', // 看见偏振
+    subtitleKey: 'course.stages.stage1.subtitle',
+    color: 'cyan',
+    gradient: 'from-cyan-500/20 to-blue-500/20',
+    units: [0, 1],
+  },
+  {
+    id: 2,
+    titleKey: 'course.stages.stage2.title', // 理解规律
+    subtitleKey: 'course.stages.stage2.subtitle',
+    color: 'green',
+    gradient: 'from-green-500/20 to-emerald-500/20',
+    units: [2, 3, 4],
+  },
+  {
+    id: 3,
+    titleKey: 'course.stages.stage3.title', // 测量与应用
+    subtitleKey: 'course.stages.stage3.subtitle',
+    color: 'purple',
+    gradient: 'from-purple-500/20 to-pink-500/20',
+    units: [5],
+  },
+]
+
 const UNITS: UnitInfo[] = [
-  { num: 0, titleKey: 'course.units.basics.title', color: 'yellow' },
-  { num: 1, titleKey: 'course.units.1.title', color: 'cyan' },
-  { num: 2, titleKey: 'course.units.2.title', color: 'purple' },
-  { num: 3, titleKey: 'course.units.3.title', color: 'green' },
-  { num: 4, titleKey: 'course.units.4.title', color: 'orange' },
-  { num: 5, titleKey: 'course.units.5.title', color: 'pink' },
+  { num: 0, titleKey: 'course.units.basics.title', color: 'yellow', stage: 1 },
+  { num: 1, titleKey: 'course.units.1.title', color: 'cyan', stage: 1 },
+  { num: 2, titleKey: 'course.units.2.title', color: 'purple', stage: 2 },
+  { num: 3, titleKey: 'course.units.3.title', color: 'green', stage: 2 },
+  { num: 4, titleKey: 'course.units.4.title', color: 'orange', stage: 2 },
+  { num: 5, titleKey: 'course.units.5.title', color: 'pink', isAdvanced: true, stage: 3 }, // Unit 5 标记为高级内容
 ]
 
 function DemoLoading() {
@@ -1783,7 +1847,7 @@ export function DemosPage() {
   // 学习者可根据需要点击展开感兴趣的内容
   const getInitialExpandedCards = (): Record<string, boolean> => {
     const tabParam = searchParams.get('tab')
-    const validTabs = ['lifeScene', 'physics', 'experiment', 'frontier', 'diy']
+    const validTabs = ['lifeScene', 'physics', 'experiment', 'frontier', 'diy', 'resources']
     if (tabParam && validTabs.includes(tabParam)) {
       return {
         lifeScene: tabParam === 'lifeScene',
@@ -1791,6 +1855,7 @@ export function DemosPage() {
         experiment: tabParam === 'experiment',
         frontier: tabParam === 'frontier',
         diy: tabParam === 'diy',
+        resources: tabParam === 'resources',
       }
     }
     // 信息减负策略：默认所有卡片折叠
@@ -1801,6 +1866,7 @@ export function DemosPage() {
       experiment: false,
       frontier: false,
       diy: false,
+      resources: false,
     }
   }
 
@@ -2264,126 +2330,175 @@ export function DemosPage() {
           </div>
 
           <div className="p-4">
-            {UNITS.map((unit) => {
-              const unitDemos = searchQuery
-                ? filteredDemos.filter((d) => d.unit === unit.num)
-                : DEMOS.filter((d) => d.unit === unit.num)
-              const isExpanded = !isCompact || expandedUnit === unit.num
+            {/* P2: 按学习阶段分组展示 */}
+            {LEARNING_STAGES.map((stage) => {
+              const stageUnits = UNITS.filter(u => stage.units.includes(u.num))
+              const hasMatchingDemos = searchQuery
+                ? stageUnits.some(u => filteredDemos.some(d => d.unit === u.num))
+                : true
 
-              // Hide units with no matching demos when searching
-              if (searchQuery && unitDemos.length === 0) return null
+              // Hide stages with no matching demos when searching
+              if (!hasMatchingDemos) return null
 
               return (
-                <div key={unit.num} className="mb-3">
-                  <button
-                    onClick={() => isCompact && setExpandedUnit(expandedUnit === unit.num ? null : unit.num)}
-                    className={cn(
-                      'w-full text-[10px] uppercase tracking-wider mb-2 px-2 font-semibold flex items-center gap-2',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
-                      isCompact && (theme === 'dark' ? 'hover:text-cyan-400' : 'hover:text-cyan-600'),
-                      'transition-colors'
-                    )}
-                  >
-                    {unit.num === 0 ? (
-                      <span className="text-yellow-400">★</span>
-                    ) : (
-                      <span className={`text-${unit.color}-400`}>●</span>
-                    )}
-                    <span className="flex-1 text-left">
-                      {unit.num === 0
-                        ? t('basics.title')  // 光学基础不重复显示
-                        : `${t('game.level')} ${unit.num} · ${t(unit.titleKey)}`}
-                    </span>
-                    {isCompact && (
-                      <ChevronDown className={cn(
-                        "w-3 h-3 transition-transform",
-                        isExpanded && "rotate-180"
-                      )} />
-                    )}
-                  </button>
-                  {isExpanded && (
-                    <ul className="space-y-0.5">
-                      {unitDemos.map((demo) => {
-                        const demoMatches = searchQuery ? searchMatches.get(demo.id) : null
-                        return (
-                          <li key={demo.id}>
-                            <button
-                              onClick={() => {
-                                handleDemoChange(demo.id)
-                                if (isCompact) setShowMobileSidebar(false)
-                              }}
-                              className={cn(
-                                'w-full flex flex-col gap-1 px-3 py-2 rounded-lg text-sm text-left transition-all duration-200',
-                                'hover:translate-x-1 active:scale-[0.98]',
-                                activeDemo === demo.id
-                                  ? theme === 'dark'
-                                    ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
-                                    : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
-                                  : theme === 'dark'
-                                    ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
-                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                              )}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span
-                                  className={cn(
-                                    'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0',
-                                    activeDemo === demo.id
-                                      ? theme === 'dark'
-                                        ? 'bg-cyan-400 text-black'
-                                        : 'bg-cyan-500 text-white'
-                                      : theme === 'dark'
-                                        ? 'bg-slate-700 text-gray-400'
-                                        : 'bg-gray-200 text-gray-500'
-                                  )}
-                                >
-                                  {unitDemos.indexOf(demo) + 1}
-                                </span>
-                                <span className="truncate flex-1">{t(demo.titleKey)}</span>
-                                <VisualTypeBadge type={demo.visualType} />
-                              </div>
-                              {/* Search match details */}
-                              {demoMatches && demoMatches.matches.length > 0 && (
-                                <div className={cn(
-                                  'ml-7 mt-1 text-xs space-y-1 border-l-2 pl-2',
-                                  theme === 'dark'
-                                    ? 'border-amber-400/40 text-gray-500'
-                                    : 'border-amber-500/40 text-gray-500'
-                                )}>
-                                  {demoMatches.matches.slice(0, 3).map((match, idx) => (
-                                    <div key={idx} className="flex flex-col">
-                                      <span className={cn(
-                                        'text-[10px] font-medium',
-                                        theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                                      )}>
-                                        {match.sectionLabel}
-                                      </span>
+                <div key={stage.id} className="mb-4">
+                  {/* Stage header */}
+                  <div className={cn(
+                    'mb-2 px-2 py-1.5 rounded-lg',
+                    theme === 'dark'
+                      ? `bg-gradient-to-r ${stage.gradient} border border-slate-700/50`
+                      : `bg-gradient-to-r ${stage.gradient} border border-gray-200`
+                  )}>
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        'text-[10px] font-bold px-1.5 py-0.5 rounded',
+                        theme === 'dark' ? `bg-${stage.color}-500/30 text-${stage.color}-400` : `bg-${stage.color}-100 text-${stage.color}-700`
+                      )}>
+                        {t('course.phase')} {stage.id}
+                      </span>
+                      <span className={cn(
+                        'text-xs font-semibold',
+                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      )}>
+                        {t(stage.titleKey)}
+                      </span>
+                      {stage.id === 3 && (
+                        <span className={cn(
+                          'text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase',
+                          theme === 'dark'
+                            ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                            : 'bg-purple-100 text-purple-600 border border-purple-200'
+                        )}>
+                          {t('course.advanced')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Units within this stage */}
+                  {stageUnits.map((unit) => {
+                    const unitDemos = searchQuery
+                      ? filteredDemos.filter((d) => d.unit === unit.num)
+                      : DEMOS.filter((d) => d.unit === unit.num)
+                    const isExpanded = !isCompact || expandedUnit === unit.num
+
+                    // Hide units with no matching demos when searching
+                    if (searchQuery && unitDemos.length === 0) return null
+
+                    return (
+                      <div key={unit.num} className="mb-2 ml-2">
+                        <button
+                          onClick={() => isCompact && setExpandedUnit(expandedUnit === unit.num ? null : unit.num)}
+                          className={cn(
+                            'w-full text-[10px] uppercase tracking-wider mb-1.5 px-2 font-semibold flex items-center gap-2',
+                            theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
+                            isCompact && (theme === 'dark' ? 'hover:text-cyan-400' : 'hover:text-cyan-600'),
+                            'transition-colors'
+                          )}
+                        >
+                          {unit.num === 0 ? (
+                            <span className="text-yellow-400">★</span>
+                          ) : (
+                            <span className={`text-${unit.color}-400`}>●</span>
+                          )}
+                          <span className="flex-1 text-left">
+                            {unit.num === 0
+                              ? t('basics.title')
+                              : `${t('game.level')} ${unit.num} · ${t(unit.titleKey)}`}
+                          </span>
+                          {isCompact && (
+                            <ChevronDown className={cn(
+                              "w-3 h-3 transition-transform",
+                              isExpanded && "rotate-180"
+                            )} />
+                          )}
+                        </button>
+                        {isExpanded && (
+                          <ul className="space-y-0.5">
+                            {unitDemos.map((demo) => {
+                              const demoMatches = searchQuery ? searchMatches.get(demo.id) : null
+                              return (
+                                <li key={demo.id}>
+                                  <button
+                                    onClick={() => {
+                                      handleDemoChange(demo.id)
+                                      if (isCompact) setShowMobileSidebar(false)
+                                    }}
+                                    className={cn(
+                                      'w-full flex flex-col gap-1 px-3 py-2 rounded-lg text-sm text-left transition-all duration-200',
+                                      'hover:translate-x-1 active:scale-[0.98]',
+                                      activeDemo === demo.id
+                                        ? theme === 'dark'
+                                          ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
+                                          : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
+                                        : theme === 'dark'
+                                          ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
+                                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                    )}
+                                  >
+                                    <div className="flex items-center gap-2">
                                       <span
-                                        className="truncate"
-                                        dangerouslySetInnerHTML={{
-                                          __html: match.highlightedText
-                                            .replace(/\*\*([^*]+)\*\*/g,
-                                              `<mark class="${theme === 'dark' ? 'bg-amber-400/30 text-amber-200' : 'bg-amber-200 text-amber-900'} px-0.5 rounded">\$1</mark>`)
-                                        }}
-                                      />
+                                        className={cn(
+                                          'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0',
+                                          activeDemo === demo.id
+                                            ? theme === 'dark'
+                                              ? 'bg-cyan-400 text-black'
+                                              : 'bg-cyan-500 text-white'
+                                            : theme === 'dark'
+                                              ? 'bg-slate-700 text-gray-400'
+                                              : 'bg-gray-200 text-gray-500'
+                                        )}
+                                      >
+                                        {unitDemos.indexOf(demo) + 1}
+                                      </span>
+                                      <span className="truncate flex-1">{t(demo.titleKey)}</span>
+                                      <VisualTypeBadge type={demo.visualType} />
                                     </div>
-                                  ))}
-                                  {demoMatches.matches.length > 3 && (
-                                    <span className={cn(
-                                      'text-[10px]',
-                                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-                                    )}>
-                                      +{demoMatches.matches.length - 3} {t('gallery.search.moreMatches') || '更多匹配'}
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </button>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  )}
+                                    {/* Search match details */}
+                                    {demoMatches && demoMatches.matches.length > 0 && (
+                                      <div className={cn(
+                                        'ml-7 mt-1 text-xs space-y-1 border-l-2 pl-2',
+                                        theme === 'dark'
+                                          ? 'border-amber-400/40 text-gray-500'
+                                          : 'border-amber-500/40 text-gray-500'
+                                      )}>
+                                        {demoMatches.matches.slice(0, 3).map((match, idx) => (
+                                          <div key={idx} className="flex flex-col">
+                                            <span className={cn(
+                                              'text-[10px] font-medium',
+                                              theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                                            )}>
+                                              {match.sectionLabel}
+                                            </span>
+                                            <span
+                                              className="truncate"
+                                              dangerouslySetInnerHTML={{
+                                                __html: match.highlightedText
+                                                  .replace(/\*\*([^*]+)\*\*/g,
+                                                    `<mark class="${theme === 'dark' ? 'bg-amber-400/30 text-amber-200' : 'bg-amber-200 text-amber-900'} px-0.5 rounded">\$1</mark>`)
+                                              }}
+                                            />
+                                          </div>
+                                        ))}
+                                        {demoMatches.matches.length > 3 && (
+                                          <span className={cn(
+                                            'text-[10px]',
+                                            theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                                          )}>
+                                            +{demoMatches.matches.length - 3} {t('gallery.search.moreMatches') || '更多匹配'}
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </button>
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               )
             })}
@@ -3042,6 +3157,175 @@ export function DemosPage() {
                           {demoInfo.diy.observation}
                         </p>
                       </div>
+                    </div>
+                  </CollapsibleCard>
+                )}
+
+                {/* P2: External Resources card - 延伸阅读 */}
+                {demoInfo.resources && (
+                  <CollapsibleCard
+                    title={t('gallery.cards.resources')}
+                    icon={<ResourcesIcon />}
+                    color="blue"
+                    isExpanded={expandedCards.resources}
+                    onToggle={() => toggleCard('resources')}
+                  >
+                    <div className="space-y-4">
+                      {/* Disclaimer */}
+                      <p className={cn(
+                        'text-xs italic',
+                        theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      )}>
+                        {t('gallery.resourcesDisclaimer')}
+                      </p>
+
+                      {/* Videos */}
+                      {demoInfo.resources.videos && demoInfo.resources.videos.length > 0 && (
+                        <div>
+                          <h5 className={cn(
+                            'font-semibold text-sm mb-2 flex items-center gap-2',
+                            theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                          )}>
+                            🎬 {t('gallery.resourceTypes.videos')}
+                          </h5>
+                          <ul className="space-y-1.5">
+                            {demoInfo.resources.videos.map((video, i) => (
+                              <li key={i}>
+                                <a
+                                  href={video.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={cn(
+                                    'text-sm flex items-center gap-2 hover:underline',
+                                    theme === 'dark' ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'
+                                  )}
+                                >
+                                  <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                  <span>{video.title}</span>
+                                  <span className={cn(
+                                    'text-xs',
+                                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                  )}>
+                                    ({video.source})
+                                  </span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Articles */}
+                      {demoInfo.resources.articles && demoInfo.resources.articles.length > 0 && (
+                        <div>
+                          <h5 className={cn(
+                            'font-semibold text-sm mb-2 flex items-center gap-2',
+                            theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                          )}>
+                            📚 {t('gallery.resourceTypes.articles')}
+                          </h5>
+                          <ul className="space-y-1.5">
+                            {demoInfo.resources.articles.map((article, i) => (
+                              <li key={i}>
+                                <a
+                                  href={article.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={cn(
+                                    'text-sm flex items-center gap-2 hover:underline',
+                                    theme === 'dark' ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'
+                                  )}
+                                >
+                                  <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                  <span>{article.title}</span>
+                                  <span className={cn(
+                                    'text-xs',
+                                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                  )}>
+                                    ({article.source})
+                                  </span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Papers */}
+                      {demoInfo.resources.papers && demoInfo.resources.papers.length > 0 && (
+                        <div>
+                          <h5 className={cn(
+                            'font-semibold text-sm mb-2 flex items-center gap-2',
+                            theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                          )}>
+                            📄 {t('gallery.resourceTypes.papers')}
+                          </h5>
+                          <ul className="space-y-1.5">
+                            {demoInfo.resources.papers.map((paper, i) => (
+                              <li key={i}>
+                                <a
+                                  href={paper.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={cn(
+                                    'text-sm flex items-center gap-2 hover:underline',
+                                    theme === 'dark' ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'
+                                  )}
+                                >
+                                  <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                  <span>{paper.title}</span>
+                                  {paper.authors && (
+                                    <span className={cn(
+                                      'text-xs',
+                                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                    )}>
+                                      - {paper.authors}
+                                    </span>
+                                  )}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Tools */}
+                      {demoInfo.resources.tools && demoInfo.resources.tools.length > 0 && (
+                        <div>
+                          <h5 className={cn(
+                            'font-semibold text-sm mb-2 flex items-center gap-2',
+                            theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                          )}>
+                            🛠️ {t('gallery.resourceTypes.tools')}
+                          </h5>
+                          <ul className="space-y-1.5">
+                            {demoInfo.resources.tools.map((tool, i) => (
+                              <li key={i}>
+                                <a
+                                  href={tool.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={cn(
+                                    'text-sm flex items-start gap-2 hover:underline',
+                                    theme === 'dark' ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'
+                                  )}
+                                >
+                                  <ExternalLink className="w-3 h-3 flex-shrink-0 mt-1" />
+                                  <div>
+                                    <span>{tool.title}</span>
+                                    <p className={cn(
+                                      'text-xs',
+                                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                    )}>
+                                      {tool.description}
+                                    </p>
+                                  </div>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   </CollapsibleCard>
                 )}

@@ -102,6 +102,33 @@
         "title": "Frontier Research in Polarization",
         "description": "Advanced research topics in full-polarization imaging, Mueller matrices, and biomedical applications."
       }
+    },
+    "guidedStart": {
+      "title": "Welcome to the World of Polarization!",
+      "subtitle": "Choose the best way to start your exploration",
+      "skip": "Skip, go directly to homepage",
+      "tracks": {
+        "curious": {
+          "title": "I want to learn what polarization is",
+          "description": "Start from zero, discover polarization through daily phenomena"
+        },
+        "student": {
+          "title": "I'm a student, want systematic learning",
+          "description": "Start from Malus's Law, master polarization rules"
+        },
+        "researcher": {
+          "title": "I have physics background, want to dive deep",
+          "description": "Jump directly to advanced content and research methods"
+        },
+        "player": {
+          "title": "I want to learn through games",
+          "description": "Understand polarization through puzzle games"
+        },
+        "explorer": {
+          "title": "I want to explore freely",
+          "description": "Browse all demos, choose by interest"
+        }
+      }
     }
   },
   "course": {
@@ -646,7 +673,15 @@
       "physics": "Physical Principle",
       "experiment": "Experimental Application",
       "frontier": "Frontier Application",
-      "diy": "Try It Yourself"
+      "diy": "Try It Yourself",
+      "resources": "Further Reading"
+    },
+    "resourcesDisclaimer": "External resources for reference only.",
+    "resourceTypes": {
+      "videos": "Video Resources",
+      "articles": "Articles",
+      "papers": "Academic Papers",
+      "tools": "Tools & Software"
     },
     "difficulty": {
       "label": "Difficulty Level",
@@ -685,7 +720,15 @@
       "physics": "Physical Principle",
       "experiment": "Experimental Application",
       "frontier": "Frontier Application",
-      "diy": "Try It Yourself"
+      "diy": "Try It Yourself",
+      "resources": "Further Reading"
+    },
+    "resourcesDisclaimer": "External resources for reference only.",
+    "resourceTypes": {
+      "videos": "Video Resources",
+      "articles": "Articles",
+      "papers": "Academic Papers",
+      "tools": "Tools & Software"
     },
     "difficulty": {
       "label": "Difficulty Level",
@@ -1264,6 +1307,14 @@
           "Try angles in between (30°, 45°, 60°) and notice the gradual change"
         ],
         "observation": "At 45° rotation, light is reduced to 50% - exactly as Malus's Law predicts (cos²45° = 0.5)"
+      },
+      "resources": {
+        "videos": [
+          { "title": "The Magic of Polarized Light - Physics Girl" }
+        ],
+        "articles": [
+          { "title": "Polarizer - Wikipedia" }
+        ]
       }
     },
     "birefringence": {
