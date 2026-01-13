@@ -350,15 +350,8 @@ export function HomePage() {
         {/* 学习工具 */}
         <QuickNavigation theme={theme} />
 
-        {/* 整合时间线与课程大纲 - 新设计 */}
-        <TimelineCourseExplorer
-          variant="full"
-          showEras={true}
-          showCuriosity={true}
-          showPSRT={true}
-          showUnits={true}
-          maxCuriosityCards={6}
-        />
+        {/* 整合时间线与课程大纲 - 重新设计版本 */}
+        <TimelineCourseExplorer variant="full" showEras={true} />
 
         {/* 页脚 */}
         <footer className={cn(
