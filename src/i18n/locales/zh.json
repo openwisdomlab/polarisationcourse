@@ -347,6 +347,8 @@
         "subtitle": "Stokes、Mueller与前沿应用",
         "description": "学习完整描述偏振态和偏振变换的数学工具，了解全偏振成像在海洋、生医、材料等领域的前沿应用。",
         "keyExp": "Mueller矩阵成像演示",
+        "life": "医学偏振成像",
+        "lifeDesc": "早期癌症无创检测",
         "s1": {
           "title": "偏振态的完整表征",
           "desc": "Stokes矢量与Mueller矩阵"

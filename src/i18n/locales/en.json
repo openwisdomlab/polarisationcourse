@@ -347,6 +347,8 @@
         "subtitle": "Stokes, Mueller & Frontier Applications",
         "description": "Learn complete mathematical tools for polarization description, explore full polarimetric imaging in ocean, biomedical, and materials applications.",
         "keyExp": "Mueller Matrix Imaging",
+        "life": "Medical Polarization Imaging",
+        "lifeDesc": "Non-invasive early cancer detection",
         "s1": {
           "title": "Complete Polarization Description",
           "desc": "Stokes vector and Mueller matrix"
