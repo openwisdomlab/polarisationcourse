@@ -189,6 +189,7 @@
     "startStage": "开始学习本阶段",
     "startLearning": "开始学习",
     "explore": "自由探索",
+    "viewCourse": "查看课程",
     "learningJourney": "学习路径",
     "quickAccess": "快捷入口",
     "quick": {
@@ -197,12 +198,33 @@
       "calc": "计算",
       "experiments": "实验",
       "chronicles": "编年史",
-      "lab": "实验室"
+      "lab": "实验室",
+      "opticalStudio": "光学设计室"
     },
     "stats": {
       "completed": "进度",
       "streak": "连续",
       "time": "时长"
+    },
+    "lifeTitle": "生活中的偏振",
+    "life": {
+      "sky": "多彩天空",
+      "skyDesc": "为什么天是蓝的？",
+      "screen": "液晶屏幕",
+      "screenDesc": "从手机到电视",
+      "sunglasses": "偏光太阳镜",
+      "sunglassesDesc": "减少眩光反射",
+      "butterfly": "蝴蝶翅膀",
+      "butterflyDesc": "大自然的虹彩"
+    },
+    "expTitle": "动手试一试",
+    "exp": {
+      "sugarRainbow": "糖水彩虹",
+      "sugarRainbowDesc": "用糖水制造彩色光",
+      "tapeArt": "胶带艺术",
+      "tapeArtDesc": "用透明胶带创作艺术",
+      "screenPolarizer": "屏幕+偏振片",
+      "screenPolarizerDesc": "在屏幕前旋转偏振片"
     }
   },
   "course": {
@@ -581,7 +603,9 @@
       "title": "准备好探索了吗？",
       "description": "继续你在偏振光奇妙世界的旅程",
       "playGames": "开始游戏",
-      "joinResearch": "加入研究"
+      "joinResearch": "加入研究",
+      "exploreDemos": "探索演示",
+      "opticalStudio": "光学设计室"
     },
     "inquiry": {
       "title": "探究问题",

@@ -189,6 +189,7 @@
     "startStage": "Start This Stage",
     "startLearning": "Start Learning",
     "explore": "Explore Freely",
+    "viewCourse": "View Course",
     "learningJourney": "Learning Journey",
     "quickAccess": "Quick Access",
     "quick": {
@@ -197,12 +198,33 @@
       "calc": "Calc",
       "experiments": "Experiments",
       "chronicles": "Chronicles",
-      "lab": "Lab"
+      "lab": "Lab",
+      "opticalStudio": "Optical Studio"
     },
     "stats": {
       "completed": "Progress",
       "streak": "Streak",
       "time": "Time"
+    },
+    "lifeTitle": "Polarization in Daily Life",
+    "life": {
+      "sky": "Colorful Sky",
+      "skyDesc": "Why is the sky blue?",
+      "screen": "LCD Screens",
+      "screenDesc": "From phone to TV",
+      "sunglasses": "Polarized Sunglasses",
+      "sunglassesDesc": "Reduce glare",
+      "butterfly": "Butterfly Wings",
+      "butterflyDesc": "Nature's iridescence"
+    },
+    "expTitle": "Try It Yourself",
+    "exp": {
+      "sugarRainbow": "Sugar Rainbow",
+      "sugarRainbowDesc": "Make colors with sugar water",
+      "tapeArt": "Tape Art",
+      "tapeArtDesc": "Create art with cellophane tape",
+      "screenPolarizer": "Screen + Polarizer",
+      "screenPolarizerDesc": "Rotate a polarizer over screen"
     }
   },
   "course": {
@@ -581,7 +603,9 @@
       "title": "Ready to Explore?",
       "description": "Continue your journey through the fascinating world of polarized light",
       "playGames": "Play Games",
-      "joinResearch": "Join Research"
+      "joinResearch": "Join Research",
+      "exploreDemos": "Explore Demos",
+      "opticalStudio": "Optical Studio"
     },
     "inquiry": {
       "title": "Exploration Questions",
