@@ -12,3 +12,6 @@ export { PSRTQuestStage, type QuestData, type StageData, type PSRTStage } from '
 export { WorldMap } from './WorldMap'
 export { InsightCollection, type OpticalItem, type Achievement, OPTICAL_ITEMS } from './InsightCollection'
 export { LensNavigator, CompactLensNavigator, type PSRTMode } from './LensNavigator'
+
+// Timeline-Course Integration
+export { TimelineCourseExplorer } from './TimelineCourseExplorer'
