@@ -12,18 +12,17 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { cn } from '@/lib/utils'
-import { Tabs, Badge, PersistentHeader } from '@/components/shared'
+import { Tabs, PersistentHeader } from '@/components/shared'
 import {
-  Clock, MapPin,
-  FlaskConical, BookOpen, Compass,
-  Sun, Sparkles, Camera, Film,
-  Users, Share2
+  Clock,
+  BookOpen,
+  Sun, Sparkles
 } from 'lucide-react'
 
 // Data imports
 import { TIMELINE_EVENTS } from '@/data/timeline-events'
 import { CATEGORY_LABELS } from '@/data/chronicles-constants'
-import { PSRT_CURRICULUM, getSectionsForEvent } from '@/data/psrt-curriculum'
+import { PSRT_CURRICULUM } from '@/data/psrt-curriculum'
 
 // Component imports
 import {
@@ -31,22 +30,14 @@ import {
   DualTrackCard,
   StoryModal,
   CenturyNavigator,
-  DemoNavigator,
   ChapterSelector,
-  ChroniclesPSRTView,
-  ScientistNetwork,
-  ConceptNetwork,
-  ExplorationMode,
-  DEMO_ITEMS
+  ChroniclesPSRTView
 } from '@/components/chronicles'
 
+// Simplified tabs - keep only Timeline and P-SRT Course
 const TABS = [
   { id: 'timeline', label: 'Timeline', labelZh: '时间线', icon: <Clock className="w-4 h-4" /> },
   { id: 'psrt', label: 'P-SRT Course', labelZh: 'P-SRT课程', icon: <BookOpen className="w-4 h-4" /> },
-  { id: 'scientists', label: 'Scientists', labelZh: '科学家网络', icon: <Users className="w-4 h-4" /> },
-  { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Share2 className="w-4 h-4" /> },
-  { id: 'exploration', label: 'Exploration', labelZh: '探索模式', icon: <Compass className="w-4 h-4" /> },
-  { id: 'experiments', label: 'Key Experiments', labelZh: '关键实验', icon: <FlaskConical className="w-4 h-4" /> },
 ]
 
 export function ChroniclesPage() {
@@ -60,19 +51,12 @@ export function ChroniclesPage() {
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
   const [selectedSections, setSelectedSections] = useState<string[]>([]) // P-SRT章节筛选状态
-  const [highlightedSections, setHighlightedSections] = useState<Set<string>>(new Set()) // 事件点击高亮的课程章节 (reserved for future use)
-  const [selectedDemos, setSelectedDemos] = useState<string[]>([]) // 演示筛选状态
-  const [highlightedDemos, setHighlightedDemos] = useState<Set<string>>(new Set()) // 事件点击高亮的演示
-  const [selectedScientistFromExploration, setSelectedScientistFromExploration] = useState<string | null>(null) // 从探索模式选中的科学家
-
-  // Suppress unused variable warning (highlightedSections is set but not yet used after removing CourseNavigator)
-  void highlightedSections
 
   // Use single-track layout on mobile/tablet
   const useSingleTrack = isMobile || isTablet
 
   // 计算被P-SRT章节筛选匹配的事件集合
-  const matchedEventKeysFromSections = useMemo(() => {
+  const matchedEventKeys = useMemo(() => {
     if (selectedSections.length === 0) return null
 
     // Get all events related to selected sections
@@ -91,43 +75,6 @@ export function ChroniclesPage() {
 
     return eventKeys
   }, [selectedSections])
-
-  // 计算被演示筛选匹配的事件集合
-  const matchedEventKeysFromDemos = useMemo(() => {
-    if (selectedDemos.length === 0) return null
-
-    // Get all events related to selected demos
-    const eventKeys = new Set<string>()
-    selectedDemos.forEach(demoId => {
-      const demo = DEMO_ITEMS.find(d => d.id === demoId)
-      if (demo?.relatedEvents) {
-        demo.relatedEvents.forEach(ref => {
-          eventKeys.add(`${ref.year}-${ref.track}`)
-        })
-      }
-    })
-
-    return eventKeys
-  }, [selectedDemos])
-
-  // 合并两种筛选的事件集合 (交集或并集)
-  const matchedEventKeys = useMemo(() => {
-    // If neither filter is active, return null (show all)
-    if (!matchedEventKeysFromSections && !matchedEventKeysFromDemos) return null
-
-    // If only one filter is active, return that one
-    if (!matchedEventKeysFromSections) return matchedEventKeysFromDemos
-    if (!matchedEventKeysFromDemos) return matchedEventKeysFromSections
-
-    // If both are active, return intersection (events that match both)
-    const intersection = new Set<string>()
-    matchedEventKeysFromSections.forEach(key => {
-      if (matchedEventKeysFromDemos.has(key)) {
-        intersection.add(key)
-      }
-    })
-    return intersection
-  }, [matchedEventKeysFromSections, matchedEventKeysFromDemos])
 
   // Filter events by category, track, and selected course modules
   const filteredEvents = useMemo(() => {
@@ -148,18 +95,12 @@ export function ChroniclesPage() {
     setSelectedSections(sections)
   }, [])
 
-  // 处理演示筛选变化
-  const handleDemoFilterChange = useCallback((demos: string[]) => {
-    setSelectedDemos(demos)
-  }, [])
-
   // 处理从导航点击事件跳转到时间线
   const handleEventClickFromNav = useCallback((year: number, track: 'optics' | 'polarization') => {
     // Reset filters to show all events
     setTrackFilter('all')
     setFilter('')
     setSelectedSections([])
-    setSelectedDemos([])
 
     // Find the target event in the filtered events
     const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
@@ -179,35 +120,6 @@ export function ChroniclesPage() {
         }
       }, 100)
     }
-  }, [])
-
-  // 处理点击时间线事件，高亮相关P-SRT章节和演示
-  const handleEventClickForHighlight = useCallback((year: number, track: 'optics' | 'polarization') => {
-    // Get related sections for this event using getSectionsForEvent
-    const mappings = getSectionsForEvent(year, track)
-    const relatedSections = new Set(mappings.map(m => m.sectionId))
-    setHighlightedSections(relatedSections)
-
-    // Get related demos for this event
-    const relatedDemos = new Set<string>()
-    DEMO_ITEMS.forEach(demo => {
-      if (demo.relatedEvents?.some(e => e.year === year && e.track === track)) {
-        relatedDemos.add(demo.id)
-      }
-    })
-    setHighlightedDemos(relatedDemos)
-
-    // Clear after 5 seconds
-    setTimeout(() => {
-      setHighlightedSections(new Set())
-      setHighlightedDemos(new Set())
-    }, 5000)
-  }, [])
-
-  // 处理从探索模式选择科学家，并切换到科学家网络标签页
-  const handleSelectScientistFromExploration = useCallback((scientistId: string) => {
-    setSelectedScientistFromExploration(scientistId)
-    setActiveTab('scientists')
   }, [])
 
   
@@ -433,16 +345,6 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Demo Navigator - 光学演示馆导航 (Desktop only, left side) */}
-            {!useSingleTrack && (
-              <DemoNavigator
-                selectedDemos={selectedDemos}
-                onFilterChange={handleDemoFilterChange}
-                highlightedDemos={highlightedDemos}
-                onEventClick={handleEventClickFromNav}
-              />
-            )}
-
             {/* Century Navigator - 世纪导航 (Desktop only, right side) */}
             {!useSingleTrack && (
               <CenturyNavigator events={filteredEvents} isZh={isZh} />
@@ -561,7 +463,6 @@ export function ChroniclesPage() {
                         onToggle={() => setExpandedEvent(expandedEvent === idx ? null : idx)}
                         onReadStory={() => handleOpenStory(idx)}
                         onLinkTo={handleLinkTo}
-                        onHighlightCourses={handleEventClickForHighlight}
                         side={event.track === 'optics' ? 'left' : 'right'}
                       />
                     </div>
@@ -646,7 +547,6 @@ export function ChroniclesPage() {
                                       onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
                                       onReadStory={() => handleOpenStory(opticsIndex)}
                                       onLinkTo={handleLinkTo}
-                                      onHighlightCourses={handleEventClickForHighlight}
                                       side="left"
                                     />
                                   )
@@ -703,7 +603,6 @@ export function ChroniclesPage() {
                                       onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
                                       onReadStory={() => handleOpenStory(polarizationIndex)}
                                       onLinkTo={handleLinkTo}
-                                      onHighlightCourses={handleEventClickForHighlight}
                                       side="right"
                                     />
                                   )
@@ -721,153 +620,6 @@ export function ChroniclesPage() {
           </>
         )}
 
-        {activeTab === 'scientists' && (
-          <ScientistNetwork
-            theme={theme}
-            onNavigateToEvent={(year, track) => {
-              setActiveTab('timeline')
-              handleEventClickFromNav(year, track)
-            }}
-            externalSelectedScientist={selectedScientistFromExploration}
-          />
-        )}
-
-        {activeTab === 'concepts' && (
-          <ConceptNetwork
-            theme={theme}
-            onNavigateToEvent={(year, track) => {
-              setActiveTab('timeline')
-              handleEventClickFromNav(year, track)
-            }}
-          />
-        )}
-
-        {activeTab === 'exploration' && (
-          <ExplorationMode
-            theme={theme}
-            onNavigateToEvent={(year, track) => {
-              setActiveTab('timeline')
-              handleEventClickFromNav(year, track)
-            }}
-            onSelectScientist={handleSelectScientistFromExploration}
-          />
-        )}
-
-        {activeTab === 'experiments' && (
-          <div className="space-y-4">
-            {/* Intro */}
-            <div className={cn(
-              'rounded-xl border p-6 mb-6',
-              theme === 'dark' ? 'bg-slate-800/50 border-slate-700' : 'bg-amber-50 border-amber-200'
-            )}>
-              <div className="flex items-start gap-4">
-                <FlaskConical className={cn(
-                  'w-10 h-10 flex-shrink-0',
-                  theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                )} />
-                <div>
-                  <h3 className={cn(
-                    'text-lg font-semibold mb-2',
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  )}>
-                    {isZh ? '历史性实验' : 'Historic Experiments'}
-                  </h3>
-                  <p className={cn(
-                    'text-sm',
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  )}>
-                    {isZh
-                      ? '这些实验改变了我们对光的理解。点击每个实验了解其原理和历史意义。'
-                      : 'These experiments transformed our understanding of light. Click each experiment to learn about its principles and historical significance.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Experiment Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {TIMELINE_EVENTS.filter(e => e.category === 'experiment' || e.category === 'discovery').map((event) => (
-                <div
-                  key={event.year}
-                  className={cn(
-                    'rounded-xl border p-5 transition-all cursor-pointer hover:shadow-lg',
-                    theme === 'dark'
-                      ? 'bg-slate-800/50 border-slate-700 hover:border-cyan-500/50'
-                      : 'bg-white border-gray-200 hover:border-cyan-400'
-                  )}
-                  onClick={() => {
-                    const idx = TIMELINE_EVENTS.findIndex(e => e.year === event.year)
-                    if (idx >= 0) handleOpenStory(idx)
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={cn(
-                      'flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center',
-                      theme === 'dark' ? 'bg-cyan-900/30' : 'bg-cyan-100'
-                    )}>
-                      <span className="text-2xl font-bold font-mono text-cyan-500">
-                        {event.year.toString().slice(-2)}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge color={CATEGORY_LABELS[event.category].color}>
-                          {isZh ? CATEGORY_LABELS[event.category].zh : CATEGORY_LABELS[event.category].en}
-                        </Badge>
-                        {event.experimentalResources && (
-                          <span className={cn(
-                            'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium',
-                            theme === 'dark'
-                              ? 'bg-purple-500/20 text-purple-300'
-                              : 'bg-purple-100 text-purple-600'
-                          )} title={isZh ? '含实验资源' : 'Has experiment resources'}>
-                            <Camera className="w-3 h-3" />
-                            <Film className="w-3 h-3" />
-                          </span>
-                        )}
-                        <span className={cn(
-                          'text-xs font-mono',
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                        )}>
-                          {event.year}
-                        </span>
-                      </div>
-                      <h4 className={cn(
-                        'font-semibold mb-1',
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
-                      )}>
-                        {isZh ? event.titleZh : event.titleEn}
-                      </h4>
-                      {event.scientistEn && (
-                        <p className={cn(
-                          'text-xs mb-2',
-                          theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                        )}>
-                          {event.scientistBio?.portraitEmoji} {isZh ? event.scientistZh : event.scientistEn}
-                        </p>
-                      )}
-                      <p className={cn(
-                        'text-sm line-clamp-2',
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                      )}>
-                        {isZh ? event.descriptionZh : event.descriptionEn}
-                      </p>
-                      {event.scene?.location && (
-                        <p className={cn(
-                          'text-xs mt-2 flex items-center gap-1',
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                        )}>
-                          <MapPin className="w-3 h-3" />
-                          {event.scene.location}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Story Modal */}
