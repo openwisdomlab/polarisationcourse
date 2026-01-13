@@ -227,12 +227,12 @@ function FresnelDiagram({
         入射光
       </text>
 
-      {/* s偏振反射光 */}
+      {/* s偏振反射光 - s和p偏振沿同一方向传播，仅强度不同 */}
       {showS && Rs > 0.01 && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={reflectEnd.x - 5}
+          x2={reflectEnd.x}
           y2={reflectEnd.y}
           stroke="#22d3ee"
           strokeWidth={Math.max(1, 4 * Rs)}
@@ -244,12 +244,12 @@ function FresnelDiagram({
         />
       )}
 
-      {/* p偏振反射光 */}
+      {/* p偏振反射光 - 与s偏振同一路径，用不同颜色和线宽表示强度差异 */}
       {showP && Rp > 0.01 && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={reflectEnd.x + 5}
+          x2={reflectEnd.x}
           y2={reflectEnd.y}
           stroke="#f472b6"
           strokeWidth={Math.max(1, 4 * Rp)}
@@ -257,7 +257,7 @@ function FresnelDiagram({
           filter="url(#glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
         />
       )}
 
@@ -266,12 +266,12 @@ function FresnelDiagram({
         反射光
       </text>
 
-      {/* s偏振折射光 */}
+      {/* s偏振折射光 - 遵循斯涅尔定律，s和p偏振沿同一折射方向 */}
       {showS && !fresnel.totalReflection && Ts > 0.01 && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={refractEnd.x - 5}
+          x2={refractEnd.x}
           y2={refractEnd.y}
           stroke="#22d3ee"
           strokeWidth={Math.max(1, 4 * Ts)}
@@ -283,12 +283,12 @@ function FresnelDiagram({
         />
       )}
 
-      {/* p偏振折射光 */}
+      {/* p偏振折射光 - 与s偏振同一路径 */}
       {showP && !fresnel.totalReflection && Tp > 0.01 && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={refractEnd.x + 5}
+          x2={refractEnd.x}
           y2={refractEnd.y}
           stroke="#f472b6"
           strokeWidth={Math.max(1, 4 * Tp)}
@@ -296,7 +296,7 @@ function FresnelDiagram({
           filter="url(#glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
+          transition={{ duration: 0.3, delay: 0.35 }}
         />
       )}
 
@@ -748,7 +748,7 @@ export function FresnelDemo() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="菲涅尔方程" color="cyan">
           <p className="text-xs text-gray-300">
-            描述电磁波在两种介质界面反射和透射的振幅比。s偏振（垂直于入射面）和p偏振（平行于入射面）有不同的反射特性。
+            描述电磁波在两种<strong>各向同性</strong>介质界面反射和透射的振幅比。s偏振和p偏振<strong>沿同一方向传播</strong>，仅强度不同（用线宽表示）。注意：只有在双折射晶体（各向异性）中才会出现不同方向的折射光。
           </p>
         </InfoCard>
         <InfoCard title="布儒斯特角" color="orange">
