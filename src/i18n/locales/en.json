@@ -87,9 +87,9 @@
     },
     "courseEntry": "Course",
     "courseBanner": {
-      "badge": "New Course",
+      "badge": "01 Academy Course",
       "title": "A New World Under Polarized Light",
-      "description": "Shenzhen 01 Academy Innovation Challenge Camp course - A gamified education and scientific practice platform for polarization optics with progressive experiments, historical stories, and frontier research."
+      "description": "This is a course from Shenzhen 01 Academy's Disruptive Innovation Challenge Camp, offering a gamified education and scientific practice platform for polarization optics. Content includes progressive course experiments with historical stories, polarization devices and basic optical paths, as well as fundamental theory and computational simulations. The platform also provides advanced features including gamified puzzle challenges, classroom showcase collections, and virtual research groups for participating in frontier scientific research. We invite everyone to make full use of this platform, experience 01 Academy's research-based learning approach, understand and utilize light polarization, and explore the wonderful world under polarized light."
     },
     "coursesSection": {
       "title": "Courses",
