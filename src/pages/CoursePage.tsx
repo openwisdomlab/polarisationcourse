@@ -19,10 +19,7 @@ import {
   Gamepad2,
   FlaskConical,
   Lightbulb,
-  FileText,
   Play,
-  CheckCircle,
-  Star,
   Sparkles,
   GraduationCap,
   Target,
@@ -62,144 +59,242 @@ interface CourseUnit {
   learningObjectives?: string[]
 }
 
-// Course structure based on PSRT curriculum - 5 main units
-// All units are accessible for open exploration (no lock/unlock system)
-const COURSE_UNITS: CourseUnit[] = [
+// Learning stage definition - 三阶段认知旅程
+interface LearningStage {
+  id: string
+  phase: number
+  titleKey: string
+  subtitleKey: string
+  descriptionKey: string
+  questionKey: string // 核心问题
+  icon: React.ReactNode
+  color: string
+  gradient: string
+  units: CourseUnit[]
+  isAdvanced?: boolean // 标记为高级内容
+}
+
+// Course structure refactored into 3 learning stages
+// 阶段一：看见偏振 → 阶段二：理解规律 → 阶段三：测量与应用
+const LEARNING_STAGES: LearningStage[] = [
   {
-    // 第一单元：光的偏振态及其调制和测量
-    id: 'unit1',
-    titleKey: 'course.units.unit1.title',
-    subtitleKey: 'course.units.unit1.subtitle',
-    descriptionKey: 'course.units.unit1.description',
+    // 阶段一：看见偏振
+    id: 'stage1',
+    phase: 1,
+    titleKey: 'course.stages.stage1.title',
+    subtitleKey: 'course.stages.stage1.subtitle',
+    descriptionKey: 'course.stages.stage1.description',
+    questionKey: 'course.stages.stage1.question',
     icon: <Lightbulb className="w-6 h-6" />,
-    color: '#C9A227', // amber
-    sections: [
-      { id: '1.1', titleKey: 'course.units.unit1.s1.title', descriptionKey: 'course.units.unit1.s1.desc', demoLink: '/demos/light-wave' },
-      { id: '1.2', titleKey: 'course.units.unit1.s2.title', descriptionKey: 'course.units.unit1.s2.desc', demoLink: '/demos/birefringence' },
-      { id: '1.3', titleKey: 'course.units.unit1.s3.title', descriptionKey: 'course.units.unit1.s3.desc', demoLink: '/demos/malus' },
-    ],
-    resources: {
-      demos: ['light-wave', 'polarization-intro', 'polarization-types', 'birefringence', 'malus'],
-      tools: ['/optical-studio?tab=devices'],
-      games: ['/game2d?level=0', '/game2d?level=1', '/game2d?level=16', '/game2d?level=17'],
-    },
-    attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.unit1PPT' },
-      { type: 'pdf', titleKey: 'course.attachments.unit1Guide' },
-    ],
-    learningObjectives: [
-      'course.objectives.unit1.1',
-      'course.objectives.unit1.2',
-      'course.objectives.unit1.3',
-      'course.objectives.unit1.4',
-    ],
-  },
-  {
-    // 第二单元：界面反射的偏振特征
-    id: 'unit2',
-    titleKey: 'course.units.unit2.title',
-    subtitleKey: 'course.units.unit2.subtitle',
-    descriptionKey: 'course.units.unit2.description',
-    icon: <Zap className="w-6 h-6" />,
-    color: '#6366F1', // indigo
-    sections: [
-      { id: '2.1', titleKey: 'course.units.unit2.s1.title', descriptionKey: 'course.units.unit2.s1.desc', demoLink: '/demos/fresnel' },
-      { id: '2.2', titleKey: 'course.units.unit2.s2.title', descriptionKey: 'course.units.unit2.s2.desc', demoLink: '/demos/brewster' },
-    ],
-    resources: {
-      demos: ['fresnel', 'brewster'],
-      experiments: ['/optical-studio?tab=experiments'],
-    },
-    attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.unit2PPT' },
-    ],
-    learningObjectives: [
-      'course.objectives.unit2.1',
-      'course.objectives.unit2.2',
-      'course.objectives.unit2.3',
+    color: '#22D3EE', // cyan
+    gradient: 'from-cyan-500 to-blue-500',
+    units: [
+      {
+        id: 'seeing-polarization',
+        titleKey: 'course.stages.stage1.units.seeing.title',
+        subtitleKey: 'course.stages.stage1.units.seeing.subtitle',
+        descriptionKey: 'course.stages.stage1.units.seeing.description',
+        icon: <Lightbulb className="w-6 h-6" />,
+        color: '#22D3EE',
+        sections: [
+          { id: '1.1', titleKey: 'course.stages.stage1.sections.whatIsPolarization.title', descriptionKey: 'course.stages.stage1.sections.whatIsPolarization.desc', demoLink: '/demos/polarization-intro' },
+          { id: '1.2', titleKey: 'course.stages.stage1.sections.polarizationTypes.title', descriptionKey: 'course.stages.stage1.sections.polarizationTypes.desc', demoLink: '/demos/polarization-types-unified' },
+          { id: '1.3', titleKey: 'course.stages.stage1.sections.dailyLife.title', descriptionKey: 'course.stages.stage1.sections.dailyLife.desc', demoLink: '/demos/optical-bench' },
+        ],
+        resources: {
+          demos: ['polarization-intro', 'polarization-types-unified', 'optical-bench'],
+          games: ['/games/2d?level=0', '/games/2d?level=1'],
+        },
+        learningObjectives: [
+          'course.stages.stage1.objectives.1',
+          'course.stages.stage1.objectives.2',
+        ],
+      },
     ],
   },
   {
-    // 第三单元：透明介质的偏振特征
-    id: 'unit3',
-    titleKey: 'course.units.unit3.title',
-    subtitleKey: 'course.units.unit3.subtitle',
-    descriptionKey: 'course.units.unit3.description',
-    icon: <Sparkles className="w-6 h-6" />,
-    color: '#0891B2', // cyan
-    sections: [
-      { id: '3.1', titleKey: 'course.units.unit3.s1.title', descriptionKey: 'course.units.unit3.s1.desc', demoLink: '/demos/chromatic' },
-      { id: '3.2', titleKey: 'course.units.unit3.s2.title', descriptionKey: 'course.units.unit3.s2.desc', demoLink: '/demos/optical-rotation' },
-    ],
-    resources: {
-      demos: ['anisotropy', 'chromatic', 'optical-rotation', 'waveplate'],
-      experiments: ['/optical-studio?tab=experiments'],
-      games: ['/game2d?level=3'],
-    },
-    attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.unit3PPT' },
-      { type: 'pdf', titleKey: 'course.attachments.stressAnalysis' },
-    ],
-    learningObjectives: [
-      'course.objectives.unit3.1',
-      'course.objectives.unit3.2',
-      'course.objectives.unit3.3',
+    // 阶段二：理解规律
+    id: 'stage2',
+    phase: 2,
+    titleKey: 'course.stages.stage2.title',
+    subtitleKey: 'course.stages.stage2.subtitle',
+    descriptionKey: 'course.stages.stage2.description',
+    questionKey: 'course.stages.stage2.question',
+    icon: <BookOpen className="w-6 h-6" />,
+    color: '#A78BFA', // purple
+    gradient: 'from-purple-500 to-pink-500',
+    units: [
+      {
+        id: 'malus-law',
+        titleKey: 'course.stages.stage2.units.malus.title',
+        subtitleKey: 'course.stages.stage2.units.malus.subtitle',
+        descriptionKey: 'course.stages.stage2.units.malus.description',
+        icon: <Target className="w-6 h-6" />,
+        color: '#F59E0B',
+        sections: [
+          { id: '2.1', titleKey: 'course.stages.stage2.sections.malusLaw.title', descriptionKey: 'course.stages.stage2.sections.malusLaw.desc', demoLink: '/demos/malus' },
+        ],
+        resources: {
+          demos: ['malus'],
+          games: ['/games/2d?level=2'],
+          experiments: ['/optical-studio?experiment=malus'],
+        },
+        learningObjectives: [
+          'course.stages.stage2.objectives.malus.1',
+          'course.stages.stage2.objectives.malus.2',
+        ],
+      },
+      {
+        id: 'birefringence',
+        titleKey: 'course.stages.stage2.units.birefringence.title',
+        subtitleKey: 'course.stages.stage2.units.birefringence.subtitle',
+        descriptionKey: 'course.stages.stage2.units.birefringence.description',
+        icon: <Sparkles className="w-6 h-6" />,
+        color: '#0891B2',
+        sections: [
+          { id: '2.2', titleKey: 'course.stages.stage2.sections.calcite.title', descriptionKey: 'course.stages.stage2.sections.calcite.desc', demoLink: '/demos/birefringence' },
+          { id: '2.3', titleKey: 'course.stages.stage2.sections.waveplate.title', descriptionKey: 'course.stages.stage2.sections.waveplate.desc', demoLink: '/demos/waveplate' },
+        ],
+        resources: {
+          demos: ['birefringence', 'waveplate'],
+          games: ['/games/2d?level=16', '/games/2d?level=17'],
+        },
+        learningObjectives: [
+          'course.stages.stage2.objectives.birefringence.1',
+          'course.stages.stage2.objectives.birefringence.2',
+        ],
+      },
+      {
+        id: 'reflection',
+        titleKey: 'course.stages.stage2.units.reflection.title',
+        subtitleKey: 'course.stages.stage2.units.reflection.subtitle',
+        descriptionKey: 'course.stages.stage2.units.reflection.description',
+        icon: <Zap className="w-6 h-6" />,
+        color: '#6366F1',
+        sections: [
+          { id: '2.4', titleKey: 'course.stages.stage2.sections.brewster.title', descriptionKey: 'course.stages.stage2.sections.brewster.desc', demoLink: '/demos/brewster' },
+        ],
+        resources: {
+          demos: ['brewster'],
+        },
+        learningObjectives: [
+          'course.stages.stage2.objectives.reflection.1',
+        ],
+      },
+      {
+        id: 'scattering',
+        titleKey: 'course.stages.stage2.units.scattering.title',
+        subtitleKey: 'course.stages.stage2.units.scattering.subtitle',
+        descriptionKey: 'course.stages.stage2.units.scattering.description',
+        icon: <Target className="w-6 h-6" />,
+        color: '#F59E0B',
+        sections: [
+          { id: '2.5', titleKey: 'course.stages.stage2.sections.rayleigh.title', descriptionKey: 'course.stages.stage2.sections.rayleigh.desc', demoLink: '/demos/rayleigh' },
+        ],
+        resources: {
+          demos: ['rayleigh'],
+        },
+        learningObjectives: [
+          'course.stages.stage2.objectives.scattering.1',
+        ],
+      },
+      {
+        id: 'applications',
+        titleKey: 'course.stages.stage2.units.applications.title',
+        subtitleKey: 'course.stages.stage2.units.applications.subtitle',
+        descriptionKey: 'course.stages.stage2.units.applications.description',
+        icon: <Sparkles className="w-6 h-6" />,
+        color: '#EC4899',
+        sections: [
+          { id: '2.6', titleKey: 'course.stages.stage2.sections.stress.title', descriptionKey: 'course.stages.stage2.sections.stress.desc', demoLink: '/demos/anisotropy' },
+          { id: '2.7', titleKey: 'course.stages.stage2.sections.sugar.title', descriptionKey: 'course.stages.stage2.sections.sugar.desc', demoLink: '/demos/optical-rotation' },
+        ],
+        resources: {
+          demos: ['anisotropy', 'chromatic', 'optical-rotation'],
+          games: ['/games/2d?level=3'],
+        },
+        learningObjectives: [
+          'course.stages.stage2.objectives.applications.1',
+          'course.stages.stage2.objectives.applications.2',
+        ],
+      },
     ],
   },
   {
-    // 第四单元：浑浊介质的偏振特征
-    id: 'unit4',
-    titleKey: 'course.units.unit4.title',
-    subtitleKey: 'course.units.unit4.subtitle',
-    descriptionKey: 'course.units.unit4.description',
-    icon: <Target className="w-6 h-6" />,
-    color: '#F59E0B', // orange
-    sections: [
-      { id: '4.1', titleKey: 'course.units.unit4.s1.title', descriptionKey: 'course.units.unit4.s1.desc', demoLink: '/demos/rayleigh' },
-      { id: '4.2', titleKey: 'course.units.unit4.s2.title', descriptionKey: 'course.units.unit4.s2.desc', demoLink: '/demos/mie-scattering' },
-    ],
-    resources: {
-      demos: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering'],
-    },
-    attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.unit4PPT' },
-    ],
-    learningObjectives: [
-      'course.objectives.unit4.1',
-      'course.objectives.unit4.2',
-      'course.objectives.unit4.3',
-    ],
-  },
-  {
-    // 第五单元：偏振光学技术和复杂结构介质物性的定量表征
-    id: 'unit5',
-    titleKey: 'course.units.unit5.title',
-    subtitleKey: 'course.units.unit5.subtitle',
-    descriptionKey: 'course.units.unit5.description',
+    // 阶段三：测量与应用（高级）
+    id: 'stage3',
+    phase: 3,
+    titleKey: 'course.stages.stage3.title',
+    subtitleKey: 'course.stages.stage3.subtitle',
+    descriptionKey: 'course.stages.stage3.description',
+    questionKey: 'course.stages.stage3.question',
     icon: <Telescope className="w-6 h-6" />,
     color: '#8B5CF6', // violet
-    sections: [
-      { id: '5.1', titleKey: 'course.units.unit5.s1.title', descriptionKey: 'course.units.unit5.s1.desc', demoLink: '/demos/stokes' },
-      { id: '5.2', titleKey: 'course.units.unit5.s2.title', descriptionKey: 'course.units.unit5.s2.desc', demoLink: '/demos/mueller' },
-      { id: '5.3', titleKey: 'course.units.unit5.s3.title', descriptionKey: 'course.units.unit5.s3.desc', demoLink: '/demos/jones' },
-      { id: '5.4', titleKey: 'course.units.unit5.s4.title', descriptionKey: 'course.units.unit5.s4.desc', demoLink: '/demos/polarimetric-microscopy' },
-    ],
-    resources: {
-      demos: ['stokes', 'mueller', 'jones', 'polarimetric-microscopy'],
-      tools: ['/calc/stokes', '/calc/mueller', '/calc/poincare', '/lab?tab=tasks'],
-    },
-    attachments: [
-      { type: 'ppt', titleKey: 'course.attachments.unit5PPT' },
-      { type: 'pdf', titleKey: 'course.attachments.muellerGuide' },
-    ],
-    learningObjectives: [
-      'course.objectives.unit5.1',
-      'course.objectives.unit5.2',
-      'course.objectives.unit5.3',
-      'course.objectives.unit5.4',
+    gradient: 'from-violet-500 to-purple-600',
+    isAdvanced: true,
+    units: [
+      {
+        id: 'stokes-vector',
+        titleKey: 'course.stages.stage3.units.stokes.title',
+        subtitleKey: 'course.stages.stage3.units.stokes.subtitle',
+        descriptionKey: 'course.stages.stage3.units.stokes.description',
+        icon: <Target className="w-6 h-6" />,
+        color: '#8B5CF6',
+        sections: [
+          { id: '3.1', titleKey: 'course.stages.stage3.sections.stokes.title', descriptionKey: 'course.stages.stage3.sections.stokes.desc', demoLink: '/demos/stokes' },
+        ],
+        resources: {
+          demos: ['stokes'],
+          tools: ['/calc/stokes', '/calc/poincare'],
+        },
+        learningObjectives: [
+          'course.stages.stage3.objectives.stokes.1',
+        ],
+      },
+      {
+        id: 'mueller-matrix',
+        titleKey: 'course.stages.stage3.units.mueller.title',
+        subtitleKey: 'course.stages.stage3.units.mueller.subtitle',
+        descriptionKey: 'course.stages.stage3.units.mueller.description',
+        icon: <Telescope className="w-6 h-6" />,
+        color: '#EC4899',
+        sections: [
+          { id: '3.2', titleKey: 'course.stages.stage3.sections.mueller.title', descriptionKey: 'course.stages.stage3.sections.mueller.desc', demoLink: '/demos/mueller' },
+          { id: '3.3', titleKey: 'course.stages.stage3.sections.jones.title', descriptionKey: 'course.stages.stage3.sections.jones.desc', demoLink: '/demos/jones' },
+        ],
+        resources: {
+          demos: ['mueller', 'jones'],
+          tools: ['/calc/mueller', '/calc/jones'],
+        },
+        learningObjectives: [
+          'course.stages.stage3.objectives.mueller.1',
+        ],
+      },
+      {
+        id: 'advanced-imaging',
+        titleKey: 'course.stages.stage3.units.imaging.title',
+        subtitleKey: 'course.stages.stage3.units.imaging.subtitle',
+        descriptionKey: 'course.stages.stage3.units.imaging.description',
+        icon: <Telescope className="w-6 h-6" />,
+        color: '#06B6D4',
+        sections: [
+          { id: '3.4', titleKey: 'course.stages.stage3.sections.microscopy.title', descriptionKey: 'course.stages.stage3.sections.microscopy.desc', demoLink: '/demos/polarimetric-microscopy' },
+          { id: '3.5', titleKey: 'course.stages.stage3.sections.monteCarlo.title', descriptionKey: 'course.stages.stage3.sections.monteCarlo.desc', demoLink: '/demos/monte-carlo-scattering' },
+        ],
+        resources: {
+          demos: ['polarimetric-microscopy', 'monte-carlo-scattering', 'mie-scattering', 'fresnel'],
+          tools: ['/lab?tab=tasks'],
+        },
+        learningObjectives: [
+          'course.stages.stage3.objectives.imaging.1',
+        ],
+      },
     ],
   },
 ]
+
+// Legacy COURSE_UNITS for backward compatibility
+const COURSE_UNITS: CourseUnit[] = LEARNING_STAGES.flatMap(stage => stage.units)
 
 // Hero animation component with polarized light effect
 function CourseHero({ theme }: { theme: 'dark' | 'light' }) {
@@ -337,228 +432,226 @@ function CourseHero({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
-// Course unit card component - all units accessible for open exploration
-function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; theme: 'dark' | 'light' }) {
+// Learning Stage Card - 三阶段学习路径卡片
+function LearningStageCard({ stage, theme, isExpanded, onToggle }: {
+  stage: LearningStage
+  theme: 'dark' | 'light'
+  isExpanded: boolean
+  onToggle: () => void
+}) {
   const { t } = useTranslation()
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [expandedUnitId, setExpandedUnitId] = useState<string | null>(null)
 
   return (
     <div
-      className={`rounded-2xl border-2 transition-all duration-300 overflow-hidden hover:-translate-y-1 hover:shadow-lg cursor-pointer ${
+      className={`rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
         theme === 'dark'
-          ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
-          : 'bg-white border-gray-200 hover:border-gray-400'
+          ? 'bg-slate-800/50 border-slate-700'
+          : 'bg-white border-gray-200'
       }`}
       style={{
-        borderColor: isExpanded ? unit.color : undefined,
-        boxShadow: isExpanded ? `0 0 30px ${unit.color}30` : undefined,
+        borderColor: isExpanded ? stage.color : undefined,
+        boxShadow: isExpanded ? `0 0 30px ${stage.color}30` : undefined,
       }}
-      onClick={() => setIsExpanded(!isExpanded)}
     >
-      {/* Unit header */}
-      <div className="p-5">
+      {/* Stage header */}
+      <div
+        className={`p-5 cursor-pointer transition-all hover:bg-opacity-80 ${
+          theme === 'dark' ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'
+        }`}
+        onClick={onToggle}
+      >
         <div className="flex items-start gap-4">
-          {/* Unit number and icon */}
+          {/* Phase number badge */}
           <div
-            className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: `${unit.color}20` }}
+            className={`flex-shrink-0 w-14 h-14 rounded-2xl flex flex-col items-center justify-center bg-gradient-to-br ${stage.gradient}`}
           >
-            <span style={{ color: unit.color }}>{unit.icon}</span>
+            <span className="text-white text-xs font-medium opacity-80">{t('course.phase')}</span>
+            <span className="text-white text-xl font-bold">{stage.phase}</span>
           </div>
 
-          {/* Unit info */}
+          {/* Stage info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-100 text-gray-500'
+              <h3 className={`text-lg font-bold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
-                {t('course.unit')} {index + 1}
-              </span>
-              <Star className="w-5 h-5" style={{ color: unit.color }} />
+                {t(stage.titleKey)}
+              </h3>
+              {stage.isAdvanced && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                  theme === 'dark'
+                    ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30'
+                    : 'bg-violet-100 text-violet-700 border border-violet-200'
+                }`}>
+                  {t('course.advanced')}
+                </span>
+              )}
             </div>
-            <h3 className={`text-lg font-bold mb-1 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
-              {t(unit.titleKey)}
-            </h3>
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-              {t(unit.subtitleKey)}
+              {t(stage.subtitleKey)}
+            </p>
+            {/* Core question - 核心问题 */}
+            <p className={`text-sm mt-2 italic ${
+              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+            }`}>
+              "{t(stage.questionKey)}"
             </p>
           </div>
 
           {/* Expand indicator */}
           <ChevronRight
-            className={`w-5 h-5 transition-transform ${
+            className={`w-5 h-5 transition-transform flex-shrink-0 ${
               isExpanded ? 'rotate-90' : ''
             } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
           />
         </div>
       </div>
 
-      {/* Expanded content */}
+      {/* Expanded content - units list */}
       {isExpanded && (
         <div className={`px-5 pb-5 pt-0 border-t ${
           theme === 'dark' ? 'border-slate-700' : 'border-gray-100'
         }`}>
           <p className={`text-sm mb-4 mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-            {t(unit.descriptionKey)}
+            {t(stage.descriptionKey)}
           </p>
 
-          {/* Course sections - clickable to link to demos */}
-          {unit.sections && unit.sections.length > 0 && (
-            <div className="mb-4">
-              <h4 className={`text-sm font-medium mb-2 ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                {t('course.sections')}
-              </h4>
-              <div className="space-y-2">
-                {unit.sections.map((section) => (
-                  <Link
-                    key={section.id}
-                    to={section.demoLink || '#'}
-                    onClick={e => e.stopPropagation()}
-                    className={`block p-3 rounded-lg transition-all hover:scale-[1.02] ${
-                      theme === 'dark'
-                        ? 'bg-slate-700/50 hover:bg-slate-700'
-                        : 'bg-gray-50 hover:bg-gray-100'
-                    }`}
+          {/* Units in this stage */}
+          <div className="space-y-3">
+            {stage.units.map((unit) => (
+              <div
+                key={unit.id}
+                className={`rounded-xl border transition-all duration-200 overflow-hidden ${
+                  theme === 'dark'
+                    ? 'bg-slate-700/30 border-slate-600/50 hover:border-slate-500'
+                    : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                }`}
+                style={{
+                  borderColor: expandedUnitId === unit.id ? unit.color : undefined,
+                }}
+              >
+                {/* Unit header */}
+                <div
+                  className="p-3 cursor-pointer flex items-center gap-3"
+                  onClick={() => setExpandedUnitId(expandedUnitId === unit.id ? null : unit.id)}
+                >
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${unit.color}20` }}
                   >
-                    <div className="flex items-start gap-2">
-                      <span
-                        className="text-xs font-bold px-1.5 py-0.5 rounded"
-                        style={{ backgroundColor: `${unit.color}20`, color: unit.color }}
-                      >
-                        {section.id}
-                      </span>
-                      <div className="flex-1">
-                        <p className={`text-sm font-medium ${
-                          theme === 'dark' ? 'text-white' : 'text-gray-900'
-                        }`}>
-                          {t(section.titleKey)}
-                        </p>
-                        <p className={`text-xs mt-0.5 ${
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                        }`}>
-                          {t(section.descriptionKey)}
-                        </p>
+                    <span style={{ color: unit.color }}>{unit.icon}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className={`text-sm font-medium ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {t(unit.titleKey)}
+                    </h4>
+                    <p className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
+                      {t(unit.subtitleKey)}
+                    </p>
+                  </div>
+                  <ChevronRight
+                    className={`w-4 h-4 transition-transform ${
+                      expandedUnitId === unit.id ? 'rotate-90' : ''
+                    } ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}
+                  />
+                </div>
+
+                {/* Unit expanded content */}
+                {expandedUnitId === unit.id && (
+                  <div className={`px-3 pb-3 border-t ${
+                    theme === 'dark' ? 'border-slate-600/50' : 'border-gray-200'
+                  }`}>
+                    {/* Sections */}
+                    {unit.sections && unit.sections.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {unit.sections.map((section) => (
+                          <Link
+                            key={section.id}
+                            to={section.demoLink || '#'}
+                            className={`block p-2 rounded-lg transition-all hover:scale-[1.01] ${
+                              theme === 'dark'
+                                ? 'bg-slate-600/30 hover:bg-slate-600/50'
+                                : 'bg-white hover:bg-gray-100'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="text-xs font-bold px-1.5 py-0.5 rounded"
+                                style={{ backgroundColor: `${unit.color}20`, color: unit.color }}
+                              >
+                                {section.id}
+                              </span>
+                              <div className="flex-1">
+                                <p className={`text-xs font-medium ${
+                                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                                }`}>
+                                  {t(section.titleKey)}
+                                </p>
+                              </div>
+                              <ArrowRight className={`w-3 h-3 ${
+                                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                              }`} />
+                            </div>
+                          </Link>
+                        ))}
                       </div>
-                      <ArrowRight
-                        className={`w-4 h-4 flex-shrink-0 ${
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                        }`}
-                      />
+                    )}
+
+                    {/* Resources */}
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                      {unit.resources.demos?.slice(0, 3).map((demo, i) => (
+                        <Link
+                          key={`demo-${i}`}
+                          to={`/demos/${demo}`}
+                          className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 transition-colors ${
+                            theme === 'dark'
+                              ? 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-900/50'
+                              : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'
+                          }`}
+                        >
+                          <FlaskConical className="w-3 h-3" />
+                          {t('course.demo')}
+                        </Link>
+                      ))}
+                      {unit.resources.games?.slice(0, 2).map((game, i) => (
+                        <Link
+                          key={`game-${i}`}
+                          to={game}
+                          className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 transition-colors ${
+                            theme === 'dark'
+                              ? 'bg-pink-900/30 text-pink-400 hover:bg-pink-900/50'
+                              : 'bg-pink-50 text-pink-700 hover:bg-pink-100'
+                          }`}
+                        >
+                          <Gamepad2 className="w-3 h-3" />
+                          {t('course.game')}
+                        </Link>
+                      ))}
+                      {unit.resources.tools?.slice(0, 2).map((tool, i) => (
+                        <Link
+                          key={`tool-${i}`}
+                          to={tool}
+                          className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 transition-colors ${
+                            theme === 'dark'
+                              ? 'bg-violet-900/30 text-violet-400 hover:bg-violet-900/50'
+                              : 'bg-violet-50 text-violet-700 hover:bg-violet-100'
+                          }`}
+                        >
+                          <Target className="w-3 h-3" />
+                          {t('course.tool')}
+                        </Link>
+                      ))}
                     </div>
-                  </Link>
-                ))}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-
-          {/* Learning objectives */}
-          {unit.learningObjectives && (
-            <div className="mb-4">
-              <h4 className={`text-sm font-medium mb-2 ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                {t('course.learningObjectives')}
-              </h4>
-              <ul className="space-y-1">
-                {unit.learningObjectives.map((obj, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: unit.color }} />
-                    <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-                      {t(obj)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Resources links */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {unit.resources.demos?.map((demo, i) => (
-              <Link
-                key={`demo-${i}`}
-                to={`/demos/${demo}`}
-                onClick={e => e.stopPropagation()}
-                className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-cyan-900/30 text-cyan-400 hover:bg-cyan-900/50'
-                    : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'
-                }`}
-              >
-                <FlaskConical className="w-3 h-3" />
-                {t('course.demo')}
-              </Link>
-            ))}
-            {unit.resources.games?.map((game, i) => (
-              <Link
-                key={`game-${i}`}
-                to={game}
-                onClick={e => e.stopPropagation()}
-                className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-pink-900/30 text-pink-400 hover:bg-pink-900/50'
-                    : 'bg-pink-50 text-pink-700 hover:bg-pink-100'
-                }`}
-              >
-                <Gamepad2 className="w-3 h-3" />
-                {t('course.game')}
-              </Link>
-            ))}
-            {unit.resources.experiments?.map((exp, i) => (
-              <Link
-                key={`exp-${i}`}
-                to={exp}
-                onClick={e => e.stopPropagation()}
-                className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/50'
-                    : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                }`}
-              >
-                <Sparkles className="w-3 h-3" />
-                {t('course.experiment')}
-              </Link>
-            ))}
-            {unit.resources.tools?.map((tool, i) => (
-              <Link
-                key={`tool-${i}`}
-                to={tool}
-                onClick={e => e.stopPropagation()}
-                className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-violet-900/30 text-violet-400 hover:bg-violet-900/50'
-                    : 'bg-violet-50 text-violet-700 hover:bg-violet-100'
-                }`}
-              >
-                <Target className="w-3 h-3" />
-                {t('course.tool')}
-              </Link>
             ))}
           </div>
-
-          {/* Attachments - internal documents only */}
-          {unit.attachments && unit.attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {unit.attachments.map((att, i) => (
-                <span
-                  key={i}
-                  onClick={e => e.stopPropagation()}
-                  className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 cursor-default ${
-                    theme === 'dark'
-                      ? 'bg-slate-700 text-gray-300'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  <FileText className="w-3 h-3" />
-                  {t(att.titleKey)}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -1119,6 +1212,8 @@ export function CoursePage() {
   const { theme } = useTheme()
   const [_searchParams] = useSearchParams()
   const { progress } = useCourseProgress()
+  // 默认展开第一阶段，帮助初学者快速入门
+  const [expandedStageId, setExpandedStageId] = useState<string>('stage1')
 
   return (
     <div className={`min-h-screen ${
@@ -1141,21 +1236,68 @@ export function CoursePage() {
         {/* Progress Stats - 学习进度统计 */}
         <ProgressStats theme={theme} />
 
-        {/* Course units - 课程大纲 (positioned above exploration map) */}
+        {/* Learning Journey - 三阶段学习路径 */}
         <div className="mb-6">
-          <h2 className={`text-lg font-bold mb-4 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
-            {t('course.curriculum')}
-          </h2>
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className={`text-lg font-bold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              {t('course.learningJourney')}
+            </h2>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${
+              theme === 'dark'
+                ? 'bg-cyan-500/20 text-cyan-400'
+                : 'bg-cyan-100 text-cyan-700'
+            }`}>
+              {t('course.threeStages')}
+            </span>
+          </div>
 
-          <div className="space-y-3">
-            {COURSE_UNITS.map((unit, index) => (
-              <UnitCard
-                key={unit.id}
-                unit={unit}
-                index={index}
+          {/* Journey path indicator */}
+          <div className={`flex items-center justify-between mb-6 px-4 py-3 rounded-xl ${
+            theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100'
+          }`}>
+            {LEARNING_STAGES.map((stage, index) => (
+              <div key={stage.id} className="flex items-center">
+                <button
+                  onClick={() => setExpandedStageId(expandedStageId === stage.id ? '' : stage.id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all ${
+                    expandedStageId === stage.id
+                      ? `bg-gradient-to-r ${stage.gradient} text-white shadow-lg`
+                      : theme === 'dark'
+                        ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'
+                  }`}
+                >
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    expandedStageId === stage.id
+                      ? 'bg-white/20'
+                      : theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
+                  }`}>
+                    {stage.phase}
+                  </span>
+                  <span className="text-sm font-medium hidden sm:inline">
+                    {t(stage.titleKey)}
+                  </span>
+                </button>
+                {index < LEARNING_STAGES.length - 1 && (
+                  <ArrowRight className={`w-4 h-4 mx-2 ${
+                    theme === 'dark' ? 'text-gray-600' : 'text-gray-300'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Stage cards */}
+          <div className="space-y-4">
+            {LEARNING_STAGES.map((stage) => (
+              <LearningStageCard
+                key={stage.id}
+                stage={stage}
                 theme={theme}
+                isExpanded={expandedStageId === stage.id}
+                onToggle={() => setExpandedStageId(expandedStageId === stage.id ? '' : stage.id)}
               />
             ))}
           </div>

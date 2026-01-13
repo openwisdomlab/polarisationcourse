@@ -102,6 +102,33 @@
         "title": "偏振前沿研究",
         "description": "全偏振成像、Mueller矩阵及生物医学应用等前沿研究课题。"
       }
+    },
+    "guidedStart": {
+      "title": "欢迎来到偏振世界！",
+      "subtitle": "选择最适合你的探索方式",
+      "skip": "跳过，直接进入首页",
+      "tracks": {
+        "curious": {
+          "title": "我想了解偏振是什么",
+          "description": "从零开始，通过生活现象认识偏振"
+        },
+        "student": {
+          "title": "我是学生，想系统学习",
+          "description": "从马吕斯定律开始，掌握偏振规律"
+        },
+        "researcher": {
+          "title": "我有物理基础，想深入研究",
+          "description": "直接进入高级内容和研究方法"
+        },
+        "player": {
+          "title": "我想在游戏中学习",
+          "description": "通过解谜游戏理解偏振原理"
+        },
+        "explorer": {
+          "title": "我想自由探索",
+          "description": "浏览所有演示，按兴趣选择"
+        }
+      }
     }
   },
   "course": {
@@ -111,7 +138,183 @@
     "startLearning": "开始学习",
     "viewHistory": "查看历史",
     "curriculum": "课程大纲",
+    "learningJourney": "学习路径",
+    "threeStages": "三阶段认知旅程",
+    "phase": "阶段",
+    "advanced": "高级",
     "unit": "单元",
+    "stages": {
+      "stage1": {
+        "title": "看见偏振",
+        "subtitle": "认识光的第三属性",
+        "description": "偏振是光除了颜色和亮度之外的第三种属性。在这个阶段，你将通过观察和体验，建立对偏振现象的直觉理解。",
+        "question": "偏振是什么？我能在哪里看到它？",
+        "units": {
+          "seeing": {
+            "title": "发现偏振世界",
+            "subtitle": "从生活现象出发",
+            "description": "了解什么是偏振，以及它在日常生活中的表现"
+          }
+        },
+        "sections": {
+          "whatIsPolarization": {
+            "title": "什么是偏振？",
+            "desc": "光的振动方向与偏振概念"
+          },
+          "polarizationTypes": {
+            "title": "偏振的类型",
+            "desc": "线偏振、圆偏振与椭圆偏振"
+          },
+          "dailyLife": {
+            "title": "生活中的偏振",
+            "desc": "LCD屏幕、偏光太阳镜等应用"
+          }
+        },
+        "objectives": {
+          "1": "理解偏振是光的一种基本属性",
+          "2": "能够识别日常生活中的偏振现象"
+        }
+      },
+      "stage2": {
+        "title": "理解规律",
+        "subtitle": "掌握偏振光的行为法则",
+        "description": "在这个阶段，你将学习偏振光遵循的物理规律，理解光通过不同介质时的行为变化。",
+        "question": "偏振光遵循什么规律？如何预测它的行为？",
+        "units": {
+          "malus": {
+            "title": "马吕斯定律",
+            "subtitle": "偏振片的透射规律",
+            "description": "理解光通过偏振片时强度与角度的关系"
+          },
+          "birefringence": {
+            "title": "双折射",
+            "subtitle": "一束光变两束",
+            "description": "探索冰洲石等晶体的神奇分光效应"
+          },
+          "reflection": {
+            "title": "反射偏振",
+            "subtitle": "界面上的偏振",
+            "description": "理解布儒斯特角与偏光太阳镜原理"
+          },
+          "scattering": {
+            "title": "散射偏振",
+            "subtitle": "天空为何是蓝色的",
+            "description": "了解瑞利散射与自然界的偏振现象"
+          },
+          "applications": {
+            "title": "偏振应用",
+            "subtitle": "应力分析与糖浓度测量",
+            "description": "学习偏振在材料检测和化学分析中的应用"
+          }
+        },
+        "sections": {
+          "malusLaw": {
+            "title": "马吕斯定律",
+            "desc": "I = I₀cos²θ 的定量关系"
+          },
+          "calcite": {
+            "title": "冰洲石与双折射",
+            "desc": "o光和e光的分离现象"
+          },
+          "waveplate": {
+            "title": "波片调制",
+            "desc": "λ/4和λ/2波片的作用"
+          },
+          "brewster": {
+            "title": "布儒斯特角",
+            "desc": "反射光完全偏振的特殊角度"
+          },
+          "rayleigh": {
+            "title": "瑞利散射",
+            "desc": "蓝天和夕阳的偏振解释"
+          },
+          "stress": {
+            "title": "应力双折射",
+            "desc": "光弹性应力分析"
+          },
+          "sugar": {
+            "title": "旋光现象",
+            "desc": "糖溶液的偏振旋转"
+          }
+        },
+        "objectives": {
+          "malus": {
+            "1": "理解马吕斯定律的物理含义",
+            "2": "能够计算通过偏振片的光强"
+          },
+          "birefringence": {
+            "1": "理解双折射的产生机制",
+            "2": "了解波片对偏振态的调制作用"
+          },
+          "reflection": {
+            "1": "理解布儒斯特角与偏光太阳镜原理"
+          },
+          "scattering": {
+            "1": "能够解释蓝天和红霞的形成"
+          },
+          "applications": {
+            "1": "了解应力双折射在质检中的应用",
+            "2": "理解旋光法测糖浓度的原理"
+          }
+        }
+      },
+      "stage3": {
+        "title": "测量与应用",
+        "subtitle": "完整表征与前沿技术",
+        "description": "在这个阶段，你将学习如何精确描述偏振态，以及偏振技术在科研和工业中的前沿应用。",
+        "question": "如何精确描述和利用偏振？",
+        "units": {
+          "stokes": {
+            "title": "Stokes矢量",
+            "subtitle": "偏振态的四参数表示",
+            "description": "学习用四个参数完整描述任意偏振态"
+          },
+          "mueller": {
+            "title": "Mueller矩阵",
+            "subtitle": "光学元件的完备描述",
+            "description": "掌握4×4矩阵表示的光学系统分析方法"
+          },
+          "imaging": {
+            "title": "全偏振成像",
+            "subtitle": "前沿应用与研究",
+            "description": "了解偏振显微镜和全偏振成像技术"
+          }
+        },
+        "sections": {
+          "stokes": {
+            "title": "Stokes矢量",
+            "desc": "[S₀, S₁, S₂, S₃] 四参数表示法"
+          },
+          "mueller": {
+            "title": "Mueller矩阵",
+            "desc": "光学元件的4×4矩阵表征"
+          },
+          "jones": {
+            "title": "Jones矩阵",
+            "desc": "完全偏振光的复数表示"
+          },
+          "microscopy": {
+            "title": "偏振显微术",
+            "desc": "Mueller矩阵显微成像"
+          },
+          "monteCarlo": {
+            "title": "蒙特卡洛模拟",
+            "desc": "复杂介质中的光子传输"
+          }
+        },
+        "objectives": {
+          "stokes": {
+            "1": "掌握Stokes矢量的物理意义和测量方法"
+          },
+          "mueller": {
+            "1": "理解Mueller矩阵的完备表征能力"
+          },
+          "imaging": {
+            "1": "了解全偏振成像技术的应用前景"
+          }
+        }
+      }
+    },
     "units": {
       "label": "单元"
     },
@@ -509,7 +712,15 @@
       "physics": "物理原理",
       "experiment": "实验应用",
       "frontier": "前沿应用",
-      "diy": "动手试试"
+      "diy": "动手试试",
+      "resources": "延伸阅读"
+    },
+    "resourcesDisclaimer": "以下资源来自外部网站，仅供参考学习。",
+    "resourceTypes": {
+      "videos": "视频资源",
+      "articles": "文章资料",
+      "papers": "学术论文",
+      "tools": "工具与软件"
     },
     "difficulty": {
       "label": "演示难度",
@@ -1088,6 +1299,14 @@
           "尝试中间角度（30°、45°、60°）观察渐变效果"
         ],
         "observation": "旋转45°时，光强减少到50%——正如马吕斯定律预测的那样（cos²45° = 0.5）"
+      },
+      "resources": {
+        "videos": [
+          { "title": "偏振光的神奇世界 - Physics Girl" }
+        ],
+        "articles": [
+          { "title": "偏振片 - 维基百科" }
+        ]
       }
     },
     "birefringence": {

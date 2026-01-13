@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ModuleIconMap, type ModuleIconKey, PolarCraftLogo, CourseIcon } from '@/components/icons'
 import { LightBeamEffect } from '@/components/effects'
+import { X, Lightbulb, BookOpen, Telescope, Gamepad2, Sparkles } from 'lucide-react'
 
 // Polarization angle colors for visual effect (based on polarization physics)
 const POLARIZATION_COLORS = [
@@ -632,6 +633,166 @@ const ModuleCard = memo(function ModuleCard({ module, index, isBeamTarget, onHov
   )
 })
 
+// P1: Guided Start Modal - 引导式起点
+// 帮助新用户选择合适的学习路径，减少首页信息过载
+const LEARNING_TRACKS = [
+  {
+    id: 'curious',
+    icon: Lightbulb,
+    color: '#22D3EE',
+    gradient: 'from-cyan-500 to-blue-500',
+    route: '/course', // 进入课程阶段一
+    queryParam: '?stage=1',
+  },
+  {
+    id: 'student',
+    icon: BookOpen,
+    color: '#A78BFA',
+    gradient: 'from-purple-500 to-pink-500',
+    route: '/demos/malus', // 从马吕斯定律开始
+  },
+  {
+    id: 'researcher',
+    icon: Telescope,
+    color: '#8B5CF6',
+    gradient: 'from-violet-500 to-purple-600',
+    route: '/course', // 进入课程页面，可以探索高级内容
+    queryParam: '?stage=3',
+  },
+  {
+    id: 'player',
+    icon: Gamepad2,
+    color: '#F59E0B',
+    gradient: 'from-orange-500 to-amber-500',
+    route: '/games/2d?level=0', // 直接开始游戏
+  },
+  {
+    id: 'explorer',
+    icon: Sparkles,
+    color: '#EC4899',
+    gradient: 'from-pink-500 to-rose-500',
+    route: '/demos', // 自由探索演示
+  },
+]
+
+function GuidedStartModal({
+  theme,
+  onClose,
+  onSelect,
+}: {
+  theme: 'dark' | 'light'
+  onClose: () => void
+  onSelect: (trackId: string, route: string) => void
+}) {
+  const { t } = useTranslation()
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className={`relative w-full max-w-2xl rounded-2xl p-6 shadow-2xl ${
+        theme === 'dark'
+          ? 'bg-slate-900 border border-slate-700'
+          : 'bg-white border border-gray-200'
+      }`}>
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className={`absolute top-4 right-4 p-2 rounded-full transition-colors ${
+            theme === 'dark'
+              ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+              : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h2 className={`text-2xl font-bold mb-2 ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>
+            {t('home.guidedStart.title')}
+          </h2>
+          <p className={`text-sm ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            {t('home.guidedStart.subtitle')}
+          </p>
+        </div>
+
+        {/* Track options */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {LEARNING_TRACKS.map((track) => {
+            const IconComponent = track.icon
+            return (
+              <button
+                key={track.id}
+                onClick={() => onSelect(track.id, track.route + (track.queryParam || ''))}
+                className={`group p-4 rounded-xl border-2 text-left transition-all hover:scale-[1.02] ${
+                  theme === 'dark'
+                    ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
+                    : 'bg-gray-50 border-gray-200 hover:border-gray-400'
+                }`}
+                style={{
+                  borderColor: undefined,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = track.color
+                  e.currentTarget.style.boxShadow = `0 0 20px ${track.color}30`
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = ''
+                  e.currentTarget.style.boxShadow = ''
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`p-2 rounded-lg bg-gradient-to-br ${track.gradient}`}
+                  >
+                    <IconComponent className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className={`font-semibold mb-1 ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {t(`home.guidedStart.tracks.${track.id}.title`)}
+                    </h3>
+                    <p className={`text-xs ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
+                      {t(`home.guidedStart.tracks.${track.id}.description`)}
+                    </p>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Skip option */}
+        <div className="mt-4 text-center">
+          <button
+            onClick={onClose}
+            className={`text-sm transition-colors ${
+              theme === 'dark'
+                ? 'text-gray-500 hover:text-gray-300'
+                : 'text-gray-400 hover:text-gray-600'
+            }`}
+          >
+            {t('home.guidedStart.skip')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Animated polarization background component
 function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
   const [time, setTime] = useState(0)
@@ -1112,10 +1273,34 @@ function CourseCardWithPolarizers({ theme, children, to }: CourseCardProps) {
 export function HomePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const navigate = useNavigate()
   const [hoveredModule, setHoveredModule] = useState<string | null>(null)
   const logoRef = useRef<HTMLDivElement>(null)
   const moduleRefsMap = useRef<Map<string, HTMLDivElement | null>>(new Map())
   const iconRefsMap = useRef<Map<string, HTMLDivElement | null>>(new Map())
+
+  // P1: 引导式起点状态 - 首次访问时显示
+  const [showGuidedStart, setShowGuidedStart] = useState(() => {
+    // 检查是否是首次访问
+    const hasSeenGuide = localStorage.getItem('polarcraft_guided_start_completed')
+    return !hasSeenGuide
+  })
+
+  // 处理引导选择
+  const handleGuidedSelect = useCallback((trackId: string, route: string) => {
+    // 记录用户已完成引导
+    localStorage.setItem('polarcraft_guided_start_completed', 'true')
+    localStorage.setItem('polarcraft_learning_track', trackId)
+    setShowGuidedStart(false)
+    // 导航到选择的路径
+    navigate(route)
+  }, [navigate])
+
+  // 关闭引导（跳过）
+  const handleGuidedClose = useCallback(() => {
+    localStorage.setItem('polarcraft_guided_start_completed', 'true')
+    setShowGuidedStart(false)
+  }, [])
 
   // Callback to register module card refs
   const registerModuleRef = useCallback((key: string, ref: HTMLDivElement | null) => {
@@ -1403,6 +1588,15 @@ export function HomePage() {
           PolarCraft supported by Open Wisdom Lab
         </p>
       </footer>
+
+      {/* P1: 引导式起点弹窗 - 首次访问时显示 */}
+      {showGuidedStart && (
+        <GuidedStartModal
+          theme={theme}
+          onClose={handleGuidedClose}
+          onSelect={handleGuidedSelect}
+        />
+      )}
     </div>
   )
 }

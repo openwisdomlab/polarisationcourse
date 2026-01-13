@@ -102,6 +102,33 @@
         "title": "Frontier Research in Polarization",
         "description": "Advanced research topics in full-polarization imaging, Mueller matrices, and biomedical applications."
       }
+    },
+    "guidedStart": {
+      "title": "Welcome to the World of Polarization!",
+      "subtitle": "Choose the best way to start your exploration",
+      "skip": "Skip, go directly to homepage",
+      "tracks": {
+        "curious": {
+          "title": "I want to learn what polarization is",
+          "description": "Start from zero, discover polarization through daily phenomena"
+        },
+        "student": {
+          "title": "I'm a student, want systematic learning",
+          "description": "Start from Malus's Law, master polarization rules"
+        },
+        "researcher": {
+          "title": "I have physics background, want to dive deep",
+          "description": "Jump directly to advanced content and research methods"
+        },
+        "player": {
+          "title": "I want to learn through games",
+          "description": "Understand polarization through puzzle games"
+        },
+        "explorer": {
+          "title": "I want to explore freely",
+          "description": "Browse all demos, choose by interest"
+        }
+      }
     }
   },
   "course": {
@@ -111,7 +138,183 @@
     "startLearning": "Start Learning",
     "viewHistory": "View History",
     "curriculum": "Course Curriculum",
+    "learningJourney": "Learning Journey",
+    "threeStages": "3-Stage Cognitive Path",
+    "phase": "Phase",
+    "advanced": "Advanced",
     "unit": "Unit",
+    "stages": {
+      "stage1": {
+        "title": "See Polarization",
+        "subtitle": "Discover the Third Property of Light",
+        "description": "Polarization is the third property of light, beyond color and brightness. In this stage, you'll build intuitive understanding through observation and experience.",
+        "question": "What is polarization? Where can I see it?",
+        "units": {
+          "seeing": {
+            "title": "Discovering Polarization",
+            "subtitle": "Starting from Daily Phenomena",
+            "description": "Learn what polarization is and how it manifests in everyday life"
+          }
+        },
+        "sections": {
+          "whatIsPolarization": {
+            "title": "What is Polarization?",
+            "desc": "Light's vibration direction and the concept of polarization"
+          },
+          "polarizationTypes": {
+            "title": "Types of Polarization",
+            "desc": "Linear, circular, and elliptical polarization"
+          },
+          "dailyLife": {
+            "title": "Polarization in Daily Life",
+            "desc": "LCD screens, polarized sunglasses, and more"
+          }
+        },
+        "objectives": {
+          "1": "Understand that polarization is a fundamental property of light",
+          "2": "Identify polarization phenomena in everyday life"
+        }
+      },
+      "stage2": {
+        "title": "Understand the Rules",
+        "subtitle": "Master the Laws of Polarized Light",
+        "description": "In this stage, you'll learn the physical laws governing polarized light and understand how light behaves through different media.",
+        "question": "What rules does polarized light follow? How can we predict its behavior?",
+        "units": {
+          "malus": {
+            "title": "Malus's Law",
+            "subtitle": "Polarizer Transmission Rule",
+            "description": "Understand the relationship between light intensity and angle through polarizers"
+          },
+          "birefringence": {
+            "title": "Birefringence",
+            "subtitle": "One Beam Becomes Two",
+            "description": "Explore the light-splitting effect in crystals like Iceland spar"
+          },
+          "reflection": {
+            "title": "Reflection Polarization",
+            "subtitle": "Polarization at Interfaces",
+            "description": "Understand Brewster's angle and polarized sunglasses"
+          },
+          "scattering": {
+            "title": "Scattering Polarization",
+            "subtitle": "Why is the Sky Blue?",
+            "description": "Learn about Rayleigh scattering and polarization in nature"
+          },
+          "applications": {
+            "title": "Polarization Applications",
+            "subtitle": "Stress Analysis & Sugar Concentration",
+            "description": "Learn polarization applications in material testing and chemical analysis"
+          }
+        },
+        "sections": {
+          "malusLaw": {
+            "title": "Malus's Law",
+            "desc": "The quantitative relationship I = I₀cos²θ"
+          },
+          "calcite": {
+            "title": "Iceland Spar & Birefringence",
+            "desc": "Separation of o-ray and e-ray"
+          },
+          "waveplate": {
+            "title": "Waveplate Modulation",
+            "desc": "Effects of λ/4 and λ/2 waveplates"
+          },
+          "brewster": {
+            "title": "Brewster's Angle",
+            "desc": "The angle of complete polarization"
+          },
+          "rayleigh": {
+            "title": "Rayleigh Scattering",
+            "desc": "Polarization explanation of blue sky and sunset"
+          },
+          "stress": {
+            "title": "Stress Birefringence",
+            "desc": "Photoelastic stress analysis"
+          },
+          "sugar": {
+            "title": "Optical Rotation",
+            "desc": "Polarization rotation in sugar solutions"
+          }
+        },
+        "objectives": {
+          "malus": {
+            "1": "Understand the physical meaning of Malus's Law",
+            "2": "Calculate light intensity through polarizers"
+          },
+          "birefringence": {
+            "1": "Understand the mechanism of birefringence",
+            "2": "Learn how waveplates modulate polarization states"
+          },
+          "reflection": {
+            "1": "Understand Brewster's angle and polarized sunglasses"
+          },
+          "scattering": {
+            "1": "Explain the formation of blue sky and red sunset"
+          },
+          "applications": {
+            "1": "Learn stress birefringence in quality control",
+            "2": "Understand polarimetry for sugar concentration"
+          }
+        }
+      },
+      "stage3": {
+        "title": "Measure & Apply",
+        "subtitle": "Complete Characterization & Frontier Tech",
+        "description": "In this stage, you'll learn how to precisely describe polarization states and explore frontier applications in research and industry.",
+        "question": "How can we precisely describe and utilize polarization?",
+        "units": {
+          "stokes": {
+            "title": "Stokes Vector",
+            "subtitle": "Four-Parameter Representation",
+            "description": "Learn to completely describe any polarization state with four parameters"
+          },
+          "mueller": {
+            "title": "Mueller Matrix",
+            "subtitle": "Complete Description of Optical Elements",
+            "description": "Master the 4×4 matrix approach for optical system analysis"
+          },
+          "imaging": {
+            "title": "Full-Polarization Imaging",
+            "subtitle": "Frontier Applications & Research",
+            "description": "Learn about polarization microscopy and full-polarization imaging"
+          }
+        },
+        "sections": {
+          "stokes": {
+            "title": "Stokes Vector",
+            "desc": "[S₀, S₁, S₂, S₃] four-parameter representation"
+          },
+          "mueller": {
+            "title": "Mueller Matrix",
+            "desc": "4×4 matrix characterization of optical elements"
+          },
+          "jones": {
+            "title": "Jones Matrix",
+            "desc": "Complex representation for fully polarized light"
+          },
+          "microscopy": {
+            "title": "Polarization Microscopy",
+            "desc": "Mueller matrix microscopy imaging"
+          },
+          "monteCarlo": {
+            "title": "Monte Carlo Simulation",
+            "desc": "Photon transport in complex media"
+          }
+        },
+        "objectives": {
+          "stokes": {
+            "1": "Master the physical meaning and measurement of Stokes vectors"
+          },
+          "mueller": {
+            "1": "Understand the complete characterization capability of Mueller matrices"
+          },
+          "imaging": {
+            "1": "Learn about the application prospects of full-polarization imaging"
+          }
+        }
+      }
+    },
     "units": {
       "label": "Units"
     },
@@ -470,7 +673,15 @@
       "physics": "Physical Principle",
       "experiment": "Experimental Application",
       "frontier": "Frontier Application",
-      "diy": "Try It Yourself"
+      "diy": "Try It Yourself",
+      "resources": "Further Reading"
+    },
+    "resourcesDisclaimer": "External resources for reference only.",
+    "resourceTypes": {
+      "videos": "Video Resources",
+      "articles": "Articles",
+      "papers": "Academic Papers",
+      "tools": "Tools & Software"
     },
     "difficulty": {
       "label": "Difficulty Level",
@@ -509,7 +720,15 @@
       "physics": "Physical Principle",
       "experiment": "Experimental Application",
       "frontier": "Frontier Application",
-      "diy": "Try It Yourself"
+      "diy": "Try It Yourself",
+      "resources": "Further Reading"
+    },
+    "resourcesDisclaimer": "External resources for reference only.",
+    "resourceTypes": {
+      "videos": "Video Resources",
+      "articles": "Articles",
+      "papers": "Academic Papers",
+      "tools": "Tools & Software"
     },
     "difficulty": {
       "label": "Difficulty Level",
@@ -1088,6 +1307,14 @@
           "Try angles in between (30°, 45°, 60°) and notice the gradual change"
         ],
         "observation": "At 45° rotation, light is reduced to 50% - exactly as Malus's Law predicts (cos²45° = 0.5)"
+      },
+      "resources": {
+        "videos": [
+          { "title": "The Magic of Polarized Light - Physics Girl" }
+        ],
+        "articles": [
+          { "title": "Polarizer - Wikipedia" }
+        ]
       }
     },
     "birefringence": {
