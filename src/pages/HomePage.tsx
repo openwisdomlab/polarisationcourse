@@ -20,16 +20,12 @@ import {
   Play,
   Lightbulb,
   BookOpen,
-  Telescope,
   FlaskConical,
   ArrowRight,
   Eye,
-  Wrench,
   ChevronDown,
   Sparkles,
   Zap,
-  GraduationCap,
-  Atom,
   Microscope,
   Sun,
   Layers,
@@ -726,12 +722,12 @@ export function HomePage() {
           <div className="flex items-center gap-3">
             <PolarWorldLogo size={36} theme={theme} />
             <span className={cn(
-              'hidden sm:block font-bold text-lg',
+              'hidden sm:block font-bold text-base',
               theme === 'dark'
                 ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400'
                 : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-violet-600'
             )}>
-              PolarCraft
+              偏振光下的新世界
             </span>
           </div>
           <LanguageThemeSwitcher />
@@ -797,7 +793,7 @@ export function HomePage() {
                 {t('home.startLearning')}
               </button>
               <Link
-                to="/course"
+                to="/demos"
                 className={cn(
                   'px-6 py-3 rounded-full font-bold flex items-center gap-2',
                   'border-2 transition-all duration-300 hover:scale-105',
@@ -806,8 +802,8 @@ export function HomePage() {
                     : 'border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50'
                 )}
               >
-                <GraduationCap className="w-5 h-5" />
-                {t('home.viewCourse')}
+                <Eye className="w-5 h-5" />
+                {t('home.explore')}
               </Link>
             </div>
           </div>
@@ -865,7 +861,7 @@ export function HomePage() {
           'mt-12 text-center text-xs',
           theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
         )}>
-          <p className="opacity-60">© 2025 PolarCraft - {t('home.title')}</p>
+          <p className="opacity-60">© 2025 深圳零一学院 · {t('home.title')}</p>
         </footer>
       </main>
     </div>
