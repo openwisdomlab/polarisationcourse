@@ -11,7 +11,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { PolarCraftLogo } from '@/components/icons'
+import { PolarWorldLogo } from '@/components/icons'
+import { PolarizedLightHero } from '@/components/effects'
 import { useCourseProgress } from '@/hooks'
 import {
   ChevronRight,
@@ -24,7 +25,6 @@ import {
   ArrowRight,
   Eye,
   Wrench,
-  GraduationCap,
   TrendingUp,
   Clock,
   Flame,
@@ -747,23 +747,25 @@ export function HomePage() {
 
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50">
-        <div className={`flex items-center justify-between px-4 py-3 ${
+        <div className={`flex items-center justify-between px-4 py-2 ${
           theme === 'dark'
-            ? 'bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50'
-            : 'bg-white/80 backdrop-blur-xl border-b border-gray-200/50'
+            ? 'bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50'
+            : 'bg-white/90 backdrop-blur-xl border-b border-gray-200/50'
         }`}>
           <div className="flex items-center gap-3">
-            <PolarCraftLogo size={32} theme={theme} />
-            <span className={`font-bold text-lg hidden sm:inline ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
-              PolarCraft
-            </span>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${
-              theme === 'dark' ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
-            }`}>
-              P-SRT
-            </span>
+            <PolarWorldLogo size={40} theme={theme} />
+            <div className="hidden sm:block">
+              <span className={`font-bold text-base ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {t('home.title')}
+              </span>
+              <span className={`block text-[10px] ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                {t('home.subtitle')}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -774,35 +776,43 @@ export function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 pt-24 pb-12">
+      <main className="max-w-4xl mx-auto px-4 pt-20 pb-12">
+        {/* Polarized Light Demonstration Effect */}
+        <div className="mb-8">
+          <PolarizedLightHero height={180} className="shadow-xl" />
+        </div>
+
         {/* Hero Section */}
         <div className="text-center mb-10">
-          <div className="flex justify-center mb-4">
-            <div className={`p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 shadow-xl`}>
-              <GraduationCap className="w-10 h-10 text-white" />
-            </div>
+          <div className="flex justify-center mb-6">
+            <PolarWorldLogo size={100} theme={theme} animated={true} />
           </div>
-          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${
+          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 ${
             theme === 'dark'
               ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400'
               : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-violet-600'
           }`}>
             {t('home.title')}
           </h1>
-          <p className={`text-base sm:text-lg max-w-2xl mx-auto leading-relaxed ${
+          <p className={`text-sm mb-2 ${
+            theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+          }`}>
+            {t('home.subtitle')}
+          </p>
+          <p className={`text-sm sm:text-base max-w-2xl mx-auto leading-relaxed ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
             {t('home.description')}
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex justify-center gap-4 mt-6">
+          <div className="flex flex-wrap justify-center gap-4 mt-6">
             <button
               onClick={() => {
                 const firstDemo = LEARNING_STAGES[0].demos[0]
                 if (firstDemo) navigate(firstDemo.link)
               }}
-              className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform shadow-lg"
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-blue-500/25"
             >
               <Play className="w-5 h-5" />
               {t('home.startLearning')}
@@ -811,8 +821,8 @@ export function HomePage() {
               to="/course"
               className={`px-6 py-3 rounded-full border-2 font-medium flex items-center gap-2 hover:scale-105 transition-transform ${
                 theme === 'dark'
-                  ? 'border-gray-600 text-gray-300 hover:border-gray-400'
-                  : 'border-gray-300 text-gray-600 hover:border-gray-500'
+                  ? 'border-violet-500/50 text-violet-300 hover:border-violet-400 hover:bg-violet-500/10'
+                  : 'border-violet-300 text-violet-600 hover:border-violet-500 hover:bg-violet-50'
               }`}
             >
               <BookOpen className="w-5 h-5" />
@@ -875,7 +885,8 @@ export function HomePage() {
         <footer className={`mt-12 text-center text-xs ${
           theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
         }`}>
-          <p>PolarCraft supported by Open Wisdom Lab</p>
+          <p>偏振光下的新世界 · 深圳零一学院颠覆创新挑战营</p>
+          <p className="mt-1 opacity-60">A New World Under Polarized Light · Open Wisdom Lab</p>
         </footer>
       </main>
 

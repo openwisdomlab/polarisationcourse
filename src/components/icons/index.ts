@@ -1,5 +1,6 @@
 export * from './ModuleIcons'
 export * from './DeviceIcons'
 export * from './PolarCraftLogo'
+export * from './PolarWorldLogo'
 export * from './OpenWisdomLabLogo'
 export * from './NodeIcons'
