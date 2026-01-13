@@ -35,6 +35,8 @@ import {
   Compass,
   Target,
   Beaker,
+  Atom,
+  Wrench,
 } from 'lucide-react'
 
 // ============================================================================
