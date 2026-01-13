@@ -23,7 +23,6 @@ import {
   Sun,
   Sparkles,
   FlaskConical,
-  History,
   Lightbulb,
   Target,
   Telescope,
@@ -33,7 +32,6 @@ import {
   X,
   Calculator,
   Users,
-  Gamepad2,
   Compass,
   Palette,
   ArrowRight,
@@ -44,7 +42,6 @@ import { TIMELINE_EVENTS, type TimelineEvent } from '@/data/timeline-events'
 import { PSRT_CURRICULUM } from '@/data/psrt-curriculum'
 import {
   COURSE_TIMELINE_MAPPINGS,
-  HISTORICAL_ERAS,
   type CourseTimelineMapping,
 } from '@/data/course-timeline-integration'
 
@@ -98,17 +95,18 @@ const MODULE_ENTRIES: ModuleEntry[] = [
     color: '#8B5CF6',
     gradient: 'from-violet-500 to-purple-500',
   },
-  {
-    id: 'games',
-    titleZh: '偏振探秘',
-    titleEn: 'PolarQuest',
-    descZh: '游戏化学习',
-    descEn: 'Gamified learning',
-    icon: <Gamepad2 className="w-5 h-5" />,
-    link: '/games',
-    color: '#F59E0B',
-    gradient: 'from-amber-500 to-orange-500',
-  },
+  // 偏振探秘暂时隐藏，尚未完善
+  // {
+  //   id: 'games',
+  //   titleZh: '偏振探秘',
+  //   titleEn: 'PolarQuest',
+  //   descZh: '游戏化学习',
+  //   descEn: 'Gamified learning',
+  //   icon: <Gamepad2 className="w-5 h-5" />,
+  //   link: '/games',
+  //   color: '#F59E0B',
+  //   gradient: 'from-amber-500 to-orange-500',
+  // },
   {
     id: 'lab',
     titleZh: '虚拟课题组',
@@ -130,7 +128,7 @@ interface CourseOutlineSidebarProps {
   theme: 'dark' | 'light'
   isZh: boolean
   activeUnitId: string | null
-  onUnitClick: (unitId: string, year: number) => void
+  onUnitClick: (unitId: string) => void
   isOpen: boolean
   onToggle: () => void
 }
@@ -249,21 +247,20 @@ function CourseOutlineSidebar({
             'text-xs mt-1',
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           )}>
-            {isZh ? '点击单元跳转到对应历史节点' : 'Click unit to jump to timeline'}
+            {isZh ? '点击展开课程内容' : 'Click to expand course content'}
           </p>
         </div>
 
         {/* Units list */}
         <div className="p-3 space-y-2">
           {PSRT_CURRICULUM.map((unit, index) => {
-            const mapping = COURSE_TIMELINE_MAPPINGS.find(m => m.unitNumber === unit.unitNumber)
             const color = unitColors[index % unitColors.length]
             const isActive = activeUnitId === unit.id
 
             return (
               <button
                 key={unit.id}
-                onClick={() => onUnitClick(unit.id, mapping?.historicalOriginYear || 1669)}
+                onClick={() => onUnitClick(unit.id)}
                 className={cn(
                   'w-full text-left p-3 rounded-xl border transition-all duration-200',
                   isActive
@@ -292,12 +289,6 @@ function CourseOutlineSidebar({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1">
                       <span style={{ color }}>{unitIcons[index]}</span>
-                      <span className={cn(
-                        'text-xs font-medium',
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                      )}>
-                        {mapping?.historicalOriginYear}
-                      </span>
                     </div>
                     <h3 className={cn(
                       'text-sm font-medium leading-tight',
@@ -356,46 +347,6 @@ function CourseOutlineSidebar({
           })}
         </div>
 
-        {/* Era overview */}
-        <div className={cn(
-          'p-4 border-t',
-          theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
-        )}>
-          <h3 className={cn(
-            'text-xs font-bold mb-3 flex items-center gap-2',
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-          )}>
-            <History className="w-3.5 h-3.5" />
-            {isZh ? '历史时代' : 'Historical Eras'}
-          </h3>
-          <div className="space-y-2">
-            {HISTORICAL_ERAS.map(era => (
-              <div
-                key={era.id}
-                className={cn(
-                  'flex items-center gap-2 p-2 rounded-lg',
-                  theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-                )}
-              >
-                <span className="text-lg">{era.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <p className={cn(
-                    'text-xs font-medium',
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  )}>
-                    {isZh ? era.nameZh : era.nameEn}
-                  </p>
-                  <p className={cn(
-                    'text-[10px]',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                  )}>
-                    {era.startYear}-{era.endYear}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </aside>
 
       {/* Backdrop for mobile */}
@@ -677,24 +628,11 @@ export function HomePage() {
     )
   }, [])
 
-  // Handle unit click from sidebar
-  const handleUnitClick = useCallback((unitId: string, year: number) => {
-    setActiveUnitId(unitId)
-    setSidebarOpen(false)
-
-    // Find and scroll to the year
-    setTimeout(() => {
-      const element = document.querySelector(`[data-year="${year}"]`)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        // Expand the first event of that year
-        const eventKey = filteredEvents.find(e => e.year === year)
-        if (eventKey) {
-          setExpandedEventKey(`${eventKey.year}-${eventKey.titleEn}`)
-        }
-      }
-    }, 100)
-  }, [filteredEvents])
+  // Handle unit click from sidebar - toggle expand/collapse
+  const handleUnitClick = useCallback((unitId: string) => {
+    // Toggle: if already active, collapse; otherwise expand
+    setActiveUnitId(prev => prev === unitId ? null : unitId)
+  }, [])
 
   // Close sidebar on mobile when clicking outside
   useEffect(() => {
@@ -745,8 +683,8 @@ export function HomePage() {
 
         {/* Main content */}
         <main ref={mainRef} className="flex-1 min-w-0 px-4 lg:px-8 py-6">
-          {/* Hero section */}
-          <div className="text-center mb-8 max-w-3xl mx-auto">
+          {/* Hero section - 课程介绍 */}
+          <div className="text-center mb-8 max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-4">
               <span className={cn(
                 'text-xs px-3 py-1 rounded-full font-medium',
@@ -758,30 +696,37 @@ export function HomePage() {
               </span>
             </div>
             <h1 className={cn(
-              'text-2xl sm:text-3xl font-bold mb-3',
+              'text-2xl sm:text-3xl font-bold mb-4',
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             )}>
-              {isZh ? '双线叙事：光学与偏振' : 'Dual Narrative: Optics & Polarization'}
+              {t('home.courseBanner.title')}
             </h1>
             <p className={cn(
-              'text-sm sm:text-base max-w-2xl mx-auto mb-4',
+              'text-sm sm:text-base max-w-3xl mx-auto mb-6 leading-relaxed',
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             )}>
-              {isZh
-                ? '从17世纪的偶然发现到现代应用，探索三个多世纪的光学奥秘。左侧追溯广义光学史上的核心发现，右侧聚焦偏振光的专属旅程。'
-                : 'From 17th-century discoveries to modern applications — explore over three centuries of optical mysteries. Left track traces core optics history, right track follows the polarization journey.'}
+              {t('home.courseBanner.description')}
             </p>
 
-            {/* Track legend */}
-            <div className="flex justify-center gap-6 text-sm">
+            {/* Track legend for timeline */}
+            <div className={cn(
+              'inline-flex items-center gap-6 text-sm px-6 py-3 rounded-xl',
+              theme === 'dark' ? 'bg-slate-800/60' : 'bg-white/80'
+            )}>
+              <span className={cn(
+                'text-xs font-medium',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              )}>
+                {isZh ? '时间线：' : 'Timeline:'}
+              </span>
               <div className="flex items-center gap-2">
-                <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
+                <Sun className={cn('w-4 h-4', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
                 <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}>
                   {isZh ? '广义光学' : 'General Optics'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                <Sparkles className={cn('w-4 h-4', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
                 <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
                   {isZh ? '偏振光' : 'Polarization'}
                 </span>
