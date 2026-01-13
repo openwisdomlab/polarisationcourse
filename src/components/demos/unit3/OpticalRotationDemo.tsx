@@ -13,12 +13,43 @@ import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 
-// 旋光率数据 (deg/(dm·g/mL))
+// 旋光率数据 (deg/(dm·g/mL)) - 以钠黄光 (589nm) 为标准
 const SPECIFIC_ROTATIONS: Record<string, { value: number; direction: 'd' | 'l' }> = {
   sucrose: { value: 66.5, direction: 'd' }, // 蔗糖 (右旋)
   glucose: { value: 52.7, direction: 'd' }, // 葡萄糖 (右旋)
   fructose: { value: -92, direction: 'l' }, // 果糖 (左旋)
   tartaric: { value: 12, direction: 'd' }, // 酒石酸 (右旋)
+}
+
+// 光谱线定义
+interface SpectralLine {
+  id: string
+  name: string
+  wavelength: number // nm
+  color: string // hex color
+}
+
+const SPECTRAL_LINES: SpectralLine[] = [
+  { id: 'na-d', name: '钠黄光 (Na D)', wavelength: 589, color: '#fbbf24' },
+  { id: 'h-alpha', name: '氢红光 (Hα)', wavelength: 656, color: '#ef4444' },
+  { id: 'hg-green', name: '汞绿光', wavelength: 546, color: '#22c55e' },
+  { id: 'h-beta', name: '氢蓝光 (Hβ)', wavelength: 486, color: '#3b82f6' },
+  { id: 'hg-violet', name: '汞紫光', wavelength: 436, color: '#a855f7' },
+]
+
+// 多色光各波长成分 (用于色散效果)
+const POLYCHROMATIC_COMPONENTS = [
+  { wavelength: 656, color: '#ef4444', name: '红' }, // Hα
+  { wavelength: 589, color: '#fbbf24', name: '黄' }, // Na D
+  { wavelength: 546, color: '#22c55e', name: '绿' }, // Hg green
+  { wavelength: 486, color: '#3b82f6', name: '蓝' }, // Hβ
+  { wavelength: 436, color: '#a855f7', name: '紫' }, // Hg violet
+]
+
+// 根据波长计算比旋光度 (Drude方程简化形式)
+// [α]λ ≈ [α]D × (589/λ)²
+function calculateSpecificRotationAtWavelength(specificRotationD: number, wavelength: number): number {
+  return specificRotationD * Math.pow(589 / wavelength, 2)
 }
 
 // 计算旋光角度
@@ -27,25 +58,56 @@ function calculateRotation(specificRotation: number, concentration: number, path
   return specificRotation * concentration * pathLength
 }
 
+// 光源模式类型
+type LightMode = 'monochromatic' | 'polychromatic'
+
 // 旋光仪光路图
 function OpticalRotationDiagram({
   substance,
   concentration,
   pathLength,
   analyzerAngle,
+  lightMode,
+  wavelength,
+  lightColor,
 }: {
   substance: string
   concentration: number
   pathLength: number
   analyzerAngle: number
+  lightMode: LightMode
+  wavelength: number
+  lightColor: string
 }) {
-  const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+  const specificRotationD = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+
+  // 根据波长计算实际比旋光度
+  const specificRotation = lightMode === 'monochromatic'
+    ? calculateSpecificRotationAtWavelength(specificRotationD, wavelength)
+    : specificRotationD // 多色光模式下使用标准值（各波长分开显示）
+
   const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
   const isRightRotation = rotationAngle >= 0
 
   // 检偏器与偏振光的角度差
   const angleDiff = Math.abs(rotationAngle - analyzerAngle)
   const intensity = Math.pow(Math.cos((angleDiff * Math.PI) / 180), 2)
+
+  // 多色光模式下计算各波长的旋转角和强度
+  const polychromaticData = useMemo(() => {
+    if (lightMode !== 'polychromatic') return []
+    return POLYCHROMATIC_COMPONENTS.map(comp => {
+      const specRot = calculateSpecificRotationAtWavelength(specificRotationD, comp.wavelength)
+      const rot = calculateRotation(specRot, concentration, pathLength)
+      const diff = Math.abs(rot - analyzerAngle)
+      const inten = Math.pow(Math.cos((diff * Math.PI) / 180), 2)
+      return {
+        ...comp,
+        rotation: rot,
+        intensity: inten,
+      }
+    })
+  }, [lightMode, specificRotationD, concentration, pathLength, analyzerAngle])
 
   return (
     <svg viewBox="0 0 700 300" className="w-full h-auto">
@@ -94,30 +156,73 @@ function OpticalRotationDiagram({
       {/* 背景 */}
       <rect x="0" y="0" width="700" height="300" fill="#0f172a" rx="8" />
 
-      {/* 单色光源 */}
+      {/* 光源 */}
       <g transform="translate(50, 150)">
-        <motion.circle
-          r="20"
-          fill="#fbbf24"
-          filter="url(#lightGlow)"
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        <text x="0" y="45" textAnchor="middle" fill="#94a3b8" fontSize="11">单色光源</text>
+        {lightMode === 'monochromatic' ? (
+          <motion.circle
+            r="20"
+            fill={lightColor}
+            filter="url(#lightGlow)"
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        ) : (
+          /* 多色光源 - 彩虹渐变 */
+          <>
+            <defs>
+              <radialGradient id="polychromaticGradient">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
+                <stop offset="30%" stopColor="#fbbf24" stopOpacity="0.8" />
+                <stop offset="60%" stopColor="#22c55e" stopOpacity="0.7" />
+                <stop offset="100%" stopColor="#a855f7" stopOpacity="0.6" />
+              </radialGradient>
+            </defs>
+            <motion.circle
+              r="20"
+              fill="url(#polychromaticGradient)"
+              filter="url(#lightGlow)"
+              animate={{ scale: [1, 1.08, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </>
+        )}
+        <text x="0" y="45" textAnchor="middle" fill="#94a3b8" fontSize="11">
+          {lightMode === 'monochromatic' ? '单色光源' : '多色光源'}
+        </text>
       </g>
 
       {/* 光束到起偏器 */}
-      <motion.rect
-        x="70"
-        y="145"
-        width="50"
-        height="10"
-        fill="#fbbf24"
-        opacity="0.7"
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.3 }}
-      />
+      {lightMode === 'monochromatic' ? (
+        <motion.rect
+          x="70"
+          y="145"
+          width="50"
+          height="10"
+          fill={lightColor}
+          opacity="0.7"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.3 }}
+        />
+      ) : (
+        /* 多色光 - 多条彩色光束 */
+        <g>
+          {POLYCHROMATIC_COMPONENTS.map((comp, i) => (
+            <motion.rect
+              key={comp.wavelength}
+              x="70"
+              y={140 + i * 4}
+              width="50"
+              height="3"
+              fill={comp.color}
+              opacity="0.7"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.3, delay: i * 0.02 }}
+            />
+          ))}
+        </g>
+      )}
 
       {/* 起偏器 */}
       <g transform="translate(130, 150)">
@@ -128,12 +233,28 @@ function OpticalRotationDiagram({
       </g>
 
       {/* 偏振光 (水平偏振) */}
-      <rect x="146" y="146" width="50" height="8" fill="#22d3ee" opacity="0.8" />
+      {lightMode === 'monochromatic' ? (
+        <rect x="146" y="146" width="50" height="8" fill={lightColor} opacity="0.8" />
+      ) : (
+        <g>
+          {POLYCHROMATIC_COMPONENTS.map((comp, i) => (
+            <rect
+              key={comp.wavelength}
+              x="146"
+              y={143 + i * 3}
+              width="50"
+              height="2"
+              fill={comp.color}
+              opacity="0.8"
+            />
+          ))}
+        </g>
+      )}
 
       {/* 偏振指示器 - 入射 */}
       <g transform="translate(175, 150)">
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#22d3ee" strokeWidth="2" />
-        <text x="0" y="-20" textAnchor="middle" fill="#22d3ee" fontSize="9">0°</text>
+        <line x1="-12" y1="0" x2="12" y2="0" stroke={lightColor} strokeWidth="2" />
+        <text x="0" y="-20" textAnchor="middle" fill={lightColor} fontSize="9">0°</text>
       </g>
 
       {/* 样品管 */}
@@ -219,69 +340,144 @@ function OpticalRotationDiagram({
       </g>
 
       {/* 偏振面旋转指示 - 沿管路显示螺旋演化 */}
-      {[0, 0.2, 0.4, 0.6, 0.8, 1].map((t, i) => {
-        const x = 240 + t * (100 + pathLength * 60)
-        const currentAngle = rotationAngle * t
-        const color = isRightRotation ? '#22d3ee' : '#f472b6'
-        // 渐变透明度使演化过程更清晰
-        const opacity = 0.3 + t * 0.5
-        return (
-          <g key={i} transform={`translate(${x}, 150)`}>
-            {/* 偏振方向线 */}
+      {lightMode === 'monochromatic' ? (
+        [0, 0.2, 0.4, 0.6, 0.8, 1].map((t, i) => {
+          const x = 240 + t * (100 + pathLength * 60)
+          const currentAngle = rotationAngle * t
+          // 渐变透明度使演化过程更清晰
+          const opacity = 0.3 + t * 0.5
+          return (
+            <g key={i} transform={`translate(${x}, 150)`}>
+              {/* 偏振方向线 */}
+              <motion.line
+                x1="-12"
+                y1="0"
+                x2="12"
+                y2="0"
+                stroke={lightColor}
+                strokeWidth="2.5"
+                transform={`rotate(${currentAngle})`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity }}
+                transition={{ delay: i * 0.08 }}
+              />
+              {/* 垂直方向参考线（辅助理解旋转） */}
+              <motion.line
+                x1="0"
+                y1="-8"
+                x2="0"
+                y2="8"
+                stroke={lightColor}
+                strokeWidth="1"
+                strokeDasharray="2 2"
+                transform={`rotate(${currentAngle})`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: opacity * 0.4 }}
+                transition={{ delay: i * 0.08 }}
+              />
+            </g>
+          )
+        })
+      ) : (
+        /* 多色光 - 各波长分开演化 */
+        [0, 0.5, 1].map((t, i) => {
+          const x = 240 + t * (100 + pathLength * 60)
+          const opacity = 0.4 + t * 0.4
+          return (
+            <g key={i} transform={`translate(${x}, 150)`}>
+              {polychromaticData.map((comp, j) => {
+                const currentAngle = comp.rotation * t
+                return (
+                  <motion.line
+                    key={comp.wavelength}
+                    x1="-10"
+                    y1="0"
+                    x2="10"
+                    y2="0"
+                    stroke={comp.color}
+                    strokeWidth="2"
+                    transform={`rotate(${currentAngle})`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: opacity * 0.7 }}
+                    transition={{ delay: i * 0.08 + j * 0.02 }}
+                  />
+                )
+              })}
+            </g>
+          )
+        })
+      )}
+
+      {/* 出射偏振光 */}
+      {lightMode === 'monochromatic' ? (
+        <rect
+          x={410 + pathLength * 60}
+          y="146"
+          width="60"
+          height="8"
+          fill={lightColor}
+          opacity="0.8"
+        />
+      ) : (
+        /* 多色光 - 各波长因旋转角不同而分开 */
+        <g>
+          {polychromaticData.map((comp) => {
+            // 根据旋转角差异计算垂直偏移（展示色散效果）
+            const angleOffset = comp.rotation - polychromaticData[2].rotation // 以绿光为基准
+            const yOffset = angleOffset * 0.15
+            return (
+              <rect
+                key={comp.wavelength}
+                x={410 + pathLength * 60}
+                y={147 + yOffset}
+                width="60"
+                height="2"
+                fill={comp.color}
+                opacity="0.8"
+              />
+            )
+          })}
+        </g>
+      )}
+
+      {/* 偏振指示器 - 出射 */}
+      <g transform={`translate(${440 + pathLength * 60}, 150)`}>
+        {lightMode === 'monochromatic' ? (
+          <>
             <motion.line
               x1="-12"
               y1="0"
               x2="12"
               y2="0"
-              stroke={color}
+              stroke={lightColor}
               strokeWidth="2.5"
-              transform={`rotate(${currentAngle})`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity }}
-              transition={{ delay: i * 0.08 }}
+              transform={`rotate(${rotationAngle})`}
             />
-            {/* 垂直方向参考线（辅助理解旋转） */}
-            <motion.line
-              x1="0"
-              y1="-8"
-              x2="0"
-              y2="8"
-              stroke={color}
-              strokeWidth="1"
-              strokeDasharray="2 2"
-              transform={`rotate(${currentAngle})`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: opacity * 0.4 }}
-              transition={{ delay: i * 0.08 }}
-            />
-          </g>
-        )
-      })}
-
-      {/* 出射偏振光 */}
-      <rect
-        x={410 + pathLength * 60}
-        y="146"
-        width="60"
-        height="8"
-        fill={isRightRotation ? '#22d3ee' : '#f472b6'}
-        opacity="0.8"
-      />
-
-      {/* 偏振指示器 - 出射 */}
-      <g transform={`translate(${440 + pathLength * 60}, 150)`}>
-        <motion.line
-          x1="-12"
-          y1="0"
-          x2="12"
-          y2="0"
-          stroke={isRightRotation ? '#22d3ee' : '#f472b6'}
-          strokeWidth="2.5"
-          transform={`rotate(${rotationAngle})`}
-        />
-        <text x="0" y="-20" textAnchor="middle" fill={isRightRotation ? '#22d3ee' : '#f472b6'} fontSize="9">
-          {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
-        </text>
+            <text x="0" y="-20" textAnchor="middle" fill={lightColor} fontSize="9">
+              {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
+            </text>
+          </>
+        ) : (
+          /* 多色光 - 显示各波长的旋转角 */
+          <>
+            {polychromaticData.map((comp) => (
+              <motion.line
+                key={comp.wavelength}
+                x1="-10"
+                y1="0"
+                x2="10"
+                y2="0"
+                stroke={comp.color}
+                strokeWidth="1.5"
+                transform={`rotate(${comp.rotation})`}
+                opacity="0.7"
+              />
+            ))}
+            <text x="0" y="-25" textAnchor="middle" fill="#94a3b8" fontSize="8">
+              色散
+            </text>
+          </>
+        )}
       </g>
 
       {/* 检偏器 */}
@@ -301,57 +497,133 @@ function OpticalRotationDiagram({
       </g>
 
       {/* 到屏幕的光束 */}
-      <rect
-        x={516 + pathLength * 60}
-        y="146"
-        width="40"
-        height="8"
-        fill="#a78bfa"
-        opacity={Math.max(0.2, intensity)}
-      />
+      {lightMode === 'monochromatic' ? (
+        <rect
+          x={516 + pathLength * 60}
+          y="146"
+          width="40"
+          height="8"
+          fill={lightColor}
+          opacity={Math.max(0.2, intensity)}
+        />
+      ) : (
+        /* 多色光 - 各波长不同强度 */
+        <g>
+          {polychromaticData.map((comp) => {
+            const angleOffset = comp.rotation - polychromaticData[2].rotation
+            const yOffset = angleOffset * 0.15
+            return (
+              <rect
+                key={comp.wavelength}
+                x={516 + pathLength * 60}
+                y={147 + yOffset}
+                width="40"
+                height="2"
+                fill={comp.color}
+                opacity={Math.max(0.2, comp.intensity)}
+              />
+            )
+          })}
+        </g>
+      )}
 
       {/* 屏幕/探测器 */}
       <g transform={`translate(${580 + pathLength * 60}, 150)`}>
-        <motion.rect
-          x="-25"
-          y="-35"
-          width="50"
-          height="70"
-          fill={`rgba(255, 255, 255, ${intensity * 0.8})`}
-          stroke="#475569"
-          strokeWidth="2"
-          rx="6"
-          animate={{ opacity: [0.8, 1, 0.8] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-        <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="11">
-          {(intensity * 100).toFixed(0)}%
-        </text>
+        {lightMode === 'monochromatic' ? (
+          /* 单色光 - 显示光源颜色 */
+          <>
+            <motion.rect
+              x="-25"
+              y="-35"
+              width="50"
+              height="70"
+              fill={lightColor}
+              opacity={intensity * 0.8}
+              stroke="#475569"
+              strokeWidth="2"
+              rx="6"
+              animate={{ opacity: [intensity * 0.7, intensity * 0.9, intensity * 0.7] }}
+              transition={{ duration: 1, repeat: Infinity }}
+            />
+            <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="11">
+              {(intensity * 100).toFixed(0)}%
+            </text>
+          </>
+        ) : (
+          /* 多色光 - 显示各波长强度条 */
+          <>
+            <rect
+              x="-25"
+              y="-35"
+              width="50"
+              height="70"
+              fill="#1e293b"
+              stroke="#475569"
+              strokeWidth="2"
+              rx="6"
+            />
+            {polychromaticData.map((comp, i) => (
+              <g key={comp.wavelength}>
+                <rect
+                  x="-20"
+                  y={-25 + i * 12}
+                  width={36 * comp.intensity}
+                  height="8"
+                  fill={comp.color}
+                  opacity={0.8}
+                  rx="2"
+                />
+                <text
+                  x="22"
+                  y={-19 + i * 12}
+                  fill="#94a3b8"
+                  fontSize="7"
+                >
+                  {(comp.intensity * 100).toFixed(0)}%
+                </text>
+              </g>
+            ))}
+            <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="9">
+              色散强度
+            </text>
+          </>
+        )}
       </g>
 
       {/* 旋转方向标注 */}
-      <g transform="translate(350, 230)">
-        <rect x="-80" y="-15" width="160" height="30" fill="rgba(30,41,59,0.8)" rx="6" />
-        <text x="0" y="5" textAnchor="middle" fill={isRightRotation ? '#22d3ee' : '#f472b6'} fontSize="13" fontWeight="500">
-          {isRightRotation ? '右旋 (d/+)' : '左旋 (l/-)'}: α = {rotationAngle.toFixed(1)}°
-        </text>
-      </g>
+      {lightMode === 'monochromatic' ? (
+        <g transform="translate(350, 230)">
+          <rect x="-80" y="-15" width="160" height="30" fill="rgba(30,41,59,0.8)" rx="6" />
+          <text x="0" y="5" textAnchor="middle" fill={lightColor} fontSize="13" fontWeight="500">
+            {isRightRotation ? '右旋 (d/+)' : '左旋 (l/-)'}: α = {rotationAngle.toFixed(1)}°
+          </text>
+        </g>
+      ) : (
+        <g transform="translate(350, 230)">
+          <rect x="-100" y="-15" width="200" height="30" fill="rgba(30,41,59,0.8)" rx="6" />
+          <text x="0" y="5" textAnchor="middle" fill="#94a3b8" fontSize="12" fontWeight="500">
+            旋光色散: 短波长旋转角更大 (Drude方程)
+          </text>
+        </g>
+      )}
 
-      {/* 旋转弧线指示 */}
-      <g transform={`translate(${440 + pathLength * 60}, 90)`}>
-        <path
-          d={`M 0 0 A 25 25 0 ${Math.abs(rotationAngle) > 180 ? 1 : 0} ${isRightRotation ? 1 : 0} ${25 * Math.sin((rotationAngle * Math.PI) / 180)} ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}`}
-          fill="none"
-          stroke={isRightRotation ? '#22d3ee' : '#f472b6'}
-          strokeWidth="2"
-          strokeDasharray="4 2"
-        />
-        <motion.polygon
-          points="-4,-8 4,0 -4,8"
-          fill={isRightRotation ? '#22d3ee' : '#f472b6'}
-          transform={`translate(${25 * Math.sin((rotationAngle * Math.PI) / 180)}, ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}) rotate(${rotationAngle + 90})`}
-        />
-      </g>
+      {/* 旋转弧线指示 - 仅单色光模式显示 */}
+      {lightMode === 'monochromatic' && (
+        <g transform={`translate(${440 + pathLength * 60}, 90)`}>
+          <path
+            d={`M 0 0 A 25 25 0 ${Math.abs(rotationAngle) > 180 ? 1 : 0} ${isRightRotation ? 1 : 0} ${25 * Math.sin((rotationAngle * Math.PI) / 180)} ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}`}
+            fill="none"
+            stroke={lightColor}
+            strokeWidth="2"
+            strokeDasharray="4 2"
+          />
+          <motion.polygon
+            points="-4,-8 4,0 -4,8"
+            fill={lightColor}
+            transform={`translate(${25 * Math.sin((rotationAngle * Math.PI) / 180)}, ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}) rotate(${rotationAngle + 90})`}
+          />
+        </g>
+      )}
     </svg>
   )
 }
@@ -446,7 +718,21 @@ export function OpticalRotationDemo() {
   const [pathLength, setPathLength] = useState(1.0)
   const [analyzerAngle, setAnalyzerAngle] = useState(0)
 
-  const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+  // 光源设置
+  const [lightMode, setLightMode] = useState<LightMode>('monochromatic')
+  const [selectedWavelengthId, setSelectedWavelengthId] = useState('na-d')
+
+  // 获取选中的光谱线信息
+  const selectedSpectralLine = SPECTRAL_LINES.find(l => l.id === selectedWavelengthId) || SPECTRAL_LINES[0]
+  const lightColor = selectedSpectralLine.color
+  const wavelength = selectedSpectralLine.wavelength
+
+  // 根据波长计算实际比旋光度
+  const specificRotationD = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+  const specificRotation = lightMode === 'monochromatic'
+    ? calculateSpecificRotationAtWavelength(specificRotationD, wavelength)
+    : specificRotationD
+
   const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
 
   // 透过强度
@@ -491,6 +777,9 @@ export function OpticalRotationDemo() {
               concentration={concentration}
               pathLength={pathLength}
               analyzerAngle={analyzerAngle}
+              lightMode={lightMode}
+              wavelength={wavelength}
+              lightColor={lightColor}
             />
           </div>
 
@@ -501,22 +790,43 @@ export function OpticalRotationDemo() {
               ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30'
               : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 shadow-sm'
           )}>
+            {/* 光源信息 */}
+            <div className="flex items-center justify-center gap-2 mb-3 pb-2 border-b border-slate-700/50">
+              <span
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: lightMode === 'monochromatic' ? lightColor : '#a855f7' }}
+              />
+              <span className="text-sm text-gray-400">
+                {lightMode === 'monochromatic'
+                  ? `${selectedSpectralLine.name} (λ = ${wavelength} nm)`
+                  : '多色光 (旋光色散)'}
+              </span>
+            </div>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
                 <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>旋光角 α</div>
-                <div className={cn("font-mono text-xl", rotationAngle >= 0 ? 'text-cyan-500' : 'text-pink-500')}>
+                <div
+                  className="font-mono text-xl"
+                  style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
+                >
                   {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
                 </div>
               </div>
               <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
                 <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>旋光方向</div>
-                <div className={cn("font-bold text-lg", rotationAngle >= 0 ? 'text-cyan-500' : 'text-pink-500')}>
+                <div
+                  className="font-bold text-lg"
+                  style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
+                >
                   {rotationAngle >= 0 ? '右旋 (d)' : '左旋 (l)'}
                 </div>
               </div>
               <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
                 <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>透过强度</div>
-                <div className={cn("font-mono text-xl", theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>
+                <div
+                  className="font-mono text-xl"
+                  style={{ color: lightMode === 'monochromatic' ? lightColor : '#a78bfa' }}
+                >
                   {(intensity * 100).toFixed(0)}%
                 </div>
               </div>
@@ -526,6 +836,97 @@ export function OpticalRotationDemo() {
 
         {/* 右侧：控制与学习 */}
         <div className="space-y-4">
+          {/* 光源设置 */}
+          <ControlPanel title="光源设置">
+            {/* 光源模式切换 */}
+            <div className="flex gap-2 mb-3">
+              <motion.button
+                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                  lightMode === 'monochromatic'
+                    ? 'bg-amber-500/20 border border-amber-500/50 text-amber-300'
+                    : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                }`}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => setLightMode('monochromatic')}
+              >
+                单色光
+              </motion.button>
+              <motion.button
+                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                  lightMode === 'polychromatic'
+                    ? 'bg-gradient-to-r from-red-500/20 via-green-500/20 to-violet-500/20 border border-purple-500/50 text-purple-300'
+                    : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                }`}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => setLightMode('polychromatic')}
+              >
+                多色光
+              </motion.button>
+            </div>
+
+            {/* 单色光波长选择 */}
+            {lightMode === 'monochromatic' && (
+              <div className="space-y-2">
+                <div className="text-xs text-gray-500 mb-2">选择光谱线</div>
+                {SPECTRAL_LINES.map((line) => (
+                  <motion.button
+                    key={line.id}
+                    className={`w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors ${
+                      selectedWavelengthId === line.id
+                        ? 'border-2'
+                        : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                    }`}
+                    style={selectedWavelengthId === line.id ? {
+                      backgroundColor: `${line.color}20`,
+                      borderColor: `${line.color}80`,
+                      color: line.color,
+                    } : {}}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => setSelectedWavelengthId(line.id)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: line.color }}
+                      />
+                      <span className="font-medium">{line.name}</span>
+                    </span>
+                    <span className="font-mono text-sm opacity-80">
+                      {line.wavelength} nm
+                    </span>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+
+            {/* 多色光说明 */}
+            {lightMode === 'polychromatic' && (
+              <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                <div className="text-xs text-gray-400 space-y-2">
+                  <p className="font-medium text-purple-400">旋光色散效应</p>
+                  <p>不同波长的光具有不同的比旋光度，导致各色光旋转角度不同。</p>
+                  <p className="font-mono text-[10px] text-gray-500">
+                    Drude方程: [α]<sub>λ</sub> ≈ [α]<sub>D</sub> × (589/λ)²
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {POLYCHROMATIC_COMPONENTS.map(comp => (
+                      <span
+                        key={comp.wavelength}
+                        className="px-2 py-0.5 rounded text-[10px] font-mono"
+                        style={{ backgroundColor: `${comp.color}30`, color: comp.color }}
+                      >
+                        {comp.name} {comp.wavelength}nm
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </ControlPanel>
+
           {/* 物质选择 */}
           <ControlPanel title="物质选择">
             <div className="space-y-2">
@@ -612,19 +1013,33 @@ export function OpticalRotationDemo() {
           <ControlPanel title="计算公式">
             <div className={cn("p-3 rounded-lg text-center", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
               <div className={cn("font-mono text-lg mb-2", theme === 'dark' ? 'text-white' : 'text-gray-800')}>
-                α = [α] × c × L
+                α = [α]<sub>λ</sub> × c × L
               </div>
               <div className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+                {lightMode === 'monochromatic' && wavelength !== 589 && (
+                  <p className="text-[10px] text-gray-500 mb-1">
+                    [α]<sub>{wavelength}</sub> = [α]<sub>D</sub> × (589/{wavelength})² = {specificRotationD.toFixed(1)} × {(Math.pow(589/wavelength, 2)).toFixed(3)} = <span style={{ color: lightColor }}>{specificRotation.toFixed(1)}°</span>
+                  </p>
+                )}
                 <p>α = {specificRotation.toFixed(1)} × {concentration.toFixed(2)} × {pathLength.toFixed(1)}</p>
-                <p className={cn("font-mono", rotationAngle >= 0 ? 'text-cyan-500' : 'text-pink-500')}>
+                <p
+                  className="font-mono"
+                  style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
+                >
                   α = {rotationAngle.toFixed(2)}°
                 </p>
               </div>
             </div>
             <div className={cn("mt-3 text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
-              <p>[α] = 比旋光度 (°/(dm·g/mL))</p>
+              <p>[α]<sub>λ</sub> = 波长λ时的比旋光度</p>
+              <p>[α]<sub>D</sub> = {specificRotationD >= 0 ? '+' : ''}{specificRotationD.toFixed(1)}° (589nm钠光)</p>
               <p>c = 浓度 (g/mL)</p>
               <p>L = 光程 (dm)</p>
+              {lightMode === 'monochromatic' && (
+                <p className="mt-1 pt-1 border-t border-slate-700/50" style={{ color: lightColor }}>
+                  当前: λ = {wavelength} nm
+                </p>
+              )}
             </div>
           </ControlPanel>
 
