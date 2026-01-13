@@ -30,6 +30,9 @@ const LearningHubPage = lazy(() => import('@/pages/LearningHubPage'))
 const ExplorePage = lazy(() => import('@/pages/ExplorePage'))
 const ExplorationNodePage = lazy(() => import('@/pages/ExplorationNodePage'))
 
+// Discovery Page - 渐进式探索入口 (Google Learn About inspired)
+const DiscoveryPage = lazy(() => import('@/pages/DiscoveryPage'))
+
 // Course Content Layer - 《偏振光下的世界》独立课程
 const WorldCourseHome = lazy(() => import('@/course/pages/CourseHome'))
 const WorldCourseUnit = lazy(() => import('@/course/pages/UnitOverview'))
@@ -82,6 +85,10 @@ export function App() {
         {/* Exploration - 问题驱动的探索系统 */}
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/explore/:nodeId" element={<ExplorationNodePage />} />
+
+        {/* Discovery - 渐进式探索入口 (避免信息过载的新设计) */}
+        <Route path="/discover" element={<DiscoveryPage />} />
+        <Route path="/discover/:topicId" element={<DiscoveryPage />} />
 
         {/* Optical Design Studio - 光学设计室 (模块化版本) */}
         <Route path="/optical-studio" element={<OpticalDesignPage />} />
