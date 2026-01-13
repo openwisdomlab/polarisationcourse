@@ -229,6 +229,99 @@
       "tapeArtDesc": "Create art with cellophane tape",
       "screenPolarizer": "Screen + Polarizer",
       "screenPolarizerDesc": "Rotate a polarizer over screen"
+    },
+    "courseOutline": {
+      "title": "Course Outline",
+      "badge": "PSRT Course",
+      "units": "units",
+      "viewFull": "View Full Course",
+      "stage1": {
+        "description": "Polarization is the third property of light, beyond color and brightness. In this stage, you'll build intuitive understanding through observation and experience.",
+        "units": {
+          "seeing": {
+            "title": "Discovering Polarization",
+            "subtitle": "Starting from Daily Phenomena"
+          }
+        },
+        "sections": {
+          "whatIs": "What is Polarization?",
+          "whatIsDesc": "Light's vibration direction and polarization concept",
+          "types": "Types of Polarization",
+          "typesDesc": "Linear, circular, and elliptical polarization",
+          "daily": "Polarization in Daily Life",
+          "dailyDesc": "LCD screens, polarized sunglasses, and more"
+        }
+      },
+      "stage2": {
+        "description": "In this stage, you'll learn the physical laws governing polarized light and understand how light behaves through different media.",
+        "units": {
+          "malus": {
+            "title": "Malus's Law",
+            "subtitle": "Polarizer Transmission Rule"
+          },
+          "birefringence": {
+            "title": "Birefringence",
+            "subtitle": "One Beam Becomes Two"
+          },
+          "reflection": {
+            "title": "Reflection Polarization",
+            "subtitle": "Polarization at Interfaces"
+          },
+          "scattering": {
+            "title": "Scattering Polarization",
+            "subtitle": "Why the Sky is Blue"
+          },
+          "applications": {
+            "title": "Polarization Applications",
+            "subtitle": "Stress Analysis & Optical Rotation"
+          }
+        },
+        "sections": {
+          "malus": "Malus's Law",
+          "malusDesc": "I = I₀cos²θ",
+          "calcite": "Calcite Birefringence",
+          "calciteDesc": "o-ray and e-ray separation",
+          "waveplate": "Wave Plates",
+          "waveplateDesc": "Quarter-wave and half-wave plates",
+          "brewster": "Brewster's Angle",
+          "brewsterDesc": "Complete polarization of reflected light",
+          "rayleigh": "Rayleigh Scattering",
+          "rayleighDesc": "The secret of blue sky and red sunset",
+          "stress": "Stress Birefringence",
+          "stressDesc": "Stress analysis in transparent materials",
+          "sugar": "Optical Rotation",
+          "sugarDesc": "Rainbow experiment with sugar solution"
+        }
+      },
+      "stage3": {
+        "description": "In this stage, you'll learn mathematical tools to fully describe polarized light and explore frontier polarimetric imaging techniques.",
+        "units": {
+          "stokes": {
+            "title": "Stokes Vector",
+            "subtitle": "Complete Description of Polarization"
+          },
+          "mueller": {
+            "title": "Mueller Matrix",
+            "subtitle": "Mathematical Expression of Polarization Transform"
+          },
+          "imaging": {
+            "title": "Polarimetric Imaging",
+            "subtitle": "Frontier Applications"
+          }
+        },
+        "sections": {
+          "stokes": "Stokes Parameters",
+          "stokesDesc": "Four parameters describe any polarization state",
+          "mueller": "Mueller Matrix",
+          "muellerDesc": "4×4 matrix representing polarization transform",
+          "jones": "Jones Matrix",
+          "jonesDesc": "2×2 complex matrix method",
+          "microscopy": "Polarimetric Microscopy",
+          "microscopyDesc": "Label-free tissue imaging",
+          "monteCarlo": "Monte Carlo Simulation",
+          "monteCarloDesc": "Photon transport in turbid media"
+        }
+      }
     }
   },
   "course": {

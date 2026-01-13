@@ -229,6 +229,99 @@
       "tapeArtDesc": "用透明胶带创作艺术",
       "screenPolarizer": "屏幕+偏振片",
       "screenPolarizerDesc": "在屏幕前旋转偏振片"
+    },
+    "courseOutline": {
+      "title": "课程大纲",
+      "badge": "PSRT课程",
+      "units": "个单元",
+      "viewFull": "查看完整课程",
+      "stage1": {
+        "description": "偏振是光除了颜色和亮度之外的第三种属性。在这个阶段，你将通过观察和体验，建立对偏振现象的直觉理解。",
+        "units": {
+          "seeing": {
+            "title": "发现偏振世界",
+            "subtitle": "从生活现象出发"
+          }
+        },
+        "sections": {
+          "whatIs": "什么是偏振？",
+          "whatIsDesc": "光的振动方向与偏振概念",
+          "types": "偏振的类型",
+          "typesDesc": "线偏振、圆偏振与椭圆偏振",
+          "daily": "生活中的偏振",
+          "dailyDesc": "LCD屏幕、偏光太阳镜等应用"
+        }
+      },
+      "stage2": {
+        "description": "在这个阶段，你将学习偏振光遵循的物理规律，理解光通过不同介质时的行为变化。",
+        "units": {
+          "malus": {
+            "title": "马吕斯定律",
+            "subtitle": "偏振片的透射规律"
+          },
+          "birefringence": {
+            "title": "双折射",
+            "subtitle": "一束光变两束"
+          },
+          "reflection": {
+            "title": "反射偏振",
+            "subtitle": "界面上的偏振"
+          },
+          "scattering": {
+            "title": "散射偏振",
+            "subtitle": "天空为什么是蓝的"
+          },
+          "applications": {
+            "title": "偏振应用",
+            "subtitle": "应力分析与旋光"
+          }
+        },
+        "sections": {
+          "malus": "马吕斯定律",
+          "malusDesc": "I = I₀cos²θ",
+          "calcite": "冰洲石双折射",
+          "calciteDesc": "o光与e光分离",
+          "waveplate": "波片",
+          "waveplateDesc": "四分之一波片与半波片",
+          "brewster": "布儒斯特角",
+          "brewsterDesc": "反射光的完全偏振",
+          "rayleigh": "瑞利散射",
+          "rayleighDesc": "蓝天与红霞的秘密",
+          "stress": "应力双折射",
+          "stressDesc": "透明材料的应力分析",
+          "sugar": "旋光性",
+          "sugarDesc": "糖溶液的彩虹实验"
+        }
+      },
+      "stage3": {
+        "description": "在这个阶段，你将学习如何用数学工具完整描述偏振光，并了解前沿的偏振成像技术。",
+        "units": {
+          "stokes": {
+            "title": "Stokes矢量",
+            "subtitle": "偏振态的完整描述"
+          },
+          "mueller": {
+            "title": "Mueller矩阵",
+            "subtitle": "偏振变换的数学表达"
+          },
+          "imaging": {
+            "title": "偏振成像",
+            "subtitle": "前沿应用技术"
+          }
+        },
+        "sections": {
+          "stokes": "Stokes参数",
+          "stokesDesc": "四个参数描述任意偏振态",
+          "mueller": "Mueller矩阵",
+          "muellerDesc": "4×4矩阵表示偏振变换",
+          "jones": "Jones矩阵",
+          "jonesDesc": "2×2复数矩阵方法",
+          "microscopy": "偏振显微镜",
+          "microscopyDesc": "无标记组织成像",
+          "monteCarlo": "蒙特卡洛模拟",
+          "monteCarloDesc": "光子在浑浊介质中的传播"
+        }
+      }
     }
   },
   "course": {
