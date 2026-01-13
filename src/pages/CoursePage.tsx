@@ -618,6 +618,7 @@ function LearningStageCard({ stage, theme, isExpanded, onToggle }: {
                           {t('course.demo')}
                         </Link>
                       ))}
+                      {/* Games temporarily hidden
                       {unit.resources.games?.slice(0, 2).map((game, i) => (
                         <Link
                           key={`game-${i}`}
@@ -632,6 +633,7 @@ function LearningStageCard({ stage, theme, isExpanded, onToggle }: {
                           {t('course.game')}
                         </Link>
                       ))}
+                      */}
                       {unit.resources.tools?.slice(0, 2).map((tool, i) => (
                         <Link
                           key={`tool-${i}`}
@@ -1346,18 +1348,18 @@ export function CoursePage() {
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link
-              to="/games"
+              to="/demos"
               className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform"
             >
-              <Gamepad2 className="w-5 h-5" />
-              {t('course.cta.playGames')}
+              <FlaskConical className="w-5 h-5" />
+              {t('course.cta.exploreDemos')}
             </Link>
             <Link
-              to="/lab"
+              to="/optical-studio"
               className="px-6 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform"
             >
               <Telescope className="w-5 h-5" />
-              {t('course.cta.joinResearch')}
+              {t('course.cta.opticalStudio')}
             </Link>
           </div>
         </div>

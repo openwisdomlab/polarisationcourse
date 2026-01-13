@@ -19,11 +19,8 @@ import {
   Lightbulb,
   BookOpen,
   Telescope,
-  Gamepad2,
   FlaskConical,
   Target,
-  Sparkles,
-  Zap,
   ArrowRight,
   Eye,
   Wrench,
@@ -50,7 +47,7 @@ interface LearningStage {
   isAdvanced?: boolean
 }
 
-// 三阶段学习路径配置
+// 三阶段学习路径配置 - 隐藏游戏，专注课程内容
 const LEARNING_STAGES: LearningStage[] = [
   {
     // 阶段一：看见偏振
@@ -67,10 +64,7 @@ const LEARNING_STAGES: LearningStage[] = [
       { id: 'polarization-types-unified', titleKey: 'home.stage1.demos.types', link: '/demos/polarization-types-unified' },
       { id: 'optical-bench', titleKey: 'home.stage1.demos.bench', link: '/demos/optical-bench' },
     ],
-    games: [
-      { titleKey: 'home.stage1.games.level0', link: '/games/2d?level=0' },
-      { titleKey: 'home.stage1.games.level1', link: '/games/2d?level=1' },
-    ],
+    // games temporarily hidden
   },
   {
     // 阶段二：理解规律
@@ -89,10 +83,7 @@ const LEARNING_STAGES: LearningStage[] = [
       { id: 'rayleigh', titleKey: 'home.stage2.demos.rayleigh', link: '/demos/rayleigh' },
       { id: 'chromatic', titleKey: 'home.stage2.demos.chromatic', link: '/demos/chromatic' },
     ],
-    games: [
-      { titleKey: 'home.stage2.games.level2', link: '/games/2d?level=2' },
-      { titleKey: 'home.stage2.games.level16', link: '/games/2d?level=16' },
-    ],
+    // games temporarily hidden
     tools: [
       { titleKey: 'home.stage2.tools.opticalStudio', link: '/optical-studio?tab=experiments' },
     ],
@@ -114,6 +105,7 @@ const LEARNING_STAGES: LearningStage[] = [
       { id: 'jones', titleKey: 'home.stage3.demos.jones', link: '/demos/jones' },
       { id: 'polarimetric-microscopy', titleKey: 'home.stage3.demos.microscopy', link: '/demos/polarimetric-microscopy' },
     ],
+    // games temporarily hidden
     tools: [
       { titleKey: 'home.stage3.tools.stokes', link: '/calc/stokes' },
       { titleKey: 'home.stage3.tools.poincare', link: '/calc/poincare' },
@@ -318,7 +310,7 @@ function LearningStageCard({
             </div>
           </div>
 
-          {/* Games section */}
+          {/* Games section - temporarily hidden
           {stage.games && stage.games.length > 0 && (
             <div className="mt-4">
               <h4 className={`text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2 ${
@@ -344,6 +336,7 @@ function LearningStageCard({
               </div>
             </div>
           )}
+          */}
 
           {/* Tools section */}
           {stage.tools && stage.tools.length > 0 && (
@@ -440,17 +433,119 @@ function QuickStats({ theme, progress }: { theme: 'dark' | 'light'; progress: Re
   )
 }
 
-// Quick Access Menu - 快捷入口
+// Life Scenes & Hands-on Experiments - 生活中的偏振 + 动手实验（融合版）
+function LifeAndExperimentsSection({ theme }: { theme: 'dark' | 'light' }) {
+  const { t } = useTranslation()
+
+  // 生活中的偏振现象
+  const lifeScenes = [
+    { icon: '🌅', titleKey: 'home.life.sky', descKey: 'home.life.skyDesc', link: '/demos/rayleigh', color: '#F59E0B' },
+    { icon: '📱', titleKey: 'home.life.screen', descKey: 'home.life.screenDesc', link: '/demos/polarization-intro', color: '#3B82F6' },
+    { icon: '🕶️', titleKey: 'home.life.sunglasses', descKey: 'home.life.sunglassesDesc', link: '/demos/malus', color: '#8B5CF6' },
+    { icon: '🦋', titleKey: 'home.life.butterfly', descKey: 'home.life.butterflyDesc', link: '/demos/chromatic', color: '#EC4899' },
+  ]
+
+  // 简单动手实验
+  const experiments = [
+    { icon: '🌈', titleKey: 'home.exp.sugarRainbow', descKey: 'home.exp.sugarRainbowDesc', link: '/demos/optical-rotation', color: '#EC4899' },
+    { icon: '🎨', titleKey: 'home.exp.tapeArt', descKey: 'home.exp.tapeArtDesc', link: '/demos/chromatic', color: '#8B5CF6' },
+    { icon: '📺', titleKey: 'home.exp.screenPolarizer', descKey: 'home.exp.screenPolarizerDesc', link: '/demos/malus', color: '#3B82F6' },
+  ]
+
+  return (
+    <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* 生活中的偏振 */}
+      <div className={`rounded-xl p-4 ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/80'}`}>
+        <h3 className={`text-sm font-bold mb-3 flex items-center gap-2 ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>
+          <Eye className="w-4 h-4 text-cyan-500" />
+          {t('home.lifeTitle')}
+        </h3>
+        <div className="grid grid-cols-2 gap-2">
+          {lifeScenes.map((item, idx) => (
+            <Link
+              key={idx}
+              to={item.link}
+              className={`group p-2.5 rounded-lg transition-all hover:scale-[1.02] ${
+                theme === 'dark'
+                  ? 'bg-slate-700/50 hover:bg-slate-700'
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{item.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-xs font-medium truncate ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    {t(item.titleKey)}
+                  </p>
+                  <p className={`text-[10px] truncate ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    {t(item.descKey)}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* 动手实验 */}
+      <div className={`rounded-xl p-4 ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/80'}`}>
+        <h3 className={`text-sm font-bold mb-3 flex items-center gap-2 ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>
+          <FlaskConical className="w-4 h-4 text-pink-500" />
+          {t('home.expTitle')}
+        </h3>
+        <div className="space-y-2">
+          {experiments.map((item, idx) => (
+            <Link
+              key={idx}
+              to={item.link}
+              className={`group flex items-center gap-3 p-2.5 rounded-lg transition-all hover:scale-[1.01] ${
+                theme === 'dark'
+                  ? 'bg-slate-700/50 hover:bg-slate-700'
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+            >
+              <span className="text-lg flex-shrink-0">{item.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className={`text-xs font-medium truncate ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {t(item.titleKey)}
+                </p>
+                <p className={`text-[10px] truncate ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {t(item.descKey)}
+                </p>
+              </div>
+              <ArrowRight className={`w-3 h-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`} />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Quick Access Menu - 快捷入口（精简版：隐藏游戏、实验室、造物局）
 function QuickAccessMenu({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
 
+  // 保留核心模块：演示馆、计算工具、历史编年史、光学设计室
   const quickLinks = [
-    { icon: <Gamepad2 className="w-4 h-4" />, label: t('home.quick.games'), link: '/games', color: '#F59E0B' },
     { icon: <FlaskConical className="w-4 h-4" />, label: t('home.quick.demos'), link: '/demos', color: '#0891B2' },
     { icon: <Target className="w-4 h-4" />, label: t('home.quick.calc'), link: '/calc', color: '#8B5CF6' },
-    { icon: <Sparkles className="w-4 h-4" />, label: t('home.quick.experiments'), link: '/experiments', color: '#EC4899' },
+    { icon: <Wrench className="w-4 h-4" />, label: t('home.quick.opticalStudio'), link: '/optical-studio', color: '#F59E0B' },
     { icon: <BookOpen className="w-4 h-4" />, label: t('home.quick.chronicles'), link: '/chronicles', color: '#C9A227' },
-    { icon: <Zap className="w-4 h-4" />, label: t('home.quick.lab'), link: '/lab', color: '#10B981' },
   ]
 
   return (
@@ -458,7 +553,7 @@ function QuickAccessMenu({ theme }: { theme: 'dark' | 'light' }) {
       <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
         {t('home.quickAccess')}
       </h3>
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {quickLinks.map((item, idx) => (
           <Link
             key={idx}
@@ -487,7 +582,7 @@ function QuickAccessMenu({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
-// Guided Start Modal - 引导式起点
+// Guided Start Modal - 引导式起点（隐藏游戏路径）
 const LEARNING_TRACKS = [
   {
     id: 'curious',
@@ -510,13 +605,7 @@ const LEARNING_TRACKS = [
     gradient: 'from-violet-500 to-purple-600',
     route: '/demos/stokes',
   },
-  {
-    id: 'player',
-    icon: Gamepad2,
-    color: '#F59E0B',
-    gradient: 'from-orange-500 to-amber-500',
-    route: '/games/2d?level=0',
-  },
+  // player track temporarily hidden
 ]
 
 function GuidedStartModal({
@@ -562,7 +651,7 @@ function GuidedStartModal({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {LEARNING_TRACKS.map((track) => {
             const IconComponent = track.icon
             return (
@@ -583,11 +672,11 @@ function GuidedStartModal({
                   e.currentTarget.style.boxShadow = ''
                 }}
               >
-                <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-lg bg-gradient-to-br ${track.gradient}`}>
-                    <IconComponent className="w-5 h-5 text-white" />
+                <div className="flex flex-col items-center text-center gap-2">
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${track.gradient}`}>
+                    <IconComponent className="w-6 h-6 text-white" />
                   </div>
-                  <div className="flex-1">
+                  <div>
                     <h3 className={`font-semibold mb-1 ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
@@ -719,15 +808,15 @@ export function HomePage() {
               {t('home.startLearning')}
             </button>
             <Link
-              to="/explore"
+              to="/course"
               className={`px-6 py-3 rounded-full border-2 font-medium flex items-center gap-2 hover:scale-105 transition-transform ${
                 theme === 'dark'
                   ? 'border-gray-600 text-gray-300 hover:border-gray-400'
                   : 'border-gray-300 text-gray-600 hover:border-gray-500'
               }`}
             >
-              <Sparkles className="w-5 h-5" />
-              {t('home.explore')}
+              <BookOpen className="w-5 h-5" />
+              {t('home.viewCourse')}
             </Link>
           </div>
         </div>
@@ -775,6 +864,9 @@ export function HomePage() {
             ))}
           </div>
         </div>
+
+        {/* Life Scenes & Hands-on Experiments - Integrated Section */}
+        <LifeAndExperimentsSection theme={theme} />
 
         {/* Quick Access Menu */}
         <QuickAccessMenu theme={theme} />
