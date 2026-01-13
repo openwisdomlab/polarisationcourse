@@ -227,16 +227,81 @@ function FresnelDiagram({
         入射光
       </text>
 
-      {/* s偏振反射光 */}
-      {showS && Rs > 0.01 && (
+      {/* 反射光 - s和p偏振沿同一方向传播，仅强度不同 */}
+      {/* 先绘制较弱的偏振（在下层），再绘制较强的偏振（在上层） */}
+      {showS && showP && Rs > 0.01 && Rp > 0.01 && (
+        // 当两者都显示时，弱的在下层
+        Rs >= Rp ? (
+          <>
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={reflectEnd.x}
+              y2={reflectEnd.y}
+              stroke="#f472b6"
+              strokeWidth={Math.max(1.5, 5 * Rp)}
+              strokeOpacity={Math.max(0.4, Rp)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            />
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={reflectEnd.x}
+              y2={reflectEnd.y}
+              stroke="#22d3ee"
+              strokeWidth={Math.max(1.5, 5 * Rs)}
+              strokeOpacity={Math.max(0.4, Rs)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            />
+          </>
+        ) : (
+          <>
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={reflectEnd.x}
+              y2={reflectEnd.y}
+              stroke="#22d3ee"
+              strokeWidth={Math.max(1.5, 5 * Rs)}
+              strokeOpacity={Math.max(0.4, Rs)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            />
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={reflectEnd.x}
+              y2={reflectEnd.y}
+              stroke="#f472b6"
+              strokeWidth={Math.max(1.5, 5 * Rp)}
+              strokeOpacity={Math.max(0.4, Rp)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            />
+          </>
+        )
+      )}
+
+      {/* 仅显示s偏振反射光（p未选中或p太弱） */}
+      {showS && Rs > 0.01 && (!showP || Rp <= 0.01) && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={reflectEnd.x - 5}
+          x2={reflectEnd.x}
           y2={reflectEnd.y}
           stroke="#22d3ee"
-          strokeWidth={Math.max(1, 4 * Rs)}
-          strokeOpacity={Math.max(0.3, Rs)}
+          strokeWidth={Math.max(1.5, 5 * Rs)}
+          strokeOpacity={Math.max(0.4, Rs)}
           filter="url(#glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -244,16 +309,16 @@ function FresnelDiagram({
         />
       )}
 
-      {/* p偏振反射光 */}
-      {showP && Rp > 0.01 && (
+      {/* 仅显示p偏振反射光（s未选中或s太弱） */}
+      {showP && Rp > 0.01 && (!showS || Rs <= 0.01) && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={reflectEnd.x + 5}
+          x2={reflectEnd.x}
           y2={reflectEnd.y}
           stroke="#f472b6"
-          strokeWidth={Math.max(1, 4 * Rp)}
-          strokeOpacity={Math.max(0.3, Rp)}
+          strokeWidth={Math.max(1.5, 5 * Rp)}
+          strokeOpacity={Math.max(0.4, Rp)}
           filter="url(#glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -266,16 +331,80 @@ function FresnelDiagram({
         反射光
       </text>
 
-      {/* s偏振折射光 */}
-      {showS && !fresnel.totalReflection && Ts > 0.01 && (
+      {/* 折射光 - s和p偏振沿同一方向传播（斯涅尔定律），仅强度不同 */}
+      {showS && showP && !fresnel.totalReflection && Ts > 0.01 && Tp > 0.01 && (
+        // 当两者都显示时，弱的在下层
+        Ts >= Tp ? (
+          <>
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={refractEnd.x}
+              y2={refractEnd.y}
+              stroke="#f472b6"
+              strokeWidth={Math.max(1.5, 5 * Tp)}
+              strokeOpacity={Math.max(0.4, Tp)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            />
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={refractEnd.x}
+              y2={refractEnd.y}
+              stroke="#22d3ee"
+              strokeWidth={Math.max(1.5, 5 * Ts)}
+              strokeOpacity={Math.max(0.4, Ts)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            />
+          </>
+        ) : (
+          <>
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={refractEnd.x}
+              y2={refractEnd.y}
+              stroke="#22d3ee"
+              strokeWidth={Math.max(1.5, 5 * Ts)}
+              strokeOpacity={Math.max(0.4, Ts)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            />
+            <motion.line
+              x1={cx}
+              y1={cy}
+              x2={refractEnd.x}
+              y2={refractEnd.y}
+              stroke="#f472b6"
+              strokeWidth={Math.max(1.5, 5 * Tp)}
+              strokeOpacity={Math.max(0.4, Tp)}
+              filter="url(#glow)"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            />
+          </>
+        )
+      )}
+
+      {/* 仅显示s偏振折射光（p未选中或p太弱） */}
+      {showS && !fresnel.totalReflection && Ts > 0.01 && (!showP || Tp <= 0.01) && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={refractEnd.x - 5}
+          x2={refractEnd.x}
           y2={refractEnd.y}
           stroke="#22d3ee"
-          strokeWidth={Math.max(1, 4 * Ts)}
-          strokeOpacity={Math.max(0.3, Ts)}
+          strokeWidth={Math.max(1.5, 5 * Ts)}
+          strokeOpacity={Math.max(0.4, Ts)}
           filter="url(#glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -283,16 +412,16 @@ function FresnelDiagram({
         />
       )}
 
-      {/* p偏振折射光 */}
-      {showP && !fresnel.totalReflection && Tp > 0.01 && (
+      {/* 仅显示p偏振折射光（s未选中或s太弱） */}
+      {showP && !fresnel.totalReflection && Tp > 0.01 && (!showS || Ts <= 0.01) && (
         <motion.line
           x1={cx}
           y1={cy}
-          x2={refractEnd.x + 5}
+          x2={refractEnd.x}
           y2={refractEnd.y}
           stroke="#f472b6"
-          strokeWidth={Math.max(1, 4 * Tp)}
-          strokeOpacity={Math.max(0.3, Tp)}
+          strokeWidth={Math.max(1.5, 5 * Tp)}
+          strokeOpacity={Math.max(0.4, Tp)}
           filter="url(#glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
