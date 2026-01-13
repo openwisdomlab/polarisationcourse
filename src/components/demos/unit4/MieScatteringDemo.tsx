@@ -157,10 +157,12 @@ function MieScatteringDiagram({
       const logIntensity = Math.log10(s.intensity + 1e-10)
       const normalizedIntensity = (logIntensity - logMin) / logRange
       const r = minRadius + normalizedIntensity * maxRadius
-      const rad = ((s.angle - 90) * Math.PI) / 180
+      // 角度转换：0°=前向(右)，90°=上，180°=后向(左)
+      // SVG的Y轴向下，所以用负sin来翻转
+      const rad = (s.angle * Math.PI) / 180
       return {
         x: cx + r * Math.cos(rad),
-        y: cy + r * Math.sin(rad),
+        y: cy - r * Math.sin(rad),
       }
     })
 
@@ -260,12 +262,12 @@ function MieScatteringDiagram({
         <text x="-30" y="-15" textAnchor="middle" fill="#94a3b8" fontSize="11">后向散射</text>
       </g>
 
-      {/* 角度标注 */}
+      {/* 角度标注 - 0°=前向(右)，90°=上，180°=后向(左) */}
       {[0, 45, 90, 135, 180].map((angle) => {
-        const rad = ((angle - 90) * Math.PI) / 180
+        const rad = (angle * Math.PI) / 180
         const r = 140
         const x = 300 + r * Math.cos(rad)
-        const y = 200 + r * Math.sin(rad)
+        const y = 200 - r * Math.sin(rad)
         return (
           <text
             key={angle}
