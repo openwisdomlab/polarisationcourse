@@ -47,37 +47,6 @@ import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/Polariza
 import { GalleryHero } from '@/components/museum'
 
 // Icon components - memoized for performance
-const PhysicsIcon = memo(function PhysicsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 1v6m0 10v6M1 12h6m10 0h6" />
-      <path d="M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24" />
-    </svg>
-  )
-})
-
-const ExperimentIcon = memo(function ExperimentIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-      <path d="M9 3h6v8l4 9H5l4-9V3z" />
-      <path d="M9 3h6" strokeLinecap="round" />
-      <circle cx="10" cy="16" r="1" fill="currentColor" />
-      <circle cx="14" cy="14" r="1" fill="currentColor" />
-    </svg>
-  )
-})
-
-const FrontierIcon = memo(function FrontierIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-      <path d="M12 2L2 7l10 5 10-5-10-5z" />
-      <path d="M2 17l10 5 10-5" />
-      <path d="M2 12l10 5 10-5" />
-    </svg>
-  )
-})
-
 const LifeSceneIcon = memo(function LifeSceneIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
@@ -300,28 +269,6 @@ interface DemoInfo {
   }
 }
 
-// 根据难度级别获取适当的内容
-const getDifficultyContent = (
-  info: DemoInfo['physics'],
-  difficultyLevel: DifficultyLevel
-): { principle: string; details: string[] } => {
-  let principle = info.principle
-  let details = info.details
-
-  if (difficultyLevel === 'foundation' && info.principle_foundation) {
-    principle = info.principle_foundation
-  } else if (difficultyLevel === 'research' && info.principle_research) {
-    principle = info.principle_research
-  }
-
-  if (difficultyLevel === 'foundation' && info.details_foundation) {
-    details = info.details_foundation
-  } else if (difficultyLevel === 'research' && info.details_research) {
-    details = info.details_research
-  }
-
-  return { principle, details }
-}
 
 // Helper to get questions array from translations with difficulty level support
 const getQuestions = (
@@ -1882,9 +1829,6 @@ export function DemosPage() {
     setTimeout(() => setShowDifficultyChange(false), 1500)
   }
 
-  // Get difficulty config
-  const difficultyConfig = DIFFICULTY_CONFIG[difficultyLevel]
-
   // Enhanced search function that returns demos with match location details
   const getSearchResults = (): { demos: DemoItem[], matches: Map<string, SearchMatch> } => {
     if (!searchQuery.trim()) {
@@ -2874,185 +2818,6 @@ export function DemosPage() {
                       </div>
                     </div>
                   </CollapsibleCard>
-                )}
-
-                {/* Physics, Experiment, Frontier cards in a grid - hide for Unit 0 (Optical Basics) */}
-                {currentDemo?.unit !== 0 && (
-                <div className={cn(
-                  "grid gap-3",
-                  isCompact ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3 gap-4"
-                )}>
-                {/* Physics principle */}
-                <CollapsibleCard
-                  title={t('gallery.cards.physics')}
-                  icon={<PhysicsIcon />}
-                  color="cyan"
-                  isExpanded={expandedCards.physics}
-                  onToggle={() => toggleCard('physics')}
-                >
-                  <div className="space-y-4">
-                    {demoInfo.diagram && (
-                      <div
-                        className={cn(
-                          'rounded-lg p-3 border',
-                          theme === 'dark'
-                            ? 'bg-slate-900/50 border-slate-700/50'
-                            : 'bg-gray-50 border-gray-200'
-                        )}
-                      >
-                        {demoInfo.diagram}
-                      </div>
-                    )}
-                    {(() => {
-                      const { principle, details } = getDifficultyContent(demoInfo.physics, difficultyLevel)
-                      return (
-                        <>
-                          <p
-                            className={cn(
-                              'text-sm leading-relaxed',
-                              theme === 'dark' ? 'text-gray-300' : 'text-gray-800'
-                            )}
-                          >
-                            {principle}
-                          </p>
-                          {/* Formula - shown based on difficulty */}
-                          {demoInfo.physics.formula && difficultyConfig.showFormula && (
-                            <div
-                              className={cn(
-                                'font-mono px-3 py-2 rounded-lg text-center text-sm border',
-                                theme === 'dark'
-                                  ? 'text-cyan-400 bg-slate-900/70 border-cyan-400/20'
-                                  : 'text-cyan-700 bg-cyan-50 border-cyan-200'
-                              )}
-                            >
-                              {demoInfo.physics.formula}
-                            </div>
-                          )}
-                          {/* Details - limited based on difficulty */}
-                          <div className="space-y-2">
-                            {details.slice(0, difficultyConfig.maxPhysicsDetails).map((detail, i) => (
-                              <ListItem key={i} icon="•">
-                                {detail}
-                              </ListItem>
-                            ))}
-                          </div>
-                        </>
-                      )
-                    })()}
-                    {/* Beginner mode hint */}
-                    {difficultyLevel === 'foundation' && demoInfo.physics.formula && (
-                      <p className={cn(
-                        'text-xs italic mt-2',
-                        theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                      )}>
-                        {t('gallery.difficulty.formulaHidden')}
-                      </p>
-                    )}
-                  </div>
-                </CollapsibleCard>
-
-                {/* Experimental application */}
-                <CollapsibleCard
-                  title={t('gallery.cards.experiment')}
-                  icon={<ExperimentIcon />}
-                  color="green"
-                  isExpanded={expandedCards.experiment}
-                  onToggle={() => toggleCard('experiment')}
-                >
-                  <div className="space-y-4">
-                    <div
-                      className={cn(
-                        'rounded-lg px-3 py-2 border',
-                        theme === 'dark'
-                          ? 'bg-green-400/10 border-green-400/20'
-                          : 'bg-green-50 border-green-200'
-                      )}
-                    >
-                      <h5
-                        className={cn(
-                          'font-semibold text-sm',
-                          theme === 'dark' ? 'text-green-400' : 'text-green-700'
-                        )}
-                      >
-                        {demoInfo.experiment.title}
-                      </h5>
-                      <p
-                        className={cn(
-                          'text-xs mt-1',
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
-                        )}
-                      >
-                        {demoInfo.experiment.example}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      {demoInfo.experiment.details.map((detail, i) => (
-                        <ListItem
-                          key={i}
-                          icon={
-                            <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>
-                              ✓
-                            </span>
-                          }
-                        >
-                          {detail}
-                        </ListItem>
-                      ))}
-                    </div>
-                  </div>
-                </CollapsibleCard>
-
-                {/* Frontier application */}
-                <CollapsibleCard
-                  title={t('gallery.cards.frontier')}
-                  icon={<FrontierIcon />}
-                  color="purple"
-                  isExpanded={expandedCards.frontier}
-                  onToggle={() => toggleCard('frontier')}
-                >
-                  <div className="space-y-4">
-                    <div
-                      className={cn(
-                        'rounded-lg px-3 py-2 border',
-                        theme === 'dark'
-                          ? 'bg-purple-400/10 border-purple-400/20'
-                          : 'bg-purple-50 border-purple-200'
-                      )}
-                    >
-                      <h5
-                        className={cn(
-                          'font-semibold text-sm',
-                          theme === 'dark' ? 'text-purple-400' : 'text-purple-700'
-                        )}
-                      >
-                        {demoInfo.frontier.title}
-                      </h5>
-                      <p
-                        className={cn(
-                          'text-xs mt-1',
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
-                        )}
-                      >
-                        {demoInfo.frontier.example}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      {demoInfo.frontier.details.slice(0, difficultyConfig.maxFrontierDetails).map((detail, i) => (
-                        <ListItem
-                          key={i}
-                          icon={
-                            <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>
-                              →
-                            </span>
-                          }
-                        >
-                          {detail}
-                        </ListItem>
-                      ))}
-                    </div>
-                  </div>
-                </CollapsibleCard>
-                </div>
                 )}
 
                 {/* DIY card - full width, at bottom */}
