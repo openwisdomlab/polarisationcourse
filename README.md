@@ -251,7 +251,17 @@ A comprehensive polarized light art design tool combining Device Library and Opt
 
 ### Course Curriculum
 
-The educational platform covers 6 units of polarization optics with 21 interactive demos:
+The educational platform features a **3-stage cognitive learning journey** with 21 interactive demos:
+
+#### Learning Stages
+
+| Stage | Theme | Core Question | Content |
+|-------|-------|---------------|---------|
+| **Stage 1: Seeing Polarization** | Discovery | "What is polarization and where can I see it?" | Polarization introduction, types, daily life examples |
+| **Stage 2: Understanding the Laws** | Comprehension | "How does polarized light behave?" | Malus's Law, birefringence, waveplates, reflection, scattering, applications |
+| **Stage 3: Measurement & Application** | Mastery (Advanced) | "How do we measure and utilize polarization?" | Stokes vectors, Mueller matrices, Jones calculus, polarimetric microscopy |
+
+#### Demo Units
 
 | Unit | Topic | Demos |
 |------|-------|-------|
@@ -264,7 +274,7 @@ The educational platform covers 6 units of polarization optics with 21 interacti
 
 #### Difficulty Levels
 
-The course offers three difficulty levels to accommodate different learners:
+Each demo adapts to three difficulty levels:
 
 | Level | Description | Content |
 |-------|-------------|---------|
@@ -272,7 +282,7 @@ The course offers three difficulty levels to accommodate different learners:
 | Application (🔬) | Rotational research training | Hands-on experiments with quantitative formulas and measurement principles |
 | Research (🚀) | Independent original research | Frontier research methods with rigorous academic treatment |
 
-Visit `/demos` to explore interactive visualizations.
+Visit `/course` for the structured learning journey or `/demos` to explore individual demos.
 
 ### Project Structure
 
@@ -566,7 +576,17 @@ npm run preview  # 预览生产构建
 
 ### 课程大纲
 
-教育平台涵盖6个偏振光学单元，共21个交互式演示：
+教育平台采用**三阶段认知学习旅程**，包含21个交互式演示：
+
+#### 学习阶段
+
+| 阶段 | 主题 | 核心问题 | 内容 |
+|------|------|----------|------|
+| **阶段一：看见偏振** | 发现 | "偏振是什么？我能在哪里看到它？" | 偏振简介、偏振类型、日常生活中的偏振 |
+| **阶段二：理解规律** | 理解 | "偏振光如何表现？" | 马吕斯定律、双折射、波片、反射、散射、应用 |
+| **阶段三：测量与应用** | 精通（进阶） | "如何测量和利用偏振？" | 斯托克斯矢量、穆勒矩阵、Jones矩阵、偏振显微镜 |
+
+#### 演示单元
 
 | 单元 | 主题 | 演示 |
 |------|------|------|
@@ -579,7 +599,7 @@ npm run preview  # 预览生产构建
 
 #### 难度级别
 
-课程提供三个难度级别，适应不同学习者：
+每个演示适配三个难度级别：
 
 | 级别 | 描述 | 内容 |
 |------|------|------|
@@ -587,7 +607,7 @@ npm run preview  # 预览生产构建
 | 应用层 (🔬) | 轮转式研究训练 | 实验设计与定量公式，强调测量原理 |
 | 研究层 (🚀) | 独立原创研究 | 前沿研究方法与严谨学术处理 |
 
-访问 `/demos` 探索交互式可视化演示。
+访问 `/course` 体验结构化学习旅程，或访问 `/demos` 探索单个演示。
 
 ### 项目结构
 
