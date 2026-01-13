@@ -1,18 +1,23 @@
 /**
- * HomePage - 双线叙事课程首页
- * 首页 - 以"双线叙事：光学与偏振"为核心逻辑展开
+ * HomePage - 光的编年史首页
+ * 首页 = 光的编年史，整合所有内容的入口
  *
- * 架构：左线讲述光学史，右线聚焦偏振专题
- * 首页专注于课程导航，其他内容融入编年史页面
+ * 架构：
+ * 1. 课程介绍（零一学院）
+ * 2. 知识棱镜（光学全景图）
+ * 3. 双轨时间线（光学史 + 偏振专题）
+ * 4. 课程大纲（5个单元）
+ * 5. 快捷导航（所有模块入口）
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PolarWorldLogo } from '@/components/icons'
 import { useCourseProgress } from '@/hooks'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { cn } from '@/lib/utils'
 import {
   Lightbulb,
@@ -31,10 +36,25 @@ import {
   Target,
   Beaker,
   Atom,
-  GitBranch,
   Eye,
   Gamepad2,
+  Clock,
+  Palette,
+  Users,
+  Wrench,
 } from 'lucide-react'
+
+// Chronicles components
+import {
+  OpticalOverviewDiagram,
+  DualTrackCard,
+  StoryModal,
+  CenturyNavigator,
+} from '@/components/chronicles'
+
+// Data imports
+import { TIMELINE_EVENTS } from '@/data/timeline-events'
+import { CATEGORY_LABELS } from '@/data/chronicles-constants'
 
 // ============================================================================
 // 课程大纲数据结构 - 5个单元
@@ -542,10 +562,10 @@ function UnitCard({
 
 
 // ============================================================================
-// 双线叙事 Hero 组件
+// 课程介绍 Hero 组件 (零一学院)
 // ============================================================================
 
-function DualNarrativeHero({ theme }: { theme: 'dark' | 'light' }) {
+function CourseBannerHero({ theme }: { theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
 
   return (
@@ -573,7 +593,7 @@ function DualNarrativeHero({ theme }: { theme: 'dark' | 'light' }) {
           </span>
         </div>
 
-        {/* 主标题 */}
+        {/* 主标题 - 光的编年史 */}
         <h1 className={cn(
           'text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4',
           'text-transparent bg-clip-text',
@@ -581,10 +601,10 @@ function DualNarrativeHero({ theme }: { theme: 'dark' | 'light' }) {
             ? 'bg-gradient-to-br from-white via-cyan-200 to-violet-300'
             : 'bg-gradient-to-br from-gray-900 via-cyan-700 to-violet-700'
         )}>
-          {t('home.dualNarrative.title')}
+          {t('home.chronicles.title')}
         </h1>
 
-        {/* 副标题 - 双线叙事概念 */}
+        {/* 副标题 */}
         <p className={cn(
           'text-lg sm:text-xl font-medium mb-3',
           theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -592,91 +612,543 @@ function DualNarrativeHero({ theme }: { theme: 'dark' | 'light' }) {
           {t('home.dualNarrative.subtitle')}
         </p>
 
-        {/* 描述 */}
+        {/* 课程描述 */}
         <p className={cn(
-          'text-sm sm:text-base max-w-2xl mx-auto mb-8',
+          'text-sm sm:text-base max-w-3xl mx-auto mb-6 leading-relaxed',
           theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
         )}>
-          {t('home.dualNarrative.description')}
+          {t('home.courseBanner.description')}
         </p>
 
-        {/* 双线可视化 */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-6">
-          {/* 左线：光学史 */}
-          <div className={cn(
-            'flex items-center gap-3 px-5 py-3 rounded-xl border',
-            theme === 'dark'
-              ? 'bg-slate-800/60 border-cyan-500/30'
-              : 'bg-white/80 border-cyan-300'
-          )}>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500">
-              <History className="w-5 h-5 text-white" />
-            </div>
-            <div className="text-left">
-              <p className={cn(
-                'text-xs font-medium',
-                theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-              )}>
-                {t('home.dualNarrative.line1Label')}
-              </p>
-              <p className={cn(
-                'text-sm font-bold',
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              )}>
-                {t('home.dualNarrative.line1Title')}
-              </p>
-            </div>
+        {/* 双轨图例 */}
+        <div className="flex justify-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
+            <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}>
+              {t('home.dualNarrative.line1Title')}
+            </span>
           </div>
-
-          {/* 连接符号 */}
-          <div className={cn(
-            'hidden sm:flex items-center',
-            theme === 'dark' ? 'text-violet-400' : 'text-violet-600'
-          )}>
-            <GitBranch className="w-6 h-6 rotate-90 sm:rotate-0" />
-          </div>
-
-          {/* 右线：偏振专题 */}
-          <div className={cn(
-            'flex items-center gap-3 px-5 py-3 rounded-xl border',
-            theme === 'dark'
-              ? 'bg-slate-800/60 border-violet-500/30'
-              : 'bg-white/80 border-violet-300'
-          )}>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-violet-400 to-purple-500">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div className="text-left">
-              <p className={cn(
-                'text-xs font-medium',
-                theme === 'dark' ? 'text-violet-400' : 'text-violet-600'
-              )}>
-                {t('home.dualNarrative.line2Label')}
-              </p>
-              <p className={cn(
-                'text-sm font-bold',
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              )}>
-                {t('home.dualNarrative.line2Title')}
-              </p>
-            </div>
+          <div className="flex items-center gap-2">
+            <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+            <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
+              {t('home.dualNarrative.line2Title')}
+            </span>
           </div>
         </div>
-
-        {/* 进入编年史链接 */}
-        <Link
-          to="/chronicles"
-          className={cn(
-            'inline-flex items-center gap-2 text-sm font-medium transition-colors',
-            theme === 'dark'
-              ? 'text-gray-400 hover:text-cyan-400'
-              : 'text-gray-500 hover:text-cyan-600'
-          )}
-        >
-          {t('home.dualNarrative.exploreChronicles')}
-          <ArrowRight className="w-4 h-4" />
-        </Link>
       </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// 快捷导航组件
+// ============================================================================
+
+interface QuickNavItem {
+  id: string
+  titleKey: string
+  descKey: string
+  icon: React.ReactNode
+  link: string
+  color: string
+  gradient: string
+}
+
+const QUICK_NAV_ITEMS: QuickNavItem[] = [
+  {
+    id: 'demos',
+    titleKey: 'home.quick.demos',
+    descKey: 'home.formulaLab.subtitle',
+    icon: <Eye className="w-5 h-5" />,
+    link: '/demos',
+    color: '#22D3EE',
+    gradient: 'from-cyan-500 to-blue-500',
+  },
+  {
+    id: 'games',
+    titleKey: 'home.quick.games',
+    descKey: 'home.polarquest.subtitle',
+    icon: <Gamepad2 className="w-5 h-5" />,
+    link: '/games',
+    color: '#EC4899',
+    gradient: 'from-pink-500 to-rose-500',
+  },
+  {
+    id: 'opticalStudio',
+    titleKey: 'home.quick.opticalStudio',
+    descKey: 'home.opticalDesignStudio.subtitle',
+    icon: <Wrench className="w-5 h-5" />,
+    link: '/optical-studio',
+    color: '#F59E0B',
+    gradient: 'from-amber-500 to-orange-500',
+  },
+  {
+    id: 'calc',
+    titleKey: 'home.quick.calc',
+    descKey: 'home.formulaLab.subtitle',
+    icon: <Calculator className="w-5 h-5" />,
+    link: '/calc',
+    color: '#8B5CF6',
+    gradient: 'from-violet-500 to-purple-500',
+  },
+  {
+    id: 'experiments',
+    titleKey: 'home.quick.experiments',
+    descKey: 'home.creativeLab.subtitle',
+    icon: <Palette className="w-5 h-5" />,
+    link: '/experiments',
+    color: '#10B981',
+    gradient: 'from-emerald-500 to-teal-500',
+  },
+  {
+    id: 'lab',
+    titleKey: 'home.quick.lab',
+    descKey: 'home.labGroup.subtitle',
+    icon: <Users className="w-5 h-5" />,
+    link: '/lab',
+    color: '#6366F1',
+    gradient: 'from-indigo-500 to-blue-500',
+  },
+]
+
+function QuickNavigation({ theme }: { theme: 'dark' | 'light' }) {
+  const { t } = useTranslation()
+
+  return (
+    <div className="mb-8">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 rounded-full bg-gradient-to-br from-violet-400 to-purple-500">
+          <Compass className="w-4 h-4 text-white" />
+        </div>
+        <h2 className={cn(
+          'text-lg font-bold',
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        )}>
+          {t('home.quickAccess')}
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {QUICK_NAV_ITEMS.map((item) => (
+          <Link
+            key={item.id}
+            to={item.link}
+            className={cn(
+              'group flex items-center gap-3 p-4 rounded-xl border transition-all hover:scale-[1.02]',
+              theme === 'dark'
+                ? 'bg-slate-800/60 border-slate-700/50 hover:border-slate-600'
+                : 'bg-white/80 border-gray-200 hover:border-gray-300'
+            )}
+          >
+            <div
+              className={cn('p-2 rounded-lg bg-gradient-to-br text-white', item.gradient)}
+            >
+              {item.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={cn(
+                'font-semibold text-sm truncate',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                {t(item.titleKey)}
+              </p>
+              <p className={cn(
+                'text-xs truncate',
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+              )}>
+                {t(item.descKey)}
+              </p>
+            </div>
+            <ArrowRight className={cn(
+              'w-4 h-4 flex-shrink-0 transition-transform group-hover:translate-x-1',
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            )} />
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// 时间线组件
+// ============================================================================
+
+function TimelineSection({
+  theme,
+  isZh,
+  isMobile,
+}: {
+  theme: 'dark' | 'light'
+  isZh: boolean
+  isMobile: boolean
+}) {
+  const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
+  const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
+  const [filter, setFilter] = useState<string>('')
+  const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
+  const [showTimeline, setShowTimeline] = useState(false)
+
+  // Filter events
+  const filteredEvents = useMemo(() => {
+    return TIMELINE_EVENTS.filter(e => {
+      const categoryMatch = !filter || e.category === filter
+      const trackMatch = trackFilter === 'all' || e.track === trackFilter
+      return categoryMatch && trackMatch
+    }).sort((a, b) => a.year - b.year)
+  }, [filter, trackFilter])
+
+  // Story modal handlers
+  const handleOpenStory = (index: number) => setStoryModalEvent(index)
+  const handleCloseStory = () => setStoryModalEvent(null)
+  const handleNextStory = () => {
+    if (storyModalEvent !== null && storyModalEvent < filteredEvents.length - 1) {
+      setStoryModalEvent(storyModalEvent + 1)
+    }
+  }
+  const handlePrevStory = () => {
+    if (storyModalEvent !== null && storyModalEvent > 0) {
+      setStoryModalEvent(storyModalEvent - 1)
+    }
+  }
+
+  // Navigate to linked event
+  const handleLinkTo = useCallback((year: number, track: 'optics' | 'polarization') => {
+    setTrackFilter('all')
+    setFilter('')
+    const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
+    const targetIndex = allEventsSorted.findIndex(e => e.year === year && e.track === track)
+    if (targetIndex !== -1) {
+      setExpandedEvent(targetIndex)
+      setTimeout(() => {
+        const targetElement = document.querySelector(`[data-event-index="${targetIndex}"]`)
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 100)
+    }
+  }, [])
+
+  return (
+    <div className="mb-8">
+      {/* Section Header */}
+      <button
+        onClick={() => setShowTimeline(!showTimeline)}
+        className={cn(
+          'w-full flex items-center justify-between gap-3 mb-4 p-4 rounded-xl border transition-all',
+          theme === 'dark'
+            ? 'bg-slate-800/60 border-slate-700/50 hover:border-slate-600'
+            : 'bg-white/80 border-gray-200 hover:border-gray-300'
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-full bg-gradient-to-br from-amber-400 to-orange-500">
+            <Clock className="w-4 h-4 text-white" />
+          </div>
+          <div className="text-left">
+            <h2 className={cn(
+              'text-lg font-bold',
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            )}>
+              {isZh ? '历史时间线' : 'Historical Timeline'}
+            </h2>
+            <p className={cn(
+              'text-xs',
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+            )}>
+              {isZh ? '从17世纪到现代的光学发现' : 'Optical discoveries from the 17th century to modern times'}
+            </p>
+          </div>
+        </div>
+        <ChevronDown className={cn(
+          'w-5 h-5 transition-transform',
+          showTimeline ? 'rotate-180' : '',
+          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+        )} />
+      </button>
+
+      {showTimeline && (
+        <>
+          {/* Track filters */}
+          <div className={cn(
+            'flex flex-wrap items-center gap-2 mb-4 p-3 rounded-lg',
+            theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
+          )}>
+            <span className={cn('text-sm font-medium mr-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+              {isZh ? '轨道：' : 'Track:'}
+            </span>
+            <button
+              onClick={() => setTrackFilter('all')}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+                trackFilter === 'all'
+                  ? 'bg-gray-600 text-white'
+                  : theme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+              )}
+            >
+              {isZh ? '全部' : 'All'}
+            </button>
+            <button
+              onClick={() => setTrackFilter('optics')}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5',
+                trackFilter === 'optics'
+                  ? 'bg-amber-500 text-white'
+                  : theme === 'dark'
+                    ? 'text-amber-400/70 hover:text-amber-400 hover:bg-amber-500/20'
+                    : 'text-amber-600 hover:text-amber-700 hover:bg-amber-100'
+              )}
+            >
+              <Sun className="w-3.5 h-3.5" />
+              {isZh ? '广义光学' : 'Optics'}
+            </button>
+            <button
+              onClick={() => setTrackFilter('polarization')}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5',
+                trackFilter === 'polarization'
+                  ? 'bg-cyan-500 text-white'
+                  : theme === 'dark'
+                    ? 'text-cyan-400/70 hover:text-cyan-400 hover:bg-cyan-500/20'
+                    : 'text-cyan-600 hover:text-cyan-700 hover:bg-cyan-100'
+              )}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              {isZh ? '偏振光' : 'Polarization'}
+            </button>
+          </div>
+
+          {/* Category filters */}
+          <div className={cn(
+            'flex flex-wrap items-center gap-2 mb-6 p-3 rounded-lg',
+            theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
+          )}>
+            <span className={cn('text-sm font-medium mr-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+              {isZh ? '类型：' : 'Type:'}
+            </span>
+            <button
+              onClick={() => setFilter('')}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+                !filter
+                  ? 'bg-gray-600 text-white'
+                  : theme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+              )}
+            >
+              {isZh ? '全部' : 'All'}
+            </button>
+            {Object.entries(CATEGORY_LABELS).map(([key, val]) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key)}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+                  filter === key
+                    ? 'bg-gray-600 text-white'
+                    : theme === 'dark'
+                      ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                )}
+              >
+                {isZh ? val.zh : val.en}
+              </button>
+            ))}
+          </div>
+
+          {/* Century Navigator - Desktop only */}
+          {!isMobile && <CenturyNavigator events={filteredEvents} isZh={isZh} />}
+
+          {/* Timeline */}
+          {isMobile ? (
+            /* Mobile Single-Track Timeline */
+            <div className="relative pl-8">
+              <div className={cn(
+                'absolute left-3 top-0 bottom-0 w-0.5',
+                theme === 'dark'
+                  ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50'
+                  : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
+              )} />
+              {filteredEvents.map((event, idx) => (
+                <div
+                  key={`${event.year}-${event.titleEn}`}
+                  className="relative mb-4 last:mb-0"
+                  data-event-index={idx}
+                >
+                  <div className={cn(
+                    'absolute -left-5 w-10 h-10 rounded-full flex items-center justify-center font-mono text-xs font-bold border-2',
+                    event.track === 'optics'
+                      ? theme === 'dark'
+                        ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                        : 'bg-amber-100 border-amber-500 text-amber-700'
+                      : theme === 'dark'
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
+                        : 'bg-cyan-100 border-cyan-500 text-cyan-700'
+                  )}>
+                    {String(event.year).slice(-2)}
+                  </div>
+                  <DualTrackCard
+                    event={event}
+                    eventIndex={idx}
+                    isExpanded={expandedEvent === idx}
+                    onToggle={() => setExpandedEvent(expandedEvent === idx ? null : idx)}
+                    onReadStory={() => handleOpenStory(idx)}
+                    onLinkTo={handleLinkTo}
+                    side={event.track === 'optics' ? 'left' : 'right'}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Desktop Dual Track Timeline */
+            <div className="relative">
+              {/* Track Labels */}
+              <div className="flex items-center justify-between mb-6">
+                <div className={cn(
+                  'flex-1 text-center py-2 rounded-l-lg border-r',
+                  theme === 'dark'
+                    ? 'bg-amber-500/10 border-amber-500/30'
+                    : 'bg-amber-50 border-amber-200'
+                )}>
+                  <div className="flex items-center justify-center gap-2">
+                    <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
+                    <span className={cn('font-semibold', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
+                      {isZh ? '广义光学' : 'General Optics'}
+                    </span>
+                  </div>
+                </div>
+                <div className={cn(
+                  'w-20 text-center py-2',
+                  theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
+                )}>
+                  <span className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                    {isZh ? '年份' : 'Year'}
+                  </span>
+                </div>
+                <div className={cn(
+                  'flex-1 text-center py-2 rounded-r-lg border-l',
+                  theme === 'dark'
+                    ? 'bg-cyan-500/10 border-cyan-500/30'
+                    : 'bg-cyan-50 border-cyan-200'
+                )}>
+                  <div className="flex items-center justify-center gap-2">
+                    <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                    <span className={cn('font-semibold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
+                      {isZh ? '偏振光' : 'Polarization'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Center vertical line */}
+              <div className={cn(
+                'absolute left-1/2 top-[60px] bottom-0 w-0.5 -translate-x-1/2',
+                theme === 'dark'
+                  ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50'
+                  : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
+              )} />
+
+              {/* Events by year */}
+              {(() => {
+                const years = [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
+                return years.map((year) => {
+                  const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
+                  const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
+                  const hasOptics = opticsEvents.length > 0
+                  const hasPolarization = polarizationEvents.length > 0
+
+                  return (
+                    <div key={year} className="relative flex items-stretch mb-6 last:mb-0">
+                      {/* Left - Optics */}
+                      <div className="flex-1 pr-4 flex justify-end">
+                        {hasOptics && (
+                          <div className="w-full max-w-md space-y-3">
+                            {opticsEvents.map((opticsEvent) => {
+                              const opticsIndex = filteredEvents.findIndex(e => e === opticsEvent)
+                              return (
+                                <div key={opticsEvent.titleEn} data-event-index={opticsIndex}>
+                                  <DualTrackCard
+                                    event={opticsEvent}
+                                    eventIndex={opticsIndex}
+                                    isExpanded={expandedEvent === opticsIndex}
+                                    onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
+                                    onReadStory={() => handleOpenStory(opticsIndex)}
+                                    onLinkTo={handleLinkTo}
+                                    side="left"
+                                  />
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Center year marker */}
+                      <div className="w-20 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
+                        <div className={cn(
+                          'w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2',
+                          hasOptics && hasPolarization
+                            ? theme === 'dark'
+                              ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
+                              : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
+                            : hasOptics
+                              ? theme === 'dark'
+                                ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                                : 'bg-amber-100 border-amber-500 text-amber-700'
+                              : theme === 'dark'
+                                ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
+                                : 'bg-cyan-100 border-cyan-500 text-cyan-700'
+                        )}>
+                          {year}
+                        </div>
+                      </div>
+
+                      {/* Right - Polarization */}
+                      <div className="flex-1 pl-4 flex justify-start">
+                        {hasPolarization && (
+                          <div className="w-full max-w-md space-y-3">
+                            {polarizationEvents.map((polarizationEvent) => {
+                              const polarizationIndex = filteredEvents.findIndex(e => e === polarizationEvent)
+                              return (
+                                <div key={polarizationEvent.titleEn} data-event-index={polarizationIndex}>
+                                  <DualTrackCard
+                                    event={polarizationEvent}
+                                    eventIndex={polarizationIndex}
+                                    isExpanded={expandedEvent === polarizationIndex}
+                                    onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
+                                    onReadStory={() => handleOpenStory(polarizationIndex)}
+                                    onLinkTo={handleLinkTo}
+                                    side="right"
+                                  />
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })
+              })()}
+            </div>
+          )}
+
+          {/* Story Modal */}
+          {storyModalEvent !== null && filteredEvents[storyModalEvent] && (
+            <StoryModal
+              event={filteredEvents[storyModalEvent]}
+              onClose={handleCloseStory}
+              onNext={handleNextStory}
+              onPrev={handlePrevStory}
+              hasNext={storyModalEvent < filteredEvents.length - 1}
+              hasPrev={storyModalEvent > 0}
+            />
+          )}
+        </>
+      )}
     </div>
   )
 }
@@ -686,9 +1158,11 @@ function DualNarrativeHero({ theme }: { theme: 'dark' | 'light' }) {
 // ============================================================================
 
 export function HomePage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { theme } = useTheme()
   const { progress } = useCourseProgress()
+  const { isMobile, isTablet } = useIsMobile()
+  const isZh = i18n.language === 'zh'
 
   // 展开状态管理
   const [expandedUnitId, setExpandedUnitId] = useState<string | null>(null)
@@ -713,7 +1187,7 @@ export function HomePage() {
       'min-h-screen',
       theme === 'dark'
         ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
-        : 'bg-gradient-to-br from-[#f0f9ff] via-[#e0f2fe] to-[#f0f9ff]'
+        : 'bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fffbeb]'
     )}>
       {/* 动态背景 */}
       <PolarizationBackground theme={theme} />
@@ -734,7 +1208,7 @@ export function HomePage() {
                 ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400'
                 : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-violet-600'
             )}>
-              {t('home.title')}
+              {t('home.chronicles.title')}
             </span>
           </div>
           <LanguageThemeSwitcher />
@@ -742,9 +1216,18 @@ export function HomePage() {
       </header>
 
       {/* 主要内容 */}
-      <main className="max-w-4xl mx-auto px-4 pt-20 pb-12">
-        {/* 双线叙事 Hero */}
-        <DualNarrativeHero theme={theme} />
+      <main className="max-w-7xl mx-auto px-4 pt-20 pb-12">
+        {/* 课程介绍 Hero (零一学院) */}
+        <CourseBannerHero theme={theme} />
+
+        {/* 知识棱镜 - 光学全景图 */}
+        <OpticalOverviewDiagram />
+
+        {/* 快捷导航 */}
+        <QuickNavigation theme={theme} />
+
+        {/* 历史时间线 (可折叠) */}
+        <TimelineSection theme={theme} isZh={isZh} isMobile={isMobile || isTablet} />
 
         {/* 课程大纲 - 5个单元 */}
         <div className="mb-8">
@@ -787,7 +1270,7 @@ export function HomePage() {
           'mt-12 text-center text-xs',
           theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
         )}>
-          <p className="opacity-60">© 2025 深圳零一学院 · {t('home.title')}</p>
+          <p className="opacity-60">© 2025 深圳零一学院 · {t('home.chronicles.title')}</p>
         </footer>
       </main>
     </div>
