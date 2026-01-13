@@ -129,6 +129,80 @@
           "description": "Browse all demos, choose by interest"
         }
       }
+    },
+    "phase": "Phase",
+    "advanced": "Advanced",
+    "stage1": {
+      "title": "See Polarization",
+      "subtitle": "Discover the Third Property of Light",
+      "question": "What is polarization? Where can I see it?",
+      "demos": {
+        "intro": "What is Polarization?",
+        "types": "Polarization Types",
+        "bench": "Optical Bench"
+      },
+      "games": {
+        "level0": "Tutorial Level",
+        "level1": "Basic Practice"
+      }
+    },
+    "stage2": {
+      "title": "Understand the Rules",
+      "subtitle": "Master Polarization Physics",
+      "question": "What rules does polarized light follow?",
+      "demos": {
+        "malus": "Malus's Law",
+        "birefringence": "Birefringence",
+        "brewster": "Brewster's Angle",
+        "rayleigh": "Rayleigh Scattering",
+        "chromatic": "Chromatic Polarization"
+      },
+      "games": {
+        "level2": "Malus's Law Puzzle",
+        "level16": "Birefringence Maze"
+      },
+      "tools": {
+        "opticalStudio": "Optical Studio"
+      }
+    },
+    "stage3": {
+      "title": "Measure & Apply",
+      "subtitle": "Full Characterization & Frontier Tech",
+      "question": "How to precisely describe and utilize polarization?",
+      "demos": {
+        "stokes": "Stokes Vector",
+        "mueller": "Mueller Matrix",
+        "jones": "Jones Matrix",
+        "microscopy": "Polarimetric Microscopy"
+      },
+      "tools": {
+        "stokes": "Stokes Calculator",
+        "poincare": "Poincare Sphere",
+        "mueller": "Mueller Calculator"
+      }
+    },
+    "resources": {
+      "demos": "Interactive Demos",
+      "games": "Practice Games",
+      "tools": "Calculation Tools"
+    },
+    "startStage": "Start This Stage",
+    "startLearning": "Start Learning",
+    "explore": "Explore Freely",
+    "learningJourney": "Learning Journey",
+    "quickAccess": "Quick Access",
+    "quick": {
+      "games": "Games",
+      "demos": "Demos",
+      "calc": "Calc",
+      "experiments": "Experiments",
+      "chronicles": "Chronicles",
+      "lab": "Lab"
+    },
+    "stats": {
+      "completed": "Progress",
+      "streak": "Streak",
+      "time": "Time"
     }
   },
   "course": {

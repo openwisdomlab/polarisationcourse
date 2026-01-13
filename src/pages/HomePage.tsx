@@ -1,677 +1,521 @@
-import { useState, useRef, useEffect, useCallback, memo } from 'react'
+/**
+ * HomePage - PSRT Course Homepage
+ * 首页 = PSRT课程（融合演示、游戏、工具作为学习资源）
+ *
+ * 架构：首页直接展示PSRT课程的三阶段学习路径
+ * 演示(demos)、游戏(games)、工具(tools)作为每个阶段的学习资源
+ */
+
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { ModuleIconMap, type ModuleIconKey, PolarCraftLogo, CourseIcon } from '@/components/icons'
-import { LightBeamEffect } from '@/components/effects'
-import { X, Lightbulb, BookOpen, Telescope, Gamepad2, Sparkles } from 'lucide-react'
+import { PolarCraftLogo } from '@/components/icons'
+import { useCourseProgress } from '@/hooks'
+import {
+  ChevronRight,
+  Play,
+  Lightbulb,
+  BookOpen,
+  Telescope,
+  Gamepad2,
+  FlaskConical,
+  Target,
+  Sparkles,
+  Zap,
+  ArrowRight,
+  Eye,
+  Wrench,
+  GraduationCap,
+  TrendingUp,
+  Clock,
+  Flame,
+  X,
+} from 'lucide-react'
 
-// Polarization angle colors for visual effect (based on polarization physics)
-const POLARIZATION_COLORS = [
-  'rgba(255, 68, 68, 0.15)',   // 0° - Red
-  'rgba(255, 170, 0, 0.15)',   // 45° - Orange
-  'rgba(68, 255, 68, 0.15)',   // 90° - Green
-  'rgba(68, 68, 255, 0.15)',   // 135° - Blue
+// Learning stage definition - 三阶段认知旅程
+interface LearningStage {
+  id: string
+  phase: number
+  titleKey: string
+  subtitleKey: string
+  questionKey: string
+  icon: React.ReactNode
+  color: string
+  gradient: string
+  demos: { id: string; titleKey: string; link: string }[]
+  games?: { titleKey: string; link: string }[]
+  tools?: { titleKey: string; link: string }[]
+  isAdvanced?: boolean
+}
+
+// 三阶段学习路径配置
+const LEARNING_STAGES: LearningStage[] = [
+  {
+    // 阶段一：看见偏振
+    id: 'stage1',
+    phase: 1,
+    titleKey: 'home.stage1.title',
+    subtitleKey: 'home.stage1.subtitle',
+    questionKey: 'home.stage1.question',
+    icon: <Lightbulb className="w-6 h-6" />,
+    color: '#22D3EE',
+    gradient: 'from-cyan-500 to-blue-500',
+    demos: [
+      { id: 'polarization-intro', titleKey: 'home.stage1.demos.intro', link: '/demos/polarization-intro' },
+      { id: 'polarization-types-unified', titleKey: 'home.stage1.demos.types', link: '/demos/polarization-types-unified' },
+      { id: 'optical-bench', titleKey: 'home.stage1.demos.bench', link: '/demos/optical-bench' },
+    ],
+    games: [
+      { titleKey: 'home.stage1.games.level0', link: '/games/2d?level=0' },
+      { titleKey: 'home.stage1.games.level1', link: '/games/2d?level=1' },
+    ],
+  },
+  {
+    // 阶段二：理解规律
+    id: 'stage2',
+    phase: 2,
+    titleKey: 'home.stage2.title',
+    subtitleKey: 'home.stage2.subtitle',
+    questionKey: 'home.stage2.question',
+    icon: <BookOpen className="w-6 h-6" />,
+    color: '#A78BFA',
+    gradient: 'from-purple-500 to-pink-500',
+    demos: [
+      { id: 'malus', titleKey: 'home.stage2.demos.malus', link: '/demos/malus' },
+      { id: 'birefringence', titleKey: 'home.stage2.demos.birefringence', link: '/demos/birefringence' },
+      { id: 'brewster', titleKey: 'home.stage2.demos.brewster', link: '/demos/brewster' },
+      { id: 'rayleigh', titleKey: 'home.stage2.demos.rayleigh', link: '/demos/rayleigh' },
+      { id: 'chromatic', titleKey: 'home.stage2.demos.chromatic', link: '/demos/chromatic' },
+    ],
+    games: [
+      { titleKey: 'home.stage2.games.level2', link: '/games/2d?level=2' },
+      { titleKey: 'home.stage2.games.level16', link: '/games/2d?level=16' },
+    ],
+    tools: [
+      { titleKey: 'home.stage2.tools.opticalStudio', link: '/optical-studio?tab=experiments' },
+    ],
+  },
+  {
+    // 阶段三：测量与应用
+    id: 'stage3',
+    phase: 3,
+    titleKey: 'home.stage3.title',
+    subtitleKey: 'home.stage3.subtitle',
+    questionKey: 'home.stage3.question',
+    icon: <Telescope className="w-6 h-6" />,
+    color: '#8B5CF6',
+    gradient: 'from-violet-500 to-purple-600',
+    isAdvanced: true,
+    demos: [
+      { id: 'stokes', titleKey: 'home.stage3.demos.stokes', link: '/demos/stokes' },
+      { id: 'mueller', titleKey: 'home.stage3.demos.mueller', link: '/demos/mueller' },
+      { id: 'jones', titleKey: 'home.stage3.demos.jones', link: '/demos/jones' },
+      { id: 'polarimetric-microscopy', titleKey: 'home.stage3.demos.microscopy', link: '/demos/polarimetric-microscopy' },
+    ],
+    tools: [
+      { titleKey: 'home.stage3.tools.stokes', link: '/calc/stokes' },
+      { titleKey: 'home.stage3.tools.poincare', link: '/calc/poincare' },
+      { titleKey: 'home.stage3.tools.mueller', link: '/calc/mueller' },
+    ],
+  },
 ]
 
-// Solid polarization colors for glow effects
-const POLARIZATION_GLOW_COLORS = [
-  'rgba(255, 68, 68, 0.6)',    // 0° - Red
-  'rgba(255, 170, 0, 0.6)',    // 45° - Orange
-  'rgba(68, 255, 68, 0.6)',    // 90° - Green
-  'rgba(68, 136, 255, 0.6)',   // 135° - Blue
-]
+// Animated polarization background
+function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
+  const [time, setTime] = useState(0)
 
-// Module glow colors for beam effect - matches the color theme
-const MODULE_GLOW_COLORS: Record<string, string> = {
-  'amber-warm': 'rgba(201, 162, 39, 0.5)',
-  'indigo-soft': 'rgba(99, 102, 241, 0.5)',
-  'cyan-deep': 'rgba(8, 145, 178, 0.5)',
-  'orange-warm': 'rgba(245, 158, 11, 0.5)',
-  'pink-vivid': 'rgba(236, 72, 153, 0.5)',
-  'emerald-bright': 'rgba(16, 185, 129, 0.5)',
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(t => (t + 1) % 360)
+    }, 50)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div
+        className="absolute inset-0"
+        style={{
+          background: theme === 'dark'
+            ? `conic-gradient(from ${time}deg at 50% 50%,
+                rgba(34, 211, 238, 0.03) 0deg,
+                rgba(167, 139, 250, 0.03) 120deg,
+                rgba(139, 92, 246, 0.03) 240deg,
+                rgba(34, 211, 238, 0.03) 360deg)`
+            : `conic-gradient(from ${time}deg at 50% 50%,
+                rgba(34, 211, 238, 0.02) 0deg,
+                rgba(167, 139, 250, 0.02) 120deg,
+                rgba(139, 92, 246, 0.02) 240deg,
+                rgba(34, 211, 238, 0.02) 360deg)`,
+        }}
+      />
+    </div>
+  )
 }
 
-// Module configuration for the 10 creative hubs
-interface ModuleConfig {
-  key: string
-  icon: string
-  colorTheme: {
-    border: string
-    borderHover: string
-    shadow: string
-    text: string
-    gradientFrom: string
-    gradientTo: string
-    buttonText: string
-  }
-  mainRoute: string
-  quickLinks: Array<{
-    labelKey: string
-    route: string
-  }>
-  comingSoon?: boolean // Mark module as coming soon
-}
-
-const MODULES: ModuleConfig[] = [
-  {
-    // 光的编年史：偏振发现之旅 (Chronicles of Light: Polarization Discovery Journey)
-    key: 'chronicles',
-    icon: '⏳', // Hourglass - represents history and time
-    colorTheme: {
-      border: 'amber-warm', // Warm Amber #C9A227 (parchment/historical feel)
-      borderHover: 'amber-warm',
-      shadow: 'rgba(201,162,39,0.25)',
-      text: 'amber-warm',
-      gradientFrom: 'amber-warm',
-      gradientTo: 'amber-700',
-      buttonText: 'black',
-    },
-    mainRoute: '/chronicles',
-    quickLinks: [
-      { labelKey: 'link1', route: '/chronicles?event=1808' }, // Malus discovery
-      { labelKey: 'link2', route: '/demos?demo=malus-law' }, // Direct to Malus law demo
-      { labelKey: 'link3', route: '/chronicles?track=polarization' },
-    ],
-  },
-  {
-    // 光学设计室：偏振器件 × 光路设计 (Optical Design Studio: Device Library × Light Path Design)
-    // Merged module combining deviceLibrary + opticalBench
-    key: 'opticalDesignStudio',
-    icon: '⬡', // Hexagon - represents optical components
-    colorTheme: {
-      border: 'indigo-soft', // Indigo #6366F1
-      borderHover: 'indigo-soft',
-      shadow: 'rgba(99,102,241,0.25)',
-      text: 'indigo-soft',
-      gradientFrom: 'indigo-soft',
-      gradientTo: 'indigo-700',
-      buttonText: 'white',
-    },
-    mainRoute: '/optical-studio',
-    quickLinks: [
-      { labelKey: 'link1', route: '/optical-studio?tab=devices' }, // Device library
-      { labelKey: 'link2', route: '/optical-studio?tab=experiments' }, // Classic experiments
-      { labelKey: 'link3', route: '/optical-studio?tab=design' }, // Free design mode
-    ],
-  },
-  {
-    // 偏振演示馆：原理可视化 (Polarization Demo Gallery: Principle Visualization)
-    key: 'formulaLab',
-    icon: '◐', // Half-filled circle - represents polarizer
-    colorTheme: {
-      border: 'cyan-deep', // Deep Cyan #0891B2
-      borderHover: 'cyan-deep',
-      shadow: 'rgba(8,145,178,0.25)',
-      text: 'cyan-deep',
-      gradientFrom: 'cyan-deep',
-      gradientTo: 'cyan-700',
-      buttonText: 'white',
-    },
-    mainRoute: '/demos',
-    quickLinks: [
-      { labelKey: 'link1', route: '/demos?demo=malus-law' },
-      { labelKey: 'link2', route: '/demos?demo=birefringence' },
-      { labelKey: 'link3', route: '/demos?demo=stokes-vector' },
-    ],
-  },
-  {
-    // 偏振探秘：光之密室 (PolarQuest: The Light Chamber)
-    key: 'polarquest',
-    icon: '⬢', // Hexagon - represents game/puzzle block
-    colorTheme: {
-      border: 'orange-warm', // Warm Orange #F59E0B (distinct from amber)
-      borderHover: 'orange-warm',
-      shadow: 'rgba(245,158,11,0.25)',
-      text: 'orange-warm',
-      gradientFrom: 'orange-warm',
-      gradientTo: 'amber-600',
-      buttonText: 'black',
-    },
-    mainRoute: '/games',
-    quickLinks: [
-      { labelKey: 'link1', route: '/game2d?level=0' },
-      { labelKey: 'link2', route: '/game?level=0' },
-      { labelKey: 'link3', route: '/games?mode=challenge' },
-    ],
-  },
-  {
-    // 偏振造物局：艺术与DIY (Polarization Workshop: Art & DIY) - MERGED: gallery + experiments + photography
-    key: 'creativeLab',
-    icon: '✧', // Sparkle - represents art and creativity
-    colorTheme: {
-      border: 'pink-vivid', // Vivid Pink #EC4899 (more distinct from coral)
-      borderHover: 'pink-vivid',
-      shadow: 'rgba(236,72,153,0.25)',
-      text: 'pink-vivid',
-      gradientFrom: 'pink-vivid',
-      gradientTo: 'rose-600',
-      buttonText: 'white',
-    },
-    mainRoute: '/experiments',
-    quickLinks: [
-      { labelKey: 'link1', route: '/experiments/diy' }, // DIY experiments
-      { labelKey: 'link2', route: '/experiments/showcase' }, // Art & Creations
-      { labelKey: 'link3', route: '/experiments/generator' }, // Art Generator
-      { labelKey: 'link4', route: '/experiments/gallery' }, // Community gallery
-    ],
-  },
-  {
-    // 虚拟课题组：光研社 (Virtual Lab Group: Light Research Guild) - Merged with Applications & Calculations
-    key: 'labGroup',
-    icon: '⚗', // Alembic - represents research/lab
-    colorTheme: {
-      border: 'emerald-bright', // Bright Emerald #10B981 (more vivid green)
-      borderHover: 'emerald-bright',
-      shadow: 'rgba(16,185,129,0.25)',
-      text: 'emerald-bright',
-      gradientFrom: 'emerald-bright',
-      gradientTo: 'emerald-600',
-      buttonText: 'black',
-    },
-    mainRoute: '/lab',
-    quickLinks: [
-      { labelKey: 'link1', route: '/lab?tab=tasks' }, // Research tasks
-      { labelKey: 'link2', route: '/lab?tab=applications' }, // Merged: Applications
-      { labelKey: 'link3', route: '/lab?tab=calculators' }, // Merged: Calculations
-      { labelKey: 'link4', route: '/lab?tab=community' }, // Community forum
-    ],
-  },
-  // 开放数据 (Open Data) - Hidden temporarily
-]
-
-// Color mapping for Tailwind classes - using distinct, visually-friendly colors
-// 9 distinct colors spread across the spectrum for maximum differentiation
-const getColorClasses = (module: ModuleConfig, theme: 'dark' | 'light') => {
-  const colorMap: Record<string, { dark: string; light: string; shadow: string }> = {
-    // 1. Warm Amber #C9A227 - Chronicles of Light (historical parchment feel)
-    'amber-warm': {
-      dark: 'border-[#C9A227]/30 hover:border-[#C9A227]/60',
-      light: 'border-[#C9A227]/40 hover:border-[#C9A227]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(201,162,39,0.25)]',
-    },
-    // 2. Sapphire Blue #4169E1 - Device Library (crystal/prism blue)
-    'sapphire-soft': {
-      dark: 'border-[#4169E1]/30 hover:border-[#4169E1]/60',
-      light: 'border-[#4169E1]/40 hover:border-[#4169E1]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(65,105,225,0.25)]',
-    },
-    // 2b. Indigo #6366F1 - Optical Bench (light path design)
-    'indigo-soft': {
-      dark: 'border-[#6366F1]/30 hover:border-[#6366F1]/60',
-      light: 'border-[#6366F1]/40 hover:border-[#6366F1]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(99,102,241,0.25)]',
-    },
-    // 3. Deep Cyan #0891B2 - Demo Gallery (scientific/technical)
-    'cyan-deep': {
-      dark: 'border-[#0891B2]/30 hover:border-[#0891B2]/60',
-      light: 'border-[#0891B2]/40 hover:border-[#0891B2]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(8,145,178,0.25)]',
-    },
-    // 4. Warm Orange #F59E0B - PolarQuest (gaming orange, distinct from amber)
-    'orange-warm': {
-      dark: 'border-[#F59E0B]/30 hover:border-[#F59E0B]/60',
-      light: 'border-[#F59E0B]/40 hover:border-[#F59E0B]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(245,158,11,0.25)]',
-    },
-    // 5. Vivid Pink #EC4899 - Creative Lab/偏振造物局 (distinct from red)
-    'pink-vivid': {
-      dark: 'border-[#EC4899]/30 hover:border-[#EC4899]/60',
-      light: 'border-[#EC4899]/40 hover:border-[#EC4899]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(236,72,153,0.25)]',
-    },
-    // 6. Bright Emerald #10B981 - Lab Group (vivid green)
-    'emerald-bright': {
-      dark: 'border-[#10B981]/30 hover:border-[#10B981]/60',
-      light: 'border-[#10B981]/40 hover:border-[#10B981]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(16,185,129,0.25)]',
-    },
-    // 7. Vivid Red #EF4444 - Applications (bright red, distinct from pink)
-    'red-vivid': {
-      dark: 'border-[#EF4444]/30 hover:border-[#EF4444]/60',
-      light: 'border-[#EF4444]/40 hover:border-[#EF4444]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(239,68,68,0.25)]',
-    },
-    // 8. Soft Violet #8B5CF6 - Simulation Lab (purple)
-    'violet-soft': {
-      dark: 'border-[#8B5CF6]/30 hover:border-[#8B5CF6]/60',
-      light: 'border-[#8B5CF6]/40 hover:border-[#8B5CF6]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(139,92,246,0.25)]',
-    },
-    // 9. Cool Slate #64748B - Open Data (neutral gray-blue)
-    'slate-cool': {
-      dark: 'border-[#64748B]/30 hover:border-[#64748B]/60',
-      light: 'border-[#64748B]/40 hover:border-[#64748B]/70',
-      shadow: 'hover:shadow-[0_15px_40px_rgba(100,116,139,0.25)]',
-    },
-  }
-
-  const color = colorMap[module.colorTheme.border]
-  return {
-    border: theme === 'dark' ? color.dark : color.light,
-    shadow: theme === 'dark' ? color.shadow : color.shadow.replace('0.25', '0.2'),
-  }
-}
-
-const getTextColorClass = (color: string, theme: 'dark' | 'light') => {
-  // Distinct color text classes matching the new palette
-  const textMap: Record<string, { dark: string; light: string }> = {
-    'amber-warm': { dark: 'text-[#C9A227]', light: 'text-[#A68620]' },
-    'sapphire-soft': { dark: 'text-[#4169E1]', light: 'text-[#3558C4]' },
-    'indigo-soft': { dark: 'text-[#6366F1]', light: 'text-[#4F46E5]' },
-    'cyan-deep': { dark: 'text-[#0891B2]', light: 'text-[#067B96]' },
-    'orange-warm': { dark: 'text-[#F59E0B]', light: 'text-[#D97706]' },
-    'pink-vivid': { dark: 'text-[#EC4899]', light: 'text-[#DB2777]' },
-    'emerald-bright': { dark: 'text-[#10B981]', light: 'text-[#059669]' },
-    'red-vivid': { dark: 'text-[#EF4444]', light: 'text-[#DC2626]' },
-    'violet-soft': { dark: 'text-[#8B5CF6]', light: 'text-[#7C3AED]' },
-    'slate-cool': { dark: 'text-[#64748B]', light: 'text-[#475569]' },
-  }
-  return theme === 'dark' ? textMap[color].dark : textMap[color].light
-}
-
-const getGradientClass = (from: string, to: string) => {
-  // Distinct gradient classes matching the new palette
-  const gradientMap: Record<string, string> = {
-    'amber-warm-amber-700': 'from-[#C9A227] to-[#92650F]',
-    'sapphire-soft-blue-700': 'from-[#4169E1] to-[#1D4ED8]',
-    'indigo-soft-indigo-700': 'from-[#6366F1] to-[#4338CA]',
-    'cyan-deep-cyan-700': 'from-[#0891B2] to-[#0E7490]',
-    'orange-warm-amber-600': 'from-[#F59E0B] to-[#D97706]',
-    'pink-vivid-rose-600': 'from-[#EC4899] to-[#DB2777]',
-    'emerald-bright-emerald-600': 'from-[#10B981] to-[#059669]',
-    'red-vivid-red-600': 'from-[#EF4444] to-[#DC2626]',
-    'violet-soft-violet-600': 'from-[#8B5CF6] to-[#7C3AED]',
-    'slate-cool-slate-600': 'from-[#64748B] to-[#475569]',
-  }
-  return gradientMap[`${from}-${to}`] || 'from-gray-400 to-gray-500'
-}
-
-const getGlowClass = (from: string) => {
-  // Glow effects matching the new distinct color palette
-  const glowMap: Record<string, string> = {
-    'amber-warm': 'drop-shadow-[0_0_20px_rgba(201,162,39,0.4)]',
-    'sapphire-soft': 'drop-shadow-[0_0_20px_rgba(65,105,225,0.4)]',
-    'indigo-soft': 'drop-shadow-[0_0_20px_rgba(99,102,241,0.4)]',
-    'cyan-deep': 'drop-shadow-[0_0_20px_rgba(8,145,178,0.4)]',
-    'orange-warm': 'drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]',
-    'pink-vivid': 'drop-shadow-[0_0_20px_rgba(236,72,153,0.4)]',
-    'emerald-bright': 'drop-shadow-[0_0_20px_rgba(16,185,129,0.4)]',
-    'red-vivid': 'drop-shadow-[0_0_20px_rgba(239,68,68,0.4)]',
-    'violet-soft': 'drop-shadow-[0_0_20px_rgba(139,92,246,0.4)]',
-    'slate-cool': 'drop-shadow-[0_0_20px_rgba(100,116,139,0.4)]',
-  }
-  return glowMap[from] || ''
-}
-
-interface ModuleCardProps {
-  module: ModuleConfig
-  index: number
-  isBeamTarget?: boolean // Whether this module is currently receiving a beam
-  onHoverStart?: (moduleKey: string) => void
-  onHoverEnd?: () => void
-  registerRef?: (key: string, ref: HTMLDivElement | null) => void
-  registerIconRef?: (key: string, ref: HTMLDivElement | null) => void
-}
-
-const ModuleCard = memo(function ModuleCard({ module, index, isBeamTarget, onHoverStart, onHoverEnd, registerRef, registerIconRef }: ModuleCardProps) {
+// Learning Stage Card Component
+function LearningStageCard({
+  stage,
+  theme,
+  isExpanded,
+  onToggle,
+  completedDemos,
+}: {
+  stage: LearningStage
+  theme: 'dark' | 'light'
+  isExpanded: boolean
+  onToggle: () => void
+  completedDemos: string[]
+}) {
   const { t } = useTranslation()
-  const { theme } = useTheme()
-  const [isHovered, setIsHovered] = useState(false)
-  const [polarAngle, setPolarAngle] = useState(0)
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
-  const animationRef = useRef<number | null>(null)
-  const cardRef = useRef<HTMLDivElement>(null)
-  const iconRef = useRef<HTMLDivElement>(null)
 
-  // Register refs with parent
-  useEffect(() => {
-    if (registerRef && cardRef.current) {
-      registerRef(module.key, cardRef.current)
-    }
-    if (registerIconRef && iconRef.current) {
-      registerIconRef(module.key, iconRef.current)
-    }
-    return () => {
-      if (registerRef) {
-        registerRef(module.key, null)
-      }
-      if (registerIconRef) {
-        registerIconRef(module.key, null)
-      }
-    }
-  }, [module.key, registerRef, registerIconRef])
-
-  const colorClasses = getColorClasses(module, theme)
-  const textColorClass = getTextColorClass(module.colorTheme.text, theme)
-  const gradientClass = getGradientClass(module.colorTheme.gradientFrom, module.colorTheme.gradientTo)
-  const glowClass = getGlowClass(module.colorTheme.gradientFrom)
-
-  // Track mouse position for dynamic polarization effect
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width
-      const y = (e.clientY - rect.top) / rect.height
-      setMousePos({ x, y })
-    }
-  }
-
-  // Animate polarization angle on hover - simulates rotating polarizer
-  useEffect(() => {
-    if (isHovered) {
-      const startTime = Date.now()
-      const animate = () => {
-        const elapsed = Date.now() - startTime
-        // Slow rotation: 360° in 6 seconds for smoother effect
-        const angle = (elapsed / 6000) * 360 % 360
-        setPolarAngle(angle)
-        animationRef.current = requestAnimationFrame(animate)
-      }
-      animationRef.current = requestAnimationFrame(animate)
-    } else {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-      // Reset to initial angle based on module index
-      setPolarAngle(index * 40 % 180)
-    }
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-    }
-  }, [isHovered, index])
-
-  // Calculate Malus's Law intensity: I = I₀ × cos²(θ)
-  // This creates the "polarizer rotation" effect where brightness varies
-  const malusIntensity = Math.pow(Math.cos((polarAngle * Math.PI) / 180), 2)
-
-  // Get current polarization color based on angle quadrant (smooth transition)
-  const colorIndex = Math.floor((polarAngle / 45) % 4)
-  const nextColorIndex = (colorIndex + 1) % 4
-  const polarizationColor = POLARIZATION_COLORS[colorIndex]
-  const polarizationGlowColor = POLARIZATION_GLOW_COLORS[colorIndex]
-  const nextPolarizationColor = POLARIZATION_COLORS[nextColorIndex]
-
-  // Calculate overlay opacity based on Malus's Law (inverted for visibility effect)
-  const overlayOpacity = isHovered ? 0.25 + 0.35 * (1 - malusIntensity) : 0
-
-  // Calculate icon rotation: icon rotates same as polarization angle (simulating analyzer)
-  const iconRotation = isHovered ? polarAngle * 0.5 : 0
+  // Calculate progress for this stage
+  const totalDemos = stage.demos.length
+  const completedCount = stage.demos.filter(d => completedDemos.includes(d.id)).length
+  const progressPercent = totalDemos > 0 ? Math.round((completedCount / totalDemos) * 100) : 0
 
   return (
     <div
-      ref={cardRef}
-      className={`group relative rounded-2xl p-4 sm:p-5 text-center
-                 transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] ${
+      className={`rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
         theme === 'dark'
-          ? `bg-slate-900/80 border-2 ${colorClasses.border} ${colorClasses.shadow}`
-          : `bg-white/90 border-2 ${colorClasses.border} ${colorClasses.shadow}`
+          ? 'bg-slate-800/60 border-slate-700/50 hover:border-slate-600'
+          : 'bg-white/80 border-gray-200 hover:border-gray-300'
       }`}
-      onMouseEnter={() => {
-        setIsHovered(true)
-        onHoverStart?.(module.key)
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false)
-        onHoverEnd?.()
-      }}
-      onMouseMove={handleMouseMove}
       style={{
-        // Add subtle brightness variation based on Malus's Law
-        filter: isHovered ? `brightness(${0.92 + 0.16 * malusIntensity})` : 'none',
+        borderColor: isExpanded ? stage.color : undefined,
+        boxShadow: isExpanded ? `0 0 40px ${stage.color}20` : undefined,
       }}
     >
-      {/* Polarization gradient overlay - simulates viewing through rotating polarizer */}
+      {/* Stage header */}
       <div
-        className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
-        style={{
-          background: isHovered
-            ? `conic-gradient(from ${polarAngle}deg at ${mousePos.x * 100}% ${mousePos.y * 100}%,
-                ${polarizationColor} 0deg,
-                ${nextPolarizationColor} 90deg,
-                ${polarizationColor} 180deg,
-                ${nextPolarizationColor} 270deg,
-                ${polarizationColor} 360deg)`
-            : 'none',
-          opacity: overlayOpacity,
-        }}
-      />
-
-      {/* Polarization wave pattern overlay - simulates light wave oscillation */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none overflow-hidden"
-        style={{
-          opacity: isHovered ? 0.12 : 0,
-          transition: 'opacity 0.3s ease',
-        }}
+        className={`p-5 cursor-pointer transition-all ${
+          theme === 'dark' ? 'hover:bg-slate-700/30' : 'hover:bg-gray-50'
+        }`}
+        onClick={onToggle}
       >
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `repeating-linear-gradient(
-              ${polarAngle}deg,
-              transparent,
-              transparent 3px,
-              ${polarizationGlowColor} 3px,
-              ${polarizationGlowColor} 4px
-            )`,
-            transform: `translateX(${Math.sin(polarAngle * Math.PI / 180) * 10}px)`,
-          }}
-        />
-      </div>
+        <div className="flex items-start gap-4">
+          {/* Phase number badge */}
+          <div
+            className={`flex-shrink-0 w-14 h-14 rounded-2xl flex flex-col items-center justify-center bg-gradient-to-br ${stage.gradient} shadow-lg`}
+          >
+            <span className="text-white text-xs font-medium opacity-80">{t('home.phase')}</span>
+            <span className="text-white text-xl font-bold">{stage.phase}</span>
+          </div>
 
-      {/* Cross-polarization effect - perpendicular lines for interference pattern */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none overflow-hidden"
-        style={{
-          opacity: isHovered ? 0.05 * (1 - malusIntensity) : 0,
-          transition: 'opacity 0.3s ease',
-        }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `repeating-linear-gradient(
-              ${polarAngle + 90}deg,
-              transparent,
-              transparent 6px,
-              ${theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)'} 6px,
-              ${theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)'} 7px
-            )`,
-          }}
-        />
-      </div>
+          {/* Stage info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className={`text-lg font-bold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {t(stage.titleKey)}
+              </h3>
+              {stage.isAdvanced && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                  theme === 'dark'
+                    ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30'
+                    : 'bg-violet-100 text-violet-700 border border-violet-200'
+                }`}>
+                  {t('home.advanced')}
+                </span>
+              )}
+            </div>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+              {t(stage.subtitleKey)}
+            </p>
+            {/* Core question */}
+            <p className={`text-sm mt-2 italic ${
+              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+            }`}>
+              "{t(stage.questionKey)}"
+            </p>
 
-      {/* Polarization glow ring - appears at extinction positions */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{
-          boxShadow: isHovered
-            ? `inset 0 0 ${20 + 15 * malusIntensity}px ${polarizationGlowColor.replace('0.6', String(0.2 * malusIntensity))}`
-            : 'none',
-          transition: 'box-shadow 0.1s ease',
-        }}
-      />
-
-      {/* Icon with synchronized rotation effect and beam glow */}
-      <div ref={iconRef} className="mb-2 flex justify-center relative z-10">
-        {(() => {
-          const IconComponent = ModuleIconMap[module.key as ModuleIconKey]
-
-          // Calculate beam glow style when this icon is being targeted
-          const beamGlowStyle = isBeamTarget ? {
-            filter: `drop-shadow(0 0 12px ${MODULE_GLOW_COLORS[module.colorTheme.gradientFrom] || module.colorTheme.shadow}) drop-shadow(0 0 20px ${MODULE_GLOW_COLORS[module.colorTheme.gradientFrom] || module.colorTheme.shadow})`,
-            transform: 'scale(1.08)',
-          } : {}
-
-          if (IconComponent) {
-            return (
-              <div
-                className="relative transition-all duration-500"
-                style={{
-                  transform: isHovered ? `rotate(${iconRotation}deg) scale(1.1)` : isBeamTarget ? 'scale(1.08)' : 'none',
-                  transition: isHovered ? 'transform 0.05s linear' : 'transform 0.5s ease, filter 0.5s ease',
-                  ...beamGlowStyle,
-                }}
-              >
-                <IconComponent
-                  size={48}
-                  className={`transition-all duration-500 ${isHovered ? glowClass : ''}`}
+            {/* Progress bar */}
+            <div className="mt-3 flex items-center gap-3">
+              <div className={`flex-1 h-1.5 rounded-full ${
+                theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
+              }`}>
+                <div
+                  className={`h-full rounded-full bg-gradient-to-r ${stage.gradient} transition-all duration-500`}
+                  style={{ width: `${progressPercent}%` }}
                 />
-                {/* Polarization indicator ring around icon */}
-                {isHovered && (
-                  <div
-                    className="absolute -inset-2 rounded-full border-2 pointer-events-none"
-                    style={{
-                      borderColor: polarizationGlowColor.replace('0.6', '0.4'),
-                      borderStyle: 'dashed',
-                      animation: 'spin 4s linear infinite',
-                    }}
-                  />
-                )}
-                {/* Beam reception glow ring - visible when receiving beam */}
-                {isBeamTarget && !isHovered && (
-                  <div
-                    className="absolute -inset-3 rounded-full pointer-events-none"
-                    style={{
-                      background: `radial-gradient(circle, ${MODULE_GLOW_COLORS[module.colorTheme.gradientFrom] || module.colorTheme.shadow} 0%, transparent 70%)`,
-                      opacity: 0.3,
-                      animation: 'pulse 2s ease-in-out infinite',
-                    }}
-                  />
-                )}
               </div>
-            )
-          }
-          return (
-            <span
-              className={`text-3xl sm:text-4xl transition-all duration-500 ${isHovered ? glowClass : ''}`}
-              style={{
-                transform: isHovered ? `rotate(${iconRotation}deg) scale(1.1)` : isBeamTarget ? 'scale(1.08)' : 'none',
-                transition: isHovered ? 'transform 0.05s linear' : 'transform 0.5s ease, filter 0.5s ease',
-                display: 'inline-block',
-                ...beamGlowStyle,
-              }}
-            >
-              {module.icon}
-            </span>
-          )
-        })()}
+              <span className={`text-xs font-medium ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                {completedCount}/{totalDemos}
+              </span>
+            </div>
+          </div>
+
+          {/* Expand indicator */}
+          <ChevronRight
+            className={`w-5 h-5 transition-transform flex-shrink-0 mt-2 ${
+              isExpanded ? 'rotate-90' : ''
+            } ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
+          />
+        </div>
       </div>
 
-      {/* Title */}
-      <h2 className={`text-base sm:text-lg font-bold ${textColorClass} mb-0.5 relative z-10`}>
-        {t(`home.${module.key}.title`)}
-      </h2>
+      {/* Expanded content */}
+      {isExpanded && (
+        <div className={`px-5 pb-5 border-t ${
+          theme === 'dark' ? 'border-slate-700/50' : 'border-gray-100'
+        }`}>
+          {/* Demos section */}
+          <div className="mt-4">
+            <h4 className={`text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2 ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            }`}>
+              <FlaskConical className="w-3.5 h-3.5" />
+              {t('home.resources.demos')}
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {stage.demos.map((demo) => (
+                <Link
+                  key={demo.id}
+                  to={demo.link}
+                  className={`group flex items-center gap-3 p-3 rounded-xl transition-all hover:-translate-y-0.5 ${
+                    completedDemos.includes(demo.id)
+                      ? theme === 'dark'
+                        ? 'bg-green-900/20 border border-green-500/30'
+                        : 'bg-green-50 border border-green-200'
+                      : theme === 'dark'
+                        ? 'bg-slate-700/50 border border-slate-600/50 hover:border-cyan-500/50'
+                        : 'bg-gray-50 border border-gray-200 hover:border-cyan-300'
+                  }`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      completedDemos.includes(demo.id)
+                        ? 'bg-green-500/20'
+                        : `bg-gradient-to-br ${stage.gradient} bg-opacity-20`
+                    }`}
+                    style={{ backgroundColor: completedDemos.includes(demo.id) ? undefined : `${stage.color}20` }}
+                  >
+                    {completedDemos.includes(demo.id) ? (
+                      <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <Eye className="w-4 h-4" style={{ color: stage.color }} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium truncate ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {t(demo.titleKey)}
+                    </p>
+                  </div>
+                  <ArrowRight className={`w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity ${
+                    theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                  }`} />
+                </Link>
+              ))}
+            </div>
+          </div>
 
-      {/* Subtitle */}
-      <p className={`text-xs font-medium mb-1.5 relative z-10 ${
-        theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-      }`}>
-        {t(`home.${module.key}.subtitle`)}
-      </p>
+          {/* Games section */}
+          {stage.games && stage.games.length > 0 && (
+            <div className="mt-4">
+              <h4 className={`text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2 ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                <Gamepad2 className="w-3.5 h-3.5" />
+                {t('home.resources.games')}
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {stage.games.map((game, idx) => (
+                  <Link
+                    key={idx}
+                    to={game.link}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105 ${
+                      theme === 'dark'
+                        ? 'bg-pink-900/30 text-pink-400 hover:bg-pink-900/50'
+                        : 'bg-pink-50 text-pink-700 hover:bg-pink-100'
+                    }`}
+                  >
+                    {t(game.titleKey)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Description */}
-      <p className={`text-xs mb-3 leading-relaxed line-clamp-2 relative z-10 text-left ${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      }`}>
-        {t(`home.${module.key}.description`)}
-      </p>
+          {/* Tools section */}
+          {stage.tools && stage.tools.length > 0 && (
+            <div className="mt-4">
+              <h4 className={`text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2 ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                <Wrench className="w-3.5 h-3.5" />
+                {t('home.resources.tools')}
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {stage.tools.map((tool, idx) => (
+                  <Link
+                    key={idx}
+                    to={tool.link}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105 ${
+                      theme === 'dark'
+                        ? 'bg-indigo-900/30 text-indigo-400 hover:bg-indigo-900/50'
+                        : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                    }`}
+                  >
+                    {t(tool.titleKey)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Quick Links - only show if not coming soon */}
-      {!module.comingSoon && module.quickLinks.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-1.5 mb-3 relative z-10">
-          {module.quickLinks.map((link, linkIndex) => (
+          {/* CTA Button */}
+          <div className="mt-5">
             <Link
-              key={linkIndex}
-              to={link.route}
-              className={`text-[10px] px-2 py-0.5 rounded-full transition-all
-                         hover:scale-105 ${
-                theme === 'dark'
-                  ? 'bg-gray-800 text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                  : 'bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
-              }`}
+              to={stage.demos[0]?.link || '/demos'}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all hover:scale-105 bg-gradient-to-r ${stage.gradient} text-white shadow-lg`}
             >
-              {t(`home.${module.key}.${link.labelKey}`)}
+              <Play className="w-4 h-4" />
+              {t('home.startStage')}
             </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Coming Soon badge or Main CTA Button */}
-      {module.comingSoon ? (
-        <div className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider relative z-10 mt-3
-                       ${theme === 'dark' ? 'bg-slate-700/50 text-slate-400' : 'bg-slate-200/80 text-slate-500'}`}>
-          {t('common.comingSoon')}
-        </div>
-      ) : (
-        <Link
-          to={module.mainRoute}
-          className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider relative z-10
-                     bg-gradient-to-r ${gradientClass} text-${module.colorTheme.buttonText}
-                     transition-transform ${isHovered ? 'scale-105' : ''}`}
-        >
-          {t(`home.${module.key}.cta`)}
-        </Link>
-      )}
-
-      {/* Polarization angle indicator (subtle, only on hover) */}
-      {isHovered && (
-        <div
-          className={`absolute top-2 right-2 text-[8px] px-1.5 py-0.5 rounded-full z-20 ${
-            theme === 'dark' ? 'bg-slate-800/80 text-cyan-400' : 'bg-white/80 text-cyan-600'
-          }`}
-          style={{ fontFamily: 'monospace' }}
-        >
-          {Math.round(polarAngle)}°
+          </div>
         </div>
       )}
     </div>
   )
-})
+}
 
-// P1: Guided Start Modal - 引导式起点
-// 帮助新用户选择合适的学习路径，减少首页信息过载
+// Quick Stats Component
+function QuickStats({ theme, progress }: { theme: 'dark' | 'light'; progress: ReturnType<typeof useCourseProgress>['progress'] }) {
+  const { t } = useTranslation()
+
+  const allDemoIds = LEARNING_STAGES.flatMap(s => s.demos.map(d => d.id))
+  const completedCount = progress.completedDemos.filter(id => allDemoIds.includes(id)).length
+  const totalCount = allDemoIds.length
+  const timeSpentMinutes = Math.round(progress.totalTimeSpent / 60)
+
+  const stats = [
+    {
+      icon: <TrendingUp className="w-4 h-4" />,
+      label: t('home.stats.completed'),
+      value: `${completedCount}/${totalCount}`,
+      color: '#22c55e',
+    },
+    {
+      icon: <Flame className="w-4 h-4" />,
+      label: t('home.stats.streak'),
+      value: `${progress.streakDays}`,
+      color: '#f59e0b',
+    },
+    {
+      icon: <Clock className="w-4 h-4" />,
+      label: t('home.stats.time'),
+      value: `${timeSpentMinutes}m`,
+      color: '#6366f1',
+    },
+  ]
+
+  return (
+    <div className="flex items-center gap-4">
+      {stats.map((stat, idx) => (
+        <div
+          key={idx}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+            theme === 'dark' ? 'bg-slate-800/80' : 'bg-white/80'
+          }`}
+        >
+          <span style={{ color: stat.color }}>{stat.icon}</span>
+          <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+            {stat.label}
+          </span>
+          <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            {stat.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Quick Access Menu - 快捷入口
+function QuickAccessMenu({ theme }: { theme: 'dark' | 'light' }) {
+  const { t } = useTranslation()
+
+  const quickLinks = [
+    { icon: <Gamepad2 className="w-4 h-4" />, label: t('home.quick.games'), link: '/games', color: '#F59E0B' },
+    { icon: <FlaskConical className="w-4 h-4" />, label: t('home.quick.demos'), link: '/demos', color: '#0891B2' },
+    { icon: <Target className="w-4 h-4" />, label: t('home.quick.calc'), link: '/calc', color: '#8B5CF6' },
+    { icon: <Sparkles className="w-4 h-4" />, label: t('home.quick.experiments'), link: '/experiments', color: '#EC4899' },
+    { icon: <BookOpen className="w-4 h-4" />, label: t('home.quick.chronicles'), link: '/chronicles', color: '#C9A227' },
+    { icon: <Zap className="w-4 h-4" />, label: t('home.quick.lab'), link: '/lab', color: '#10B981' },
+  ]
+
+  return (
+    <div className={`rounded-xl p-4 ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/80'}`}>
+      <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+        {t('home.quickAccess')}
+      </h3>
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+        {quickLinks.map((item, idx) => (
+          <Link
+            key={idx}
+            to={item.link}
+            className={`flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all hover:scale-105 ${
+              theme === 'dark'
+                ? 'bg-slate-700/50 hover:bg-slate-700'
+                : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: `${item.color}20` }}
+            >
+              <span style={{ color: item.color }}>{item.icon}</span>
+            </div>
+            <span className={`text-[10px] font-medium text-center ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              {item.label}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Guided Start Modal - 引导式起点
 const LEARNING_TRACKS = [
   {
     id: 'curious',
     icon: Lightbulb,
     color: '#22D3EE',
     gradient: 'from-cyan-500 to-blue-500',
-    route: '/course', // 进入课程阶段一
-    queryParam: '?stage=1',
+    route: '/demos/polarization-intro',
   },
   {
     id: 'student',
     icon: BookOpen,
     color: '#A78BFA',
     gradient: 'from-purple-500 to-pink-500',
-    route: '/demos/malus', // 从马吕斯定律开始
+    route: '/demos/malus',
   },
   {
     id: 'researcher',
     icon: Telescope,
     color: '#8B5CF6',
     gradient: 'from-violet-500 to-purple-600',
-    route: '/course', // 进入课程页面，可以探索高级内容
-    queryParam: '?stage=3',
+    route: '/demos/stokes',
   },
   {
     id: 'player',
     icon: Gamepad2,
     color: '#F59E0B',
     gradient: 'from-orange-500 to-amber-500',
-    route: '/games/2d?level=0', // 直接开始游戏
-  },
-  {
-    id: 'explorer',
-    icon: Sparkles,
-    color: '#EC4899',
-    gradient: 'from-pink-500 to-rose-500',
-    route: '/demos', // 自由探索演示
+    route: '/games/2d?level=0',
   },
 ]
 
@@ -688,19 +532,12 @@ function GuidedStartModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div className={`relative w-full max-w-2xl rounded-2xl p-6 shadow-2xl ${
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className={`relative w-full max-w-xl rounded-2xl p-6 shadow-2xl ${
         theme === 'dark'
           ? 'bg-slate-900 border border-slate-700'
           : 'bg-white border border-gray-200'
       }`}>
-        {/* Close button */}
         <button
           onClick={onClose}
           className={`absolute top-4 right-4 p-2 rounded-full transition-colors ${
@@ -712,7 +549,6 @@ function GuidedStartModal({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header */}
         <div className="text-center mb-6">
           <h2 className={`text-2xl font-bold mb-2 ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -726,22 +562,18 @@ function GuidedStartModal({
           </p>
         </div>
 
-        {/* Track options */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {LEARNING_TRACKS.map((track) => {
             const IconComponent = track.icon
             return (
               <button
                 key={track.id}
-                onClick={() => onSelect(track.id, track.route + (track.queryParam || ''))}
+                onClick={() => onSelect(track.id, track.route)}
                 className={`group p-4 rounded-xl border-2 text-left transition-all hover:scale-[1.02] ${
                   theme === 'dark'
                     ? 'bg-slate-800/50 border-slate-700 hover:border-slate-500'
                     : 'bg-gray-50 border-gray-200 hover:border-gray-400'
                 }`}
-                style={{
-                  borderColor: undefined,
-                }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = track.color
                   e.currentTarget.style.boxShadow = `0 0 20px ${track.color}30`
@@ -752,9 +584,7 @@ function GuidedStartModal({
                 }}
               >
                 <div className="flex items-start gap-3">
-                  <div
-                    className={`p-2 rounded-lg bg-gradient-to-br ${track.gradient}`}
-                  >
+                  <div className={`p-2 rounded-lg bg-gradient-to-br ${track.gradient}`}>
                     <IconComponent className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1">
@@ -775,7 +605,6 @@ function GuidedStartModal({
           })}
         </div>
 
-        {/* Skip option */}
         <div className="mt-4 text-center">
           <button
             onClick={onClose}
@@ -793,803 +622,172 @@ function GuidedStartModal({
   )
 }
 
-// Animated polarization background component
-function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
-  const [time, setTime] = useState(0)
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(t => (t + 1) % 360)
-    }, 50)
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      {/* Primary rotating polarization gradient */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: theme === 'dark'
-            ? `conic-gradient(from ${time}deg at 50% 50%,
-                rgba(255, 68, 68, 0.03) 0deg,
-                rgba(255, 170, 0, 0.03) 90deg,
-                rgba(68, 255, 68, 0.03) 180deg,
-                rgba(68, 136, 255, 0.03) 270deg,
-                rgba(255, 68, 68, 0.03) 360deg)`
-            : `conic-gradient(from ${time}deg at 50% 50%,
-                rgba(255, 68, 68, 0.02) 0deg,
-                rgba(255, 170, 0, 0.02) 90deg,
-                rgba(68, 255, 68, 0.02) 180deg,
-                rgba(68, 136, 255, 0.02) 270deg,
-                rgba(255, 68, 68, 0.02) 360deg)`,
-        }}
-      />
-
-      {/* Secondary counter-rotating gradient for interference effect */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: theme === 'dark'
-            ? `conic-gradient(from ${360 - time}deg at 30% 70%,
-                rgba(68, 136, 255, 0.02) 0deg,
-                rgba(68, 255, 68, 0.02) 90deg,
-                rgba(255, 170, 0, 0.02) 180deg,
-                rgba(255, 68, 68, 0.02) 270deg,
-                rgba(68, 136, 255, 0.02) 360deg)`
-            : `conic-gradient(from ${360 - time}deg at 30% 70%,
-                rgba(68, 136, 255, 0.015) 0deg,
-                rgba(68, 255, 68, 0.015) 90deg,
-                rgba(255, 170, 0, 0.015) 180deg,
-                rgba(255, 68, 68, 0.015) 270deg,
-                rgba(68, 136, 255, 0.015) 360deg)`,
-        }}
-      />
-
-      {/* Animated polarization wave lines */}
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ opacity: 0.15 }}>
-        <defs>
-          <linearGradient id="wave-grad-1" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={theme === 'dark' ? '#ff4444' : '#ff6666'} stopOpacity="0.3" />
-            <stop offset="50%" stopColor={theme === 'dark' ? '#44ff44' : '#66ff66'} stopOpacity="0.3" />
-            <stop offset="100%" stopColor={theme === 'dark' ? '#4488ff' : '#6699ff'} stopOpacity="0.3" />
-          </linearGradient>
-        </defs>
-        {/* Horizontal wave lines simulating E-field */}
-        {[0.2, 0.35, 0.5, 0.65, 0.8].map((yPos, i) => {
-          const y = yPos * 100
-          const yOffset = Math.sin((time + i * 30) * Math.PI / 180) * 3
-          return (
-            <path
-              key={`h-${i}`}
-              d={`M 0 ${y} Q 25 ${y + yOffset}, 50 ${y} T 100 ${y}`}
-              fill="none"
-              stroke="url(#wave-grad-1)"
-              strokeWidth="0.5"
-              style={{
-                transform: `translateX(${Math.sin((time + i * 60) * Math.PI / 180) * 2}%)`,
-              }}
-            />
-          )
-        })}
-        {/* Vertical wave lines simulating B-field (perpendicular) */}
-        {[0.15, 0.4, 0.6, 0.85].map((xPos, i) => {
-          const x = xPos * 100
-          const xOffset = Math.cos((time + i * 45) * Math.PI / 180) * 2
-          return (
-            <path
-              key={`v-${i}`}
-              d={`M ${x} 0 Q ${x + xOffset} 50, ${x} 100`}
-              fill="none"
-              stroke={theme === 'dark' ? 'rgba(100, 200, 255, 0.15)' : 'rgba(50, 150, 200, 0.1)'}
-              strokeWidth="0.5"
-              style={{
-                transform: `translateY(${Math.cos((time + i * 45) * Math.PI / 180) * 1.5}%)`,
-              }}
-            />
-          )
-        })}
-      </svg>
-
-      {/* Light beam decorations with polarization colors */}
-      {[
-        { left: 10, color: 'rgba(255, 68, 68, 0.2)', delay: 0 },
-        { left: 30, color: 'rgba(255, 170, 0, 0.2)', delay: 1.5 },
-        { left: 70, color: 'rgba(68, 255, 68, 0.2)', delay: 3 },
-        { left: 90, color: 'rgba(68, 136, 255, 0.2)', delay: 4.5 },
-      ].map((beam, i) => (
-        <div
-          key={i}
-          className="absolute w-0.5 h-screen animate-beam-move"
-          style={{
-            left: `${beam.left}%`,
-            background: `linear-gradient(to bottom, transparent 0%, ${beam.color} 50%, transparent 100%)`,
-            animationDelay: `${beam.delay}s`,
-            filter: 'blur(1px)',
-          }}
-        />
-      ))}
-
-      {/* Floating polarization particles */}
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <div
-          key={`particle-${i}`}
-          className="absolute rounded-full animate-float"
-          style={{
-            width: `${4 + i * 2}px`,
-            height: `${4 + i * 2}px`,
-            left: `${15 + i * 15}%`,
-            top: `${20 + (i % 3) * 25}%`,
-            background: POLARIZATION_GLOW_COLORS[i % 4].replace('0.6', '0.3'),
-            filter: 'blur(2px)',
-            animationDelay: `${i * 0.5}s`,
-            animationDuration: `${4 + i}s`,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-// Course Card with Crossed Polarizers Animation - demonstrates Malus's Law
-// Shows polarized light passing through two polarizers, with intensity following I = I₀ × cos²θ
-interface CourseCardProps {
-  theme: 'dark' | 'light'
-  children: React.ReactNode
-  to: string
-}
-
-function CourseCardWithPolarizers({ theme, children, to }: CourseCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [analyzerAngle, setAnalyzerAngle] = useState(0)
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
-  const cardRef = useRef<HTMLAnchorElement>(null)
-  const animationRef = useRef<number | null>(null)
-
-  // Animate analyzer rotation on hover
-  useEffect(() => {
-    if (isHovered) {
-      const startTime = Date.now()
-      const animate = () => {
-        const elapsed = Date.now() - startTime
-        // Complete rotation in 4 seconds
-        const angle = (elapsed / 4000) * 360 % 360
-        setAnalyzerAngle(angle)
-        animationRef.current = requestAnimationFrame(animate)
-      }
-      animationRef.current = requestAnimationFrame(animate)
-    } else {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-      setAnalyzerAngle(0)
-    }
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-    }
-  }, [isHovered])
-
-  // Calculate Malus's Law intensity: I = I₀ × cos²(θ)
-  const malusIntensity = Math.pow(Math.cos((analyzerAngle * Math.PI) / 180), 2)
-
-  // Get polarization color based on angle (smooth transition through polarization colors)
-  const getPolarizationColor = (angle: number) => {
-    const normalizedAngle = ((angle % 180) + 180) % 180
-    // 0° → red, 45° → orange, 90° → green, 135° → blue
-    if (normalizedAngle < 45) {
-      const t = normalizedAngle / 45
-      return `rgb(${255}, ${Math.round(68 + t * 102)}, ${Math.round(68 - t * 68)})`
-    } else if (normalizedAngle < 90) {
-      const t = (normalizedAngle - 45) / 45
-      return `rgb(${Math.round(255 - t * 187)}, ${Math.round(170 + t * 85)}, ${Math.round(t * 68)})`
-    } else if (normalizedAngle < 135) {
-      const t = (normalizedAngle - 90) / 45
-      return `rgb(${Math.round(68 - t * 68)}, ${Math.round(255 - t * 119)}, ${Math.round(68 + t * 68)})`
-    } else {
-      const t = (normalizedAngle - 135) / 45
-      return `rgb(${Math.round(t * 187)}, ${Math.round(136 - t * 68)}, ${Math.round(136 + t * 119)})`
-    }
-  }
-
-  const currentColor = getPolarizationColor(analyzerAngle)
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width
-      const y = (e.clientY - rect.top) / rect.height
-      setMousePos({ x, y })
-    }
-  }
-
-  return (
-    <Link
-      ref={cardRef}
-      to={to}
-      className={`group block relative overflow-hidden rounded-xl p-5 transition-all duration-300 hover:-translate-y-0.5 ${
-        theme === 'dark'
-          ? 'bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 border border-blue-500/20 hover:border-blue-500/40'
-          : 'bg-gradient-to-r from-blue-50/90 via-indigo-50/90 to-blue-50/90 border border-blue-200 hover:border-blue-300'
-      }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onMouseMove={handleMouseMove}
-    >
-      {/* Crossed Polarizers SVG Animation */}
-      <div
-        className="absolute inset-0 pointer-events-none overflow-hidden"
-        style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.4s ease' }}
-      >
-        <svg
-          viewBox="0 0 800 120"
-          className="absolute inset-0 w-full h-full"
-          preserveAspectRatio="xMinYMid slice"
-        >
-          <defs>
-            {/* Gradient for incident light beam */}
-            <linearGradient id="polarizedBeam" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={currentColor} stopOpacity="0" />
-              <stop offset="30%" stopColor={currentColor} stopOpacity="0.8" />
-              <stop offset="100%" stopColor={currentColor} stopOpacity="0.9" />
-            </linearGradient>
-            {/* Gradient for transmitted beam (intensity varies with Malus's Law) */}
-            <linearGradient id="transmittedBeam" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={currentColor} stopOpacity={0.9 * malusIntensity} />
-              <stop offset="70%" stopColor={currentColor} stopOpacity={0.6 * malusIntensity} />
-              <stop offset="100%" stopColor={currentColor} stopOpacity="0" />
-            </linearGradient>
-            {/* Glow filter */}
-            <filter id="polarizerGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* Polarized light wave - E-field oscillation (before polarizer) */}
-          <g style={{ opacity: isHovered ? 0.6 : 0, transition: 'opacity 0.3s ease' }}>
-            {[...Array(8)].map((_, i) => {
-              const x = 10 + i * 12
-              const amplitude = 15 * Math.sin((Date.now() / 200 + i) * 0.5)
-              return (
-                <line
-                  key={`wave-${i}`}
-                  x1={x}
-                  y1={60 - amplitude}
-                  x2={x}
-                  y2={60 + amplitude}
-                  stroke={currentColor}
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  style={{
-                    opacity: 0.3 + i * 0.08,
-                  }}
-                />
-              )
-            })}
-          </g>
-
-          {/* First Polarizer (fixed at 0°) - vertical lines */}
-          <g transform="translate(100, 60)">
-            <rect
-              x="-8"
-              y="-30"
-              width="16"
-              height="60"
-              fill={theme === 'dark' ? 'rgba(100, 150, 255, 0.15)' : 'rgba(50, 100, 200, 0.1)'}
-              stroke={theme === 'dark' ? 'rgba(100, 150, 255, 0.5)' : 'rgba(50, 100, 200, 0.4)'}
-              strokeWidth="1"
-              rx="2"
-            />
-            {/* Polarizer lines (vertical = 0°) */}
-            {[-20, -10, 0, 10, 20].map((y) => (
-              <line
-                key={y}
-                x1="-5"
-                y1={y}
-                x2="5"
-                y2={y}
-                stroke={theme === 'dark' ? 'rgba(150, 200, 255, 0.7)' : 'rgba(50, 100, 200, 0.6)'}
-                strokeWidth="1.5"
-                transform="rotate(0)"
-              />
-            ))}
-            {/* Label */}
-            <text
-              y="45"
-              textAnchor="middle"
-              fill={theme === 'dark' ? 'rgba(150, 200, 255, 0.6)' : 'rgba(50, 100, 200, 0.5)'}
-              fontSize="8"
-              fontFamily="monospace"
-            >
-              P₁
-            </text>
-          </g>
-
-          {/* Light beam between polarizers - intensity from Malus's Law */}
-          <line
-            x1="108"
-            y1="60"
-            x2="192"
-            y2="60"
-            stroke="url(#polarizedBeam)"
-            strokeWidth={2 + malusIntensity * 2}
-            filter="url(#polarizerGlow)"
-            style={{
-              strokeDasharray: '100',
-              strokeDashoffset: isHovered ? '0' : '100',
-              transition: 'stroke-dashoffset 0.5s ease',
-            }}
-          />
-
-          {/* Second Polarizer (Analyzer - rotating) */}
-          <g transform={`translate(200, 60) rotate(${analyzerAngle})`}>
-            <rect
-              x="-8"
-              y="-30"
-              width="16"
-              height="60"
-              fill={theme === 'dark' ? 'rgba(100, 150, 255, 0.15)' : 'rgba(50, 100, 200, 0.1)'}
-              stroke={currentColor}
-              strokeWidth="1"
-              rx="2"
-              style={{ opacity: 0.5 + malusIntensity * 0.5 }}
-            />
-            {/* Polarizer lines (rotating) */}
-            {[-20, -10, 0, 10, 20].map((y) => (
-              <line
-                key={y}
-                x1="-5"
-                y1={y}
-                x2="5"
-                y2={y}
-                stroke={currentColor}
-                strokeWidth="1.5"
-                style={{ opacity: 0.6 + malusIntensity * 0.4 }}
-              />
-            ))}
-          </g>
-          {/* Analyzer label (outside rotation) */}
-          <text
-            x="200"
-            y="105"
-            textAnchor="middle"
-            fill={currentColor}
-            fontSize="8"
-            fontFamily="monospace"
-            style={{ opacity: 0.6 }}
-          >
-            P₂ ({Math.round(analyzerAngle)}°)
-          </text>
-
-          {/* Transmitted beam after analyzer - intensity follows cos²θ */}
-          <line
-            x1="208"
-            y1="60"
-            x2="320"
-            y2="60"
-            stroke="url(#transmittedBeam)"
-            strokeWidth={1 + malusIntensity * 3}
-            filter="url(#polarizerGlow)"
-            style={{
-              opacity: malusIntensity,
-              transition: 'opacity 0.1s ease',
-            }}
-          />
-
-          {/* Intensity indicator */}
-          <g transform="translate(350, 60)">
-            <text
-              textAnchor="start"
-              fill={theme === 'dark' ? 'rgba(200, 220, 255, 0.5)' : 'rgba(50, 80, 150, 0.5)'}
-              fontSize="9"
-              fontFamily="monospace"
-              y="4"
-            >
-              I = I₀cos²θ
-            </text>
-            <text
-              textAnchor="start"
-              fill={currentColor}
-              fontSize="11"
-              fontFamily="monospace"
-              fontWeight="bold"
-              y="20"
-              style={{ opacity: 0.8 }}
-            >
-              {Math.round(malusIntensity * 100)}%
-            </text>
-          </g>
-
-          {/* Extinction indicator when crossed (near 90° or 270°) */}
-          {malusIntensity < 0.1 && (
-            <g transform="translate(260, 60)">
-              <circle
-                r="12"
-                fill="none"
-                stroke={theme === 'dark' ? 'rgba(255, 100, 100, 0.6)' : 'rgba(200, 50, 50, 0.5)'}
-                strokeWidth="1.5"
-                strokeDasharray="4 2"
-              />
-              <line
-                x1="-8"
-                y1="-8"
-                x2="8"
-                y2="8"
-                stroke={theme === 'dark' ? 'rgba(255, 100, 100, 0.6)' : 'rgba(200, 50, 50, 0.5)'}
-                strokeWidth="1.5"
-              />
-              <text
-                y="30"
-                textAnchor="middle"
-                fill={theme === 'dark' ? 'rgba(255, 100, 100, 0.7)' : 'rgba(200, 50, 50, 0.6)'}
-                fontSize="8"
-                fontFamily="monospace"
-              >
-                消光
-              </text>
-            </g>
-          )}
-        </svg>
-      </div>
-
-      {/* Polarization color gradient overlay following mouse */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: isHovered
-            ? `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%,
-                ${currentColor.replace('rgb', 'rgba').replace(')', ', 0.08)')} 0%,
-                transparent 50%)`
-            : 'none',
-          opacity: isHovered ? malusIntensity : 0,
-          transition: 'opacity 0.4s ease',
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10">
-        {children}
-      </div>
-
-      {/* Edge highlight on hover - color changes with polarization */}
-      <div
-        className="absolute inset-0 rounded-xl pointer-events-none"
-        style={{
-          boxShadow: isHovered
-            ? `inset 0 0 20px ${currentColor.replace('rgb', 'rgba').replace(')', ', 0.15)')}, inset 0 0 40px ${currentColor.replace('rgb', 'rgba').replace(')', ', 0.08)')}`
-            : 'none',
-          transition: 'box-shadow 0.4s ease',
-        }}
-      />
-    </Link>
-  )
-}
-
 export function HomePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const navigate = useNavigate()
-  const [hoveredModule, setHoveredModule] = useState<string | null>(null)
-  const logoRef = useRef<HTMLDivElement>(null)
-  const moduleRefsMap = useRef<Map<string, HTMLDivElement | null>>(new Map())
-  const iconRefsMap = useRef<Map<string, HTMLDivElement | null>>(new Map())
+  const { progress } = useCourseProgress()
+  const [expandedStageId, setExpandedStageId] = useState<string>('stage1')
 
-  // P1: 引导式起点状态 - 首次访问时显示
+  // Guided start modal state
   const [showGuidedStart, setShowGuidedStart] = useState(() => {
-    // 检查是否是首次访问
     const hasSeenGuide = localStorage.getItem('polarcraft_guided_start_completed')
     return !hasSeenGuide
   })
 
-  // 处理引导选择
   const handleGuidedSelect = useCallback((trackId: string, route: string) => {
-    // 记录用户已完成引导
     localStorage.setItem('polarcraft_guided_start_completed', 'true')
     localStorage.setItem('polarcraft_learning_track', trackId)
     setShowGuidedStart(false)
-    // 导航到选择的路径
     navigate(route)
   }, [navigate])
 
-  // 关闭引导（跳过）
   const handleGuidedClose = useCallback(() => {
     localStorage.setItem('polarcraft_guided_start_completed', 'true')
     setShowGuidedStart(false)
   }, [])
 
-  // Callback to register module card refs
-  const registerModuleRef = useCallback((key: string, ref: HTMLDivElement | null) => {
-    if (ref) {
-      moduleRefsMap.current.set(key, ref)
-    } else {
-      moduleRefsMap.current.delete(key)
-    }
-  }, [])
-
-  // Callback to register icon refs for precise beam targeting
-  const registerIconRef = useCallback((key: string, ref: HTMLDivElement | null) => {
-    if (ref) {
-      iconRefsMap.current.set(key, ref)
-    } else {
-      iconRefsMap.current.delete(key)
-    }
-  }, [])
-
-  // Hover handlers
-  const handleModuleHoverStart = useCallback((moduleKey: string) => {
-    setHoveredModule(moduleKey)
-  }, [])
-
-  const handleModuleHoverEnd = useCallback(() => {
-    setHoveredModule(null)
-  }, [])
-
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-10 ${
+    <div className={`min-h-screen ${
       theme === 'dark'
         ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
         : 'bg-gradient-to-br from-[#f0f9ff] via-[#e0f2fe] to-[#f0f9ff]'
     }`}>
-      {/* Settings and Course Entry */}
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
-        {/* Course Entry - Prominent Button */}
-        <Link
-          to="/course"
-          className={`group relative flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 ${
-            theme === 'dark'
-              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-900/30 hover:shadow-blue-600/40'
-              : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50'
-          }`}
-        >
-          <CourseIcon size={20} />
-          <span className="hidden sm:inline">{t('home.courseEntry')}</span>
-          {/* Animated glow effect */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-30 blur-xl transition-opacity" />
-        </Link>
-        <LanguageThemeSwitcher />
-      </div>
-
-      {/* Animated polarization background */}
+      {/* Background */}
       <PolarizationBackground theme={theme} />
 
       {/* Header */}
-      <header className="text-center mb-6 sm:mb-10 md:mb-12 relative z-10 px-2">
-        {/* PolarCraft Logo - Light source for beam effect */}
-        <div ref={logoRef} className="flex justify-center mb-4 sm:mb-6">
-          <PolarCraftLogo size={80} theme={theme} animated />
-        </div>
-        <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 ${
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <div className={`flex items-center justify-between px-4 py-3 ${
           theme === 'dark'
-            ? 'text-cyan-400 drop-shadow-[0_0_30px_rgba(100,200,255,0.5)]'
-            : 'text-cyan-600 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]'
+            ? 'bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50'
+            : 'bg-white/80 backdrop-blur-xl border-b border-gray-200/50'
         }`}>
-          {t('home.title')}
-        </h1>
-        <h2 className={`text-lg sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4 ${
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-        }`}>
-          {t('home.subtitle')}
-        </h2>
-        <p className={`text-sm sm:text-base md:text-lg max-w-2xl leading-relaxed mx-auto ${
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-        }`}>
-          {t('home.description')}
-        </p>
-      </header>
-
-      {/* Navigation Cards - 9 Creative Modules with polarization effects */}
-      <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-6xl relative z-10 w-full px-2">
-        {MODULES.map((module, index) => (
-          <ModuleCard
-            key={module.key}
-            module={module}
-            index={index}
-            isBeamTarget={hoveredModule === module.key}
-            onHoverStart={handleModuleHoverStart}
-            onHoverEnd={handleModuleHoverEnd}
-            registerRef={registerModuleRef}
-            registerIconRef={registerIconRef}
-          />
-        ))}
-      </nav>
-
-      {/* Light beam effect from logo to hovered module icon */}
-      <LightBeamEffect
-        logoRef={logoRef}
-        hoveredModule={hoveredModule}
-        moduleRefs={moduleRefsMap.current}
-        iconRefs={iconRefsMap.current}
-      />
-
-      {/* Course Banner - Below the 6 cards */}
-      <div className="max-w-6xl w-full relative z-10 px-2 mt-8">
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <h2 className={`text-lg font-bold ${
+            <PolarCraftLogo size={32} theme={theme} />
+            <span className={`font-bold text-lg hidden sm:inline ${
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             }`}>
-              {t('home.coursesSection.title')}
-            </h2>
+              PolarCraft
+            </span>
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               theme === 'dark' ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
             }`}>
               P-SRT
             </span>
           </div>
-          <Link
-            to="/course"
-            className={`text-sm flex items-center gap-1 transition-colors ${
-              theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
-            }`}
-          >
-            {t('home.coursesSection.viewAll')}
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
 
-        {/* Course List */}
-        <div className="space-y-3">
-          {/* Course 1 - Main Course with Crossed Polarizers Animation */}
-          <CourseCardWithPolarizers theme={theme} to="/course">
-            <div className="flex items-center gap-4">
-              {/* Course Icon */}
-              <div className={`flex-shrink-0 p-3 rounded-xl transition-transform group-hover:scale-105 ${
+          <div className="flex items-center gap-3">
+            <QuickStats theme={theme} progress={progress} />
+            <LanguageThemeSwitcher />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 pt-24 pb-12">
+        {/* Hero Section */}
+        <div className="text-center mb-10">
+          <div className="flex justify-center mb-4">
+            <div className={`p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 shadow-xl`}>
+              <GraduationCap className="w-10 h-10 text-white" />
+            </div>
+          </div>
+          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${
+            theme === 'dark'
+              ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400'
+              : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-violet-600'
+          }`}>
+            {t('home.title')}
+          </h1>
+          <p className={`text-base sm:text-lg max-w-2xl mx-auto leading-relaxed ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            {t('home.description')}
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex justify-center gap-4 mt-6">
+            <button
+              onClick={() => {
+                const firstDemo = LEARNING_STAGES[0].demos[0]
+                if (firstDemo) navigate(firstDemo.link)
+              }}
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform shadow-lg"
+            >
+              <Play className="w-5 h-5" />
+              {t('home.startLearning')}
+            </button>
+            <Link
+              to="/explore"
+              className={`px-6 py-3 rounded-full border-2 font-medium flex items-center gap-2 hover:scale-105 transition-transform ${
                 theme === 'dark'
-                  ? 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20'
-                  : 'bg-gradient-to-br from-blue-100 to-indigo-100'
-              }`}>
-                <CourseIcon size={36} />
-              </div>
-
-              {/* Course Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                    theme === 'dark' ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'
-                  }`}>
-                    P-SRT
-                  </span>
-                  <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
-                    5 {t('course.units.label')} · 17 {t('course.demos.label')}
-                  </span>
-                </div>
-                <h3 className={`font-bold mb-0.5 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
-                  {t('home.courseBanner.title')}
-                </h3>
-                <p className={`text-sm line-clamp-1 ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  {t('home.courseBanner.description')}
-                </p>
-              </div>
-
-              {/* Arrow */}
-              <div className={`flex-shrink-0 p-2 rounded-full transition-all group-hover:translate-x-1 ${
-                theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-              }`}>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-          </CourseCardWithPolarizers>
-
-          {/* Course 2 - Coming Soon */}
-          <div
-            className={`relative overflow-hidden rounded-xl p-5 opacity-60 ${
-              theme === 'dark'
-                ? 'bg-slate-800/50 border border-slate-700'
-                : 'bg-gray-50 border border-gray-200'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              {/* Course Icon */}
-              <div className={`flex-shrink-0 p-3 rounded-xl ${
-                theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
-              }`}>
-                <svg className="w-9 h-9" viewBox="0 0 36 36" fill="none">
-                  <circle cx="18" cy="18" r="14" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeDasharray="4 4" />
-                  <path d="M18 12v8M14 16h8" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </div>
-
-              {/* Course Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                    theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-700'
-                  }`}>
-                    E-SRT
-                  </span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${
-                    theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-gray-200 text-gray-500'
-                  }`}>
-                    {t('common.comingSoon')}
-                  </span>
-                </div>
-                <h3 className={`font-bold mb-0.5 ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                  {t('home.coursesSection.course2.title')}
-                </h3>
-                <p className={`text-sm line-clamp-1 ${
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                }`}>
-                  {t('home.coursesSection.course2.description')}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Course 3 - Coming Soon */}
-          <div
-            className={`relative overflow-hidden rounded-xl p-5 opacity-60 ${
-              theme === 'dark'
-                ? 'bg-slate-800/50 border border-slate-700'
-                : 'bg-gray-50 border border-gray-200'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              {/* Course Icon */}
-              <div className={`flex-shrink-0 p-3 rounded-xl ${
-                theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-100'
-              }`}>
-                <svg className="w-9 h-9" viewBox="0 0 36 36" fill="none">
-                  <circle cx="18" cy="18" r="14" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeDasharray="4 4" />
-                  <path d="M18 12v8M14 16h8" stroke={theme === 'dark' ? '#64748b' : '#9ca3af'} strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </div>
-
-              {/* Course Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                    theme === 'dark' ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-700'
-                  }`}>
-                    ORIC
-                  </span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${
-                    theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-gray-200 text-gray-500'
-                  }`}>
-                    {t('common.comingSoon')}
-                  </span>
-                </div>
-                <h3 className={`font-bold mb-0.5 ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                  {t('home.coursesSection.course3.title')}
-                </h3>
-                <p className={`text-sm line-clamp-1 ${
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                }`}>
-                  {t('home.coursesSection.course3.description')}
-                </p>
-              </div>
-            </div>
+                  ? 'border-gray-600 text-gray-300 hover:border-gray-400'
+                  : 'border-gray-300 text-gray-600 hover:border-gray-500'
+              }`}
+            >
+              <Sparkles className="w-5 h-5" />
+              {t('home.explore')}
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* Footer */}
-      <footer className={`mt-6 sm:mt-10 md:mt-12 text-center text-xs sm:text-sm relative z-10 ${
-        theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
-      }`}>
-        <p>
-          PolarCraft supported by Open Wisdom Lab
-        </p>
-      </footer>
+        {/* Learning Journey - Three Stages */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className={`text-lg font-bold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              {t('home.learningJourney')}
+            </h2>
+            <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full ${
+              theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
+            }`}>
+              {LEARNING_STAGES.map((stage, idx) => (
+                <button
+                  key={stage.id}
+                  onClick={() => setExpandedStageId(stage.id)}
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                    expandedStageId === stage.id
+                      ? `bg-gradient-to-r ${stage.gradient} text-white`
+                      : theme === 'dark'
+                        ? 'text-gray-400 hover:text-white'
+                        : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* P1: 引导式起点弹窗 - 首次访问时显示 */}
+          {/* Stage Cards */}
+          <div className="space-y-4">
+            {LEARNING_STAGES.map((stage) => (
+              <LearningStageCard
+                key={stage.id}
+                stage={stage}
+                theme={theme}
+                isExpanded={expandedStageId === stage.id}
+                onToggle={() => setExpandedStageId(expandedStageId === stage.id ? '' : stage.id)}
+                completedDemos={progress.completedDemos}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Access Menu */}
+        <QuickAccessMenu theme={theme} />
+
+        {/* Footer */}
+        <footer className={`mt-12 text-center text-xs ${
+          theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
+        }`}>
+          <p>PolarCraft supported by Open Wisdom Lab</p>
+        </footer>
+      </main>
+
+      {/* Guided Start Modal */}
       {showGuidedStart && (
         <GuidedStartModal
           theme={theme}

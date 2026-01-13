@@ -129,6 +129,80 @@
           "description": "浏览所有演示，按兴趣选择"
         }
       }
+    },
+    "phase": "阶段",
+    "advanced": "进阶",
+    "stage1": {
+      "title": "看见偏振",
+      "subtitle": "认识光的第三属性",
+      "question": "偏振是什么？我能在哪里看到它？",
+      "demos": {
+        "intro": "什么是偏振？",
+        "types": "偏振类型",
+        "bench": "光学工作台"
+      },
+      "games": {
+        "level0": "入门关卡",
+        "level1": "基础练习"
+      }
+    },
+    "stage2": {
+      "title": "理解规律",
+      "subtitle": "掌握偏振物理",
+      "question": "偏振光遵循什么规律？",
+      "demos": {
+        "malus": "马吕斯定律",
+        "birefringence": "双折射",
+        "brewster": "布儒斯特角",
+        "rayleigh": "瑞利散射",
+        "chromatic": "色偏振"
+      },
+      "games": {
+        "level2": "马吕斯定律谜题",
+        "level16": "双折射迷宫"
+      },
+      "tools": {
+        "opticalStudio": "光学设计室"
+      }
+    },
+    "stage3": {
+      "title": "测量与应用",
+      "subtitle": "完整表征与前沿技术",
+      "question": "如何精确描述和利用偏振？",
+      "demos": {
+        "stokes": "Stokes矢量",
+        "mueller": "Mueller矩阵",
+        "jones": "Jones矩阵",
+        "microscopy": "偏振显微镜"
+      },
+      "tools": {
+        "stokes": "Stokes计算器",
+        "poincare": "庞加莱球",
+        "mueller": "Mueller计算器"
+      }
+    },
+    "resources": {
+      "demos": "互动演示",
+      "games": "练习游戏",
+      "tools": "计算工具"
+    },
+    "startStage": "开始学习本阶段",
+    "startLearning": "开始学习",
+    "explore": "自由探索",
+    "learningJourney": "学习路径",
+    "quickAccess": "快捷入口",
+    "quick": {
+      "games": "游戏",
+      "demos": "演示",
+      "calc": "计算",
+      "experiments": "实验",
+      "chronicles": "编年史",
+      "lab": "实验室"
+    },
+    "stats": {
+      "completed": "进度",
+      "streak": "连续",
+      "time": "时长"
     }
   },
   "course": {
