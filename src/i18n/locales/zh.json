@@ -230,6 +230,10 @@
       "screenPolarizer": "屏幕+偏振片",
       "screenPolarizerDesc": "在屏幕前旋转偏振片"
     },
+    "visualShowcase": {
+      "title": "偏振光效果展示",
+      "description": "体验偏振光通过不同角度偏振片时的奇妙变化——光的强度随偏振角度呈现美妙的余弦平方规律"
+    },
     "keyExperiment": "核心实验",
     "resType": {
       "demo": "演示",

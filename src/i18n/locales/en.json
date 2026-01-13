@@ -230,6 +230,10 @@
       "screenPolarizer": "Screen + Polarizer",
       "screenPolarizerDesc": "Rotate a polarizer over screen"
     },
+    "visualShowcase": {
+      "title": "Polarized Light Showcase",
+      "description": "Experience the fascinating changes as polarized light passes through polarizers at different angles — intensity follows the beautiful cosine-squared pattern"
+    },
     "keyExperiment": "Key Experiment",
     "resType": {
       "demo": "Demo",

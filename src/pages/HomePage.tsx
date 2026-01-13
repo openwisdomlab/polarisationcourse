@@ -7,7 +7,7 @@
  * 采用探索和游戏化模式，避免信息过载
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
@@ -320,7 +320,7 @@ function PolarizationBackground({ theme }: { theme: 'dark' | 'light' }) {
 // 资源类型标签组件
 // ============================================================================
 
-function ResourceBadge({ type, theme }: { type: UnitResource['type']; theme: 'dark' | 'light' }) {
+function ResourceBadge({ type }: { type: UnitResource['type'] }) {
   const { t } = useTranslation()
 
   const config = {
@@ -530,7 +530,7 @@ function UnitCard({
                       )}>
                         {t(resource.titleKey)}
                       </span>
-                      <ResourceBadge type={resource.type} theme={theme} />
+                      <ResourceBadge type={resource.type} />
                     </Link>
                   ))}
                 </div>
@@ -688,20 +688,9 @@ export function HomePage() {
   }, [])
 
   const handleStartLearning = useCallback(() => {
-    // 跳转到第一个未完成的演示
-    for (const unit of COURSE_UNITS) {
-      for (const section of unit.sections) {
-        for (const resource of section.resources) {
-          if (resource.type === 'demo' && !progress.completedDemos.includes(resource.id)) {
-            navigate(resource.link)
-            return
-          }
-        }
-      }
-    }
-    // 如果全部完成，跳转到第一个演示
-    navigate('/demos/polarization-intro')
-  }, [navigate, progress.completedDemos])
+    // 跳转到结构化课程页面
+    navigate('/course')
+  }, [navigate])
 
   return (
     <div className={cn(
@@ -795,7 +784,7 @@ export function HomePage() {
                 {t('home.startLearning')}
               </button>
               <Link
-                to="/demos"
+                to="/games"
                 className={cn(
                   'px-6 py-3 rounded-full font-bold flex items-center gap-2',
                   'border-2 transition-all duration-300 hover:scale-105',
@@ -804,16 +793,11 @@ export function HomePage() {
                     : 'border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50'
                 )}
               >
-                <Eye className="w-5 h-5" />
+                <Gamepad2 className="w-5 h-5" />
                 {t('home.explore')}
               </Link>
             </div>
           </div>
-        </div>
-
-        {/* 偏振光效果展示 */}
-        <div className="mb-8">
-          <PolarizedLightHero height={180} className="shadow-xl rounded-2xl" />
         </div>
 
         {/* 快速入口 */}
@@ -858,9 +842,38 @@ export function HomePage() {
           </div>
         </div>
 
+        {/* 偏振光效果展示 - 放在页面底部作为视觉收尾 */}
+        <div className="mt-8 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-full bg-gradient-to-br from-violet-400 to-pink-500">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <h2 className={cn(
+              'text-lg font-bold',
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            )}>
+              {t('home.visualShowcase.title')}
+            </h2>
+          </div>
+          <div className={cn(
+            'rounded-2xl overflow-hidden',
+            theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/80'
+          )}>
+            <PolarizedLightHero height={200} className="shadow-xl" />
+            <div className="p-4">
+              <p className={cn(
+                'text-sm text-center',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                {t('home.visualShowcase.description')}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* 页脚 */}
         <footer className={cn(
-          'mt-12 text-center text-xs',
+          'mt-8 text-center text-xs',
           theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
         )}>
           <p className="opacity-60">© 2025 深圳零一学院 · {t('home.title')}</p>
