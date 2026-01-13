@@ -225,9 +225,9 @@ function MieScatteringDiagram({
       {/* 散射强度分布（极坐标图） */}
       <motion.path
         d={scatterPath}
-        fill={scatterType.color}
-        fillOpacity="0.2"
-        stroke={scatterType.color}
+        fill={lightColor}
+        fillOpacity="0.25"
+        stroke={lightColor}
         strokeWidth="2"
         filter="url(#scatterGlow)"
         initial={{ opacity: 0, scale: 0.5 }}
@@ -249,14 +249,14 @@ function MieScatteringDiagram({
 
       {/* 前向散射标注 */}
       <g transform="translate(450, 200)">
-        <line x1="0" y1="0" x2="60" y2="0" stroke={scatterType.color} strokeWidth="2" />
-        <polygon points="55,-5 65,0 55,5" fill={scatterType.color} />
-        <text x="30" y="-15" textAnchor="middle" fill={scatterType.color} fontSize="11">前向散射</text>
+        <line x1="0" y1="0" x2="60" y2="0" stroke={lightColor} strokeWidth="2" />
+        <polygon points="55,-5 65,0 55,5" fill={lightColor} />
+        <text x="30" y="-15" textAnchor="middle" fill={lightColor} fontSize="11">前向散射</text>
       </g>
 
       {/* 后向散射标注 */}
       <g transform="translate(150, 200)">
-        <line x1="0" y1="0" x2="-60" y2="0" stroke={scatterType.color} strokeWidth="1" opacity="0.5" />
+        <line x1="0" y1="0" x2="-60" y2="0" stroke={lightColor} strokeWidth="1" opacity="0.5" />
         <text x="-30" y="-15" textAnchor="middle" fill="#94a3b8" fontSize="11">后向散射</text>
       </g>
 

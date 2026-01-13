@@ -59,7 +59,8 @@ function calculateTransmission(
   analyzerAngle: number
 ): number {
   // 相位延迟 δ = 2π × Δn × d / λ
-  const delta = (2 * Math.PI * birefringence * thickness * 1000) / wavelength
+  // thickness is in mm, wavelength is in nm, so multiply by 1e6 to convert mm to nm
+  const delta = (2 * Math.PI * birefringence * thickness * 1e6) / wavelength
 
   // 偏振片角度转换为弧度
   const thetaP = (polarizerAngle * Math.PI) / 180 // 起偏器角度
@@ -491,9 +492,10 @@ export function ChromaticDemo() {
   const resultColor = calculateMixedColor(thickness, birefringence, polarizerAngle, analyzerAngle)
 
   // 计算相位延迟
-  const phaseRetardation = (2 * Math.PI * birefringence * thickness * 1000) / 550 // 在550nm处
+  // thickness is in mm, convert to nm by multiplying by 1e6
+  const opticalPathDiff = birefringence * thickness * 1e6 // nm
+  const phaseRetardation = (2 * Math.PI * opticalPathDiff) / 550 // 在550nm处
   const retardationOrders = phaseRetardation / (2 * Math.PI)
-  const opticalPathDiff = birefringence * thickness * 1000 // nm
 
   return (
     <div className="space-y-6">
