@@ -3746,5 +3746,196 @@
       "mueller": "4×4 matrices for complete polarimetric analysis",
       "polarimetricMicroscopy": "Using polarization to reveal hidden structures"
     }
+  },
+  "worldCourse": {
+    "title": "The World Under Polarized Light",
+    "titleZh": "偏振光下的世界",
+    "shortTitle": "World Under Polarized Light",
+    "subtitle": "From Iceland Spar to Modern Imaging",
+    "description": "Discover how polarized light reveals hidden worlds - from stress in materials to sugar in solutions, from blue skies to medical diagnostics.",
+    "difficulty": {
+      "foundation": {
+        "label": "Foundation",
+        "description": "Discover phenomena through simple explanations. No formulas required! Focus on 'why' over 'how to calculate'."
+      },
+      "application": {
+        "label": "Application",
+        "description": "Hands-on experiments with quantitative formulas. Focus on measurement principles and experimental design."
+      },
+      "research": {
+        "label": "Research",
+        "description": "Frontier research methods with rigorous academic treatment. Advanced theory and research perspective."
+      }
+    },
+    "progress": {
+      "title": "Learning Progress",
+      "viewAll": "View All",
+      "overall": "Overall Progress",
+      "timeSpent": "Time Spent",
+      "streak": "Day Streak",
+      "completed": "Completed",
+      "lessons": "lessons"
+    },
+    "units": {
+      "unit0": {
+        "title": "Optical Basics",
+        "titleZh": "光学基础",
+        "subtitle": "Light Waves & Polarization Introduction",
+        "description": "Start your journey with electromagnetic waves and discover what polarization means.",
+        "obj1": "Understand light as an electromagnetic wave",
+        "obj2": "Recognize the relationship between E and B fields",
+        "obj3": "Distinguish between polarized and unpolarized light",
+        "coreQuestion": "What is light, and why does its 'direction of vibration' matter?"
+      },
+      "unit1": {
+        "title": "Polarization States",
+        "titleZh": "偏振态",
+        "subtitle": "Modulation & Measurement",
+        "description": "From Iceland spar to Malus's Law - learn how to create, modify, and measure polarized light.",
+        "obj1": "Explain double refraction in birefringent crystals",
+        "obj2": "Apply Malus's Law to predict intensity",
+        "obj3": "Use waveplates to transform polarization states",
+        "obj4": "Design simple polarization measurement systems",
+        "coreQuestion": "How can we control and measure the polarization of light?"
+      },
+      "unit2": {
+        "title": "Interface Reflection",
+        "titleZh": "界面反射",
+        "subtitle": "Fresnel Equations & Brewster's Angle",
+        "description": "Understand why reflections are polarized and how to use this effect.",
+        "obj1": "Derive and apply Fresnel equations",
+        "obj2": "Find and explain Brewster's angle",
+        "obj3": "Design polarization-based anti-glare systems",
+        "coreQuestion": "Why is reflected light from water polarized?"
+      },
+      "unit3": {
+        "title": "Transparent Media",
+        "titleZh": "透明介质",
+        "subtitle": "Chromatic Polarization & Optical Rotation",
+        "description": "Explore the rainbow colors of stressed plastics and the rotation of light by sugar.",
+        "obj1": "Explain chromatic polarization and Michel-Levy colors",
+        "obj2": "Understand optical activity and chirality",
+        "obj3": "Measure sugar concentration with polarimetry",
+        "coreQuestion": "Why do stressed plastics show rainbow colors between polarizers?"
+      },
+      "unit4": {
+        "title": "Turbid Media",
+        "titleZh": "浑浊介质",
+        "subtitle": "Scattering & Polarization",
+        "description": "From blue skies to underwater imaging - how particles scatter and polarize light.",
+        "obj1": "Explain Rayleigh scattering and sky colors",
+        "obj2": "Understand Mie scattering for larger particles",
+        "obj3": "Simulate light transport with Monte Carlo methods",
+        "coreQuestion": "Why is the sky blue, sunsets red, and clouds white?"
+      },
+      "unit5": {
+        "title": "Full Polarimetry",
+        "titleZh": "全偏振技术",
+        "subtitle": "Stokes, Mueller & Imaging",
+        "description": "Master the mathematical tools for complete polarization analysis and frontier applications.",
+        "obj1": "Use Stokes vectors to describe any polarization state",
+        "obj2": "Apply Mueller matrices to optical systems",
+        "obj3": "Understand Jones calculus for coherent light",
+        "obj4": "Explore polarimetric imaging applications",
+        "coreQuestion": "How do we completely characterize polarization in light and materials?"
+      }
+    },
+    "lessons": {
+      "lightWave": {
+        "title": "Light as an Electromagnetic Wave",
+        "titleZh": "光是电磁波",
+        "description": "Understand how light propagates as coupled electric and magnetic fields."
+      },
+      "polarizationIntro": {
+        "title": "Introduction to Polarization",
+        "titleZh": "偏振光入门",
+        "description": "Discover what polarization means and how it differs from color or intensity."
+      },
+      "polarizationTypes": {
+        "title": "Polarization Types",
+        "titleZh": "偏振类型",
+        "description": "Explore linear, circular, and elliptical polarization and the three-polarizer paradox."
+      },
+      "opticalBench": {
+        "title": "Interactive Optical Bench",
+        "titleZh": "交互式光学平台",
+        "description": "Design your own polarization experiments with virtual optical components."
+      },
+      "birefringence": {
+        "title": "Birefringence & Double Refraction",
+        "titleZh": "双折射",
+        "description": "Discover how crystals like Iceland spar split light into two beams."
+      },
+      "malusLaw": {
+        "title": "Malus's Law",
+        "titleZh": "马吕斯定律",
+        "description": "The fundamental law: I = I₀ cos²θ governs light through polarizers."
+      },
+      "waveplate": {
+        "title": "Waveplates & Retarders",
+        "titleZh": "波片与相位延迟",
+        "description": "Transform polarization states using quarter-wave and half-wave plates."
+      },
+      "fresnel": {
+        "title": "Fresnel Equations",
+        "titleZh": "菲涅尔方程",
+        "description": "Calculate reflection and transmission for s and p polarizations."
+      },
+      "brewster": {
+        "title": "Brewster's Angle",
+        "titleZh": "布儒斯特角",
+        "description": "The special angle where reflected light is completely polarized."
+      },
+      "chromatic": {
+        "title": "Chromatic Polarization",
+        "titleZh": "彩色偏振",
+        "description": "Understand the rainbow colors seen in stressed materials."
+      },
+      "opticalRotation": {
+        "title": "Optical Rotation",
+        "titleZh": "旋光性",
+        "description": "How chiral molecules like sugar rotate the polarization plane."
+      },
+      "anisotropy": {
+        "title": "Stress Birefringence",
+        "titleZh": "应力双折射",
+        "description": "Visualize internal stresses using photoelastic effects."
+      },
+      "rayleigh": {
+        "title": "Rayleigh Scattering",
+        "titleZh": "瑞利散射",
+        "description": "Why the sky is blue and how small particles scatter light."
+      },
+      "mieScattering": {
+        "title": "Mie Scattering",
+        "titleZh": "米氏散射",
+        "description": "Scattering by larger particles - fog, clouds, and milk."
+      },
+      "monteCarlo": {
+        "title": "Monte Carlo Simulation",
+        "titleZh": "蒙特卡洛模拟",
+        "description": "Simulate light propagation in complex scattering media."
+      },
+      "stokes": {
+        "title": "Stokes Vectors",
+        "titleZh": "斯托克斯矢量",
+        "description": "A 4-component description of any polarization state."
+      },
+      "mueller": {
+        "title": "Mueller Matrices",
+        "titleZh": "穆勒矩阵",
+        "description": "4×4 matrices for complete polarimetric analysis."
+      },
+      "jones": {
+        "title": "Jones Calculus",
+        "titleZh": "琼斯矩阵",
+        "description": "2×2 matrices for coherent polarization transformations."
+      },
+      "polarimetricMicroscopy": {
+        "title": "Polarimetric Microscopy",
+        "titleZh": "偏振显微镜",
+        "description": "Using polarization to reveal hidden structures in samples."
+      }
+    }
   }
 }

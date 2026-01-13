@@ -3934,5 +3934,196 @@
       "mueller": "完整偏振分析的 4×4 矩阵",
       "polarimetricMicroscopy": "利用偏振揭示隐藏结构"
     }
+  },
+  "worldCourse": {
+    "title": "偏振光下的世界",
+    "titleZh": "偏振光下的世界",
+    "shortTitle": "偏振光的世界",
+    "subtitle": "从冰洲石到现代成像",
+    "description": "探索偏振光如何揭示隐藏的世界——从材料应力到糖溶液，从蓝天白云到医学诊断。",
+    "difficulty": {
+      "foundation": {
+        "label": "基础层",
+        "description": "通过简单的解释发现现象。不需要公式！重点在于'为什么'而不是'怎么计算'。"
+      },
+      "application": {
+        "label": "应用层",
+        "description": "带有定量公式的动手实验。专注于测量原理和实验设计。"
+      },
+      "research": {
+        "label": "研究层",
+        "description": "具有严谨学术处理的前沿研究方法。高级理论和研究视角。"
+      }
+    },
+    "progress": {
+      "title": "学习进度",
+      "viewAll": "查看全部",
+      "overall": "总体进度",
+      "timeSpent": "学习时长",
+      "streak": "连续天数",
+      "completed": "已完成",
+      "lessons": "课时"
+    },
+    "units": {
+      "unit0": {
+        "title": "光学基础",
+        "titleZh": "光学基础",
+        "subtitle": "光波与偏振入门",
+        "description": "从电磁波开始你的旅程，发现偏振的意义。",
+        "obj1": "理解光是一种电磁波",
+        "obj2": "认识电场和磁场的关系",
+        "obj3": "区分偏振光和非偏振光",
+        "coreQuestion": "什么是光？为什么它的'振动方向'很重要？"
+      },
+      "unit1": {
+        "title": "偏振态",
+        "titleZh": "偏振态",
+        "subtitle": "调制与测量",
+        "description": "从冰洲石到马吕斯定律——学习如何产生、改变和测量偏振光。",
+        "obj1": "解释双折射晶体中的双折射现象",
+        "obj2": "应用马吕斯定律预测光强",
+        "obj3": "使用波片变换偏振态",
+        "obj4": "设计简单的偏振测量系统",
+        "coreQuestion": "我们如何控制和测量光的偏振？"
+      },
+      "unit2": {
+        "title": "界面反射",
+        "titleZh": "界面反射",
+        "subtitle": "菲涅尔方程与布儒斯特角",
+        "description": "理解为什么反射光是偏振的，以及如何利用这种效应。",
+        "obj1": "推导并应用菲涅尔方程",
+        "obj2": "找到并解释布儒斯特角",
+        "obj3": "设计基于偏振的防眩光系统",
+        "coreQuestion": "为什么水面反射的光是偏振的？"
+      },
+      "unit3": {
+        "title": "透明介质",
+        "titleZh": "透明介质",
+        "subtitle": "彩色偏振与旋光性",
+        "description": "探索应力塑料的彩虹色和糖溶液对光的旋转。",
+        "obj1": "解释彩色偏振和米歇尔-利维色图",
+        "obj2": "理解光学活性和手性",
+        "obj3": "用偏振法测量糖浓度",
+        "coreQuestion": "为什么应力塑料在偏振片之间呈现彩虹色？"
+      },
+      "unit4": {
+        "title": "浑浊介质",
+        "titleZh": "浑浊介质",
+        "subtitle": "散射与偏振",
+        "description": "从蓝天到水下成像——粒子如何散射和偏振光。",
+        "obj1": "解释瑞利散射和天空颜色",
+        "obj2": "理解大颗粒的米氏散射",
+        "obj3": "用蒙特卡洛方法模拟光传输",
+        "coreQuestion": "为什么天空是蓝色的，日落是红色的，云是白色的？"
+      },
+      "unit5": {
+        "title": "全偏振技术",
+        "titleZh": "全偏振技术",
+        "subtitle": "斯托克斯、穆勒与成像",
+        "description": "掌握完整偏振分析的数学工具和前沿应用。",
+        "obj1": "使用斯托克斯矢量描述任意偏振态",
+        "obj2": "将穆勒矩阵应用于光学系统",
+        "obj3": "理解相干光的琼斯矩阵",
+        "obj4": "探索偏振成像应用",
+        "coreQuestion": "我们如何完整地表征光和材料的偏振特性？"
+      }
+    },
+    "lessons": {
+      "lightWave": {
+        "title": "光是电磁波",
+        "titleZh": "光是电磁波",
+        "description": "理解光如何作为耦合的电场和磁场传播。"
+      },
+      "polarizationIntro": {
+        "title": "偏振入门",
+        "titleZh": "偏振入门",
+        "description": "发现偏振的含义，以及它与颜色或强度有何不同。"
+      },
+      "polarizationTypes": {
+        "title": "偏振类型",
+        "titleZh": "偏振类型",
+        "description": "探索线偏振、圆偏振和椭圆偏振，以及三偏振片悖论。"
+      },
+      "opticalBench": {
+        "title": "交互式光学平台",
+        "titleZh": "交互式光学平台",
+        "description": "使用虚拟光学元件设计你自己的偏振实验。"
+      },
+      "birefringence": {
+        "title": "双折射",
+        "titleZh": "双折射",
+        "description": "发现冰洲石等晶体如何将光分成两束。"
+      },
+      "malusLaw": {
+        "title": "马吕斯定律",
+        "titleZh": "马吕斯定律",
+        "description": "基本定律：I = I₀ cos²θ 控制光通过偏振片的传输。"
+      },
+      "waveplate": {
+        "title": "波片与延迟器",
+        "titleZh": "波片与延迟器",
+        "description": "使用四分之一波片和半波片变换偏振态。"
+      },
+      "fresnel": {
+        "title": "菲涅尔方程",
+        "titleZh": "菲涅尔方程",
+        "description": "计算 s 和 p 偏振的反射和透射系数。"
+      },
+      "brewster": {
+        "title": "布儒斯特角",
+        "titleZh": "布儒斯特角",
+        "description": "反射光完全偏振的特殊角度。"
+      },
+      "chromatic": {
+        "title": "彩色偏振",
+        "titleZh": "彩色偏振",
+        "description": "理解应力材料中看到的彩虹色。"
+      },
+      "opticalRotation": {
+        "title": "旋光性",
+        "titleZh": "旋光性",
+        "description": "糖等手性分子如何旋转偏振面。"
+      },
+      "anisotropy": {
+        "title": "应力双折射",
+        "titleZh": "应力双折射",
+        "description": "利用光弹效应可视化内部应力。"
+      },
+      "rayleigh": {
+        "title": "瑞利散射",
+        "titleZh": "瑞利散射",
+        "description": "天空为什么是蓝色的，小颗粒如何散射光。"
+      },
+      "mieScattering": {
+        "title": "米氏散射",
+        "titleZh": "米氏散射",
+        "description": "大颗粒的散射——雾、云和牛奶。"
+      },
+      "monteCarlo": {
+        "title": "蒙特卡洛模拟",
+        "titleZh": "蒙特卡洛模拟",
+        "description": "模拟复杂散射介质中的光传播。"
+      },
+      "stokes": {
+        "title": "斯托克斯矢量",
+        "titleZh": "斯托克斯矢量",
+        "description": "描述任意偏振态的四分量表示。"
+      },
+      "mueller": {
+        "title": "穆勒矩阵",
+        "titleZh": "穆勒矩阵",
+        "description": "用于完整偏振分析的 4×4 矩阵。"
+      },
+      "jones": {
+        "title": "琼斯矩阵",
+        "titleZh": "琼斯矩阵",
+        "description": "用于相干偏振变换的 2×2 矩阵。"
+      },
+      "polarimetricMicroscopy": {
+        "title": "偏振显微镜",
+        "titleZh": "偏振显微镜",
+        "description": "利用偏振揭示样品中的隐藏结构。"
+      }
+    }
   }
 }

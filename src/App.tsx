@@ -26,6 +26,11 @@ const DetectiveGamePage = lazy(() => import('@/pages/DetectiveGamePage'))
 const CoursePage = lazy(() => import('@/pages/CoursePage'))
 const LearningHubPage = lazy(() => import('@/pages/LearningHubPage'))
 
+// Course Content Layer - 《偏振光下的世界》独立课程
+const WorldCourseHome = lazy(() => import('@/course/pages/CourseHome'))
+const WorldCourseUnit = lazy(() => import('@/course/pages/UnitOverview'))
+const WorldCourseLesson = lazy(() => import('@/course/pages/LessonPage'))
+
 // Loading fallback component
 function PageLoader() {
   return (
@@ -104,6 +109,12 @@ export function App() {
         <Route path="/lab/jones" element={<Navigate to="/calc/jones" replace />} />
         <Route path="/lab/stokes" element={<Navigate to="/calc/stokes" replace />} />
         <Route path="/lab/mueller" element={<Navigate to="/calc/mueller" replace />} />
+
+        {/* Course Content Layer - 《偏振光下的世界》独立课程 */}
+        {/* 新增的课程内容层路由，不修改原有 /course 路由 */}
+        <Route path="/course/world-under-polarized-light" element={<WorldCourseHome />} />
+        <Route path="/course/world-under-polarized-light/unit/:unitId" element={<WorldCourseUnit />} />
+        <Route path="/course/world-under-polarized-light/unit/:unitId/lesson/:lessonId" element={<WorldCourseLesson />} />
         </Routes>
         </Suspense>
       </BrowserRouter>
