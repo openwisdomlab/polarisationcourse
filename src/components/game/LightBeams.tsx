@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import * as THREE from 'three'
 import { Line } from '@react-three/drei'
 import { World } from '@/core/World'
-import { LightState, LightPacket, BlockPosition, POLARIZATION_COLORS, DIRECTION_VECTORS } from '@/core/types'
+import { LightState, LightPacket, BlockPosition, DIRECTION_VECTORS, getPolarizationColorNumeric } from '@/core/types'
 import { VisionMode } from '@/stores/gameStore'
 
 interface LightBeamsProps {
@@ -72,7 +72,8 @@ function LightPacketBeam({ position, packet, visionMode }: LightPacketBeamProps)
 
   const color = useMemo(() => {
     if (visionMode === 'polarized') {
-      return POLARIZATION_COLORS[packet.polarization as keyof typeof POLARIZATION_COLORS] || 0xffffaa
+      // 使用连续彩虹色模式，获得更丰富的颜色表现
+      return getPolarizationColorNumeric(packet.polarization)
     }
     return 0xffffaa
   }, [visionMode, packet.polarization])

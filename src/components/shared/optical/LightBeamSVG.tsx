@@ -5,15 +5,17 @@
  * 偏振颜色映射说明：
  * 这是一种可视化约定(visualization convention)，而非物理特性。
  * 在现实中，偏振光的颜色由其波长决定，与偏振角度无关。
- * 使用不同颜色区分偏振方向是为了教学可视化目的：
- *   - 0° (水平偏振): 红色 #ff4444
- *   - 45°: 橙色 #ffaa00
- *   - 90° (垂直偏振): 绿色 #44ff44
- *   - 135°: 蓝色 #4444ff
+ * 使用不同颜色区分偏振方向是为了教学可视化目的。
+ *
+ * 支持三种色彩模式（通过 getPolarizationColor 从 lib/polarization 获取）：
+ *   - discrete: 经典4色（0°=红, 45°=橙, 90°=绿, 135°=蓝）
+ *   - continuous: 连续彩虹渐变（角度→色相映射）
+ *   - michelLevy: 米歇尔-莱维干涉色（模拟偏光显微镜）
  *
  * 这种颜色编码参考了偏振显微镜中的惯例，并非通用标准。
  */
 
+import { getPolarizationColor as getDefaultColor } from '@/lib/polarization'
 import type { GetPolarizationColorFn, LightBeamSegment } from './types'
 
 export interface LightBeamSVGProps {
@@ -35,13 +37,8 @@ export function LightBeamSVG({
 }: LightBeamSVGProps) {
   // 偏振角度到颜色的映射函数 - 这是可视化约定，非物理特性
   // 颜色周期为180°，因为偏振方向具有180°对称性
-  const getColor = getPolarizationColor || ((angle: number) => {
-    const normalizedAngle = ((angle % 180) + 180) % 180
-    if (normalizedAngle < 22.5 || normalizedAngle >= 157.5) return '#ff4444'  // 0°附近 - 水平
-    if (normalizedAngle < 67.5) return '#ffaa00'  // 45°附近
-    if (normalizedAngle < 112.5) return '#44ff44' // 90°附近 - 垂直
-    return '#4444ff' // 135°附近
-  })
+  // 使用集中管理的色彩函数，支持三种模式：discrete/continuous/michelLevy
+  const getColor = getPolarizationColor || getDefaultColor
 
   const opacity = Math.max(0.2, beam.intensity / 100)
   const strokeWidth = Math.max(0.5, (beam.intensity / 100) * 2)

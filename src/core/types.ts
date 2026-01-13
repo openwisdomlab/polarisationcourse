@@ -101,13 +101,49 @@ export const OPPOSITE_DIRECTION: Record<Direction, Direction> = {
   down: 'up'
 };
 
-// 偏振角度对应的颜色（用于可视化）
+// 偏振角度对应的颜色（用于可视化）- 离散模式（Three.js数值格式）
 export const POLARIZATION_COLORS: Record<PolarizationAngle, number> = {
   0: 0xff4444,    // 红色 - 水平
   45: 0xffaa00,   // 橙黄色 - 45度
   90: 0x44ff44,   // 绿色 - 垂直
   135: 0x4444ff   // 蓝色 - 135度
 };
+
+/**
+ * 将十六进制颜色字符串转换为Three.js数值格式
+ * @param hexString 如 '#ff4444'
+ * @returns 数值如 0xff4444
+ */
+export function hexStringToNumber(hexString: string): number {
+  return parseInt(hexString.replace('#', ''), 16);
+}
+
+/**
+ * HSL转Three.js数值颜色（连续彩虹模式）
+ * @param angle 偏振角度 (0-180)
+ * @returns Three.js数值颜色
+ */
+export function getPolarizationColorNumeric(angle: number): number {
+  // 归一化角度到 0-180
+  const normalizedAngle = ((angle % 180) + 180) % 180;
+  // 映射到HSL色相 (0-360)
+  const hue = (normalizedAngle * 2) % 360;
+
+  // HSL to RGB conversion (s=0.85, l=0.55)
+  const s = 0.85;
+  const l = 0.55;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + hue / 30) % 12;
+    return l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+  };
+
+  const r = Math.round(255 * f(0));
+  const g = Math.round(255 * f(8));
+  const b = Math.round(255 * f(4));
+
+  return (r << 16) | (g << 8) | b;
+}
 
 // 默认方块状态
 export function createDefaultBlockState(type: BlockType): BlockState {

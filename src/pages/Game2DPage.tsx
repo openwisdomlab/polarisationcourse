@@ -40,7 +40,14 @@ import { PersistentHeader } from '@/components/shared/PersistentHeader'
 import { SEO } from '@/components/shared/SEO'
 
 // Import shared modules
-import { getPolarizationColor, POLARIZATION_DISPLAY_CONFIG } from '@/lib/polarization'
+import {
+  getPolarizationColor,
+  POLARIZATION_DISPLAY_CONFIG,
+  setColorMode,
+  getColorMode,
+  COLOR_MODE_NAMES,
+  type PolarizationColorMode,
+} from '@/lib/polarization'
 import {
   EmitterSVG,
   PolarizerSVG,
@@ -487,7 +494,14 @@ export function Game2DPage() {
   const [showHint, setShowHint] = useState(false)
   const [isAnimating, setIsAnimating] = useState(true)
   const [showPolarization, setShowPolarization] = useState(true)
+  const [colorMode, setColorModeState] = useState<PolarizationColorMode>(getColorMode())
   const [showMobileInfo, setShowMobileInfo] = useState(false)
+
+  // Handle color mode change
+  const handleColorModeChange = useCallback((mode: PolarizationColorMode) => {
+    setColorMode(mode)
+    setColorModeState(mode)
+  }, [])
 
   // Undo/Redo history state
   const [history, setHistory] = useState<Record<string, Partial<OpticalComponent>>[]>([])
@@ -1104,6 +1118,34 @@ export function Game2DPage() {
                 <Eye className="w-3 h-3" />
                 {isZh ? '偏振色' : 'Polarization'}
               </button>
+
+              {/* Color mode selector */}
+              {showPolarization && (
+                <div className={cn(
+                  'flex flex-col gap-1 px-2 py-1.5 rounded-lg',
+                  isDark ? 'bg-slate-800/90' : 'bg-white/90'
+                )}>
+                  <span className={cn('text-[10px] font-medium mb-0.5', isDark ? 'text-slate-400' : 'text-slate-500')}>
+                    {isZh ? '色彩模式' : 'Color Mode'}
+                  </span>
+                  {(['discrete', 'continuous', 'michelLevy'] as PolarizationColorMode[]).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => handleColorModeChange(mode)}
+                      className={cn(
+                        'px-2 py-0.5 rounded text-[10px] text-left transition-all',
+                        colorMode === mode
+                          ? 'bg-cyan-500/30 text-cyan-400 border border-cyan-500/40'
+                          : isDark
+                            ? 'hover:bg-slate-700 text-slate-400'
+                            : 'hover:bg-slate-100 text-slate-600'
+                      )}
+                    >
+                      {COLOR_MODE_NAMES[mode][isZh ? 'zh' : 'en']}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Sensors status */}
