@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 // ListItem removed - no longer needed after merging lifeScene and diy
 import { DemoErrorBoundary } from '@/components/demos/DemoErrorBoundary'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Palette, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft, ExternalLink, FileCode } from 'lucide-react'
+import { Palette, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft, ExternalLink, FileCode, MessageCircle } from 'lucide-react'
 import { SourceCodeViewer } from '@/components/demos/source-code'
 import { hasDemoSource } from '@/data/demo-sources'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -3176,6 +3176,173 @@ export function DemosPage() {
           initialLanguage="typescript"
           onClose={() => setViewingSource(null)}
         />
+      )}
+
+      {/* C1: Question Wall Dialog */}
+      {showQuestionWall && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowQuestionWall(false)}
+        >
+          <div
+            className={cn(
+              'w-full max-w-3xl max-h-[80vh] overflow-hidden rounded-2xl border shadow-2xl',
+              theme === 'dark'
+                ? 'bg-slate-900 border-slate-700'
+                : 'bg-white border-gray-200'
+            )}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Dialog Header */}
+            <div className={cn(
+              'px-6 py-4 border-b flex items-center justify-between',
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-slate-700'
+                : 'bg-gradient-to-r from-purple-50 to-pink-50 border-gray-200'
+            )}>
+              <div className="flex items-center gap-3">
+                <MessageCircle className={cn(
+                  'w-6 h-6',
+                  theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
+                )} />
+                <div>
+                  <h2 className={cn(
+                    'text-xl font-bold',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? '问题墙' : 'Question Wall'}
+                  </h2>
+                  <p className={cn(
+                    'text-xs mt-0.5',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  )}>
+                    {isZh ? '从常见问题开始探索偏振光学' : 'Explore polarization through common questions'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowQuestionWall(false)}
+                className={cn(
+                  'p-2 rounded-lg transition-colors',
+                  theme === 'dark'
+                    ? 'hover:bg-slate-800 text-gray-400 hover:text-white'
+                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                )}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Dialog Content - Scrollable */}
+            <div className="overflow-y-auto p-6 max-h-[calc(80vh-100px)]">
+              {/* Difficulty Filter Tabs */}
+              <div className="flex gap-2 mb-6">
+                {(['explore', 'professional'] as DifficultyLevel[]).map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => handleDifficultyChange(level)}
+                    className={cn(
+                      'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                      difficultyLevel === level
+                        ? theme === 'dark'
+                          ? 'bg-purple-500/20 text-purple-400 border-2 border-purple-400'
+                          : 'bg-purple-100 text-purple-700 border-2 border-purple-500'
+                        : theme === 'dark'
+                          ? 'bg-slate-800 text-gray-400 border-2 border-slate-700 hover:border-slate-600'
+                          : 'bg-gray-100 text-gray-600 border-2 border-gray-200 hover:border-gray-300'
+                    )}
+                  >
+                    {DIFFICULTY_STRATEGY[level].icon} {isZh ? DIFFICULTY_STRATEGY[level].labelZh : DIFFICULTY_STRATEGY[level].label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Questions organized by category */}
+              {['phenomenon', 'application', 'principle', 'measurement'].map((category) => {
+                const categoryQuestions = QUESTION_WALL.filter(q =>
+                  q.category === category && q.difficulty === difficultyLevel
+                )
+
+                if (categoryQuestions.length === 0) return null
+
+                const categoryIcons = {
+                  phenomenon: '🌈',
+                  application: '🔧',
+                  principle: '⚡',
+                  measurement: '📊'
+                }
+
+                const categoryNames = {
+                  phenomenon: { en: 'Natural Phenomena', zh: '自然现象' },
+                  application: { en: 'Practical Applications', zh: '实际应用' },
+                  principle: { en: 'Physical Principles', zh: '物理原理' },
+                  measurement: { en: 'Measurement & Analysis', zh: '测量与分析' }
+                }
+
+                return (
+                  <div key={category} className="mb-6">
+                    <h3 className={cn(
+                      'text-sm font-semibold mb-3 flex items-center gap-2',
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    )}>
+                      <span className="text-lg">{categoryIcons[category as keyof typeof categoryIcons]}</span>
+                      {isZh ? categoryNames[category as keyof typeof categoryNames].zh : categoryNames[category as keyof typeof categoryNames].en}
+                    </h3>
+                    <div className="space-y-2">
+                      {categoryQuestions.map((q) => (
+                        <button
+                          key={q.id}
+                          onClick={() => {
+                            handleDemoChange(q.demoId)
+                            setShowQuestionWall(false)
+                            if (isCompact) setShowMobileSidebar(false)
+                          }}
+                          className={cn(
+                            'w-full text-left px-4 py-3 rounded-lg border transition-all duration-200',
+                            'hover:scale-[1.01] hover:shadow-md active:scale-[0.99]',
+                            theme === 'dark'
+                              ? 'bg-slate-800/50 border-slate-700 hover:bg-slate-800 hover:border-purple-500/50 text-gray-300'
+                              : 'bg-gray-50 border-gray-200 hover:bg-white hover:border-purple-300 text-gray-800'
+                          )}
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className={cn(
+                              'text-lg mt-0.5',
+                              theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
+                            )}>
+                              ?
+                            </span>
+                            <div className="flex-1">
+                              <p className={cn(
+                                'text-sm font-medium',
+                                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                              )}>
+                                {isZh ? q.questionZh : q.question}
+                              </p>
+                              <p className={cn(
+                                'text-xs mt-1',
+                                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                              )}>
+                                {(() => {
+                                  const demo = DEMOS.find(d => d.id === q.demoId)
+                                  return demo ? t(demo.titleKey) : ''
+                                })()}
+                              </p>
+                            </div>
+                            <ChevronRight className={cn(
+                              'w-4 h-4 mt-1',
+                              theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                            )} />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
       )}
     </>
   )
