@@ -472,41 +472,19 @@ export function ChroniclesPage() {
             ) : (
               /* Desktop Dual Track Timeline - 桌面端双轨时间线 (同步时间线布局) */
               <div className="relative">
-                {/* Track Labels - 轨道标签 */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className={cn(
-                    'flex-1 text-center py-2 rounded-l-lg border-r',
-                    theme === 'dark'
-                      ? 'bg-amber-500/10 border-amber-500/30'
-                      : 'bg-amber-50 border-amber-200'
-                  )}>
-                    <div className="flex items-center justify-center gap-2">
-                      <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
-                      <span className={cn('font-semibold', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
-                        {isZh ? '广义光学' : 'General Optics'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className={cn(
-                    'w-20 text-center py-2',
-                    theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
-                  )}>
-                    <span className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
-                      {isZh ? '年份' : 'Year'}
+                {/* Track Labels - 轨道标签 (居中显示) */}
+                <div className="flex items-center justify-center gap-8 mb-6">
+                  <div className="flex items-center gap-2">
+                    <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
+                    <span className={cn('font-semibold', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
+                      {isZh ? '广义光学' : 'General Optics'}
                     </span>
                   </div>
-                  <div className={cn(
-                    'flex-1 text-center py-2 rounded-r-lg border-l',
-                    theme === 'dark'
-                      ? 'bg-cyan-500/10 border-cyan-500/30'
-                      : 'bg-cyan-50 border-cyan-200'
-                  )}>
-                    <div className="flex items-center justify-center gap-2">
-                      <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
-                      <span className={cn('font-semibold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
-                        {isZh ? '偏振光' : 'Polarization'}
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
+                    <span className={cn('font-semibold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
+                      {isZh ? '偏振光' : 'Polarization'}
+                    </span>
                   </div>
                 </div>
 
