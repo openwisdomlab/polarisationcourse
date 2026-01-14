@@ -147,11 +147,23 @@ function FresnelDiagram({
         y: cy + rayLength * Math.cos(refractRad),
       }
 
-  // 反射率
+  // 反射率和透射率（考虑折射率和角度因子）
   const Rs = fresnel.rs * fresnel.rs
   const Rp = fresnel.rp * fresnel.rp
-  const Ts = 1 - Rs
-  const Tp = 1 - Rp
+
+  // 透射率需要考虑介质阻抗匹配因子：T = (n₂cosθ₂)/(n₁cosθ₁) × t²
+  // 这确保能量守恒：R + T = 1（在界面处的能量通量）
+  const rad1 = (incidentAngle * Math.PI) / 180
+  const rad2 = (fresnel.theta2 * Math.PI) / 180
+  const cosTheta1 = Math.cos(rad1)
+  const cosTheta2 = Math.cos(rad2)
+
+  const impedanceFactor = fresnel.totalReflection
+    ? 0
+    : (n2 * cosTheta2) / (n1 * cosTheta1)
+
+  const Ts = impedanceFactor * fresnel.ts * fresnel.ts
+  const Tp = impedanceFactor * fresnel.tp * fresnel.tp
 
   // 布儒斯特角
   const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
@@ -569,8 +581,19 @@ export function FresnelDemo() {
   const fresnel = fresnelEquations(incidentAngle, n1, n2)
   const Rs = fresnel.rs * fresnel.rs
   const Rp = fresnel.rp * fresnel.rp
-  const Ts = 1 - Rs
-  const Tp = 1 - Rp
+
+  // 透射率需要考虑介质阻抗匹配因子：T = (n₂cosθ₂)/(n₁cosθ₁) × t²
+  const rad1 = (incidentAngle * Math.PI) / 180
+  const rad2 = (fresnel.theta2 * Math.PI) / 180
+  const cosTheta1 = Math.cos(rad1)
+  const cosTheta2 = Math.cos(rad2)
+
+  const impedanceFactor = fresnel.totalReflection
+    ? 0
+    : (n2 * cosTheta2) / (n1 * cosTheta1)
+
+  const Ts = impedanceFactor * fresnel.ts * fresnel.ts
+  const Tp = impedanceFactor * fresnel.tp * fresnel.tp
 
   // 布儒斯特角
   const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
