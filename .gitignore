@@ -18,6 +18,9 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# npm lock file (project uses pnpm)
+package-lock.json
+
 # Environment
 .env
 .env.local
