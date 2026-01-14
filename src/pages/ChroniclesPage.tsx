@@ -599,10 +599,23 @@ export function ChroniclesPage() {
                       })
                     })
 
+                    // Calculate which years should show labels (first event, or 15+ year gap)
+                    let lastLabeledYear = -Infinity
+                    const yearsToLabel = new Set<number>()
+                    rows.forEach((row, idx) => {
+                      const gap = row.year - lastLabeledYear
+                      // Show label for: first row, significant gap (15+ years), or century change
+                      if (idx === 0 || gap >= 15 || Math.floor(row.year / 100) !== Math.floor(lastLabeledYear / 100)) {
+                        yearsToLabel.add(row.year)
+                        lastLabeledYear = row.year
+                      }
+                    })
+
                     return rows.map((row) => {
                       const { year, opticsEvents, polarizationEvents } = row
                       const hasOptics = opticsEvents.length > 0
                       const hasPolarization = polarizationEvents.length > 0
+                      const showYearLabel = yearsToLabel.has(year)
 
                       return (
                         <div key={`${year}-${hasOptics ? 'o' : ''}-${hasPolarization ? 'p' : ''}`} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
@@ -630,33 +643,53 @@ export function ChroniclesPage() {
                           </div>
 
                           {/* Center year marker */}
-                          <div className="w-20 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
+                          <div className="w-16 flex flex-col items-center justify-start relative z-10 flex-shrink-0">
+                            {/* Year label - only shown for significant gaps */}
+                            {showYearLabel && (
+                              <div className={cn(
+                                'px-2 py-0.5 rounded-full font-mono text-xs mb-1',
+                                hasOptics && hasPolarization
+                                  ? theme === 'dark'
+                                    ? 'bg-slate-700/80 text-gray-300'
+                                    : 'bg-gray-200 text-gray-700'
+                                  : hasOptics
+                                    ? theme === 'dark'
+                                      ? 'bg-amber-500/20 text-amber-400'
+                                      : 'bg-amber-100 text-amber-700'
+                                    : theme === 'dark'
+                                      ? 'bg-cyan-500/20 text-cyan-400'
+                                      : 'bg-cyan-100 text-cyan-700'
+                              )}>
+                                {year}
+                              </div>
+                            )}
+                            {/* Timeline dot */}
                             <div className={cn(
-                              'w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2',
+                              'w-3 h-3 rounded-full border-2',
                               hasOptics && hasPolarization
                                 ? theme === 'dark'
-                                  ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
-                                  : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
+                                  ? 'bg-gradient-to-br from-amber-500 to-cyan-500 border-gray-600'
+                                  : 'bg-gradient-to-br from-amber-400 to-cyan-400 border-gray-300'
                                 : hasOptics
                                   ? theme === 'dark'
-                                    ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                                    : 'bg-amber-100 border-amber-500 text-amber-700'
+                                    ? 'bg-amber-500 border-amber-400'
+                                    : 'bg-amber-400 border-amber-300'
                                   : theme === 'dark'
-                                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
-                                    : 'bg-cyan-100 border-cyan-500 text-cyan-700'
-                            )}>
-                              {year}
-                            </div>
+                                    ? 'bg-cyan-500 border-cyan-400'
+                                    : 'bg-cyan-400 border-cyan-300'
+                            )} />
                             {/* Connector lines */}
                             {hasOptics && (
                               <div className={cn(
-                                'absolute top-6 right-full w-4 h-0.5 mr-0',
+                                'absolute right-full w-4 h-0.5 mr-0',
+                                showYearLabel ? 'top-[calc(1.25rem+0.375rem)]' : 'top-1',
                                 theme === 'dark' ? 'bg-amber-500/50' : 'bg-amber-400'
                               )} />
                             )}
                             {hasPolarization && (
                               <div className={cn(
-                                'absolute top-6 left-full w-4 h-0.5 ml-0',
+                                'absolute left-full w-4 h-0.5 ml-0',
+                                showYearLabel ? 'top-[calc(1.25rem+0.375rem)]' : 'top-1',
                                 theme === 'dark' ? 'bg-cyan-500/50' : 'bg-cyan-400'
                               )} />
                             )}
