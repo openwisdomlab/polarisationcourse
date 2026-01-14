@@ -35,7 +35,6 @@ import {
   Eye,
   Menu,
   X,
-  Calculator,
   Users,
   Palette,
   ArrowRight,
@@ -80,14 +79,6 @@ const MODULE_ENTRIES: ModuleEntry[] = [
     icon: <Palette className="w-4 h-4" />,
     link: '/optical-studio',
     color: '#6366F1',
-  },
-  {
-    id: 'calc',
-    titleZh: '计算工坊',
-    titleEn: 'Calculators',
-    icon: <Calculator className="w-4 h-4" />,
-    link: '/calc',
-    color: '#8B5CF6',
   },
   {
     id: 'lab',
