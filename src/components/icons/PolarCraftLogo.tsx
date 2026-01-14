@@ -1,11 +1,12 @@
 /**
- * PolarCraft Logo - Main brand logo
- * PolarCraft 标志 - 简洁有冲击力的品牌标志
+ * PolarCraft Logo - 偏振光动态Logo
+ * Dynamic Polarized Light Logo - Bold and Impactful
  *
  * Design concept:
- * - Clean, bold design with strong visual impact
- * - Central prism splitting light into polarization colors
- * - Minimal elements for maximum recognition
+ * - 动态旋转的偏振波形，展示光波的振动方向
+ * - 精简有力的线条，极简主义设计
+ * - 流畅的CSS动画，呈现偏振光的动态美
+ * - 颜色渐变代表不同偏振态
  */
 
 import { cn } from '@/lib/utils'
@@ -23,15 +24,17 @@ export function PolarCraftLogo({
   animated = true,
   theme = 'dark'
 }: PolarCraftLogoProps) {
-  // Polarization colors - vibrant and distinct
+  // 偏振光标志色
   const colors = {
-    cyan: '#22d3ee',
-    violet: '#8b5cf6',
-    pink: '#ec4899',
-    orange: '#f59e0b',
-    center: theme === 'dark' ? '#ffffff' : '#0f172a',
-    glow: theme === 'dark' ? 'rgba(34, 211, 238, 0.6)' : 'rgba(8, 145, 178, 0.4)',
+    primary: '#22d3ee',    // 青色 - 水平偏振
+    secondary: '#a855f7',  // 紫色 - 垂直偏振
+    accent: '#f43f5e',     // 玫红 - 圆偏振
+    glow: theme === 'dark' ? 'rgba(34, 211, 238, 0.7)' : 'rgba(8, 145, 178, 0.5)',
+    core: theme === 'dark' ? '#ffffff' : '#0f172a',
   }
+
+  // 生成唯一ID避免SVG filter冲突
+  const id = `pc-${Math.random().toString(36).substr(2, 9)}`
 
   return (
     <svg
@@ -42,26 +45,45 @@ export function PolarCraftLogo({
       className={cn('transition-all duration-300', className)}
     >
       <defs>
-        {/* Gradient for center prism */}
-        <linearGradient id="prism-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={colors.cyan} />
-          <stop offset="50%" stopColor={colors.violet} />
-          <stop offset="100%" stopColor={colors.pink} />
+        {/* 主渐变 - 偏振光谱 */}
+        <linearGradient id={`${id}-grad`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={colors.primary}>
+            {animated && (
+              <animate
+                attributeName="stop-color"
+                values={`${colors.primary};${colors.secondary};${colors.accent};${colors.primary}`}
+                dur="3s"
+                repeatCount="indefinite"
+              />
+            )}
+          </stop>
+          <stop offset="100%" stopColor={colors.secondary}>
+            {animated && (
+              <animate
+                attributeName="stop-color"
+                values={`${colors.secondary};${colors.accent};${colors.primary};${colors.secondary}`}
+                dur="3s"
+                repeatCount="indefinite"
+              />
+            )}
+          </stop>
         </linearGradient>
 
-        {/* Glow filter */}
-        <filter id="logo-glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
+        {/* 光晕滤镜 */}
+        <filter id={`${id}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
+            <feMergeNode in="blur" />
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
 
-        {/* Strong glow for center */}
-        <filter id="center-glow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
+        {/* 强光晕 */}
+        <filter id={`${id}-glow-strong`} x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="5" result="blur" />
           <feMerge>
+            <feMergeNode in="blur" />
             <feMergeNode in="blur" />
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -69,82 +91,124 @@ export function PolarCraftLogo({
         </filter>
       </defs>
 
-      {/* Light beams radiating from center - simplified to 4 main beams */}
-      <g filter="url(#logo-glow)">
-        {/* Horizontal beam - cyan */}
-        <line
-          x1="10"
-          y1="50"
-          x2="90"
-          y2="50"
-          stroke={colors.cyan}
-          strokeWidth="6"
-          strokeLinecap="round"
-          opacity="0.9"
-        />
-
-        {/* Vertical beam - violet */}
-        <line
-          x1="50"
-          y1="10"
-          x2="50"
-          y2="90"
-          stroke={colors.violet}
-          strokeWidth="6"
-          strokeLinecap="round"
-          opacity="0.9"
-        />
-
-        {/* Diagonal beam 1 - pink */}
-        <line
-          x1="18"
-          y1="82"
-          x2="82"
-          y2="18"
-          stroke={colors.pink}
-          strokeWidth="4"
-          strokeLinecap="round"
-          opacity="0.8"
-        />
-
-        {/* Diagonal beam 2 - orange */}
-        <line
-          x1="18"
-          y1="18"
-          x2="82"
-          y2="82"
-          stroke={colors.orange}
-          strokeWidth="4"
-          strokeLinecap="round"
-          opacity="0.8"
-        />
-      </g>
-
-      {/* Central prism - bold hexagon */}
-      <g filter="url(#center-glow)">
-        <path
-          d="M50 25 L72 37 L72 63 L50 75 L28 63 L28 37 Z"
-          fill="url(#prism-gradient)"
-          opacity="0.95"
-        />
-
-        {/* Inner highlight */}
-        <path
-          d="M50 33 L62 41 L62 59 L50 67 L38 59 L38 41 Z"
-          fill={theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.5)'}
-        />
-      </g>
-
-      {/* Bright center core */}
+      {/* 背景光晕 - 脉动效果 */}
       <circle
         cx="50"
         cy="50"
-        r="10"
-        fill={colors.center}
-        filter="url(#center-glow)"
-        className={animated ? 'animate-pulse' : ''}
-        opacity="0.95"
+        r="30"
+        fill={colors.glow}
+        opacity={animated ? undefined : 0.4}
+        filter={`url(#${id}-glow-strong)`}
+      >
+        {animated && (
+          <animate
+            attributeName="opacity"
+            values="0.3;0.6;0.3"
+            dur="2s"
+            repeatCount="indefinite"
+          />
+        )}
+      </circle>
+
+      {/* 外环 - 代表偏振片 */}
+      <circle
+        cx="50"
+        cy="50"
+        r="38"
+        fill="none"
+        stroke={`url(#${id}-grad)`}
+        strokeWidth="3"
+        strokeLinecap="round"
+        filter={`url(#${id}-glow)`}
+        opacity="0.8"
       />
+
+      {/* 核心偏振波形 - 旋转的正弦波 */}
+      <g filter={`url(#${id}-glow)`}>
+        {/* 主波形 - 水平偏振态 */}
+        <g>
+          {animated && (
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              values="0 50 50;360 50 50"
+              dur="6s"
+              repeatCount="indefinite"
+            />
+          )}
+          <path
+            d="M 20 50 Q 30 35, 40 50 T 60 50 T 80 50"
+            fill="none"
+            stroke={colors.primary}
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          {/* 波形箭头 */}
+          <path
+            d="M 76 46 L 82 50 L 76 54"
+            fill="none"
+            stroke={colors.primary}
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+
+        {/* 正交波形 - 垂直偏振态，相位差90度 */}
+        <g opacity="0.7">
+          {animated && (
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              values="90 50 50;450 50 50"
+              dur="6s"
+              repeatCount="indefinite"
+            />
+          )}
+          <path
+            d="M 20 50 Q 30 35, 40 50 T 60 50 T 80 50"
+            fill="none"
+            stroke={colors.secondary}
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+        </g>
+      </g>
+
+      {/* 中心核心 - 光源点 */}
+      <circle
+        cx="50"
+        cy="50"
+        r="8"
+        fill={colors.core}
+        filter={`url(#${id}-glow-strong)`}
+      >
+        {animated && (
+          <animate
+            attributeName="r"
+            values="7;9;7"
+            dur="1.5s"
+            repeatCount="indefinite"
+          />
+        )}
+      </circle>
+
+      {/* 核心内圈 - 渐变色 */}
+      <circle
+        cx="50"
+        cy="50"
+        r="5"
+        fill={`url(#${id}-grad)`}
+      >
+        {animated && (
+          <animate
+            attributeName="r"
+            values="4;6;4"
+            dur="1.5s"
+            repeatCount="indefinite"
+          />
+        )}
+      </circle>
     </svg>
   )
 }
