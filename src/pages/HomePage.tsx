@@ -18,7 +18,7 @@ import { PolarWorldLogo } from '@/components/icons'
 import { GlobalSearch } from '@/components/shared/GlobalSearch'
 import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 import { PolarizationComparison } from '@/components/shared/PolarizationComparison'
-import { EXHIBITION_HALLS, type ExhibitionHall } from '@/components/museum'
+import { EXHIBITION_HALLS } from '@/components/museum'
 import { cn } from '@/lib/utils'
 import {
   ChevronRight,
@@ -119,6 +119,341 @@ const CATEGORY_FILTERS: CategoryFilter[] = [
 ]
 
 // ============================================================================
+// Expanded Unit Detail Card - 展开的单元详情卡片
+// ============================================================================
+
+interface ExpandedUnitCardProps {
+  unit: typeof PSRT_CURRICULUM[0]
+  theme: 'dark' | 'light'
+  isZh: boolean
+  color: string
+  icon: React.ReactNode
+  mapping?: CourseTimelineMapping
+  onClose: () => void
+}
+
+function ExpandedUnitCard({
+  unit,
+  theme,
+  isZh,
+  color,
+  icon,
+  mapping,
+  onClose,
+}: ExpandedUnitCardProps) {
+  // Count total events and demos for the unit
+  const totalEvents = mapping?.keyEvents?.length || 0
+  const totalDemos = unit.sections.reduce((sum, s) => sum + s.relatedDemos.length, 0)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className={cn(
+        'rounded-2xl border overflow-hidden',
+        theme === 'dark'
+          ? 'bg-slate-800/90 border-slate-700'
+          : 'bg-white border-gray-200'
+      )}
+      style={{
+        boxShadow: `0 8px 32px ${color}15`,
+        borderColor: `${color}40`,
+      }}
+    >
+      {/* Header */}
+      <div
+        className="p-5"
+        style={{
+          background: theme === 'dark'
+            ? `linear-gradient(135deg, ${color}10 0%, transparent 100%)`
+            : `linear-gradient(135deg, ${color}08 0%, transparent 100%)`
+        }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            {/* Icon */}
+            <div
+              className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: color }}
+            >
+              <span className="text-white">{icon}</span>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              {/* Badge */}
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className="text-xs font-medium px-2.5 py-1 rounded-full"
+                  style={{ backgroundColor: `${color}20`, color }}
+                >
+                  {isZh ? `单元 ${unit.unitNumber}` : `Unit ${unit.unitNumber}`}
+                </span>
+              </div>
+
+              {/* Title */}
+              <h3 className={cn(
+                'text-lg font-bold leading-tight mb-1',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                {isZh ? unit.titleZh : unit.titleEn}
+              </h3>
+
+              {/* Subtitle */}
+              <p className={cn(
+                'text-sm',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              )}>
+                {isZh ? unit.subtitleZh : unit.subtitleEn}
+              </p>
+            </div>
+          </div>
+
+          {/* Stats & Close */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 text-xs">
+              <span className={cn(
+                'flex items-center gap-1',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              )}>
+                <Eye className="w-3.5 h-3.5" />
+                {totalDemos}
+              </span>
+              <span className={cn(
+                'flex items-center gap-1',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              )}>
+                <Users className="w-3.5 h-3.5" />
+                {totalEvents}
+              </span>
+            </div>
+            <button
+              onClick={onClose}
+              className={cn(
+                'p-1.5 rounded-lg transition-colors',
+                theme === 'dark'
+                  ? 'hover:bg-slate-700 text-gray-400'
+                  : 'hover:bg-gray-100 text-gray-500'
+              )}
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Description */}
+        <p className={cn(
+          'mt-4 text-sm leading-relaxed',
+          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+        )}>
+          {isZh ? unit.descriptionZh : unit.descriptionEn}
+        </p>
+      </div>
+
+      {/* Learning Objectives - 学习目标 */}
+      <div className={cn(
+        'px-5 py-4 border-t',
+        theme === 'dark' ? 'border-slate-700' : 'border-gray-100'
+      )}>
+        <h4 className={cn(
+          'text-sm font-semibold mb-3 flex items-center gap-2',
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        )}>
+          <Target className="w-4 h-4" style={{ color }} />
+          {isZh ? '学习目标' : 'Learning Objectives'}
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {(isZh ? unit.learningObjectives.zh : unit.learningObjectives.en).map((objective, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                'flex items-start gap-2 text-xs',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              )}
+            >
+              <div
+                className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-0.5"
+                style={{ backgroundColor: `${color}20` }}
+              >
+                <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill={color}>
+                  <path d="M10.28 2.28a.75.75 0 00-1.06-1.06L4.5 5.94 2.78 4.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l5.25-5.25z" />
+                </svg>
+              </div>
+              <span className="flex-1">{objective}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Course Chapters - 课程章节 */}
+      <div className={cn(
+        'px-5 py-4 border-t',
+        theme === 'dark' ? 'border-slate-700' : 'border-gray-100'
+      )}>
+        <h4 className={cn(
+          'text-sm font-semibold mb-3 flex items-center gap-2',
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        )}>
+          <BookOpen className="w-4 h-4" style={{ color }} />
+          {isZh ? '课程章节' : 'Course Chapters'}
+        </h4>
+        <div className="space-y-2">
+          {unit.sections.map((section) => {
+            const sectionEvents = section.relatedEvents?.length || 0
+            const sectionDemos = section.relatedDemos?.length || 0
+
+            return (
+              <Link
+                key={section.id}
+                to={section.relatedDemos[0] ? `/demos/${section.relatedDemos[0]}` : '#'}
+                className={cn(
+                  'group flex items-center gap-3 p-3 rounded-xl transition-all',
+                  theme === 'dark'
+                    ? 'bg-slate-700/30 hover:bg-slate-700/60 border border-slate-700/50'
+                    : 'bg-gray-50 hover:bg-gray-100 border border-gray-100'
+                )}
+              >
+                {/* Section number */}
+                <div
+                  className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border-2"
+                  style={{
+                    backgroundColor: `${color}10`,
+                    borderColor: `${color}40`,
+                    color,
+                  }}
+                >
+                  {section.id}
+                </div>
+
+                {/* Section content */}
+                <div className="flex-1 min-w-0">
+                  <h5 className={cn(
+                    'text-sm font-medium leading-tight',
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  )}>
+                    {isZh ? section.titleZh : section.titleEn}
+                  </h5>
+                  <p className={cn(
+                    'text-xs mt-0.5 line-clamp-1',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  )}>
+                    {isZh ? section.descriptionZh : section.descriptionEn}
+                  </p>
+                </div>
+
+                {/* Stats */}
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  {sectionEvents > 0 && (
+                    <span className={cn(
+                      'flex items-center gap-1 text-xs',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    )}>
+                      <Sparkles className="w-3 h-3" />
+                      {sectionEvents} {isZh ? '事件' : 'events'}
+                    </span>
+                  )}
+                  {sectionDemos > 0 && (
+                    <span className={cn(
+                      'flex items-center gap-1 text-xs',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    )}>
+                      <FlaskConical className="w-3 h-3" />
+                      {sectionDemos} {isZh ? '演示' : 'demos'}
+                    </span>
+                  )}
+                  <ChevronRight className={cn(
+                    'w-4 h-4 transition-transform group-hover:translate-x-0.5',
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  )} />
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Home Experiments - 家庭小实验 */}
+      {unit.homeExperiments && unit.homeExperiments.length > 0 && (
+        <div className={cn(
+          'px-5 py-4 border-t',
+          theme === 'dark' ? 'border-slate-700' : 'border-gray-100'
+        )}>
+          <h4 className={cn(
+            'text-sm font-semibold mb-3 flex items-center gap-2',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}>
+            <span className="text-base">🏠</span>
+            {isZh ? '家庭小实验' : 'Home Experiments'}
+          </h4>
+          {unit.homeExperiments.slice(0, 1).map((exp, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                'p-4 rounded-xl',
+                theme === 'dark'
+                  ? 'bg-gradient-to-br from-slate-700/50 to-slate-800/50 border border-slate-700/50'
+                  : 'bg-gradient-to-br from-amber-50/50 to-orange-50/50 border border-amber-100/50'
+              )}
+            >
+              <h5 className={cn(
+                'text-sm font-semibold mb-2',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                {isZh ? exp.titleZh : exp.titleEn}
+              </h5>
+              <p className={cn(
+                'text-xs mb-3',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                {isZh ? '材料：' : 'Materials: '}
+                {(isZh ? exp.materials.zh : exp.materials.en).join('、')}
+              </p>
+              <p className={cn(
+                'text-xs px-3 py-2 rounded-lg',
+                theme === 'dark'
+                  ? 'bg-cyan-500/10 text-cyan-400'
+                  : 'bg-cyan-50 text-cyan-700'
+              )}>
+                ✨ {isZh ? exp.observation.zh : exp.observation.en}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Application Domains - 应用领域 */}
+      <div className={cn(
+        'px-5 py-4 border-t',
+        theme === 'dark' ? 'border-slate-700' : 'border-gray-100'
+      )}>
+        <h4 className={cn(
+          'text-sm font-semibold mb-3 flex items-center gap-2',
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        )}>
+          <Rocket className="w-4 h-4" style={{ color }} />
+          {isZh ? '应用领域' : 'Applications'}
+        </h4>
+        <div className="flex flex-wrap gap-2">
+          {(isZh ? unit.applications.zh : unit.applications.en).map((app, idx) => (
+            <span
+              key={idx}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-xs font-medium transition-colors cursor-default',
+                theme === 'dark'
+                  ? 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              )}
+            >
+              {app}
+            </span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+// ============================================================================
 // Course Outline Column - 课程大纲列（用于三栏布局）
 // ============================================================================
 
@@ -137,12 +472,26 @@ function CourseOutlineColumn({
 }: CourseOutlineColumnProps) {
   const unitColors = ['#22D3EE', '#3B82F6', '#8B5CF6', '#F59E0B', '#EC4899']
   const unitIcons = [
-    <Lightbulb key="1" className="w-4 h-4" />,
-    <Zap key="2" className="w-4 h-4" />,
-    <Sparkles key="3" className="w-4 h-4" />,
-    <Target key="4" className="w-4 h-4" />,
-    <Telescope key="5" className="w-4 h-4" />,
+    <Lightbulb key="1" className="w-5 h-5" />,
+    <Zap key="2" className="w-5 h-5" />,
+    <Sparkles key="3" className="w-5 h-5" />,
+    <Target key="4" className="w-5 h-5" />,
+    <Telescope key="5" className="w-5 h-5" />,
   ]
+
+  const [expandedUnitId, setExpandedUnitId] = useState<string | null>(null)
+
+  const handleUnitClick = (unitId: string, mapping?: CourseTimelineMapping) => {
+    if (expandedUnitId === unitId) {
+      // Clicking same unit - collapse and clear filter
+      setExpandedUnitId(null)
+      onUnitClick(null)
+    } else {
+      // Clicking different unit - expand and filter
+      setExpandedUnitId(unitId)
+      onUnitClick(unitId, mapping?.relatedTimelineYears)
+    }
+  }
 
   return (
     <div className={cn(
@@ -169,14 +518,17 @@ function CourseOutlineColumn({
           'text-xs mt-1',
           theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
         )}>
-          {isZh ? '点击单元筛选时间线' : 'Click to filter timeline'}
+          {isZh ? '点击单元展开详情' : 'Click unit to expand details'}
         </p>
       </div>
 
       {/* Show All Button */}
       <div className="p-3 pb-0">
         <button
-          onClick={() => onUnitClick(null)}
+          onClick={() => {
+            setExpandedUnitId(null)
+            onUnitClick(null)
+          }}
           className={cn(
             'w-full text-left p-3 rounded-xl border transition-all duration-200',
             !activeUnitId
@@ -205,106 +557,108 @@ function CourseOutlineColumn({
       </div>
 
       {/* Units list */}
-      <div className="p-3 space-y-2 max-h-[500px] overflow-y-auto scrollbar-thin">
-        {PSRT_CURRICULUM.map((unit, index) => {
-          const mapping = COURSE_TIMELINE_MAPPINGS.find(m => m.unitNumber === unit.unitNumber)
-          const color = unitColors[index % unitColors.length]
-          const isActive = activeUnitId === unit.id
+      <div className="p-3 space-y-2 max-h-[600px] overflow-y-auto scrollbar-thin">
+        <AnimatePresence mode="wait">
+          {PSRT_CURRICULUM.map((unit, index) => {
+            const mapping = COURSE_TIMELINE_MAPPINGS.find(m => m.unitNumber === unit.unitNumber)
+            const color = unitColors[index % unitColors.length]
+            const isExpanded = expandedUnitId === unit.id
+            const isActive = activeUnitId === unit.id
+            const totalDemos = unit.sections.reduce((sum, s) => sum + s.relatedDemos.length, 0)
 
-          return (
-            <button
-              key={unit.id}
-              onClick={() => onUnitClick(unit.id, mapping?.relatedTimelineYears)}
-              className={cn(
-                'w-full text-left p-3 rounded-xl border transition-all duration-200',
-                isActive
-                  ? theme === 'dark'
-                    ? 'bg-slate-700 shadow-lg'
-                    : 'bg-white shadow-lg'
-                  : theme === 'dark'
-                    ? 'bg-slate-800/50 hover:bg-slate-700'
-                    : 'bg-gray-50 hover:bg-white'
-              )}
-              style={{
-                borderColor: isActive ? color : theme === 'dark' ? '#334155' : '#e5e7eb',
-                boxShadow: isActive ? `0 4px 20px ${color}20` : undefined,
-              }}
-            >
-              <div className="flex items-start gap-3">
-                {/* Unit number */}
-                <div
-                  className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
-                  style={{ backgroundColor: color }}
-                >
-                  {unit.unitNumber}
-                </div>
+            // Show expanded card if this unit is expanded
+            if (isExpanded) {
+              return (
+                <ExpandedUnitCard
+                  key={unit.id}
+                  unit={unit}
+                  theme={theme}
+                  isZh={isZh}
+                  color={color}
+                  icon={unitIcons[index]}
+                  mapping={mapping}
+                  onClose={() => {
+                    setExpandedUnitId(null)
+                    onUnitClick(null)
+                  }}
+                />
+              )
+            }
 
-                {/* Unit info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span style={{ color }}>{unitIcons[index]}</span>
-                    <span className={cn(
-                      'text-xs font-medium',
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                    )}>
-                      {mapping?.keyEvents?.length || 0} {isZh ? '个事件' : 'events'}
-                    </span>
+            // Show compact card for non-expanded units
+            return (
+              <motion.button
+                key={unit.id}
+                layout
+                onClick={() => handleUnitClick(unit.id, mapping)}
+                className={cn(
+                  'w-full text-left p-3 rounded-xl border transition-all duration-200',
+                  isActive
+                    ? theme === 'dark'
+                      ? 'bg-slate-700 shadow-lg'
+                      : 'bg-white shadow-lg'
+                    : theme === 'dark'
+                      ? 'bg-slate-800/50 hover:bg-slate-700'
+                      : 'bg-gray-50 hover:bg-white'
+                )}
+                style={{
+                  borderColor: isActive ? color : theme === 'dark' ? '#334155' : '#e5e7eb',
+                  boxShadow: isActive ? `0 4px 20px ${color}20` : undefined,
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  {/* Unit number */}
+                  <div
+                    className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold"
+                    style={{ backgroundColor: color }}
+                  >
+                    {unit.unitNumber}
                   </div>
-                  <h3 className={cn(
-                    'text-sm font-medium leading-tight',
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  )}>
-                    {isZh ? unit.titleZh : unit.titleEn}
-                  </h3>
-                  <p className={cn(
-                    'text-xs mt-1 line-clamp-2',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                  )}>
-                    {isZh ? unit.subtitleZh : unit.subtitleEn}
-                  </p>
-                </div>
 
-                <ChevronRight className={cn(
-                  'w-4 h-4 flex-shrink-0 transition-transform',
-                  isActive ? 'rotate-90' : '',
-                  theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-                )} />
-              </div>
+                  {/* Unit info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span style={{ color }}>{unitIcons[index]}</span>
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className={cn(
+                          'flex items-center gap-0.5',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        )}>
+                          <Eye className="w-3 h-3" />
+                          {totalDemos}
+                        </span>
+                        <span className={cn(
+                          'flex items-center gap-0.5',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        )}>
+                          <Users className="w-3 h-3" />
+                          {mapping?.keyEvents?.length || 0}
+                        </span>
+                      </div>
+                    </div>
+                    <h3 className={cn(
+                      'text-sm font-semibold leading-tight',
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    )}>
+                      {isZh ? unit.titleZh : unit.titleEn}
+                    </h3>
+                    <p className={cn(
+                      'text-xs mt-1 line-clamp-1',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    )}>
+                      {isZh ? unit.subtitleZh : unit.subtitleEn}
+                    </p>
+                  </div>
 
-              {/* Sections preview when active */}
-              {isActive && (
-                <div className="mt-3 pt-3 border-t space-y-1.5"
-                  style={{ borderColor: theme === 'dark' ? '#334155' : '#e5e7eb' }}
-                >
-                  {unit.sections.slice(0, 3).map(section => (
-                    <Link
-                      key={section.id}
-                      to={section.relatedDemos[0] ? `/demos/${section.relatedDemos[0]}` : '#'}
-                      onClick={e => e.stopPropagation()}
-                      className={cn(
-                        'flex items-center gap-2 p-2 rounded-lg text-xs transition-colors',
-                        theme === 'dark'
-                          ? 'hover:bg-slate-600/50 text-gray-300'
-                          : 'hover:bg-gray-100 text-gray-600'
-                      )}
-                    >
-                      <span
-                        className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold"
-                        style={{ backgroundColor: `${color}20`, color }}
-                      >
-                        {section.id}
-                      </span>
-                      <span className="flex-1 truncate">
-                        {isZh ? section.titleZh : section.titleEn}
-                      </span>
-                      <FlaskConical className="w-3 h-3 opacity-50" />
-                    </Link>
-                  ))}
+                  <ChevronDown className={cn(
+                    'w-4 h-4 flex-shrink-0 transition-transform',
+                    theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                  )} />
                 </div>
-              )}
-            </button>
-          )
-        })}
+              </motion.button>
+            )
+          })}
+        </AnimatePresence>
       </div>
     </div>
   )
