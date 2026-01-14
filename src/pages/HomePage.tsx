@@ -17,6 +17,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { PolarWorldLogo } from '@/components/icons'
 import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 import { PolarizationComparison } from '@/components/shared/PolarizationComparison'
+import { EXHIBITION_HALLS, type ExhibitionHall } from '@/components/museum'
 import { cn } from '@/lib/utils'
 import {
   ChevronRight,
@@ -40,6 +41,10 @@ import {
   Beaker,
   Layers,
   Rocket,
+  Play,
+  Waves,
+  Atom,
+  Microscope,
 } from 'lucide-react'
 
 // Data imports
@@ -1072,50 +1077,277 @@ export function HomePage() {
           {t('home.courseBanner.description')}
         </motion.p>
 
-        {/* CTA Buttons */}
+        {/* Module links - Secondary CTAs */}
         <motion.div
-          className="flex flex-wrap items-center justify-center gap-4 px-4"
+          className="flex items-center justify-center gap-2 px-4 mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8 }}
         >
-          {/* Primary CTA - Demo Gallery */}
-          <Link
-            to="/demos"
-            className={cn(
-              'inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:scale-105',
-              'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg hover:shadow-cyan-500/25'
-            )}
-          >
-            <Eye className="w-5 h-5" />
-            {isZh ? '进入偏振演示馆' : 'Enter Demo Gallery'}
-            <span className="text-xs px-2 py-0.5 rounded-full bg-white/20">20+</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-
-          {/* Module links */}
-          <div className="flex items-center gap-2">
-            {MODULE_ENTRIES.map((module, index) => (
-              <motion.div
-                key={module.id}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 2 + index * 0.1 }}
+          {MODULE_ENTRIES.map((module, index) => (
+            <motion.div
+              key={module.id}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 2 + index * 0.1 }}
+            >
+              <Link
+                to={module.link}
+                className={cn(
+                  'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105',
+                  theme === 'dark'
+                    ? 'bg-slate-800/80 text-gray-300 hover:bg-slate-700 border border-slate-700'
+                    : 'bg-white/80 text-gray-700 hover:bg-white border border-gray-200'
+                )}
               >
-                <Link
-                  to={module.link}
-                  className={cn(
-                    'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105',
-                    theme === 'dark'
-                      ? 'bg-slate-800/80 text-gray-300 hover:bg-slate-700 border border-slate-700'
-                      : 'bg-white/80 text-gray-700 hover:bg-white border border-gray-200'
-                  )}
+                <span style={{ color: module.color }}>{module.icon}</span>
+                <span>{isZh ? module.titleZh : module.titleEn}</span>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* ================================================================== */}
+        {/* Demo Gallery Portal Entrance - 偏振演示馆入口 */}
+        {/* ================================================================== */}
+        <motion.div
+          className="w-full max-w-5xl mx-auto px-4"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.2, duration: 0.6 }}
+        >
+          {/* Portal Container */}
+          <div className={cn(
+            'relative rounded-3xl overflow-hidden',
+            theme === 'dark'
+              ? 'bg-gradient-to-br from-slate-800/90 via-slate-900/95 to-slate-800/90 border border-slate-700/50'
+              : 'bg-gradient-to-br from-white/95 via-gray-50/95 to-white/95 border border-gray-200/50'
+          )}
+          style={{
+            boxShadow: theme === 'dark'
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(34, 211, 238, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+              : '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(34, 211, 238, 0.1)'
+          }}
+          >
+            {/* Animated Background Glow */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px]"
+                style={{
+                  background: `radial-gradient(ellipse, ${theme === 'dark' ? 'rgba(34, 211, 238, 0.15)' : 'rgba(34, 211, 238, 0.1)'} 0%, transparent 70%)`,
+                }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.5, 0.8, 0.5],
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              {/* Animated light beams */}
+              {[0, 1, 2, 3].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute top-1/2 left-1/2 h-0.5 origin-left"
+                  style={{
+                    width: '150px',
+                    background: `linear-gradient(90deg, ${['#ff4444', '#ffaa00', '#44ff44', '#4488ff'][i]}60, transparent)`,
+                    transform: `translate(-50%, -50%) rotate(${i * 90 + 45}deg)`,
+                  }}
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                    width: ['150px', '200px', '150px'],
+                  }}
+                  transition={{ duration: 2, delay: i * 0.3, repeat: Infinity, ease: 'easeInOut' }}
+                />
+              ))}
+            </div>
+
+            {/* Portal Header with Enter Button */}
+            <div className="relative z-10 p-6 pb-4 text-center">
+              {/* Badge */}
+              <div className={cn(
+                'inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-medium',
+                theme === 'dark'
+                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30'
+                  : 'bg-cyan-500/10 text-cyan-600 border border-cyan-500/30'
+              )}>
+                <div className="flex gap-1">
+                  {['#ff4444', '#ffaa00', '#44ff44', '#4488ff'].map((color, i) => (
+                    <motion.div
+                      key={i}
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: color }}
+                      animate={{ scale: [1, 1.3, 1] }}
+                      transition={{ duration: 1.5, delay: i * 0.2, repeat: Infinity }}
+                    />
+                  ))}
+                </div>
+                <span>{isZh ? '偏振演示馆' : 'Polarization Demo Gallery'}</span>
+              </div>
+
+              {/* Main Entry Button */}
+              <Link
+                to="/demos"
+                className={cn(
+                  'group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg',
+                  'transition-all duration-300 hover:scale-105',
+                  'bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-500 text-white',
+                  'shadow-xl shadow-cyan-500/30 hover:shadow-cyan-500/50'
+                )}
+              >
+                <motion.div
+                  className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                 >
-                  <span style={{ color: module.color }}>{module.icon}</span>
-                  <span>{isZh ? module.titleZh : module.titleEn}</span>
-                </Link>
-              </motion.div>
-            ))}
+                  <Play className="w-5 h-5 ml-0.5" />
+                </motion.div>
+                <span>{isZh ? '进入偏振演示馆' : 'Enter Demo Gallery'}</span>
+                <span className="text-xs px-3 py-1 rounded-full bg-white/20">20+</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+
+              {/* Stats */}
+              <div className="flex items-center justify-center gap-6 mt-4 text-sm">
+                {[
+                  { value: '6', label: isZh ? '展厅' : 'Halls' },
+                  { value: '17+', label: isZh ? '演示' : 'Demos' },
+                  { value: '3', label: isZh ? '难度' : 'Levels' }
+                ].map((stat, i) => (
+                  <div key={i} className="flex items-center gap-1.5">
+                    <span className={cn(
+                      'font-bold',
+                      theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                    )}>
+                      {stat.value}
+                    </span>
+                    <span className={cn(
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    )}>
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Exhibition Halls Grid - 展厅导览 */}
+            <div className="relative z-10 px-6 pb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className={cn(
+                  'text-base font-semibold flex items-center gap-2',
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                )}>
+                  <Layers className="w-4 h-4 text-cyan-500" />
+                  {isZh ? '展厅导览' : 'Exhibition Halls'}
+                </h3>
+                <span className={cn(
+                  'text-xs',
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                )}>
+                  {isZh ? '选择展厅开始探索' : 'Select a hall to explore'}
+                </span>
+              </div>
+
+              {/* Halls Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {EXHIBITION_HALLS.map((hall, index) => {
+                  const IconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+                    'optical-basics': Lightbulb,
+                    'polarization-fundamentals': Waves,
+                    'interface-reflection': Layers,
+                    'transparent-media': FlaskConical,
+                    'scattering': Atom,
+                    'polarimetry': Microscope,
+                  }
+                  const Icon = IconMap[hall.id] || Eye
+
+                  return (
+                    <motion.div
+                      key={hall.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 2.4 + index * 0.1 }}
+                    >
+                      <Link
+                        to={`/demos/${hall.demos[0]}`}
+                        className={cn(
+                          'group relative block rounded-xl overflow-hidden p-4',
+                          'transition-all duration-300 hover:scale-[1.02]',
+                          theme === 'dark'
+                            ? 'bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600'
+                            : 'bg-white/80 hover:bg-white border border-gray-200/80 hover:border-gray-300'
+                        )}
+                        style={{
+                          boxShadow: `0 0 0 0 ${hall.color}00`,
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = `0 8px 24px -8px ${hall.glowColor}, 0 0 0 1px ${hall.color}40`
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = `0 0 0 0 ${hall.color}00`
+                        }}
+                      >
+                        <div className="flex items-start gap-3">
+                          {/* Icon */}
+                          <div
+                            className={cn(
+                              'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center',
+                              'transition-all duration-300 group-hover:scale-110'
+                            )}
+                            style={{ backgroundColor: `${hall.color}15` }}
+                          >
+                            <Icon
+                              className="w-5 h-5 transition-transform duration-300 group-hover:rotate-6"
+                              style={{ color: hall.color }}
+                            />
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span
+                                className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+                                style={{ backgroundColor: `${hall.color}20`, color: hall.color }}
+                              >
+                                Unit {hall.unit}
+                              </span>
+                              <span className={cn(
+                                'text-[10px]',
+                                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                              )}>
+                                {hall.demos.length} demos
+                              </span>
+                            </div>
+                            <h4 className={cn(
+                              'text-sm font-semibold truncate',
+                              theme === 'dark' ? 'text-white' : 'text-gray-900'
+                            )}>
+                              {t(hall.titleKey)}
+                            </h4>
+                            <p className={cn(
+                              'text-xs line-clamp-1 mt-0.5',
+                              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                            )}>
+                              {t(hall.subtitleKey)}
+                            </p>
+                          </div>
+
+                          {/* Arrow */}
+                          <ChevronRight
+                            className={cn(
+                              'flex-shrink-0 w-4 h-4 transition-all duration-300',
+                              'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0',
+                              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                            )}
+                            style={{ color: hall.color }}
+                          />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </motion.div>
 

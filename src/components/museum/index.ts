@@ -5,7 +5,7 @@
  */
 
 export { MuseumHomepage } from './MuseumHomepage'
-export { GalleryHero } from './GalleryHero'
+export { GalleryHero, ExhibitionHallCard, EXHIBITION_HALLS, type ExhibitionHall } from './GalleryHero'
 export { LightPathOdyssey } from './LightPathOdyssey'
 export { KnowledgeMap } from './KnowledgeMap'
 export { PolarizationLawsSection } from './PolarizationLawsSection'

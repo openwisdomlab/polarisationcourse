@@ -24,8 +24,8 @@ import { PolarizationLawsSection } from './PolarizationLawsSection'
 // Polarization angle colors
 const POLARIZATION_COLORS = ['#ff4444', '#ffaa00', '#44ff44', '#4488ff']
 
-// Exhibition hall configuration for each unit
-interface ExhibitionHall {
+// Exhibition hall configuration for each unit (exported for reuse)
+export interface ExhibitionHall {
   id: string
   unit: number
   titleKey: string
@@ -37,7 +37,7 @@ interface ExhibitionHall {
   demos: string[]
 }
 
-const EXHIBITION_HALLS: ExhibitionHall[] = [
+export const EXHIBITION_HALLS: ExhibitionHall[] = [
   {
     id: 'optical-basics',
     unit: 0,
@@ -175,8 +175,8 @@ function AnimatedPolarizationVisual() {
   )
 }
 
-// Exhibition Hall Card - compact version
-function ExhibitionHallCard({
+// Exhibition Hall Card - compact version (exported for reuse)
+export function ExhibitionHallCard({
   hall,
   isHovered,
   onHover,
