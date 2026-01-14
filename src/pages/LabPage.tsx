@@ -1,9 +1,9 @@
 /**
- * Lab Page - Virtual Research Lab Group
- * 课题组页面 - 虚拟研究实验室
+ * Lab Page - Research Lab (科研实战营)
+ * 不是学科研，而是做科研
  *
- * Simulated graduate research experience with tasks, experiments,
- * and collaborative learning about polarization physics.
+ * Real research challenges with open-ended exploration,
+ * authentic data, and complete research workflows.
  */
 
 import { useState, useMemo } from 'react'
@@ -18,10 +18,12 @@ import {
   FlaskConical, Users, Target, Award,
   BookOpen, CheckCircle2,
   Clock, Lock, ChevronRight, Lightbulb,
-  GraduationCap, Beaker, Microscope,
+  Beaker, Microscope,
   BarChart3, Sparkles, Newspaper, Calculator,
-  TrendingUp, Puzzle, PlayCircle
+  TrendingUp, PlayCircle, Rocket,
+  Search, Eye, Brain, Dna, TreePine
 } from 'lucide-react'
+import { RESEARCH_CHALLENGES, type ResearchChallenge } from '@/data/research-challenges'
 
 // Research tasks data
 interface ResearchTask {
@@ -200,14 +202,14 @@ const STUDY_GROUPS: StudyGroup[] = [
   },
 ]
 
-// Tabs configuration
+// Tabs configuration - 重新排序，开放挑战优先
 const TABS = [
-  { id: 'tasks', label: 'Research Tasks', labelZh: '研究任务', icon: <Target className="w-4 h-4" /> },
-  { id: 'analysis', label: 'Data Workbench', labelZh: '数据分析工作台', icon: <BarChart3 className="w-4 h-4" /> },
+  { id: 'challenges', label: 'Open Challenges', labelZh: '开放挑战', icon: <Rocket className="w-4 h-4" /> },
+  { id: 'tasks', label: 'Guided Tasks', labelZh: '引导任务', icon: <Target className="w-4 h-4" /> },
+  { id: 'analysis', label: 'Data Workbench', labelZh: '数据工作台', icon: <BarChart3 className="w-4 h-4" /> },
   { id: 'frontier', label: 'Research Frontier', labelZh: '科研前沿', icon: <TrendingUp className="w-4 h-4" /> },
-  { id: 'workshop', label: 'Creative Workshop', labelZh: '创意工坊', icon: <Puzzle className="w-4 h-4" /> },
-  { id: 'groups', label: 'Study Groups', labelZh: '学习小组', icon: <Users className="w-4 h-4" /> },
-  { id: 'showcase', label: 'Showcase', labelZh: '成果展示', icon: <Award className="w-4 h-4" /> },
+  { id: 'collaboration', label: 'Collaboration Hub', labelZh: '协作空间', icon: <Users className="w-4 h-4" /> },
+  { id: 'showcase', label: 'Showcase Gallery', labelZh: '成果展示', icon: <Award className="w-4 h-4" /> },
 ]
 
 // Research frontier data (科研前沿)
@@ -270,60 +272,7 @@ const RESEARCH_FRONTIER: ResearchNews[] = [
   },
 ]
 
-// Creative workshop challenges (创意工坊)
-interface Challenge {
-  id: string
-  titleEn: string
-  titleZh: string
-  descriptionEn: string
-  descriptionZh: string
-  difficulty: 'open' | 'guided' | 'research'
-  tags: string[]
-  status: 'active' | 'completed' | 'coming-soon'
-}
-
-const CHALLENGES: Challenge[] = [
-  {
-    id: 'underwater-vision',
-    titleEn: 'Underwater Polarization Camera',
-    titleZh: '水下偏振相机设计',
-    descriptionEn: 'Design a polarimetric system to improve underwater visibility by removing scattered light.',
-    descriptionZh: '设计一个偏振系统，通过去除散射光来提高水下能见度。',
-    difficulty: 'guided',
-    tags: ['imaging', 'scattering', 'application'],
-    status: 'active',
-  },
-  {
-    id: 'stress-visualization',
-    titleEn: 'Stress Visualization App',
-    titleZh: '应力可视化应用',
-    descriptionEn: 'Create a smartphone app that uses the phone\'s screen and camera to visualize stress patterns in transparent materials.',
-    descriptionZh: '创建一个智能手机应用，使用手机屏幕和摄像头来可视化透明材料中的应力图案。',
-    difficulty: 'open',
-    tags: ['photoelasticity', 'mobile', 'DIY'],
-    status: 'active',
-  },
-  {
-    id: 'polarimeter-design',
-    titleEn: 'Low-Cost Polarimeter',
-    titleZh: '低成本偏振仪设计',
-    descriptionEn: 'Build a Stokes polarimeter using inexpensive components that can measure all four Stokes parameters.',
-    descriptionZh: '使用低成本组件构建一个能测量全部四个斯托克斯参数的偏振仪。',
-    difficulty: 'research',
-    tags: ['instrumentation', 'Stokes', 'measurement'],
-    status: 'active',
-  },
-  {
-    id: 'bee-simulation',
-    titleEn: 'Bee Navigation Simulator',
-    titleZh: '蜜蜂导航模拟器',
-    descriptionEn: 'Create a simulation of how bees use sky polarization patterns for navigation.',
-    descriptionZh: '创建一个模拟蜜蜂如何利用天空偏振图案进行导航的仿真系统。',
-    difficulty: 'guided',
-    tags: ['biomimetics', 'simulation', 'nature'],
-    status: 'coming-soon',
-  },
-]
+// Removed old CHALLENGES data - now using RESEARCH_CHALLENGES from separate file
 
 // Analysis tools data (数据分析工作台)
 interface AnalysisTool {
@@ -599,7 +548,7 @@ export function LabPage() {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
-  const [activeTab, setActiveTab] = useState('tasks')
+  const [activeTab, setActiveTab] = useState('challenges') // Default to challenges
   const [difficultyFilter, setDifficultyFilter] = useState<string>('')
 
   // Lab store
@@ -637,10 +586,10 @@ export function LabPage() {
   return (
     <>
       <SEO
-        title="Virtual Lab Group - PolarCraft"
-        titleZh="虚拟课题组 - PolarCraft"
-        description="Experience graduate-level research simulation with polarization experiments, data analysis, and scientific publications."
-        descriptionZh="体验研究生级别的研究模拟，包括偏振实验、数据分析和科学出版。"
+        title="Research Lab - PolarCraft"
+        titleZh="科研实战营 - PolarCraft"
+        description="Join real research projects with open-ended exploration, authentic data, and complete research workflows. Not learning research, but doing research."
+        descriptionZh="加入真实科研课题，体验完整研究流程。不是学科研，而是做科研。真实数据、开放探索、无标准答案。"
       />
       <div className={cn(
         'min-h-screen',
@@ -651,7 +600,7 @@ export function LabPage() {
         {/* Header with Persistent Logo */}
         <PersistentHeader
         moduleKey="labGroup"
-        moduleName={isZh ? '虚拟课题组' : 'Virtual Lab Group'}
+        moduleName={isZh ? '科研实战营' : 'Research Lab'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',
@@ -665,24 +614,45 @@ export function LabPage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Hero section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 text-yellow-500 text-sm mb-4">
-            <GraduationCap className="w-4 h-4" />
-            <span>{isZh ? '像研究生一样学习' : 'Learn Like a Graduate Student'}</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-500 text-sm mb-4">
+            <Rocket className="w-4 h-4" />
+            <span className="font-semibold">{isZh ? '不是学科研，而是做科研' : 'Not Learning Research, but Doing Research'}</span>
           </div>
           <h2 className={cn(
-            'text-2xl sm:text-3xl font-bold mb-3',
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
+            'text-2xl sm:text-3xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r',
+            theme === 'dark'
+              ? 'from-cyan-400 via-violet-400 to-pink-400'
+              : 'from-cyan-600 via-violet-600 to-pink-600'
           )}>
-            {isZh ? '欢迎加入偏振光课题组' : 'Welcome to the Polarization Lab'}
+            {isZh ? '欢迎来到科研实战营' : 'Welcome to the Research Lab'}
           </h2>
           <p className={cn(
-            'text-base max-w-2xl mx-auto',
+            'text-base max-w-2xl mx-auto mb-2',
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           )}>
             {isZh
-              ? '领取研究任务，完成虚拟实验，与同学讨论，产出研究成果。'
-              : 'Take on research tasks, complete virtual experiments, discuss with peers, and produce results.'}
+              ? '加入真实科研课题，体验完整研究流程，探索未知问题，产出真正的研究成果。'
+              : 'Join real research projects, experience complete research workflows, explore open questions, and produce genuine research outcomes.'}
           </p>
+          <div className={cn(
+            'flex flex-wrap items-center justify-center gap-2 text-xs',
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          )}>
+            <span className="flex items-center gap-1">
+              <Eye className="w-3 h-3" />
+              {isZh ? '真实数据' : 'Real Data'}
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              <Search className="w-3 h-3" />
+              {isZh ? '开放探索' : 'Open Exploration'}
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              <Brain className="w-3 h-3" />
+              {isZh ? '无标准答案' : 'No Fixed Answers'}
+            </span>
+          </div>
         </div>
 
         {/* Progress overview */}
@@ -729,6 +699,241 @@ export function LabPage() {
         </div>
 
         {/* Content */}
+        {/* Open Challenges Tab - 开放挑战 */}
+        {activeTab === 'challenges' && (
+          <div className="space-y-6">
+            {/* Intro Banner */}
+            <div className={cn(
+              'p-6 rounded-2xl border-2',
+              theme === 'dark'
+                ? 'bg-gradient-to-br from-orange-900/20 via-yellow-900/20 to-red-900/20 border-yellow-500/30'
+                : 'bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 border-yellow-300'
+            )}>
+              <div className="flex items-start gap-4">
+                <div className={cn(
+                  'w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0',
+                  theme === 'dark' ? 'bg-yellow-500/20' : 'bg-yellow-100'
+                )}>
+                  <Rocket className={cn('w-6 h-6', theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600')} />
+                </div>
+                <div className="flex-1">
+                  <h3 className={cn(
+                    'text-lg font-bold mb-2',
+                    theme === 'dark' ? 'text-yellow-300' : 'text-yellow-800'
+                  )}>
+                    {isZh ? '🔥 真实课题 · 开放探索 · 你就是科研者' : '🔥 Real Projects · Open Exploration · You Are the Researcher'}
+                  </h3>
+                  <p className={cn(
+                    'text-sm leading-relaxed',
+                    theme === 'dark' ? 'text-yellow-200/80' : 'text-yellow-700'
+                  )}>
+                    {isZh
+                      ? '这里的每个挑战都来自正在进行的真实科研项目。你将使用真实的实验数据，面对真实的不确定性，没有标准答案等着你——只有等待发现的未知。这不是演示实验，而是真正的科研探索。'
+                      : 'Every challenge here comes from ongoing real research projects. You\'ll work with authentic experimental data, face real uncertainties, and there are no standard answers waiting for you — only unknowns waiting to be discovered. This is not a demonstration experiment, but genuine scientific exploration.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Challenges Grid */}
+            <div className="grid grid-cols-1 gap-6">
+              {RESEARCH_CHALLENGES.map(challenge => {
+                const categoryIcons: Record<ResearchChallenge['category'], React.ReactNode> = {
+                  biomedical: <Dna className="w-5 h-5" />,
+                  environmental: <TreePine className="w-5 h-5" />,
+                  materials: <Microscope className="w-5 h-5" />,
+                  fundamental: <Sparkles className="w-5 h-5" />
+                }
+
+                const categoryColors: Record<ResearchChallenge['category'], string> = {
+                  biomedical: '#EC4899',
+                  environmental: '#10B981',
+                  materials: '#8B5CF6',
+                  fundamental: '#3B82F6'
+                }
+
+                const difficultyLabels = {
+                  beginner: { zh: '入门', en: 'Beginner' },
+                  intermediate: { zh: '进阶', en: 'Intermediate' },
+                  advanced: { zh: '高级', en: 'Advanced' }
+                }
+
+                const statusLabels = {
+                  active: { zh: '进行中', en: 'Active' },
+                  completed: { zh: '已完成', en: 'Completed' },
+                  'coming-soon': { zh: '即将开放', en: 'Coming Soon' }
+                }
+
+                const color = categoryColors[challenge.category]
+
+                return (
+                  <div
+                    key={challenge.id}
+                    className={cn(
+                      'rounded-2xl border-2 overflow-hidden transition-all duration-300',
+                      challenge.status === 'active'
+                        ? theme === 'dark'
+                          ? 'bg-slate-800/70 border-slate-700 hover:border-yellow-500/50 hover:shadow-2xl hover:-translate-y-1'
+                          : 'bg-white border-gray-200 hover:border-yellow-400 hover:shadow-2xl hover:-translate-y-1'
+                        : theme === 'dark'
+                          ? 'bg-slate-800/30 border-slate-700/50 opacity-60'
+                          : 'bg-gray-50 border-gray-200 opacity-60'
+                    )}
+                    style={{
+                      boxShadow: challenge.status === 'active' ? `0 8px 32px ${color}10` : undefined
+                    }}
+                  >
+                    {/* Header with gradient */}
+                    <div
+                      className="h-2"
+                      style={{
+                        background: `linear-gradient(to right, ${color}, ${color}88)`
+                      }}
+                    />
+
+                    <div className="p-6">
+                      {/* Title & Metadata */}
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
+                            <span style={{ color }}>{categoryIcons[challenge.category]}</span>
+                            <Badge color="yellow" size="sm">
+                              {isZh ? difficultyLabels[challenge.difficulty].zh : difficultyLabels[challenge.difficulty].en}
+                            </Badge>
+                            <Badge
+                              color={challenge.status === 'active' ? 'green' : challenge.status === 'completed' ? 'blue' : 'gray'}
+                              size="sm"
+                            >
+                              {isZh ? statusLabels[challenge.status].zh : statusLabels[challenge.status].en}
+                            </Badge>
+                            <div className={cn(
+                              'flex items-center gap-1 text-xs',
+                              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                            )}>
+                              <Clock className="w-3 h-3" />
+                              {challenge.estimatedWeeks} {isZh ? '周' : 'weeks'}
+                            </div>
+                          </div>
+                          <h3 className={cn(
+                            'text-xl font-bold mb-1',
+                            theme === 'dark' ? 'text-white' : 'text-gray-900'
+                          )}>
+                            {isZh ? challenge.titleZh : challenge.titleEn}
+                          </h3>
+                          <p className={cn(
+                            'text-sm italic',
+                            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                          )}>
+                            {isZh ? challenge.subtitleZh : challenge.subtitleEn}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Core Question */}
+                      <div className={cn(
+                        'p-4 rounded-xl mb-4',
+                        theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'
+                      )}>
+                        <h4 className={cn(
+                          'text-xs font-semibold uppercase tracking-wider mb-2',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        )}>
+                          {isZh ? '核心问题' : 'Core Question'}
+                        </h4>
+                        <p className={cn(
+                          'text-sm font-medium',
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        )}>
+                          {isZh ? challenge.coreQuestionZh : challenge.coreQuestionEn}
+                        </p>
+                      </div>
+
+                      {/* Objectives */}
+                      <div className="mb-4">
+                        <h4 className={cn(
+                          'text-xs font-semibold uppercase tracking-wider mb-2',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        )}>
+                          {isZh ? '学习目标' : 'Learning Objectives'}
+                        </h4>
+                        <ul className="space-y-2">
+                          {(isZh ? challenge.objectivesZh : challenge.objectivesEn).slice(0, 3).map((obj, i) => (
+                            <li key={i} className={cn(
+                              'text-sm flex items-start gap-2',
+                              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                            )}>
+                              <span className="text-yellow-500 flex-shrink-0">•</span>
+                              <span>{obj}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {challenge.tags.map(tag => (
+                          <span
+                            key={tag}
+                            className={cn(
+                              'text-xs px-2 py-1 rounded-full',
+                              theme === 'dark' ? 'bg-slate-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                            )}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Action Button */}
+                      {challenge.status === 'active' && (
+                        <button
+                          onClick={() => {
+                            // TODO: Open challenge detail modal
+                            console.log('Open challenge:', challenge.id)
+                          }}
+                          className={cn(
+                            'w-full py-3 px-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2',
+                            'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600',
+                            'text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5'
+                          )}
+                        >
+                          <span>{isZh ? '开始挑战' : 'Start Challenge'}</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      {challenge.status === 'coming-soon' && (
+                        <div className={cn(
+                          'w-full py-3 px-4 rounded-xl font-medium text-center',
+                          theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-100 text-gray-500'
+                        )}>
+                          {isZh ? '即将开放' : 'Coming Soon'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Bottom Note */}
+            <div className={cn(
+              'p-4 rounded-xl border',
+              theme === 'dark' ? 'bg-cyan-900/10 border-cyan-500/20' : 'bg-cyan-50 border-cyan-200'
+            )}>
+              <p className={cn(
+                'text-sm italic',
+                theme === 'dark' ? 'text-cyan-300/80' : 'text-cyan-700'
+              )}>
+                💡 {isZh
+                  ? '科研从来不是知道答案的人在讲解，而是不知道答案的人在一起探索。如果你愿意参与这场探索，那么从现在开始，你已经是这个课题组的一部分了。'
+                  : 'Research is never about those who know the answer explaining it, but about those who don\'t know the answer exploring together. If you\'re willing to join this exploration, you\'re already part of this research group.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Guided Tasks Tab */}
         {activeTab === 'tasks' && (
           <>
             {/* Difficulty filter */}
@@ -935,114 +1140,86 @@ export function LabPage() {
           </div>
         )}
 
-        {/* Creative Workshop Tab */}
-        {activeTab === 'workshop' && (
+        {/* Collaboration Hub Tab - 协作空间 */}
+        {activeTab === 'collaboration' && (
           <div className="space-y-6">
             {/* Intro */}
             <div className={cn(
-              'p-4 rounded-xl border',
-              theme === 'dark' ? 'bg-purple-900/20 border-purple-700/30' : 'bg-purple-50 border-purple-200'
+              'p-6 rounded-2xl border',
+              theme === 'dark' ? 'bg-violet-900/20 border-violet-700/30' : 'bg-violet-50 border-violet-200'
             )}>
-              <div className="flex items-start gap-3">
-                <Puzzle className={cn(
-                  'w-5 h-5 mt-0.5',
-                  theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
-                )} />
+              <div className="flex items-start gap-4">
+                <div className={cn(
+                  'w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0',
+                  theme === 'dark' ? 'bg-violet-500/20' : 'bg-violet-100'
+                )}>
+                  <Users className={cn('w-6 h-6', theme === 'dark' ? 'text-violet-400' : 'text-violet-600')} />
+                </div>
                 <div>
                   <h4 className={cn(
-                    'font-semibold',
-                    theme === 'dark' ? 'text-purple-300' : 'text-purple-800'
+                    'text-lg font-semibold mb-2',
+                    theme === 'dark' ? 'text-violet-300' : 'text-violet-800'
                   )}>
-                    {isZh ? '创意工坊：开放问题 × 社区挑战' : 'Creative Workshop: Open Problems × Community Challenges'}
+                    {isZh ? '协作空间：与同行交流，共同成长' : 'Collaboration Hub: Exchange with Peers, Grow Together'}
                   </h4>
                   <p className={cn(
-                    'text-sm mt-1',
-                    theme === 'dark' ? 'text-purple-200/70' : 'text-purple-700'
+                    'text-sm',
+                    theme === 'dark' ? 'text-violet-200/70' : 'text-violet-700'
                   )}>
                     {isZh
-                      ? '探索开放性问题，参与社区挑战，将理论知识应用到实际项目中。'
-                      : 'Explore open problems, participate in community challenges, and apply theoretical knowledge to real projects.'}
+                      ? '加入虚拟学习小组，与志同道合的伙伴讨论科研问题，分享研究心得，相互启发。'
+                      : 'Join virtual study groups, discuss research questions with like-minded partners, share insights, and inspire each other.'}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Challenges Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {CHALLENGES.map(challenge => (
-                <div
-                  key={challenge.id}
-                  className={cn(
-                    'p-4 rounded-xl border transition-all',
-                    challenge.status === 'active'
-                      ? theme === 'dark'
-                        ? 'bg-slate-800/70 border-slate-700 hover:border-purple-500/50'
-                        : 'bg-white border-gray-200 hover:border-purple-300'
-                      : theme === 'dark'
-                        ? 'bg-slate-800/30 border-slate-700/50'
-                        : 'bg-gray-50 border-gray-200'
-                  )}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className={cn(
-                      'font-semibold',
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    )}>
-                      {isZh ? challenge.titleZh : challenge.titleEn}
-                    </h3>
-                    <span className={cn(
-                      'text-xs px-2 py-0.5 rounded-full',
-                      challenge.status === 'active'
-                        ? 'bg-green-500/10 text-green-500'
-                        : challenge.status === 'coming-soon'
-                          ? 'bg-yellow-500/10 text-yellow-500'
-                          : 'bg-gray-500/10 text-gray-500'
-                    )}>
-                      {challenge.status === 'active' ? (isZh ? '进行中' : 'Active')
-                        : challenge.status === 'coming-soon' ? (isZh ? '即将开始' : 'Coming Soon')
-                          : (isZh ? '已完成' : 'Completed')}
-                    </span>
-                  </div>
-                  <p className={cn(
-                    'text-sm mb-3',
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  )}>
-                    {isZh ? challenge.descriptionZh : challenge.descriptionEn}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {challenge.tags.map(tag => (
-                      <span
-                        key={tag}
-                        className={cn(
-                          'text-xs px-2 py-0.5 rounded-full',
-                          theme === 'dark' ? 'bg-slate-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-                        )}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    <span className={cn(
-                      'text-xs px-2 py-0.5 rounded-full',
-                      challenge.difficulty === 'open' && (theme === 'dark' ? 'bg-green-500/10 text-green-400' : 'bg-green-100 text-green-700'),
-                      challenge.difficulty === 'guided' && (theme === 'dark' ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-100 text-blue-700'),
-                      challenge.difficulty === 'research' && (theme === 'dark' ? 'bg-purple-500/10 text-purple-400' : 'bg-purple-100 text-purple-700')
-                    )}>
-                      {challenge.difficulty === 'open' ? (isZh ? '开放式' : 'Open')
-                        : challenge.difficulty === 'guided' ? (isZh ? '引导式' : 'Guided')
-                          : (isZh ? '研究级' : 'Research')}
-                    </span>
-                  </div>
-                </div>
-              ))}
+            {/* Study Groups Grid */}
+            <div>
+              <h3 className={cn(
+                'text-lg font-semibold mb-4 flex items-center gap-2',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                <Users className="w-5 h-5 text-violet-500" />
+                {isZh ? '虚拟学习小组' : 'Virtual Study Groups'}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {STUDY_GROUPS.map(group => (
+                  <GroupCard key={group.id} group={group} />
+                ))}
+              </div>
             </div>
-          </div>
-        )}
 
-        {activeTab === 'groups' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {STUDY_GROUPS.map(group => (
-              <GroupCard key={group.id} group={group} />
-            ))}
+            {/* Discussion & Q&A */}
+            <div className={cn(
+              'p-6 rounded-2xl border text-center',
+              theme === 'dark' ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'
+            )}>
+              <Lightbulb className={cn(
+                'w-12 h-12 mx-auto mb-4',
+                theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
+              )} />
+              <h3 className={cn(
+                'text-xl font-semibold mb-2',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                {isZh ? '讨论区 & 问答社区' : 'Discussion & Q&A Community'}
+              </h3>
+              <p className={cn(
+                'text-sm mb-4 max-w-md mx-auto',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              )}>
+                {isZh
+                  ? '在这里提出你的科研问题，与导师和同学互动，获得及时反馈。社区功能即将上线。'
+                  : 'Ask your research questions here, interact with mentors and peers, and get timely feedback. Community features coming soon.'}
+              </p>
+              <div className={cn(
+                'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm',
+                theme === 'dark' ? 'bg-slate-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+              )}>
+                <span>{isZh ? '即将推出' : 'Coming Soon'}</span>
+              </div>
+            </div>
           </div>
         )}
 
