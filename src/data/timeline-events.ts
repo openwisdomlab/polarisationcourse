@@ -198,46 +198,6 @@ This insight, born in plague-time isolation, became the foundation of spectrosco
     illustrationType: 'prism'
   },
   {
-    year: 1676,
-    titleEn: 'First Measurement of Light Speed',
-    titleZh: '首次测量光速',
-    descriptionEn: 'Ole Rømer calculates the speed of light by observing the moons of Jupiter, proving light travels at finite speed.',
-    descriptionZh: '奥勒·罗默通过观测木星卫星计算出光速，证明光以有限速度传播。',
-    scientistEn: 'Ole Rømer',
-    scientistZh: '奥勒·罗默',
-    category: 'discovery',
-    importance: 1,
-    track: 'optics',
-    details: {
-      en: [
-        'Observed delays in eclipses of Jupiter\'s moon Io',
-        'Calculated light speed as approximately 220,000 km/s (close to modern value)',
-        'First proof that light doesn\'t travel instantaneously'
-      ],
-      zh: [
-        '观测到木卫一被木星遮挡时间的延迟',
-        '计算出光速约为220,000公里/秒（接近现代数值）',
-        '首次证明光不是瞬时传播'
-      ]
-    },
-    scientistBio: {
-      birthYear: 1644,
-      deathYear: 1710,
-      nationality: 'Danish',
-      portraitEmoji: '🪐',
-      bioEn: 'Ole Rømer was a Danish astronomer who made the first quantitative measurements of the speed of light. He later became the mayor of Copenhagen and reformed Danish weights and measures.',
-      bioZh: '奥勒·罗默是丹麦天文学家，首次对光速进行了定量测量。后来他成为哥本哈根市长，并改革了丹麦的度量衡制度。'
-    },
-    references: [
-      { title: 'Cohen, I. B. (1940). Roemer and the First Determination of the Velocity of Light' }
-    ],
-    thinkingQuestion: {
-      en: 'If light travels so fast (300,000 km/s), how did Rømer manage to measure it using only a telescope? What clever trick did he use?',
-      zh: '光速如此之快（每秒30万公里），罗默是如何仅用望远镜测量它的？他用了什么巧妙的方法？'
-    },
-    illustrationType: 'lightspeed'
-  },
-  {
     year: 1801,
     titleEn: 'Young\'s Double-Slit Experiment',
     titleZh: '杨氏双缝实验',
@@ -3570,124 +3530,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     },
     illustrationType: 'quantum'
   },
-  // ===== 新增历史事件 (新科学家) =====
-  {
-    year: 1609,
-    titleEn: 'Galileo\'s Telescope Revolution',
-    titleZh: '伽利略的望远镜革命',
-    descriptionEn: 'Galileo Galilei improves the refracting telescope and turns it toward the heavens, beginning modern observational astronomy.',
-    descriptionZh: '伽利略·伽利莱改进折射望远镜并将其指向天空，开启了现代观测天文学。',
-    scientistEn: 'Galileo Galilei',
-    scientistZh: '伽利略·伽利莱',
-    category: 'experiment',
-    importance: 1,
-    track: 'optics',
-    details: {
-      en: [
-        'Improved Dutch telescope design to 20x magnification',
-        'Discovered Jupiter\'s moons, Saturn\'s rings, lunar craters',
-        'Observed phases of Venus proving heliocentric model',
-        'Laid foundation for lens-based optical instruments'
-      ],
-      zh: [
-        '将荷兰望远镜设计改进至20倍放大',
-        '发现木星卫星、土星光环、月球环形山',
-        '观察金星相位证明日心说',
-        '为透镜光学仪器奠定基础'
-      ]
-    },
-    scientistBio: {
-      birthYear: 1564,
-      deathYear: 1642,
-      nationality: 'Italian',
-      portraitEmoji: '🔭',
-      bioEn: 'Galileo Galilei is called the "father of modern science." His telescope observations transformed our understanding of the universe.',
-      bioZh: '伽利略·伽利莱被称为"现代科学之父"。他的望远镜观测改变了我们对宇宙的理解。'
-    },
-    scene: {
-      location: 'Padua and Venice, Italy',
-      season: 'Summer',
-      mood: 'revolutionary discovery'
-    }
-  },
-  {
-    year: 1662,
-    titleEn: 'Fermat\'s Principle of Least Time',
-    titleZh: '费马最短时间原理',
-    descriptionEn: 'Pierre de Fermat derives refraction law from the principle that light takes the path of least time.',
-    descriptionZh: '皮埃尔·德·费马从光走最短时间路径的原理推导出折射定律。',
-    scientistEn: 'Pierre de Fermat',
-    scientistZh: '皮埃尔·德·费马',
-    category: 'theory',
-    importance: 1,
-    track: 'optics',
-    details: {
-      en: [
-        'Light chooses the path of least time, not shortest distance',
-        'Mathematically derived Snell\'s law from first principles',
-        'Introduced variational thinking to physics',
-        'Precursor to principle of least action in mechanics'
-      ],
-      zh: [
-        '光选择时间最短的路径，而非距离最短',
-        '从第一原理数学推导斯涅尔定律',
-        '将变分思想引入物理学',
-        '力学中最小作用量原理的先驱'
-      ]
-    },
-    scientistBio: {
-      birthYear: 1607,
-      deathYear: 1665,
-      nationality: 'French',
-      portraitEmoji: '📐',
-      bioEn: 'Pierre de Fermat was a lawyer and amateur mathematician whose contributions to optics, number theory, and probability were foundational.',
-      bioZh: '皮埃尔·德·费马是一位律师兼业余数学家，他对光学、数论和概率论的贡献是奠基性的。'
-    },
-    scene: {
-      location: 'Toulouse, France',
-      season: 'Autumn',
-      mood: 'mathematical elegance'
-    }
-  },
-  {
-    year: 1814,
-    titleEn: 'Fraunhofer Lines: The Sun\'s Fingerprint',
-    titleZh: '夫琅和费线：太阳的指纹',
-    descriptionEn: 'Joseph von Fraunhofer maps hundreds of dark lines in the solar spectrum, founding spectroscopy.',
-    descriptionZh: '约瑟夫·冯·夫琅和费绘制了太阳光谱中数百条暗线，创立了光谱学。',
-    scientistEn: 'Joseph von Fraunhofer',
-    scientistZh: '约瑟夫·冯·夫琅和费',
-    category: 'discovery',
-    importance: 1,
-    track: 'optics',
-    details: {
-      en: [
-        'Mapped 574 dark lines in the solar spectrum',
-        'Labeled major lines with letters (A, B, C... still used today)',
-        'Invented the diffraction grating for precise spectral analysis',
-        'Founded spectroscopy — identifying elements by spectral signatures'
-      ],
-      zh: [
-        '绘制了太阳光谱中574条暗线',
-        '用字母标记主要线条（A、B、C...至今仍在使用）',
-        '发明了用于精确光谱分析的衍射光栅',
-        '创立了光谱学——通过光谱特征识别元素'
-      ]
-    },
-    scientistBio: {
-      birthYear: 1787,
-      deathYear: 1826,
-      nationality: 'German',
-      portraitEmoji: '🌈',
-      bioEn: 'Joseph von Fraunhofer rose from poverty to become the foremost optical instrument maker of his era.',
-      bioZh: '约瑟夫·冯·夫琅和费从贫困中崛起，成为他那个时代最杰出的光学仪器制造商。'
-    },
-    scene: {
-      location: 'Munich, Bavaria',
-      season: 'Summer',
-      mood: 'precision and discovery'
-    }
-  },
+  // ===== 补充历史事件 =====
   {
     year: 1881,
     titleEn: 'Michelson Interferometer',
@@ -3815,45 +3658,6 @@ And yet the mystery remained. Why does light have polarization at all? What fund
       trackTarget: 'polarization',
       descriptionEn: 'Land revolutionized polarizer technology building on Nicol\'s prism',
       descriptionZh: '兰德在尼科尔棱镜基础上革新了偏振技术'
-    }
-  },
-  {
-    year: 1947,
-    titleEn: 'Gabor Invents Holography',
-    titleZh: '盖博发明全息术',
-    descriptionEn: 'Dennis Gabor conceives holography — recording both amplitude and phase of light for 3D imaging.',
-    descriptionZh: '丹尼斯·盖博构想出全息术——同时记录光波振幅和相位实现三维成像。',
-    scientistEn: 'Dennis Gabor',
-    scientistZh: '丹尼斯·盖博',
-    category: 'theory',
-    importance: 2,
-    track: 'optics',
-    details: {
-      en: [
-        'Proposed recording interference pattern of object and reference beams',
-        'Reconstruction creates 3D image with parallax',
-        'Originally developed to improve electron microscopes',
-        'Full potential realized after invention of lasers in 1960s'
-      ],
-      zh: [
-        '提出记录物光束和参考光束的干涉图样',
-        '重建产生具有视差的3D图像',
-        '最初为改进电子显微镜而开发',
-        '在1960年代激光发明后才充分发挥潜力'
-      ]
-    },
-    scientistBio: {
-      birthYear: 1900,
-      deathYear: 1979,
-      nationality: 'Hungarian-British',
-      portraitEmoji: '💿',
-      bioEn: 'Dennis Gabor received the 1971 Nobel Prize for inventing holography. His theoretical invention had to wait decades for laser technology.',
-      bioZh: '丹尼斯·盖博因发明全息术获得1971年诺贝尔奖。他的理论发明等待了数十年才有激光技术使其实用。'
-    },
-    scene: {
-      location: 'Rugby, England',
-      season: 'Autumn',
-      mood: 'theoretical breakthrough'
     }
   },
 ]

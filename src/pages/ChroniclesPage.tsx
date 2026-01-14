@@ -470,7 +470,7 @@ export function ChroniclesPage() {
                 </div>
               </div>
             ) : (
-              /* Desktop Dual Track Timeline - 桌面端双轨时间线 */
+              /* Desktop Dual Track Timeline - 桌面端双轨时间线 (同步时间线布局) */
               <div className="relative">
                 {/* Track Labels - 轨道标签 */}
                 <div className="flex items-center justify-between mb-6">
@@ -510,7 +510,7 @@ export function ChroniclesPage() {
                   </div>
                 </div>
 
-                {/* Timeline with center axis */}
+                {/* Timeline with center axis - 同步时间线 */}
                 <div className="relative">
                   {/* Center vertical line */}
                   <div className={cn(
@@ -518,21 +518,95 @@ export function ChroniclesPage() {
                     theme === 'dark' ? 'bg-gradient-to-b from-amber-500/50 via-gray-500/50 to-cyan-500/50' : 'bg-gradient-to-b from-amber-300 via-gray-300 to-cyan-300'
                   )} />
 
-                  {/* Events */}
+                  {/* Events - 同步时间线布局 */}
                   {(() => {
-                    // Get all unique years from filtered events
-                    const years = [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
+                    // 将事件按时间排序，然后创建同步的左右布局
+                    // 规则：右侧事件时间不能早于同行或上方的左侧事件
+                    const sortedEvents = [...filteredEvents].sort((a, b) => a.year - b.year)
 
-                    return years.map((year) => {
-                      // Get ALL events for this year per track (not just the first one)
-                      const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
-                      const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
+                    // 创建配对的行：每行包含同一时间点的 optics 和/或 polarization 事件
+                    // 同时追踪最后一个左侧事件的年份，确保右侧事件不会早于它
+                    const rows: Array<{
+                      year: number
+                      opticsEvents: typeof sortedEvents
+                      polarizationEvents: typeof sortedEvents
+                    }> = []
+
+                    // 按年份分组
+                    const yearGroups = new Map<number, { optics: typeof sortedEvents, polarization: typeof sortedEvents }>()
+                    sortedEvents.forEach(event => {
+                      if (!yearGroups.has(event.year)) {
+                        yearGroups.set(event.year, { optics: [], polarization: [] })
+                      }
+                      const group = yearGroups.get(event.year)!
+                      if (event.track === 'optics') {
+                        group.optics.push(event)
+                      } else {
+                        group.polarization.push(event)
+                      }
+                    })
+
+                    // 按年份排序处理
+                    const years = Array.from(yearGroups.keys()).sort((a, b) => a - b)
+                    let lastLeftYear = -Infinity
+                    let pendingRightEvents: Array<{ year: number, events: typeof sortedEvents }> = []
+
+                    years.forEach(year => {
+                      const group = yearGroups.get(year)!
+
+                      // 如果有左侧事件，先清空待处理的右侧事件（如果它们的年份 <= 当前年份）
+                      if (group.optics.length > 0) {
+                        // 输出所有待处理的右侧事件（年份 <= 当前左侧年份）
+                        pendingRightEvents.forEach(pending => {
+                          if (pending.year <= year) {
+                            rows.push({
+                              year: pending.year,
+                              opticsEvents: [],
+                              polarizationEvents: pending.events
+                            })
+                          }
+                        })
+                        pendingRightEvents = pendingRightEvents.filter(p => p.year > year)
+
+                        lastLeftYear = year
+                        rows.push({
+                          year,
+                          opticsEvents: group.optics,
+                          polarizationEvents: group.polarization
+                        })
+                      } else if (group.polarization.length > 0) {
+                        // 只有右侧事件
+                        if (year >= lastLeftYear) {
+                          // 右侧年份不早于最后的左侧年份，可以直接显示
+                          rows.push({
+                            year,
+                            opticsEvents: [],
+                            polarizationEvents: group.polarization
+                          })
+                        } else {
+                          // 右侧年份早于最后的左侧年份，需要等待
+                          pendingRightEvents.push({ year, events: group.polarization })
+                        }
+                      }
+                    })
+
+                    // 输出剩余的待处理右侧事件
+                    pendingRightEvents.forEach(pending => {
+                      rows.push({
+                        year: pending.year,
+                        opticsEvents: [],
+                        polarizationEvents: pending.events
+                      })
+                    })
+
+                    return rows.map((row) => {
+                      const { year, opticsEvents, polarizationEvents } = row
                       const hasOptics = opticsEvents.length > 0
                       const hasPolarization = polarizationEvents.length > 0
 
                       return (
-                        <div key={year} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
-                          {/* Left side - Optics (can have multiple events) */}
+                        <div key={`${year}-${hasOptics ? 'o' : ''}-${hasPolarization ? 'p' : ''}`} id={`timeline-year-${year}`} className="relative flex items-stretch mb-6 last:mb-0 scroll-mt-24">
+                          {/* Left side - Optics */}
                           <div className="flex-1 pr-4 flex justify-end">
                             {hasOptics && (
                               <div className="w-full max-w-md space-y-3">
@@ -588,7 +662,7 @@ export function ChroniclesPage() {
                             )}
                           </div>
 
-                          {/* Right side - Polarization (can have multiple events) */}
+                          {/* Right side - Polarization */}
                           <div className="flex-1 pl-4 flex justify-start">
                             {hasPolarization && (
                               <div className="w-full max-w-md space-y-3">
