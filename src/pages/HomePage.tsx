@@ -971,7 +971,7 @@ function LightBeamEffect({ theme }: { theme: 'dark' | 'light' }) {
 }
 
 // Scroll indicator
-function ScrollIndicator({ theme, onClick }: { theme: 'dark' | 'light', onClick: () => void }) {
+function ScrollIndicator({ theme, onClick, isZh }: { theme: 'dark' | 'light', onClick: () => void, isZh: boolean }) {
   return (
     <motion.button
       onClick={onClick}
@@ -984,7 +984,7 @@ function ScrollIndicator({ theme, onClick }: { theme: 'dark' | 'light', onClick:
       transition={{ delay: 2, duration: 0.5 }}
       whileHover={{ scale: 1.1 }}
     >
-      <span className="text-xs font-medium">Scroll to explore</span>
+      <span className="text-xs font-medium">{isZh ? '向下滚动探索' : 'Scroll to explore'}</span>
       <motion.div
         animate={{ y: [0, 8, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
@@ -1603,7 +1603,7 @@ export function HomePage() {
         </motion.div>
 
         {/* Scroll indicator */}
-        <ScrollIndicator theme={theme} onClick={scrollToContent} />
+        <ScrollIndicator theme={theme} onClick={scrollToContent} isZh={isZh} />
       </section>
 
       {/* ================================================================== */}
@@ -2045,6 +2045,9 @@ export function HomePage() {
         )}>
           <p className="opacity-60">
             {isZh ? '© 2025 开放智慧实验室' : '© 2025 Open Wisdom Lab'}
+          </p>
+          <p className="opacity-50 mt-1">
+            {isZh ? 'Supported by 开放智慧实验室' : 'Supported by Open Wisdom Lab (开放智慧实验室)'}
           </p>
         </footer>
       </main>
