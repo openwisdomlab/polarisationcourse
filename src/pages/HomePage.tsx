@@ -19,16 +19,14 @@ import { PolarWorldLogo } from '@/components/icons'
 import { GlobalSearch } from '@/components/shared/GlobalSearch'
 import { PolarizationComparison } from '@/components/shared/PolarizationComparison'
 // PuzzleGate 已移至 App.tsx 进行全局访问验证
-import { EXHIBITION_HALLS } from '@/components/museum'
+import { getShowcaseItems } from '@/utils/gallery-showcase'
 import { cn } from '@/lib/utils'
 import {
   ChevronRight,
   BookOpen,
   Sun,
   Sparkles,
-  FlaskConical,
   Lightbulb,
-  Eye,
   Menu,
   X,
   Users,
@@ -37,9 +35,7 @@ import {
   Search,
   Layers,
   Play,
-  Waves,
-  Atom,
-  Microscope,
+  RefreshCw,
 } from 'lucide-react'
 
 // Extracted HomePage components
@@ -55,6 +51,142 @@ import {
   PSRT_QUESTIONS,
   type CourseTimelineMapping,
 } from '@/data/course-timeline-integration'
+
+// ============================================================================
+// Randomized Showcase Component - 随机展厅导览
+// ============================================================================
+
+interface RandomizedShowcaseProps {
+  theme: 'dark' | 'light'
+  isZh: boolean
+}
+
+function RandomizedShowcase({ theme, isZh }: RandomizedShowcaseProps) {
+  // Get showcase items (cached for 1 hour)
+  const showcaseItems = useMemo(() => getShowcaseItems(6), [])
+
+  return (
+    <div className="relative z-10 px-6 pb-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className={cn(
+          'text-base font-semibold flex items-center gap-2',
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        )}>
+          <Layers className="w-4 h-4 text-cyan-500" />
+          {isZh ? '展厅导览' : 'Gallery Showcase'}
+        </h3>
+        <div className="flex items-center gap-2">
+          <RefreshCw className={cn(
+            'w-3 h-3',
+            theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+          )} />
+          <span className={cn(
+            'text-xs',
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          )}>
+            {isZh ? '每小时更新推荐' : 'Refreshes hourly'}
+          </span>
+        </div>
+      </div>
+
+      {/* Showcase Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {showcaseItems.map((item, index) => {
+          const Icon = item.icon
+          return (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2.4 + index * 0.1 }}
+            >
+              <Link
+                to={item.link}
+                className={cn(
+                  'group relative block rounded-xl overflow-hidden p-4',
+                  'transition-all duration-300 hover:scale-[1.02]',
+                  theme === 'dark'
+                    ? 'bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600'
+                    : 'bg-white/80 hover:bg-white border border-gray-200/80 hover:border-gray-300'
+                )}
+                style={{
+                  boxShadow: `0 0 0 0 ${item.color}00`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = `0 8px 24px -8px ${item.glowColor}, 0 0 0 1px ${item.color}40`
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = `0 0 0 0 ${item.color}00`
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  {/* Icon */}
+                  <div
+                    className={cn(
+                      'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center',
+                      'transition-all duration-300 group-hover:scale-110'
+                    )}
+                    style={{ backgroundColor: `${item.color}15` }}
+                  >
+                    <Icon
+                      className="w-5 h-5 transition-transform duration-300 group-hover:rotate-6"
+                      style={{ color: item.color }}
+                    />
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+                        style={{ backgroundColor: `${item.color}20`, color: item.color }}
+                      >
+                        {isZh ? item.badgeZh : item.badge}
+                      </span>
+                      {item.type !== 'demo' && (
+                        <span className={cn(
+                          'text-[10px] px-1.5 py-0.5 rounded',
+                          theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-100 text-gray-500'
+                        )}>
+                          {item.type === 'game' ? (isZh ? '互动' : 'Play') :
+                           item.type === 'calculator' ? (isZh ? '计算' : 'Calc') :
+                           (isZh ? '工具' : 'Tool')}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className={cn(
+                      'text-sm font-semibold truncate',
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    )}>
+                      {isZh ? item.titleZh : item.titleEn}
+                    </h4>
+                    <p className={cn(
+                      'text-xs line-clamp-1 mt-0.5',
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    )}>
+                      {isZh ? item.descriptionZh : item.descriptionEn}
+                    </p>
+                  </div>
+
+                  {/* Arrow */}
+                  <ChevronRight
+                    className={cn(
+                      'flex-shrink-0 w-4 h-4 transition-all duration-300',
+                      'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0',
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    )}
+                    style={{ color: item.color }}
+                  />
+                </div>
+              </Link>
+            </motion.div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 // ============================================================================
 // Module Entry Points Data - Header版（简洁）
@@ -609,124 +741,8 @@ export function HomePage() {
               </Link>
             </div>
 
-            {/* Exhibition Halls Grid - 展厅导览 */}
-            <div className="relative z-10 px-6 pb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={cn(
-                  'text-base font-semibold flex items-center gap-2',
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                )}>
-                  <Layers className="w-4 h-4 text-cyan-500" />
-                  {isZh ? '展厅导览' : 'Exhibition Halls'}
-                </h3>
-                <span className={cn(
-                  'text-xs',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                )}>
-                  {isZh ? '选择展厅开始探索' : 'Select a hall to explore'}
-                </span>
-              </div>
-
-              {/* Halls Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {EXHIBITION_HALLS.map((hall, index) => {
-                  const IconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
-                    'optical-basics': Lightbulb,
-                    'polarization-fundamentals': Waves,
-                    'interface-reflection': Layers,
-                    'transparent-media': FlaskConical,
-                    'scattering': Atom,
-                    'polarimetry': Microscope,
-                  }
-                  const Icon = IconMap[hall.id] || Eye
-
-                  return (
-                    <motion.div
-                      key={hall.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 2.4 + index * 0.1 }}
-                    >
-                      <Link
-                        to={`/demos/${hall.demos[0]}`}
-                        className={cn(
-                          'group relative block rounded-xl overflow-hidden p-4',
-                          'transition-all duration-300 hover:scale-[1.02]',
-                          theme === 'dark'
-                            ? 'bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600'
-                            : 'bg-white/80 hover:bg-white border border-gray-200/80 hover:border-gray-300'
-                        )}
-                        style={{
-                          boxShadow: `0 0 0 0 ${hall.color}00`,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.boxShadow = `0 8px 24px -8px ${hall.glowColor}, 0 0 0 1px ${hall.color}40`
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.boxShadow = `0 0 0 0 ${hall.color}00`
-                        }}
-                      >
-                        <div className="flex items-start gap-3">
-                          {/* Icon */}
-                          <div
-                            className={cn(
-                              'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center',
-                              'transition-all duration-300 group-hover:scale-110'
-                            )}
-                            style={{ backgroundColor: `${hall.color}15` }}
-                          >
-                            <Icon
-                              className="w-5 h-5 transition-transform duration-300 group-hover:rotate-6"
-                              style={{ color: hall.color }}
-                            />
-                          </div>
-
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span
-                                className="text-[10px] font-medium px-1.5 py-0.5 rounded"
-                                style={{ backgroundColor: `${hall.color}20`, color: hall.color }}
-                              >
-                                Unit {hall.unit}
-                              </span>
-                              <span className={cn(
-                                'text-[10px]',
-                                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                              )}>
-                                {hall.demos.length} demos
-                              </span>
-                            </div>
-                            <h4 className={cn(
-                              'text-sm font-semibold truncate',
-                              theme === 'dark' ? 'text-white' : 'text-gray-900'
-                            )}>
-                              {t(hall.titleKey)}
-                            </h4>
-                            <p className={cn(
-                              'text-xs line-clamp-1 mt-0.5',
-                              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                            )}>
-                              {t(hall.subtitleKey)}
-                            </p>
-                          </div>
-
-                          {/* Arrow */}
-                          <ChevronRight
-                            className={cn(
-                              'flex-shrink-0 w-4 h-4 transition-all duration-300',
-                              'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0',
-                              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                            )}
-                            style={{ color: hall.color }}
-                          />
-                        </div>
-                      </Link>
-                    </motion.div>
-                  )
-                })}
-              </div>
-            </div>
+            {/* Exhibition Halls Grid - 展厅导览（随机推荐） */}
+            <RandomizedShowcase theme={theme} isZh={isZh} />
           </div>
         </motion.div>
 
