@@ -8,9 +8,10 @@
  * 3. 三栏布局：课程大纲 + 广义光学时间线 + 偏振光时间线
  */
 
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PolarWorldLogo } from '@/components/icons'
@@ -521,6 +522,250 @@ function TimelineEventCard({
 }
 
 // ============================================================================
+// Animated Hero Components - 动画英雄区组件
+// ============================================================================
+
+// Floating light particle
+interface ParticleProps {
+  delay: number
+  duration: number
+  x: number
+  y: number
+  size: number
+  color: string
+}
+
+function FloatingParticle({ delay, duration, x, y, size, color }: ParticleProps) {
+  return (
+    <motion.div
+      className="absolute rounded-full"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: size,
+        height: size,
+        backgroundColor: color,
+        boxShadow: `0 0 ${size * 2}px ${color}`,
+      }}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{
+        opacity: [0, 0.8, 0],
+        scale: [0, 1, 0.5],
+        y: [0, -100, -200],
+      }}
+      transition={{
+        duration,
+        delay,
+        repeat: Infinity,
+        ease: 'easeOut',
+      }}
+    />
+  )
+}
+
+// Polarization wave animation
+function PolarizationWave({ theme }: { theme: 'dark' | 'light' }) {
+  const waveColor = theme === 'dark' ? '#22d3ee' : '#0891b2'
+
+  return (
+    <svg
+      viewBox="0 0 400 100"
+      className="w-full max-w-lg mx-auto"
+      style={{ height: '60px' }}
+    >
+      {/* Horizontal polarization wave */}
+      <motion.path
+        d="M 0,50 Q 50,20 100,50 T 200,50 T 300,50 T 400,50"
+        fill="none"
+        stroke={waveColor}
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 2, ease: 'easeInOut' }}
+      />
+      {/* Vertical polarization wave */}
+      <motion.path
+        d="M 0,50 Q 50,80 100,50 T 200,50 T 300,50 T 400,50"
+        fill="none"
+        stroke={theme === 'dark' ? '#a855f7' : '#7c3aed'}
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 0.6 }}
+        transition={{ duration: 2, delay: 0.5, ease: 'easeInOut' }}
+      />
+      {/* Animated dot traveling along wave */}
+      <motion.circle
+        r="4"
+        fill={waveColor}
+        style={{ filter: `drop-shadow(0 0 8px ${waveColor})` }}
+        initial={{ cx: 0, cy: 50 }}
+        animate={{
+          cx: [0, 100, 200, 300, 400],
+          cy: [50, 20, 50, 20, 50],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+      />
+    </svg>
+  )
+}
+
+// Animated polarizer icon
+function AnimatedPolarizer({ theme }: { theme: 'dark' | 'light' }) {
+  const color = theme === 'dark' ? '#22d3ee' : '#0891b2'
+
+  return (
+    <motion.svg
+      viewBox="0 0 100 100"
+      className="w-16 h-16"
+      initial={{ rotate: 0 }}
+      animate={{ rotate: 360 }}
+      transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+    >
+      {/* Outer ring */}
+      <circle
+        cx="50"
+        cy="50"
+        r="45"
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        opacity="0.3"
+      />
+      {/* Polarizer lines */}
+      {[0, 30, 60, 90, 120, 150].map((angle) => (
+        <motion.line
+          key={angle}
+          x1="50"
+          y1="10"
+          x2="50"
+          y2="90"
+          stroke={color}
+          strokeWidth="1.5"
+          opacity="0.6"
+          transform={`rotate(${angle} 50 50)`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{
+            duration: 2,
+            delay: angle / 60,
+            repeat: Infinity,
+          }}
+        />
+      ))}
+      {/* Center glow */}
+      <motion.circle
+        cx="50"
+        cy="50"
+        r="8"
+        fill={color}
+        initial={{ opacity: 0.5, scale: 0.8 }}
+        animate={{ opacity: [0.5, 1, 0.5], scale: [0.8, 1.2, 0.8] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        style={{ filter: `drop-shadow(0 0 10px ${color})` }}
+      />
+    </motion.svg>
+  )
+}
+
+// Light beam effect
+function LightBeamEffect({ theme }: { theme: 'dark' | 'light' }) {
+  const beamColor = theme === 'dark' ? '#22d3ee' : '#0891b2'
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Diagonal light beam */}
+      <motion.div
+        className="absolute"
+        style={{
+          width: '200%',
+          height: '2px',
+          background: `linear-gradient(90deg, transparent, ${beamColor}40, ${beamColor}, ${beamColor}40, transparent)`,
+          transformOrigin: 'center',
+          top: '30%',
+          left: '-50%',
+        }}
+        initial={{ x: '-100%', rotate: -15 }}
+        animate={{ x: '100%' }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: 'easeInOut',
+        }}
+      />
+      {/* Second beam */}
+      <motion.div
+        className="absolute"
+        style={{
+          width: '150%',
+          height: '1px',
+          background: `linear-gradient(90deg, transparent, ${beamColor}20, ${beamColor}60, ${beamColor}20, transparent)`,
+          transformOrigin: 'center',
+          top: '60%',
+          left: '-25%',
+        }}
+        initial={{ x: '-100%', rotate: 10 }}
+        animate={{ x: '100%' }}
+        transition={{
+          duration: 5,
+          delay: 1.5,
+          repeat: Infinity,
+          repeatDelay: 3,
+          ease: 'easeInOut',
+        }}
+      />
+    </div>
+  )
+}
+
+// Scroll indicator
+function ScrollIndicator({ theme, onClick }: { theme: 'dark' | 'light', onClick: () => void }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      className={cn(
+        'absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer',
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+      )}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2, duration: 0.5 }}
+      whileHover={{ scale: 1.1 }}
+    >
+      <span className="text-xs font-medium">Scroll to explore</span>
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      >
+        <ChevronDown className="w-6 h-6" />
+      </motion.div>
+    </motion.button>
+  )
+}
+
+// Generate random particles
+function generateParticles(count: number, theme: 'dark' | 'light'): ParticleProps[] {
+  const colors = theme === 'dark'
+    ? ['#22d3ee', '#a855f7', '#3b82f6', '#f59e0b', '#22c55e']
+    : ['#0891b2', '#7c3aed', '#2563eb', '#d97706', '#16a34a']
+
+  return Array.from({ length: count }, (_, i) => ({
+    delay: Math.random() * 5,
+    duration: 3 + Math.random() * 4,
+    x: 10 + Math.random() * 80,
+    y: 50 + Math.random() * 40,
+    size: 4 + Math.random() * 8,
+    color: colors[i % colors.length],
+  }))
+}
+
+// ============================================================================
 // Year Marker - 年份标记
 // ============================================================================
 
@@ -565,8 +810,26 @@ export function HomePage() {
   const [expandedEventKey, setExpandedEventKey] = useState<string | null>(null)
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'discovery' | 'theory' | 'experiment' | 'application'>('all')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [showHeroHeader, setShowHeroHeader] = useState(false)
 
-  const mainRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  // Generate particles once on mount
+  const particles = useMemo(() => generateParticles(15, theme), [theme])
+
+  // Handle scroll to show/hide header
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowHeroHeader(window.scrollY > 100)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Scroll to content section
+  const scrollToContent = useCallback(() => {
+    contentRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
 
   // Filter events by category and unit years
   const filteredEvents = useMemo(() => {
@@ -604,64 +867,74 @@ export function HomePage() {
         ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
         : 'bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fffbeb]'
     )}>
-      {/* Header with logo and learning modules */}
-      <header className={cn(
-        'fixed top-0 left-0 right-0 z-50',
-        'flex items-center justify-between px-4 py-2',
-        theme === 'dark'
-          ? 'bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50'
-          : 'bg-white/90 backdrop-blur-xl border-b border-gray-200/50'
-      )}>
-        {/* Left: Logo */}
-        <div className="flex items-center gap-2">
-          <PolarWorldLogo size={32} theme={theme} />
-          <span className={cn(
-            'hidden sm:block font-bold text-sm',
-            theme === 'dark'
-              ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400'
-              : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-violet-600'
-          )}>
-            {t('home.chronicles.title')}
-          </span>
-        </div>
-
-        {/* Center: Learning modules */}
-        <div className="hidden md:flex items-center gap-1">
-          {MODULE_ENTRIES.map(module => (
-            <Link
-              key={module.id}
-              to={module.link}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
-                theme === 'dark'
-                  ? 'hover:bg-slate-800 text-gray-300 hover:text-white'
-                  : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-              )}
-            >
-              <span style={{ color: module.color }}>{module.icon}</span>
-              <span>{isZh ? module.titleZh : module.titleEn}</span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Right: Settings */}
-        <div className="flex items-center gap-2">
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+      {/* Header - only visible after scrolling */}
+      <AnimatePresence>
+        {showHeroHeader && (
+          <motion.header
+            initial={{ y: -60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -60, opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className={cn(
-              'md:hidden p-2 rounded-lg',
-              theme === 'dark' ? 'hover:bg-slate-800' : 'hover:bg-gray-100'
+              'fixed top-0 left-0 right-0 z-50',
+              'flex items-center justify-between px-4 py-2',
+              theme === 'dark'
+                ? 'bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50'
+                : 'bg-white/90 backdrop-blur-xl border-b border-gray-200/50'
             )}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-          <LanguageThemeSwitcher />
-        </div>
-      </header>
+            {/* Left: Logo */}
+            <div className="flex items-center gap-2">
+              <PolarWorldLogo size={32} theme={theme} />
+              <span className={cn(
+                'hidden sm:block font-bold text-sm',
+                theme === 'dark'
+                  ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400'
+                  : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-violet-600'
+              )}>
+                {t('home.chronicles.title')}
+              </span>
+            </div>
+
+            {/* Center: Learning modules */}
+            <div className="hidden md:flex items-center gap-1">
+              {MODULE_ENTRIES.map(module => (
+                <Link
+                  key={module.id}
+                  to={module.link}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                    theme === 'dark'
+                      ? 'hover:bg-slate-800 text-gray-300 hover:text-white'
+                      : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                  )}
+                >
+                  <span style={{ color: module.color }}>{module.icon}</span>
+                  <span>{isZh ? module.titleZh : module.titleEn}</span>
+                </Link>
+              ))}
+            </div>
+
+            {/* Right: Settings */}
+            <div className="flex items-center gap-2">
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className={cn(
+                  'md:hidden p-2 rounded-lg',
+                  theme === 'dark' ? 'hover:bg-slate-800' : 'hover:bg-gray-100'
+                )}
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+              <LanguageThemeSwitcher />
+            </div>
+          </motion.header>
+        )}
+      </AnimatePresence>
 
       {/* Mobile menu dropdown */}
-      {mobileMenuOpen && (
+      {mobileMenuOpen && showHeroHeader && (
         <div className={cn(
           'fixed top-14 left-0 right-0 z-40 md:hidden p-4 border-b',
           theme === 'dark'
@@ -689,52 +962,171 @@ export function HomePage() {
         </div>
       )}
 
-      {/* Main content */}
-      <main ref={mainRef} className="pt-14 px-4 lg:px-8 py-6">
-        {/* Hero section - 课程介绍 */}
-        <div className="text-center mb-6 max-w-4xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <span className={cn(
-              'text-xs px-3 py-1 rounded-full font-medium',
-              theme === 'dark'
-                ? 'bg-cyan-500/20 text-cyan-400'
-                : 'bg-cyan-100 text-cyan-700'
-            )}>
-              {t('home.courseBanner.badge')}
-            </span>
-          </div>
-          <h1 className={cn(
-            'text-2xl sm:text-3xl font-bold mb-4',
+      {/* ================================================================== */}
+      {/* FULL SCREEN HERO SECTION - 全屏英雄区 */}
+      {/* ================================================================== */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+        {/* Background effects */}
+        <LightBeamEffect theme={theme} />
+
+        {/* Floating particles */}
+        <div className="absolute inset-0 pointer-events-none">
+          {particles.map((particle, i) => (
+            <FloatingParticle key={i} {...particle} />
+          ))}
+        </div>
+
+        {/* Top decorative elements */}
+        <div className="absolute top-0 left-0 right-0 flex justify-center pt-8">
+          {/* Language/Theme switcher in hero */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="absolute top-4 right-4"
+          >
+            <LanguageThemeSwitcher />
+          </motion.div>
+        </div>
+
+        {/* Animated elements above title */}
+        <motion.div
+          className="flex items-center justify-center gap-8 mb-8"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
+          {/* Left polarizer */}
+          <AnimatedPolarizer theme={theme} />
+
+          {/* Center logo */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <PolarWorldLogo size={80} theme={theme} />
+          </motion.div>
+
+          {/* Right polarizer */}
+          <AnimatedPolarizer theme={theme} />
+        </motion.div>
+
+        {/* Polarization wave animation */}
+        <motion.div
+          className="w-full max-w-2xl px-4 mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          <PolarizationWave theme={theme} />
+        </motion.div>
+
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1 }}
+          className="mb-4"
+        >
+          <span className={cn(
+            'text-xs px-4 py-1.5 rounded-full font-medium',
+            theme === 'dark'
+              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+              : 'bg-cyan-100 text-cyan-700 border border-cyan-200'
+          )}>
+            {t('home.courseBanner.badge')}
+          </span>
+        </motion.div>
+
+        {/* Main Title - Centered */}
+        <motion.h1
+          className={cn(
+            'text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-6 px-4',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+        >
+          <span className={cn(
+            'bg-clip-text text-transparent',
+            theme === 'dark'
+              ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400'
+              : 'bg-gradient-to-r from-cyan-600 via-blue-600 to-violet-600'
           )}>
             {t('home.courseBanner.title')}
-          </h1>
-          <p className={cn(
-            'text-sm sm:text-base max-w-3xl mx-auto mb-6 leading-relaxed',
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          )}>
-            {t('home.courseBanner.description')}
-          </p>
+          </span>
+        </motion.h1>
 
-          {/* 偏振演示馆 入口 */}
+        {/* Description */}
+        <motion.p
+          className={cn(
+            'text-sm sm:text-base md:text-lg max-w-3xl mx-auto mb-8 px-6 text-center leading-relaxed',
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          )}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
+          {t('home.courseBanner.description')}
+        </motion.p>
+
+        {/* CTA Buttons */}
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-4 px-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.8 }}
+        >
+          {/* Primary CTA - Demo Gallery */}
           <Link
             to="/demos"
             className={cn(
-              'inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all hover:scale-105',
-              'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg'
+              'inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:scale-105',
+              'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg hover:shadow-cyan-500/25'
             )}
           >
             <Eye className="w-5 h-5" />
             {isZh ? '进入偏振演示馆' : 'Enter Demo Gallery'}
-            <span className={cn(
-              'text-xs px-2 py-0.5 rounded-full',
-              'bg-white/20'
-            )}>
-              20+
-            </span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/20">20+</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
-        </div>
+
+          {/* Module links */}
+          <div className="flex items-center gap-2">
+            {MODULE_ENTRIES.map((module, index) => (
+              <motion.div
+                key={module.id}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 2 + index * 0.1 }}
+              >
+                <Link
+                  to={module.link}
+                  className={cn(
+                    'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105',
+                    theme === 'dark'
+                      ? 'bg-slate-800/80 text-gray-300 hover:bg-slate-700 border border-slate-700'
+                      : 'bg-white/80 text-gray-700 hover:bg-white border border-gray-200'
+                  )}
+                >
+                  <span style={{ color: module.color }}>{module.icon}</span>
+                  <span>{isZh ? module.titleZh : module.titleEn}</span>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <ScrollIndicator theme={theme} onClick={scrollToContent} />
+      </section>
+
+      {/* ================================================================== */}
+      {/* MAIN CONTENT SECTION - 主内容区 */}
+      {/* ================================================================== */}
+      <main ref={contentRef} className="px-4 lg:px-8 py-12">
 
         {/* Knowledge Prism - 知识棱镜 */}
         <div className="max-w-6xl mx-auto mb-8">
