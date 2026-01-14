@@ -48,6 +48,7 @@ import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/Polariza
 
 // Museum Components
 import { GalleryHero } from '@/components/museum'
+import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 
 // Icon components - memoized for performance
 const LifeSceneIcon = memo(function LifeSceneIcon() {
@@ -2517,6 +2518,8 @@ export function DemosPage() {
           {/* Show Gallery Hero when no demo is selected, otherwise show demo content */}
           {showMuseumHomepage || !currentDemo ? (
             <div className="max-w-[1400px] mx-auto">
+              {/* Knowledge Prism - 知识棱镜：光学全景图 */}
+              <OpticalOverviewDiagram />
               <GalleryHero
                 onSelectDemo={handleDemoChange}
                 onSelectUnit={(unit) => setExpandedUnit(unit)}

@@ -4,8 +4,9 @@
  *
  * 架构：
  * 1. 顶部导航栏（logo + 学习模块）
- * 2. 知识棱镜（光学全景图）
- * 3. 两栏布局：课程大纲 + 统一时间轴（中央年份标记，左侧广义光学，右侧偏振光）
+ * 2. 两栏布局：课程大纲 + 统一时间轴（中央年份标记，左侧广义光学，右侧偏振光）
+ *
+ * 注：知识棱镜（光学全景图）已移至 DemosPage.tsx 演示馆页面
  */
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
@@ -16,7 +17,6 @@ import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PolarWorldLogo } from '@/components/icons'
 import { GlobalSearch } from '@/components/shared/GlobalSearch'
-import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 import { PolarizationComparison } from '@/components/shared/PolarizationComparison'
 // PuzzleGate 已移至 App.tsx 进行全局访问验证
 import { EXHIBITION_HALLS } from '@/components/museum'
@@ -1565,11 +1565,6 @@ export function HomePage() {
       {/* MAIN CONTENT SECTION - 主内容区 */}
       {/* ================================================================== */}
       <main ref={contentRef} className="px-4 lg:px-8 py-12">
-
-        {/* Knowledge Prism - 知识棱镜 */}
-        <div className="max-w-6xl mx-auto mb-8">
-          <OpticalOverviewDiagram />
-        </div>
 
         {/* Category filters - 分类筛选 */}
         <div className={cn(
