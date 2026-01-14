@@ -18,6 +18,7 @@ import { PolarWorldLogo } from '@/components/icons'
 import { GlobalSearch } from '@/components/shared/GlobalSearch'
 import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 import { PolarizationComparison } from '@/components/shared/PolarizationComparison'
+import { PuzzleGate, checkAccess } from '@/components/shared/PuzzleGate'
 import { EXHIBITION_HALLS } from '@/components/museum'
 import { cn } from '@/lib/utils'
 import {
@@ -1137,6 +1138,9 @@ export function HomePage() {
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
+  // 访问验证状态
+  const [hasAccess, setHasAccess] = useState(() => checkAccess())
+
   const [activeUnitId, setActiveUnitId] = useState<string | null>(null)
   const [activeYears, setActiveYears] = useState<number[] | null>(null)
   const [expandedEventKey, setExpandedEventKey] = useState<string | null>(null)
@@ -1226,6 +1230,11 @@ export function HomePage() {
 
     setActiveYears([...extendedYears].sort((a, b) => a - b))
   }, [])
+
+  // 如果未通过验证，显示谜题锁
+  if (!hasAccess) {
+    return <PuzzleGate onAccessGranted={() => setHasAccess(true)} />
+  }
 
   return (
     <div className={cn(
