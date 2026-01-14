@@ -166,7 +166,7 @@ function CourseOutlineSidebar({
       <aside
         className={cn(
           'fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] z-30 transition-transform duration-300',
-          'w-72 overflow-y-auto scrollbar-thin',
+          'w-80 overflow-y-auto scrollbar-thin',
           theme === 'dark'
             ? 'bg-slate-900/95 border-r border-slate-700'
             : 'bg-white/95 border-r border-gray-200',
@@ -264,7 +264,7 @@ function CourseOutlineSidebar({
                 <div className="flex items-start gap-3">
                   {/* Unit icon and number */}
                   <div
-                    className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-white"
+                    className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white"
                     style={{ backgroundColor: color }}
                   >
                     {unitIcons[index]}
@@ -272,44 +272,46 @@ function CourseOutlineSidebar({
 
                   {/* Unit info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className="text-xs font-bold px-1.5 py-0.5 rounded"
-                        style={{ backgroundColor: `${color}20`, color }}
-                      >
-                        {isZh ? `单元 ${unit.unitNumber}` : `Unit ${unit.unitNumber}`}
-                      </span>
-                      <div className="flex items-center gap-1 text-xs">
-                        <Eye className="w-3 h-3 opacity-50" />
-                        <span className={cn(
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                        )}>
-                          {unit.sections.length}
-                        </span>
-                        <Users className="w-3 h-3 opacity-50 ml-1" />
-                        <span className={cn(
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                        )}>
-                          {mapping?.keyEvents?.length || 0}
-                        </span>
-                      </div>
-                    </div>
+                    {/* Unit badge */}
+                    <span
+                      className="text-[10px] font-bold px-1.5 py-0.5 rounded inline-block mb-1"
+                      style={{ backgroundColor: `${color}20`, color }}
+                    >
+                      {isZh ? `单元 ${unit.unitNumber}` : `Unit ${unit.unitNumber}`}
+                    </span>
                     <h3 className={cn(
-                      'text-sm font-medium leading-tight',
+                      'text-sm font-medium leading-snug',
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     )}>
                       {isZh ? unit.titleZh : unit.titleEn}
                     </h3>
                     <p className={cn(
-                      'text-xs mt-1 line-clamp-1',
+                      'text-xs mt-0.5 leading-relaxed',
                       theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
                     )}>
                       {isZh ? unit.subtitleZh : unit.subtitleEn}
                     </p>
+                    {/* Stats row */}
+                    <div className="flex items-center gap-2 mt-1.5 text-[10px]">
+                      <span className={cn(
+                        'flex items-center gap-0.5',
+                        theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                      )}>
+                        <Eye className="w-3 h-3" />
+                        {unit.sections.length} {isZh ? '节' : 'sec'}
+                      </span>
+                      <span className={cn(
+                        'flex items-center gap-0.5',
+                        theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                      )}>
+                        <Users className="w-3 h-3" />
+                        {mapping?.keyEvents?.length || 0} {isZh ? '事件' : 'events'}
+                      </span>
+                    </div>
                   </div>
 
                   <ChevronRight className={cn(
-                    'w-4 h-4 flex-shrink-0 transition-transform mt-1',
+                    'w-4 h-4 flex-shrink-0 transition-transform mt-2',
                     isActive ? 'rotate-90 text-cyan-500' : '',
                     theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
                   )} />
@@ -354,42 +356,36 @@ function UnitDetailPanel({ unit, mapping, theme, isZh, onClose }: UnitDetailPane
         ? 'bg-slate-800/50 border-slate-700'
         : 'bg-white border-gray-200 shadow-lg'
     )}>
-      {/* Header */}
+      {/* Header - 更紧凑的布局 */}
       <div
-        className="p-6 relative overflow-hidden"
+        className="p-4 sm:p-5 relative overflow-hidden"
         style={{ background: `linear-gradient(135deg, ${color}20, ${color}05)` }}
       >
-        <div className="flex items-start justify-between relative z-10">
-          <div className="flex items-start gap-4">
+        <div className="flex items-start justify-between relative z-10 gap-3">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
             <div
-              className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg flex-shrink-0"
               style={{ backgroundColor: color }}
             >
               {unit.unitNumber}
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-2">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span
-                  className="text-xs font-bold px-2 py-1 rounded"
+                  className="text-[10px] font-bold px-1.5 py-0.5 rounded"
                   style={{ backgroundColor: `${color}30`, color }}
                 >
                   {isZh ? `单元 ${unit.unitNumber}` : `Unit ${unit.unitNumber}`}
                 </span>
-                <span className={cn(
-                  'text-xs px-2 py-1 rounded',
-                  theme === 'dark' ? 'bg-slate-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-                )}>
-                  {unit.sections.length} {isZh ? '章节' : 'sections'}
-                </span>
               </div>
               <h2 className={cn(
-                'text-xl font-bold mb-1',
+                'text-base sm:text-lg font-bold leading-tight',
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               )}>
                 {isZh ? unit.titleZh : unit.titleEn}
               </h2>
               <p className={cn(
-                'text-sm',
+                'text-xs sm:text-sm mt-0.5 leading-relaxed',
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               )}>
                 {isZh ? unit.subtitleZh : unit.subtitleEn}
@@ -399,49 +395,45 @@ function UnitDetailPanel({ unit, mapping, theme, isZh, onClose }: UnitDetailPane
           <button
             onClick={onClose}
             className={cn(
-              'p-2 rounded-lg transition-colors',
+              'p-1.5 rounded-lg transition-colors flex-shrink-0',
               theme === 'dark'
                 ? 'hover:bg-slate-700 text-gray-400'
                 : 'hover:bg-gray-100 text-gray-500'
             )}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Description */}
+        {/* Description - 精简显示 */}
         <p className={cn(
-          'mt-4 text-sm leading-relaxed',
+          'mt-3 text-xs sm:text-sm leading-relaxed',
           theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
         )}>
           {isZh ? unit.descriptionZh : unit.descriptionEn}
         </p>
       </div>
 
-      {/* Content Grid */}
-      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Learning Objectives */}
+      {/* Content - 简化为两栏布局 */}
+      <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Learning Objectives - 更紧凑 */}
         <div className={cn(
-          'p-4 rounded-xl',
+          'p-3 rounded-xl',
           theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'
         )}>
           <h3 className={cn(
-            'text-sm font-bold mb-3 flex items-center gap-2',
+            'text-xs font-bold mb-2 flex items-center gap-1.5',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
-            <Target className="w-4 h-4" style={{ color }} />
-            {isZh ? '学习目标' : 'Learning Objectives'}
+            <Target className="w-3.5 h-3.5" style={{ color }} />
+            {isZh ? '学习目标' : 'Objectives'}
           </h3>
-          <ul className="space-y-2">
-            {(isZh ? unit.learningObjectives.zh : unit.learningObjectives.en).map((obj, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs">
-                <span
-                  className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold"
-                  style={{ backgroundColor: `${color}20`, color }}
-                >
-                  {i + 1}
-                </span>
+          <ul className="space-y-1.5">
+            {(isZh ? unit.learningObjectives.zh : unit.learningObjectives.en).slice(0, 3).map((obj, i) => (
+              <li key={i} className="flex items-start gap-1.5 text-[11px]">
+                <span style={{ color }} className="mt-0.5">✓</span>
                 <span className={cn(
+                  'leading-relaxed',
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                 )}>
                   {obj}
@@ -451,24 +443,24 @@ function UnitDetailPanel({ unit, mapping, theme, isZh, onClose }: UnitDetailPane
           </ul>
         </div>
 
-        {/* Applications */}
+        {/* Applications - 更紧凑 */}
         <div className={cn(
-          'p-4 rounded-xl',
+          'p-3 rounded-xl',
           theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'
         )}>
           <h3 className={cn(
-            'text-sm font-bold mb-3 flex items-center gap-2',
+            'text-xs font-bold mb-2 flex items-center gap-1.5',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
-            <Rocket className="w-4 h-4" style={{ color }} />
+            <Rocket className="w-3.5 h-3.5" style={{ color }} />
             {isZh ? '应用领域' : 'Applications'}
           </h3>
-          <div className="flex flex-wrap gap-2">
-            {(isZh ? unit.applications.zh : unit.applications.en).map((app, i) => (
+          <div className="flex flex-wrap gap-1.5">
+            {(isZh ? unit.applications.zh : unit.applications.en).slice(0, 4).map((app, i) => (
               <span
                 key={i}
                 className={cn(
-                  'text-xs px-3 py-1.5 rounded-full',
+                  'text-[10px] px-2 py-1 rounded-full',
                   theme === 'dark'
                     ? 'bg-slate-600 text-gray-200'
                     : 'bg-white text-gray-700 border border-gray-200'
@@ -481,152 +473,114 @@ function UnitDetailPanel({ unit, mapping, theme, isZh, onClose }: UnitDetailPane
         </div>
       </div>
 
-      {/* Sections */}
-      <div className="px-6 pb-6">
+      {/* Sections - 更紧凑的章节列表 */}
+      <div className="px-4 sm:px-5 pb-4">
         <h3 className={cn(
-          'text-sm font-bold mb-3 flex items-center gap-2',
+          'text-xs font-bold mb-2 flex items-center gap-1.5',
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         )}>
-          <BookOpen className="w-4 h-4" style={{ color }} />
-          {isZh ? '章节内容' : 'Sections'}
+          <BookOpen className="w-3.5 h-3.5" style={{ color }} />
+          {isZh ? '课程章节' : 'Sections'}
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="space-y-1.5">
           {unit.sections.map(section => (
             <Link
               key={section.id}
               to={section.relatedDemos[0] ? `/demos/${section.relatedDemos[0]}` : '#'}
               className={cn(
-                'p-3 rounded-xl border transition-all hover:scale-[1.02]',
+                'flex items-center gap-2 p-2 rounded-lg border transition-all hover:scale-[1.01]',
                 theme === 'dark'
                   ? 'bg-slate-700/30 border-slate-600 hover:bg-slate-700/50'
-                  : 'bg-white border-gray-200 hover:shadow-md'
+                  : 'bg-white border-gray-200 hover:shadow-sm'
               )}
             >
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="text-xs font-bold px-2 py-0.5 rounded"
-                  style={{ backgroundColor: `${color}20`, color }}
-                >
-                  {section.id}
-                </span>
-                <span className={cn(
-                  'text-[10px] px-1.5 py-0.5 rounded',
-                  section.difficulty === 'foundation'
-                    ? 'bg-green-500/20 text-green-500'
-                    : section.difficulty === 'application'
-                    ? 'bg-cyan-500/20 text-cyan-500'
-                    : 'bg-purple-500/20 text-purple-500'
-                )}>
-                  {section.difficulty === 'foundation'
-                    ? (isZh ? '基础' : 'Basic')
-                    : section.difficulty === 'application'
-                    ? (isZh ? '应用' : 'Applied')
-                    : (isZh ? '研究' : 'Research')}
-                </span>
-              </div>
-              <h4 className={cn(
-                'text-sm font-medium line-clamp-2',
+              <span
+                className="text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0"
+                style={{ backgroundColor: `${color}20`, color }}
+              >
+                {section.id}
+              </span>
+              <span className={cn(
+                'text-xs font-medium flex-1 min-w-0 truncate',
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               )}>
                 {isZh ? section.titleZh : section.titleEn}
-              </h4>
-              <div className="flex items-center gap-2 mt-2">
-                <FlaskConical className="w-3 h-3 opacity-50" />
-                <span className={cn(
-                  'text-xs',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                )}>
-                  {section.relatedDemos.length} {isZh ? '个演示' : 'demos'}
-                </span>
-              </div>
+              </span>
+              <span className={cn(
+                'text-[10px] flex-shrink-0',
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              )}>
+                {section.relatedDemos.length} {isZh ? '演示' : 'demo'}
+              </span>
             </Link>
           ))}
         </div>
       </div>
 
-      {/* Home Experiments */}
+      {/* Home Experiments - 精简版 */}
       {unit.homeExperiments && unit.homeExperiments.length > 0 && (
         <div className={cn(
-          'px-6 pb-6 pt-2 border-t',
+          'px-4 sm:px-5 pb-4 pt-2 border-t',
           theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
         )}>
           <h3 className={cn(
-            'text-sm font-bold mb-3 flex items-center gap-2',
+            'text-xs font-bold mb-2 flex items-center gap-1.5',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
-            <Beaker className="w-4 h-4" style={{ color }} />
-            {isZh ? '家庭实验' : 'Home Experiments'}
+            <Beaker className="w-3.5 h-3.5" style={{ color }} />
+            {isZh ? '动手实验' : 'Try It'}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {unit.homeExperiments.map((exp, i) => (
-              <div
+          <div className="flex flex-wrap gap-1.5">
+            {unit.homeExperiments.slice(0, 2).map((exp, i) => (
+              <span
                 key={i}
                 className={cn(
-                  'p-3 rounded-xl',
-                  theme === 'dark' ? 'bg-amber-900/20' : 'bg-amber-50'
+                  'text-[10px] px-2 py-1 rounded-full',
+                  theme === 'dark' ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'
                 )}
               >
-                <h4 className={cn(
-                  'text-sm font-medium mb-1',
-                  theme === 'dark' ? 'text-amber-300' : 'text-amber-700'
-                )}>
-                  {isZh ? exp.titleZh : exp.titleEn}
-                </h4>
-                <p className={cn(
-                  'text-xs',
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                )}>
-                  {isZh ? exp.observation.zh : exp.observation.en}
-                </p>
-              </div>
+                {isZh ? exp.titleZh : exp.titleEn}
+              </span>
             ))}
           </div>
         </div>
       )}
 
-      {/* Key Historical Events */}
+      {/* Key Historical Events - 精简版 */}
       {mapping?.keyEvents && mapping.keyEvents.length > 0 && (
         <div className={cn(
-          'px-6 pb-6 pt-2 border-t',
+          'px-4 sm:px-5 pb-4 pt-2 border-t',
           theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
         )}>
           <h3 className={cn(
-            'text-sm font-bold mb-3 flex items-center gap-2',
+            'text-xs font-bold mb-2 flex items-center gap-1.5',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
-            <Sun className="w-4 h-4" style={{ color }} />
-            {isZh ? '关键历史事件' : 'Key Historical Events'}
+            <Sun className="w-3.5 h-3.5" style={{ color }} />
+            {isZh ? '历史里程碑' : 'Milestones'}
           </h3>
-          <div className="flex flex-wrap gap-2">
-            {mapping.keyEvents.map(event => (
-              <div
+          <div className="flex flex-wrap gap-1.5">
+            {mapping.keyEvents.slice(0, 4).map(event => (
+              <span
                 key={event.year}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-lg text-xs',
+                  'text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1',
                   event.isPrimary
                     ? theme === 'dark'
-                      ? 'bg-slate-700'
-                      : 'bg-gray-100'
+                      ? 'bg-slate-700 text-white'
+                      : 'bg-gray-100 text-gray-800'
                     : theme === 'dark'
-                      ? 'bg-slate-700/50'
-                      : 'bg-gray-50'
+                      ? 'bg-slate-700/50 text-gray-300'
+                      : 'bg-gray-50 text-gray-600'
                 )}
               >
-                <span
-                  className={cn(
-                    'font-mono font-bold px-2 py-0.5 rounded',
-                    theme === 'dark' ? 'bg-slate-600' : 'bg-white'
-                  )}
-                  style={{ borderLeft: event.isPrimary ? `2px solid ${color}` : undefined }}
-                >
+                <span className="font-mono font-bold" style={{ color: event.isPrimary ? color : undefined }}>
                   {event.year}
                 </span>
-                <span className={cn(
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                )}>
+                <span className="max-w-[80px] truncate">
                   {isZh ? event.titleZh : event.titleEn}
                 </span>
-              </div>
+              </span>
             ))}
           </div>
         </div>
