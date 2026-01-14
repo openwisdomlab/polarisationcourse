@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PolarWorldLogo } from '@/components/icons'
+import { GlobalSearch } from '@/components/shared/GlobalSearch'
 import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 import { PolarizationComparison } from '@/components/shared/PolarizationComparison'
 import { EXHIBITION_HALLS, type ExhibitionHall } from '@/components/museum'
@@ -929,6 +930,8 @@ export function HomePage() {
 
             {/* Right: Settings */}
             <div className="flex items-center gap-2">
+              {/* Global Search */}
+              <GlobalSearch />
               {/* Mobile menu button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -990,13 +993,14 @@ export function HomePage() {
 
         {/* Top decorative elements */}
         <div className="absolute top-0 left-0 right-0 flex justify-center pt-8">
-          {/* Language/Theme switcher in hero */}
+          {/* Search and Language/Theme switcher in hero */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="absolute top-4 right-4"
+            className="absolute top-4 right-4 flex items-center gap-2"
           >
+            <GlobalSearch />
             <LanguageThemeSwitcher />
           </motion.div>
         </div>

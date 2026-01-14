@@ -14,6 +14,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { PolarWorldLogo, ModuleIconMap, type ModuleIconKey } from '@/components/icons'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
+import { GlobalSearch } from '@/components/shared/GlobalSearch'
 import { ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 
@@ -227,11 +228,14 @@ export function PersistentHeader({
         </div>
       )}
 
-      {/* Right section: Settings + Custom content */}
+      {/* Right section: Search + Settings + Custom content */}
       <div className="flex items-center gap-2">
         {rightContent}
         {showSettings && (
-          <LanguageThemeSwitcher compact={compact} />
+          <>
+            <GlobalSearch />
+            <LanguageThemeSwitcher compact={compact} />
+          </>
         )}
       </div>
     </header>
