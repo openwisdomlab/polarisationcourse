@@ -169,9 +169,10 @@ export function PersistentHeader({
           title={t('common.home')}
         >
           <PolarWorldLogo
-            size={compact ? 28 : 32}
+            size={compact ? 28 : 36}
             theme={theme}
-            animated={false}
+            animated={true}
+            className="transition-transform group-hover:scale-105"
           />
           {!compact && (
             <span className={cn(
