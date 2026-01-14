@@ -16,6 +16,7 @@ import { SourceCodeViewer } from '@/components/demos/source-code'
 import { hasDemoSource } from '@/data/demo-sources'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
+import { DIFFICULTY_STRATEGY } from '@/components/demos/DifficultyStrategy'
 
 // Extracted SVG icons and diagrams
 import { ResourcesIcon, MalusDiagram, BirefringenceDiagram, WaveplateDiagram, PolarizationStateDiagram, FresnelDiagram, BrewsterDiagram, ScatteringDiagram, StokesDiagram, MuellerDiagram, LightWaveDiagram } from '@/components/demos/icons'
@@ -1413,6 +1414,41 @@ const RECOMMENDED_DEMOS: Record<DifficultyLevel, string[]> = {
   ],
 }
 
+// D2: Next Step Recommendation Logic
+function getNextDemoRecommendation(currentDemoId: string, difficultyLevel: DifficultyLevel): DemoItem | null {
+  const currentDemo = DEMOS.find(d => d.id === currentDemoId)
+  if (!currentDemo) return null
+
+  // Strategy 1: Try next demo in the same unit
+  const currentUnitDemos = DEMOS.filter(d => d.unit === currentDemo.unit)
+  const currentIndex = currentUnitDemos.findIndex(d => d.id === currentDemoId)
+  if (currentIndex !== -1 && currentIndex < currentUnitDemos.length - 1) {
+    return currentUnitDemos[currentIndex + 1]
+  }
+
+  // Strategy 2: Try first demo of next unit (matching difficulty if possible)
+  const nextUnit = currentDemo.unit + 1
+  const nextUnitDemos = DEMOS.filter(d => d.unit === nextUnit)
+  if (nextUnitDemos.length > 0) {
+    // Prefer demos matching current difficulty level
+    const matchingDifficulty = nextUnitDemos.find(d => d.difficulty === difficultyLevel)
+    return matchingDifficulty || nextUnitDemos[0]
+  }
+
+  // Strategy 3: If at end of all units, recommend based on difficulty level
+  // For explore: recommend more explore demos from earlier units
+  // For professional: recommend professional demos
+  const sameDifficultyDemos = DEMOS.filter(d =>
+    d.difficulty === difficultyLevel && d.id !== currentDemoId
+  )
+  if (sameDifficultyDemos.length > 0) {
+    // Return a random demo to encourage exploration
+    return sameDifficultyDemos[Math.floor(Math.random() * sameDifficultyDemos.length)]
+  }
+
+  return null
+}
+
 // C1: Question Wall - Maps common questions to relevant demos
 interface QuestionItem {
   id: string
@@ -2127,7 +2163,7 @@ export function DemosPage() {
       <div
         className={cn(
           'min-h-screen',
-          theme === 'dark' ? 'bg-[#0a0a0f] text-gray-200' : 'bg-[#f8fafc] text-gray-800'
+          theme === 'dark' ? 'bg-[#0a0a0f] text-gray-200' : 'bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 text-gray-800'
         )}
       >
         {/* Navigation Header with Persistent Logo */}
@@ -2141,7 +2177,7 @@ export function DemosPage() {
           isCompact ? 'px-3 py-2' : 'px-6 py-3',
           theme === 'dark'
             ? 'bg-slate-900/95 border-b border-cyan-400/20'
-            : 'bg-white/95 border-b border-cyan-500/20'
+            : 'bg-white/90 backdrop-blur-md border-b border-indigo-100 shadow-sm'
         )}
         showSettings={false}
         rightContent={
@@ -2223,13 +2259,13 @@ export function DemosPage() {
               : 'w-64 left-0 top-[60px]',
             theme === 'dark'
               ? 'bg-slate-900/95 border-cyan-400/10'
-              : 'bg-white/95 border-cyan-200'
+              : 'bg-white/95 backdrop-blur-sm border-indigo-100 shadow-lg'
           )}
         >
           {/* Search Input */}
           <div className={cn(
             'p-3 border-b',
-            theme === 'dark' ? 'border-slate-800' : 'border-gray-200'
+            theme === 'dark' ? 'border-slate-800' : 'border-indigo-100'
           )}>
             <div className="relative">
               <Search className={cn(
@@ -2246,7 +2282,7 @@ export function DemosPage() {
                   'focus:outline-none focus:ring-2',
                   theme === 'dark'
                     ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500 focus:border-cyan-400/50 focus:ring-cyan-400/20'
-                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20'
+                    : 'bg-white border-indigo-200/60 text-gray-900 placeholder-gray-400 focus:border-indigo-400 focus:ring-indigo-400/20 shadow-sm'
                 )}
               />
               {searchQuery && (
@@ -2303,13 +2339,13 @@ export function DemosPage() {
                   'mb-3 px-3 py-2 rounded-lg border',
                   theme === 'dark'
                     ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30'
-                    : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+                    : 'bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 border-indigo-200/80 shadow-sm'
                 )}>
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🎯</span>
                     <span className={cn(
                       'text-xs font-semibold',
-                      theme === 'dark' ? 'text-amber-400' : 'text-amber-700'
+                      theme === 'dark' ? 'text-amber-400' : 'text-indigo-700'
                     )}>
                       {isZh ? '推荐开始' : 'Recommended for You'}
                     </span>
@@ -2336,10 +2372,10 @@ export function DemosPage() {
                           isActive
                             ? theme === 'dark'
                               ? 'bg-gradient-to-r from-amber-400/20 to-orange-400/10 text-amber-400 border-l-2 border-amber-400'
-                              : 'bg-gradient-to-r from-amber-100 to-orange-50 text-amber-700 border-l-2 border-amber-500'
+                              : 'bg-gradient-to-r from-indigo-100 via-violet-50 to-purple-50 text-indigo-700 border-l-2 border-indigo-500 shadow-sm'
                             : theme === 'dark'
                               ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white border border-slate-800'
-                              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
+                              : 'text-gray-600 hover:bg-indigo-50/50 hover:text-indigo-900 border border-gray-200 hover:border-indigo-200'
                         )}
                       >
                         <span
@@ -2348,10 +2384,10 @@ export function DemosPage() {
                             isActive
                               ? theme === 'dark'
                                 ? 'bg-amber-400 text-black'
-                                : 'bg-amber-500 text-white'
+                                : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md'
                               : theme === 'dark'
                                 ? 'bg-slate-700 text-gray-400'
-                                : 'bg-gray-200 text-gray-500'
+                                : 'bg-indigo-100 text-indigo-500'
                           )}
                         >
                           ⭐
@@ -2364,7 +2400,7 @@ export function DemosPage() {
                           <span className={cn(
                             'text-[10px] mt-0.5 block',
                             isActive
-                              ? theme === 'dark' ? 'text-amber-300/70' : 'text-amber-600/70'
+                              ? theme === 'dark' ? 'text-amber-300/70' : 'text-indigo-500'
                               : theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
                           )}>
                             {demo.unit === 0 ? t('basics.title') : `${t('game.level')} ${demo.unit}`}
@@ -2513,7 +2549,7 @@ export function DemosPage() {
                                         'ml-7 mt-1 text-xs space-y-1 border-l-2 pl-2',
                                         theme === 'dark'
                                           ? 'border-amber-400/40 text-gray-500'
-                                          : 'border-amber-500/40 text-gray-500'
+                                          : 'border-violet-400/40 text-gray-500'
                                       )}>
                                         {demoMatches.matches.slice(0, 3).map((match, idx) => (
                                           <div key={idx} className="flex flex-col">
@@ -2528,7 +2564,7 @@ export function DemosPage() {
                                               dangerouslySetInnerHTML={{
                                                 __html: match.highlightedText
                                                   .replace(/\*\*([^*]+)\*\*/g,
-                                                    `<mark class="${theme === 'dark' ? 'bg-amber-400/30 text-amber-200' : 'bg-amber-200 text-amber-900'} px-0.5 rounded">\$1</mark>`)
+                                                    `<mark class="${theme === 'dark' ? 'bg-amber-400/30 text-amber-200' : 'bg-violet-200 text-violet-900'} px-0.5 rounded">\$1</mark>`)
                                               }}
                                             />
                                           </div>
@@ -2591,7 +2627,7 @@ export function DemosPage() {
               isCompact ? 'top-[52px]' : 'top-[60px] -mx-6 px-6',
               theme === 'dark'
                 ? 'bg-[#0a0a0f]/90 border-slate-800/50'
-                : 'bg-[#f8fafc]/90 border-gray-200/50'
+                : 'bg-white/80 border-indigo-100/60 shadow-sm'
             )}>
               <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -2695,17 +2731,17 @@ export function DemosPage() {
                   'mb-5 rounded-xl border p-4',
                   theme === 'dark'
                     ? 'bg-gradient-to-r from-amber-400/5 to-orange-400/5 border-amber-400/20'
-                    : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+                    : 'bg-gradient-to-r from-rose-50 via-pink-50 to-fuchsia-50 border-rose-200/80 shadow-sm'
                 )}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <Lightbulb className={cn(
                     'w-5 h-5',
-                    theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                    theme === 'dark' ? 'text-amber-400' : 'text-rose-500'
                   )} />
                   <h3 className={cn(
                     'text-lg font-bold',
-                    theme === 'dark' ? 'text-amber-400' : 'text-amber-700'
+                    theme === 'dark' ? 'text-amber-400' : 'text-rose-700'
                   )}>
                     {t('gallery.questions.title')}
                   </h3>
@@ -2718,17 +2754,17 @@ export function DemosPage() {
                       'hover:scale-[1.01] hover:shadow-lg cursor-default',
                       theme === 'dark'
                         ? 'bg-gradient-to-r from-amber-400/10 to-orange-400/10 border-amber-400/40 hover:border-amber-400/60'
-                        : 'bg-gradient-to-r from-amber-100/80 to-orange-100/80 border-amber-400 hover:border-amber-500'
+                        : 'bg-gradient-to-r from-rose-100/90 via-pink-100/80 to-fuchsia-100/70 border-rose-400 hover:border-rose-500 shadow-sm'
                     )}
                   >
                     <div className="flex items-start gap-3">
                       <span className={cn(
                         'text-2xl flex-shrink-0 animate-pulse',
-                        theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                        theme === 'dark' ? 'text-amber-400' : 'text-rose-600'
                       )}>?</span>
                       <p className={cn(
                         'text-base font-medium leading-relaxed',
-                        theme === 'dark' ? 'text-amber-200' : 'text-amber-900'
+                        theme === 'dark' ? 'text-amber-200' : 'text-rose-900'
                       )}>
                         {demoInfo.questions.leading}
                       </p>
@@ -2815,7 +2851,7 @@ export function DemosPage() {
                 'rounded-2xl border overflow-hidden',
                 theme === 'dark'
                   ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/50 border-cyan-400/20 shadow-[0_0_40px_rgba(34,211,238,0.1)]'
-                  : 'bg-gradient-to-br from-white to-gray-50 border-cyan-200 shadow-lg'
+                  : 'bg-gradient-to-br from-white via-slate-50/50 to-indigo-50/30 border-indigo-200/60 shadow-xl shadow-indigo-100/50'
               )}
             >
               <div className="p-5 min-h-[550px]">
@@ -2895,13 +2931,13 @@ export function DemosPage() {
                             'rounded-lg p-4 border',
                             theme === 'dark'
                               ? 'bg-amber-900/20 border-amber-500/30'
-                              : 'bg-amber-50 border-amber-200'
+                              : 'bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-orange-200/80 shadow-sm'
                           )}
                         >
                           <h5
                             className={cn(
                               'font-semibold text-sm mb-3 flex items-center gap-2',
-                              theme === 'dark' ? 'text-amber-400' : 'text-amber-700'
+                              theme === 'dark' ? 'text-amber-400' : 'text-orange-700'
                             )}
                           >
                             🔬 {t('gallery.cards.diy') || '动手试试'}
@@ -2911,7 +2947,7 @@ export function DemosPage() {
                           <div className="mb-3">
                             <p className={cn(
                               'text-xs font-medium mb-1.5',
-                              theme === 'dark' ? 'text-amber-300' : 'text-amber-700'
+                              theme === 'dark' ? 'text-amber-300' : 'text-orange-600'
                             )}>
                               📦 Materials
                             </p>
@@ -2921,10 +2957,10 @@ export function DemosPage() {
                                   key={i}
                                   className={cn(
                                     'text-xs flex items-center gap-2',
-                                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                    theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
                                   )}
                                 >
-                                  <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}>•</span>
+                                  <span className={theme === 'dark' ? 'text-amber-400' : 'text-orange-500'}>•</span>
                                   {material}
                                 </li>
                               ))}
@@ -2935,7 +2971,7 @@ export function DemosPage() {
                           <div className="mb-3">
                             <p className={cn(
                               'text-xs font-medium mb-1.5',
-                              theme === 'dark' ? 'text-amber-300' : 'text-amber-700'
+                              theme === 'dark' ? 'text-amber-300' : 'text-orange-600'
                             )}>
                               📝 Steps
                             </p>
@@ -2945,7 +2981,7 @@ export function DemosPage() {
                                   key={i}
                                   className={cn(
                                     'text-xs flex items-start gap-2',
-                                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                                    theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
                                   )}
                                 >
                                   <span
@@ -2953,7 +2989,7 @@ export function DemosPage() {
                                       'flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold',
                                       theme === 'dark'
                                         ? 'bg-amber-400/20 text-amber-400'
-                                        : 'bg-amber-200 text-amber-800'
+                                        : 'bg-gradient-to-br from-orange-400 to-amber-500 text-white shadow-sm'
                                     )}
                                   >
                                     {i + 1}
@@ -2970,18 +3006,18 @@ export function DemosPage() {
                               'rounded px-3 py-2 border',
                               theme === 'dark'
                                 ? 'bg-amber-400/5 border-amber-400/30'
-                                : 'bg-amber-100/50 border-amber-300'
+                                : 'bg-gradient-to-r from-orange-100/80 to-amber-100/60 border-orange-300/80'
                             )}
                           >
                             <p className={cn(
                               'text-[10px] font-medium mb-1',
-                              theme === 'dark' ? 'text-amber-300' : 'text-amber-700'
+                              theme === 'dark' ? 'text-amber-300' : 'text-orange-700'
                             )}>
                               💡 Observation
                             </p>
                             <p className={cn(
                               'text-xs',
-                              theme === 'dark' ? 'text-amber-200' : 'text-amber-900'
+                              theme === 'dark' ? 'text-amber-200' : 'text-orange-900'
                             )}>
                               {demoInfo.diy.observation}
                             </p>
@@ -3162,6 +3198,86 @@ export function DemosPage() {
                 )}
               </div>
             )}
+
+            {/* D2: Next Step Recommendation - Shows recommended next demo */}
+            {activeDemo && (() => {
+              const nextDemo = getNextDemoRecommendation(activeDemo, difficultyLevel)
+              if (!nextDemo) return null
+
+              return (
+                <div className="mt-6">
+                  <div className={cn(
+                    'rounded-xl border p-5 transition-all duration-300',
+                    'hover:shadow-lg hover:scale-[1.01]',
+                    theme === 'dark'
+                      ? 'bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-500/30'
+                      : 'bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200'
+                  )}>
+                    <div className="flex items-start gap-4">
+                      {/* Icon */}
+                      <div className={cn(
+                        'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
+                        theme === 'dark'
+                          ? 'bg-indigo-500/20 text-indigo-400'
+                          : 'bg-indigo-100 text-indigo-600'
+                      )}>
+                        <ChevronRight className="w-6 h-6" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className={cn(
+                          'text-sm font-semibold mb-1',
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        )}>
+                          {isZh ? '下一步推荐' : 'What\'s Next?'}
+                        </h4>
+                        <p className={cn(
+                          'text-lg font-bold mb-2',
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        )}>
+                          {t(nextDemo.titleKey)}
+                        </p>
+                        <p className={cn(
+                          'text-sm mb-3',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                        )}>
+                          {t(nextDemo.descriptionKey)}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            'text-xs px-2 py-1 rounded-full',
+                            theme === 'dark'
+                              ? 'bg-slate-700 text-gray-400'
+                              : 'bg-gray-200 text-gray-600'
+                          )}>
+                            {nextDemo.unit === 0 ? t('basics.title') : `${t('game.level')} ${nextDemo.unit}`}
+                          </span>
+                          <VisualTypeBadge type={nextDemo.visualType} />
+                        </div>
+                      </div>
+
+                      {/* Button */}
+                      <button
+                        onClick={() => {
+                          handleDemoChange(nextDemo.id)
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        className={cn(
+                          'px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200',
+                          'hover:scale-105 active:scale-95',
+                          theme === 'dark'
+                            ? 'bg-indigo-500 text-white hover:bg-indigo-400'
+                            : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                        )}
+                      >
+                        {isZh ? '继续学习' : 'Continue'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
           </>
           )}

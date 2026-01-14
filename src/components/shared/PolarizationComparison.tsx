@@ -19,7 +19,6 @@ import {
   Play,
   Pause,
   RotateCcw,
-  Info,
   ChevronRight,
   Waves,
   Eye,
