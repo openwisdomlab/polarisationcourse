@@ -3114,6 +3114,114 @@
         "amplitude": "Ex, Ey are complex amplitudes of electric field",
         "phase": "Complex phase encodes relative phase between components",
         "coherence": "Only valid for coherent, fully polarized light"
+      },
+      "questions": {
+        "leading": "How can a 2×2 matrix describe all the effects of an optical element on polarized light?",
+        "leading_foundation": "If a light beam is 'horizontal', what happens when it encounters a pass that requires 'vertical'?",
+        "leading_research": "How do off-diagonal elements of a matrix affect the optical rotation of linearly polarized light? What is the physical meaning of eigenvalues for polarization state evolution?",
+        "guided": [
+          "What do the diagonal and off-diagonal elements of a Jones matrix represent?",
+          "Why can Jones matrices only describe fully polarized light?"
+        ],
+        "guided_foundation": [
+          "Polarizers, waveplates, rotators—how are their 'passes' different?",
+          "What happens to light when two 'passes' are stacked together?"
+        ],
+        "guided_research": [
+          "Derive the rotation transformation form of Jones matrix at arbitrary angles",
+          "How to understand the eigenpolarization states of optical elements through eigenvalue decomposition of Jones matrices?"
+        ],
+        "openEnded": [
+          "What are the advantages and limitations of Jones matrices vs Mueller matrices?",
+          "How to design cascaded optical systems to achieve specific polarization transformations?"
+        ],
+        "openEnded_foundation": [
+          "What are the benefits of understanding optical elements using 'passes'?",
+          "What interesting effects can you create by stacking multiple 'passes'?"
+        ],
+        "openEnded_research": [
+          "Analyze the unitarity conditions of Jones matrices and their relationship with lossless optical elements",
+          "How to use Jones matrices to design polarization state purifiers or polarization rotators?"
+        ]
+      },
+      "physics": {
+        "principle": "Jones matrices use 2×2 complex matrices to describe linear transformations of fully polarized light",
+        "principle_foundation": "Think of a Jones matrix as a 'magic pass'. When light carries this pass through an optical element, the matrix tells the light: 'Please turn right' or 'Please become spiral'. Different elements are different instruction cards.",
+        "principle_research": "Jones calculus uses 2×2 complex matrices to describe the interaction between fully polarized light and linear optical elements. System transformations follow linear algebra rules: $J_{out} = M \\cdot J_{in}$, where complex phase factors contain phase retardation information. The Jones matrix of cascaded systems is the reverse-order product of individual element matrices. Matrix eigenvalues correspond to complex transmittances of eigenpolarization states.",
+        "formula": "J_out = M · J_in",
+        "details": [
+          "Jones vectors describe the electric field amplitude and phase of fully polarized light",
+          "The elements of the 2×2 matrix encode all information about polarization transformation",
+          "Cascaded system matrices must be multiplied in reverse order of light propagation"
+        ],
+        "details_foundation": [
+          "Each beam of light has an 'ID card'—two numbers recording its vibration direction",
+          "Optical elements are 'transformers'—using matrices to tell light how to change",
+          "When multiple elements are in sequence, calculate from back to front!"
+        ],
+        "details_research": [
+          "Unitary matrices correspond to lossless optical elements, satisfying M†M = I",
+          "Hermitian matrices correspond to lossy elements (like partial polarizers)",
+          "Eigenvectors give invariant polarization states, eigenvalues give complex transmission coefficients"
+        ]
+      },
+      "lifeScene": {
+        "title": "Polarization Control in Lasers",
+        "title_foundation": "The 'Magic Transformation' of Light!",
+        "title_research": "Jones Matrix Cascade Design in Coherent Optical Systems",
+        "imageAlt": "Precise arrangement of polarizers and waveplates in a laser optical system",
+        "hook": "How do lasers precisely control the polarization state of output light? The answer lies in a set of simple 2×2 matrices.",
+        "hook_foundation": "Scientists can make lasers 'obediently' turn left, turn right, and change in various ways—like using magic commands to control light! These commands are Jones matrices.",
+        "hook_research": "High-precision laser systems (like gravitational wave detector LIGO) rely on Jones matrices to precisely calculate cumulative polarization effects of multi-stage optical elements, requiring extinction ratios of 10⁻¹⁰.",
+        "facts": [
+          "Each optical element corresponds to a specific Jones matrix",
+          "Complex phase precisely records light vibration information",
+          "3D movie theaters use exactly this kind of precise polarization control"
+        ],
+        "facts_foundation": [
+          "The light in a laser pointer has been carefully 'trained'—its vibration direction is fixed",
+          "The secret of 3D movies: left and right eye light vibrate in different directions!",
+          "The glasses are 'pass checkpoints' that only let specific vibrating light into each eye"
+        ],
+        "facts_research": [
+          "Polarization mode dispersion (PMD) in optical fibers can be described using statistical theory of Jones matrices",
+          "Jones matrix ellipticity parameter directly corresponds to latitude on the Poincaré sphere",
+          "In quantum optics, Jones vectors generalize to polarization qubit bases of quantum states"
+        ]
+      },
+      "experiment": {
+        "title": "Jones Matrix Verification Experiment",
+        "example": "Polarizer-waveplate cascade measurement",
+        "details": [
+          "Measure the Jones matrix of individual elements",
+          "Verify matrix multiplication rules for cascaded systems",
+          "Compare theoretical predictions with experimental results"
+        ]
+      },
+      "frontier": {
+        "title": "Quantum Polarization State Manipulation",
+        "example": "Single-photon polarization qubit",
+        "details": [
+          "Jones vectors generalize to quantum polarization states",
+          "Polarization states as quantum bit carriers",
+          "Foundation of quantum key distribution"
+        ]
+      },
+      "diy": {
+        "title": "Polarization Transformation Predictor",
+        "materials": [
+          "Two polarizers",
+          "Quarter-wave plate (can be obtained from 3D glasses)",
+          "Laser pointer or strong flashlight",
+          "Paper and pen to calculate Jones matrices"
+        ],
+        "steps": [
+          "Use a polarizer to create light with known polarization state",
+          "Calculate the Jones matrix of the waveplate at different angles",
+          "Predict polarization state changes after passing through the waveplate",
+          "Use a second polarizer to verify your prediction"
+        ],
+        "observation": "When your calculations are correct, your predictions will perfectly match observations! This is how optical engineers design complex laser systems."
       }
     },
     "calculator": {
@@ -3135,7 +3243,114 @@
       "cascadeRule": "Cascade Rule",
       "cascadeDesc": "For cascaded optical elements, multiply matrices in reverse order (last element first)",
       "muellerJones": "Mueller vs Jones",
-      "tips": "Tips"
+      "tips": "Tips",
+      "questions": {
+        "leading": "How to build and simulate complex polarization optical systems?",
+        "leading_foundation": "Try stacking two polarizers with a waveplate between them—will the light get brighter or dimmer?",
+        "leading_research": "In multi-stage waveplate systems, how do cumulative phase errors affect the final extinction ratio?",
+        "guided": [
+          "How is the total matrix of a cascaded system calculated?",
+          "When should you use Mueller matrices vs Jones matrices?"
+        ],
+        "guided_foundation": [
+          "If you add a tilted polarizer between two 'crossed' polarizers, can light pass through?",
+          "Drag different 'building blocks' and see how the output intensity changes"
+        ],
+        "guided_research": [
+          "Analyze error propagation in matrix multiplication for cascaded systems",
+          "How to design compensating elements to correct system depolarization effects?"
+        ],
+        "openEnded": [
+          "How can calculation tools optimize optical system design?",
+          "What practical applications can use the exported code?"
+        ],
+        "openEnded_foundation": [
+          "Can you build a system that dims the light using these 'blocks'?",
+          "Try converting circular polarization to linear polarization!"
+        ],
+        "openEnded_research": [
+          "Design a broadband achromatic waveplate combination and verify its performance",
+          "How to use Mueller matrix decomposition algorithms to diagnose system depolarization sources?"
+        ]
+      },
+      "physics": {
+        "principle": "Simulate complex optical system polarization transformations through cascaded matrix multiplication",
+        "principle_foundation": "Think of it like 'optical LEGO' blocks! You can stack polarizers and waveplates like building blocks. Watch how light passing through the first block gets transformed by the second, third, and so on.",
+        "principle_research": "Based on cascaded matrix multiplication principle to simulate complex optical systems. Total system matrix $M_{sys} = M_n \\cdot M_{n-1} \\cdot ... \\cdot M_1$. Supports dual-mode computation with Mueller matrices (handling depolarization) and Jones matrices (handling coherent superposition). System depolarization index can be extracted via SVD of the Mueller matrix.",
+        "formula": "M_sys = M_n × M_{n-1} × ... × M_1",
+        "details": [
+          "When light passes through multiple elements sequentially, the effect is determined by matrix products",
+          "Mueller matrices can handle partially polarized light and depolarization effects",
+          "Jones matrices are suitable for precise calculations with fully polarized light"
+        ],
+        "details_foundation": [
+          "Arrange optical elements in a row like building blocks",
+          "Light enters the first block and passes through each one in sequence",
+          "The final output depends on the combined effect of all blocks"
+        ],
+        "details_research": [
+          "Mueller matrices can be decomposed into depolarization, birefringence, and diattenuation components",
+          "System condition number reflects sensitivity to manufacturing errors",
+          "Monte Carlo simulations can evaluate the impact of element tolerances on system performance"
+        ]
+      },
+      "lifeScene": {
+        "title": "Optical Instrument Design Workbench",
+        "title_foundation": "Optical LEGO Workshop!",
+        "title_research": "Computer-Aided Design and Tolerance Analysis of Polarization Optical Systems",
+        "imageAlt": "Optical engineer using calculation software to design polarization optical systems",
+        "hook": "Designing a complex polarization optical system requires precise calculations—the calculator lets you experiment in a virtual world first.",
+        "hook_foundation": "Imagine you're an optical wizard with various magical optical blocks at hand. How do you arrange them to achieve the desired effect? This calculator lets you try freely!",
+        "hook_research": "Modern polarization optical system design relies on numerical simulation. From polarization smoothing in laser fusion ignition devices to Mueller matrix calibration of astronomical polarimeters, calculation tools are an indispensable design platform.",
+        "facts": [
+          "Industry uses similar tools to design LCD displays and polarization cameras",
+          "Exported code can be directly used in scientific computing",
+          "Drag-and-drop interface makes complex design simple and intuitive"
+        ],
+        "facts_foundation": [
+          "TV screens, 3D glasses, camera filters—all designed using this 'building block' method!",
+          "Testing in software before making physical prototypes saves time and money",
+          "Your 'designs' can be exported as code, just like a programmer!"
+        ],
+        "facts_research": [
+          "System-level Mueller matrices can be calculated via Kronecker products of discrete elements",
+          "Monte Carlo tolerance analysis evaluates performance degradation under manufacturing deviations",
+          "Gradient-based inverse design can automatically find optimal element configurations"
+        ]
+      },
+      "experiment": {
+        "title": "Cascaded System Verification",
+        "example": "Multi-element polarization optical path construction",
+        "details": [
+          "Build actual optical path according to calculator design",
+          "Measure output polarization state and intensity",
+          "Compare simulation with measured results"
+        ]
+      },
+      "frontier": {
+        "title": "Automatic Optical Design",
+        "example": "AI-assisted polarization system optimization",
+        "details": [
+          "Machine learning to find optimal element configurations",
+          "Automatic tolerance allocation and sensitivity analysis",
+          "Inverse design to achieve target polarization transformation"
+        ]
+      },
+      "diy": {
+        "title": "Virtual Optical Experiment",
+        "materials": [
+          "This calculator tool",
+          "Optional: actual polarizers and waveplates for verification",
+          "Paper and pen to record design ideas"
+        ],
+        "steps": [
+          "Add a light source and set its polarization state",
+          "Add polarizers, waveplates, and other elements sequentially",
+          "Observe changes in output Stokes vector and intensity",
+          "Try to achieve specific goals (e.g., circular to linear polarization)"
+        ],
+        "observation": "Through repeated experimentation, you'll discover that element order and angles have a huge impact on results! This is the essence of polarization optical design."
+      }
     },
     "polarimetricMicroscopy": {
       "title": "Full Polarimetric Microscopy",
@@ -3965,6 +4180,7 @@
     "brewster": {
       "title": "Brewster's Angle Interactive Demo",
       "subtitle": "tan(θB) = n₂/n₁ — At this angle, reflected light is fully s-polarized",
+      "dynamicDemo": "Dynamic Demo",
       "air": "Air",
       "medium": "Medium",
       "normal": "Normal",

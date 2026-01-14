@@ -4145,6 +4145,7 @@
     "brewster": {
       "title": "布儒斯特角交互演示",
       "subtitle": "tan(θB) = n₂/n₁ —— 在此角度入射时，反射光为完全s偏振",
+      "dynamicDemo": "动态演示",
       "air": "空气",
       "medium": "介质",
       "normal": "法线",
