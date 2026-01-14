@@ -4518,12 +4518,19 @@
     "optional": "optional",
     "characters": "characters",
     "validLength": "Valid length",
-    "submit": "Submit to GitHub",
+    "submit": "Submit Feedback",
     "submitting": "Submitting...",
-    "note": "You will be redirected to GitHub to complete the submission",
+    "note": "Your feedback will be automatically submitted to GitHub",
+    "apiNotConfigured": "Feedback API is not configured. Please contact the administrator.",
+    "success": {
+      "title": "Thank You!",
+      "message": "Your feedback has been submitted successfully.",
+      "viewOnGithub": "View on GitHub"
+    },
     "errors": {
       "empty": "Please enter your feedback content",
-      "lowValue": "Please provide more detailed feedback. Simple comments like 'good' or 'nice' won't help us improve."
+      "lowValue": "Please provide more detailed feedback. Simple comments like 'good' or 'nice' won't help us improve.",
+      "submitFailed": "Failed to submit feedback. Please try again later."
     }
   }
 }
