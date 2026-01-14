@@ -1,46 +1,80 @@
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useState, ComponentType } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget'
 import { PuzzleGate, checkAccess } from '@/components/shared/PuzzleGate'
 
-// Lazy load all pages for code splitting
-const HomePage = lazy(() => import('@/pages/HomePage'))
-const GamePage = lazy(() => import('@/pages/GamePage'))
-const Game2DPage = lazy(() => import('@/pages/Game2DPage'))
-const DemosPage = lazy(() => import('@/pages/DemosPage'))
-const HardwarePage = lazy(() => import('@/pages/HardwarePage'))
-const CardGamePage = lazy(() => import('@/pages/CardGamePage'))
-const MerchandisePage = lazy(() => import('@/pages/MerchandisePage'))
-const GameHubPage = lazy(() => import('@/pages/GameHubPage'))
-const EscapeRoomPage = lazy(() => import('@/pages/EscapeRoomPage'))
-const ChroniclesPage = lazy(() => import('@/pages/ChroniclesPage'))
-const LabPage = lazy(() => import('@/pages/LabPage'))
-const OpticalDesignPage = lazy(() => import('@/pages/OpticalDesignPage'))
-const ApplicationsPage = lazy(() => import('@/pages/ApplicationsPage'))
-const ExperimentsPage = lazy(() => import('@/pages/ExperimentsPage'))
-const CalculationWorkshopPage = lazy(() => import('@/pages/CalculationWorkshopPage'))
-const PoincareSphereViewerPage = lazy(() => import('@/pages/PoincareSphereViewerPage'))
-const JonesCalculatorPage = lazy(() => import('@/pages/JonesCalculatorPage'))
-const StokesCalculatorPage = lazy(() => import('@/pages/StokesCalculatorPage'))
-const MuellerCalculatorPage = lazy(() => import('@/pages/MuellerCalculatorPage'))
-const DetectiveGamePage = lazy(() => import('@/pages/DetectiveGamePage'))
-const LearningHubPage = lazy(() => import('@/pages/LearningHubPage'))
+// Retry dynamic import with cache busting for failed module loads
+// This handles cases where chunks fail to load due to deployment/cache issues
+function lazyWithRetry<T extends ComponentType<unknown>>(
+  importFn: () => Promise<{ default: T }>,
+  retries = 3,
+  delay = 1000
+): React.LazyExoticComponent<T> {
+  return lazy(async () => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await importFn()
+      } catch (error) {
+        // On last retry, try with cache-busting query parameter
+        if (i === retries - 1) {
+          // Force reload to get fresh assets after deployment
+          const isChunkError = error instanceof Error &&
+            (error.message.includes('Failed to fetch') ||
+             error.message.includes('Loading chunk') ||
+             error.message.includes('dynamically imported module'))
+
+          if (isChunkError) {
+            // Reload the page to get fresh HTML with new asset hashes
+            window.location.reload()
+          }
+          throw error
+        }
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, delay * (i + 1)))
+      }
+    }
+    throw new Error('Failed to load module after retries')
+  })
+}
+
+// Lazy load all pages for code splitting (with retry logic)
+const HomePage = lazyWithRetry(() => import('@/pages/HomePage'))
+const GamePage = lazyWithRetry(() => import('@/pages/GamePage'))
+const Game2DPage = lazyWithRetry(() => import('@/pages/Game2DPage'))
+const DemosPage = lazyWithRetry(() => import('@/pages/DemosPage'))
+const HardwarePage = lazyWithRetry(() => import('@/pages/HardwarePage'))
+const CardGamePage = lazyWithRetry(() => import('@/pages/CardGamePage'))
+const MerchandisePage = lazyWithRetry(() => import('@/pages/MerchandisePage'))
+const GameHubPage = lazyWithRetry(() => import('@/pages/GameHubPage'))
+const EscapeRoomPage = lazyWithRetry(() => import('@/pages/EscapeRoomPage'))
+const ChroniclesPage = lazyWithRetry(() => import('@/pages/ChroniclesPage'))
+const LabPage = lazyWithRetry(() => import('@/pages/LabPage'))
+const OpticalDesignPage = lazyWithRetry(() => import('@/pages/OpticalDesignPage'))
+const ApplicationsPage = lazyWithRetry(() => import('@/pages/ApplicationsPage'))
+const ExperimentsPage = lazyWithRetry(() => import('@/pages/ExperimentsPage'))
+const CalculationWorkshopPage = lazyWithRetry(() => import('@/pages/CalculationWorkshopPage'))
+const PoincareSphereViewerPage = lazyWithRetry(() => import('@/pages/PoincareSphereViewerPage'))
+const JonesCalculatorPage = lazyWithRetry(() => import('@/pages/JonesCalculatorPage'))
+const StokesCalculatorPage = lazyWithRetry(() => import('@/pages/StokesCalculatorPage'))
+const MuellerCalculatorPage = lazyWithRetry(() => import('@/pages/MuellerCalculatorPage'))
+const DetectiveGamePage = lazyWithRetry(() => import('@/pages/DetectiveGamePage'))
+const LearningHubPage = lazyWithRetry(() => import('@/pages/LearningHubPage'))
 
 // Light Explorer - 渐进式探索光学编年史
-const LightExplorerPage = lazy(() => import('@/pages/LightExplorerPage'))
+const LightExplorerPage = lazyWithRetry(() => import('@/pages/LightExplorerPage'))
 
 // Exploration Pages - 问题驱动的探索系统
-const ExplorePage = lazy(() => import('@/pages/ExplorePage'))
-const ExplorationNodePage = lazy(() => import('@/pages/ExplorationNodePage'))
+const ExplorePage = lazyWithRetry(() => import('@/pages/ExplorePage'))
+const ExplorationNodePage = lazyWithRetry(() => import('@/pages/ExplorationNodePage'))
 
 // Discovery Page - 渐进式探索入口 (Google Learn About inspired)
-const DiscoveryPage = lazy(() => import('@/pages/DiscoveryPage'))
+const DiscoveryPage = lazyWithRetry(() => import('@/pages/DiscoveryPage'))
 
 // Course Content Layer - 《偏振光下的世界》独立课程
-const WorldCourseHome = lazy(() => import('@/course/pages/CourseHome'))
-const WorldCourseUnit = lazy(() => import('@/course/pages/UnitOverview'))
-const WorldCourseLesson = lazy(() => import('@/course/pages/LessonPage'))
+const WorldCourseHome = lazyWithRetry(() => import('@/course/pages/CourseHome'))
+const WorldCourseUnit = lazyWithRetry(() => import('@/course/pages/UnitOverview'))
+const WorldCourseLesson = lazyWithRetry(() => import('@/course/pages/LessonPage'))
 
 // Loading fallback component
 function PageLoader() {

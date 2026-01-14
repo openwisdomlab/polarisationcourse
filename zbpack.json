@@ -1,0 +1,6 @@
+{
+  "static": {
+    "spa": true,
+    "dist": "dist"
+  }
+}
