@@ -203,11 +203,12 @@ const STUDY_GROUPS: StudyGroup[] = [
 ]
 
 // Tabs configuration - 重新排序，开放挑战优先
+// Hidden tabs: 'analysis' (数据工作台), 'frontier' (科研前沿) - temporarily hidden to reduce information overload
 const TABS = [
   { id: 'challenges', label: 'Open Challenges', labelZh: '开放挑战', icon: <Rocket className="w-4 h-4" /> },
   { id: 'tasks', label: 'Guided Tasks', labelZh: '引导任务', icon: <Target className="w-4 h-4" /> },
-  { id: 'analysis', label: 'Data Workbench', labelZh: '数据工作台', icon: <BarChart3 className="w-4 h-4" /> },
-  { id: 'frontier', label: 'Research Frontier', labelZh: '科研前沿', icon: <TrendingUp className="w-4 h-4" /> },
+  // { id: 'analysis', label: 'Data Workbench', labelZh: '数据工作台', icon: <BarChart3 className="w-4 h-4" /> },
+  // { id: 'frontier', label: 'Research Frontier', labelZh: '科研前沿', icon: <TrendingUp className="w-4 h-4" /> },
   { id: 'collaboration', label: 'Collaboration Hub', labelZh: '协作空间', icon: <Users className="w-4 h-4" /> },
   { id: 'showcase', label: 'Showcase Gallery', labelZh: '成果展示', icon: <Award className="w-4 h-4" /> },
 ]
@@ -981,10 +982,9 @@ export function LabPage() {
           </>
         )}
 
-        {/* Data Analysis Workbench Tab */}
-        {activeTab === 'analysis' && (
+        {/* Data Analysis Workbench Tab - Hidden to reduce information overload */}
+        {/* {activeTab === 'analysis' && (
           <div className="space-y-6">
-            {/* Tools Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {ANALYSIS_TOOLS.map(tool => {
                 const cardContent = (
@@ -1054,7 +1054,6 @@ export function LabPage() {
               })}
             </div>
 
-            {/* Info Box */}
             <div className={cn(
               'p-4 rounded-xl border',
               theme === 'dark' ? 'bg-cyan-900/20 border-cyan-700/30' : 'bg-cyan-50 border-cyan-200'
@@ -1083,10 +1082,10 @@ export function LabPage() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
-        {/* Research Frontier Tab */}
-        {activeTab === 'frontier' && (
+        {/* Research Frontier Tab - Hidden to reduce information overload */}
+        {/* {activeTab === 'frontier' && (
           <div className="space-y-4">
             {RESEARCH_FRONTIER.map(news => (
               <div
@@ -1138,7 +1137,7 @@ export function LabPage() {
               </div>
             ))}
           </div>
-        )}
+        )} */}
 
         {/* Collaboration Hub Tab - 协作空间 */}
         {activeTab === 'collaboration' && (
