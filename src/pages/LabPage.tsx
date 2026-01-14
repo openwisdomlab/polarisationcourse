@@ -587,9 +587,9 @@ export function LabPage() {
     <>
       <SEO
         title="Research Lab - PolarCraft"
-        titleZh="科研实战营 - PolarCraft"
-        description="Join real research projects with open-ended exploration, authentic data, and complete research workflows. Not learning research, but doing research."
-        descriptionZh="加入真实科研课题，体验完整研究流程。不是学科研，而是做科研。真实数据、开放探索、无标准答案。"
+        titleZh="虚拟课题组 - PolarCraft"
+        description="Join real research projects with open-ended exploration, authentic data, and complete research workflows. Learn and explore in cutting-edge research."
+        descriptionZh="加入真实科研课题，体验完整研究流程。在真实前沿的研究中学习和探索。真实数据、开放探索、无标准答案。"
       />
       <div className={cn(
         'min-h-screen',
@@ -600,7 +600,7 @@ export function LabPage() {
         {/* Header with Persistent Logo */}
         <PersistentHeader
         moduleKey="labGroup"
-        moduleName={isZh ? '科研实战营' : 'Research Lab'}
+        moduleName={isZh ? '虚拟课题组' : 'Research Lab'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',
@@ -616,7 +616,7 @@ export function LabPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-500 text-sm mb-4">
             <Rocket className="w-4 h-4" />
-            <span className="font-semibold">{isZh ? '不是学科研，而是做科研' : 'Not Learning Research, but Doing Research'}</span>
+            <span className="font-semibold">{isZh ? '在真实前沿的研究中学习和探索' : 'Learn and Explore in Cutting-Edge Research'}</span>
           </div>
           <h2 className={cn(
             'text-2xl sm:text-3xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r',
@@ -624,7 +624,7 @@ export function LabPage() {
               ? 'from-cyan-400 via-violet-400 to-pink-400'
               : 'from-cyan-600 via-violet-600 to-pink-600'
           )}>
-            {isZh ? '欢迎来到科研实战营' : 'Welcome to the Research Lab'}
+            {isZh ? '欢迎来到虚拟课题组' : 'Welcome to the Research Lab'}
           </h2>
           <p className={cn(
             'text-base max-w-2xl mx-auto mb-2',

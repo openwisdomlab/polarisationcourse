@@ -89,7 +89,7 @@ const MODULE_ENTRIES: ModuleEntry[] = [
   },
   {
     id: 'lab',
-    titleZh: '科研实战营',
+    titleZh: '虚拟课题组',
     titleEn: 'Research Lab',
     icon: <Users className="w-4 h-4" />,
     link: '/lab',
