@@ -2401,6 +2401,22 @@ export function DemosPage() {
                                         {unitDemos.indexOf(demo) + 1}
                                       </span>
                                       <span className="truncate flex-1">{t(demo.titleKey)}</span>
+                                      {hasDemoSource(demo.id) && (
+                                        <span title={isZh ? '源码可用' : 'Source available'}>
+                                          <FileCode
+                                            className={cn(
+                                              'w-3.5 h-3.5 flex-shrink-0',
+                                              activeDemo === demo.id
+                                                ? theme === 'dark'
+                                                  ? 'text-cyan-300'
+                                                  : 'text-cyan-600'
+                                                : theme === 'dark'
+                                                  ? 'text-emerald-400'
+                                                  : 'text-emerald-500'
+                                            )}
+                                          />
+                                        </span>
+                                      )}
                                       <VisualTypeBadge type={demo.visualType} />
                                     </div>
                                     {/* Search match details */}
@@ -2575,7 +2591,7 @@ export function DemosPage() {
           <div className="max-w-[1400px] mx-auto">
             {/* Title and description */}
             <div className="mb-5">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
                 <span
                   className={cn(
                     'px-2.5 py-1 text-xs rounded-lg border',
@@ -2589,6 +2605,33 @@ export function DemosPage() {
                     : `${t('game.level')} ${currentDemo?.unit}`}
                 </span>
                 <VisualTypeBadge type={currentDemo?.visualType || '2D'} />
+
+                {/* Source Code Badge - Show prominently in title area */}
+                {activeDemo && hasDemoSource(activeDemo) && (
+                  <button
+                    onClick={() => setViewingSource(activeDemo)}
+                    className={cn(
+                      'flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all',
+                      'hover:scale-105 active:scale-95 hover:shadow-md',
+                      theme === 'dark'
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-400/40 hover:bg-emerald-500/30 hover:border-emerald-400/60'
+                        : 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400'
+                    )}
+                    title={isZh ? '查看源码（Python, MATLAB等）' : 'View Source Code (Python, MATLAB, etc.)'}
+                  >
+                    <FileCode className="w-3.5 h-3.5" />
+                    <span>{isZh ? '查看源码' : 'View Source'}</span>
+                    <span className={cn(
+                      'px-1.5 py-0.5 text-[9px] rounded font-bold',
+                      theme === 'dark'
+                        ? 'bg-emerald-400/30 text-emerald-300'
+                        : 'bg-emerald-200 text-emerald-700'
+                    )}>
+                      {isZh ? '多语言' : 'Multi-lang'}
+                    </span>
+                  </button>
+                )}
+
                 <h1
                   className={cn(
                     'text-2xl font-bold',

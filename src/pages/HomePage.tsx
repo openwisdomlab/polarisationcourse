@@ -549,47 +549,98 @@ function CourseOutlineColumn({
                     className="overflow-hidden"
                   >
                     <div className={cn(
-                      'rounded-xl border p-3 space-y-3',
+                      'rounded-xl border p-3 space-y-2',
                       theme === 'dark'
                         ? 'bg-slate-800/80 border-slate-700'
                         : 'bg-white/80 border-gray-200'
                     )}
                       style={{ borderColor: `${color}30` }}
                     >
-                      {/* Learning objectives */}
+                      {/* Course Sections */}
                       <div>
                         <h4 className={cn(
                           'text-xs font-semibold flex items-center gap-1.5 mb-2',
                           theme === 'dark' ? 'text-white' : 'text-gray-900'
                         )}>
-                          <Target className="w-3.5 h-3.5" style={{ color }} />
-                          {isZh ? '学习目标' : 'Objectives'}
+                          <BookOpen className="w-3.5 h-3.5" style={{ color }} />
+                          {isZh ? '课程内容' : 'Course Content'}
                         </h4>
                         <div className="space-y-1.5">
-                          {(isZh ? unit.learningObjectives.zh : unit.learningObjectives.en).slice(0, 2).map((obj, idx) => (
-                            <div key={idx} className={cn(
-                              'text-xs leading-snug pl-4 relative',
-                              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                            )}>
-                              <span className="absolute left-0 top-0.5 text-[10px]" style={{ color }}>●</span>
-                              {obj}
-                            </div>
+                          {unit.sections.map((section) => (
+                            <Link
+                              key={section.id}
+                              to={section.relatedDemos[0] ? `/demos/${section.relatedDemos[0]}` : '/demos'}
+                              className={cn(
+                                'group flex items-start gap-2 p-2 rounded-lg transition-all',
+                                theme === 'dark'
+                                  ? 'hover:bg-slate-700/50'
+                                  : 'hover:bg-gray-100'
+                              )}
+                            >
+                              {/* Section number */}
+                              <div
+                                className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold"
+                                style={{
+                                  backgroundColor: `${color}15`,
+                                  color,
+                                }}
+                              >
+                                {section.id}
+                              </div>
+
+                              {/* Section info */}
+                              <div className="flex-1 min-w-0">
+                                <h5 className={cn(
+                                  'text-xs font-medium leading-tight',
+                                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                                )}>
+                                  {isZh ? section.titleZh : section.titleEn}
+                                </h5>
+                                <p className={cn(
+                                  'text-[10px] mt-0.5 leading-snug line-clamp-2',
+                                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                                )}>
+                                  {isZh ? section.descriptionZh : section.descriptionEn}
+                                </p>
+                              </div>
+
+                              {/* Arrow */}
+                              <ChevronRight className={cn(
+                                'w-3 h-3 flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity',
+                                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                              )} />
+                            </Link>
                           ))}
                         </div>
                       </div>
 
-                      {/* Quick link to full course */}
-                      <Link
-                        to="/course"
-                        className={cn(
-                          'block w-full text-center text-xs font-medium py-2 rounded-lg transition-colors',
-                          theme === 'dark'
-                            ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                            : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
-                        )}
-                      >
-                        {isZh ? '查看完整课程' : 'View Full Course'} →
-                      </Link>
+                      {/* Stats footer */}
+                      <div className={cn(
+                        'flex items-center justify-between pt-2 border-t text-xs',
+                        theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+                      )}>
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            'flex items-center gap-1',
+                            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                          )}>
+                            <Eye className="w-3 h-3" />
+                            {totalDemos} {isZh ? '演示' : 'demos'}
+                          </span>
+                        </div>
+                        <Link
+                          to="/demos"
+                          className={cn(
+                            'text-xs font-medium transition-colors',
+                            theme === 'dark'
+                              ? 'text-cyan-400 hover:text-cyan-300'
+                              : 'text-cyan-600 hover:text-cyan-700'
+                          )}
+                          style={{ color }}
+                        >
+                          {isZh ? '浏览演示' : 'View Demos'} →
+                        </Link>
+                      </div>
                     </div>
                   </motion.div>
                 )}
