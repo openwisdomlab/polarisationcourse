@@ -38,6 +38,35 @@ import {
 
 export type ShowcaseItemType = 'demo' | 'game' | 'calculator' | 'tool'
 
+// Icon name type for serialization
+type IconName = 'Lightbulb' | 'Waves' | 'Layers' | 'FlaskConical' | 'Atom' | 'Microscope' |
+  'Gamepad2' | 'Calculator' | 'Palette' | 'Sparkles' | 'Eye' | 'Compass' |
+  'Zap' | 'Sun' | 'Target' | 'Sigma' | 'CircleDot' | 'Binary' | 'Puzzle' | 'Search'
+
+// Icon lookup map for deserializing from localStorage
+const ICON_MAP: Record<IconName, LucideIcon> = {
+  Lightbulb,
+  Waves,
+  Layers,
+  FlaskConical,
+  Atom,
+  Microscope,
+  Gamepad2,
+  Calculator,
+  Palette,
+  Sparkles,
+  Eye,
+  Compass,
+  Zap,
+  Sun,
+  Target,
+  Sigma,
+  CircleDot,
+  Binary,
+  Puzzle,
+  Search,
+}
+
 export interface ShowcaseItem {
   id: string
   type: ShowcaseItemType
@@ -46,6 +75,7 @@ export interface ShowcaseItem {
   descriptionZh: string
   descriptionEn: string
   icon: LucideIcon
+  iconName: IconName  // For serialization to localStorage
   color: string
   glowColor: string
   link: string
@@ -69,6 +99,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '探索电磁波的基本特性和传播方式',
     descriptionEn: 'Explore the basic properties of electromagnetic waves',
     icon: Waves,
+    iconName: 'Waves',
     color: '#fbbf24',
     glowColor: 'rgba(251, 191, 36, 0.4)',
     link: '/demos/em-wave',
@@ -84,6 +115,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '从生活场景认识偏振光的奇妙世界',
     descriptionEn: 'Discover polarized light through everyday scenes',
     icon: Sun,
+    iconName: 'Sun',
     color: '#fbbf24',
     glowColor: 'rgba(251, 191, 36, 0.4)',
     link: '/demos/polarization-intro',
@@ -99,6 +131,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '理解线偏振、圆偏振和椭圆偏振',
     descriptionEn: 'Understand linear, circular and elliptical polarization',
     icon: Sparkles,
+    iconName: 'Sparkles',
     color: '#fbbf24',
     glowColor: 'rgba(251, 191, 36, 0.4)',
     link: '/demos/polarization-types-unified',
@@ -114,6 +147,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '动手设计你的第一个偏振实验',
     descriptionEn: 'Design your first polarization experiment',
     icon: Lightbulb,
+    iconName: 'Lightbulb',
     color: '#fbbf24',
     glowColor: 'rgba(251, 191, 36, 0.4)',
     link: '/demos/optical-bench',
@@ -130,6 +164,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '在三维空间中直观理解偏振态',
     descriptionEn: 'Visualize polarization states in 3D space',
     icon: Eye,
+    iconName: 'Eye',
     color: '#22d3ee',
     glowColor: 'rgba(34, 211, 238, 0.4)',
     link: '/demos/polarization-state',
@@ -145,6 +180,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '探索偏振光强度与角度的关系',
     descriptionEn: 'Explore the relationship between intensity and angle',
     icon: Target,
+    iconName: 'Target',
     color: '#22d3ee',
     glowColor: 'rgba(34, 211, 238, 0.4)',
     link: '/demos/malus',
@@ -160,6 +196,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '揭秘冰洲石的神奇双影效应',
     descriptionEn: 'Discover the magic of calcite double refraction',
     icon: Layers,
+    iconName: 'Layers',
     color: '#22d3ee',
     glowColor: 'rgba(34, 211, 238, 0.4)',
     link: '/demos/birefringence',
@@ -175,6 +212,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '学习波片如何调控偏振态',
     descriptionEn: 'Learn how waveplates modulate polarization',
     icon: Zap,
+    iconName: 'Zap',
     color: '#22d3ee',
     glowColor: 'rgba(34, 211, 238, 0.4)',
     link: '/demos/waveplate',
@@ -191,6 +229,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '理解光在界面的反射和透射',
     descriptionEn: 'Understand reflection and transmission at interfaces',
     icon: Layers,
+    iconName: 'Layers',
     color: '#a78bfa',
     glowColor: 'rgba(167, 139, 250, 0.4)',
     link: '/demos/fresnel',
@@ -206,6 +245,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '探索无反射偏振的神奇角度',
     descriptionEn: 'Explore the magic angle of polarization',
     icon: Compass,
+    iconName: 'Compass',
     color: '#a78bfa',
     glowColor: 'rgba(167, 139, 250, 0.4)',
     link: '/demos/brewster',
@@ -222,6 +262,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '观察应力诱导的美丽色偏振',
     descriptionEn: 'Observe beautiful stress-induced colors',
     icon: FlaskConical,
+    iconName: 'FlaskConical',
     color: '#34d399',
     glowColor: 'rgba(52, 211, 153, 0.4)',
     link: '/demos/anisotropy',
@@ -237,6 +278,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '探索偏振光的彩色世界',
     descriptionEn: 'Explore the colorful world of polarization',
     icon: Sparkles,
+    iconName: 'Sparkles',
     color: '#34d399',
     glowColor: 'rgba(52, 211, 153, 0.4)',
     link: '/demos/chromatic',
@@ -252,6 +294,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '用偏振光测量糖浓度',
     descriptionEn: 'Measure sugar concentration with polarized light',
     icon: CircleDot,
+    iconName: 'CircleDot',
     color: '#34d399',
     glowColor: 'rgba(52, 211, 153, 0.4)',
     link: '/demos/optical-rotation',
@@ -268,6 +311,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '揭秘天空为什么是蓝色的',
     descriptionEn: 'Discover why the sky is blue',
     icon: Sun,
+    iconName: 'Sun',
     color: '#f472b6',
     glowColor: 'rgba(244, 114, 182, 0.4)',
     link: '/demos/rayleigh',
@@ -283,6 +327,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '理解云雾和大颗粒散射',
     descriptionEn: 'Understand scattering by large particles',
     icon: Atom,
+    iconName: 'Atom',
     color: '#f472b6',
     glowColor: 'rgba(244, 114, 182, 0.4)',
     link: '/demos/mie-scattering',
@@ -298,6 +343,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '用随机方法模拟多次散射',
     descriptionEn: 'Simulate multiple scattering with Monte Carlo',
     icon: Binary,
+    iconName: 'Binary',
     color: '#f472b6',
     glowColor: 'rgba(244, 114, 182, 0.4)',
     link: '/demos/monte-carlo-scattering',
@@ -314,6 +360,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '用四参数完整描述偏振态',
     descriptionEn: 'Describe polarization with four parameters',
     icon: Sigma,
+    iconName: 'Sigma',
     color: '#60a5fa',
     glowColor: 'rgba(96, 165, 250, 0.4)',
     link: '/demos/stokes',
@@ -329,6 +376,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '完备表征光学元件的偏振效应',
     descriptionEn: 'Characterize optical elements completely',
     icon: Binary,
+    iconName: 'Binary',
     color: '#60a5fa',
     glowColor: 'rgba(96, 165, 250, 0.4)',
     link: '/demos/mueller',
@@ -344,6 +392,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '用复数优雅描述偏振变换',
     descriptionEn: 'Elegant complex representation of polarization',
     icon: Sigma,
+    iconName: 'Sigma',
     color: '#60a5fa',
     glowColor: 'rgba(96, 165, 250, 0.4)',
     link: '/demos/jones',
@@ -359,6 +408,7 @@ const DEMO_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '用偏振光观察微观世界',
     descriptionEn: 'Observe the microscopic world with polarized light',
     icon: Microscope,
+    iconName: 'Microscope',
     color: '#60a5fa',
     glowColor: 'rgba(96, 165, 250, 0.4)',
     link: '/demos/polarimetric-microscopy',
@@ -379,6 +429,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '用偏振原理解开精妙谜题',
     descriptionEn: 'Solve puzzles with polarization principles',
     icon: Puzzle,
+    iconName: 'Puzzle',
     color: '#10b981',
     glowColor: 'rgba(16, 185, 129, 0.4)',
     link: '/games/2d',
@@ -393,6 +444,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '在立体世界中操控光线',
     descriptionEn: 'Manipulate light in a 3D world',
     icon: Gamepad2,
+    iconName: 'Gamepad2',
     color: '#10b981',
     glowColor: 'rgba(16, 185, 129, 0.4)',
     link: '/games/3d',
@@ -407,6 +459,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '用光学知识逃出密室',
     descriptionEn: 'Escape using optical knowledge',
     icon: Search,
+    iconName: 'Search',
     color: '#10b981',
     glowColor: 'rgba(16, 185, 129, 0.4)',
     link: '/games/escape',
@@ -422,6 +475,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '计算Jones矢量和矩阵变换',
     descriptionEn: 'Calculate Jones vectors and transformations',
     icon: Calculator,
+    iconName: 'Calculator',
     color: '#6366f1',
     glowColor: 'rgba(99, 102, 241, 0.4)',
     link: '/calc/jones',
@@ -436,6 +490,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '分析斯托克斯参数',
     descriptionEn: 'Analyze Stokes parameters',
     icon: Calculator,
+    iconName: 'Calculator',
     color: '#6366f1',
     glowColor: 'rgba(99, 102, 241, 0.4)',
     link: '/calc/stokes',
@@ -450,6 +505,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '在球面上可视化偏振态',
     descriptionEn: 'Visualize polarization states on a sphere',
     icon: CircleDot,
+    iconName: 'CircleDot',
     color: '#6366f1',
     glowColor: 'rgba(99, 102, 241, 0.4)',
     link: '/calc/poincare',
@@ -465,6 +521,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '自由设计光学系统',
     descriptionEn: 'Design optical systems freely',
     icon: Palette,
+    iconName: 'Palette',
     color: '#8b5cf6',
     glowColor: 'rgba(139, 92, 246, 0.4)',
     link: '/optical-studio',
@@ -479,6 +536,7 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
     descriptionZh: '动手创造偏振艺术',
     descriptionEn: 'Create polarization art',
     icon: FlaskConical,
+    iconName: 'FlaskConical',
     color: '#8b5cf6',
     glowColor: 'rgba(139, 92, 246, 0.4)',
     link: '/experiments',
@@ -494,10 +552,23 @@ const OTHER_SHOWCASE_ITEMS: ShowcaseItem[] = [
 const STORAGE_KEY = 'gallery_showcase_cache'
 // Cache duration: 1 hour (seed changes each hour, which invalidates cache automatically)
 
+// Cached item type without the icon function (can't be serialized)
+type CachedShowcaseItem = Omit<ShowcaseItem, 'icon'>
+
 interface ShowcaseCache {
   timestamp: number
-  items: ShowcaseItem[]
+  items: CachedShowcaseItem[]
   seed: number
+}
+
+/**
+ * Restore icon component from iconName for cached items
+ */
+function restoreIcons(cachedItems: CachedShowcaseItem[]): ShowcaseItem[] {
+  return cachedItems.map(item => ({
+    ...item,
+    icon: ICON_MAP[item.iconName],
+  }))
 }
 
 /**
@@ -601,7 +672,8 @@ export function getShowcaseItems(count: number = 6): ShowcaseItem[] {
       const data: ShowcaseCache = JSON.parse(cached)
       // Check if cache is still valid (same hour seed)
       if (data.seed === currentSeed && data.items.length === count) {
-        return data.items
+        // Restore icon components from iconName
+        return restoreIcons(data.items)
       }
     }
   } catch {
@@ -612,11 +684,13 @@ export function getShowcaseItems(count: number = 6): ShowcaseItem[] {
   const random = seededRandom(currentSeed)
   const items = selectShowcaseItems(random, count)
 
-  // Cache the result
+  // Cache the result (without icon functions - they can't be serialized)
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const itemsForCache: CachedShowcaseItem[] = items.map(({ icon, ...rest }) => rest)
     const cacheData: ShowcaseCache = {
       timestamp: Date.now(),
-      items,
+      items: itemsForCache,
       seed: currentSeed,
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cacheData))
