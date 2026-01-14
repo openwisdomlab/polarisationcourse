@@ -5,7 +5,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/',
+  base: './', // Use relative paths for IPFS/decentralized hosting compatibility
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
