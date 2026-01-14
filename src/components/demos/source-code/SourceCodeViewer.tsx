@@ -12,6 +12,11 @@ import { X, Copy, Download, Check, ExternalLink, BookOpen, FileCode } from 'luci
 import { motion, AnimatePresence } from 'framer-motion'
 import Prism from 'prismjs'
 import 'prismjs/themes/prism-tomorrow.css'
+// PrismJS language components must be imported in dependency order:
+// - TSX requires: markup, javascript, jsx, typescript
+import 'prismjs/components/prism-markup'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-jsx'
 import 'prismjs/components/prism-typescript'
 import 'prismjs/components/prism-tsx'
 import 'prismjs/components/prism-python'

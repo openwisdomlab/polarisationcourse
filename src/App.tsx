@@ -1,7 +1,8 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget'
+import { PuzzleGate, checkAccess } from '@/components/shared/PuzzleGate'
 
 // Lazy load all pages for code splitting
 const HomePage = lazy(() => import('@/pages/HomePage'))
@@ -55,6 +56,18 @@ function PageLoader() {
 }
 
 export function App() {
+  // 全局访问验证状态
+  const [hasAccess, setHasAccess] = useState(() => checkAccess())
+
+  // 如果未通过验证，显示密码锁（所有路由都需要先验证）
+  if (!hasAccess) {
+    return (
+      <ErrorBoundary>
+        <PuzzleGate onAccessGranted={() => setHasAccess(true)} />
+      </ErrorBoundary>
+    )
+  }
+
   return (
     <ErrorBoundary>
       <BrowserRouter>
