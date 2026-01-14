@@ -297,7 +297,7 @@ const ANALYSIS_TOOLS: AnalysisTool[] = [
     descriptionZh: '从强度测量计算和可视化斯托克斯参数。',
     icon: <Calculator className="w-5 h-5" />,
     available: true,
-    link: '/lab/stokes',
+    link: '/calc/stokes',
   },
   {
     id: 'mueller-sim',
@@ -307,7 +307,7 @@ const ANALYSIS_TOOLS: AnalysisTool[] = [
     descriptionZh: '使用穆勒矩阵计算斯托克斯矢量变换，支持部分偏振光。',
     icon: <BarChart3 className="w-5 h-5" />,
     available: true,
-    link: '/lab/mueller',
+    link: '/calc/mueller',
   },
   {
     id: 'jones-calc',
@@ -317,7 +317,7 @@ const ANALYSIS_TOOLS: AnalysisTool[] = [
     descriptionZh: '计算完全偏振光的琼斯向量变换。',
     icon: <Calculator className="w-5 h-5" />,
     available: true,
-    link: '/lab/jones',
+    link: '/calc/jones',
   },
   {
     id: 'data-fitting',
@@ -336,7 +336,7 @@ const ANALYSIS_TOOLS: AnalysisTool[] = [
     descriptionZh: '在庞加莱球上可视化偏振态。',
     icon: <Sparkles className="w-5 h-5" />,
     available: true,
-    link: '/lab/poincare',
+    link: '/calc/poincare',
   },
 ]
 

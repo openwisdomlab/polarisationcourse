@@ -846,7 +846,7 @@ function QuickStartSection() {
       titleKey: 'museum.quickStart.challenge.title',
       descriptionKey: 'museum.quickStart.challenge.description',
       color: '#f59e0b',
-      action: () => navigate('/game2d')
+      action: () => navigate('/games/2d')
     }
   ]
 
@@ -1210,7 +1210,7 @@ function MuseumFooter() {
               </li>
               <li>
                 <button
-                  onClick={() => navigate('/game2d')}
+                  onClick={() => navigate('/games/2d')}
                   className={cn(
                     "text-sm hover:underline",
                     theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"

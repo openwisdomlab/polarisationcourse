@@ -531,7 +531,7 @@ export function ExperimentsPage() {
                   </div>
                 </Link>
                 <Link
-                  to="/devices"
+                  to="/optical-studio"
                   className={cn(
                     'p-4 rounded-lg flex items-start gap-3 transition-colors',
                     theme === 'dark'
@@ -550,7 +550,7 @@ export function ExperimentsPage() {
                   </div>
                 </Link>
                 <Link
-                  to="/bench"
+                  to="/optical-studio"
                   className={cn(
                     'p-4 rounded-lg flex items-start gap-3 transition-colors',
                     theme === 'dark'

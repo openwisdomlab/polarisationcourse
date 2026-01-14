@@ -87,14 +87,14 @@ export const ILLUSTRATION_TO_DEMO_MAP: Record<string, { route: string; labelEn: 
 // Optical bench experiment mappings for "复现实验" button
 // 用于"在实验室复现"按钮的光学工作台实验映射
 export const ILLUSTRATION_TO_BENCH_MAP: Record<string, { route: string; labelEn: string; labelZh: string }> = {
-  'polarizer': { route: '/bench?experiment=malus-law', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
-  'malus': { route: '/bench?experiment=malus-law', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
-  'birefringence': { route: '/bench?experiment=birefringence', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
-  'calcite': { route: '/bench?experiment=birefringence', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
-  'nicol': { route: '/bench?experiment=birefringence', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
-  'chromaticpol': { route: '/bench?experiment=chromatic-polarization', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
-  'faraday': { route: '/bench?experiment=faraday-rotation', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
-  'opticalactivity': { route: '/bench?experiment=optical-rotation', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'polarizer': { route: '/optical-studio?experiment=malus-law', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'malus': { route: '/optical-studio?experiment=malus-law', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'birefringence': { route: '/optical-studio?experiment=birefringence', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'calcite': { route: '/optical-studio?experiment=birefringence', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'nicol': { route: '/optical-studio?experiment=birefringence', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'chromaticpol': { route: '/optical-studio?experiment=chromatic-polarization', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'faraday': { route: '/optical-studio?experiment=faraday-rotation', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
+  'opticalactivity': { route: '/optical-studio?experiment=optical-rotation', labelEn: 'Recreate in Lab', labelZh: '在实验室复现' },
 }
 
 // Type exports for external use

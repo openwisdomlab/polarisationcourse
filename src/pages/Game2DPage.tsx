@@ -817,7 +817,7 @@ export function Game2DPage() {
             {!isCompact && (
               <>
                 <Link
-                  to="/game"
+                  to="/games/3d"
                   className={cn(
                     'p-2 rounded-lg transition-colors',
                     isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-200 text-slate-600'
