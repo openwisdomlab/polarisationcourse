@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1b4b"/>
+      <stop offset="100%" style="stop-color:#0a0a15"/>
+    </linearGradient>
+    <linearGradient id="light" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="50%" style="stop-color:#a855f7"/>
+      <stop offset="100%" style="stop-color:#ec4899"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="64" fill="url(#bg)"/>
+  <!-- Polarized light beam with glow -->
+  <g filter="url(#glow)">
+    <path d="M 80 256 Q 160 160 256 256 Q 352 352 432 256" stroke="url(#light)" stroke-width="16" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- Wave oscillation planes -->
+  <ellipse cx="256" cy="256" rx="100" ry="50" stroke="#22d3ee" stroke-width="4" fill="none" opacity="0.5" transform="rotate(-25 256 256)"/>
+  <ellipse cx="256" cy="256" rx="100" ry="50" stroke="#a855f7" stroke-width="4" fill="none" opacity="0.5" transform="rotate(25 256 256)"/>
+  <ellipse cx="256" cy="256" rx="70" ry="35" stroke="#ec4899" stroke-width="3" fill="none" opacity="0.4" transform="rotate(0 256 256)"/>
+  <!-- Center birefringent crystal -->
+  <polygon points="256,150 310,256 256,362 202,256" fill="#22d3ee" opacity="0.85"/>
+  <polygon points="256,170 295,256 256,342 217,256" fill="#fff" opacity="0.3"/>
+  <!-- Light rays splitting -->
+  <line x1="310" y1="256" x2="400" y2="200" stroke="#22d3ee" stroke-width="4" opacity="0.7"/>
+  <line x1="310" y1="256" x2="400" y2="312" stroke="#a855f7" stroke-width="4" opacity="0.7"/>
+</svg>
