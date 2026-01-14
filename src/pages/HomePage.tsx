@@ -208,6 +208,35 @@ export function HomePage() {
     return [...new Set(filteredEvents.map(e => e.year))].sort((a, b) => a - b)
   }, [filteredEvents])
 
+  // Helper to get century from year
+  const getCentury = useCallback((year: number): number => {
+    return Math.floor(year / 100) + 1
+  }, [])
+
+  // Get century label
+  const getCenturyLabel = useCallback((century: number, isZh: boolean): string => {
+    const centuryLabels: Record<number, { en: string; zh: string }> = {
+      17: { en: '17th Century', zh: '17世纪' },
+      18: { en: '18th Century', zh: '18世纪' },
+      19: { en: '19th Century', zh: '19世纪' },
+      20: { en: '20th Century', zh: '20世纪' },
+      21: { en: '21st Century', zh: '21世纪' },
+    }
+    return centuryLabels[century]?.[isZh ? 'zh' : 'en'] || `${century}th Century`
+  }, [])
+
+  // Track which centuries have been displayed
+  const getDisplayedCenturies = useMemo(() => {
+    const centuryYears = new Map<number, number>() // century -> first year in that century
+    years.forEach(year => {
+      const century = Math.floor(year / 100) + 1
+      if (!centuryYears.has(century)) {
+        centuryYears.set(century, year)
+      }
+    })
+    return centuryYears
+  }, [years])
+
   // Find related course unit for an event
   const findRelatedUnit = useCallback((event: TimelineEvent): CourseTimelineMapping | undefined => {
     return COURSE_TIMELINE_MAPPINGS.find(m =>
@@ -828,31 +857,40 @@ export function HomePage() {
 
                 {/* Timeline events grouped by year */}
                 <div className="relative space-y-8">
-                  {years.map(year => {
+                  {years.map((year, yearIndex) => {
                     const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
                     const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
 
                     if (opticsEvents.length === 0 && polarizationEvents.length === 0) return null
 
+                    // Check if this is the first year of a new century
+                    const century = getCentury(year)
+                    const isFirstYearOfCentury = getDisplayedCenturies.get(century) === year
+                    const prevYear = yearIndex > 0 ? years[yearIndex - 1] : null
+                    const prevCentury = prevYear ? getCentury(prevYear) : null
+                    const showCenturyMarker = isFirstYearOfCentury && century !== prevCentury
+
                     return (
                       <div key={year} className="relative">
-                        {/* Year marker in center */}
-                        <div className="flex items-center justify-center mb-4">
-                          <div className={cn(
-                            'relative z-10 px-4 py-2 rounded-full font-bold text-lg border-2',
-                            theme === 'dark'
-                              ? 'bg-slate-800 border-amber-500/50 text-amber-400'
-                              : 'bg-white border-amber-400 text-amber-600'
-                          )}
-                          style={{
-                            boxShadow: theme === 'dark'
-                              ? '0 0 20px rgba(245, 158, 11, 0.2)'
-                              : '0 0 20px rgba(245, 158, 11, 0.15)'
-                          }}
-                          >
-                            {year}
+                        {/* Century marker - only show at the start of each century */}
+                        {showCenturyMarker && (
+                          <div className="flex items-center justify-center mb-6">
+                            <div className={cn(
+                              'relative z-10 px-5 py-2.5 rounded-full font-bold text-base border-2',
+                              theme === 'dark'
+                                ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-amber-500/60 text-amber-300'
+                                : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-400 text-amber-700'
+                            )}
+                            style={{
+                              boxShadow: theme === 'dark'
+                                ? '0 0 24px rgba(245, 158, 11, 0.25)'
+                                : '0 0 20px rgba(245, 158, 11, 0.2)'
+                            }}
+                            >
+                              {getCenturyLabel(century, isZh)}
+                            </div>
                           </div>
-                        </div>
+                        )}
 
                         {/* Events row: Left (Optics) | Center line | Right (Polarization) */}
                         <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
@@ -1008,7 +1046,7 @@ export function HomePage() {
               />
 
               <div className="space-y-6">
-                {years.map(year => {
+                {years.map((year, yearIndex) => {
                   const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
                   const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
                   const hasOptics = opticsEvents.length > 0
@@ -1016,36 +1054,31 @@ export function HomePage() {
 
                   if (!hasOptics && !hasPolarization) return null
 
+                  // Check if this is the first year of a new century (for mobile)
+                  const century = getCentury(year)
+                  const isFirstYearOfCentury = getDisplayedCenturies.get(century) === year
+                  const prevYear = yearIndex > 0 ? years[yearIndex - 1] : null
+                  const prevCentury = prevYear ? getCentury(prevYear) : null
+                  const showCenturyMarker = isFirstYearOfCentury && century !== prevCentury
+
                   return (
                     <div key={year} className="relative">
-                      {/* Year marker */}
-                      <div className="flex items-center gap-4 mb-4">
-                        <div
-                          className={cn(
-                            'absolute left-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm border-2 z-10',
-                            hasOptics && hasPolarization
-                              ? theme === 'dark'
-                                ? 'bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border-gray-500 text-white'
-                                : 'bg-gradient-to-br from-amber-100 to-cyan-100 border-gray-400 text-gray-800'
-                              : hasOptics
-                                ? theme === 'dark'
-                                  ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                                  : 'bg-amber-100 border-amber-500 text-amber-700'
-                                : theme === 'dark'
-                                  ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
-                                  : 'bg-cyan-100 border-cyan-500 text-cyan-700'
-                          )}
-                          style={{ left: 0, transform: 'translateX(-50%)' }}
-                        >
-                          {String(year).slice(-2)}
+                      {/* Century marker - only at start of each century (mobile) */}
+                      {showCenturyMarker && (
+                        <div className="flex items-center gap-4 mb-4">
+                          <div
+                            className={cn(
+                              'absolute left-0 px-3 py-1.5 rounded-full flex items-center justify-center font-bold text-xs border-2 z-10',
+                              theme === 'dark'
+                                ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-amber-500/60 text-amber-300'
+                                : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-400 text-amber-700'
+                            )}
+                            style={{ left: 0, transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}
+                          >
+                            {getCenturyLabel(century, isZh)}
+                          </div>
                         </div>
-                        <span className={cn(
-                          'text-lg font-bold ml-6',
-                          theme === 'dark' ? 'text-white' : 'text-gray-900'
-                        )}>
-                          {year}
-                        </span>
-                      </div>
+                      )}
 
                       {/* Events for this year */}
                       <div className="space-y-3">
