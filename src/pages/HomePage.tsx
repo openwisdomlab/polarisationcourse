@@ -836,23 +836,23 @@ export function HomePage() {
             )}>
               {/* Timeline header with track legends */}
               <div className={cn(
-                'sticky top-14 z-10 px-4 py-3 border-b backdrop-blur-sm',
+                'sticky top-14 z-10 px-6 py-3 border-b backdrop-blur-sm',
                 theme === 'dark'
                   ? 'bg-slate-800/80 border-slate-700'
                   : 'bg-gray-50/80 border-gray-200'
               )}>
-                <div className="flex items-center justify-center gap-8">
-                  <div className="flex items-center gap-2">
+                <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
+                  {/* Left column: General Optics label centered */}
+                  <div className="flex items-center justify-center gap-2">
                     <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
                     <span className={cn('font-semibold text-sm', theme === 'dark' ? 'text-amber-400' : 'text-amber-700')}>
                       {isZh ? '广义光学' : 'General Optics'}
                     </span>
                   </div>
-                  <div className={cn(
-                    'w-px h-6',
-                    theme === 'dark' ? 'bg-slate-600' : 'bg-gray-300'
-                  )} />
-                  <div className="flex items-center gap-2">
+                  {/* Center spacer - matches center column width of events */}
+                  <div className="w-4" />
+                  {/* Right column: Polarization label centered */}
+                  <div className="flex items-center justify-center gap-2">
                     <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
                     <span className={cn('font-semibold text-sm', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700')}>
                       {isZh ? '偏振光' : 'Polarization'}
@@ -890,17 +890,17 @@ export function HomePage() {
                       <div key={year} className="relative">
                         {/* Century marker - only show at the start of each century */}
                         {showCenturyMarker && (
-                          <div className="flex items-center justify-center mb-6">
+                          <div className="flex items-center justify-center mt-4 mb-8">
                             <div className={cn(
-                              'relative z-10 px-5 py-2.5 rounded-full font-bold text-base border-2',
+                              'relative z-10 px-4 py-1.5 rounded-full font-semibold text-sm border',
                               theme === 'dark'
-                                ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-amber-500/60 text-amber-300'
+                                ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-amber-500/50 text-amber-300'
                                 : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-400 text-amber-700'
                             )}
                             style={{
                               boxShadow: theme === 'dark'
-                                ? '0 0 24px rgba(245, 158, 11, 0.25)'
-                                : '0 0 20px rgba(245, 158, 11, 0.2)'
+                                ? '0 0 16px rgba(245, 158, 11, 0.2)'
+                                : '0 0 12px rgba(245, 158, 11, 0.15)'
                             }}
                             >
                               {getCenturyLabel(century, isZh)}

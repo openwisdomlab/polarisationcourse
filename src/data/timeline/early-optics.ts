@@ -279,4 +279,76 @@ In his dedication, he wrote: "One finds in this subject a kind of demonstration 
     },
     illustrationType: 'wave'
   },
+  {
+    year: 1704,
+    titleEn: 'Newton\'s Opticks Published',
+    titleZh: '牛顿《光学》出版',
+    descriptionEn: 'Isaac Newton publishes "Opticks", his comprehensive treatise on the nature of light, establishing the corpuscular theory.',
+    descriptionZh: '牛顿出版《光学》，这是他关于光的本质的全面论著，确立了光的微粒学说。',
+    scientistEn: 'Isaac Newton',
+    scientistZh: '艾萨克·牛顿',
+    category: 'theory',
+    importance: 1,
+    track: 'optics',
+    details: {
+      en: [
+        'Written in English rather than Latin, making it accessible to wider audience',
+        'Documented extensive experiments on color, refraction, and diffraction',
+        'Proposed light consists of tiny particles (corpuscles)',
+        'Included famous "Queries" section speculating on the nature of light and matter'
+      ],
+      zh: [
+        '以英文而非拉丁文写成，使更广泛的读者能够阅读',
+        '记录了关于颜色、折射和衍射的大量实验',
+        '提出光由微小粒子（微粒）组成',
+        '包含著名的"疑问"章节，推测光和物质的本质'
+      ]
+    },
+    story: {
+      en: `By 1704, Newton had waited nearly forty years. The Opticks had been essentially complete since the 1670s, but Newton refused to publish while Robert Hooke lived — the two had clashed bitterly over their competing theories of light.
+
+Hooke died in 1703. Within months, Opticks appeared in London bookshops.
+
+Unlike his intimidating Principia written in Latin, Newton chose English for Opticks, making it accessible to craftsmen, instrument makers, and curious amateurs. The book was structured around experiments anyone could reproduce with prisms, lenses, and careful observation.
+
+At its heart was Newton's corpuscular theory: light, he argued, consisted of tiny particles emitted by luminous bodies. This explained reflection (particles bouncing) and refraction (particles accelerating at boundaries). It seemed to triumph over Huygens' wave theory.
+
+But Newton was too honest to pretend certainty where he had none. In the famous "Queries" at the book's end, he posed 31 questions about nature's deepest secrets: What causes gravity? What is the relationship between light and matter? Are not all bodies made of atoms?
+
+These queries, framed as humble questions, contained some of physics' most prophetic intuitions. They would inspire researchers for the next two centuries.`,
+      zh: `到1704年，牛顿已经等待了将近四十年。《光学》实际上早在1670年代就基本完成，但牛顿拒绝在罗伯特·胡克在世时出版——两人曾就他们各自的光学理论激烈交锋。
+
+胡克于1703年去世。几个月后，《光学》出现在伦敦的书店里。
+
+与用拉丁文写成的令人望而生畏的《原理》不同，牛顿选择用英文撰写《光学》，使工匠、仪器制造商和好奇的业余爱好者都能阅读。这本书以实验为核心，任何人都可以用棱镜、透镜和仔细观察来重现。
+
+其核心是牛顿的微粒理论：他认为光由发光体发射的微小粒子组成。这解释了反射（粒子弹跳）和折射（粒子在界面加速）。它似乎战胜了惠更斯的波动理论。
+
+但牛顿太诚实了，不会在没有确定性的地方假装确定。在书末著名的"疑问"中，他提出了31个关于自然最深奥秘密的问题：是什么导致了引力？光与物质有什么关系？所有物体不都是由原子组成的吗？
+
+这些以谦虚问题形式提出的疑问，包含了物理学中一些最具预见性的直觉。它们将在接下来的两个世纪激励研究者们。`
+    },
+    scientistBio: {
+      birthYear: 1643,
+      deathYear: 1727,
+      nationality: 'English',
+      portraitEmoji: '📖',
+      bioEn: 'Sir Isaac Newton was an English mathematician, physicist, and astronomer. Opticks became one of the most influential scientific books of the 18th century, shaping the understanding of light for over a century until the wave theory revival.',
+      bioZh: '艾萨克·牛顿爵士是英国数学家、物理学家和天文学家。《光学》成为18世纪最有影响力的科学书籍之一，在波动理论复兴之前的一个多世纪里塑造了人们对光的理解。'
+    },
+    scene: {
+      location: 'London, England',
+      season: 'Spring',
+      mood: 'triumph'
+    },
+    references: [
+      { title: 'Newton, I. (1704). Opticks: or, A Treatise of the Reflexions, Refractions, Inflexions and Colours of Light' },
+      { title: 'Shapiro, A. E. (1993). Fits, Passions, and Paroxysms: Physics, Method, and Chemistry and Newton\'s Theories of Colored Bodies' }
+    ],
+    thinkingQuestion: {
+      en: 'Newton\'s corpuscular theory dominated for over a century. What might have happened if Huygens\' wave theory had been accepted earlier? How would that have changed the history of physics?',
+      zh: '牛顿的微粒学说统治了一个多世纪。如果惠更斯的波动理论更早被接受，会发生什么？这会如何改变物理学的历史？'
+    },
+    illustrationType: 'prism'
+  },
 ]
