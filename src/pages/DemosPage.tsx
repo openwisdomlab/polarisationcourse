@@ -2163,7 +2163,9 @@ export function DemosPage() {
       <div
         className={cn(
           'min-h-screen',
-          theme === 'dark' ? 'bg-[#0a0a0f] text-gray-200' : 'bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 text-gray-800'
+          theme === 'dark'
+            ? 'bg-[#0f0d1a] text-gray-200'
+            : 'bg-gradient-to-br from-violet-50/40 via-blue-50/30 to-purple-50/40 text-gray-800'
         )}
       >
         {/* Navigation Header with Persistent Logo */}
@@ -2176,8 +2178,8 @@ export function DemosPage() {
           'fixed top-0 left-0 right-0 z-50',
           isCompact ? 'px-3 py-2' : 'px-6 py-3',
           theme === 'dark'
-            ? 'bg-slate-900/95 border-b border-cyan-400/20'
-            : 'bg-white/90 backdrop-blur-md border-b border-indigo-100 shadow-sm'
+            ? 'bg-[#13111f]/95 border-b border-violet-500/20'
+            : 'bg-white/85 backdrop-blur-md border-b border-violet-200/60 shadow-sm'
         )}
         showSettings={false}
         rightContent={
@@ -2258,14 +2260,14 @@ export function DemosPage() {
                 )
               : 'w-64 left-0 top-[60px]',
             theme === 'dark'
-              ? 'bg-slate-900/95 border-cyan-400/10'
-              : 'bg-white/95 backdrop-blur-sm border-indigo-100 shadow-lg'
+              ? 'bg-[#13111f]/95 border-violet-500/10'
+              : 'bg-white/90 backdrop-blur-sm border-violet-200/50 shadow-lg shadow-violet-100/30'
           )}
         >
           {/* Search Input */}
           <div className={cn(
             'p-3 border-b',
-            theme === 'dark' ? 'border-slate-800' : 'border-indigo-100'
+            theme === 'dark' ? 'border-violet-900/50' : 'border-violet-100'
           )}>
             <div className="relative">
               <Search className={cn(
@@ -2281,8 +2283,8 @@ export function DemosPage() {
                   'w-full pl-9 pr-8 py-2 text-sm rounded-lg border transition-all duration-200',
                   'focus:outline-none focus:ring-2',
                   theme === 'dark'
-                    ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500 focus:border-cyan-400/50 focus:ring-cyan-400/20'
-                    : 'bg-white border-indigo-200/60 text-gray-900 placeholder-gray-400 focus:border-indigo-400 focus:ring-indigo-400/20 shadow-sm'
+                    ? 'bg-violet-950/30 border-violet-800/50 text-white placeholder-gray-500 focus:border-violet-400/50 focus:ring-violet-400/20'
+                    : 'bg-white border-violet-200/60 text-gray-900 placeholder-gray-400 focus:border-violet-400 focus:ring-violet-400/20 shadow-sm'
                 )}
               />
               {searchQuery && (
@@ -2338,14 +2340,14 @@ export function DemosPage() {
                 <div className={cn(
                   'mb-3 px-3 py-2 rounded-lg border',
                   theme === 'dark'
-                    ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30'
-                    : 'bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 border-indigo-200/80 shadow-sm'
+                    ? 'bg-gradient-to-r from-violet-500/10 to-purple-500/10 border-violet-500/30'
+                    : 'bg-gradient-to-r from-blue-50 via-violet-50 to-purple-50 border-violet-200/80 shadow-sm'
                 )}>
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🎯</span>
                     <span className={cn(
                       'text-xs font-semibold',
-                      theme === 'dark' ? 'text-amber-400' : 'text-indigo-700'
+                      theme === 'dark' ? 'text-violet-400' : 'text-violet-700'
                     )}>
                       {isZh ? '推荐开始' : 'Recommended for You'}
                     </span>
@@ -2371,11 +2373,11 @@ export function DemosPage() {
                           'hover:translate-x-1 active:scale-[0.98]',
                           isActive
                             ? theme === 'dark'
-                              ? 'bg-gradient-to-r from-amber-400/20 to-orange-400/10 text-amber-400 border-l-2 border-amber-400'
-                              : 'bg-gradient-to-r from-indigo-100 via-violet-50 to-purple-50 text-indigo-700 border-l-2 border-indigo-500 shadow-sm'
+                              ? 'bg-gradient-to-r from-violet-400/20 to-purple-400/10 text-violet-400 border-l-2 border-violet-400'
+                              : 'bg-gradient-to-r from-blue-100/80 via-violet-100/60 to-purple-100/40 text-violet-700 border-l-2 border-violet-500 shadow-sm'
                             : theme === 'dark'
-                              ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white border border-slate-800'
-                              : 'text-gray-600 hover:bg-indigo-50/50 hover:text-indigo-900 border border-gray-200 hover:border-indigo-200'
+                              ? 'text-gray-400 hover:bg-violet-900/20 hover:text-white border border-violet-900/30'
+                              : 'text-gray-600 hover:bg-violet-50/50 hover:text-violet-900 border border-gray-200 hover:border-violet-200'
                         )}
                       >
                         <span
@@ -2383,11 +2385,11 @@ export function DemosPage() {
                             'w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0',
                             isActive
                               ? theme === 'dark'
-                                ? 'bg-amber-400 text-black'
-                                : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md'
+                                ? 'bg-violet-400 text-black'
+                                : 'bg-gradient-to-br from-blue-500 to-violet-600 text-white shadow-md'
                               : theme === 'dark'
-                                ? 'bg-slate-700 text-gray-400'
-                                : 'bg-indigo-100 text-indigo-500'
+                                ? 'bg-violet-900/50 text-violet-400'
+                                : 'bg-violet-100 text-violet-500'
                           )}
                         >
                           ⭐
@@ -2400,7 +2402,7 @@ export function DemosPage() {
                           <span className={cn(
                             'text-[10px] mt-0.5 block',
                             isActive
-                              ? theme === 'dark' ? 'text-amber-300/70' : 'text-indigo-500'
+                              ? theme === 'dark' ? 'text-violet-300/70' : 'text-violet-500'
                               : theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
                           )}>
                             {demo.unit === 0 ? t('basics.title') : `${t('game.level')} ${demo.unit}`}
@@ -2626,8 +2628,8 @@ export function DemosPage() {
               'sticky z-30 mb-4 -mx-3 px-3 py-3 border-b backdrop-blur-md',
               isCompact ? 'top-[52px]' : 'top-[60px] -mx-6 px-6',
               theme === 'dark'
-                ? 'bg-[#0a0a0f]/90 border-slate-800/50'
-                : 'bg-white/80 border-indigo-100/60 shadow-sm'
+                ? 'bg-[#0f0d1a]/90 border-violet-900/50'
+                : 'bg-white/80 border-violet-100/60 shadow-sm'
             )}>
               <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -2730,18 +2732,18 @@ export function DemosPage() {
                 className={cn(
                   'mb-5 rounded-xl border p-4',
                   theme === 'dark'
-                    ? 'bg-gradient-to-r from-amber-400/5 to-orange-400/5 border-amber-400/20'
-                    : 'bg-gradient-to-r from-rose-50 via-pink-50 to-fuchsia-50 border-rose-200/80 shadow-sm'
+                    ? 'bg-gradient-to-r from-violet-400/5 to-purple-400/5 border-violet-400/20'
+                    : 'bg-gradient-to-r from-sky-50 via-blue-50 to-violet-50 border-blue-200/80 shadow-sm'
                 )}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <Lightbulb className={cn(
                     'w-5 h-5',
-                    theme === 'dark' ? 'text-amber-400' : 'text-rose-500'
+                    theme === 'dark' ? 'text-violet-400' : 'text-blue-500'
                   )} />
                   <h3 className={cn(
                     'text-lg font-bold',
-                    theme === 'dark' ? 'text-amber-400' : 'text-rose-700'
+                    theme === 'dark' ? 'text-violet-400' : 'text-blue-700'
                   )}>
                     {t('gallery.questions.title')}
                   </h3>
@@ -2753,18 +2755,18 @@ export function DemosPage() {
                       'mb-4 p-4 rounded-lg border-2 border-dashed transition-all duration-300',
                       'hover:scale-[1.01] hover:shadow-lg cursor-default',
                       theme === 'dark'
-                        ? 'bg-gradient-to-r from-amber-400/10 to-orange-400/10 border-amber-400/40 hover:border-amber-400/60'
-                        : 'bg-gradient-to-r from-rose-100/90 via-pink-100/80 to-fuchsia-100/70 border-rose-400 hover:border-rose-500 shadow-sm'
+                        ? 'bg-gradient-to-r from-violet-400/10 to-purple-400/10 border-violet-400/40 hover:border-violet-400/60'
+                        : 'bg-gradient-to-r from-sky-100/90 via-blue-100/80 to-violet-100/70 border-blue-400 hover:border-blue-500 shadow-sm'
                     )}
                   >
                     <div className="flex items-start gap-3">
                       <span className={cn(
                         'text-2xl flex-shrink-0 animate-pulse',
-                        theme === 'dark' ? 'text-amber-400' : 'text-rose-600'
+                        theme === 'dark' ? 'text-violet-400' : 'text-blue-600'
                       )}>?</span>
                       <p className={cn(
                         'text-base font-medium leading-relaxed',
-                        theme === 'dark' ? 'text-amber-200' : 'text-rose-900'
+                        theme === 'dark' ? 'text-violet-200' : 'text-blue-900'
                       )}>
                         {demoInfo.questions.leading}
                       </p>
@@ -2781,11 +2783,11 @@ export function DemosPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <HelpCircle className={cn(
                           'w-4 h-4',
-                          theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                          theme === 'dark' ? 'text-sky-400' : 'text-sky-600'
                         )} />
                         <span className={cn(
                           'text-sm font-semibold',
-                          theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'
+                          theme === 'dark' ? 'text-sky-400' : 'text-sky-700'
                         )}>
                           {t('gallery.questions.guided')}
                         </span>
@@ -2798,8 +2800,8 @@ export function DemosPage() {
                               'text-sm pl-3 border-l-2 py-1 transition-all duration-200',
                               'hover:pl-4 hover:border-l-4 cursor-default',
                               theme === 'dark'
-                                ? 'text-gray-300 border-cyan-400/40 hover:border-cyan-400 hover:text-cyan-100'
-                                : 'text-gray-800 border-cyan-500 hover:border-cyan-600 hover:bg-cyan-50/50'
+                                ? 'text-gray-300 border-sky-400/40 hover:border-sky-400 hover:text-sky-100'
+                                : 'text-gray-800 border-sky-500 hover:border-sky-600 hover:bg-sky-50/50'
                             )}
                           >
                             {q}
@@ -2850,8 +2852,8 @@ export function DemosPage() {
               className={cn(
                 'rounded-2xl border overflow-hidden',
                 theme === 'dark'
-                  ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/50 border-cyan-400/20 shadow-[0_0_40px_rgba(34,211,238,0.1)]'
-                  : 'bg-gradient-to-br from-white via-slate-50/50 to-indigo-50/30 border-indigo-200/60 shadow-xl shadow-indigo-100/50'
+                  ? 'bg-gradient-to-br from-[#13111f] to-[#1a1625] border-violet-500/20 shadow-[0_0_40px_rgba(139,92,246,0.1)]'
+                  : 'bg-gradient-to-br from-white via-blue-50/30 to-violet-50/40 border-violet-200/60 shadow-xl shadow-violet-100/50'
               )}
             >
               <div className="p-5 min-h-[550px]">
