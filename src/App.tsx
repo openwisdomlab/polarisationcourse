@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { FeedbackWidget } from '@/components/ui/FeedbackWidget'
 
 // Lazy load all pages for code splitting
 const HomePage = lazy(() => import('@/pages/HomePage'))
@@ -140,6 +141,8 @@ export function App() {
         <Route path="/course/world-under-polarized-light/unit/:unitId/lesson/:lessonId" element={<WorldCourseLesson />} />
         </Routes>
         </Suspense>
+        {/* 全局反馈浮动框 */}
+        <FeedbackWidget />
       </BrowserRouter>
     </ErrorBoundary>
   )

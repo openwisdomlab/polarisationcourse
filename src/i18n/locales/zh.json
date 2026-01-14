@@ -4678,5 +4678,39 @@
         "description": "利用偏振揭示样品中的隐藏结构。"
       }
     }
+  },
+  "feedback": {
+    "button": "提交反馈",
+    "title": "反馈",
+    "typeLabel": "反馈类型",
+    "types": {
+      "bug": "Bug 报告",
+      "feature": "功能建议",
+      "content": "内容问题",
+      "other": "其他"
+    },
+    "goesToIssue": "将创建 GitHub Issue",
+    "goesToDiscussion": "将创建 GitHub Discussion",
+    "titleLabel": "标题",
+    "titlePlaceholder": "简要概述您的反馈",
+    "contentLabel": "详细描述",
+    "contentPlaceholder": "请详细描述问题或建议...\n\n报告 Bug：发生了什么？您期望什么？\n功能建议：您希望看到什么功能？",
+    "optional": "可选",
+    "characters": "字符",
+    "validLength": "长度有效",
+    "submit": "提交反馈",
+    "submitting": "提交中...",
+    "note": "您的反馈将自动提交到 GitHub",
+    "apiNotConfigured": "反馈 API 未配置，请联系管理员。",
+    "success": {
+      "title": "感谢反馈！",
+      "message": "您的反馈已成功提交。",
+      "viewOnGithub": "在 GitHub 查看"
+    },
+    "errors": {
+      "empty": "请输入反馈内容",
+      "lowValue": "请提供更详细的反馈。简单的评论如「好棒」「不错」无法帮助我们改进。",
+      "submitFailed": "提交失败，请稍后重试。"
+    }
   }
 }

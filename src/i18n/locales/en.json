@@ -4498,5 +4498,39 @@
         "description": "Using polarization to reveal hidden structures in samples."
       }
     }
+  },
+  "feedback": {
+    "button": "Send Feedback",
+    "title": "Feedback",
+    "typeLabel": "Feedback Type",
+    "types": {
+      "bug": "Bug Report",
+      "feature": "Feature Request",
+      "content": "Content Issue",
+      "other": "Other"
+    },
+    "goesToIssue": "Will create a GitHub Issue",
+    "goesToDiscussion": "Will create a GitHub Discussion",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Brief summary of your feedback",
+    "contentLabel": "Description",
+    "contentPlaceholder": "Please describe the issue or suggestion in detail...\n\nFor bugs: What happened? What did you expect?\nFor features: What would you like to see?",
+    "optional": "optional",
+    "characters": "characters",
+    "validLength": "Valid length",
+    "submit": "Submit Feedback",
+    "submitting": "Submitting...",
+    "note": "Your feedback will be automatically submitted to GitHub",
+    "apiNotConfigured": "Feedback API is not configured. Please contact the administrator.",
+    "success": {
+      "title": "Thank You!",
+      "message": "Your feedback has been submitted successfully.",
+      "viewOnGithub": "View on GitHub"
+    },
+    "errors": {
+      "empty": "Please enter your feedback content",
+      "lowValue": "Please provide more detailed feedback. Simple comments like 'good' or 'nice' won't help us improve.",
+      "submitFailed": "Failed to submit feedback. Please try again later."
+    }
   }
 }
