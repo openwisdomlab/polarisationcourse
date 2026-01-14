@@ -418,6 +418,176 @@ assert abs(S[1]) < 0.001 and abs(S[2] - 1) < 0.001  # ✅
 
 ---
 
+## 9. Stokes Vector (斯托克斯矢量) ✅
+
+### 核心公式
+
+**Stokes Parameters** (斯托克斯参数):
+```
+S = [S₀]   [|Ex|² + |Ey|²  ]   [I_H + I_V      ]
+    [S₁] = [|Ex|² - |Ey|²  ] = [I_H - I_V      ]
+    [S₂]   [2·Re(Ex·Ey*)   ]   [I_+45° - I_-45°]
+    [S₃]   [2·Im(Ex·Ey*)   ]   [I_R - I_L      ]
+```
+
+**Physical Meaning** (物理含义):
+- **S₀**: Total intensity (总光强)
+- **S₁**: H-V polarization preference (水平-垂直偏好)
+- **S₂**: ±45° polarization preference (±45°偏好)
+- **S₃**: R-L circular polarization preference (左旋-右旋偏好)
+
+**Degree of Polarization** (偏振度):
+```
+DOP = √(S₁² + S₂² + S₃²) / S₀
+
+DOP = 1: Fully polarized (完全偏振)
+DOP = 0: Unpolarized (非偏振)
+0 < DOP < 1: Partially polarized (部分偏振)
+```
+
+**Physical Realizability** (物理可实现性):
+```
+S₁² + S₂² + S₃² ≤ S₀²
+```
+
+**Poincaré Sphere** (庞加莱球):
+```
+Normalized coordinates:
+s₁ = S₁/S₀  (x-axis: H ↔ V)
+s₂ = S₂/S₀  (y-axis: +45° ↔ -45°)
+s₃ = S₃/S₀  (z-axis: R ↔ L)
+
+Radius from origin: r = DOP
+```
+
+**Polarization Ellipse Parameters** (偏振椭圆参数):
+```
+Orientation: ψ = 0.5 × arctan(S₂/S₁)
+Ellipticity: χ = 0.5 × arcsin(S₃/S₀)
+Semi-axes: a = √(S₀ + √(S₁² + S₂²))
+           b = √(S₀ - √(S₁² + S₂²))
+```
+
+### 文献依据
+
+- **Goldstein, D.** (2011). *Polarized Light* (3rd ed.), Chapter 3: Stokes Polarization Parameters
+- **Hecht, E.** (2016). *Optics* (5th ed.), Section 8.13: Stokes Parameters
+- **Born & Wolf** (1999). *Principles of Optics* (7th ed.), Section 10.8
+- **Stokes, G. G.** (1852). "On the Composition and Resolution of Streams of Polarized Light"
+
+### 验证
+
+#### 1. From Jones Vector to Stokes
+```python
+# Horizontal linear polarization
+E = np.array([1, 0], dtype=complex)
+S = StokesVector.from_jones(E)
+assert np.allclose(S.S, [1, 1, 0, 0])  # ✅ [I, H-V, 0, 0]
+
+# Right circular polarization
+E = np.array([1, -1j], dtype=complex) / np.sqrt(2)
+S = StokesVector.from_jones(E)
+assert np.allclose(S.S, [1, 0, 0, -1])  # ✅ [I, 0, 0, -R]
+
+# 45° linear polarization
+E = np.array([1, 1], dtype=complex) / np.sqrt(2)
+S = StokesVector.from_jones(E)
+assert np.allclose(S.S, [1, 0, 1, 0])  # ✅ [I, 0, +45°, 0]
+```
+
+#### 2. Degree of Polarization
+```python
+# Fully polarized
+S = StokesVector(1, 1, 0, 0)
+assert S.dop() == 1.0  # ✅
+
+# Unpolarized
+S = StokesVector(1, 0, 0, 0)
+assert S.dop() == 0.0  # ✅
+
+# 50% polarized
+S = StokesVector(1, 0.5, 0, 0)
+assert S.dop() == 0.5  # ✅
+```
+
+#### 3. Physical Realizability
+```python
+# Valid state
+S = StokesVector(1, 0.6, 0.8, 0)
+assert S.dop() == 1.0  # ✅ √(0.6² + 0.8²) = 1
+
+# Invalid state (should raise ValueError)
+try:
+    S = StokesVector(1, 1, 1, 1)  # √(1² + 1² + 1²) > 1
+    assert False, "Should have raised ValueError"
+except ValueError:
+    pass  # ✅ Correctly rejected
+```
+
+#### 4. Incoherent Addition
+```python
+# Unpolarized + H-polarized
+S1 = StokesVector(1, 0, 0, 0)  # Unpolarized
+S2 = StokesVector(1, 1, 0, 0)  # H-polarized
+S_total = S1 + S2
+
+assert np.allclose(S_total.S, [2, 1, 0, 0])  # ✅
+assert abs(S_total.dop() - 0.5) < 0.001  # ✅ DOP = 0.5
+```
+
+#### 5. Poincaré Sphere Coordinates
+```python
+# Horizontal linear → Point at (1, 0, 0)
+S = StokesVector(1, 1, 0, 0)
+s1, s2, s3 = S.to_poincare()
+assert np.allclose([s1, s2, s3], [1, 0, 0])  # ✅
+
+# Right circular → Point at (0, 0, -1)
+S = StokesVector(1, 0, 0, -1)
+s1, s2, s3 = S.to_poincare()
+assert np.allclose([s1, s2, s3], [0, 0, -1])  # ✅
+
+# 50% H-polarized → Interior point at (0.5, 0, 0)
+S = StokesVector(1, 0.5, 0, 0)
+s1, s2, s3 = S.to_poincare()
+assert np.allclose([s1, s2, s3], [0.5, 0, 0])  # ✅
+assert S.dop() == 0.5  # ✅ DOP = radius
+```
+
+#### 6. Ellipse Parameters
+```python
+# 45° linear polarization
+S = StokesVector(1, 0, 1, 0)
+a, b, psi, chi, hand = S.ellipse_parameters()
+assert abs(psi - 45) < 0.1  # ✅ Orientation 45°
+assert abs(chi) < 0.1  # ✅ Linear (χ = 0)
+assert hand == 'linear'  # ✅
+
+# Right circular polarization
+S = StokesVector(1, 0, 0, -1)
+a, b, psi, chi, hand = S.ellipse_parameters()
+assert abs(chi + 45) < 0.1  # ✅ χ = -45° for right circular
+assert hand == 'right'  # ✅
+assert abs(a - b) < 0.001  # ✅ Circle (a = b)
+```
+
+#### 7. Intensity Measurements
+```python
+# From 6 intensity measurements
+I_H, I_V = 0.75, 0.25
+I_45, I_m45 = 0.5, 0.5
+I_R, I_L = 0.5, 0.5
+
+S = StokesVector.from_intensities(I_H, I_V, I_45, I_m45, I_R, I_L)
+
+assert abs(S.S[0] - 1.0) < 0.001  # ✅ S₀ = I_H + I_V = 1
+assert abs(S.S[1] - 0.5) < 0.001  # ✅ S₁ = I_H - I_V = 0.5
+assert abs(S.S[2]) < 0.001  # ✅ S₂ = I_+45 - I_-45 = 0
+assert abs(S.S[3]) < 0.001  # ✅ S₃ = I_R - I_L = 0
+```
+
+---
+
 ## 📊 总结 (Summary)
 
 | 演示 | 公式验证 | 能量守恒 | 单位检查 | 极限情况 | 状态 |
@@ -430,22 +600,23 @@ assert abs(S[1]) < 0.001 and abs(S[2] - 1) < 0.001  # ✅
 | Optical Rotation | ✅ | N/A | ✅ | ✅ | ✅ 通过 |
 | Rayleigh Scattering | ✅ | N/A | ✅ | ✅ | ✅ 通过 |
 | **Jones Matrix** | ✅ | ✅ | ✅ | ✅ | ✅ 通过 |
+| **Stokes Vector** | ✅ | ✅ | ✅ | ✅ | ✅ 通过 |
 
 ---
 
 ## ✅ 验证结论
 
-**所有8个演示的物理公式均已验证正确**：
+**所有9个演示的物理公式均已验证正确**：
 - ✅ 公式与教科书/文献一致
 - ✅ 数值验证通过
-- ✅ 特殊情况（极限、能量守恒）验证通过
+- ✅ 特殊情况（极限、能量守恒、DOP）验证通过
 - ✅ 单位使用规范（SI或明确标注）
 
 **物理准确性评级**: ⭐⭐⭐⭐⭐ (5/5)
 
 ### Stage 2 进展 (Stage 2 Progress)
 - ✅ **Jones Matrix** (琼斯矩阵) - 完成并验证
-- 🚧 **Stokes Vector** (斯托克斯矢量) - 待开发
+- ✅ **Stokes Vector** (斯托克斯矢量) - 完成并验证
 - 🚧 **Mueller Matrix** (缪勒矩阵) - 待开发
 
 ---
