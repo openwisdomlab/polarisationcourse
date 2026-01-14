@@ -24,6 +24,9 @@ PolarCraft is an educational voxel puzzle game based on polarized light physics.
 - **Calculation Workshop**: Jones, Stokes, Mueller calculators + Poincare Sphere viewer
 - **Lab Module**: Research simulation and data analysis tools
 - **Games Hub**: Multiple game modes including card game, escape room, detective game
+- **Course Content Layer**: Structured "World Under Polarized Light" course with progress tracking
+- **Multi-Language Source Code**: Demo implementations in TypeScript, Python, MATLAB, Julia, and R
+- **Progressive Exploration**: Discovery and exploration modes for self-paced learning
 - Multi-language support (English/Chinese)
 - Dark/Light theme switching
 - Three camera modes in 3D game (first-person, isometric, top-down)
@@ -84,19 +87,36 @@ polarisation/
 │   │   ├── labStore.ts           # Lab module state management
 │   │   └── discoveryStore.ts     # Discovery/achievement tracking
 │   │
+│   ├── types/                    # TypeScript type definitions
+│   │   └── source-code.ts        # Multi-language source code types
+│   │
+│   ├── course/                   # Course Content Layer
+│   │   ├── pages/                # Course pages (CourseHome, UnitOverview, LessonPage)
+│   │   ├── components/           # Course-specific components
+│   │   └── meta/                 # Course metadata and configuration
+│   │
+│   ├── data/                     # Static data files
+│   │   └── demo-sources/         # Multi-language demo source code
+│   │
+│   ├── utils/                    # Utility functions
+│   │   └── package-generator.ts  # Source code package generator
+│   │
 │   ├── pages/                    # Page components
 │   │   ├── HomePage.tsx          # Landing page with navigation
 │   │   ├── GamePage.tsx          # Full 3D game with HUD
 │   │   ├── Game2DPage.tsx        # 2D CSS/SVG-based puzzle game
 │   │   ├── GameHubPage.tsx       # Games hub with all game modes
 │   │   ├── DemosPage.tsx         # Interactive physics demos
-│   │   ├── CoursePage.tsx        # Structured course content
 │   │   ├── OpticalDesignPage.tsx # Modular optical design studio
-│   │   ├── OpticalDesignStudioPageV2.tsx  # Legacy optical studio
 │   │   ├── LabPage.tsx           # Research lab simulation
 │   │   ├── ExperimentsPage.tsx   # Creative experiments module
 │   │   ├── ApplicationsPage.tsx  # Real-world applications showcase
 │   │   ├── ChroniclesPage.tsx    # Historical chronicles
+│   │   ├── LearningHubPage.tsx   # Learning hub with curated paths
+│   │   ├── DiscoveryPage.tsx     # Progressive discovery portal
+│   │   ├── ExplorePage.tsx       # Question-driven exploration
+│   │   ├── ExplorationNodePage.tsx # Exploration node content
+│   │   ├── LightExplorerPage.tsx # Progressive optical history explorer
 │   │   ├── CalculationWorkshopPage.tsx   # Calculator hub
 │   │   ├── JonesCalculatorPage.tsx       # Jones matrix calculator
 │   │   ├── StokesCalculatorPage.tsx      # Stokes vector calculator
@@ -167,9 +187,13 @@ polarisation/
 │   │   │   │   ├── JonesMatrixDemo.tsx
 │   │   │   │   ├── PolarizationCalculatorDemo.tsx
 │   │   │   │   └── PolarimetricMicroscopyDemo.tsx
+│   │   │   ├── source-code/      # Source code viewer
+│   │   │   │   ├── SourceCodeViewer.tsx  # Multi-language code viewer
+│   │   │   │   └── LanguageSelector.tsx  # Language switcher
 │   │   │   ├── DemoCanvas.tsx    # 3D demo wrapper (R3F)
 │   │   │   ├── Demo2DCanvas.tsx  # 2D demo wrapper (Canvas)
 │   │   │   ├── DemoControls.tsx  # Shared demo UI controls
+│   │   │   ├── DemoErrorBoundary.tsx  # Error boundary for demos
 │   │   │   ├── DifficultyStrategy.tsx  # Difficulty level handling
 │   │   │   ├── LifeSceneIllustrations.tsx
 │   │   │   └── index.ts          # Barrel export
@@ -317,12 +341,18 @@ polarisation/
 | `/games/detective` | `DetectiveGamePage` | Detective mystery game |
 | `/demos` | `DemosPage` | Interactive physics demos |
 | `/demos/:demoId` | `DemosPage` | Deep link to specific demo |
-| `/course` | `CoursePage` | Structured course content |
 | `/optical-studio` | `OpticalDesignPage` | Modular optical design studio |
 | `/lab` | `LabPage` | Research lab simulation |
 | `/experiments` | `ExperimentsPage` | Creative experiments module |
+| `/experiments/:tabId` | `ExperimentsPage` | Experiments with specific tab |
 | `/applications` | `ApplicationsPage` | Real-world applications |
 | `/chronicles` | `ChroniclesPage` | Historical chronicles |
+| `/chronicles/explore` | `LightExplorerPage` | Progressive optical history explorer |
+| `/learn` | `LearningHubPage` | Learning hub with curated paths |
+| `/discover` | `DiscoveryPage` | Progressive discovery portal |
+| `/discover/:topicId` | `DiscoveryPage` | Topic-specific discovery |
+| `/explore` | `ExplorePage` | Question-driven exploration |
+| `/explore/:nodeId` | `ExplorationNodePage` | Exploration node content |
 | `/calc` | `CalculationWorkshopPage` | Calculator hub |
 | `/calc/jones` | `JonesCalculatorPage` | Jones matrix calculator |
 | `/calc/stokes` | `StokesCalculatorPage` | Stokes vector calculator |
@@ -330,6 +360,14 @@ polarisation/
 | `/calc/poincare` | `PoincareSphereViewerPage` | Poincare sphere visualization |
 | `/hardware` | `HardwarePage` | Hardware components guide |
 | `/merchandise` | `MerchandisePage` | Educational merchandise |
+
+### Course Content Layer Routes
+
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/course/world-under-polarized-light` | `WorldCourseHome` | Course home page |
+| `/course/world-under-polarized-light/unit/:unitId` | `WorldCourseUnit` | Unit overview page |
+| `/course/world-under-polarized-light/unit/:unitId/lesson/:lessonId` | `WorldCourseLesson` | Individual lesson page |
 
 ### Legacy Route Redirects
 
@@ -339,9 +377,11 @@ polarisation/
 | `/game2d` | `/games/2d` |
 | `/cardgame` | `/games/card` |
 | `/escape` | `/games/escape` |
+| `/course` | `/` (homepage) |
 | `/devices` | `/optical-studio` |
 | `/bench` | `/optical-studio` |
 | `/optics` | `/optical-studio` |
+| `/optical-studio-v2` | `/optical-studio` |
 | `/creative` | `/experiments` |
 | `/simulation` | `/lab` |
 | `/lab/poincare` | `/calc/poincare` |
@@ -809,6 +849,128 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
 
 // Value display
 <ValueDisplay label="Frequency" value="5.45 × 10¹⁴ Hz" />
+```
+
+## Multi-Language Source Code System
+
+The platform provides demo source code in multiple programming languages for educational purposes.
+
+### Supported Languages
+
+| Language | Category | File Extension | Description |
+|----------|----------|----------------|-------------|
+| TypeScript/React | Web | `.tsx` | Interactive web demo (recommended for online experience) |
+| Python | Scientific | `.py` | NumPy + Matplotlib scientific computing (most popular) |
+| MATLAB/Octave | Scientific | `.m` | Traditional scientific computing standard |
+| Julia | Scientific | `.jl` | Modern high-performance scientific computing |
+| R | Statistical | `.R` | Statistical computing and data visualization |
+
+### Source Code Types (src/types/source-code.ts)
+
+```typescript
+// Supported programming languages
+type SourceLanguage = 'typescript' | 'python' | 'matlab' | 'julia' | 'r'
+
+// Language implementation for a demo
+interface LanguageImplementation {
+  language: SourceLanguage
+  sourceCode: string
+  dependencies: Record<string, string>
+  setup?: string       // Setup instructions
+  setupZh?: string     // Chinese setup instructions
+  notes?: string       // Special notes
+  notesZh?: string
+}
+
+// Complete demo source with multiple implementations
+interface DemoSourceCode {
+  id: string
+  name: string
+  nameZh: string
+  description: string
+  descriptionZh: string
+  complexity: 'beginner' | 'intermediate' | 'advanced'
+  concepts: string[]
+  conceptsZh: string[]
+  tags: string[]
+  implementations: LanguageImplementation[]
+  resources?: LearningResource[]
+}
+```
+
+### Adding Source Code for a Demo
+
+1. Create a source file in `src/data/demo-sources/`
+2. Define implementations for each language:
+   ```typescript
+   export const malusLawSource: DemoSourceCode = {
+     id: 'malus-law',
+     name: "Malus's Law Demo",
+     nameZh: '马吕斯定律演示',
+     // ... other metadata
+     implementations: [
+       {
+         language: 'typescript',
+         sourceCode: `// TypeScript implementation...`,
+         dependencies: { 'react': '^19.0.0', 'framer-motion': '^11.0.0' },
+       },
+       {
+         language: 'python',
+         sourceCode: `# Python implementation...`,
+         dependencies: { 'numpy': '>=1.20', 'matplotlib': '>=3.5' },
+         setup: 'pip install numpy matplotlib',
+       },
+     ],
+   }
+   ```
+3. Register in `src/data/demo-sources/index.ts`
+
+## Course Content Layer
+
+The Course Content Layer provides a structured learning experience with the "World Under Polarized Light" course.
+
+### Course Structure (src/course/)
+
+```
+src/course/
+├── pages/
+│   ├── CourseHome.tsx      # Course landing page
+│   ├── UnitOverview.tsx    # Unit overview with lessons
+│   └── LessonPage.tsx      # Individual lesson content
+├── components/
+│   ├── CourseLayout.tsx    # Shared layout
+│   ├── ProgressTracker.tsx # Progress visualization
+│   └── LevelBadge.tsx      # Difficulty badge
+└── meta/
+    ├── course.config.ts    # Course configuration
+    └── units.ts            # Unit/lesson definitions
+```
+
+### Course Configuration (src/course/meta/course.config.ts)
+
+```typescript
+// Difficulty levels
+type DifficultyLevel = 'foundation' | 'application' | 'research'
+
+// Course metadata
+interface CourseMetadata {
+  id: CourseId
+  titleKey: string
+  version: string
+  totalUnits: number
+  estimatedHours: number
+  prerequisites: string[]
+  tags: string[]
+}
+
+// Course layer configuration
+interface CourseLayerConfig {
+  routePrefix: string           // '/course/world-under-polarized-light'
+  enableProgress: boolean       // Progress tracking
+  enableQuiz: boolean           // Quiz functionality
+  enableAchievements: boolean   // Achievement system
+  defaultDifficulty: DifficultyLevel
+}
 ```
 
 ## Development Guidelines

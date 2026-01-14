@@ -21,7 +21,7 @@ A comprehensive educational platform that transforms the invisible world of pola
 
 - **Chronicles of Light** - Journey through the history of polarization discoveries
 - **Optical Design Studio** - Device library (80+ components) + interactive light path designer
-- **Polarization Demo Gallery** - 21 interactive physics demonstrations across 6 units
+- **Polarization Demo Gallery** - 21+ interactive physics demonstrations across 6 units with multi-language source code
 - **PolarQuest Game Hub** - 2D puzzles, 3D voxel games, card battles, escape rooms, and detective mysteries
 - **Creative Workshop** - Polarization art, photography, and DIY experiments
 - **Virtual Lab Group** - Research tasks, applications database, and calculation tools
@@ -33,6 +33,9 @@ A comprehensive educational platform that transforms the invisible world of pola
 - **Multiple Game Modes** - 2D puzzles (11 levels), 3D voxel (5 tutorials), card game, escape room, detective game
 - **3-Tier Difficulty System** - Foundation, Application, and Research content levels
 - **Interactive Simulations** - Real-time light propagation with polarization visualization
+- **Multi-Language Source Code** - Demo implementations in TypeScript, Python, MATLAB, Julia, and R
+- **Course Content Layer** - Structured learning path "World Under Polarized Light" with progress tracking
+- **Progressive Exploration** - Discovery and exploration modes for self-paced learning
 - **Bilingual Support** - Full English and Chinese interface
 - **Dark/Light Theme** - Comfortable viewing in any environment
 
@@ -66,11 +69,31 @@ npm run preview  # Preview production build
 |-------|--------|-------------|
 | `/` | Home | Landing page with 6 creative module navigation |
 | `/chronicles` | Chronicles of Light | History of polarization discoveries |
+| `/chronicles/explore` | Light Explorer | Progressive exploration of optical history |
 | `/optical-studio` | Optical Design Studio | Device library + light path designer |
-| `/demos` | Demo Gallery | 21 interactive physics demonstrations |
+| `/demos` | Demo Gallery | 21+ interactive physics demonstrations |
+| `/demos/:demoId` | Demo Deep Link | Direct link to specific demo |
 | `/games` | PolarQuest Hub | Game center with multiple modes |
-| `/creative` | Creative Workshop | Art, photography, and DIY projects |
+| `/experiments` | Creative Workshop | Art, photography, and DIY projects |
 | `/lab` | Virtual Lab Group | Research tasks and community |
+
+#### Learning & Exploration
+
+| Route | Description |
+|-------|-------------|
+| `/learn` | Learning hub with curated content paths |
+| `/discover` | Progressive discovery portal (Google Learn About inspired) |
+| `/discover/:topicId` | Topic-specific discovery journey |
+| `/explore` | Question-driven exploration system |
+| `/explore/:nodeId` | Exploration node with interactive content |
+
+#### Course Content Layer
+
+| Route | Description |
+|-------|-------------|
+| `/course/world-under-polarized-light` | Course home for "World Under Polarized Light" |
+| `/course/world-under-polarized-light/unit/:unitId` | Unit overview page |
+| `/course/world-under-polarized-light/unit/:unitId/lesson/:lessonId` | Individual lesson page |
 
 #### Games (PolarQuest)
 
@@ -282,7 +305,25 @@ Each demo adapts to three difficulty levels:
 | Application (🔬) | Rotational research training | Hands-on experiments with quantitative formulas and measurement principles |
 | Research (🚀) | Independent original research | Frontier research methods with rigorous academic treatment |
 
-Visit `/course` for the structured learning journey or `/demos` to explore individual demos.
+Visit `/learn` for the learning hub, `/discover` for progressive exploration, or `/demos` to explore individual demos.
+
+### Multi-Language Source Code
+
+Each demo provides source code implementations in multiple programming languages:
+
+| Language | Category | Description |
+|----------|----------|-------------|
+| TypeScript/React | Web | Interactive web demo (recommended for online experience) |
+| Python | Scientific | NumPy + Matplotlib scientific computing (most popular) |
+| MATLAB/Octave | Scientific | Traditional scientific computing standard |
+| Julia | Scientific | Modern high-performance scientific computing |
+| R | Statistical | Statistical computing and data visualization |
+
+**Features:**
+- Syntax highlighting with Prism.js
+- Download as individual files or complete package
+- Setup instructions and dependencies included
+- Cross-language concept comparison
 
 ### Project Structure
 
@@ -292,12 +333,19 @@ polarisation/
 │   ├── core/                  # Physics engine & world logic
 │   │   └── game2d/            # 2D game specific logic
 │   ├── stores/                # Zustand state management
-│   ├── pages/                 # Route page components (20+ pages)
+│   ├── pages/                 # Route page components (25+ pages)
 │   ├── hooks/                 # Custom React hooks
 │   ├── data/                  # Static data files
 │   │   ├── cardgame/          # Card game definitions
+│   │   ├── demo-sources/      # Multi-language demo source code
 │   │   ├── hardware/          # Hardware catalog data
 │   │   └── merchandise/       # Product catalog data
+│   ├── types/                 # TypeScript type definitions
+│   ├── utils/                 # Utility functions
+│   ├── course/                # Course Content Layer
+│   │   ├── pages/             # Course pages (Home, Unit, Lesson)
+│   │   ├── components/        # Course-specific components
+│   │   └── meta/              # Course metadata and config
 │   ├── components/
 │   │   ├── game/              # 3D voxel game components (R3F)
 │   │   ├── hud/               # Game UI overlay components
@@ -308,7 +356,8 @@ polarisation/
 │   │   │   ├── unit2/         # Unit 2: Interface reflection
 │   │   │   ├── unit3/         # Unit 3: Transparent media
 │   │   │   ├── unit4/         # Unit 4: Scattering
-│   │   │   └── unit5/         # Unit 5: Full polarimetry
+│   │   │   ├── unit5/         # Unit 5: Full polarimetry
+│   │   │   └── source-code/   # Source code viewer components
 │   │   ├── optical-studio/    # Optical Design Studio components
 │   │   ├── shared/optical/    # Shared optical visualization components
 │   │   ├── icons/             # Custom icon components
@@ -346,7 +395,7 @@ MIT License
 
 - **光的编年史** - 穿越偏振发现的历史之旅
 - **光学设计室** - 器件图鉴（80+组件）+ 交互式光路设计器
-- **偏振演示馆** - 6个单元共21个交互式物理演示
+- **偏振演示馆** - 6个单元共21+个交互式物理演示，支持多语言源码
 - **偏振光探秘游戏中心** - 2D解谜、3D体素游戏、卡牌对战、密室逃脱、侦探推理
 - **偏振造物局** - 偏振艺术、摄影与DIY实验
 - **虚拟课题组：光研社** - 研究任务、应用数据库和计算工具
@@ -358,6 +407,9 @@ MIT License
 - **多种游戏模式** - 2D解谜（11关）、3D体素（5教程）、卡牌游戏、密室逃脱、侦探游戏
 - **三级难度系统** - 基础层、应用层、研究层三种内容级别
 - **交互式仿真** - 实时光传播与偏振可视化
+- **多语言源码** - 演示代码支持TypeScript、Python、MATLAB、Julia、R五种语言
+- **课程内容层** - 结构化学习路径《偏振光下的世界》，支持进度追踪
+- **渐进式探索** - 发现模式和探索模式，支持自主学习
 - **双语支持** - 完整的中英文界面
 - **深色/浅色主题** - 在任何环境下都能舒适观看
 
@@ -391,11 +443,31 @@ npm run preview  # 预览生产构建
 |------|------|------|
 | `/` | 首页 | 带6大创意模块导航的首页 |
 | `/chronicles` | 光的编年史 | 偏振发现的历史之旅 |
+| `/chronicles/explore` | 光学探索者 | 渐进式光学历史探索 |
 | `/optical-studio` | 光学设计室 | 器件图鉴 + 光路设计器 |
-| `/demos` | 演示馆 | 21个交互式物理演示 |
+| `/demos` | 演示馆 | 21+个交互式物理演示 |
+| `/demos/:demoId` | 演示深链接 | 直接链接到特定演示 |
 | `/games` | 游戏中心 | 多模式游戏中心 |
-| `/creative` | 偏振造物局 | 艺术、摄影与DIY项目 |
+| `/experiments` | 偏振造物局 | 艺术、摄影与DIY项目 |
 | `/lab` | 虚拟课题组 | 研究任务和社区 |
+
+#### 学习与探索
+
+| 路由 | 描述 |
+|------|------|
+| `/learn` | 学习中心，提供精选内容路径 |
+| `/discover` | 渐进式发现门户（受Google Learn About启发） |
+| `/discover/:topicId` | 特定主题的发现之旅 |
+| `/explore` | 问题驱动的探索系统 |
+| `/explore/:nodeId` | 带交互内容的探索节点 |
+
+#### 课程内容层
+
+| 路由 | 描述 |
+|------|------|
+| `/course/world-under-polarized-light` | 《偏振光下的世界》课程首页 |
+| `/course/world-under-polarized-light/unit/:unitId` | 单元概览页 |
+| `/course/world-under-polarized-light/unit/:unitId/lesson/:lessonId` | 课程详情页 |
 
 #### 游戏（偏振光探秘）
 
@@ -607,7 +679,25 @@ npm run preview  # 预览生产构建
 | 应用层 (🔬) | 轮转式研究训练 | 实验设计与定量公式，强调测量原理 |
 | 研究层 (🚀) | 独立原创研究 | 前沿研究方法与严谨学术处理 |
 
-访问 `/course` 体验结构化学习旅程，或访问 `/demos` 探索单个演示。
+访问 `/learn` 进入学习中心，`/discover` 进行渐进式探索，或访问 `/demos` 探索单个演示。
+
+### 多语言源码
+
+每个演示都提供多种编程语言的源码实现：
+
+| 语言 | 类别 | 描述 |
+|------|------|------|
+| TypeScript/React | 网页 | 交互式网页演示（推荐在线体验） |
+| Python | 科学计算 | NumPy + Matplotlib 科学计算（最流行） |
+| MATLAB/Octave | 科学计算 | 传统科学计算标准 |
+| Julia | 科学计算 | 现代高性能科学计算 |
+| R | 统计计算 | 统计计算与数据可视化 |
+
+**功能特点：**
+- Prism.js 语法高亮
+- 支持单文件或完整包下载
+- 包含安装说明和依赖配置
+- 跨语言概念对比
 
 ### 项目结构
 
@@ -617,12 +707,19 @@ polarisation/
 │   ├── core/                  # 物理引擎和世界逻辑
 │   │   └── game2d/            # 2D游戏特定逻辑
 │   ├── stores/                # Zustand状态管理
-│   ├── pages/                 # 路由页面组件（20+页面）
+│   ├── pages/                 # 路由页面组件（25+页面）
 │   ├── hooks/                 # 自定义React钩子
 │   ├── data/                  # 静态数据文件
 │   │   ├── cardgame/          # 卡牌游戏定义
+│   │   ├── demo-sources/      # 多语言演示源码
 │   │   ├── hardware/          # 硬件目录数据
 │   │   └── merchandise/       # 产品目录数据
+│   ├── types/                 # TypeScript类型定义
+│   ├── utils/                 # 工具函数
+│   ├── course/                # 课程内容层
+│   │   ├── pages/             # 课程页面（首页、单元、课程）
+│   │   ├── components/        # 课程专用组件
+│   │   └── meta/              # 课程元数据和配置
 │   ├── components/
 │   │   ├── game/              # 3D体素游戏组件（R3F）
 │   │   ├── hud/               # 游戏UI叠加组件
@@ -633,7 +730,8 @@ polarisation/
 │   │   │   ├── unit2/         # 单元2：界面反射
 │   │   │   ├── unit3/         # 单元3：透明介质
 │   │   │   ├── unit4/         # 单元4：散射
-│   │   │   └── unit5/         # 单元5：全偏振测量
+│   │   │   ├── unit5/         # 单元5：全偏振测量
+│   │   │   └── source-code/   # 源码查看器组件
 │   │   ├── optical-studio/    # 光学设计室组件
 │   │   ├── shared/optical/    # 共享光学可视化组件
 │   │   ├── icons/             # 自定义图标组件
