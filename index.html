@@ -3,15 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="PolarCraft - 基于偏振光物理的教育游戏平台，探索光学奥秘，学习马吕斯定律、双折射、干涉等光学原理">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PolarCraft">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0a0a15">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⟡</text></svg>">
+  <link rel="icon" href="/pwa-192x192.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+  <link rel="mask-icon" href="/pwa-512x512.svg" color="#22d3ee">
   <title>PolarCraft - 偏振光下的新世界</title>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- 初始加载指示器 - React 挂载后自动替换 -->
+    <div id="initial-loader" style="
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0a0a15 0%, #1a1a2e 100%);
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, sans-serif;
+      gap: 1.5rem;
+    ">
+      <!-- 旋转光圈动画 -->
+      <div style="
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(34, 211, 238, 0.2);
+        border-top-color: #22d3ee;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      "></div>
+      <!-- 加载文字 -->
+      <div style="text-align: center;">
+        <div style="font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem;">
+          加载中 / Loading...
+        </div>
+        <div style="font-size: 0.875rem; color: #94a3b8;">
+          正在准备偏振光世界
+        </div>
+      </div>
+    </div>
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
