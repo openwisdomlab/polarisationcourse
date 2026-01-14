@@ -1008,7 +1008,8 @@
       "experiment": "Experimental Application",
       "frontier": "Frontier Application",
       "diy": "Try It Yourself",
-      "resources": "Further Reading"
+      "resources": "Further Reading",
+      "experience": "Experience Polarization"
     },
     "resourcesDisclaimer": "External resources for reference only.",
     "resourceTypes": {
@@ -1059,7 +1060,8 @@
       "experiment": "Experimental Application",
       "frontier": "Frontier Application",
       "diy": "Try It Yourself",
-      "resources": "Further Reading"
+      "resources": "Further Reading",
+      "experience": "Experience Polarization"
     },
     "resourcesDisclaimer": "External resources for reference only.",
     "resourceTypes": {
@@ -4171,6 +4173,10 @@
       "controlPanel": "Parameter Control",
       "calculationResult": "Calculation Result",
       "cameraFilter": "Camera Filter"
+    },
+    "aragoFresnel": {
+      "title": "Arago-Fresnel Laws",
+      "subtitle": "Interference of orthogonally polarized light and the role of the analyzer"
     },
     "polarizationState": {
       "parameters": "Parameter Adjustment",
