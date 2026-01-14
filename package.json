@@ -10,7 +10,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "deploy": "npm run build && pinme upload dist",
+    "deploy": "pnpm run build && pinme upload dist",
     "deploy:only": "pinme upload dist"
   },
   "dependencies": {
