@@ -1007,7 +1007,9 @@
       "physics": "物理原理",
       "experiment": "实验应用",
       "frontier": "前沿应用",
-      "diy": "动手试试"
+      "diy": "动手试试",
+      "resources": "延伸阅读",
+      "experience": "体验偏振"
     },
     "difficulty": {
       "label": "课程难度层级",
@@ -1051,7 +1053,8 @@
       "experiment": "实验应用",
       "frontier": "前沿应用",
       "diy": "动手试试",
-      "resources": "延伸阅读"
+      "resources": "延伸阅读",
+      "experience": "体验偏振"
     },
     "resourcesDisclaimer": "以下资源来自外部网站，仅供参考学习。",
     "resourceTypes": {
@@ -4136,6 +4139,10 @@
       "controlPanel": "参数控制",
       "calculationResult": "计算结果",
       "cameraFilter": "相机滤镜"
+    },
+    "aragoFresnel": {
+      "title": "阿拉戈-菲涅尔定律",
+      "subtitle": "正交偏振光的干涉与检偏器的作用"
     },
     "polarizationState": {
       "parameters": "参数调节",
