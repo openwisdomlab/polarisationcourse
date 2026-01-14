@@ -38,6 +38,15 @@ import BrewsterDemoPython from '@/demo-sources/python/brewster.py?raw'
 import OpticalRotationPython from '@/demo-sources/python/optical_rotation.py?raw'
 import RayleighScatteringPython from '@/demo-sources/python/rayleigh_scattering.py?raw'
 
+// Stage 2: Advanced polarimetry demos (Jones/Stokes/Mueller)
+// 阶段2：高级偏振演示（Jones/Stokes/Mueller）
+import JonesMatrixPython from '@/demo-sources/python/jones_matrix.py?raw'
+import JonesMatrixOptimizedPython from '@/demo-sources/python/jones_matrix_optimized.py?raw'
+import StokesVectorPython from '@/demo-sources/python/stokes_vector.py?raw'
+import StokesVectorOptimizedPython from '@/demo-sources/python/stokes_vector_optimized.py?raw'
+import MuellerMatrixPython from '@/demo-sources/python/mueller_matrix.py?raw'
+import MuellerMatrixOptimizedPython from '@/demo-sources/python/mueller_matrix_optimized.py?raw'
+
 // MATLAB/Octave implementations
 // MATLAB/Octave 实现
 import MalusLawDemoMatlab from '@/demo-sources/matlab/malus_law.m?raw'
@@ -762,6 +771,310 @@ rayleigh_scattering`,
   ],
 }
 
+/**
+ * Jones Matrix Demo - Advanced Polarization Calculus
+ * Jones矩阵演示 - 高级偏振演算
+ */
+const JONES_MATRIX_SOURCE: DemoSourceCode = {
+  id: 'jones-matrix',
+  name: 'Jones Matrix Calculus',
+  nameZh: 'Jones矩阵演算',
+  description: 'Interactive demonstration of Jones vectors and matrices for coherent polarization transformations',
+  descriptionZh: '相干偏振变换的Jones向量和矩阵交互演示',
+  complexity: 'advanced',
+
+  concepts: [
+    'Jones vector: E = [E_x, E_y]^T',
+    'Jones matrix: E_out = J × E_in',
+    'Linear polarizer: J = [cos²θ, cosθsinθ; cosθsinθ, sin²θ]',
+    'Half-wave plate: Rotates polarization by 2θ',
+    'Quarter-wave plate: Creates circular polarization',
+    'Poincaré sphere visualization',
+    'Complex amplitude representation',
+  ],
+  conceptsZh: [
+    'Jones向量：E = [E_x, E_y]^T',
+    'Jones矩阵：E_out = J × E_in',
+    '线偏振器：J = [cos²θ, cosθsinθ; cosθsinθ, sin²θ]',
+    '半波片：旋转偏振方向2θ',
+    '四分之一波片：产生圆偏振',
+    'Poincaré球可视化',
+    '复振幅表示',
+  ],
+
+  tags: ['polarization', 'jones-calculus', 'jones-matrix', 'poincare-sphere', 'advanced', 'coherent-light'],
+
+  relatedDemos: ['stokes-vector', 'mueller-matrix', 'waveplate', 'poincare-sphere-viewer'],
+
+  implementations: [
+    {
+      language: 'python',
+      sourceCode: JonesMatrixOptimizedPython,
+      dependencies: {
+        'numpy': '>=1.24.0',
+        'matplotlib': '>=3.7.0',
+      },
+      setup: `# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+
+# Install dependencies
+pip install numpy matplotlib
+
+# Run the optimized demo (PolarCraft unified theme)
+python jones_matrix_optimized.py
+
+# Or run the original version
+python jones_matrix.py`,
+      setupZh: `# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Windows系统: venv\\Scripts\\activate
+
+# 安装依赖
+pip install numpy matplotlib
+
+# 运行优化版演示（PolarCraft统一主题）
+python jones_matrix_optimized.py
+
+# 或运行原始版本
+python jones_matrix.py`,
+      notes: 'Advanced interactive demo with 6 optical elements (Polarizer, HWP, QWP, Rotator, Phase Shifter, Custom Matrix). Features 3D Poincaré sphere visualization, real-time Jones calculus, and optimized PolarCraft dark theme.',
+      notesZh: '高级交互演示，包含6种光学元件（偏振器、半波片、四分之一波片、旋转器、相移器、自定义矩阵）。具有3D Poincaré球可视化、实时Jones演算和优化的PolarCraft暗色主题。',
+    },
+  ],
+
+  resources: [
+    {
+      type: 'documentation',
+      title: 'Jones Calculus - Wikipedia',
+      titleZh: 'Jones演算 - 维基百科',
+      url: 'https://en.wikipedia.org/wiki/Jones_calculus',
+      description: 'Comprehensive explanation of Jones vectors and matrices',
+      descriptionZh: 'Jones向量和矩阵的全面解释',
+    },
+    {
+      type: 'documentation',
+      title: 'Poincaré Sphere - RP Photonics',
+      titleZh: 'Poincaré球 - RP光子学',
+      url: 'https://www.rp-photonics.com/poincare_sphere.html',
+      description: 'Visual representation of polarization states',
+      descriptionZh: '偏振态的可视化表示',
+    },
+    {
+      type: 'paper',
+      title: 'R. C. Jones (1941) - A New Calculus for the Treatment of Optical Systems',
+      titleZh: 'R. C. Jones (1941) - 处理光学系统的新演算',
+      url: 'https://doi.org/10.1364/JOSA.31.000488',
+      description: 'Original paper introducing Jones calculus',
+      descriptionZh: '介绍Jones演算的原始论文',
+    },
+  ],
+}
+
+/**
+ * Stokes Vector Demo - Universal Polarization Description
+ * Stokes参数演示 - 通用偏振描述
+ */
+const STOKES_VECTOR_SOURCE: DemoSourceCode = {
+  id: 'stokes-vector',
+  name: 'Stokes Vector & Parameters',
+  nameZh: 'Stokes向量与参数',
+  description: 'Interactive demonstration of Stokes parameters for complete polarization characterization including partial polarization',
+  descriptionZh: 'Stokes参数的交互演示，完整表征包括部分偏振在内的偏振态',
+  complexity: 'advanced',
+
+  concepts: [
+    'Stokes vector: S = [S₀, S₁, S₂, S₃]^T',
+    'S₀: Total intensity',
+    'S₁: H-V linear polarization difference',
+    'S₂: +45°/-45° linear polarization difference',
+    'S₃: RCP-LCP circular polarization difference',
+    'Degree of polarization: DOP = √(S₁² + S₂² + S₃²) / S₀',
+    'Represents both fully and partially polarized light',
+    'Real-valued parameters (measurable)',
+  ],
+  conceptsZh: [
+    'Stokes向量：S = [S₀, S₁, S₂, S₃]^T',
+    'S₀：总光强',
+    'S₁：水平-垂直线偏振差',
+    'S₂：+45°/-45°线偏振差',
+    'S₃：右旋-左旋圆偏振差',
+    '偏振度：DOP = √(S₁² + S₂² + S₃²) / S₀',
+    '可表示完全和部分偏振光',
+    '实数参数（可测量）',
+  ],
+
+  tags: ['polarization', 'stokes-parameters', 'stokes-vector', 'dop', 'poincare-sphere', 'advanced', 'polarimetry'],
+
+  relatedDemos: ['jones-matrix', 'mueller-matrix', 'polarimetric-microscopy', 'poincare-sphere-viewer'],
+
+  implementations: [
+    {
+      language: 'python',
+      sourceCode: StokesVectorOptimizedPython,
+      dependencies: {
+        'numpy': '>=1.24.0',
+        'matplotlib': '>=3.7.0',
+      },
+      setup: `# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+
+# Install dependencies
+pip install numpy matplotlib
+
+# Run the optimized demo (PolarCraft unified theme)
+python stokes_vector_optimized.py
+
+# Or run the original version
+python stokes_vector.py`,
+      setupZh: `# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Windows系统: venv\\Scripts\\activate
+
+# 安装依赖
+pip install numpy matplotlib
+
+# 运行优化版演示（PolarCraft统一主题）
+python stokes_vector_optimized.py
+
+# 或运行原始版本
+python stokes_vector.py`,
+      notes: 'Comprehensive 6-panel visualization: Stokes bar chart, 3D Poincaré sphere, polarization ellipse, intensity measurements (I₀°/45°/90°/RCP), DOP gauge, and parameters table. Includes interactive sliders for S₁, S₂, S₃ with automatic normalization.',
+      notesZh: '全面的6面板可视化：Stokes柱状图、3D Poincaré球、偏振椭圆、强度测量（I₀°/45°/90°/RCP）、偏振度仪表和参数表。包含S₁、S₂、S₃的交互滑块和自动归一化。',
+    },
+  ],
+
+  resources: [
+    {
+      type: 'documentation',
+      title: 'Stokes Parameters - Wikipedia',
+      titleZh: 'Stokes参数 - 维基百科',
+      url: 'https://en.wikipedia.org/wiki/Stokes_parameters',
+      description: 'Complete mathematical formulation and physical interpretation',
+      descriptionZh: '完整数学公式和物理解释',
+    },
+    {
+      type: 'documentation',
+      title: 'Polarimetry - RP Photonics',
+      titleZh: '偏振测量 - RP光子学',
+      url: 'https://www.rp-photonics.com/polarimetry.html',
+      description: 'Measurement techniques for Stokes parameters',
+      descriptionZh: 'Stokes参数的测量技术',
+    },
+    {
+      type: 'paper',
+      title: 'G. G. Stokes (1852) - On the Composition and Resolution of Streams of Polarized Light',
+      titleZh: 'G. G. Stokes (1852) - 论偏振光流的合成与分解',
+      url: 'https://doi.org/10.1017/CBO9780511702266.010',
+      description: 'Original paper introducing Stokes parameters',
+      descriptionZh: '介绍Stokes参数的原始论文',
+    },
+  ],
+}
+
+/**
+ * Mueller Matrix Demo - General Polarization Transformations
+ * Mueller矩阵演示 - 通用偏振变换
+ */
+const MUELLER_MATRIX_SOURCE: DemoSourceCode = {
+  id: 'mueller-matrix',
+  name: 'Mueller Matrix Calculus',
+  nameZh: 'Mueller矩阵演算',
+  description: 'Interactive demonstration of Mueller matrices for general polarization transformations including depolarization',
+  descriptionZh: 'Mueller矩阵的交互演示，用于包括退偏在内的通用偏振变换',
+  complexity: 'advanced',
+
+  concepts: [
+    'Mueller matrix: 4×4 real matrix',
+    'S_out = M × S_in (operates on Stokes vectors)',
+    'Handles partial polarization and depolarization',
+    'Lu-Chipman decomposition: M = M_Δ × M_R × M_D',
+    'Diattenuation: Preferential absorption',
+    'Retardance: Phase delay between components',
+    'Depolarization: Reduces degree of polarization',
+    'Most general polarization formalism',
+  ],
+  conceptsZh: [
+    'Mueller矩阵：4×4实数矩阵',
+    'S_out = M × S_in（作用于Stokes向量）',
+    '处理部分偏振和退偏',
+    'Lu-Chipman分解：M = M_Δ × M_R × M_D',
+    '二向衰减：优先吸收',
+    '延迟：分量间相位延迟',
+    '退偏：降低偏振度',
+    '最通用的偏振形式',
+  ],
+
+  tags: ['polarization', 'mueller-matrix', 'depolarization', 'lu-chipman', 'advanced', 'polarimetry'],
+
+  relatedDemos: ['stokes-vector', 'jones-matrix', 'polarimetric-microscopy'],
+
+  implementations: [
+    {
+      language: 'python',
+      sourceCode: MuellerMatrixOptimizedPython,
+      dependencies: {
+        'numpy': '>=1.24.0',
+        'matplotlib': '>=3.7.0',
+      },
+      setup: `# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+
+# Install dependencies
+pip install numpy matplotlib
+
+# Run the optimized demo (PolarCraft unified theme)
+python mueller_matrix_optimized.py
+
+# Or run the original version
+python mueller_matrix.py`,
+      setupZh: `# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Windows系统: venv\\Scripts\\activate
+
+# 安装依赖
+pip install numpy matplotlib
+
+# 运行优化版演示（PolarCraft统一主题）
+python mueller_matrix_optimized.py
+
+# 或运行原始版本
+python mueller_matrix.py`,
+      notes: 'Advanced multi-panel demo with 7 optical elements (Polarizer, HWP, QWP, Rotator, Diattenuator, Depolarizer, Custom Matrix). Features Lu-Chipman decomposition, input/output Stokes visualization, 3D Poincaré sphere, and detailed matrix display.',
+      notesZh: '高级多面板演示，包含7种光学元件（偏振器、半波片、四分之一波片、旋转器、二向衰减器、退偏器、自定义矩阵）。具有Lu-Chipman分解、输入/输出Stokes可视化、3D Poincaré球和详细矩阵显示。',
+    },
+  ],
+
+  resources: [
+    {
+      type: 'documentation',
+      title: 'Mueller Calculus - Wikipedia',
+      titleZh: 'Mueller演算 - 维基百科',
+      url: 'https://en.wikipedia.org/wiki/Mueller_calculus',
+      description: 'Comprehensive explanation of Mueller matrices',
+      descriptionZh: 'Mueller矩阵的全面解释',
+    },
+    {
+      type: 'documentation',
+      title: 'Depolarization - RP Photonics',
+      titleZh: '退偏 - RP光子学',
+      url: 'https://www.rp-photonics.com/depolarization.html',
+      description: 'Understanding depolarization in optical systems',
+      descriptionZh: '理解光学系统中的退偏',
+    },
+    {
+      type: 'paper',
+      title: 'S-Y Lu & R. A. Chipman (1996) - Interpretation of Mueller matrices',
+      titleZh: 'S-Y Lu & R. A. Chipman (1996) - Mueller矩阵的解释',
+      url: 'https://doi.org/10.1364/JOSAA.13.001106',
+      description: 'Lu-Chipman decomposition method',
+      descriptionZh: 'Lu-Chipman分解方法',
+    },
+  ],
+}
+
 // ============================================================================
 // REGISTRY OBJECT - Add more demos here
 // 注册表对象 - 在此添加更多演示
@@ -779,6 +1092,12 @@ export const DEMO_SOURCES_REGISTRY: Record<string, DemoSourceCode> = {
   'brewster': BREWSTER_SOURCE,
   'optical-rotation': OPTICAL_ROTATION_SOURCE,
   'rayleigh': RAYLEIGH_SCATTERING_SOURCE,
+
+  // Stage 2: Advanced polarimetry (Jones/Stokes/Mueller)
+  // 阶段2：高级偏振测量（Jones/Stokes/Mueller）
+  'jones-matrix': JONES_MATRIX_SOURCE,
+  'stokes-vector': STOKES_VECTOR_SOURCE,
+  'mueller-matrix': MUELLER_MATRIX_SOURCE,
 
   // TODO: Add more demos
   // 'chromatic': CHROMATIC_SOURCE,

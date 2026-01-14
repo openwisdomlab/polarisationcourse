@@ -47,6 +47,14 @@ from visualization_config import (
     setup_polarcraft_style, style_slider, COLORS, FONTS, SIZES
 )
 
+# 导入导出工具
+try:
+    from export_utils import export_stokes_vector
+    EXPORT_AVAILABLE = True
+except ImportError:
+    EXPORT_AVAILABLE = False
+    print("Warning: export_utils.py not found. Export functionality disabled.")
+
 
 class StokesVector:
     """
@@ -465,6 +473,14 @@ class StokesVectorDemo:
         self.btn_reset.label.set_color(COLORS['text_primary'])
         self.btn_reset.on_clicked(self.reset)
 
+        # Button: Export
+        if EXPORT_AVAILABLE:
+            ax_export = plt.axes([0.75, 0.03, 0.08, 0.04])
+            self.btn_export = Button(ax_export, 'Export', color=COLORS['success'],
+                                     hovercolor=COLORS['primary'])
+            self.btn_export.label.set_color(COLORS['text_primary'])
+            self.btn_export.on_clicked(self.export_data)
+
     def set_preset(self, label):
         """Set preset polarization states"""
         presets = {
@@ -827,6 +843,32 @@ DECOMPOSITION (分解):
         self.slider_s3.reset()
         self.slider_dop.reset()
         self.radio.set_active(0)
+
+    def export_data(self, event):
+        """Export Stokes vector data (导出Stokes向量数据)"""
+        try:
+            # Get current Stokes parameters
+            S = np.array([self.S0, self.s1, self.s2, self.s3])
+
+            # Export using export_utils
+            export_stokes_vector(
+                S,
+                'stokes_vector_data',
+                format='json',
+                metadata={
+                    'Demo': 'Stokes Vector & Parameters',
+                    'S0': float(self.S0),
+                    'S1': float(self.s1),
+                    'S2': float(self.s2),
+                    'S3': float(self.s3),
+                    'DOP': float(self.dop)
+                }
+            )
+
+            print("✓ Stokes vector data exported successfully!")
+
+        except Exception as e:
+            print(f"Export error: {e}")
 
 
 def main():

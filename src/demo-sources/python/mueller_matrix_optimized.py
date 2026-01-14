@@ -32,6 +32,14 @@ from visualization_config import (
     setup_polarcraft_style, style_slider, COLORS, FONTS, SIZES
 )
 
+# 导入导出工具
+try:
+    from export_utils import export_matrix, export_stokes_vector
+    EXPORT_AVAILABLE = True
+except ImportError:
+    EXPORT_AVAILABLE = False
+    print("Warning: export_utils.py not found. Export functionality disabled.")
+
 
 
 class StokesVector:
@@ -575,6 +583,13 @@ class MuellerMatrixDemo:
         self.btn_reset.label.set_color(self.text_color)
         self.btn_reset.on_clicked(self.reset)
 
+        # Export button
+        if EXPORT_AVAILABLE:
+            ax_export = plt.axes([control_x, 0.14, control_width, 0.05], facecolor=self.bg_color)
+            self.btn_export = Button(ax_export, 'Export', color=COLORS['success'], hovercolor=COLORS['primary'])
+            self.btn_export.label.set_color(self.text_color)
+            self.btn_export.on_clicked(self.export_data)
+
     def update_element_type(self, label):
         """Update Mueller matrix based on element type"""
         self.element_type = label
@@ -817,6 +832,51 @@ class MuellerMatrixDemo:
         self.slider_depolarization.set_val(0.5)
         self.radio_element.set_active(0)
         self.radio_presets.set_active(0)
+
+    def export_data(self, event):
+        """Export Mueller matrix and Stokes vectors (导出Mueller矩阵和Stokes向量)"""
+        try:
+            # Export Mueller matrix
+            export_matrix(
+                self.mueller_matrix.M,
+                'mueller_matrix_data',
+                matrix_name=f'Mueller Matrix - {self.element_type}',
+                format='json',
+                metadata={
+                    'Demo': 'Mueller Matrix Calculus',
+                    'Element Type': self.element_type,
+                    'Angle (deg)': float(self.angle),
+                    'Retardance (deg)': float(self.retardance) if self.element_type in ['Quarter-Wave', 'Half-Wave'] else None,
+                    'Diattenuation': float(self.diattenuation) if self.element_type == 'Diattenuator' else None,
+                    'Depolarization': float(self.depolarization) if self.element_type == 'Depolarizer' else None
+                }
+            )
+
+            # Export input and output Stokes vectors
+            export_stokes_vector(
+                self.input_stokes.S,
+                'mueller_input_stokes',
+                format='json',
+                metadata={
+                    'Demo': 'Mueller Matrix - Input State',
+                    'Input Preset': self.input_preset
+                }
+            )
+
+            export_stokes_vector(
+                self.output_stokes.S,
+                'mueller_output_stokes',
+                format='json',
+                metadata={
+                    'Demo': 'Mueller Matrix - Output State',
+                    'Element Type': self.element_type
+                }
+            )
+
+            print("✓ Mueller matrix data exported successfully!")
+
+        except Exception as e:
+            print(f"Export error: {e}")
 
 
 def main():

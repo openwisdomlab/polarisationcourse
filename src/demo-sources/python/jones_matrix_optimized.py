@@ -82,6 +82,14 @@ from visualization_config import (
     setup_polarcraft_style, style_slider, COLORS, FONTS, SIZES
 )
 
+# 导入导出工具
+try:
+    from export_utils import export_to_json, export_matrix
+    EXPORT_AVAILABLE = True
+except ImportError:
+    EXPORT_AVAILABLE = False
+    print("Warning: export_utils.py not found. Export functionality disabled.")
+
 
 # ============================================================================
 # Jones矢量类 (Jones Vector Class)
@@ -882,6 +890,14 @@ class JonesMatrixDemo:
         self.btn_reset.on_clicked(self.on_reset)
         self.btn_reset.label.set_color(COLORS['text_primary'])
 
+        # 导出按钮
+        if EXPORT_AVAILABLE:
+            ax_export = plt.axes([0.85, 0.03, 0.08, 0.04])
+            self.btn_export = Button(ax_export, 'Export',
+                                    color=COLORS['success'], hovercolor=COLORS['primary'])
+            self.btn_export.on_clicked(self.on_export)
+            self.btn_export.label.set_color(COLORS['text_primary'])
+
     def get_input_jones(self):
         """获取输入Jones矢量"""
         if self.input_type == 'linear':
@@ -962,6 +978,69 @@ class JonesMatrixDemo:
         self.radio_element.set_active(0)
 
         self.update_plot()
+
+    def on_export(self, event):
+        """导出数据回调 (Export data callback)"""
+        try:
+            # Get current Jones vectors and matrix
+            E_in = self.get_input_jones()
+            J = self.get_element_jones()
+            E_out = J @ E_in
+
+            # Prepare export data
+            data = {
+                'input_vector': {
+                    'Ex': {'real': float(E_in.Ex.real), 'imag': float(E_in.Ex.imag)},
+                    'Ey': {'real': float(E_in.Ey.real), 'imag': float(E_in.Ey.imag)},
+                    'polarization_type': self.input_type,
+                    'angle_deg': float(self.input_angle) if self.input_type == 'linear' else None
+                },
+                'jones_matrix': {
+                    'J11': {'real': float(J.J[0,0].real), 'imag': float(J.J[0,0].imag)},
+                    'J12': {'real': float(J.J[0,1].real), 'imag': float(J.J[0,1].imag)},
+                    'J21': {'real': float(J.J[1,0].real), 'imag': float(J.J[1,0].imag)},
+                    'J22': {'real': float(J.J[1,1].real), 'imag': float(J.J[1,1].imag)},
+                    'element_type': self.element_type,
+                    'angle_deg': float(self.element_angle)
+                },
+                'output_vector': {
+                    'Ex': {'real': float(E_out.Ex.real), 'imag': float(E_out.Ex.imag)},
+                    'Ey': {'real': float(E_out.Ey.real), 'imag': float(E_out.Ey.imag)},
+                    'intensity': float(E_out.intensity())
+                },
+                'stokes_parameters': {
+                    'input': {
+                        'S0': float(E_in.to_stokes()[0]),
+                        'S1': float(E_in.to_stokes()[1]),
+                        'S2': float(E_in.to_stokes()[2]),
+                        'S3': float(E_in.to_stokes()[3])
+                    },
+                    'output': {
+                        'S0': float(E_out.to_stokes()[0]),
+                        'S1': float(E_out.to_stokes()[1]),
+                        'S2': float(E_out.to_stokes()[2]),
+                        'S3': float(E_out.to_stokes()[3])
+                    }
+                }
+            }
+
+            # Export to JSON
+            export_to_json(
+                data,
+                'jones_matrix_data',
+                metadata={
+                    'Demo': 'Jones Matrix Calculus',
+                    'Input Type': self.input_type,
+                    'Input Angle (deg)': float(self.input_angle),
+                    'Element Type': self.element_type,
+                    'Element Angle (deg)': float(self.element_angle)
+                }
+            )
+
+            print("✓ Jones matrix data exported successfully!")
+
+        except Exception as e:
+            print(f"Export error: {e}")
 
     def update_plot(self):
         """更新所有图形"""
