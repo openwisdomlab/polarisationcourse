@@ -62,8 +62,8 @@ interface RandomizedShowcaseProps {
 }
 
 function RandomizedShowcase({ theme, isZh }: RandomizedShowcaseProps) {
-  // Get showcase items (cached for 1 hour)
-  const showcaseItems = useMemo(() => getShowcaseItems(6), [])
+  // Get showcase items (cached for 1 hour) - 3 items with balanced difficulty
+  const showcaseItems = useMemo(() => getShowcaseItems(3), [])
 
   return (
     <div className="relative z-10 px-6 pb-6">
@@ -73,8 +73,8 @@ function RandomizedShowcase({ theme, isZh }: RandomizedShowcaseProps) {
           'text-base font-semibold flex items-center gap-2',
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         )}>
-          <Layers className="w-4 h-4 text-cyan-500" />
-          {isZh ? '展厅导览' : 'Gallery Showcase'}
+          <Sparkles className="w-4 h-4 text-cyan-500" />
+          {isZh ? '随机推荐演示' : 'Random Demo Picks'}
         </h3>
         <div className="flex items-center gap-2">
           <RefreshCw className={cn(
@@ -85,7 +85,7 @@ function RandomizedShowcase({ theme, isZh }: RandomizedShowcaseProps) {
             'text-xs',
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           )}>
-            {isZh ? '每小时更新推荐' : 'Refreshes hourly'}
+            {isZh ? '每小时更新' : 'Hourly refresh'}
           </span>
         </div>
       </div>
@@ -144,16 +144,13 @@ function RandomizedShowcase({ theme, isZh }: RandomizedShowcaseProps) {
                       >
                         {isZh ? item.badgeZh : item.badge}
                       </span>
-                      {item.type !== 'demo' && (
-                        <span className={cn(
-                          'text-[10px] px-1.5 py-0.5 rounded',
-                          theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-100 text-gray-500'
-                        )}>
-                          {item.type === 'game' ? (isZh ? '互动' : 'Play') :
-                           item.type === 'calculator' ? (isZh ? '计算' : 'Calc') :
-                           (isZh ? '工具' : 'Tool')}
-                        </span>
-                      )}
+                      <span className={cn(
+                        'text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5',
+                        theme === 'dark' ? 'bg-slate-700/50 text-gray-500' : 'bg-gray-100 text-gray-400'
+                      )}>
+                        <RefreshCw className="w-2.5 h-2.5" />
+                        {isZh ? '随机' : 'Random'}
+                      </span>
                     </div>
                     <h4 className={cn(
                       'text-sm font-semibold truncate',

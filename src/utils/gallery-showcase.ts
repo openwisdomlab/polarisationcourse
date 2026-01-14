@@ -615,61 +615,77 @@ function shuffleArray<T>(array: T[], random: () => number): T[] {
 }
 
 /**
- * Select showcase items with weighted randomization
- * - 85% chance to pick from demo pool
- * - 15% chance to pick from other pool
- * - Ensures variety by not picking duplicates
+ * Difficulty tier for demos based on unit number
+ * - Easy: Unit 0, 1 (basics and polarization fundamentals)
+ * - Medium: Unit 2, 3 (interface reflection and transparent media)
+ * - Hard: Unit 4, 5 (scattering and polarimetry)
  */
-function selectShowcaseItems(random: () => number, count: number = 6): ShowcaseItem[] {
+type DifficultyTier = 'easy' | 'medium' | 'hard'
+
+function getDifficultyTier(unit: number | undefined): DifficultyTier {
+  if (unit === undefined || unit <= 1) return 'easy'
+  if (unit <= 3) return 'medium'
+  return 'hard'
+}
+
+/**
+ * Select showcase items with balanced difficulty distribution
+ * - Only selects from demo pool (no games)
+ * - Ensures even difficulty distribution (1 easy, 1 medium, 1 hard for 3 items)
+ * - Falls back to random selection if not enough items in a tier
+ */
+function selectShowcaseItems(random: () => number, count: number = 3): ShowcaseItem[] {
+  // Group demos by difficulty tier
+  const easyDemos = DEMO_SHOWCASE_ITEMS.filter(d => getDifficultyTier(d.unit) === 'easy')
+  const mediumDemos = DEMO_SHOWCASE_ITEMS.filter(d => getDifficultyTier(d.unit) === 'medium')
+  const hardDemos = DEMO_SHOWCASE_ITEMS.filter(d => getDifficultyTier(d.unit) === 'hard')
+
+  // Shuffle each tier
+  const shuffledEasy = shuffleArray(easyDemos, random)
+  const shuffledMedium = shuffleArray(mediumDemos, random)
+  const shuffledHard = shuffleArray(hardDemos, random)
+
   const selected: ShowcaseItem[] = []
-  const usedDemoIds = new Set<string>()
-  const usedOtherIds = new Set<string>()
 
-  // Shuffle both pools
-  const shuffledDemos = shuffleArray(DEMO_SHOWCASE_ITEMS, random)
-  const shuffledOther = shuffleArray(OTHER_SHOWCASE_ITEMS, random)
+  // For balanced selection: pick from each tier in round-robin
+  // This ensures difficulty is evenly distributed
+  const tiers = [shuffledEasy, shuffledMedium, shuffledHard]
+  const tierIndices = [0, 0, 0]
 
-  let demoIndex = 0
-  let otherIndex = 0
+  // First pass: ensure at least one from each tier (if count >= 3)
+  if (count >= 3) {
+    for (let i = 0; i < 3; i++) {
+      if (tiers[i].length > 0) {
+        selected.push(tiers[i][tierIndices[i]++])
+      }
+    }
+  }
 
+  // Continue adding items round-robin until we reach count
+  let currentTier = 0
   while (selected.length < count) {
-    // 85% demo, 15% other
-    const pickDemo = random() < 0.85
+    const tier = tiers[currentTier]
+    if (tierIndices[currentTier] < tier.length) {
+      selected.push(tier[tierIndices[currentTier]++])
+    }
+    currentTier = (currentTier + 1) % 3
 
-    if (pickDemo && demoIndex < shuffledDemos.length) {
-      const item = shuffledDemos[demoIndex++]
-      if (!usedDemoIds.has(item.id)) {
-        usedDemoIds.add(item.id)
-        selected.push(item)
-      }
-    } else if (otherIndex < shuffledOther.length) {
-      const item = shuffledOther[otherIndex++]
-      if (!usedOtherIds.has(item.id)) {
-        usedOtherIds.add(item.id)
-        selected.push(item)
-      }
-    } else if (demoIndex < shuffledDemos.length) {
-      // Fall back to demos if other pool exhausted
-      const item = shuffledDemos[demoIndex++]
-      if (!usedDemoIds.has(item.id)) {
-        usedDemoIds.add(item.id)
-        selected.push(item)
-      }
-    } else {
-      // Both pools exhausted
+    // Safety check: if all tiers exhausted, break
+    if (tierIndices.every((idx, i) => idx >= tiers[i].length)) {
       break
     }
   }
 
-  // Final shuffle to mix demo and other items
+  // Final shuffle to randomize display order
   return shuffleArray(selected, random)
 }
 
 /**
  * Get cached showcase items or generate new ones
  * Cache is valid for 1 hour
+ * Only selects demo items with balanced difficulty distribution
  */
-export function getShowcaseItems(count: number = 6): ShowcaseItem[] {
+export function getShowcaseItems(count: number = 3): ShowcaseItem[] {
   const currentSeed = getHourlySeed()
 
   // Try to get from localStorage
@@ -716,7 +732,7 @@ export function getShowcaseItems(count: number = 6): ShowcaseItem[] {
 /**
  * Force refresh showcase items (for testing or manual refresh)
  */
-export function refreshShowcaseItems(count: number = 6): ShowcaseItem[] {
+export function refreshShowcaseItems(count: number = 3): ShowcaseItem[] {
   try {
     localStorage.removeItem(STORAGE_KEY)
   } catch {
