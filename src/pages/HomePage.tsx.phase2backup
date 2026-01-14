@@ -23,28 +23,31 @@ import { EXHIBITION_HALLS } from '@/components/museum'
 import { cn } from '@/lib/utils'
 import {
   ChevronRight,
+  ChevronDown,
   BookOpen,
   Sun,
   Sparkles,
   FlaskConical,
   Lightbulb,
+  Target,
+  Telescope,
+  Zap,
   Eye,
   Menu,
   X,
+  Calculator,
   Users,
   Palette,
   ArrowRight,
   Search,
+  Beaker,
   Layers,
+  Rocket,
   Play,
   Waves,
   Atom,
   Microscope,
 } from 'lucide-react'
-
-// Extracted HomePage components
-import { FloatingParticle, PolarizationWave, AnimatedPolarizer, LightBeamEffect, ScrollIndicator } from '@/components/home/animations'
-import { CourseOutlineColumn, TimelineEventCard } from '@/components/home/timeline'
 
 // Data imports
 import { TIMELINE_EVENTS, type TimelineEvent } from '@/data/timeline'
@@ -79,6 +82,14 @@ const MODULE_ENTRIES: ModuleEntry[] = [
     color: '#6366F1',
   },
   {
+    id: 'calc',
+    titleZh: '计算工坊',
+    titleEn: 'Calculators',
+    icon: <Calculator className="w-4 h-4" />,
+    link: '/calc',
+    color: '#8B5CF6',
+  },
+  {
     id: 'lab',
     titleZh: '虚拟课题组',
     titleEn: 'Research Lab',
@@ -93,7 +104,7 @@ const MODULE_ENTRIES: ModuleEntry[] = [
 // ============================================================================
 
 interface CategoryFilter {
-  id: 'all' | 'discovery' | 'theory'
+  id: 'all' | 'discovery' | 'theory' | 'experiment' | 'application'
   labelZh: string
   labelEn: string
   icon: React.ReactNode
@@ -104,15 +115,529 @@ const CATEGORY_FILTERS: CategoryFilter[] = [
   { id: 'all', labelZh: '全部', labelEn: 'All', icon: <Layers className="w-4 h-4" />, color: '#64748b' },
   { id: 'discovery', labelZh: '发现', labelEn: 'Discovery', icon: <Search className="w-4 h-4" />, color: '#F59E0B' },
   { id: 'theory', labelZh: '理论', labelEn: 'Theory', icon: <Lightbulb className="w-4 h-4" />, color: '#3B82F6' },
+  { id: 'experiment', labelZh: '实验', labelEn: 'Experiment', icon: <Beaker className="w-4 h-4" />, color: '#10B981' },
+  { id: 'application', labelZh: '应用', labelEn: 'Application', icon: <Rocket className="w-4 h-4" />, color: '#EC4899' },
 ]
 
 // ============================================================================
 // Course Outline Column - 课程大纲列（用于三栏布局）
 // ============================================================================
 
+interface CourseOutlineColumnProps {
+  theme: 'dark' | 'light'
+  isZh: boolean
+  activeUnitId: string | null
+  onUnitClick: (unitId: string | null, years?: number[]) => void
+}
+
+function CourseOutlineColumn({
+  theme,
+  isZh,
+  activeUnitId,
+  onUnitClick,
+}: CourseOutlineColumnProps) {
+  const unitColors = ['#22D3EE', '#3B82F6', '#8B5CF6', '#F59E0B', '#EC4899']
+  const unitIcons = [
+    <Lightbulb key="1" className="w-5 h-5" />,
+    <Zap key="2" className="w-5 h-5" />,
+    <Sparkles key="3" className="w-5 h-5" />,
+    <Target key="4" className="w-5 h-5" />,
+    <Telescope key="5" className="w-5 h-5" />,
+  ]
+
+  const [expandedUnitId, setExpandedUnitId] = useState<string | null>(null)
+
+  const handleUnitClick = (unitId: string, mapping?: CourseTimelineMapping) => {
+    if (expandedUnitId === unitId) {
+      // Clicking same unit - collapse and clear filter
+      setExpandedUnitId(null)
+      onUnitClick(null)
+    } else {
+      // Clicking different unit - expand and filter
+      setExpandedUnitId(unitId)
+      onUnitClick(unitId, mapping?.relatedTimelineYears)
+    }
+  }
+
+  return (
+    <div className={cn(
+      'rounded-2xl border overflow-hidden',
+      theme === 'dark'
+        ? 'bg-slate-800/50 border-slate-700'
+        : 'bg-white/80 border-gray-200'
+    )}>
+      {/* Header */}
+      <div className={cn(
+        'p-4 border-b',
+        theme === 'dark'
+          ? 'bg-slate-800/80 border-slate-700'
+          : 'bg-gray-50/80 border-gray-200'
+      )}>
+        <h2 className={cn(
+          'text-sm font-bold flex items-center gap-2',
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        )}>
+          <BookOpen className="w-4 h-4 text-amber-500" />
+          {isZh ? '课程大纲' : 'Course Outline'}
+        </h2>
+        <p className={cn(
+          'text-xs mt-1',
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        )}>
+          {isZh ? '点击单元展开详情' : 'Click unit to expand details'}
+        </p>
+      </div>
+
+      {/* Show All Button */}
+      <div className="p-3 pb-0">
+        <button
+          onClick={() => {
+            setExpandedUnitId(null)
+            onUnitClick(null)
+          }}
+          className={cn(
+            'w-full text-left p-3 rounded-xl border transition-all duration-200',
+            !activeUnitId
+              ? theme === 'dark'
+                ? 'bg-slate-700 border-cyan-500 shadow-lg'
+                : 'bg-white border-cyan-500 shadow-lg'
+              : theme === 'dark'
+                ? 'bg-slate-800/50 border-slate-700 hover:bg-slate-800'
+                : 'bg-gray-50 border-gray-200 hover:bg-white'
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold bg-gradient-to-br from-cyan-500 to-blue-500"
+            >
+              <Layers className="w-4 h-4" />
+            </div>
+            <span className={cn(
+              'text-sm font-medium',
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            )}>
+              {isZh ? '显示全部' : 'Show All'}
+            </span>
+          </div>
+        </button>
+      </div>
+
+      {/* Units list - Accordion style */}
+      <div className="p-3 space-y-2 max-h-[600px] overflow-y-auto scrollbar-thin">
+        {PSRT_CURRICULUM.map((unit, index) => {
+          const mapping = COURSE_TIMELINE_MAPPINGS.find(m => m.unitNumber === unit.unitNumber)
+          const color = unitColors[index % unitColors.length]
+          const isExpanded = expandedUnitId === unit.id
+          const isActive = activeUnitId === unit.id
+          const totalDemos = unit.sections.reduce((sum, s) => sum + s.relatedDemos.length, 0)
+          const totalEvents = mapping?.keyEvents?.length || 0
+
+          return (
+            <div key={unit.id} className="space-y-2">
+              {/* Unit header card - always visible */}
+              <motion.button
+                layout
+                onClick={() => handleUnitClick(unit.id, mapping)}
+                className={cn(
+                  'w-full text-left p-3 rounded-xl border transition-all duration-200',
+                  isExpanded || isActive
+                    ? theme === 'dark'
+                      ? 'bg-slate-700 shadow-lg'
+                      : 'bg-white shadow-lg'
+                    : theme === 'dark'
+                      ? 'bg-slate-800/50 hover:bg-slate-700'
+                      : 'bg-gray-50 hover:bg-white'
+                )}
+                style={{
+                  borderColor: (isExpanded || isActive) ? color : theme === 'dark' ? '#334155' : '#e5e7eb',
+                  boxShadow: (isExpanded || isActive) ? `0 4px 20px ${color}20` : undefined,
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  {/* Unit number */}
+                  <div
+                    className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold"
+                    style={{ backgroundColor: color }}
+                  >
+                    {unit.unitNumber}
+                  </div>
+
+                  {/* Unit info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span style={{ color }}>{unitIcons[index]}</span>
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className={cn(
+                          'flex items-center gap-0.5',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        )}>
+                          <Eye className="w-3 h-3" />
+                          {totalDemos}
+                        </span>
+                        <span className={cn(
+                          'flex items-center gap-0.5',
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        )}>
+                          <Users className="w-3 h-3" />
+                          {totalEvents}
+                        </span>
+                      </div>
+                    </div>
+                    <h3 className={cn(
+                      'text-sm font-semibold leading-tight',
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    )}>
+                      {isZh ? unit.titleZh : unit.titleEn}
+                    </h3>
+                    <p className={cn(
+                      'text-xs mt-1 line-clamp-1',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    )}>
+                      {isZh ? unit.subtitleZh : unit.subtitleEn}
+                    </p>
+                  </div>
+
+                  <ChevronDown className={cn(
+                    'w-4 h-4 flex-shrink-0 transition-transform',
+                    isExpanded && 'rotate-180',
+                    theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                  )} />
+                </div>
+              </motion.button>
+
+              {/* Expanded content - Accordion style */}
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className={cn(
+                      'rounded-xl border p-3 space-y-2',
+                      theme === 'dark'
+                        ? 'bg-slate-800/80 border-slate-700'
+                        : 'bg-white/80 border-gray-200'
+                    )}
+                      style={{ borderColor: `${color}30` }}
+                    >
+                      {/* Course Sections */}
+                      <div>
+                        <h4 className={cn(
+                          'text-xs font-semibold flex items-center gap-1.5 mb-2',
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        )}>
+                          <BookOpen className="w-3.5 h-3.5" style={{ color }} />
+                          {isZh ? '课程内容' : 'Course Content'}
+                        </h4>
+                        <div className="space-y-1.5">
+                          {unit.sections.map((section) => (
+                            <Link
+                              key={section.id}
+                              to={section.relatedDemos[0] ? `/demos/${section.relatedDemos[0]}` : '/demos'}
+                              className={cn(
+                                'group flex items-start gap-2 p-2 rounded-lg transition-all',
+                                theme === 'dark'
+                                  ? 'hover:bg-slate-700/50'
+                                  : 'hover:bg-gray-100'
+                              )}
+                            >
+                              {/* Section number */}
+                              <div
+                                className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold"
+                                style={{
+                                  backgroundColor: `${color}15`,
+                                  color,
+                                }}
+                              >
+                                {section.id}
+                              </div>
+
+                              {/* Section info */}
+                              <div className="flex-1 min-w-0">
+                                <h5 className={cn(
+                                  'text-xs font-medium leading-tight',
+                                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                                )}>
+                                  {isZh ? section.titleZh : section.titleEn}
+                                </h5>
+                                <p className={cn(
+                                  'text-[10px] mt-0.5 leading-snug line-clamp-2',
+                                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                                )}>
+                                  {isZh ? section.descriptionZh : section.descriptionEn}
+                                </p>
+                              </div>
+
+                              {/* Arrow */}
+                              <ChevronRight className={cn(
+                                'w-3 h-3 flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity',
+                                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                              )} />
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Stats footer */}
+                      <div className={cn(
+                        'flex items-center justify-between pt-2 border-t text-xs',
+                        theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+                      )}>
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            'flex items-center gap-1',
+                            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                          )}>
+                            <Eye className="w-3 h-3" />
+                            {totalDemos} {isZh ? '演示' : 'demos'}
+                          </span>
+                        </div>
+                        <Link
+                          to="/demos"
+                          className={cn(
+                            'text-xs font-medium transition-colors',
+                            theme === 'dark'
+                              ? 'text-cyan-400 hover:text-cyan-300'
+                              : 'text-cyan-600 hover:text-cyan-700'
+                          )}
+                          style={{ color }}
+                        >
+                          {isZh ? '浏览演示' : 'View Demos'} →
+                        </Link>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ============================================================================
 // Timeline Event Card - 时间线事件卡片
 // ============================================================================
+
+interface TimelineEventCardProps {
+  event: TimelineEvent
+  theme: 'dark' | 'light'
+  isZh: boolean
+  isExpanded: boolean
+  onToggle: () => void
+  relatedUnit?: CourseTimelineMapping
+}
+
+function TimelineEventCard({
+  event,
+  theme,
+  isZh,
+  isExpanded,
+  onToggle,
+  relatedUnit,
+}: TimelineEventCardProps) {
+  const isOptics = event.track === 'optics'
+  const trackColor = isOptics ? '#F59E0B' : '#22D3EE'
+  const scientistName = isZh ? event.scientistZh : event.scientistEn
+
+  // Category badge color
+  const categoryColors: Record<string, string> = {
+    discovery: '#F59E0B',
+    theory: '#3B82F6',
+    experiment: '#10B981',
+    application: '#EC4899',
+  }
+  const categoryLabels: Record<string, { zh: string; en: string }> = {
+    discovery: { zh: '发现', en: 'Discovery' },
+    theory: { zh: '理论', en: 'Theory' },
+    experiment: { zh: '实验', en: 'Experiment' },
+    application: { zh: '应用', en: 'Application' },
+  }
+
+  return (
+    <div
+      data-year={event.year}
+      className={cn(
+        'rounded-xl border-2 overflow-hidden transition-all duration-300',
+        isExpanded
+          ? theme === 'dark'
+            ? 'bg-slate-800 shadow-xl'
+            : 'bg-white shadow-xl'
+          : theme === 'dark'
+            ? 'bg-slate-800/70 hover:bg-slate-800'
+            : 'bg-white/90 hover:bg-white'
+      )}
+      style={{
+        borderColor: isExpanded ? trackColor : theme === 'dark' ? '#334155' : '#e5e7eb',
+        boxShadow: isExpanded ? `0 8px 32px ${trackColor}20` : undefined,
+      }}
+    >
+      {/* Card header */}
+      <button
+        onClick={onToggle}
+        className="w-full p-4 text-left"
+      >
+        <div className="flex items-start gap-3">
+          {/* Track indicator */}
+          <div
+            className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: `${trackColor}20` }}
+          >
+            {isOptics
+              ? <Sun className="w-5 h-5" style={{ color: trackColor }} />
+              : <Sparkles className="w-5 h-5" style={{ color: trackColor }} />
+            }
+          </div>
+
+          {/* Event info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className={cn(
+                'text-xs font-bold px-2 py-0.5 rounded-full',
+                isOptics
+                  ? 'bg-amber-500/20 text-amber-500'
+                  : 'bg-cyan-500/20 text-cyan-500'
+              )}>
+                {event.year}
+              </span>
+              {/* Category badge instead of redundant track label */}
+              <span
+                className="text-[10px] px-1.5 py-0.5 rounded"
+                style={{
+                  backgroundColor: `${categoryColors[event.category]}20`,
+                  color: categoryColors[event.category],
+                }}
+              >
+                {isZh ? categoryLabels[event.category].zh : categoryLabels[event.category].en}
+              </span>
+            </div>
+            <h3 className={cn(
+              'font-bold text-sm mb-1',
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            )}>
+              {isZh ? event.titleZh : event.titleEn}
+            </h3>
+            <p className={cn(
+              'text-xs line-clamp-2',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh ? event.descriptionZh : event.descriptionEn}
+            </p>
+          </div>
+
+          <ChevronDown className={cn(
+            'w-4 h-4 flex-shrink-0 transition-transform',
+            isExpanded ? 'rotate-180' : '',
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          )} />
+        </div>
+      </button>
+
+      {/* Expanded content */}
+      {isExpanded && (
+        <div className={cn(
+          'px-4 pb-4 border-t',
+          theme === 'dark' ? 'border-slate-700' : 'border-gray-100'
+        )}>
+          {/* Scientist info */}
+          {scientistName && (
+            <div className={cn(
+              'mt-3 p-3 rounded-lg flex items-center gap-3',
+              theme === 'dark' ? 'bg-slate-700/50' : 'bg-gray-50'
+            )}>
+              {event.scientistBio?.portraitEmoji && (
+                <span className="text-3xl">{event.scientistBio.portraitEmoji}</span>
+              )}
+              <div>
+                <p className={cn(
+                  'text-sm font-medium',
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                )}>
+                  {scientistName}
+                </p>
+                {event.scientistBio?.bioEn && (
+                  <p className={cn(
+                    'text-xs line-clamp-2',
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  )}>
+                    {isZh ? event.scientistBio.bioZh : event.scientistBio.bioEn}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Story */}
+          {event.story && (
+            <div className={cn(
+              'mt-3 p-3 rounded-lg',
+              theme === 'dark' ? 'bg-slate-700/30' : 'bg-gray-50/80'
+            )}>
+              <p className={cn(
+                'text-xs italic',
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              )}>
+                {isZh ? event.story.zh : event.story.en}
+              </p>
+            </div>
+          )}
+
+          {/* Thinking question */}
+          {event.thinkingQuestion && (
+            <div className={cn(
+              'mt-3 p-3 rounded-lg border',
+              theme === 'dark'
+                ? 'bg-cyan-900/10 border-cyan-500/30'
+                : 'bg-cyan-50 border-cyan-200'
+            )}>
+              <p className={cn(
+                'text-xs font-medium',
+                theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'
+              )}>
+                🤔 {isZh ? event.thinkingQuestion.zh : event.thinkingQuestion.en}
+              </p>
+            </div>
+          )}
+
+          {/* Related course unit */}
+          {relatedUnit && (
+            <Link
+              to={relatedUnit.keyExperimentDemo}
+              className={cn(
+                'mt-3 p-3 rounded-lg border flex items-center gap-2 transition-colors',
+                theme === 'dark'
+                  ? 'bg-violet-900/10 border-violet-500/30 hover:bg-violet-900/20'
+                  : 'bg-violet-50 border-violet-200 hover:bg-violet-100'
+              )}
+            >
+              <BookOpen className="w-4 h-4 text-violet-500" />
+              <div className="flex-1">
+                <span className={cn(
+                  'text-xs font-bold',
+                  theme === 'dark' ? 'text-violet-400' : 'text-violet-600'
+                )}>
+                  {isZh ? `单元 ${relatedUnit.unitNumber}` : `Unit ${relatedUnit.unitNumber}`}
+                </span>
+                <span className={cn(
+                  'text-xs ml-2',
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                )}>
+                  {isZh ? relatedUnit.unitTitleZh : relatedUnit.unitTitleEn}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-violet-500" />
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ============================================================================
 // Animated Hero Components - 动画英雄区组件
@@ -128,15 +653,346 @@ interface ParticleProps {
   color: string
 }
 
+function FloatingParticle({ delay, duration, x, y, size, color }: ParticleProps) {
+  return (
+    <motion.div
+      className="absolute rounded-full"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: size,
+        height: size,
+        backgroundColor: color,
+        boxShadow: `0 0 ${size * 2}px ${color}`,
+      }}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{
+        opacity: [0, 0.8, 0],
+        scale: [0, 1, 0.5],
+        y: [0, -100, -200],
+      }}
+      transition={{
+        duration,
+        delay,
+        repeat: Infinity,
+        ease: 'easeOut',
+      }}
+    />
+  )
+}
 
 // Polarization wave animation - 展示Ex和Ey正交电场分量
+function PolarizationWave({ theme }: { theme: 'dark' | 'light' }) {
+  const exColor = theme === 'dark' ? '#22d3ee' : '#0891b2' // 水平分量 Ex (cyan)
+  const eyColor = theme === 'dark' ? '#a855f7' : '#7c3aed' // 垂直分量 Ey (purple)
+
+  return (
+    <svg
+      viewBox="0 0 500 120"
+      className="w-full max-w-2xl mx-auto"
+      style={{ height: '80px' }}
+    >
+      {/* Ex - 水平电场分量 (正弦波) */}
+      <motion.path
+        d="M 0,60 Q 31.25,30 62.5,60 T 125,60 T 187.5,60 T 250,60 T 312.5,60 T 375,60 T 437.5,60 T 500,60"
+        fill="none"
+        stroke={exColor}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 0.9 }}
+        transition={{ duration: 2, ease: 'easeInOut' }}
+      />
+
+      {/* Ey - 垂直电场分量 (余弦波，相位差π/2) */}
+      <motion.path
+        d="M 0,60 Q 31.25,90 62.5,60 T 125,60 T 187.5,60 T 250,60 T 312.5,60 T 375,60 T 437.5,60 T 500,60"
+        fill="none"
+        stroke={eyColor}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 0.7 }}
+        transition={{ duration: 2, delay: 0.3, ease: 'easeInOut' }}
+      />
+
+      {/* 传播方向箭头 */}
+      <motion.path
+        d="M 480,60 L 495,60 M 490,55 L 495,60 L 490,65"
+        fill="none"
+        stroke={theme === 'dark' ? '#64748b' : '#94a3b8'}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.5 }}
+        transition={{ delay: 1.5 }}
+      />
+
+      {/* Ex标签 */}
+      <motion.text
+        x="8"
+        y="35"
+        fontSize="10"
+        fill={exColor}
+        fontWeight="600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.8 }}
+        transition={{ delay: 2 }}
+      >
+        Ex
+      </motion.text>
+
+      {/* Ey标签 */}
+      <motion.text
+        x="8"
+        y="95"
+        fontSize="10"
+        fill={eyColor}
+        fontWeight="600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.8 }}
+        transition={{ delay: 2.3 }}
+      >
+        Ey
+      </motion.text>
+
+      {/* 相位指示小球 - 沿Ex分量运动 */}
+      <motion.circle
+        r="3.5"
+        fill={exColor}
+        style={{ filter: `drop-shadow(0 0 6px ${exColor})` }}
+        initial={{ cx: 0, cy: 60 }}
+        animate={{
+          cx: [0, 62.5, 125, 187.5, 250, 312.5, 375, 437.5, 500],
+          cy: [60, 30, 60, 90, 60, 30, 60, 90, 60],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+      />
+
+      {/* 相位指示小球 - 沿Ey分量运动（相位差π/2） */}
+      <motion.circle
+        r="3.5"
+        fill={eyColor}
+        style={{ filter: `drop-shadow(0 0 6px ${eyColor})` }}
+        initial={{ cx: 0, cy: 60 }}
+        animate={{
+          cx: [0, 62.5, 125, 187.5, 250, 312.5, 375, 437.5, 500],
+          cy: [60, 90, 60, 30, 60, 90, 60, 30, 60],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+      />
+    </svg>
+  )
+}
 
 // Animated polarizer icon - 真实的线性偏振片表示
 // angle: 0° (水平) 或 90° (垂直)
+function AnimatedPolarizer({
+  theme,
+  angle = 0
+}: {
+  theme: 'dark' | 'light'
+  angle?: 0 | 90
+}) {
+  const color = theme === 'dark' ? '#22d3ee' : '#0891b2'
+  const isHorizontal = angle === 0
+
+  return (
+    <motion.svg
+      viewBox="0 0 100 100"
+      className="w-16 h-16"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* 外圆环 - 偏振片边框 */}
+      <circle
+        cx="50"
+        cy="50"
+        r="45"
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        opacity="0.4"
+      />
+
+      {/* 偏振片透射轴线（多条平行线模拟偏振片的栅格结构） */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        const offset = -27.5 + i * 5 // 从-27.5到+27.5，间隔5
+        return (
+          <motion.line
+            key={i}
+            x1={isHorizontal ? 15 : 50 + offset}
+            y1={isHorizontal ? 50 + offset : 15}
+            x2={isHorizontal ? 85 : 50 + offset}
+            y2={isHorizontal ? 50 + offset : 85}
+            stroke={color}
+            strokeWidth="1.2"
+            opacity="0.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{
+              duration: 3,
+              delay: i * 0.1,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        )
+      })}
+
+      {/* 透射轴方向指示器（加粗的中心线） */}
+      <motion.line
+        x1={isHorizontal ? 10 : 50}
+        y1={isHorizontal ? 50 : 10}
+        x2={isHorizontal ? 90 : 50}
+        y2={isHorizontal ? 50 : 90}
+        stroke={color}
+        strokeWidth="2.5"
+        opacity="0.9"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1, delay: 0.3 }}
+      />
+
+      {/* 透射轴箭头 */}
+      <motion.path
+        d={isHorizontal
+          ? "M 85,50 L 90,50 M 87,47 L 90,50 L 87,53"
+          : "M 50,10 L 50,5 M 47,8 L 50,5 L 53,8"
+        }
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.9 }}
+        transition={{ delay: 1 }}
+      />
+
+      {/* 中心光点 - 表示光通过偏振片 */}
+      <motion.circle
+        cx="50"
+        cy="50"
+        r="6"
+        fill={color}
+        initial={{ opacity: 0.3, scale: 0.5 }}
+        animate={{
+          opacity: [0.3, 0.8, 0.3],
+          scale: [0.8, 1.2, 0.8]
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        style={{ filter: `drop-shadow(0 0 8px ${color})` }}
+      />
+
+      {/* 角度标记 */}
+      <motion.text
+        x="50"
+        y="95"
+        fontSize="10"
+        fill={color}
+        textAnchor="middle"
+        fontWeight="600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.7 }}
+        transition={{ delay: 1.2 }}
+      >
+        {angle}°
+      </motion.text>
+    </motion.svg>
+  )
+}
 
 // Light beam effect
+function LightBeamEffect({ theme }: { theme: 'dark' | 'light' }) {
+  const beamColor = theme === 'dark' ? '#22d3ee' : '#0891b2'
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Diagonal light beam */}
+      <motion.div
+        className="absolute"
+        style={{
+          width: '200%',
+          height: '2px',
+          background: `linear-gradient(90deg, transparent, ${beamColor}40, ${beamColor}, ${beamColor}40, transparent)`,
+          transformOrigin: 'center',
+          top: '30%',
+          left: '-50%',
+        }}
+        initial={{ x: '-100%', rotate: -15 }}
+        animate={{ x: '100%' }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: 'easeInOut',
+        }}
+      />
+      {/* Second beam */}
+      <motion.div
+        className="absolute"
+        style={{
+          width: '150%',
+          height: '1px',
+          background: `linear-gradient(90deg, transparent, ${beamColor}20, ${beamColor}60, ${beamColor}20, transparent)`,
+          transformOrigin: 'center',
+          top: '60%',
+          left: '-25%',
+        }}
+        initial={{ x: '-100%', rotate: 10 }}
+        animate={{ x: '100%' }}
+        transition={{
+          duration: 5,
+          delay: 1.5,
+          repeat: Infinity,
+          repeatDelay: 3,
+          ease: 'easeInOut',
+        }}
+      />
+    </div>
+  )
+}
 
 // Scroll indicator
+function ScrollIndicator({ theme, onClick, isZh }: { theme: 'dark' | 'light', onClick: () => void, isZh: boolean }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      className={cn(
+        'absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer',
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+      )}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2, duration: 0.5 }}
+      whileHover={{ scale: 1.1 }}
+    >
+      <span className="text-xs font-medium">{isZh ? '向下滚动探索' : 'Scroll to explore'}</span>
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      >
+        <ChevronDown className="w-6 h-6" />
+      </motion.div>
+    </motion.button>
+  )
+}
 
 // Generate random particles
 function generateParticles(count: number, theme: 'dark' | 'light'): ParticleProps[] {
@@ -169,7 +1025,7 @@ export function HomePage() {
   const [activeUnitId, setActiveUnitId] = useState<string | null>(null)
   const [activeYears, setActiveYears] = useState<number[] | null>(null)
   const [expandedEventKey, setExpandedEventKey] = useState<string | null>(null)
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'discovery' | 'theory'>('all')
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'discovery' | 'theory' | 'experiment' | 'application'>('all')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showHeroHeader, setShowHeroHeader] = useState(false)
 

@@ -29,7 +29,7 @@ import {
 } from 'lucide-react'
 
 // Import searchable data
-import { TIMELINE_EVENTS } from '@/data/timeline-events'
+import { TIMELINE_EVENTS } from '@/data/timeline'
 import { DEVICES as OPTICAL_DEVICES } from '@/data/optical-devices'
 import { PSRT_CURRICULUM } from '@/data/psrt-curriculum'
 

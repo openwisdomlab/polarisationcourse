@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 
 // Data imports
-import { TIMELINE_EVENTS } from '@/data/timeline-events'
+import { TIMELINE_EVENTS } from '@/data/timeline'
 import { CATEGORY_LABELS } from '@/data/chronicles-constants'
 import { PSRT_CURRICULUM } from '@/data/psrt-curriculum'
 

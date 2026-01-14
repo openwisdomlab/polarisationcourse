@@ -18,7 +18,8 @@ import {
   BookOpen, CheckCircle2,
   Clock, Lock, ChevronRight, Lightbulb,
   Beaker, Microscope,
-  Sparkles, PlayCircle, Rocket,
+  BarChart3, Sparkles, Calculator,
+  TrendingUp, PlayCircle, Rocket,
   Search, Eye, Brain, Dna, TreePine
 } from 'lucide-react'
 import { RESEARCH_CHALLENGES, type ResearchChallenge } from '@/data/research-challenges'
@@ -211,7 +212,133 @@ const TABS = [
   { id: 'showcase', label: 'Showcase Gallery', labelZh: '成果展示', icon: <Award className="w-4 h-4" /> },
 ]
 
-// Note: Research frontier and analysis tools moved to separate modules
+// Research frontier data (科研前沿)
+interface ResearchNews {
+  id: string
+  titleEn: string
+  titleZh: string
+  summaryEn: string
+  summaryZh: string
+  year: number
+  category: 'breakthrough' | 'application' | 'method'
+  sourceUrl?: string
+}
+
+// @ts-expect-error - Placeholder data for future research frontier section
+const RESEARCH_FRONTIER: ResearchNews[] = [
+  {
+    id: 'quantum-polarimetry-2024',
+    titleEn: 'Quantum-Enhanced Polarimetric Sensing',
+    titleZh: '量子增强偏振传感技术',
+    summaryEn: 'Researchers demonstrated quantum-enhanced polarimetry that surpasses classical sensitivity limits, enabling detection of ultrasmall optical activity changes.',
+    summaryZh: '研究人员展示了超越经典灵敏度极限的量子增强偏振测量技术，能够检测超小光学活性变化。',
+    year: 2024,
+    category: 'breakthrough',
+  },
+  {
+    id: 'polarimetric-ai-2024',
+    titleEn: 'AI-Powered Mueller Matrix Imaging',
+    titleZh: 'AI驱动的穆勒矩阵成像',
+    summaryEn: 'Deep learning methods now enable real-time Mueller matrix decomposition and tissue characterization from polarimetric images.',
+    summaryZh: '深度学习方法现已能够从偏振成像中实现实时穆勒矩阵分解和组织表征。',
+    year: 2024,
+    category: 'method',
+  },
+  {
+    id: 'cancer-detection-2023',
+    titleEn: 'Early Cancer Detection via Polarimetry',
+    titleZh: '偏振光学早期癌症检测',
+    summaryEn: 'Clinical trials show polarimetric imaging can detect cancerous tissue changes before they become visible under conventional microscopy.',
+    summaryZh: '临床试验表明，偏振成像能够在传统显微镜下可见之前检测到癌变组织的变化。',
+    year: 2023,
+    category: 'application',
+  },
+  {
+    id: 'atmospheric-2023',
+    titleEn: 'Polarimetric Aerosol Characterization',
+    titleZh: '偏振大气气溶胶表征',
+    summaryEn: 'New satellite-based polarimeters provide unprecedented detail on aerosol composition and climate effects.',
+    summaryZh: '新型卫星偏振仪提供了前所未有的气溶胶成分和气候效应细节。',
+    year: 2023,
+    category: 'application',
+  },
+  {
+    id: 'metamaterial-2024',
+    titleEn: 'Metasurface Polarization Control',
+    titleZh: '超表面偏振调控',
+    summaryEn: 'Programmable metasurfaces enable dynamic, pixel-level control of light polarization for next-generation displays.',
+    summaryZh: '可编程超表面实现了下一代显示器的动态像素级偏振控制。',
+    year: 2024,
+    category: 'breakthrough',
+  },
+]
+
+// Removed old CHALLENGES data - now using RESEARCH_CHALLENGES from separate file
+
+// Analysis tools data (数据分析工作台)
+interface AnalysisTool {
+  id: string
+  nameEn: string
+  nameZh: string
+  descriptionEn: string
+  descriptionZh: string
+  icon: React.ReactNode
+  available: boolean
+  link?: string
+}
+
+// @ts-expect-error - Placeholder data for future analysis tools section
+const ANALYSIS_TOOLS: AnalysisTool[] = [
+  {
+    id: 'stokes-calc',
+    nameEn: 'Stokes Calculator',
+    nameZh: '斯托克斯计算器',
+    descriptionEn: 'Calculate and visualize Stokes parameters from intensity measurements.',
+    descriptionZh: '从强度测量计算和可视化斯托克斯参数。',
+    icon: <Calculator className="w-5 h-5" />,
+    available: true,
+    link: '/lab/stokes',
+  },
+  {
+    id: 'mueller-sim',
+    nameEn: 'Mueller Matrix Calculator',
+    nameZh: '穆勒矩阵计算器',
+    descriptionEn: 'Calculate Stokes vector transformations using Mueller matrix calculus. Supports partially polarized light.',
+    descriptionZh: '使用穆勒矩阵计算斯托克斯矢量变换，支持部分偏振光。',
+    icon: <BarChart3 className="w-5 h-5" />,
+    available: true,
+    link: '/lab/mueller',
+  },
+  {
+    id: 'jones-calc',
+    nameEn: 'Jones Vector Calculator',
+    nameZh: '琼斯向量计算器',
+    descriptionEn: 'Compute Jones vector transformations for fully polarized light.',
+    descriptionZh: '计算完全偏振光的琼斯向量变换。',
+    icon: <Calculator className="w-5 h-5" />,
+    available: true,
+    link: '/lab/jones',
+  },
+  {
+    id: 'data-fitting',
+    nameEn: 'Malus\'s Law Fitting',
+    nameZh: '马吕斯定律拟合',
+    descriptionEn: 'Fit experimental data to Malus\'s Law and extract extinction ratio.',
+    descriptionZh: '将实验数据拟合到马吕斯定律并提取消光比。',
+    icon: <TrendingUp className="w-5 h-5" />,
+    available: true,
+  },
+  {
+    id: 'poincare',
+    nameEn: 'Poincaré Sphere Viewer',
+    nameZh: '庞加莱球可视化',
+    descriptionEn: 'Visualize polarization states on the Poincaré sphere.',
+    descriptionZh: '在庞加莱球上可视化偏振态。',
+    icon: <Sparkles className="w-5 h-5" />,
+    available: true,
+    link: '/lab/poincare',
+  },
+]
 
 // Task card component
 function TaskCard({ task, onStart }: { task: ResearchTask; onStart?: (taskId: string) => void }) {

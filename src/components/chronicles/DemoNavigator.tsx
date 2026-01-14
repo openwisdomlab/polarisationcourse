@@ -45,7 +45,7 @@ import type { LucideIcon } from 'lucide-react'
 
 // Import centralized mapping data
 import { getEventMappingsByDemo, COURSE_DEMOS, type CourseDemo } from '@/data/course-event-mapping'
-import { TIMELINE_EVENTS } from '@/data/timeline-events'
+import { TIMELINE_EVENTS } from '@/data/timeline'
 
 // Get demo info from centralized data
 function getDemoInfo(demoId: string): CourseDemo | undefined {

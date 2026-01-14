@@ -39,7 +39,7 @@ import {
   type CourseUnit,
   type CourseSection
 } from '@/data/psrt-curriculum'
-import { TIMELINE_EVENTS, type TimelineEvent } from '@/data/timeline-events'
+import { TIMELINE_EVENTS, type TimelineEvent } from '@/data/timeline'
 import { COURSE_DEMOS } from '@/data/course-event-mapping'
 
 interface ChroniclesPSRTViewProps {

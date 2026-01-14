@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { ChevronUp, ChevronDown } from 'lucide-react'
-import type { TimelineEvent } from '@/data/timeline-events'
+import type { TimelineEvent } from '@/data/timeline'
 
 interface CenturyNavigatorProps {
   events: TimelineEvent[]

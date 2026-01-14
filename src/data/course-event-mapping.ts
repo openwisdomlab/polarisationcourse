@@ -7,7 +7,7 @@
  * 3. 区分关联强度：primary(核心关联) vs secondary(相关联系)
  */
 
-import type { TimelineEvent } from './timeline-events'
+import type { TimelineEvent } from './timeline'
 
 // 课程演示信息结构
 export interface CourseDemo {

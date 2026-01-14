@@ -11,7 +11,7 @@ export interface TimelineEvent {
   descriptionZh: string
   scientistEn?: string
   scientistZh?: string
-  category: 'discovery' | 'theory' | 'experiment' | 'application'
+  category: 'discovery' | 'theory'
   importance: 1 | 2 | 3 // 1 = major milestone, 2 = significant, 3 = notable
   // 双轨分类: 'optics' = 广义光学, 'polarization' = 偏振光专属
   track: 'optics' | 'polarization'
@@ -139,7 +139,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     descriptionZh: '牛顿使用三棱镜证明白光由光谱中的各种颜色组成。',
     scientistEn: 'Isaac Newton',
     scientistZh: '艾萨克·牛顿',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'optics',
     details: {
@@ -205,7 +205,7 @@ This insight, born in plague-time isolation, became the foundation of spectrosco
     descriptionZh: '托马斯·杨演示了光的干涉现象，为光的波动理论提供了有力证据。',
     scientistEn: 'Thomas Young',
     scientistZh: '托马斯·杨',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'optics',
     details: {
@@ -1333,7 +1333,7 @@ Fresnel's circular polarization decomposition remains one of the most powerful c
     descriptionZh: '尼科尔发明了第一个实用的偏振棱镜，使用方解石制成。',
     scientistEn: 'William Nicol',
     scientistZh: '威廉·尼科尔',
-    category: 'experiment',
+    category: 'discovery',
     importance: 2,
     track: 'polarization',
     details: {
@@ -1561,7 +1561,7 @@ Pasteur later said this moment changed his life. "The universe is asymmetric," h
     descriptionZh: '莱昂·傅科证明光在水中的传播速度比在空气中慢，为光的波动理论提供了决定性证据。',
     scientistEn: 'Léon Foucault',
     scientistZh: '莱昂·傅科',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'optics',
     details: {
@@ -1745,7 +1745,7 @@ S₀给出总强度。S₁描述水平与垂直的倾向。S₂捕捉对角线�
     descriptionZh: '约翰·廷德尔发现光穿过胶体悬浮液时，短波长散射更强烈，且散射光具有偏振特性。',
     scientistEn: 'John Tyndall',
     scientistZh: '约翰·廷德尔',
-    category: 'experiment',
+    category: 'discovery',
     importance: 2,
     track: 'optics',
     details: {
@@ -2013,7 +2013,7 @@ Today, Kerr's discovery lives on in electro-optic modulators that switch light i
     descriptionZh: '海因里希·赫兹通过实验证实麦克斯韦的预测——电磁波存在并以光速传播。',
     scientistEn: 'Heinrich Hertz',
     scientistZh: '海因里希·赫兹',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'optics',
     details: {
@@ -2421,7 +2421,7 @@ Today, Mie theory is essential for climate science (understanding aerosol effect
     descriptionZh: '埃德温·兰德发明了第一种合成薄片偏振器，彻底改变了偏振应用。',
     scientistEn: 'Edwin Land',
     scientistZh: '埃德温·兰德',
-    category: 'application',
+    category: 'discovery',
     importance: 1,
     track: 'polarization',
     details: {
@@ -2829,7 +2829,7 @@ Maiman's 1960 flash of ruby light opened an era. Today, lasers are everywhere �
     titleZh: 'LCD技术',
     descriptionEn: 'First practical liquid crystal display using polarization principles is demonstrated.',
     descriptionZh: '首个使用偏振原理的实用液晶显示器被展示。',
-    category: 'application',
+    category: 'discovery',
     importance: 2,
     track: 'polarization',
     details: {
@@ -2898,7 +2898,7 @@ The story of polarized light has become the story of modern communication. Barth
     descriptionZh: '阿兰·阿斯佩及其同事利用纠缠光子的偏振关联确定性地验证贝尔不等式，证明量子纠缠是真实存在的。',
     scientistEn: 'Alain Aspect, Philippe Grangier, Gérard Roger',
     scientistZh: '阿兰·阿斯佩、菲利普·格朗日、热拉尔·罗杰',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'polarization',
     details: {
@@ -3049,7 +3049,7 @@ Allen's discovery revealed that polarization is just one facet of light's angula
     titleZh: 'RealD 3D 电影',
     descriptionEn: 'RealD 3D technology uses circular polarization to create immersive 3D movie experiences, bringing polarization science to millions of moviegoers.',
     descriptionZh: 'RealD 3D技术使用圆偏振创造沉浸式3D电影体验，将偏振科学带给数百万电影观众。',
-    category: 'application',
+    category: 'discovery',
     importance: 2,
     track: 'polarization',
     details: {
@@ -3129,7 +3129,7 @@ RealD的突破是圆偏振。系统不是按角度过滤（像线偏振器那样
     descriptionZh: '首次实验观测到光子自旋霍尔效应——不同偏振态（自旋）的光在折射或反射时向相反方向偏转。',
     scientistEn: 'Onur Hosten, Paul Kwiat',
     scientistZh: '奥努尔·霍斯滕、保罗·克维亚特',
-    category: 'experiment',
+    category: 'discovery',
     importance: 2,
     track: 'polarization',
     details: {
@@ -3274,7 +3274,7 @@ In the rainbow-colored eyes of a small crustacean, three centuries of optical re
     titleZh: '偏振医学成像',
     descriptionEn: 'Mueller matrix polarimetry enables non-invasive cancer detection by analyzing tissue birefringence changes.',
     descriptionZh: '穆勒矩阵偏振测量通过分析组织双折射变化，实现无创癌症检测。',
-    category: 'application',
+    category: 'discovery',
     importance: 2,
     track: 'polarization',
     details: {
@@ -3335,7 +3335,7 @@ The same physics that Malus discovered in a Paris sunset, that Stokes formalized
     descriptionZh: 'LIGO使用激光干涉测量法探测到来自合并黑洞的引力波——有史以来最精密的光学测量。',
     scientistEn: 'Rainer Weiss, Kip Thorne, Barry Barish et al.',
     scientistZh: '雷纳·韦斯、基普·索恩、巴里·巴里什等',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'optics',
     details: {
@@ -3539,7 +3539,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     descriptionZh: '阿尔伯特·迈克尔逊发明干涉仪，实现了有史以来最精确的光学测量。',
     scientistEn: 'Albert Michelson',
     scientistZh: '阿尔伯特·迈克尔逊',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'optics',
     details: {
@@ -3578,7 +3578,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     descriptionZh: '海因里希·赫兹产生并探测电磁波，证实光是电磁现象。',
     scientistEn: 'Heinrich Hertz',
     scientistZh: '海因里希·赫兹',
-    category: 'experiment',
+    category: 'discovery',
     importance: 1,
     track: 'optics',
     details: {
@@ -3623,7 +3623,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     descriptionZh: '埃德温·兰德发明大面积偏振滤光片，使偏振光技术可用于日常生活。',
     scientistEn: 'Edwin Land',
     scientistZh: '埃德温·兰德',
-    category: 'application',
+    category: 'discovery',
     importance: 2,
     track: 'polarization',
     details: {

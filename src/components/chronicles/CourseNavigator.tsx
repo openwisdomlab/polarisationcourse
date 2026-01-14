@@ -42,7 +42,7 @@ import {
   getDifficultyColor,
   getDifficultyIcon
 } from '@/data/psrt-curriculum'
-import { TIMELINE_EVENTS } from '@/data/timeline-events'
+import { TIMELINE_EVENTS } from '@/data/timeline'
 
 // Unit icon mapping
 import type { LucideIcon } from 'lucide-react'

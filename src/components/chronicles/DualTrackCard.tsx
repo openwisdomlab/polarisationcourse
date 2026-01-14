@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { Badge } from '@/components/shared'
 import { CATEGORY_LABELS, ILLUSTRATION_TO_DEMO_MAP, ILLUSTRATION_TO_BENCH_MAP } from '@/data/chronicles-constants'
-import type { TimelineEvent } from '@/data/timeline-events'
+import type { TimelineEvent } from '@/data/timeline'
 import { ExperimentIllustration } from './ExperimentIllustration'
 import { getDemosByEvent, UNIT_INFO } from '@/data/course-event-mapping'
 

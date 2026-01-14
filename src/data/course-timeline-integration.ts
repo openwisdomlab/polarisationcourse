@@ -8,7 +8,7 @@
  * - P-SRT问题牵引的学习路径
  */
 
-import { TIMELINE_EVENTS, type TimelineEvent } from './timeline-events'
+import { TIMELINE_EVENTS, type TimelineEvent } from './timeline'
 
 // 历史时代定义
 export interface HistoricalEra {
