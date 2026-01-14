@@ -20,7 +20,6 @@ import {
   Pause,
   RotateCcw,
   Info,
-  Lightbulb,
   ChevronRight,
   Waves,
   Eye,
@@ -100,7 +99,7 @@ function EFieldVector({
 }
 
 // ============================================================================
-// 互动偏振片模拟器
+// 互动偏振片模拟器 - 增强版双偏振片演示
 // ============================================================================
 interface InteractivePolarizerProps {
   theme: 'dark' | 'light'
@@ -108,34 +107,50 @@ interface InteractivePolarizerProps {
 }
 
 function InteractivePolarizer({ theme, isZh }: InteractivePolarizerProps) {
-  const [polarizerAngle, setPolarizerAngle] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [lightIntensity, setLightIntensity] = useState(100)
+  const [analyzerAngle, setAnalyzerAngle] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   // 计算马吕斯定律下的透射强度
-  const calculateIntensity = useCallback((angle: number) => {
-    // I = I₀ × cos²(θ)
-    const rad = (angle * Math.PI) / 180
-    return Math.round(100 * Math.cos(rad) ** 2)
-  }, [])
-
-  useEffect(() => {
-    setLightIntensity(calculateIntensity(polarizerAngle))
-  }, [polarizerAngle, calculateIntensity])
+  const lightIntensity = Math.round(100 * Math.cos((analyzerAngle * Math.PI) / 180) ** 2)
 
   // 自动旋转
   useEffect(() => {
     if (!isPlaying) return
     const interval = setInterval(() => {
-      setPolarizerAngle(prev => (prev + 5) % 360)
-    }, 100)
+      setAnalyzerAngle(prev => (prev + 3) % 360)
+    }, 50)
     return () => clearInterval(interval)
   }, [isPlaying])
 
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPolarizerAngle(Number(e.target.value))
+  // 圆形拖拽角度控制
+  const handleDrag = useCallback((e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    if (!isDragging) return
+    const target = e.currentTarget
+    const rect = target.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+
+    let clientX: number, clientY: number
+    if ('touches' in e) {
+      clientX = e.touches[0].clientX
+      clientY = e.touches[0].clientY
+    } else {
+      clientX = e.clientX
+      clientY = e.clientY
+    }
+
+    const angle = Math.atan2(clientY - centerY, clientX - centerX) * 180 / Math.PI + 90
+    setAnalyzerAngle((angle + 360) % 360)
     setIsPlaying(false)
-  }
+  }, [isDragging])
+
+  // 快捷角度按钮
+  const presetAngles = [
+    { angle: 0, label: '0°', color: 'text-green-500' },
+    { angle: 45, label: '45°', color: 'text-yellow-500' },
+    { angle: 90, label: '90°', color: 'text-red-500' },
+  ]
 
   return (
     <div className={cn(
@@ -144,244 +159,364 @@ function InteractivePolarizer({ theme, isZh }: InteractivePolarizerProps) {
         ? 'bg-gradient-to-br from-cyan-900/20 via-slate-800/80 to-violet-900/20 border-cyan-500/30'
         : 'bg-gradient-to-br from-cyan-50 via-white to-violet-50 border-cyan-200'
     )}>
-      {/* 标题 */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className={cn(
-            'w-8 h-8 rounded-lg flex items-center justify-center',
-            theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
-          )}>
-            <Play className="w-4 h-4 text-cyan-500" />
-          </div>
-          <div>
-            <h4 className={cn(
-              'font-semibold text-sm',
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            )}>
-              {isZh ? '互动实验：旋转偏振片' : 'Interactive: Rotate Polarizer'}
-            </h4>
-            <p className={cn(
-              'text-xs',
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            )}>
-              {isZh ? '观察马吕斯定律 I = I₀ × cos²θ' : 'Observe Malus\'s Law: I = I₀ × cos²θ'}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className={cn(
-              'p-2 rounded-lg transition-colors',
-              theme === 'dark'
-                ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            )}
-          >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={() => {
-              setPolarizerAngle(0)
-              setIsPlaying(false)
-            }}
-            className={cn(
-              'p-2 rounded-lg transition-colors',
-              theme === 'dark'
-                ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            )}
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* 可视化区域 */}
-      <div className="flex flex-col md:flex-row items-center gap-6">
-        {/* 光源 → 偏振片 → 检测器 */}
-        <div className="flex-1 flex items-center justify-center gap-4">
+      {/* 可视化区域 - 光学路径 */}
+      <div className="relative">
+        {/* 主演示区 */}
+        <div className="flex items-center justify-center gap-2 sm:gap-4 py-4">
           {/* 光源 */}
           <div className="flex flex-col items-center gap-1">
             <motion.div
-              className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center shadow-lg"
               animate={{
                 boxShadow: [
-                  '0 0 20px rgba(250, 204, 21, 0.5)',
-                  '0 0 40px rgba(250, 204, 21, 0.8)',
-                  '0 0 20px rgba(250, 204, 21, 0.5)',
+                  '0 0 20px rgba(250, 204, 21, 0.4)',
+                  '0 0 35px rgba(250, 204, 21, 0.7)',
+                  '0 0 20px rgba(250, 204, 21, 0.4)',
                 ],
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <Sun className="w-6 h-6 text-yellow-900" />
+              <Sun className="w-7 h-7 sm:w-8 sm:h-8 text-yellow-900" />
             </motion.div>
             <span className={cn(
-              'text-xs',
+              'text-[10px] sm:text-xs font-medium',
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
             )}>
-              {isZh ? '光源' : 'Light'}
+              {isZh ? '自然光' : 'Natural Light'}
             </span>
           </div>
 
-          {/* 光线 (入射) */}
-          <motion.div
-            className="w-16 h-2 rounded-full"
-            style={{
-              background: 'linear-gradient(90deg, #facc15, #22d3ee)',
-            }}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
+          {/* 光线 (入射 - 非偏振) */}
+          <div className="relative w-8 sm:w-12 h-4 flex items-center">
+            {/* 多彩光线表示非偏振 */}
+            {[0, 45, 90, 135].map((rot, i) => (
+              <motion.div
+                key={rot}
+                className="absolute inset-0"
+                style={{
+                  background: `linear-gradient(90deg, transparent, hsl(${rot * 2}, 70%, 60%), transparent)`,
+                  height: 2,
+                  top: '50%',
+                  marginTop: -1,
+                }}
+                animate={{ opacity: [0.3, 0.8, 0.3] }}
+                transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+              />
+            ))}
+          </div>
 
-          {/* 偏振片 */}
+          {/* 第一偏振片 (固定0°) */}
           <div className="flex flex-col items-center gap-1">
-            <motion.div
-              className="relative w-16 h-16 rounded-xl border-2 border-cyan-500 overflow-hidden"
-              style={{
-                background: theme === 'dark'
-                  ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(139, 92, 246, 0.2))'
-                  : 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1))'
-              }}
+            <div
+              className={cn(
+                'relative w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 overflow-hidden',
+                theme === 'dark' ? 'border-violet-500/70 bg-violet-900/30' : 'border-violet-400 bg-violet-50'
+              )}
             >
-              {/* 偏振片栅格线 */}
-              {Array.from({ length: 8 }).map((_, i) => (
-                <motion.div
+              {/* 固定垂直栅格线 */}
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
                   key={i}
-                  className="absolute left-1/2 w-full h-0.5 bg-cyan-500/60"
-                  style={{
-                    top: `${(i + 1) * 12.5}%`,
-                    transformOrigin: 'center',
-                  }}
-                  animate={{ rotate: polarizerAngle }}
+                  className={cn(
+                    'absolute h-full w-0.5',
+                    theme === 'dark' ? 'bg-violet-400/60' : 'bg-violet-500/50'
+                  )}
+                  style={{ left: `${(i + 1) * 14}%` }}
                 />
               ))}
-              {/* 中心指示器 */}
-              <motion.div
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ rotate: polarizerAngle }}
-              >
-                <div className="w-12 h-1 bg-cyan-400 rounded-full shadow-lg shadow-cyan-500/50" />
-              </motion.div>
-            </motion.div>
+              <div className={cn(
+                'absolute inset-0 flex items-center justify-center text-[8px] font-bold',
+                theme === 'dark' ? 'text-violet-300' : 'text-violet-600'
+              )}>
+                P1
+              </div>
+            </div>
             <span className={cn(
-              'text-xs',
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              'text-[10px] sm:text-xs font-medium',
+              theme === 'dark' ? 'text-violet-400' : 'text-violet-600'
             )}>
-              {isZh ? '偏振片' : 'Polarizer'}
+              {isZh ? '起偏器' : 'Polarizer'}
             </span>
           </div>
 
-          {/* 光线 (透射) */}
-          <motion.div
-            className="w-16 h-2 rounded-full"
-            style={{
-              background: `linear-gradient(90deg, #22d3ee, transparent)`,
-              opacity: lightIntensity / 100,
-            }}
-            animate={{ opacity: [lightIntensity / 100 * 0.7, lightIntensity / 100, lightIntensity / 100 * 0.7] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
+          {/* 偏振光 (竖直偏振) */}
+          <div className="relative w-8 sm:w-12 h-4 flex items-center">
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(90deg, #8b5cf6, #22d3ee)',
+                height: 3,
+                top: '50%',
+                marginTop: -1.5,
+                borderRadius: 2,
+              }}
+              animate={{
+                opacity: [0.6, 1, 0.6],
+                boxShadow: ['0 0 4px #8b5cf6', '0 0 10px #22d3ee', '0 0 4px #8b5cf6'],
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </div>
 
-          {/* 检测器 */}
+          {/* 第二偏振片 (可旋转分析器) - 交互式 */}
           <div className="flex flex-col items-center gap-1">
             <motion.div
               className={cn(
-                'w-12 h-12 rounded-full flex items-center justify-center border-2',
+                'relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-3 cursor-grab active:cursor-grabbing',
+                theme === 'dark'
+                  ? 'border-cyan-500 bg-gradient-to-br from-slate-800 to-slate-900'
+                  : 'border-cyan-500 bg-gradient-to-br from-white to-gray-50',
+                isDragging && 'ring-4 ring-cyan-500/30'
+              )}
+              style={{ touchAction: 'none' }}
+              onMouseDown={() => { setIsDragging(true); setIsPlaying(false) }}
+              onMouseUp={() => setIsDragging(false)}
+              onMouseLeave={() => setIsDragging(false)}
+              onMouseMove={handleDrag}
+              onTouchStart={() => { setIsDragging(true); setIsPlaying(false) }}
+              onTouchEnd={() => setIsDragging(false)}
+              onTouchMove={handleDrag}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {/* 旋转的栅格线 */}
+              <motion.div
+                className="absolute inset-2"
+                animate={{ rotate: analyzerAngle }}
+              >
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      'absolute h-full w-0.5 left-1/2 -ml-0.5',
+                      theme === 'dark' ? 'bg-cyan-400/60' : 'bg-cyan-500/50'
+                    )}
+                    style={{ transform: `translateX(${(i - 3) * 4}px)` }}
+                  />
+                ))}
+              </motion.div>
+              {/* 角度指示箭头 */}
+              <motion.div
+                className="absolute inset-0 flex items-start justify-center"
+                animate={{ rotate: analyzerAngle }}
+              >
+                <div
+                  className={cn(
+                    'w-1 h-5 rounded-full -mt-1',
+                    theme === 'dark' ? 'bg-cyan-400' : 'bg-cyan-600'
+                  )}
+                />
+              </motion.div>
+              {/* 中心标签 */}
+              <div className={cn(
+                'absolute inset-0 flex items-center justify-center text-[8px] font-bold',
+                theme === 'dark' ? 'text-cyan-300' : 'text-cyan-600'
+              )}>
+                P2
+              </div>
+              {/* 拖拽提示 */}
+              <motion.div
+                className={cn(
+                  'absolute -bottom-1 left-1/2 -translate-x-1/2 text-[8px] whitespace-nowrap px-1.5 py-0.5 rounded',
+                  theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-600'
+                )}
+                animate={{ opacity: isDragging ? 0 : [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {isZh ? '拖动旋转' : 'Drag'}
+              </motion.div>
+            </motion.div>
+            <span className={cn(
+              'text-[10px] sm:text-xs font-medium',
+              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+            )}>
+              {isZh ? '检偏器' : 'Analyzer'}
+            </span>
+          </div>
+
+          {/* 透射光线 */}
+          <div className="relative w-8 sm:w-12 h-4 flex items-center">
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(90deg, #22d3ee, transparent)`,
+                height: 3,
+                top: '50%',
+                marginTop: -1.5,
+                borderRadius: 2,
+                opacity: lightIntensity / 100,
+              }}
+              animate={{
+                opacity: [lightIntensity / 100 * 0.7, lightIntensity / 100, lightIntensity / 100 * 0.7],
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </div>
+
+          {/* 检测器/屏幕 */}
+          <div className="flex flex-col items-center gap-1">
+            <motion.div
+              className={cn(
+                'w-14 h-14 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center border-2 transition-all duration-300',
                 theme === 'dark' ? 'border-slate-600' : 'border-gray-300'
               )}
               style={{
-                background: `rgba(34, 211, 238, ${lightIntensity / 100 * 0.8})`,
-                boxShadow: `0 0 ${lightIntensity / 5}px rgba(34, 211, 238, ${lightIntensity / 100})`,
+                background: lightIntensity > 50
+                  ? `linear-gradient(135deg, rgba(34, 211, 238, ${lightIntensity / 100 * 0.8}), rgba(139, 92, 246, ${lightIntensity / 100 * 0.5}))`
+                  : lightIntensity > 10
+                    ? `rgba(34, 211, 238, ${lightIntensity / 100 * 0.5})`
+                    : theme === 'dark' ? '#1e293b' : '#f1f5f9',
+                boxShadow: lightIntensity > 20
+                  ? `0 0 ${lightIntensity / 3}px rgba(34, 211, 238, ${lightIntensity / 100})`
+                  : 'none',
               }}
             >
-              <Eye className="w-5 h-5" style={{ opacity: Math.max(0.3, lightIntensity / 100) }} />
+              <Eye
+                className={cn(
+                  'w-6 h-6 sm:w-7 sm:h-7 transition-all duration-300',
+                  lightIntensity > 50 ? 'text-white' : lightIntensity > 10 ? 'text-cyan-400' : theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                )}
+              />
             </motion.div>
             <span className={cn(
-              'text-xs',
+              'text-[10px] sm:text-xs font-medium',
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
             )}>
-              {isZh ? '检测' : 'Detect'}
+              {isZh ? '屏幕' : 'Screen'}
             </span>
           </div>
         </div>
 
-        {/* 控制和数据 */}
+        {/* 强度条和数值 */}
         <div className={cn(
-          'w-full md:w-48 p-4 rounded-xl',
-          theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
+          'mt-4 p-4 rounded-xl',
+          theme === 'dark' ? 'bg-slate-800/60' : 'bg-gray-100/80'
         )}>
-          {/* 角度控制 */}
-          <div className="mb-4">
-            <label className={cn(
-              'text-xs font-medium block mb-2',
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+          <div className="flex items-center gap-4">
+            {/* 强度进度条 */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <span className={cn(
+                  'text-xs font-medium',
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                )}>
+                  {isZh ? '透射光强' : 'Transmitted Intensity'}
+                </span>
+                <motion.span
+                  className={cn(
+                    'text-lg font-bold font-mono',
+                    lightIntensity > 70 ? 'text-green-500' :
+                    lightIntensity > 30 ? 'text-yellow-500' : 'text-red-500'
+                  )}
+                  key={lightIntensity}
+                  initial={{ scale: 1.3 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  {lightIntensity}%
+                </motion.span>
+              </div>
+              <div className={cn(
+                'h-4 rounded-full overflow-hidden',
+                theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
+              )}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    background: lightIntensity > 70
+                      ? 'linear-gradient(90deg, #22c55e, #4ade80)'
+                      : lightIntensity > 30
+                        ? 'linear-gradient(90deg, #eab308, #facc15)'
+                        : 'linear-gradient(90deg, #ef4444, #f87171)',
+                  }}
+                  initial={false}
+                  animate={{ width: `${lightIntensity}%` }}
+                  transition={{ duration: 0.15 }}
+                />
+              </div>
+            </div>
+
+            {/* 角度显示 */}
+            <div className={cn(
+              'text-center px-4 py-2 rounded-lg',
+              theme === 'dark' ? 'bg-slate-700/50' : 'bg-white'
             )}>
-              {isZh ? '偏振片角度' : 'Polarizer Angle'}
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="360"
-              value={polarizerAngle}
-              onChange={handleSliderChange}
-              className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-              style={{
-                background: theme === 'dark'
-                  ? 'linear-gradient(90deg, #334155, #22d3ee)'
-                  : 'linear-gradient(90deg, #e5e7eb, #22d3ee)'
-              }}
-            />
-            <div className="flex justify-between text-xs mt-1">
-              <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}>0°</span>
-              <span className="text-cyan-500 font-mono font-bold">{polarizerAngle}°</span>
-              <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}>360°</span>
+              <div className={cn(
+                'text-[10px] mb-0.5',
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              )}>
+                {isZh ? '夹角' : 'Angle'}
+              </div>
+              <div className="text-cyan-500 font-bold font-mono text-lg">
+                {Math.round(analyzerAngle % 180)}°
+              </div>
             </div>
           </div>
 
-          {/* 强度显示 */}
+          {/* 公式显示 */}
           <div className={cn(
-            'p-3 rounded-lg text-center',
-            theme === 'dark' ? 'bg-slate-700/50' : 'bg-white'
+            'mt-3 text-center text-xs font-mono py-2 rounded-lg',
+            theme === 'dark' ? 'bg-slate-900/50 text-gray-400' : 'bg-white text-gray-500'
           )}>
-            <div className={cn(
-              'text-xs mb-1',
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            )}>
-              {isZh ? '透射强度' : 'Transmitted Intensity'}
-            </div>
-            <motion.div
-              className="text-2xl font-bold text-cyan-500"
-              key={lightIntensity}
-              initial={{ scale: 1.2 }}
-              animate={{ scale: 1 }}
-            >
-              {lightIntensity}%
-            </motion.div>
-            <div className={cn(
-              'text-[10px] mt-1 font-mono',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-            )}>
-              I = I₀ × cos²({polarizerAngle}°)
-            </div>
+            I = I₀ × cos²({Math.round(analyzerAngle % 180)}°) = I₀ × {(Math.cos((analyzerAngle % 180) * Math.PI / 180) ** 2).toFixed(2)} = <span className="text-cyan-500 font-bold">{lightIntensity}%</span>
           </div>
         </div>
-      </div>
 
-      {/* 提示 */}
-      <div className={cn(
-        'mt-4 p-3 rounded-lg flex items-start gap-2',
-        theme === 'dark' ? 'bg-cyan-900/20' : 'bg-cyan-50'
-      )}>
-        <Info className="w-4 h-4 text-cyan-500 flex-shrink-0 mt-0.5" />
-        <p className={cn(
-          'text-xs',
-          theme === 'dark' ? 'text-cyan-300' : 'text-cyan-700'
-        )}>
-          {isZh
-            ? '当偏振片旋转到 90° 或 270° 时，透射强度最低；0° 或 180° 时最高。这就是马吕斯定律！'
-            : 'When the polarizer rotates to 90° or 270°, transmission is minimum; at 0° or 180°, it\'s maximum. This is Malus\'s Law!'}
-        </p>
+        {/* 快捷按钮和控制 */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+          {/* 预设角度按钮 */}
+          {presetAngles.map(preset => (
+            <button
+              key={preset.angle}
+              onClick={() => { setAnalyzerAngle(preset.angle); setIsPlaying(false) }}
+              className={cn(
+                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
+                analyzerAngle % 180 === preset.angle
+                  ? theme === 'dark'
+                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
+                    : 'bg-cyan-100 border-cyan-400 text-cyan-700'
+                  : theme === 'dark'
+                    ? 'bg-slate-800 border-slate-700 text-gray-400 hover:text-white hover:border-slate-600'
+                    : 'bg-white border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300'
+              )}
+            >
+              <span className={preset.color}>{preset.label}</span>
+              {preset.angle === 0 && <span className="ml-1 opacity-60">({isZh ? '最亮' : 'Max'})</span>}
+              {preset.angle === 90 && <span className="ml-1 opacity-60">({isZh ? '全黑' : 'Dark'})</span>}
+            </button>
+          ))}
+          <div className={cn('w-px h-6 mx-1', theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200')} />
+          {/* 播放/暂停按钮 */}
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+              isPlaying
+                ? theme === 'dark'
+                  ? 'bg-violet-500/20 text-violet-400'
+                  : 'bg-violet-100 text-violet-700'
+                : theme === 'dark'
+                  ? 'bg-slate-800 text-gray-400 hover:text-white'
+                  : 'bg-white text-gray-600 hover:text-gray-900'
+            )}
+          >
+            {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+            {isPlaying ? (isZh ? '暂停' : 'Stop') : (isZh ? '自动旋转' : 'Auto')}
+          </button>
+          {/* 重置按钮 */}
+          <button
+            onClick={() => { setAnalyzerAngle(0); setIsPlaying(false) }}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+              theme === 'dark'
+                ? 'bg-slate-800 text-gray-400 hover:text-white'
+                : 'bg-white text-gray-600 hover:text-gray-900'
+            )}
+          >
+            <RotateCcw className="w-3 h-3" />
+            {isZh ? '重置' : 'Reset'}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -475,160 +610,6 @@ function ApplicationCard({
   )
 }
 
-// ============================================================================
-// 绳子穿过栅栏类比动画
-// ============================================================================
-function RopeFenceAnalogy({ theme, isZh }: { theme: 'dark' | 'light'; isZh: boolean }) {
-  const [isAnimating, setIsAnimating] = useState(true)
-
-  return (
-    <div className={cn(
-      'rounded-2xl border p-5',
-      theme === 'dark'
-        ? 'bg-gradient-to-br from-amber-900/20 via-slate-800/80 to-orange-900/20 border-amber-500/30'
-        : 'bg-gradient-to-br from-amber-50 via-white to-orange-50 border-amber-200'
-    )}>
-      <div className="flex items-center gap-2 mb-4">
-        <div className={cn(
-          'w-8 h-8 rounded-lg flex items-center justify-center',
-          theme === 'dark' ? 'bg-amber-500/20' : 'bg-amber-100'
-        )}>
-          <Lightbulb className="w-4 h-4 text-amber-500" />
-        </div>
-        <div>
-          <h4 className={cn(
-            'font-semibold text-sm',
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          )}>
-            {isZh ? '形象类比：绳子穿过栅栏' : 'Analogy: Rope Through Fence'}
-          </h4>
-          <p className={cn(
-            'text-xs',
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-          )}>
-            {isZh ? '理解偏振的最简单方式' : 'The simplest way to understand polarization'}
-          </p>
-        </div>
-      </div>
-
-      {/* 动画区域 */}
-      <div className="relative h-32 overflow-hidden rounded-xl bg-gradient-to-r from-slate-900/50 via-slate-800/50 to-slate-900/50">
-        {/* 栅栏 */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-4 -ml-2 flex flex-col justify-center gap-1">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                'w-full h-2 rounded-full',
-                theme === 'dark' ? 'bg-amber-700' : 'bg-amber-600'
-              )}
-            />
-          ))}
-        </div>
-
-        {/* 栅栏标签 */}
-        <div className="absolute left-1/2 -ml-12 top-2 text-xs text-amber-500 font-medium">
-          {isZh ? '偏振片' : 'Polarizer'}
-        </div>
-
-        {/* 绳子 (上下振动 - 可通过) */}
-        <motion.div
-          className="absolute left-0 right-1/2 top-1/2 h-1 rounded-full origin-right"
-          style={{
-            background: 'linear-gradient(90deg, transparent, #22c55e)',
-          }}
-          animate={isAnimating ? {
-            scaleY: [1, 3, 1, 3, 1],
-            y: [0, -15, 0, 15, 0],
-          } : {}}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-
-        {/* 绳子通过后 */}
-        <motion.div
-          className="absolute left-1/2 right-0 top-1/2 h-1 rounded-full origin-left"
-          style={{
-            background: 'linear-gradient(90deg, #22c55e, transparent)',
-          }}
-          animate={isAnimating ? {
-            scaleY: [1, 3, 1, 3, 1],
-            y: [0, -15, 0, 15, 0],
-          } : {}}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-
-        {/* 标签 - 通过 */}
-        <div className="absolute right-4 top-1/2 -mt-8">
-          <span className="text-xs text-green-500 font-medium flex items-center gap-1">
-            <span>✓</span>
-            {isZh ? '上下振动通过' : 'Vertical passes'}
-          </span>
-        </div>
-
-        {/* 水平振动的绳子 (被阻挡) - 下方 */}
-        <motion.div
-          className="absolute left-0 top-3/4 h-1 rounded-full"
-          style={{
-            width: '45%',
-            background: 'linear-gradient(90deg, transparent, #ef4444)',
-          }}
-          animate={isAnimating ? {
-            scaleX: [1, 1.5, 1, 1.5, 1],
-          } : {}}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-
-        {/* 阻挡标记 */}
-        <motion.div
-          className="absolute left-1/2 top-3/4 -ml-4 -mt-1"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        >
-          <span className="text-red-500 text-lg">✕</span>
-        </motion.div>
-
-        {/* 标签 - 阻挡 */}
-        <div className="absolute left-4 top-3/4 mt-2">
-          <span className="text-xs text-red-400 font-medium flex items-center gap-1">
-            <span>✕</span>
-            {isZh ? '水平振动被挡' : 'Horizontal blocked'}
-          </span>
-        </div>
-      </div>
-
-      {/* 解释文字 */}
-      <div className={cn(
-        'mt-4 p-3 rounded-lg',
-        theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-      )}>
-        <p className={cn(
-          'text-xs leading-relaxed',
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-        )}>
-          {isZh
-            ? '想象一根绳子穿过栅栏的缝隙：如果绳子上下振动（垂直于栅栏），它可以顺利通过；但如果绳子左右振动（平行于栅栏），就会被挡住。偏振片对光的作用就像栅栏对绳子一样！'
-            : 'Imagine a rope passing through fence slats: if the rope vibrates up and down (perpendicular to the slats), it passes through; but if it vibrates left and right (parallel to the slats), it gets blocked. A polarizer acts on light just like the fence acts on the rope!'}
-        </p>
-      </div>
-
-      {/* 播放控制 */}
-      <div className="flex justify-center mt-3">
-        <button
-          onClick={() => setIsAnimating(!isAnimating)}
-          className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors',
-            theme === 'dark'
-              ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-              : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-          )}
-        >
-          {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-          {isAnimating ? (isZh ? '暂停' : 'Pause') : (isZh ? '播放' : 'Play')}
-        </button>
-      </div>
-    </div>
-  )
-}
 
 // ============================================================================
 // 主组件
@@ -640,7 +621,7 @@ export function PolarizationComparison() {
   const isZh = i18n.language === 'zh'
 
   const [polarizationAngle, setPolarizationAngle] = useState(0)
-  const [activeTab, setActiveTab] = useState<'comparison' | 'interactive' | 'analogy'>('comparison')
+  const [activeTab, setActiveTab] = useState<'comparison' | 'interactive'>('comparison')
 
   // 非偏振光的随机角度
   const randomAngles = [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350]
@@ -764,7 +745,6 @@ export function PolarizationComparison() {
           {[
             { id: 'comparison', labelZh: '对比展示', labelEn: 'Comparison', icon: <Eye className="w-4 h-4" /> },
             { id: 'interactive', labelZh: '互动实验', labelEn: 'Interactive', icon: <Play className="w-4 h-4" /> },
-            { id: 'analogy', labelZh: '形象类比', labelEn: 'Analogy', icon: <Lightbulb className="w-4 h-4" /> },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -997,18 +977,6 @@ export function PolarizationComparison() {
             </motion.div>
           )}
 
-          {/* 形象类比 */}
-          {activeTab === 'analogy' && (
-            <motion.div
-              key="analogy"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <RopeFenceAnalogy theme={theme} isZh={isZh} />
-            </motion.div>
-          )}
         </AnimatePresence>
       </div>
 

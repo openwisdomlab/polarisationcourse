@@ -2290,53 +2290,6 @@ export function DemosPage() {
               )
             })}
           </div>
-
-          {/* Interaction guide - hide on mobile to save space */}
-          {!isCompact && (
-            <div
-              className={cn(
-                'p-4 border-t',
-                theme === 'dark' ? 'border-slate-800' : 'border-gray-200'
-              )}
-            >
-              <div
-                className={cn(
-                  'p-3 rounded-lg border',
-                  theme === 'dark'
-                    ? 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50'
-                    : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
-                )}
-              >
-                <h4
-                  className={cn(
-                    'text-xs font-semibold mb-2',
-                    theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                  )}
-                >
-                  {t('gallery.interactionGuide')}
-                </h4>
-                <ul
-                  className={cn(
-                    'text-[11px] space-y-1.5',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
-                  )}
-                >
-                  <li className="flex items-center gap-2">
-                    <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
-                    {t('gallery.dragToRotate')}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
-                    {t('gallery.scrollToZoom')}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}>◎</span>
-                    {t('gallery.slidersAdjust')}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          )}
         </aside>
 
         {/* Mobile sidebar overlay */}
