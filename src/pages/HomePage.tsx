@@ -1413,27 +1413,6 @@ export function HomePage() {
 
             {/* Portal Header with Enter Button */}
             <div className="relative z-10 p-6 pb-4 text-center">
-              {/* Badge */}
-              <div className={cn(
-                'inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-medium',
-                theme === 'dark'
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30'
-                  : 'bg-cyan-500/10 text-cyan-600 border border-cyan-500/30'
-              )}>
-                <div className="flex gap-1">
-                  {['#ff4444', '#ffaa00', '#44ff44', '#4488ff'].map((color, i) => (
-                    <motion.div
-                      key={i}
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: color }}
-                      animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 1.5, delay: i * 0.2, repeat: Infinity }}
-                    />
-                  ))}
-                </div>
-                <span>{isZh ? '偏振演示馆' : 'Polarization Demo Gallery'}</span>
-              </div>
-
               {/* Main Entry Button */}
               <Link
                 to="/demos"
@@ -1455,29 +1434,6 @@ export function HomePage() {
                 <span className="text-xs px-3 py-1 rounded-full bg-white/20">20+</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-
-              {/* Stats */}
-              <div className="flex items-center justify-center gap-6 mt-4 text-sm">
-                {[
-                  { value: '6', label: isZh ? '展厅' : 'Halls' },
-                  { value: '17+', label: isZh ? '演示' : 'Demos' },
-                  { value: '3', label: isZh ? '难度' : 'Levels' }
-                ].map((stat, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <span className={cn(
-                      'font-bold',
-                      theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                    )}>
-                      {stat.value}
-                    </span>
-                    <span className={cn(
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                    )}>
-                      {stat.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Exhibition Halls Grid - 展厅导览 */}
