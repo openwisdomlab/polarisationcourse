@@ -48,7 +48,7 @@ import FresnelDemoMatlab from '@/demo-sources/matlab/fresnel.m?raw'
  * 马吕斯定律演示 - 所有语言实现
  */
 const MALUS_LAW_SOURCE: DemoSourceCode = {
-  id: 'malus-law',
+  id: 'malus',
   name: "Malus's Law",
   nameZh: '马吕斯定律',
   description: 'Interactive demonstration of intensity variation through polarizers',
@@ -300,7 +300,7 @@ birefringence`,
  * 菲涅尔方程演示 - 所有语言实现
  */
 const FRESNEL_SOURCE: DemoSourceCode = {
-  id: 'fresnel-equations',
+  id: 'fresnel',
   name: 'Fresnel Equations',
   nameZh: '菲涅尔方程',
   description: 'Interactive demonstration of reflection and transmission coefficients at optical interfaces',
@@ -432,9 +432,9 @@ fresnel`,
  * 所有演示源码的完整注册表
  */
 export const DEMO_SOURCES_REGISTRY: Record<string, DemoSourceCode> = {
-  'malus-law': MALUS_LAW_SOURCE,
+  'malus': MALUS_LAW_SOURCE,
   'birefringence': BIREFRINGENCE_SOURCE,
-  'fresnel-equations': FRESNEL_SOURCE,
+  'fresnel': FRESNEL_SOURCE,
 
   // TODO: Add more demos
   // 'brewster-angle': BREWSTER_SOURCE,
