@@ -91,6 +91,16 @@ export const HISTORICAL_ERAS: HistoricalEra[] = [
   },
 ]
 
+// 关键历史事件
+export interface KeyHistoricalEvent {
+  year: number
+  titleEn: string
+  titleZh: string
+  scientistEn?: string
+  scientistZh?: string
+  isPrimary?: boolean // 是否为主要事件（用于高亮显示）
+}
+
 // 课程单元与时间线事件的映射
 export interface CourseTimelineMapping {
   unitNumber: number
@@ -98,8 +108,9 @@ export interface CourseTimelineMapping {
   unitTitleZh: string
   coreQuestionEn: string
   coreQuestionZh: string
-  historicalOriginYear: number // 历史起源年份
-  historicalOriginEvent: string // 起源事件标题
+  historicalOriginYear: number // 历史起源年份（保留向后兼容）
+  historicalOriginEvent: string // 起源事件标题（保留向后兼容）
+  keyEvents: KeyHistoricalEvent[] // 关键历史事件列表
   relatedTimelineYears: number[] // 相关时间线年份
   keyExperimentDemo: string // 核心实验演示链接
   lifeSceneExamples: LifeSceneExample[]
@@ -140,6 +151,12 @@ export const COURSE_TIMELINE_MAPPINGS: CourseTimelineMapping[] = [
     coreQuestionZh: '透过冰洲石看字，为什么会看到两个像？',
     historicalOriginYear: 1669,
     historicalOriginEvent: 'Bartholin\'s Calcite Discovery',
+    keyEvents: [
+      { year: 1669, titleEn: 'Birefringence Discovery', titleZh: '双折射发现', scientistEn: 'Bartholin', scientistZh: '巴多林', isPrimary: true },
+      { year: 1808, titleEn: 'Polarization by Reflection', titleZh: '反射偏振', scientistEn: 'Malus', scientistZh: '马吕斯' },
+      { year: 1828, titleEn: 'Nicol Prism', titleZh: '尼科尔棱镜', scientistEn: 'Nicol', scientistZh: '尼科尔' },
+      { year: 1852, titleEn: 'Stokes Parameters', titleZh: '斯托克斯参量', scientistEn: 'Stokes', scientistZh: '斯托克斯' },
+    ],
     relatedTimelineYears: [1669, 1808, 1828, 1852],
     keyExperimentDemo: '/demos/birefringence',
     era: 'classical',
@@ -192,6 +209,11 @@ export const COURSE_TIMELINE_MAPPINGS: CourseTimelineMapping[] = [
     coreQuestionZh: '为什么偏振太阳镜能减少路面的刺眼反光？',
     historicalOriginYear: 1808,
     historicalOriginEvent: 'Malus\'s Reflection Discovery',
+    keyEvents: [
+      { year: 1808, titleEn: 'Reflection Polarization', titleZh: '反射偏振', scientistEn: 'Malus', scientistZh: '马吕斯', isPrimary: true },
+      { year: 1815, titleEn: 'Brewster\'s Angle', titleZh: '布儒斯特角', scientistEn: 'Brewster', scientistZh: '布儒斯特' },
+      { year: 1823, titleEn: 'Fresnel Equations', titleZh: '菲涅尔方程', scientistEn: 'Fresnel', scientistZh: '菲涅尔' },
+    ],
     relatedTimelineYears: [1808, 1815, 1823],
     keyExperimentDemo: '/demos/brewster',
     era: 'wave-theory',
@@ -235,6 +257,11 @@ export const COURSE_TIMELINE_MAPPINGS: CourseTimelineMapping[] = [
     coreQuestionZh: '玻璃幕墙边角为什么会出现彩色图案？',
     historicalOriginYear: 1811,
     historicalOriginEvent: 'Arago\'s Chromatic Polarization',
+    keyEvents: [
+      { year: 1811, titleEn: 'Chromatic Polarization', titleZh: '色偏振', scientistEn: 'Arago', scientistZh: '阿拉戈', isPrimary: true },
+      { year: 1815, titleEn: 'Optical Rotation', titleZh: '旋光现象', scientistEn: 'Biot', scientistZh: '毕奥' },
+      { year: 1848, titleEn: 'Molecular Chirality', titleZh: '分子手性', scientistEn: 'Pasteur', scientistZh: '巴斯德' },
+    ],
     relatedTimelineYears: [1811, 1815, 1848],
     keyExperimentDemo: '/demos/chromatic',
     era: 'modern',
@@ -287,6 +314,10 @@ export const COURSE_TIMELINE_MAPPINGS: CourseTimelineMapping[] = [
     coreQuestionZh: '天空为什么是蓝色的？夕阳为什么是红色的？云为什么是白色的？',
     historicalOriginYear: 1871,
     historicalOriginEvent: 'Rayleigh Scattering Theory',
+    keyEvents: [
+      { year: 1871, titleEn: 'Rayleigh Scattering', titleZh: '瑞利散射', scientistEn: 'Rayleigh', scientistZh: '瑞利', isPrimary: true },
+      { year: 1908, titleEn: 'Mie Scattering', titleZh: '米氏散射', scientistEn: 'Mie', scientistZh: '米' },
+    ],
     relatedTimelineYears: [1871, 1908],
     keyExperimentDemo: '/demos/rayleigh',
     era: 'electromagnetic',
@@ -330,6 +361,13 @@ export const COURSE_TIMELINE_MAPPINGS: CourseTimelineMapping[] = [
     coreQuestionZh: '如何完整描述光的偏振状态？如何用偏振揭示物质的微观结构？',
     historicalOriginYear: 1852,
     historicalOriginEvent: 'Stokes Parameters',
+    keyEvents: [
+      { year: 1852, titleEn: 'Stokes Parameters', titleZh: '斯托克斯参量', scientistEn: 'Stokes', scientistZh: '斯托克斯', isPrimary: true },
+      { year: 1892, titleEn: 'Poincaré Sphere', titleZh: '庞加莱球', scientistEn: 'Poincaré', scientistZh: '庞加莱' },
+      { year: 1941, titleEn: 'Jones Calculus', titleZh: '琼斯矩阵', scientistEn: 'Jones', scientistZh: '琼斯' },
+      { year: 1943, titleEn: 'Mueller Matrix', titleZh: '穆勒矩阵', scientistEn: 'Mueller', scientistZh: '穆勒' },
+      { year: 2000, titleEn: 'Polarimetric Imaging', titleZh: '偏振成像', isPrimary: false },
+    ],
     relatedTimelineYears: [1852, 1892, 1941, 1943, 2000],
     keyExperimentDemo: '/demos/mueller',
     era: 'electromagnetic',

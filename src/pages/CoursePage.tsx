@@ -266,12 +266,34 @@ function CourseOutlineSidebar({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1">
                       <span style={{ color }}>{unitIcons[index]}</span>
-                      <span className={cn(
-                        'text-xs font-medium',
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                      )}>
-                        {mapping?.historicalOriginYear}
-                      </span>
+                      {/* Key events tags - show first 2-3 events */}
+                      <div className="flex flex-wrap gap-1">
+                        {mapping?.keyEvents?.slice(0, 3).map((event) => (
+                          <span
+                            key={event.year}
+                            className={cn(
+                              'text-[10px] px-1.5 py-0.5 rounded',
+                              event.isPrimary
+                                ? 'font-medium'
+                                : 'opacity-75',
+                              theme === 'dark'
+                                ? 'bg-slate-700/80 text-gray-300'
+                                : 'bg-gray-100 text-gray-600'
+                            )}
+                            title={isZh ? event.titleZh : event.titleEn}
+                          >
+                            {event.year}
+                          </span>
+                        ))}
+                        {mapping?.keyEvents && mapping.keyEvents.length > 3 && (
+                          <span className={cn(
+                            'text-[10px] px-1 py-0.5',
+                            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                          )}>
+                            +{mapping.keyEvents.length - 3}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <h3 className={cn(
                       'text-sm font-medium leading-tight',
@@ -293,6 +315,66 @@ function CourseOutlineSidebar({
                     theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
                   )} />
                 </div>
+
+                {/* Key events preview when active */}
+                {isActive && mapping?.keyEvents && (
+                  <div className="mt-3 pt-3 border-t"
+                    style={{ borderColor: theme === 'dark' ? '#334155' : '#e5e7eb' }}
+                  >
+                    <p className={cn(
+                      'text-[10px] font-medium mb-2 px-1',
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    )}>
+                      {isZh ? '关键历史事件' : 'Key Events'}
+                    </p>
+                    <div className="space-y-1.5">
+                      {mapping.keyEvents.map(event => (
+                        <div
+                          key={event.year}
+                          className={cn(
+                            'flex items-center gap-2 p-1.5 rounded text-xs',
+                            event.isPrimary
+                              ? theme === 'dark'
+                                ? 'bg-slate-700/50'
+                                : 'bg-gray-50'
+                              : ''
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              'text-[10px] px-1.5 py-0.5 rounded font-mono',
+                              event.isPrimary
+                                ? 'font-bold'
+                                : '',
+                              theme === 'dark'
+                                ? 'bg-slate-600 text-gray-200'
+                                : 'bg-gray-200 text-gray-700'
+                            )}
+                            style={{
+                              borderLeft: event.isPrimary ? `2px solid ${color}` : undefined
+                            }}
+                          >
+                            {event.year}
+                          </span>
+                          <span className={cn(
+                            'flex-1 truncate',
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                          )}>
+                            {isZh ? event.titleZh : event.titleEn}
+                          </span>
+                          {event.scientistZh && (
+                            <span className={cn(
+                              'text-[10px]',
+                              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                            )}>
+                              {isZh ? event.scientistZh : event.scientistEn}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Sections preview when active */}
                 {isActive && (
