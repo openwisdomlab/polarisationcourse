@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
-import { PolarCraftLogo, ModuleIconMap, type ModuleIconKey } from '@/components/icons'
+import { PolarWorldLogo, ModuleIconMap, type ModuleIconKey } from '@/components/icons'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -127,8 +127,9 @@ export function PersistentHeader({
   variant = 'glass',
   showBreadcrumb = true,
 }: PersistentHeaderProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { theme } = useTheme()
+  const isZh = i18n.language === 'zh'
 
   const moduleTheme = moduleKey ? MODULE_THEMES[moduleKey] : null
   const ModuleIcon = moduleKey && moduleKey in ModuleIconMap
@@ -158,7 +159,7 @@ export function PersistentHeader({
     >
       {/* Left section: Logo + Module branding */}
       <div className="flex items-center gap-2">
-        {/* Main PolarCraft Logo - always links to home */}
+        {/* Main Logo - always links to home */}
         <Link
           to="/"
           className={cn(
@@ -167,18 +168,19 @@ export function PersistentHeader({
           )}
           title={t('common.home')}
         >
-          <PolarCraftLogo
+          <PolarWorldLogo
             size={compact ? 28 : 32}
             theme={theme}
             animated={false}
-            className="transition-transform group-hover:scale-105"
           />
           {!compact && (
             <span className={cn(
-              'font-bold text-lg tracking-tight',
-              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+              'font-bold text-sm tracking-tight',
+              theme === 'dark'
+                ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400'
+                : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-violet-600'
             )}>
-              PolarCraft
+              {isZh ? '偏振光下的新世界' : 'A New World Under Polarized Light'}
             </span>
           )}
         </Link>
@@ -250,7 +252,7 @@ export function MiniLogo({
 
   return (
     <Link to="/" className={cn('inline-flex items-center', className)}>
-      <PolarCraftLogo size={size} theme={theme} animated={false} />
+      <PolarWorldLogo size={size} theme={theme} animated={false} />
     </Link>
   )
 }

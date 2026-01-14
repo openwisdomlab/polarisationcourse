@@ -1,11 +1,12 @@
 /**
- * CoursePage - 光的编年史：双线叙事
- * Chronicles of Light: Dual Narrative - Optics & Polarization
+ * CoursePage - 光的编年史：课程主页
+ * Chronicles of Light: Course Main Page
  *
  * 设计理念：
- * - 以"光的编年史"为主线，双轨时间线作为课程主体内容
- * - 左侧课程大纲作为导航，与时间线对应
- * - 减少层级，直接呈现历史与学习的融合
+ * - 顶部：知识棱镜（光学全景图）
+ * - Header：学习模块入口
+ * - 左侧：课程大纲（筛选时间线）
+ * - 右侧：双轨时间线（可按分类筛选）
  */
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
@@ -14,7 +15,9 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { cn } from '@/lib/utils'
-import { PersistentHeader } from '@/components/shared'
+import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
+import { PolarWorldLogo } from '@/components/icons'
+import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 import {
   ChevronRight,
   ChevronDown,
@@ -22,7 +25,6 @@ import {
   Sun,
   Sparkles,
   FlaskConical,
-  History,
   Lightbulb,
   Target,
   Telescope,
@@ -30,6 +32,13 @@ import {
   Eye,
   Menu,
   X,
+  Calculator,
+  Users,
+  Palette,
+  Search,
+  Beaker,
+  Layers,
+  Rocket,
 } from 'lucide-react'
 
 // Data imports
@@ -37,9 +46,76 @@ import { TIMELINE_EVENTS, type TimelineEvent } from '@/data/timeline-events'
 import { PSRT_CURRICULUM } from '@/data/psrt-curriculum'
 import {
   COURSE_TIMELINE_MAPPINGS,
-  HISTORICAL_ERAS,
   type CourseTimelineMapping,
 } from '@/data/course-timeline-integration'
+
+// ============================================================================
+// Module Entry Points Data - 学习模块
+// ============================================================================
+
+interface ModuleEntry {
+  id: string
+  titleZh: string
+  titleEn: string
+  icon: React.ReactNode
+  link: string
+  color: string
+}
+
+const MODULE_ENTRIES: ModuleEntry[] = [
+  {
+    id: 'demos',
+    titleZh: '演示馆',
+    titleEn: 'Demos',
+    icon: <Eye className="w-4 h-4" />,
+    link: '/demos',
+    color: '#22D3EE',
+  },
+  {
+    id: 'optical-studio',
+    titleZh: '设计室',
+    titleEn: 'Studio',
+    icon: <Palette className="w-4 h-4" />,
+    link: '/optical-studio',
+    color: '#6366F1',
+  },
+  {
+    id: 'calc',
+    titleZh: '计算工坊',
+    titleEn: 'Calculators',
+    icon: <Calculator className="w-4 h-4" />,
+    link: '/calc',
+    color: '#8B5CF6',
+  },
+  {
+    id: 'lab',
+    titleZh: '虚拟课题组',
+    titleEn: 'Virtual Lab',
+    icon: <Users className="w-4 h-4" />,
+    link: '/lab',
+    color: '#10B981',
+  },
+]
+
+// ============================================================================
+// Category Filter Data - 分类筛选
+// ============================================================================
+
+interface CategoryFilter {
+  id: 'all' | 'discovery' | 'theory' | 'experiment' | 'application'
+  labelZh: string
+  labelEn: string
+  icon: React.ReactNode
+  color: string
+}
+
+const CATEGORY_FILTERS: CategoryFilter[] = [
+  { id: 'all', labelZh: '全部', labelEn: 'All', icon: <Layers className="w-4 h-4" />, color: '#64748b' },
+  { id: 'discovery', labelZh: '发现', labelEn: 'Discovery', icon: <Search className="w-4 h-4" />, color: '#F59E0B' },
+  { id: 'theory', labelZh: '理论', labelEn: 'Theory', icon: <Lightbulb className="w-4 h-4" />, color: '#3B82F6' },
+  { id: 'experiment', labelZh: '实验', labelEn: 'Experiment', icon: <Beaker className="w-4 h-4" />, color: '#10B981' },
+  { id: 'application', labelZh: '应用', labelEn: 'Application', icon: <Rocket className="w-4 h-4" />, color: '#EC4899' },
+]
 
 // ============================================================================
 // Course Outline Sidebar - 课程大纲侧边栏
@@ -49,7 +125,7 @@ interface CourseOutlineSidebarProps {
   theme: 'dark' | 'light'
   isZh: boolean
   activeUnitId: string | null
-  onUnitClick: (unitId: string, year: number) => void
+  onUnitClick: (unitId: string | null, years?: number[]) => void
   isOpen: boolean
   onToggle: () => void
 }
@@ -90,7 +166,7 @@ function CourseOutlineSidebar({
       <aside
         className={cn(
           'fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] z-30 transition-transform duration-300',
-          'w-72 overflow-y-auto scrollbar-thin',
+          'w-64 overflow-y-auto scrollbar-thin',
           theme === 'dark'
             ? 'bg-slate-900/95 border-r border-slate-700'
             : 'bg-white/95 border-r border-gray-200',
@@ -98,7 +174,7 @@ function CourseOutlineSidebar({
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        {/* Header */}
+        {/* Course Outline Header */}
         <div className={cn(
           'sticky top-0 p-4 border-b backdrop-blur-sm',
           theme === 'dark'
@@ -116,8 +192,39 @@ function CourseOutlineSidebar({
             'text-xs mt-1',
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           )}>
-            {isZh ? '点击单元跳转到对应历史节点' : 'Click unit to jump to timeline'}
+            {isZh ? '点击单元筛选时间线' : 'Click unit to filter timeline'}
           </p>
+        </div>
+
+        {/* Show All Button */}
+        <div className="p-3 pb-0">
+          <button
+            onClick={() => onUnitClick(null)}
+            className={cn(
+              'w-full text-left p-3 rounded-xl border transition-all duration-200',
+              !activeUnitId
+                ? theme === 'dark'
+                  ? 'bg-slate-800 border-cyan-500 shadow-lg'
+                  : 'bg-white border-cyan-500 shadow-lg'
+                : theme === 'dark'
+                  ? 'bg-slate-800/50 border-slate-700 hover:bg-slate-800'
+                  : 'bg-gray-50 border-gray-200 hover:bg-white'
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold bg-gradient-to-br from-cyan-500 to-blue-500"
+              >
+                <Layers className="w-4 h-4" />
+              </div>
+              <span className={cn(
+                'text-sm font-medium',
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              )}>
+                {isZh ? '显示全部' : 'Show All'}
+              </span>
+            </div>
+          </button>
         </div>
 
         {/* Units list */}
@@ -130,7 +237,7 @@ function CourseOutlineSidebar({
             return (
               <button
                 key={unit.id}
-                onClick={() => onUnitClick(unit.id, mapping?.historicalOriginYear || 1669)}
+                onClick={() => onUnitClick(unit.id, mapping?.relatedTimelineYears)}
                 className={cn(
                   'w-full text-left p-3 rounded-xl border transition-all duration-200',
                   isActive
@@ -222,47 +329,6 @@ function CourseOutlineSidebar({
             )
           })}
         </div>
-
-        {/* Era overview */}
-        <div className={cn(
-          'p-4 border-t',
-          theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
-        )}>
-          <h3 className={cn(
-            'text-xs font-bold mb-3 flex items-center gap-2',
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-          )}>
-            <History className="w-3.5 h-3.5" />
-            {isZh ? '历史时代' : 'Historical Eras'}
-          </h3>
-          <div className="space-y-2">
-            {HISTORICAL_ERAS.map(era => (
-              <div
-                key={era.id}
-                className={cn(
-                  'flex items-center gap-2 p-2 rounded-lg',
-                  theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-                )}
-              >
-                <span className="text-lg">{era.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <p className={cn(
-                    'text-xs font-medium',
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  )}>
-                    {isZh ? era.nameZh : era.nameEn}
-                  </p>
-                  <p className={cn(
-                    'text-[10px]',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                  )}>
-                    {era.startYear}-{era.endYear}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </aside>
 
       {/* Backdrop for mobile */}
@@ -301,6 +367,20 @@ function TimelineEventCard({
   const trackColor = isOptics ? '#F59E0B' : '#22D3EE'
   const scientistName = isZh ? event.scientistZh : event.scientistEn
 
+  // Category badge color
+  const categoryColors: Record<string, string> = {
+    discovery: '#F59E0B',
+    theory: '#3B82F6',
+    experiment: '#10B981',
+    application: '#EC4899',
+  }
+  const categoryLabels: Record<string, { zh: string; en: string }> = {
+    discovery: { zh: '发现', en: 'Discovery' },
+    theory: { zh: '理论', en: 'Theory' },
+    experiment: { zh: '实验', en: 'Experiment' },
+    application: { zh: '应用', en: 'Application' },
+  }
+
   return (
     <div
       data-year={event.year}
@@ -338,7 +418,7 @@ function TimelineEventCard({
 
           {/* Event info */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className={cn(
                 'text-xs font-bold px-2 py-0.5 rounded-full',
                 isOptics
@@ -352,6 +432,16 @@ function TimelineEventCard({
                 theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-100 text-gray-500'
               )}>
                 {isOptics ? (isZh ? '广义光学' : 'Optics') : (isZh ? '偏振光' : 'Polarization')}
+              </span>
+              {/* Category badge */}
+              <span
+                className="text-[10px] px-1.5 py-0.5 rounded"
+                style={{
+                  backgroundColor: `${categoryColors[event.category]}20`,
+                  color: categoryColors[event.category],
+                }}
+              >
+                {isZh ? categoryLabels[event.category].zh : categoryLabels[event.category].en}
               </span>
             </div>
             <h3 className={cn(
@@ -437,7 +527,7 @@ function TimelineEventCard({
                 'text-xs font-medium',
                 theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'
               )}>
-                🤔 {isZh ? event.thinkingQuestion.zh : event.thinkingQuestion.en}
+                {isZh ? event.thinkingQuestion.zh : event.thinkingQuestion.en}
               </p>
             </div>
           )}
@@ -519,17 +609,25 @@ export function CoursePage() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeUnitId, setActiveUnitId] = useState<string | null>(null)
+  const [activeYears, setActiveYears] = useState<number[] | null>(null)
   const [expandedEventKey, setExpandedEventKey] = useState<string | null>(null)
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'discovery' | 'theory' | 'experiment' | 'application'>('all')
 
   const mainRef = useRef<HTMLDivElement>(null)
 
-  // Filter events by track
+  // Filter events by track, category, and unit years
   const filteredEvents = useMemo(() => {
-    return TIMELINE_EVENTS.filter(e =>
-      trackFilter === 'all' || e.track === trackFilter
-    ).sort((a, b) => a.year - b.year)
-  }, [trackFilter])
+    return TIMELINE_EVENTS.filter(e => {
+      // Track filter
+      if (trackFilter !== 'all' && e.track !== trackFilter) return false
+      // Category filter
+      if (categoryFilter !== 'all' && e.category !== categoryFilter) return false
+      // Unit years filter
+      if (activeYears && activeYears.length > 0 && !activeYears.includes(e.year)) return false
+      return true
+    }).sort((a, b) => a.year - b.year)
+  }, [trackFilter, categoryFilter, activeYears])
 
   // Get unique years
   const years = useMemo(() => {
@@ -544,23 +642,11 @@ export function CoursePage() {
   }, [])
 
   // Handle unit click from sidebar
-  const handleUnitClick = useCallback((unitId: string, year: number) => {
+  const handleUnitClick = useCallback((unitId: string | null, years?: number[]) => {
     setActiveUnitId(unitId)
+    setActiveYears(years || null)
     setSidebarOpen(false)
-
-    // Find and scroll to the year
-    setTimeout(() => {
-      const element = document.querySelector(`[data-year="${year}"]`)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        // Expand the first event of that year
-        const eventKey = filteredEvents.find(e => e.year === year)
-        if (eventKey) {
-          setExpandedEventKey(`${eventKey.year}-${eventKey.titleEn}`)
-        }
-      }
-    }, 100)
-  }, [filteredEvents])
+  }, [])
 
   // Close sidebar on mobile when clicking outside
   useEffect(() => {
@@ -576,16 +662,52 @@ export function CoursePage() {
         ? 'bg-gradient-to-br from-[#0a0a1a] via-[#1a1a3a] to-[#0a0a2a]'
         : 'bg-gradient-to-br from-[#fffbeb] via-[#fef3c7] to-[#fffbeb]'
     )}>
-      {/* Header */}
-      <PersistentHeader
-        moduleKey="chronicles"
-        moduleName={isZh ? '光的编年史' : 'Chronicles of Light'}
-        variant="glass"
-        className="sticky top-0 z-50"
-      />
+      {/* Header with logo and learning modules */}
+      <header className={cn(
+        'fixed top-0 left-0 right-0 z-50',
+        'flex items-center justify-between px-4 py-2',
+        theme === 'dark'
+          ? 'bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50'
+          : 'bg-white/90 backdrop-blur-xl border-b border-gray-200/50'
+      )}>
+        {/* Left: Logo */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <PolarWorldLogo size={32} theme={theme} animated={false} />
+          <span className={cn(
+            'hidden sm:block font-bold text-sm',
+            theme === 'dark'
+              ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400'
+              : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-violet-600'
+          )}>
+            {isZh ? '偏振光下的新世界' : 'A New World Under Polarized Light'}
+          </span>
+        </Link>
 
-      <div className="flex">
-        {/* Sidebar */}
+        {/* Center: Learning modules */}
+        <div className="hidden md:flex items-center gap-1">
+          {MODULE_ENTRIES.map(module => (
+            <Link
+              key={module.id}
+              to={module.link}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                theme === 'dark'
+                  ? 'hover:bg-slate-800 text-gray-300 hover:text-white'
+                  : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+              )}
+            >
+              <span style={{ color: module.color }}>{module.icon}</span>
+              <span>{isZh ? module.titleZh : module.titleEn}</span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Right: Settings */}
+        <LanguageThemeSwitcher />
+      </header>
+
+      <div className="flex pt-14">
+        {/* Sidebar - Course Outline */}
         <CourseOutlineSidebar
           theme={theme}
           isZh={isZh}
@@ -597,49 +719,24 @@ export function CoursePage() {
 
         {/* Main content */}
         <main ref={mainRef} className="flex-1 min-w-0 px-4 lg:px-8 py-6">
-          {/* Hero section */}
-          <div className="text-center mb-8 max-w-3xl mx-auto">
-            <h1 className={cn(
-              'text-2xl sm:text-3xl font-bold mb-3',
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            )}>
-              {isZh ? '双线叙事：光学与偏振' : 'Dual Narrative: Optics & Polarization'}
-            </h1>
-            <p className={cn(
-              'text-sm sm:text-base max-w-2xl mx-auto mb-4',
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            )}>
-              {isZh
-                ? '从17世纪的偶然发现到现代应用，探索三个多世纪的光学奥秘。左侧追溯广义光学史上的核心发现，右侧聚焦偏振光的专属旅程。'
-                : 'From 17th-century discoveries to modern applications — explore over three centuries of optical mysteries. Left track traces core optics history, right track follows the polarization journey.'}
-            </p>
+          {/* Knowledge Prism - 知识棱镜 */}
+          <OpticalOverviewDiagram />
 
-            {/* Track legend */}
-            <div className="flex justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
-                <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}>
-                  {isZh ? '广义光学' : 'General Optics'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
-                <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
-                  {isZh ? '偏振光' : 'Polarization'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Track filters */}
+          {/* Track legend */}
           <div className={cn(
-            'flex flex-wrap items-center justify-center gap-2 mb-8 p-3 rounded-xl max-w-xl mx-auto',
+            'flex flex-wrap items-center justify-center gap-4 mb-6 p-3 rounded-xl',
             theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/80'
           )}>
+            <span className={cn(
+              'text-xs font-medium',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh ? '时间线轨道：' : 'Timeline Track:'}
+            </span>
             <button
               onClick={() => setTrackFilter('all')}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
                 trackFilter === 'all'
                   ? theme === 'dark'
                     ? 'bg-gradient-to-r from-amber-500/30 to-cyan-500/30 text-white'
@@ -654,7 +751,7 @@ export function CoursePage() {
             <button
               onClick={() => setTrackFilter('optics')}
               className={cn(
-                'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
                 trackFilter === 'optics'
                   ? 'bg-amber-500 text-white'
                   : theme === 'dark'
@@ -662,13 +759,13 @@ export function CoursePage() {
                     : 'text-amber-600 hover:bg-amber-100'
               )}
             >
-              <Sun className="w-4 h-4" />
+              <Sun className="w-3.5 h-3.5" />
               {isZh ? '广义光学' : 'Optics'}
             </button>
             <button
               onClick={() => setTrackFilter('polarization')}
               className={cn(
-                'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
                 trackFilter === 'polarization'
                   ? 'bg-cyan-500 text-white'
                   : theme === 'dark'
@@ -676,10 +773,68 @@ export function CoursePage() {
                     : 'text-cyan-600 hover:bg-cyan-100'
               )}
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3.5 h-3.5" />
               {isZh ? '偏振光' : 'Polarization'}
             </button>
           </div>
+
+          {/* Category filters */}
+          <div className={cn(
+            'flex flex-wrap items-center justify-center gap-2 mb-8 p-3 rounded-xl',
+            theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/80'
+          )}>
+            <span className={cn(
+              'text-xs font-medium mr-2',
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            )}>
+              {isZh ? '分类筛选：' : 'Category:'}
+            </span>
+            {CATEGORY_FILTERS.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryFilter(cat.id)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                  categoryFilter === cat.id
+                    ? 'text-white'
+                    : theme === 'dark'
+                      ? 'text-gray-400 hover:text-white hover:bg-slate-700'
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                )}
+                style={{
+                  backgroundColor: categoryFilter === cat.id ? cat.color : undefined,
+                }}
+              >
+                {cat.icon}
+                {isZh ? cat.labelZh : cat.labelEn}
+              </button>
+            ))}
+          </div>
+
+          {/* Active filter indicator */}
+          {activeUnitId && (
+            <div className={cn(
+              'flex items-center justify-center gap-2 mb-6 p-3 rounded-xl',
+              theme === 'dark' ? 'bg-violet-900/20 border border-violet-500/30' : 'bg-violet-50 border border-violet-200'
+            )}>
+              <BookOpen className="w-4 h-4 text-violet-500" />
+              <span className={cn(
+                'text-sm',
+                theme === 'dark' ? 'text-violet-300' : 'text-violet-700'
+              )}>
+                {isZh ? '正在查看单元相关时间线' : 'Viewing unit-related timeline'}
+              </span>
+              <button
+                onClick={() => handleUnitClick(null)}
+                className={cn(
+                  'ml-2 px-2 py-0.5 rounded text-xs',
+                  theme === 'dark' ? 'bg-violet-500/30 text-violet-300' : 'bg-violet-200 text-violet-700'
+                )}
+              >
+                {isZh ? '清除筛选' : 'Clear filter'}
+              </button>
+            </div>
+          )}
 
           {/* Dual-track timeline */}
           <div className="relative max-w-5xl mx-auto">
@@ -730,111 +885,134 @@ export function CoursePage() {
             )} />
 
             {/* Timeline events */}
-            <div className="space-y-8">
-              {years.map(year => {
-                const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
-                const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
-                const hasOptics = opticsEvents.length > 0
-                const hasPolarization = polarizationEvents.length > 0
+            {years.length === 0 ? (
+              <div className={cn(
+                'text-center py-12',
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              )}>
+                <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>{isZh ? '没有找到匹配的事件' : 'No matching events found'}</p>
+                <button
+                  onClick={() => {
+                    setTrackFilter('all')
+                    setCategoryFilter('all')
+                    handleUnitClick(null)
+                  }}
+                  className={cn(
+                    'mt-4 px-4 py-2 rounded-lg text-sm',
+                    theme === 'dark' ? 'bg-slate-700 text-white' : 'bg-gray-200 text-gray-900'
+                  )}
+                >
+                  {isZh ? '重置所有筛选' : 'Reset all filters'}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {years.map(year => {
+                  const opticsEvents = filteredEvents.filter(e => e.year === year && e.track === 'optics')
+                  const polarizationEvents = filteredEvents.filter(e => e.year === year && e.track === 'polarization')
+                  const hasOptics = opticsEvents.length > 0
+                  const hasPolarization = polarizationEvents.length > 0
 
-                return (
-                  <div
-                    key={year}
-                    id={`timeline-year-${year}`}
-                    className={cn(
-                      'relative',
-                      'lg:flex lg:items-stretch lg:gap-4'
-                    )}
-                  >
-                    {/* Left side - Optics (Desktop) */}
-                    <div className="hidden lg:block flex-1 pr-4">
-                      {hasOptics && (
-                        <div className="space-y-3 ml-auto max-w-md">
-                          {opticsEvents.map(event => (
-                            <TimelineEventCard
-                              key={`${event.year}-${event.titleEn}`}
-                              event={event}
-                              theme={theme}
-                              isZh={isZh}
-                              isExpanded={expandedEventKey === `${event.year}-${event.titleEn}`}
-                              onToggle={() => setExpandedEventKey(
-                                expandedEventKey === `${event.year}-${event.titleEn}` ? null : `${event.year}-${event.titleEn}`
-                              )}
-                              relatedUnit={findRelatedUnit(event)}
-                            />
-                          ))}
-                        </div>
+                  return (
+                    <div
+                      key={year}
+                      id={`timeline-year-${year}`}
+                      className={cn(
+                        'relative',
+                        'lg:flex lg:items-stretch lg:gap-4'
                       )}
-                    </div>
+                    >
+                      {/* Left side - Optics (Desktop) */}
+                      <div className="hidden lg:block flex-1 pr-4">
+                        {hasOptics && (
+                          <div className="space-y-3 ml-auto max-w-md">
+                            {opticsEvents.map(event => (
+                              <TimelineEventCard
+                                key={`${event.year}-${event.titleEn}`}
+                                event={event}
+                                theme={theme}
+                                isZh={isZh}
+                                isExpanded={expandedEventKey === `${event.year}-${event.titleEn}`}
+                                onToggle={() => setExpandedEventKey(
+                                  expandedEventKey === `${event.year}-${event.titleEn}` ? null : `${event.year}-${event.titleEn}`
+                                )}
+                                relatedUnit={findRelatedUnit(event)}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Center year marker (Desktop) */}
-                    <div className="hidden lg:flex w-20 flex-col items-center justify-start relative z-10 flex-shrink-0">
-                      <YearMarker
-                        year={year}
-                        theme={theme}
-                        hasOptics={hasOptics}
-                        hasPolarization={hasPolarization}
-                      />
-                    </div>
-
-                    {/* Right side - Polarization (Desktop) */}
-                    <div className="hidden lg:block flex-1 pl-4">
-                      {hasPolarization && (
-                        <div className="space-y-3 max-w-md">
-                          {polarizationEvents.map(event => (
-                            <TimelineEventCard
-                              key={`${event.year}-${event.titleEn}`}
-                              event={event}
-                              theme={theme}
-                              isZh={isZh}
-                              isExpanded={expandedEventKey === `${event.year}-${event.titleEn}`}
-                              onToggle={() => setExpandedEventKey(
-                                expandedEventKey === `${event.year}-${event.titleEn}` ? null : `${event.year}-${event.titleEn}`
-                              )}
-                              relatedUnit={findRelatedUnit(event)}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Mobile/Tablet - Single column */}
-                    <div className="lg:hidden space-y-4">
-                      {/* Year badge */}
-                      <div className="flex items-center gap-3">
+                      {/* Center year marker (Desktop) */}
+                      <div className="hidden lg:flex w-20 flex-col items-center justify-start relative z-10 flex-shrink-0">
                         <YearMarker
                           year={year}
                           theme={theme}
                           hasOptics={hasOptics}
                           hasPolarization={hasPolarization}
                         />
-                        <div className={cn(
-                          'flex-1 h-0.5',
-                          theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
-                        )} />
                       </div>
 
-                      {/* All events for this year */}
-                      <div className="space-y-3 pl-4">
-                        {[...opticsEvents, ...polarizationEvents].map(event => (
-                          <TimelineEventCard
-                            key={`${event.year}-${event.titleEn}`}
-                            event={event}
+                      {/* Right side - Polarization (Desktop) */}
+                      <div className="hidden lg:block flex-1 pl-4">
+                        {hasPolarization && (
+                          <div className="space-y-3 max-w-md">
+                            {polarizationEvents.map(event => (
+                              <TimelineEventCard
+                                key={`${event.year}-${event.titleEn}`}
+                                event={event}
+                                theme={theme}
+                                isZh={isZh}
+                                isExpanded={expandedEventKey === `${event.year}-${event.titleEn}`}
+                                onToggle={() => setExpandedEventKey(
+                                  expandedEventKey === `${event.year}-${event.titleEn}` ? null : `${event.year}-${event.titleEn}`
+                                )}
+                                relatedUnit={findRelatedUnit(event)}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Mobile/Tablet - Single column */}
+                      <div className="lg:hidden space-y-4">
+                        {/* Year badge */}
+                        <div className="flex items-center gap-3">
+                          <YearMarker
+                            year={year}
                             theme={theme}
-                            isZh={isZh}
-                            isExpanded={expandedEventKey === `${event.year}-${event.titleEn}`}
-                            onToggle={() => setExpandedEventKey(
-                              expandedEventKey === `${event.year}-${event.titleEn}` ? null : `${event.year}-${event.titleEn}`
-                            )}
-                            relatedUnit={findRelatedUnit(event)}
+                            hasOptics={hasOptics}
+                            hasPolarization={hasPolarization}
                           />
-                        ))}
+                          <div className={cn(
+                            'flex-1 h-0.5',
+                            theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
+                          )} />
+                        </div>
+
+                        {/* All events for this year */}
+                        <div className="space-y-3 pl-4">
+                          {[...opticsEvents, ...polarizationEvents].map(event => (
+                            <TimelineEventCard
+                              key={`${event.year}-${event.titleEn}`}
+                              event={event}
+                              theme={theme}
+                              isZh={isZh}
+                              isExpanded={expandedEventKey === `${event.year}-${event.titleEn}`}
+                              onToggle={() => setExpandedEventKey(
+                                expandedEventKey === `${event.year}-${event.titleEn}` ? null : `${event.year}-${event.titleEn}`
+                              )}
+                              relatedUnit={findRelatedUnit(event)}
+                            />
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {/* Bottom CTA */}
@@ -875,6 +1053,16 @@ export function CoursePage() {
               </Link>
             </div>
           </div>
+
+          {/* Footer */}
+          <footer className={cn(
+            'mt-12 text-center text-xs',
+            theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
+          )}>
+            <p className="opacity-60">
+              {isZh ? '© 2025 开放智慧实验室' : '© 2025 Open Wisdom Lab'}
+            </p>
+          </footer>
         </main>
       </div>
     </div>

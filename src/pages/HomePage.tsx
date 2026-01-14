@@ -945,7 +945,9 @@ export function HomePage() {
             'mt-12 text-center text-xs',
             theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
           )}>
-            <p className="opacity-60">© 2025 开放智慧实验室 Open Wisdom Lab</p>
+            <p className="opacity-60">
+              {isZh ? '© 2025 开放智慧实验室' : '© 2025 Open Wisdom Lab'}
+            </p>
           </footer>
         </main>
       </div>
