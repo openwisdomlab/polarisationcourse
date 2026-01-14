@@ -335,6 +335,89 @@ assert I_90 < I_0    # ✅ 90°散射较弱
 
 ---
 
+## 8. Jones Matrix (琼斯矩阵) ✅
+
+### 核心公式
+```
+Jones Vector: |E⟩ = [Ex, Ey]ᵀ (complex)
+Jones Matrix: J = 2×2 complex matrix
+Output: |E_out⟩ = J × |E_in⟩
+
+线偏振片: J_pol(θ) = [[cos²θ, sinθcosθ],
+                      [sinθcosθ, sin²θ]]
+
+λ/4波片: J_QWP = [[1, 0], [0, -i]]  (快轴沿x)
+
+λ/2波片: J_HWP = [[1, 0], [0, -1]]  (快轴沿x)
+
+旋转器: J_rot(θ) = [[cosθ, -sinθ],
+                    [sinθ,  cosθ]]
+```
+
+### 验证
+- ✅ **Polarizer at 45°**: H input → I_out = 50%
+- ✅ **Crossed polarizers (90°)**: I_out = 0
+- ✅ **QWP**: 45° linear + QWP(0°) → Right circular (|Ex| = |Ey|, δ = 90°)
+- ✅ **HWP**: H + HWP(22.5°) → Rotated by 45°
+- ✅ **Matrix multiplication**: J_total = Jₙ · ... · J₂ · J₁ (right to left)
+- ✅ **Stokes conversion**: S₀ = |Ex|² + |Ey|², S₁ = |Ex|² - |Ey|², S₂ = 2Re(Ex·Ey*), S₃ = 2Im(Ex·Ey*)
+- ✅ **Poincaré mapping**: H → (1,0,0), V → (-1,0,0), R → (0,0,1), L → (0,0,-1)
+
+### 物理依据
+- R. Clark Jones (1941) - "A New Calculus for the Treatment of Optical Systems"
+- 教材: Goldstein《Polarized Light》Chapter 2
+- 适用范围: 完全相干偏振光 (fully polarized light)
+- 局限性: 不能描述部分偏振光 (需使用Mueller矩阵)
+
+### 代码实现验证
+```python
+# jones_matrix.py line ~328
+
+def jones_polarizer(theta_deg):
+    """Linear polarizer Jones matrix"""
+    theta = np.radians(theta_deg)
+    cos_t = np.cos(theta)
+    sin_t = np.sin(theta)
+
+    J = np.array([
+        [cos_t**2, cos_t * sin_t],
+        [sin_t * cos_t, sin_t**2]
+    ], dtype=complex)
+    return J
+
+def jones_quarter_waveplate(fast_axis_deg):
+    """Quarter-wave plate Jones matrix"""
+    theta = np.radians(fast_axis_deg)
+    M0 = np.array([[1, 0], [0, -1j]], dtype=complex)
+    R = rotation_matrix(fast_axis_deg)
+    R_inv = rotation_matrix(-fast_axis_deg)
+    return R_inv @ M0 @ R
+
+# 验证: Crossed polarizers
+E_in = np.array([1, 0], dtype=complex)  # Horizontal
+J1 = jones_polarizer(0)     # H polarizer
+J2 = jones_polarizer(90)    # V polarizer
+E_out = J2 @ J1 @ E_in
+I_out = np.abs(E_out[0])**2 + np.abs(E_out[1])**2
+assert I_out < 0.001  # ✅ I ≈ 0
+
+# 验证: QWP creates circular polarization
+E_in = np.array([1, 1], dtype=complex) / np.sqrt(2)  # 45° linear
+J_qwp = jones_quarter_waveplate(0)
+E_out = J_qwp @ E_in
+assert abs(abs(E_out[0]) - abs(E_out[1])) < 0.001  # ✅ |Ex| = |Ey|
+phase_diff = np.angle(E_out[1]) - np.angle(E_out[0])
+assert abs(abs(phase_diff) - np.pi/2) < 0.01  # ✅ δ = 90°
+
+# 验证: Stokes parameters
+S = to_stokes(E_in)
+assert abs(S[0] - 1.0) < 0.001  # ✅ S₀ = 1 (normalized)
+# For 45° linear: S = [1, 0, 1, 0]
+assert abs(S[1]) < 0.001 and abs(S[2] - 1) < 0.001  # ✅
+```
+
+---
+
 ## 📊 总结 (Summary)
 
 | 演示 | 公式验证 | 能量守恒 | 单位检查 | 极限情况 | 状态 |
@@ -346,18 +429,24 @@ assert I_90 < I_0    # ✅ 90°散射较弱
 | Brewster's Angle | ✅ | ✅ | ✅ | ✅ | ✅ 通过 |
 | Optical Rotation | ✅ | N/A | ✅ | ✅ | ✅ 通过 |
 | Rayleigh Scattering | ✅ | N/A | ✅ | ✅ | ✅ 通过 |
+| **Jones Matrix** | ✅ | ✅ | ✅ | ✅ | ✅ 通过 |
 
 ---
 
 ## ✅ 验证结论
 
-**所有7个演示的物理公式均已验证正确**：
+**所有8个演示的物理公式均已验证正确**：
 - ✅ 公式与教科书/文献一致
 - ✅ 数值验证通过
 - ✅ 特殊情况（极限、能量守恒）验证通过
 - ✅ 单位使用规范（SI或明确标注）
 
 **物理准确性评级**: ⭐⭐⭐⭐⭐ (5/5)
+
+### Stage 2 进展 (Stage 2 Progress)
+- ✅ **Jones Matrix** (琼斯矩阵) - 完成并验证
+- 🚧 **Stokes Vector** (斯托克斯矢量) - 待开发
+- 🚧 **Mueller Matrix** (缪勒矩阵) - 待开发
 
 ---
 
