@@ -925,50 +925,111 @@ function FloatingParticle({ delay, duration, x, y, size, color }: ParticleProps)
   )
 }
 
-// Polarization wave animation
+// Polarization wave animation - 展示Ex和Ey正交电场分量
 function PolarizationWave({ theme }: { theme: 'dark' | 'light' }) {
-  const waveColor = theme === 'dark' ? '#22d3ee' : '#0891b2'
+  const exColor = theme === 'dark' ? '#22d3ee' : '#0891b2' // 水平分量 Ex (cyan)
+  const eyColor = theme === 'dark' ? '#a855f7' : '#7c3aed' // 垂直分量 Ey (purple)
 
   return (
     <svg
-      viewBox="0 0 400 100"
-      className="w-full max-w-lg mx-auto"
-      style={{ height: '60px' }}
+      viewBox="0 0 500 120"
+      className="w-full max-w-2xl mx-auto"
+      style={{ height: '80px' }}
     >
-      {/* Horizontal polarization wave */}
+      {/* Ex - 水平电场分量 (正弦波) */}
       <motion.path
-        d="M 0,50 Q 50,20 100,50 T 200,50 T 300,50 T 400,50"
+        d="M 0,60 Q 31.25,30 62.5,60 T 125,60 T 187.5,60 T 250,60 T 312.5,60 T 375,60 T 437.5,60 T 500,60"
         fill="none"
-        stroke={waveColor}
-        strokeWidth="2"
+        stroke={exColor}
+        strokeWidth="2.5"
         strokeLinecap="round"
         initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
+        animate={{ pathLength: 1, opacity: 0.9 }}
         transition={{ duration: 2, ease: 'easeInOut' }}
       />
-      {/* Vertical polarization wave */}
+
+      {/* Ey - 垂直电场分量 (余弦波，相位差π/2) */}
       <motion.path
-        d="M 0,50 Q 50,80 100,50 T 200,50 T 300,50 T 400,50"
+        d="M 0,60 Q 31.25,90 62.5,60 T 125,60 T 187.5,60 T 250,60 T 312.5,60 T 375,60 T 437.5,60 T 500,60"
         fill="none"
-        stroke={theme === 'dark' ? '#a855f7' : '#7c3aed'}
-        strokeWidth="2"
+        stroke={eyColor}
+        strokeWidth="2.5"
         strokeLinecap="round"
         initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 0.6 }}
-        transition={{ duration: 2, delay: 0.5, ease: 'easeInOut' }}
+        animate={{ pathLength: 1, opacity: 0.7 }}
+        transition={{ duration: 2, delay: 0.3, ease: 'easeInOut' }}
       />
-      {/* Animated dot traveling along wave */}
+
+      {/* 传播方向箭头 */}
+      <motion.path
+        d="M 480,60 L 495,60 M 490,55 L 495,60 L 490,65"
+        fill="none"
+        stroke={theme === 'dark' ? '#64748b' : '#94a3b8'}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.5 }}
+        transition={{ delay: 1.5 }}
+      />
+
+      {/* Ex标签 */}
+      <motion.text
+        x="8"
+        y="35"
+        fontSize="10"
+        fill={exColor}
+        fontWeight="600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.8 }}
+        transition={{ delay: 2 }}
+      >
+        Ex
+      </motion.text>
+
+      {/* Ey标签 */}
+      <motion.text
+        x="8"
+        y="95"
+        fontSize="10"
+        fill={eyColor}
+        fontWeight="600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.8 }}
+        transition={{ delay: 2.3 }}
+      >
+        Ey
+      </motion.text>
+
+      {/* 相位指示小球 - 沿Ex分量运动 */}
       <motion.circle
-        r="4"
-        fill={waveColor}
-        style={{ filter: `drop-shadow(0 0 8px ${waveColor})` }}
-        initial={{ cx: 0, cy: 50 }}
+        r="3.5"
+        fill={exColor}
+        style={{ filter: `drop-shadow(0 0 6px ${exColor})` }}
+        initial={{ cx: 0, cy: 60 }}
         animate={{
-          cx: [0, 100, 200, 300, 400],
-          cy: [50, 20, 50, 20, 50],
+          cx: [0, 62.5, 125, 187.5, 250, 312.5, 375, 437.5, 500],
+          cy: [60, 30, 60, 90, 60, 30, 60, 90, 60],
         }}
         transition={{
-          duration: 3,
+          duration: 4,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+      />
+
+      {/* 相位指示小球 - 沿Ey分量运动（相位差π/2） */}
+      <motion.circle
+        r="3.5"
+        fill={eyColor}
+        style={{ filter: `drop-shadow(0 0 6px ${eyColor})` }}
+        initial={{ cx: 0, cy: 60 }}
+        animate={{
+          cx: [0, 62.5, 125, 187.5, 250, 312.5, 375, 437.5, 500],
+          cy: [60, 90, 60, 30, 60, 90, 60, 30, 60],
+        }}
+        transition={{
+          duration: 4,
           repeat: Infinity,
           ease: 'linear',
         }}
@@ -977,19 +1038,28 @@ function PolarizationWave({ theme }: { theme: 'dark' | 'light' }) {
   )
 }
 
-// Animated polarizer icon
-function AnimatedPolarizer({ theme }: { theme: 'dark' | 'light' }) {
+// Animated polarizer icon - 真实的线性偏振片表示
+// angle: 0° (水平) 或 90° (垂直)
+function AnimatedPolarizer({
+  theme,
+  angle = 0
+}: {
+  theme: 'dark' | 'light'
+  angle?: 0 | 90
+}) {
   const color = theme === 'dark' ? '#22d3ee' : '#0891b2'
+  const gridColor = theme === 'dark' ? '#475569' : '#94a3b8'
+  const isHorizontal = angle === 0
 
   return (
     <motion.svg
       viewBox="0 0 100 100"
       className="w-16 h-16"
-      initial={{ rotate: 0 }}
-      animate={{ rotate: 360 }}
-      transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6 }}
     >
-      {/* Outer ring */}
+      {/* 外圆环 - 偏振片边框 */}
       <circle
         cx="50"
         cy="50"
@@ -997,40 +1067,98 @@ function AnimatedPolarizer({ theme }: { theme: 'dark' | 'light' }) {
         fill="none"
         stroke={color}
         strokeWidth="2"
-        opacity="0.3"
+        opacity="0.4"
       />
-      {/* Polarizer lines */}
-      {[0, 30, 60, 90, 120, 150].map((angle) => (
-        <motion.line
-          key={angle}
-          x1="50"
-          y1="10"
-          x2="50"
-          y2="90"
-          stroke={color}
-          strokeWidth="1.5"
-          opacity="0.6"
-          transform={`rotate(${angle} 50 50)`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{
-            duration: 2,
-            delay: angle / 60,
-            repeat: Infinity,
-          }}
-        />
-      ))}
-      {/* Center glow */}
+
+      {/* 偏振片透射轴线（多条平行线模拟偏振片的栅格结构） */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        const offset = -27.5 + i * 5 // 从-27.5到+27.5，间隔5
+        return (
+          <motion.line
+            key={i}
+            x1={isHorizontal ? 15 : 50 + offset}
+            y1={isHorizontal ? 50 + offset : 15}
+            x2={isHorizontal ? 85 : 50 + offset}
+            y2={isHorizontal ? 50 + offset : 85}
+            stroke={color}
+            strokeWidth="1.2"
+            opacity="0.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{
+              duration: 3,
+              delay: i * 0.1,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        )
+      })}
+
+      {/* 透射轴方向指示器（加粗的中心线） */}
+      <motion.line
+        x1={isHorizontal ? 10 : 50}
+        y1={isHorizontal ? 50 : 10}
+        x2={isHorizontal ? 90 : 50}
+        y2={isHorizontal ? 50 : 90}
+        stroke={color}
+        strokeWidth="2.5"
+        opacity="0.9"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1, delay: 0.3 }}
+      />
+
+      {/* 透射轴箭头 */}
+      <motion.path
+        d={isHorizontal
+          ? "M 85,50 L 90,50 M 87,47 L 90,50 L 87,53"
+          : "M 50,10 L 50,5 M 47,8 L 50,5 L 53,8"
+        }
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.9 }}
+        transition={{ delay: 1 }}
+      />
+
+      {/* 中心光点 - 表示光通过偏振片 */}
       <motion.circle
         cx="50"
         cy="50"
-        r="8"
+        r="6"
         fill={color}
-        initial={{ opacity: 0.5, scale: 0.8 }}
-        animate={{ opacity: [0.5, 1, 0.5], scale: [0.8, 1.2, 0.8] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        style={{ filter: `drop-shadow(0 0 10px ${color})` }}
+        initial={{ opacity: 0.3, scale: 0.5 }}
+        animate={{
+          opacity: [0.3, 0.8, 0.3],
+          scale: [0.8, 1.2, 0.8]
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        style={{ filter: `drop-shadow(0 0 8px ${color})` }}
       />
+
+      {/* 角度标记 */}
+      <motion.text
+        x="50"
+        y="95"
+        fontSize="10"
+        fill={color}
+        textAnchor="middle"
+        fontWeight="600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.7 }}
+        transition={{ delay: 1.2 }}
+      >
+        {angle}°
+      </motion.text>
     </motion.svg>
   )
 }
@@ -1366,8 +1494,8 @@ export function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          {/* Left polarizer */}
-          <AnimatedPolarizer theme={theme} />
+          {/* Left polarizer - 0° 水平偏振 */}
+          <AnimatedPolarizer theme={theme} angle={0} />
 
           {/* Center logo */}
           <motion.div
@@ -1378,8 +1506,8 @@ export function HomePage() {
             <PolarWorldLogo size={80} theme={theme} />
           </motion.div>
 
-          {/* Right polarizer */}
-          <AnimatedPolarizer theme={theme} />
+          {/* Right polarizer - 90° 垂直偏振 */}
+          <AnimatedPolarizer theme={theme} angle={90} />
         </motion.div>
 
         {/* Polarization wave animation */}
