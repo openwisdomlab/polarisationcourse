@@ -1022,10 +1022,14 @@
       "foundation": "Foundation",
       "application": "Application",
       "research": "Research",
+      "explore": "Explore",
+      "professional": "Professional",
       "foundationDesc": "PSRT: Discover light's mysteries in simple terms - no formulas needed!",
       "applicationDesc": "ESRT: Hands-on experiments with key formulas and concepts",
       "researchDesc": "ORIC/SURF: Rigorous academic treatment with research perspective",
-      "formulaHidden": "Want formulas? Switch to Application or Research mode"
+      "exploreDesc": "Discover the mysteries of polarized light intuitively - perfect for beginners",
+      "professionalDesc": "In-depth professional knowledge with mathematical formulas and research-level content",
+      "formulaHidden": "Want formulas? Switch to Professional mode"
     },
     "questions": {
       "title": "Think Before You Explore",
@@ -1069,10 +1073,14 @@
       "foundation": "Foundation",
       "application": "Application",
       "research": "Research",
+      "explore": "Explore",
+      "professional": "Professional",
       "foundationDesc": "PSRT: Discover light's mysteries in simple terms - no formulas needed!",
       "applicationDesc": "ESRT: Hands-on experiments with key formulas and concepts",
       "researchDesc": "ORIC/SURF: Rigorous academic treatment with research perspective",
-      "formulaHidden": "Want formulas? Switch to Application or Research mode"
+      "exploreDesc": "Discover the mysteries of polarized light intuitively - perfect for beginners",
+      "professionalDesc": "In-depth professional knowledge with mathematical formulas and research-level content",
+      "formulaHidden": "Want formulas? Switch to Professional mode"
     },
     "questions": {
       "title": "Think Before You Explore",

@@ -1014,10 +1014,14 @@
       "foundation": "基础层",
       "application": "应用层",
       "research": "研究层",
+      "explore": "探索",
+      "professional": "专业",
       "foundationDesc": "PSRT问题驱动:用最简单的方式理解光的奥秘，不需要公式！",
       "applicationDesc": "ESRT轮转训练:动手实验，结合关键公式和概念深入理解",
       "researchDesc": "ORIC/SURF自主研究:严谨的学术表述，前沿研究视角",
-      "formulaHidden": "想看公式？切换到「应用层」或「研究层」模式"
+      "exploreDesc": "用直观的方式探索偏振光的奥秘，适合入门学习",
+      "professionalDesc": "深入专业知识，包含数学公式和研究级内容",
+      "formulaHidden": "想看公式？切换到「专业」模式"
     },
     "questions": {
       "title": "探索前的思考",
@@ -1061,10 +1065,14 @@
       "foundation": "基础层",
       "application": "应用层",
       "research": "研究层",
+      "explore": "探索",
+      "professional": "专业",
       "foundationDesc": "PSRT问题驱动:用最简单的方式理解光的奥秘，不需要公式！",
       "applicationDesc": "ESRT轮转训练:动手实验，结合关键公式和概念深入理解",
       "researchDesc": "ORIC/SURF自主研究:严谨的学术表述，前沿研究视角",
-      "formulaHidden": "想看公式？切换到「应用层」或「研究层」模式"
+      "exploreDesc": "用直观的方式探索偏振光的奥秘，适合入门学习",
+      "professionalDesc": "深入专业知识，包含数学公式和研究级内容",
+      "formulaHidden": "想看公式？切换到「专业」模式"
     },
     "questions": {
       "title": "探索前的思考",
