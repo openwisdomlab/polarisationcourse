@@ -1038,7 +1038,7 @@
       },
       "physics": {
         "principle": "Malus's Law describes the intensity change when polarized light passes through a polarizer",
-        "principle_foundation": "A polarizer is like a fence with vertical slats - if light 'wiggles' vertically, it passes through; if it wiggles horizontally, it gets blocked. At an angle? Some gets through, some doesn't!",
+        "principle_foundation": "A polarizer is like a fence with vertical slats - if light 'wiggles' vertically, it passes through; if it wiggles horizontally, it gets blocked. At an angle? Some gets through, some doesn't! (Note: The 'slats' represent the transmission axis - the direction light is allowed to pass. In real wire-grid polarizers, light actually passes perpendicular to the wires.)",
         "principle_research": "Malus's Law is a macroscopic manifestation of electromagnetic wave propagation in anisotropic media. From quantum electrodynamics, the photon polarization state projects onto the detector eigenstate, with detection probability |⟨ψ_detector|ψ_photon⟩|² = cos²θ.",
         "formula": "I = I₀ × cos²(θ)",
         "details": [
@@ -2814,7 +2814,7 @@
         },
         "physics": {
           "principle": "Polarization describes the orientation of the electric field oscillation in a light wave",
-          "principle_foundation": "Imagine light as a jump rope. Sunlight wiggles in all directions at once (unpolarized). But you can make it wiggle just up-and-down, or just left-and-right - that's polarization! A polarizer is like a fence that only lets one direction through.",
+          "principle_foundation": "Imagine light as a jump rope. Sunlight wiggles in a direction that changes randomly and rapidly over time (unpolarized). But you can make it wiggle just up-and-down, or just left-and-right - that's polarization! A polarizer lets light through along its 'transmission axis' - the slats in our fence analogy represent this allowed direction, not physical wires. (In real wire-grid polarizers, light passes perpendicular to the wires!)",
           "principle_research": "Polarization describes the time-evolution of the E-field vector in the plane transverse to propagation. For fully polarized light, the tip of E traces a definite curve (line, circle, or ellipse). The Stokes parameters or Jones vector completely specify the polarization state, including partial polarization and coherence properties.",
           "details": [
             "Unpolarized light has random electric field orientations",
@@ -3315,7 +3315,7 @@
       "unpolarizedLight": "Unpolarized Light",
       "polarizedLight": "Polarized Light",
       "propagationDirection": "k (propagation, perpendicular to page)",
-      "unpolarizedDesc": "E-field vibrates in random directions",
+      "unpolarizedDesc": "E-field vibrates in a direction that changes randomly over time",
       "polarizedDesc": "E-field vibrates in a single plane",
       "unpolarizedDetails": [
         "E-field direction changes randomly with time",

@@ -46,11 +46,11 @@ export function LightWaveDemo() {
 
   // 波形数据（用于SVG路径）
   // 将 generateWavePath 移入 useMemo 内部，确保闭包值正确
+  // 物理准确性：E场和B场在电磁波中是同相的（峰值对齐）
   const wavePaths = useMemo(() => {
     const generatePath = (
       phaseOffset: number,
-      amplitudeScale: number,
-      isVertical: boolean = false
+      amplitudeScale: number
     ) => {
       const width = 600
       const centerY = 150
@@ -59,9 +59,10 @@ export function LightWaveDemo() {
 
       for (let x = 0; x <= width; x += 2) {
         const waveX = (x + phaseOffset) / pixelsPerWavelength * 2 * Math.PI
-        const y = isVertical
-          ? centerY + amplitude * amplitudeScale * Math.cos(waveX)
-          : centerY - amplitude * amplitudeScale * Math.sin(waveX)
+        // E and B fields are IN PHASE in electromagnetic waves (peaks align with peaks)
+        // Both use negative sin so they visually peak together (same direction)
+        // B-field has smaller amplitude (0.3x) to distinguish it while showing phase alignment
+        const y = centerY - amplitude * amplitudeScale * Math.sin(waveX)
         points.push(`${x + 50},${y}`)
       }
 
@@ -72,8 +73,8 @@ export function LightWaveDemo() {
     for (let phase = 0; phase <= 200; phase += 10) {
       paths.push({
         phase,
-        ePath: generatePath(phase, 1, false),
-        bPath: generatePath(phase, 0.3, true),
+        ePath: generatePath(phase, 1),      // E-field: full amplitude
+        bPath: generatePath(phase, 0.3),    // B-field: 0.3x amplitude (visually distinct but in phase)
       })
     }
     return { paths, generatePath }
@@ -123,7 +124,7 @@ export function LightWaveDemo() {
 
               {/* E场波形 - 动画 */}
               <motion.path
-                d={wavePaths.generatePath(0, 1, false)}
+                d={wavePaths.generatePath(0, 1)}
                 fill="none"
                 stroke={waveColor}
                 strokeWidth="3"
@@ -138,10 +139,10 @@ export function LightWaveDemo() {
                 }}
               />
 
-              {/* B场波形 - 虚线动画 */}
+              {/* B场波形 - 虚线动画 (与E场同相，峰值对齐) */}
               {showBField && (
                 <motion.path
-                  d={wavePaths.generatePath(0, 0.3, true)}
+                  d={wavePaths.generatePath(0, 0.3)}
                   fill="none"
                   stroke="#60a5fa"
                   strokeWidth="2"
