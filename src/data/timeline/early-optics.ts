@@ -191,12 +191,12 @@ Little did he know that this transparent stone from the frozen north would one d
       ],
       featuredImages: [
         {
-          url: '/images/calcite/双折射成像.jpg',
+          url: '/images/calcite/双折射成像.webp',
           caption: 'Classic calcite double refraction - Iceland spar crystal creating two images',
           captionZh: '经典冰洲石双折射——冰洲石晶体产生双像'
         },
         {
-          url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.webp',
           caption: 'Stress-induced birefringence in tempered glass - modern manifestation of Bartholin\'s discovery',
           captionZh: '钢化玻璃中的应力双折射——巴托林发现在现代的体现'
         }

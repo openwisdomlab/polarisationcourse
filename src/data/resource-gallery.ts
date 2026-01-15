@@ -90,8 +90,8 @@ export const GLASS_HEATING_SEQUENCE: PolarizationResource = {
   description: 'Observe how thermal stress develops and dissipates in ordinary glass during heating and cooling',
   descriptionZh: '观察普通玻璃在加热冷却过程中热应力的产生与消散',
   category: 'stress',
-  url: '/images/chromatic-polarization/普通玻璃加热冷却-0秒-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/普通玻璃加热冷却-0秒-正交偏振系统-正视图.jpg',
+  url: '/images/chromatic-polarization/普通玻璃加热冷却-0秒-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/普通玻璃加热冷却-0秒-正交偏振系统-正视图.webp',
   relatedModules: ['birefringence', 'stress-analysis', 'anisotropy'],
   metadata: {
     timePoints: [0, 5, 10, 15, 20, 25, 30],
@@ -101,13 +101,13 @@ export const GLASS_HEATING_SEQUENCE: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-打火机烧玻璃-正交偏振系统-长时间观察视频.mp4',
   },
   frames: [
-    { time: 0, label: 'Just Heated', labelZh: '刚加热完', url: '/images/chromatic-polarization/普通玻璃加热冷却-0秒-正交偏振系统-正视图.jpg' },
-    { time: 5, label: '5 seconds', labelZh: '5秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-5秒-正交偏振系统-正视图.jpg' },
-    { time: 10, label: '10 seconds', labelZh: '10秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-10秒-正交偏振系统-正视图.jpg' },
-    { time: 15, label: '15 seconds', labelZh: '15秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-15秒-正交偏振系统-正视图.jpg' },
-    { time: 20, label: '20 seconds', labelZh: '20秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-20秒-正交偏振系统-正视图.jpg' },
-    { time: 25, label: '25 seconds', labelZh: '25秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-25秒-正交偏振系统-正视图.jpg' },
-    { time: 30, label: '30 seconds', labelZh: '30秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-30秒-正交偏振系统-正视图.jpg' },
+    { time: 0, label: 'Just Heated', labelZh: '刚加热完', url: '/images/chromatic-polarization/普通玻璃加热冷却-0秒-正交偏振系统-正视图.webp' },
+    { time: 5, label: '5 seconds', labelZh: '5秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-5秒-正交偏振系统-正视图.webp' },
+    { time: 10, label: '10 seconds', labelZh: '10秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-10秒-正交偏振系统-正视图.webp' },
+    { time: 15, label: '15 seconds', labelZh: '15秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-15秒-正交偏振系统-正视图.webp' },
+    { time: 20, label: '20 seconds', labelZh: '20秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-20秒-正交偏振系统-正视图.webp' },
+    { time: 25, label: '25 seconds', labelZh: '25秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-25秒-正交偏振系统-正视图.webp' },
+    { time: 30, label: '30 seconds', labelZh: '30秒', url: '/images/chromatic-polarization/普通玻璃加热冷却-30秒-正交偏振系统-正视图.webp' },
   ],
 }
 
@@ -120,8 +120,8 @@ export const GLASS_COMPARISON: PolarizationResource = {
   description: 'Compare the stress patterns between tempered and ordinary glass under crossed polarizers',
   descriptionZh: '正交偏振下对比钢化玻璃和普通玻璃的应力图案',
   category: 'stress',
-  url: '/images/chromatic-polarization/玻璃对比-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/玻璃对比正视图.jpg',
+  url: '/images/chromatic-polarization/玻璃对比-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/玻璃对比正视图.webp',
   relatedModules: ['stress-analysis', 'birefringence'],
   metadata: {
     material: 'glass',
@@ -130,9 +130,9 @@ export const GLASS_COMPARISON: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-偏振片看钢化玻璃-朝西.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/玻璃对比正视图.jpg',
-    parallel: '/images/chromatic-polarization/玻璃对比-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/玻璃对比-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/玻璃对比正视图.webp',
+    parallel: '/images/chromatic-polarization/玻璃对比-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/玻璃对比-正交偏振系统-正视图.webp',
   },
 }
 
@@ -145,8 +145,8 @@ export const TEMPERED_GLASS: PolarizationResource = {
   description: 'The characteristic stress pattern of tempered glass visible under polarized light',
   descriptionZh: '钢化玻璃在偏振光下显示的特征应力图案',
   category: 'stress',
-  url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/钢化玻璃正视图.jpg',
+  url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/钢化玻璃正视图.webp',
   relatedModules: ['stress-analysis', 'birefringence'],
   metadata: {
     material: 'tempered glass',
@@ -155,9 +155,9 @@ export const TEMPERED_GLASS: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-偏振片看钢化玻璃-朝西.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/钢化玻璃正视图.jpg',
-    parallel: '/images/chromatic-polarization/钢化玻璃-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/钢化玻璃正视图.webp',
+    parallel: '/images/chromatic-polarization/钢化玻璃-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.webp',
   },
 }
 
@@ -170,17 +170,17 @@ export const ORDINARY_GLASS: PolarizationResource = {
   description: 'Ordinary glass shows minimal stress patterns under crossed polarizers',
   descriptionZh: '普通玻璃在正交偏振下显示极少的应力图案',
   category: 'stress',
-  url: '/images/chromatic-polarization/普通玻璃-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/普通玻璃正视图.jpg',
+  url: '/images/chromatic-polarization/普通玻璃-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/普通玻璃正视图.webp',
   relatedModules: ['stress-analysis', 'birefringence'],
   metadata: {
     material: 'ordinary glass',
     polarizationSystem: 'crossed',
   },
   views: {
-    front: '/images/chromatic-polarization/普通玻璃正视图.jpg',
-    parallel: '/images/chromatic-polarization/普通玻璃-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/普通玻璃-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/普通玻璃正视图.webp',
+    parallel: '/images/chromatic-polarization/普通玻璃-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/普通玻璃-正交偏振系统-正视图.webp',
   },
 }
 
@@ -193,8 +193,8 @@ export const GLASS_CORNER_HEATING: PolarizationResource = {
   description: 'Thermal stress created by heating the corner of ordinary glass with a lighter',
   descriptionZh: '用打火机加热普通玻璃顶角产生的热应力',
   category: 'stress',
-  url: '/images/chromatic-polarization/普通玻璃顶角加热-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/普通玻璃打火机烧顶角正视图.jpg',
+  url: '/images/chromatic-polarization/普通玻璃顶角加热-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/普通玻璃打火机烧顶角正视图.webp',
   relatedModules: ['stress-analysis', 'thermal-stress'],
   metadata: {
     material: 'ordinary glass',
@@ -203,9 +203,9 @@ export const GLASS_CORNER_HEATING: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-打火机烧玻璃-正交偏振系统-长时间观察视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/普通玻璃打火机烧顶角正视图.jpg',
-    parallel: '/images/chromatic-polarization/普通玻璃顶角加热-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/普通玻璃顶角加热-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/普通玻璃打火机烧顶角正视图.webp',
+    parallel: '/images/chromatic-polarization/普通玻璃顶角加热-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/普通玻璃顶角加热-正交偏振系统-正视图.webp',
   },
 }
 
@@ -218,7 +218,7 @@ export const GLASS_COOLED: PolarizationResource = {
   description: 'Residual stress in glass after extended cooling time',
   descriptionZh: '长时间冷却后玻璃中的残余应力',
   category: 'stress',
-  url: '/images/chromatic-polarization/普通玻璃顶角加热长时间冷却-正交偏振系统-正视图.jpg',
+  url: '/images/chromatic-polarization/普通玻璃顶角加热长时间冷却-正交偏振系统-正视图.webp',
   relatedModules: ['stress-analysis', 'thermal-stress'],
   metadata: {
     material: 'ordinary glass',
@@ -237,8 +237,8 @@ export const PLASTIC_WRAP_THICKNESS: PolarizationResource = {
   description: 'Observe how interference colors change with increasing layers of plastic wrap',
   descriptionZh: '观察保鲜膜层数增加时干涉色的变化',
   category: 'interference',
-  url: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/保鲜膜正视图.jpg',
+  url: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/保鲜膜正视图.webp',
   relatedModules: ['birefringence', 'waveplate', 'chromatic-polarization'],
   metadata: {
     layers: 4,
@@ -252,31 +252,31 @@ export const PLASTIC_WRAP_THICKNESS: PolarizationResource = {
       time: 1,
       label: '1 Layer',
       labelZh: '1层',
-      url: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.jpg',
+      url: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.webp',
     },
     {
       time: 2,
       label: '2 Layers',
       labelZh: '2层',
-      url: '/images/chromatic-polarization/保鲜膜重叠1次-正交偏振系统-正视图.jpg',
+      url: '/images/chromatic-polarization/保鲜膜重叠1次-正交偏振系统-正视图.webp',
     },
     {
       time: 3,
       label: '3 Layers',
       labelZh: '3层',
-      url: '/images/chromatic-polarization/保鲜膜重叠2次-正交偏振系统-正视图.jpg',
+      url: '/images/chromatic-polarization/保鲜膜重叠2次-正交偏振系统-正视图.webp',
     },
     {
       time: 4,
       label: '4 Layers',
       labelZh: '4层',
-      url: '/images/chromatic-polarization/保鲜膜重叠3次-正交偏振系统-正视图.jpg',
+      url: '/images/chromatic-polarization/保鲜膜重叠3次-正交偏振系统-正视图.webp',
     },
     {
       time: 5,
       label: '5 Layers',
       labelZh: '5层',
-      url: '/images/chromatic-polarization/保鲜膜重叠4次-正交偏振系统-正视图.jpg',
+      url: '/images/chromatic-polarization/保鲜膜重叠4次-正交偏振系统-正视图.webp',
     },
   ],
 }
@@ -290,8 +290,8 @@ export const PLASTIC_WRAP: PolarizationResource = {
   description: 'Single layer plastic wrap showing birefringent colors',
   descriptionZh: '单层保鲜膜显示的双折射颜色',
   category: 'interference',
-  url: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/保鲜膜正视图.jpg',
+  url: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/保鲜膜正视图.webp',
   relatedModules: ['birefringence', 'waveplate'],
   metadata: {
     layers: 1,
@@ -301,9 +301,9 @@ export const PLASTIC_WRAP: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-保鲜膜拉伸-正交偏振系统-旋转样品视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/保鲜膜正视图.jpg',
-    parallel: '/images/chromatic-polarization/保鲜膜-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/保鲜膜正视图.webp',
+    parallel: '/images/chromatic-polarization/保鲜膜-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.webp',
   },
   videoAnnotations: [
     {
@@ -351,7 +351,7 @@ export const PLASTIC_WRAP_STRETCHING: PolarizationResource = {
   descriptionZh: '动态演示拉伸如何影响保鲜膜的双折射',
   category: 'interference',
   url: '/videos/chromatic-polarization/实验-保鲜膜拉伸-正交偏振系统-旋转样品视频.mp4',
-  thumbnail: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.jpg',
+  thumbnail: '/images/chromatic-polarization/保鲜膜-正交偏振系统-正视图.webp',
   relatedModules: ['birefringence', 'waveplate', 'stress-optics'],
   metadata: {
     material: 'plastic wrap',
@@ -396,8 +396,8 @@ export const CLEAR_TAPE: PolarizationResource = {
   description: 'Clear tape shows stress-induced birefringence',
   descriptionZh: '透明胶显示应力诱导的双折射',
   category: 'interference',
-  url: '/images/chromatic-polarization/透明胶-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/透明胶正视图.jpg',
+  url: '/images/chromatic-polarization/透明胶-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/透明胶正视图.webp',
   relatedModules: ['birefringence', 'stress-analysis'],
   metadata: {
     material: 'clear tape',
@@ -406,9 +406,9 @@ export const CLEAR_TAPE: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-透明胶-正交偏振系统-旋转样品视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/透明胶正视图.jpg',
-    parallel: '/images/chromatic-polarization/透明胶-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/透明胶-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/透明胶正视图.webp',
+    parallel: '/images/chromatic-polarization/透明胶-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/透明胶-正交偏振系统-正视图.webp',
   },
 }
 
@@ -421,8 +421,8 @@ export const CLEAR_TAPE_X: PolarizationResource = {
   description: 'X-shaped clear tape pattern showing overlapping birefringence',
   descriptionZh: 'X形透明胶条图案显示重叠的双折射',
   category: 'interference',
-  url: '/images/chromatic-polarization/透明胶条（X）-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/透明胶条（X）正视图.jpg',
+  url: '/images/chromatic-polarization/透明胶条（X）-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/透明胶条（X）正视图.webp',
   relatedModules: ['birefringence', 'interference'],
   metadata: {
     material: 'clear tape',
@@ -431,9 +431,9 @@ export const CLEAR_TAPE_X: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-透明胶条（X）-正交偏振系统-旋转样品视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/透明胶条（X）正视图.jpg',
-    parallel: '/images/chromatic-polarization/透明胶条（X）-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/透明胶条（X）-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/透明胶条（X）正视图.webp',
+    parallel: '/images/chromatic-polarization/透明胶条（X）-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/透明胶条（X）-正交偏振系统-正视图.webp',
   },
 }
 
@@ -446,8 +446,8 @@ export const CLEAR_TAPE_ARRAY: PolarizationResource = {
   description: 'Array of overlapping clear tape strips showing color gradients',
   descriptionZh: '透明胶条重叠阵列显示颜色渐变',
   category: 'interference',
-  url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/透明胶重叠阵列正视图.jpg',
+  url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/透明胶重叠阵列正视图.webp',
   relatedModules: ['birefringence', 'chromatic-polarization'],
   metadata: {
     material: 'clear tape',
@@ -456,9 +456,9 @@ export const CLEAR_TAPE_ARRAY: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-透明胶条（重叠阵列）-正交偏振系统-旋转样品视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/透明胶重叠阵列正视图.jpg',
-    parallel: '/images/chromatic-polarization/透明胶条（重叠阵列）-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/透明胶重叠阵列正视图.webp',
+    parallel: '/images/chromatic-polarization/透明胶条（重叠阵列）-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.webp',
   },
 }
 
@@ -471,17 +471,17 @@ export const TAPE_ROLL: PolarizationResource = {
   description: 'Full tape roll showing concentric birefringent rings',
   descriptionZh: '整卷透明胶显示同心的双折射环',
   category: 'interference',
-  url: '/images/chromatic-polarization/透明胶卷-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/透明胶卷正视图.jpg',
+  url: '/images/chromatic-polarization/透明胶卷-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/透明胶卷正视图.webp',
   relatedModules: ['birefringence'],
   metadata: {
     material: 'clear tape',
     polarizationSystem: 'crossed',
   },
   views: {
-    front: '/images/chromatic-polarization/透明胶卷正视图.jpg',
-    parallel: '/images/chromatic-polarization/透明胶卷-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/透明胶卷-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/透明胶卷正视图.webp',
+    parallel: '/images/chromatic-polarization/透明胶卷-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/透明胶卷-正交偏振系统-正视图.webp',
   },
 }
 
@@ -494,17 +494,17 @@ export const PROTECTIVE_FILM: PolarizationResource = {
   description: 'Protective plastic film showing manufacturing stress patterns',
   descriptionZh: '保护膜显示制造过程中产生的应力图案',
   category: 'interference',
-  url: '/images/chromatic-polarization/保护膜-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/保护膜正视图.jpg',
+  url: '/images/chromatic-polarization/保护膜-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/保护膜正视图.webp',
   relatedModules: ['birefringence', 'stress-analysis'],
   metadata: {
     material: 'protective film',
     polarizationSystem: 'crossed',
   },
   views: {
-    front: '/images/chromatic-polarization/保护膜正视图.jpg',
-    parallel: '/images/chromatic-polarization/保护膜-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/保护膜-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/保护膜正视图.webp',
+    parallel: '/images/chromatic-polarization/保护膜-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/保护膜-正交偏振系统-正视图.webp',
   },
 }
 
@@ -519,8 +519,8 @@ export const GLASSES: PolarizationResource = {
   description: 'Eyeglass lenses showing stress patterns from molding process',
   descriptionZh: '眼镜镜片显示模制过程产生的应力图案',
   category: 'daily',
-  url: '/images/chromatic-polarization/眼镜-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/眼镜正视图.jpg',
+  url: '/images/chromatic-polarization/眼镜-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/眼镜正视图.webp',
   relatedModules: ['stress-analysis', 'daily-polarization'],
   metadata: {
     material: 'polycarbonate',
@@ -529,9 +529,9 @@ export const GLASSES: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-眼镜-正交偏振系统-旋转样品视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/眼镜正视图.jpg',
-    parallel: '/images/chromatic-polarization/眼镜-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/眼镜-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/眼镜正视图.webp',
+    parallel: '/images/chromatic-polarization/眼镜-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/眼镜-正交偏振系统-正视图.webp',
   },
 }
 
@@ -544,8 +544,8 @@ export const WATER_BOTTLE: PolarizationResource = {
   description: 'PET bottle showing stress patterns from blow molding',
   descriptionZh: 'PET瓶显示吹塑过程产生的应力图案',
   category: 'daily',
-  url: '/images/chromatic-polarization/矿泉水瓶-正交偏振系统-正视图.jpg',
-  thumbnail: '/images/chromatic-polarization/矿泉水瓶正视图.jpg',
+  url: '/images/chromatic-polarization/矿泉水瓶-正交偏振系统-正视图.webp',
+  thumbnail: '/images/chromatic-polarization/矿泉水瓶正视图.webp',
   relatedModules: ['stress-analysis', 'daily-polarization'],
   metadata: {
     material: 'PET',
@@ -554,9 +554,9 @@ export const WATER_BOTTLE: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-矿泉水瓶-正交偏振系统-旋转样品视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/矿泉水瓶正视图.jpg',
-    parallel: '/images/chromatic-polarization/矿泉水瓶-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/矿泉水瓶-正交偏振系统-正视图.jpg',
+    front: '/images/chromatic-polarization/矿泉水瓶正视图.webp',
+    parallel: '/images/chromatic-polarization/矿泉水瓶-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/矿泉水瓶-正交偏振系统-正视图.webp',
   },
 }
 
@@ -569,8 +569,8 @@ export const SUGAR_BAG: PolarizationResource = {
   description: 'Sugar is optically active - it rotates the polarization plane of light. The plastic bag also shows stress patterns.',
   descriptionZh: '白砂糖具有旋光性 - 它会旋转光的偏振面。塑料袋同时显示应力图案。',
   category: 'daily',
-  url: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.jpg',
-  thumbnail: '/images/chromatic-polarization/白砂糖袋子正视图.jpg',
+  url: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.webp',
+  thumbnail: '/images/chromatic-polarization/白砂糖袋子正视图.webp',
   relatedModules: ['stress-analysis', 'daily-polarization', 'optical-rotation', 'food-quality'],
   metadata: {
     material: 'sugar + plastic',
@@ -579,9 +579,9 @@ export const SUGAR_BAG: PolarizationResource = {
     videoUrl: '/videos/chromatic-polarization/实验-白砂糖袋子-正交偏振系统-旋转样品视频.mp4',
   },
   views: {
-    front: '/images/chromatic-polarization/白砂糖袋子正视图.jpg',
-    parallel: '/images/chromatic-polarization/白砂糖袋子-平行偏振系统-正视图.jpg',
-    crossed: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.jpg',
+    front: '/images/chromatic-polarization/白砂糖袋子正视图.webp',
+    parallel: '/images/chromatic-polarization/白砂糖袋子-平行偏振系统-正视图.webp',
+    crossed: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.webp',
   },
   isChiral: true, // 白砂糖是旋光性物质
 }
@@ -596,7 +596,7 @@ export const POLARIZATION_SYSTEM_PARALLEL: PolarizationResource = {
   description: 'Reference image of parallel polarizer setup',
   descriptionZh: '平行偏振片系统参考图',
   category: 'daily',
-  url: '/images/chromatic-polarization/平行偏振系统正视图.jpg',
+  url: '/images/chromatic-polarization/平行偏振系统正视图.webp',
   relatedModules: ['polarization-intro', 'malus'],
   metadata: {
     polarizationSystem: 'parallel',
@@ -611,7 +611,7 @@ export const POLARIZATION_SYSTEM_CROSSED: PolarizationResource = {
   description: 'Reference image of crossed polarizer setup',
   descriptionZh: '正交偏振片系统参考图',
   category: 'daily',
-  url: '/images/chromatic-polarization/正交偏振系统正视图（横向）.jpg',
+  url: '/images/chromatic-polarization/正交偏振系统正视图（横向）.webp',
   relatedModules: ['polarization-intro', 'malus'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -628,8 +628,8 @@ export const BREWSTER_APPARATUS: PolarizationResource = {
   description: 'Front view of the experimental apparatus for demonstrating Brewster\'s angle polarization',
   descriptionZh: '演示布儒斯特角偏振的实验装置正视图',
   category: 'brewster',
-  url: '/images/brewster/反射装置正视图.jpg',
-  thumbnail: '/images/brewster/反射装置正视图.jpg',
+  url: '/images/brewster/反射装置正视图.webp',
+  thumbnail: '/images/brewster/反射装置正视图.webp',
   relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
   metadata: {
     polarizationSystem: 'front',
@@ -644,8 +644,8 @@ export const BREWSTER_HORIZONTAL_DARK_SPOT: PolarizationResource = {
   description: 'Demonstration of the dark spot phenomenon at Brewster\'s angle with horizontally polarized green laser beam',
   descriptionZh: '使用横向偏振绿色激光演示布儒斯特角下的暗点现象',
   category: 'brewster',
-  url: '/images/brewster/横向绿色光束暗点现象.jpg',
-  thumbnail: '/images/brewster/横向绿色光束暗点现象.jpg',
+  url: '/images/brewster/横向绿色光束暗点现象.webp',
+  thumbnail: '/images/brewster/横向绿色光束暗点现象.webp',
   relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
   metadata: {
     polarizationSystem: 'parallel',
@@ -660,8 +660,8 @@ export const BREWSTER_VERTICAL_DARK_SPOT: PolarizationResource = {
   description: 'Demonstration of the dark spot phenomenon at Brewster\'s angle with vertically polarized green laser beam',
   descriptionZh: '使用纵向偏振绿色激光演示布儒斯特角下的暗点现象',
   category: 'brewster',
-  url: '/images/brewster/纵向绿色光束暗点现象.jpg',
-  thumbnail: '/images/brewster/纵向绿色光束暗点现象.jpg',
+  url: '/images/brewster/纵向绿色光束暗点现象.webp',
+  thumbnail: '/images/brewster/纵向绿色光束暗点现象.webp',
   relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -678,8 +678,8 @@ export const BREWSTER_SETUP_DIAGRAM: PolarizationResource = {
   description: 'Schematic diagram of the complete Brewster angle experimental setup',
   descriptionZh: '布儒斯特角实验装置完整示意图',
   category: 'brewster',
-  url: '/images/brewster/实验装置示意图.png',
-  thumbnail: '/images/brewster/实验装置示意图.png',
+  url: '/images/brewster/实验装置示意图.webp',
+  thumbnail: '/images/brewster/实验装置示意图.webp',
   relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
   metadata: {
     polarizationSystem: 'front',
@@ -695,8 +695,8 @@ export const BREWSTER_NO_POLARIZER: PolarizationResource = {
   description: 'Top view of Brewster apparatus without polarizers',
   descriptionZh: '无偏振片情况下的布儒斯特实验装置俯视图',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（无偏振片）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（无偏振片）.png',
+  url: '/images/brewster/实验装置俯视图（无偏振片）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（无偏振片）.webp',
   relatedModules: ['brewster', 'fresnel'],
   metadata: {
     polarizationSystem: 'none',
@@ -711,8 +711,8 @@ export const BREWSTER_NO_POLARIZER_VERTICAL_LASER: PolarizationResource = {
   description: 'Brewster setup without polarizer, green laser beam in vertical orientation',
   descriptionZh: '无偏振片情况下，纵向绿色激光照射的布儒斯特实验',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（无偏振片）-开启绿色激光（纵向光束）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（无偏振片）-开启绿色激光（纵向光束）.png',
+  url: '/images/brewster/实验装置俯视图（无偏振片）-开启绿色激光（纵向光束）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（无偏振片）-开启绿色激光（纵向光束）.webp',
   relatedModules: ['brewster', 'fresnel'],
   metadata: {
     polarizationSystem: 'none',
@@ -730,7 +730,7 @@ export const BREWSTER_NO_POLARIZER_VIDEO: PolarizationResource = {
   descriptionZh: '无偏振片条件下旋转玻璃片的视频，展示反射光强度变化',
   category: 'brewster',
   url: '/videos/brewster/实验装置俯视图（无偏振片）-开启绿色激光（纵向光束）-旋转玻璃片视频.mp4',
-  thumbnail: '/images/brewster/实验装置俯视图（无偏振片）-开启绿色激光（纵向光束）.png',
+  thumbnail: '/images/brewster/实验装置俯视图（无偏振片）-开启绿色激光（纵向光束）.webp',
   relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
   metadata: {
     polarizationSystem: 'none',
@@ -748,8 +748,8 @@ export const BREWSTER_PARALLEL_POLARIZER: PolarizationResource = {
   description: 'Top view of Brewster apparatus with parallel polarizers',
   descriptionZh: '偏振片平行方向布置的布儒斯特实验装置俯视图',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（偏振片平行方向）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片平行方向）.png',
+  url: '/images/brewster/实验装置俯视图（偏振片平行方向）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片平行方向）.webp',
   relatedModules: ['brewster', 'fresnel', 'malus'],
   metadata: {
     polarizationSystem: 'parallel',
@@ -764,8 +764,8 @@ export const BREWSTER_PARALLEL_VERTICAL_LASER: PolarizationResource = {
   description: 'Parallel polarizers with vertical green laser beam showing maximum transmission',
   descriptionZh: '偏振片平行布置，纵向绿色激光，显示最大透射',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（纵向光束）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（纵向光束）.png',
+  url: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（纵向光束）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（纵向光束）.webp',
   relatedModules: ['brewster', 'fresnel', 'malus'],
   metadata: {
     polarizationSystem: 'parallel',
@@ -780,8 +780,8 @@ export const BREWSTER_PARALLEL_HORIZONTAL_LASER: PolarizationResource = {
   description: 'Parallel polarizers with horizontal green laser beam',
   descriptionZh: '偏振片平行布置，横向绿色激光照射',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（横向光束）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（横向光束）.png',
+  url: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（横向光束）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片平行方向）-开启绿色激光（横向光束）.webp',
   relatedModules: ['brewster', 'fresnel', 'malus'],
   metadata: {
     polarizationSystem: 'parallel',
@@ -797,8 +797,8 @@ export const BREWSTER_PERPENDICULAR_POLARIZER: PolarizationResource = {
   description: 'Top view of Brewster apparatus with crossed (perpendicular) polarizers',
   descriptionZh: '偏振片垂直交叉布置的布儒斯特实验装置俯视图',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（偏振片垂直方向）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）.png',
+  url: '/images/brewster/实验装置俯视图（偏振片垂直方向）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）.webp',
   relatedModules: ['brewster', 'fresnel', 'malus'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -813,8 +813,8 @@ export const BREWSTER_PERPENDICULAR_VERTICAL_LASER: PolarizationResource = {
   description: 'Crossed polarizers with vertical green laser beam showing polarization effects at Brewster angle',
   descriptionZh: '偏振片垂直交叉，纵向绿色激光，展示布儒斯特角偏振效应',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.png',
+  url: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.webp',
   relatedModules: ['brewster', 'fresnel', 'malus'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -832,7 +832,7 @@ export const BREWSTER_PERPENDICULAR_VERTICAL_LASER_VIDEO: PolarizationResource =
   descriptionZh: '正交偏振片下旋转玻璃片视频，展示布儒斯特角消光现象',
   category: 'brewster',
   url: '/videos/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）-旋转玻璃片视频.mp4',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.png',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.webp',
   relatedModules: ['brewster', 'fresnel', 'malus'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -849,8 +849,8 @@ export const BREWSTER_PERPENDICULAR_HORIZONTAL_LASER: PolarizationResource = {
   description: 'Crossed polarizers with horizontal green laser beam',
   descriptionZh: '偏振片垂直交叉，横向绿色激光照射',
   category: 'brewster',
-  url: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（横向光束）.png',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（横向光束）.png',
+  url: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（横向光束）.webp',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（横向光束）.webp',
   relatedModules: ['brewster', 'fresnel', 'malus'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -867,7 +867,7 @@ export const BREWSTER_VERTICAL_DIRECTION_VIDEO: PolarizationResource = {
   descriptionZh: '偏振片纵向方向下旋转玻璃片的视频',
   category: 'brewster',
   url: '/videos/brewster/实验装置俯视图（偏振片纵向方向）-开启绿色激光（纵向光束）-旋转玻璃片视频.mp4',
-  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.png',
+  thumbnail: '/images/brewster/实验装置俯视图（偏振片垂直方向）-开启绿色激光（纵向光束）.webp',
   relatedModules: ['brewster', 'fresnel', 'polarization-intro'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -886,8 +886,8 @@ export const CALCITE_DOUBLE_REFRACTION: PolarizationResource = {
   description: 'Classic demonstration of double refraction in Iceland spar (calcite) crystal',
   descriptionZh: '冰洲石（方解石）晶体双折射成像的经典演示',
   category: 'birefringence',
-  url: '/images/calcite/双折射成像.jpg',
-  thumbnail: '/images/calcite/双折射成像.jpg',
+  url: '/images/calcite/双折射成像.webp',
+  thumbnail: '/images/calcite/双折射成像.webp',
   relatedModules: ['birefringence', 'polarization-intro', 'waveplate'],
   metadata: {
     material: 'calcite',
@@ -903,18 +903,18 @@ export const CALCITE_POLARIZER_SEQUENCE: PolarizationResource = {
   description: 'Sequence showing calcite double image as viewed through polarizers at different angles (0°, 70°, 90°, 135°)',
   descriptionZh: '通过不同角度偏振片观察冰洲石双像的变化序列（0°、70°、90°、135°）',
   category: 'birefringence',
-  url: '/images/calcite/0度偏振片看冰洲石的像.jpg',
-  thumbnail: '/images/calcite/0度偏振片看冰洲石的像.jpg',
+  url: '/images/calcite/0度偏振片看冰洲石的像.webp',
+  thumbnail: '/images/calcite/0度偏振片看冰洲石的像.webp',
   relatedModules: ['birefringence', 'malus', 'polarization-intro'],
   metadata: {
     material: 'calcite',
     polarizationSystem: 'crossed',
   },
   frames: [
-    { time: 0, label: '0° Polarizer', labelZh: '0度偏振片', url: '/images/calcite/0度偏振片看冰洲石的像.jpg' },
-    { time: 1, label: '70° Polarizer', labelZh: '70度偏振片', url: '/images/calcite/70度偏振片看冰洲石的像.jpg' },
-    { time: 2, label: '90° Polarizer', labelZh: '90度偏振片', url: '/images/calcite/90度偏振片看冰洲石的像.jpg' },
-    { time: 3, label: '135° Polarizer', labelZh: '135度偏振片', url: '/images/calcite/135度偏振片看冰洲石的像.jpg' },
+    { time: 0, label: '0° Polarizer', labelZh: '0度偏振片', url: '/images/calcite/0度偏振片看冰洲石的像.webp' },
+    { time: 1, label: '70° Polarizer', labelZh: '70度偏振片', url: '/images/calcite/70度偏振片看冰洲石的像.webp' },
+    { time: 2, label: '90° Polarizer', labelZh: '90度偏振片', url: '/images/calcite/90度偏振片看冰洲石的像.webp' },
+    { time: 3, label: '135° Polarizer', labelZh: '135度偏振片', url: '/images/calcite/135度偏振片看冰洲石的像.webp' },
   ],
 }
 
@@ -926,8 +926,8 @@ export const CALCITE_STACKED: PolarizationResource = {
   description: 'Two calcite crystals stacked in specific orientation create four separate images',
   descriptionZh: '两块冰洲石以特定方向堆叠，产生四个分离的像',
   category: 'birefringence',
-  url: '/images/calcite/堆叠两个冰洲石特定情况成四个像.jpg',
-  thumbnail: '/images/calcite/堆叠两个冰洲石特定情况成四个像.jpg',
+  url: '/images/calcite/堆叠两个冰洲石特定情况成四个像.webp',
+  thumbnail: '/images/calcite/堆叠两个冰洲石特定情况成四个像.webp',
   relatedModules: ['birefringence', 'waveplate'],
   metadata: {
     material: 'calcite',
@@ -943,8 +943,8 @@ export const CALCITE_LASER_RED_BEAMS: PolarizationResource = {
   description: 'Green laser passing through calcite produces red-colored split beams due to frequency effects',
   descriptionZh: '绿色激光穿过冰洲石后产生红色分裂光束现象',
   category: 'birefringence',
-  url: '/images/calcite/绿色激光入射所成红色四条光束像.jpg',
-  thumbnail: '/images/calcite/绿色激光入射所成红色四条光束像.jpg',
+  url: '/images/calcite/绿色激光入射所成红色四条光束像.webp',
+  thumbnail: '/images/calcite/绿色激光入射所成红色四条光束像.webp',
   relatedModules: ['birefringence', 'waveplate'],
   metadata: {
     material: 'calcite',
@@ -960,8 +960,8 @@ export const CALCITE_LASER_RED_BEAMS_2: PolarizationResource = {
   description: 'Alternative view of green laser through calcite producing red beam patterns',
   descriptionZh: '绿色激光穿过冰洲石产生红色光束的另一视角',
   category: 'birefringence',
-  url: '/images/calcite/绿色激光入射所成红色四条光束像（1）.jpg',
-  thumbnail: '/images/calcite/绿色激光入射所成红色四条光束像（1）.jpg',
+  url: '/images/calcite/绿色激光入射所成红色四条光束像（1）.webp',
+  thumbnail: '/images/calcite/绿色激光入射所成红色四条光束像（1）.webp',
   relatedModules: ['birefringence', 'waveplate'],
   metadata: {
     material: 'calcite',
@@ -979,8 +979,8 @@ export const OPTICAL_ROTATION_SETUP: PolarizationResource = {
   description: 'Experimental apparatus for demonstrating optical rotation with room lights on',
   descriptionZh: '旋光性实验装置示意图（室内照明下）',
   category: 'rotation',
-  url: '/images/optical-rotation/室内照明、未开启光源时的装置示意图.jpg',
-  thumbnail: '/images/optical-rotation/室内照明、未开启光源时的装置示意图.jpg',
+  url: '/images/optical-rotation/室内照明、未开启光源时的装置示意图.webp',
+  thumbnail: '/images/optical-rotation/室内照明、未开启光源时的装置示意图.webp',
   relatedModules: ['optical-rotation', 'chromatic', 'polarization-intro'],
   metadata: {
     polarizationSystem: 'front',
@@ -995,8 +995,8 @@ export const OPTICAL_ROTATION_WHITE_LIGHT: PolarizationResource = {
   description: 'Optical rotation experiment using white light source through polarizer',
   descriptionZh: '使用白光光源并通过偏振片的旋光实验',
   category: 'rotation',
-  url: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.jpg',
-  thumbnail: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.jpg',
+  url: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.webp',
+  thumbnail: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.webp',
   relatedModules: ['optical-rotation', 'chromatic'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -1012,8 +1012,8 @@ export const OPTICAL_ROTATION_LASER_FRONT: PolarizationResource = {
   description: 'Front view of optical rotation using green and red lasers through polarizer',
   descriptionZh: '使用绿色和红色激光通过偏振片的旋光实验正视图',
   category: 'rotation',
-  url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.jpg',
-  thumbnail: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.jpg',
+  url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.webp',
+  thumbnail: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.webp',
   relatedModules: ['optical-rotation', 'chromatic'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -1029,8 +1029,8 @@ export const OPTICAL_ROTATION_LASER_TOP: PolarizationResource = {
   description: 'Top view of optical rotation using green and red lasers through polarizer',
   descriptionZh: '使用绿色和红色激光通过偏振片的旋光实验俯视图',
   category: 'rotation',
-  url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的俯视图.jpg',
-  thumbnail: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的俯视图.jpg',
+  url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的俯视图.webp',
+  thumbnail: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的俯视图.webp',
   relatedModules: ['optical-rotation', 'chromatic'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -1046,8 +1046,8 @@ export const OPTICAL_ROTATION_NO_POLARIZER: PolarizationResource = {
   description: 'Top view of optical rotation experiment without polarizer in front of camera',
   descriptionZh: '旋光实验俯视图（相机前无偏振片）',
   category: 'rotation',
-  url: '/images/optical-rotation/旋光实验相机前无偏振片顶角俯视图.jpg',
-  thumbnail: '/images/optical-rotation/旋光实验相机前无偏振片顶角俯视图.jpg',
+  url: '/images/optical-rotation/旋光实验相机前无偏振片顶角俯视图.webp',
+  thumbnail: '/images/optical-rotation/旋光实验相机前无偏振片顶角俯视图.webp',
   relatedModules: ['optical-rotation', 'chromatic'],
   metadata: {
     polarizationSystem: 'none',
@@ -1063,8 +1063,8 @@ export const OPTICAL_ROTATION_WITH_POLARIZER: PolarizationResource = {
   description: 'Top view of optical rotation experiment with polarizer in front of camera',
   descriptionZh: '旋光实验俯视图（相机前有偏振片）',
   category: 'rotation',
-  url: '/images/optical-rotation/旋光实验相机前有偏振片顶角俯视图.jpg',
-  thumbnail: '/images/optical-rotation/旋光实验相机前有偏振片顶角俯视图.jpg',
+  url: '/images/optical-rotation/旋光实验相机前有偏振片顶角俯视图.webp',
+  thumbnail: '/images/optical-rotation/旋光实验相机前有偏振片顶角俯视图.webp',
   relatedModules: ['optical-rotation', 'chromatic'],
   metadata: {
     polarizationSystem: 'crossed',
@@ -1082,8 +1082,8 @@ export const SCATTERING_MIE_CONCENTRATION: PolarizationResource = {
   description: 'Transmitted light through 80nm microsphere suspensions at different concentrations (decreasing from left to right)',
   descriptionZh: '80nm微球悬浊液在不同浓度下的透射光实物图（由左至右浓度递减）',
   category: 'scattering',
-  url: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.jpg',
-  thumbnail: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.jpg',
+  url: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.webp',
+  thumbnail: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.webp',
   relatedModules: ['mie-scattering', 'rayleigh', 'monte-carlo-scattering'],
   metadata: {
     polarizationSystem: 'none',
@@ -1098,8 +1098,8 @@ export const SCATTERING_PARTICLE_SIZE: PolarizationResource = {
   description: 'Comparison of scattering effects by particles of different sizes: 80nm, 300nm, and 3μm microspheres',
   descriptionZh: '不同粒径微球（80nm、300nm、3μm）的散射效果对比',
   category: 'scattering',
-  url: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.jpg',
-  thumbnail: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.jpg',
+  url: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.webp',
+  thumbnail: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.webp',
   relatedModules: ['mie-scattering', 'rayleigh', 'monte-carlo-scattering'],
   metadata: {
     polarizationSystem: 'none',

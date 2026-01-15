@@ -101,7 +101,7 @@ The Tyndall effect, as it came to be known, remains a fundamental phenomenon in 
       ],
       featuredImages: [
         {
-          url: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.jpg',
+          url: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.webp',
           caption: 'Transmitted light through colloidal suspensions at different concentrations',
           captionZh: '不同浓度胶体悬浊液的透射光对比'
         }
@@ -186,7 +186,7 @@ Rayleigh's work showed that polarization isn't just a laboratory curiosity — i
       ],
       featuredImages: [
         {
-          url: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.jpg',
+          url: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.webp',
           caption: 'Scattering comparison: 80nm vs 300nm vs 3μm particles - demonstrating Rayleigh to Mie transition',
           captionZh: '散射对比：80nm vs 300nm vs 3μm 颗粒——展示从瑞利散射到米氏散射的过渡'
         }

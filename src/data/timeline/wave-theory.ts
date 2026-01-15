@@ -230,7 +230,7 @@ Years later, dying young from tuberculosis contracted in Egypt, Malus would be r
       ],
       featuredImages: [
         {
-          url: '/images/chromatic-polarization/玻璃对比-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/玻璃对比-正交偏振系统-正视图.webp',
           caption: 'Glass under crossed polarizers - modern demonstration of Malus\'s reflection discovery',
           captionZh: '正交偏振下的玻璃——马吕斯反射发现的现代演示'
         }
@@ -320,7 +320,7 @@ Tragically, Malus would not live to see his law's full impact. He died just thre
       ],
       featuredImages: [
         {
-          url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.webp',
           caption: 'Malus\'s Law in action - light intensity varies with polarizer angle',
           captionZh: '马吕斯定律实际应用——光强随偏振片角度变化'
         }
@@ -429,17 +429,17 @@ Today, if you've ever seen the rainbow patterns in a stressed plastic ruler view
       ],
       featuredImages: [
         {
-          url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.webp',
           caption: 'Transparent tape array showing chromatic interference under crossed polarizers',
           captionZh: '透明胶条阵列在正交偏振系统下展示的色偏振干涉图案'
         },
         {
-          url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.webp',
           caption: 'Stress patterns in tempered glass revealed by crossed polarizers',
           captionZh: '正交偏振片揭示钢化玻璃中的应力图案'
         },
         {
-          url: '/images/chromatic-polarization/保鲜膜重叠4次-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/保鲜膜重叠4次-正交偏振系统-正视图.webp',
           caption: '4-layer plastic wrap showing color variation due to thickness changes',
           captionZh: '四层保鲜膜因厚度变化产生的色彩干涉'
         }
@@ -574,12 +574,12 @@ Brewster went on to invent the kaleidoscope and contribute to photography, but h
       ],
       featuredImages: [
         {
-          url: '/images/brewster/反射装置正视图.jpg',
+          url: '/images/brewster/反射装置正视图.webp',
           caption: 'Brewster angle reflection apparatus - demonstrating complete polarization at specific angle',
           captionZh: '布儒斯特角反射装置——演示特定角度下的完全偏振'
         },
         {
-          url: '/images/brewster/横向绿色光束暗点现象.jpg',
+          url: '/images/brewster/横向绿色光束暗点现象.webp',
           caption: 'Dark spot phenomenon with horizontally polarized green laser at Brewster angle',
           captionZh: '横向偏振绿色激光在布儒斯特角下的暗点现象'
         }
@@ -694,17 +694,17 @@ Today, measuring optical rotation remains a standard technique in chemistry and 
       ],
       featuredImages: [
         {
-          url: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.jpg',
+          url: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.webp',
           caption: 'Optical rotation experiment with white light through polarizer',
           captionZh: '白光通过偏振片的旋光实验'
         },
         {
-          url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.jpg',
+          url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.webp',
           caption: 'Optical rotation with green and red lasers - different wavelengths rotate by different amounts',
           captionZh: '绿色和红色激光的旋光——不同波长旋转量不同'
         },
         {
-          url: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.jpg',
+          url: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.webp',
           caption: 'Sugar demonstrating optical rotation - the chiral molecules rotate the polarization plane',
           captionZh: '白砂糖展示旋光性——手性分子旋转偏振面'
         }
@@ -800,7 +800,7 @@ The revolution he sparked continues to this day. Every polarizing sunglasses len
       ],
       featuredImages: [
         {
-          url: '/images/chromatic-polarization/透明胶-正交偏振系统-正视图.jpg',
+          url: '/images/chromatic-polarization/透明胶-正交偏振系统-正视图.webp',
           caption: 'Transverse wave nature revealed by polarized light through stressed material',
           captionZh: '应力材料在偏振光下揭示光的横波特性'
         }
