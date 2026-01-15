@@ -10,6 +10,8 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { MediaGalleryPanel } from './MediaGalleryPanel'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import {
   analyzeSpectrum,
   MATERIAL_BIREFRINGENCE,
@@ -199,12 +201,14 @@ function OpticalPathDiagram({
   polarizerAngle,
   analyzerAngle,
   resultColor,
+  theme,
 }: {
   thickness: number
   birefringence: number
   polarizerAngle: number
   analyzerAngle: number
   resultColor: string
+  theme: 'dark' | 'light'
 }) {
   return (
     <svg viewBox="0 0 700 280" className="w-full h-auto max-h-[320px]">
@@ -235,7 +239,7 @@ function OpticalPathDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="700" height="280" fill="#0f172a" rx="8" />
+      <rect x="0" y="0" width="700" height="280" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
 
       {/* 白光光源 */}
       <g transform="translate(50, 140)">
@@ -246,7 +250,7 @@ function OpticalPathDiagram({
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         />
-        <text x="0" y="50" textAnchor="middle" fill="#94a3b8" fontSize="12">白光源</text>
+        <text x="0" y="50" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="12">白光源</text>
       </g>
 
       {/* 入射光束（彩虹色） */}
@@ -254,7 +258,7 @@ function OpticalPathDiagram({
 
       {/* 起偏器 */}
       <g transform="translate(145, 140)">
-        <rect x="-8" y="-45" width="16" height="90" fill="#1e3a5f" stroke="#22d3ee" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-45" width="16" height="90" fill={theme === 'dark' ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
         <motion.line
           x1="0"
           y1="-35"
@@ -265,7 +269,7 @@ function OpticalPathDiagram({
           transform={`rotate(${polarizerAngle})`}
         />
         <text x="0" y="65" textAnchor="middle" fill="#22d3ee" fontSize="11">起偏器</text>
-        <text x="0" y="78" textAnchor="middle" fill="#94a3b8" fontSize="10">{polarizerAngle}°</text>
+        <text x="0" y="78" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{polarizerAngle}°</text>
       </g>
 
       {/* 偏振光束（单色） */}
@@ -287,7 +291,7 @@ function OpticalPathDiagram({
         <line x1="-30" y1="-40" x2={40 + thickness * 80} y2="-40" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="4 3" />
         <text x={(thickness * 80) / 2} y="-25" textAnchor="middle" fill="#a78bfa" fontSize="9">快轴</text>
         <text x={(thickness * 80) / 2} y="70" textAnchor="middle" fill="#67e8f9" fontSize="11">双折射样品</text>
-        <text x={(thickness * 80) / 2} y="85" textAnchor="middle" fill="#94a3b8" fontSize="10">
+        <text x={(thickness * 80) / 2} y="85" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
           d={thickness.toFixed(2)}mm, Δn={birefringence.toFixed(3)}
         </text>
       </g>
@@ -305,7 +309,7 @@ function OpticalPathDiagram({
 
       {/* 检偏器 */}
       <g transform={`translate(${420 + thickness * 80}, 140)`}>
-        <rect x="-8" y="-45" width="16" height="90" fill="#1e3a5f" stroke="#a78bfa" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-45" width="16" height="90" fill={theme === 'dark' ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
         <motion.line
           x1="0"
           y1="-35"
@@ -316,7 +320,7 @@ function OpticalPathDiagram({
           transform={`rotate(${analyzerAngle})`}
         />
         <text x="0" y="65" textAnchor="middle" fill="#a78bfa" fontSize="11">检偏器</text>
-        <text x="0" y="78" textAnchor="middle" fill="#94a3b8" fontSize="10">{analyzerAngle}°</text>
+        <text x="0" y="78" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{analyzerAngle}°</text>
       </g>
 
       {/* 最终光束 */}
@@ -330,26 +334,26 @@ function OpticalPathDiagram({
           width="60"
           height="100"
           fill={resultColor}
-          stroke="#475569"
+          stroke={theme === 'dark' ? '#475569' : '#94a3b8'}
           strokeWidth="2"
           rx="6"
           filter="url(#glowResult)"
           animate={{ opacity: [0.8, 1, 0.8] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         />
-        <text x="0" y="70" textAnchor="middle" fill="#94a3b8" fontSize="11">观察屏</text>
+        <text x="0" y="70" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">观察屏</text>
       </g>
 
       {/* 标注线 */}
       <path
         d="M 50 200 L 50 230 L 650 230 L 650 200"
         fill="none"
-        stroke="#475569"
+        stroke={theme === 'dark' ? '#475569' : '#94a3b8'}
         strokeWidth="1"
         strokeDasharray="4 4"
         opacity="0.5"
       />
-      <text x="350" y="250" textAnchor="middle" fill="#64748b" fontSize="11">
+      <text x="350" y="250" textAnchor="middle" fill={theme === 'dark' ? '#64748b' : '#475569'} fontSize="11">
         光路传播方向 →
       </text>
     </svg>
@@ -362,11 +366,13 @@ function SpectrumChart({
   birefringence,
   polarizerAngle,
   analyzerAngle,
+  theme,
 }: {
   thickness: number
   birefringence: number
   polarizerAngle: number
   analyzerAngle: number
+  theme: 'dark' | 'light'
 }) {
   const { pathData, spectrumGradient } = useMemo(() => {
     const points: string[] = []
@@ -413,8 +419,8 @@ function SpectrumChart({
       <rect x="40" y="30" width="250" height="100" fill="url(#spectrumBg)" rx="4" />
 
       {/* 坐标轴 */}
-      <line x1="40" y1="130" x2="300" y2="130" stroke="#475569" strokeWidth="1" />
-      <line x1="40" y1="30" x2="40" y2="130" stroke="#475569" strokeWidth="1" />
+      <line x1="40" y1="130" x2="300" y2="130" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
 
       {/* X轴刻度 */}
       {[400, 500, 600, 700].map((wl) => {
@@ -422,7 +428,7 @@ function SpectrumChart({
         const [r, g, b] = wavelengthToRGB(wl)
         return (
           <g key={wl}>
-            <line x1={x} y1="130" x2={x} y2="135" stroke="#94a3b8" strokeWidth="1" />
+            <line x1={x} y1="130" x2={x} y2="135" stroke={theme === 'dark' ? '#94a3b8' : '#64748b'} strokeWidth="1" />
             <text x={x} y="148" textAnchor="middle" fill={`rgb(${r * 255}, ${g * 255}, ${b * 255})`} fontSize="10">
               {wl}
             </text>
@@ -435,17 +441,17 @@ function SpectrumChart({
         const y = 130 - val * 100
         return (
           <g key={i}>
-            <text x="30" y={y + 4} textAnchor="end" fill="#94a3b8" fontSize="10">{val}</text>
+            <text x="30" y={y + 4} textAnchor="end" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{val}</text>
           </g>
         )
       })}
 
       {/* 透过率曲线 */}
-      <path d={pathData} fill="none" stroke="#ffffff" strokeWidth="2.5" />
+      <path d={pathData} fill="none" stroke={theme === 'dark' ? '#ffffff' : '#1e293b'} strokeWidth="2.5" />
 
       {/* 轴标签 */}
-      <text x="170" y="165" textAnchor="middle" fill="#94a3b8" fontSize="11">波长 (nm)</text>
-      <text x="15" y="85" fill="#94a3b8" fontSize="10" transform="rotate(-90 15 85)">T</text>
+      <text x="170" y="165" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">波长 (nm)</text>
+      <text x="15" y="85" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10" transform="rotate(-90 15 85)">T</text>
     </svg>
   )
 }
@@ -453,13 +459,15 @@ function SpectrumChart({
 // 颜色显示面板
 function ColorDisplayPanel({
   color,
+  theme,
 }: {
   color: { r: number; g: number; b: number; hex: string }
+  theme: 'dark' | 'light'
 }) {
   return (
     <div className="space-y-3">
       <div
-        className="w-full h-24 rounded-xl border-2 border-slate-600 shadow-lg transition-colors duration-300"
+        className={cn("w-full h-24 rounded-xl border-2 shadow-lg transition-colors duration-300", theme === 'dark' ? 'border-slate-600' : 'border-gray-300')}
         style={{
           backgroundColor: color.hex,
           boxShadow: `0 0 30px ${color.hex}40`,
@@ -468,13 +476,13 @@ function ColorDisplayPanel({
       <div className="flex justify-between items-center text-xs">
         <div className="space-y-1">
           <div className="text-gray-500">RGB</div>
-          <div className="font-mono text-gray-300">
+          <div className={cn("font-mono", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>
             ({Math.round(color.r * 255)}, {Math.round(color.g * 255)}, {Math.round(color.b * 255)})
           </div>
         </div>
         <div className="space-y-1 text-right">
           <div className="text-gray-500">HEX</div>
-          <div className="font-mono text-gray-300 uppercase">{color.hex}</div>
+          <div className={cn("font-mono uppercase", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>{color.hex}</div>
         </div>
       </div>
     </div>
@@ -825,6 +833,7 @@ function VirtualTapeExperiment() {
 
 // 主演示组件
 export function ChromaticDemo() {
+  const { theme } = useTheme()
   const [thickness, setThickness] = useState(0.1)
   const [birefringence, setBirefringence] = useState(0.01)
   const [polarizerAngle, setPolarizerAngle] = useState(0)
@@ -851,10 +860,15 @@ export function ChromaticDemo() {
     <div className="space-y-6">
       {/* 页面标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
+        <h2 className={cn(
+          "text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent",
+          theme === 'dark'
+            ? 'from-white via-purple-100 to-white'
+            : 'from-gray-800 via-purple-600 to-gray-800'
+        )}>
           光学各向异性 - 色偏振
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={cn("mt-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
           探索双折射材料产生的彩色干涉效应
         </p>
       </div>
@@ -879,20 +893,31 @@ export function ChromaticDemo() {
         {/* 左侧：可视化 */}
         <div className="space-y-4">
           {/* 光路图 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-purple-950/90 border border-purple-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={cn(
+            "rounded-xl border p-4",
+            theme === 'dark'
+              ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-purple-950/90 border-purple-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]'
+              : 'bg-gradient-to-br from-slate-50 via-white to-purple-50 border-purple-200 shadow-lg'
+          )}>
             <OpticalPathDiagram
               thickness={thickness}
               birefringence={birefringence}
               polarizerAngle={polarizerAngle}
               analyzerAngle={analyzerAngle}
               resultColor={resultColor.hex}
+              theme={theme}
             />
           </div>
 
           {/* 观察到的颜色 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
-            <h4 className="text-sm font-semibold text-white mb-3">观察到的颜色</h4>
-            <ColorDisplayPanel color={resultColor} />
+          <div className={cn(
+            "rounded-xl border p-4",
+            theme === 'dark'
+              ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30'
+              : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
+          )}>
+            <h4 className={cn("text-sm font-semibold mb-3", theme === 'dark' ? 'text-white' : 'text-gray-800')}>观察到的颜色</h4>
+            <ColorDisplayPanel color={resultColor} theme={theme} />
           </div>
         </div>
 
@@ -929,11 +954,16 @@ export function ChromaticDemo() {
                   <button
                     key={m.name}
                     onClick={() => setBirefringence(m.br)}
-                    className={`px-2 py-1.5 text-xs rounded transition-colors ${
+                    className={cn(
+                      "px-2 py-1.5 text-xs rounded transition-colors",
                       Math.abs(birefringence - m.br) < 0.0001
-                        ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-                        : 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
-                    }`}
+                        ? theme === 'dark'
+                          ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
+                          : 'bg-purple-100 text-purple-700 border border-purple-300'
+                        : theme === 'dark'
+                          ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    )}
                   >
                     {m.name}
                   </button>
@@ -967,7 +997,12 @@ export function ChromaticDemo() {
 
             <div className="flex gap-2 pt-2">
               <motion.button
-                className="flex-1 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                className={cn(
+                  "flex-1 py-1.5 text-xs rounded transition-colors",
+                  theme === 'dark'
+                    ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                )}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setAnalyzerAngle(polarizerAngle)}
@@ -975,7 +1010,12 @@ export function ChromaticDemo() {
                 平行设置
               </motion.button>
               <motion.button
-                className="flex-1 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                className={cn(
+                  "flex-1 py-1.5 text-xs rounded transition-colors",
+                  theme === 'dark'
+                    ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                )}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setAnalyzerAngle((polarizerAngle + 90) % 180)}
@@ -988,15 +1028,15 @@ export function ChromaticDemo() {
           {/* 相位延迟信息 */}
           <ControlPanel title="相位延迟">
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={cn("p-2 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
                 <div className="text-gray-500 text-xs">光程差 Δn×d</div>
                 <div className="text-cyan-400 font-mono">{opticalPathDiff.toFixed(1)} nm</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={cn("p-2 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
                 <div className="text-gray-500 text-xs">相位延迟 (550nm)</div>
                 <div className="text-purple-400 font-mono">{(phaseRetardation * 180 / Math.PI).toFixed(0)}°</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg col-span-2">
+              <div className={cn("p-2 rounded-lg col-span-2", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
                 <div className="text-gray-500 text-xs">延迟级次</div>
                 <div className="text-orange-400 font-mono">{retardationOrders.toFixed(2)} λ</div>
               </div>
@@ -1010,8 +1050,9 @@ export function ChromaticDemo() {
               birefringence={birefringence}
               polarizerAngle={polarizerAngle}
               analyzerAngle={analyzerAngle}
+              theme={theme}
             />
-            <p className="text-xs text-gray-400 mt-2">
+            <p className={cn("text-xs mt-2", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
               不同波长的透过率不同，导致出射光呈现特定颜色。
             </p>
           </ControlPanel>
@@ -1036,17 +1077,17 @@ export function ChromaticDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="色偏振原理" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
             白光通过双折射材料时，不同波长的光经历不同的相位延迟，在检偏器后发生干涉，产生特征颜色。
           </p>
         </InfoCard>
         <InfoCard title="米歇尔-列维色表" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
             光程差与颜色的对应关系构成米歇尔-列维色表，是矿物鉴定的重要工具。低级次：灰→白→黄，高级次：彩色序列。
           </p>
         </InfoCard>
         <InfoCard title="应用场景" color="orange">
-          <ul className="text-xs text-gray-300 space-y-1">
+          <ul className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
             <li>• 矿物岩石鉴定</li>
             <li>• 应力分析（光弹性）</li>
             <li>• 液晶显示技术</li>
