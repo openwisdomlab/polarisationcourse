@@ -12,6 +12,7 @@ import {
   Formula,
   InfoCard,
 } from '../DemoControls'
+import { useTheme } from '@/contexts/ThemeContext'
 
 // 3D波动传播视图 - 伪3D等轴测投影Canvas
 function WavePropagation3DCanvas({
@@ -404,6 +405,7 @@ function PresetButton({
 
 // 主演示组件
 export function PolarizationStateDemo() {
+  const { theme } = useTheme()
   const [phaseDiff, setPhaseDiff] = useState(0)
   const [ampX, setAmpX] = useState(1)
   const [ampY, setAmpY] = useState(1)
@@ -449,7 +451,7 @@ export function PolarizationStateDemo() {
         <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
           偏振态与波合成
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           探索光的偏振状态：由两个垂直分量的振幅比和相位差决定
         </p>
       </div>
@@ -457,10 +459,10 @@ export function PolarizationStateDemo() {
       {/* 上方：两个可视化面板 */}
       <div className="flex flex-col lg:flex-row gap-6">
         {/* 3D 波动传播视图 */}
-        <div className="flex-1 bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden">
+        <div className={`flex-1 rounded-xl border border-cyan-400/20 overflow-hidden ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
           <div className="px-4 py-3 border-b border-cyan-400/10 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white">3D 空间传播视图</h3>
-            <div className="text-xs text-gray-500">伪等轴测投影</div>
+            <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>3D 空间传播视图</h3>
+            <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>伪等轴测投影</div>
           </div>
           <div className="p-4 flex justify-center">
             <WavePropagation3DCanvas
@@ -473,9 +475,9 @@ export function PolarizationStateDemo() {
         </div>
 
         {/* 2D 偏振态投影 */}
-        <div className="lg:w-[360px] bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden">
+        <div className={`lg:w-[360px] rounded-xl border border-cyan-400/20 overflow-hidden ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
           <div className="px-4 py-3 border-b border-cyan-400/10">
-            <h3 className="text-sm font-semibold text-white">偏振态投影</h3>
+            <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>偏振态投影</h3>
           </div>
           <div className="p-4 flex flex-col items-center gap-3">
             <PolarizationStateCanvas
@@ -486,19 +488,19 @@ export function PolarizationStateDemo() {
             />
             <div className="text-center space-y-1">
               <div>
-                <span className="text-gray-400 text-sm">当前状态: </span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>当前状态: </span>
                 <span className="font-semibold" style={{ color: polarizationState.color }}>
                   {polarizationState.type}
                 </span>
               </div>
-              <p className="text-xs text-gray-500">{polarizationState.description}</p>
+              <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>{polarizationState.description}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* 快速预设 */}
-      <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 p-4">
+      <div className={`rounded-xl border border-cyan-400/20 p-4 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
         <div className="flex flex-wrap gap-2 justify-center">
           {presets.map((preset, index) => (
             <PresetButton
@@ -514,7 +516,7 @@ export function PolarizationStateDemo() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               animate
                 ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
-                : 'bg-slate-700/50 text-gray-400 border border-slate-600'
+                : theme === 'dark' ? 'bg-slate-700/50 text-gray-400 border border-slate-600' : 'bg-gray-100 text-gray-600 border border-gray-300'
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -580,7 +582,7 @@ export function PolarizationStateDemo() {
 
         {/* 物理原理 */}
         <ControlPanel title="物理原理">
-          <div className="text-xs text-gray-400 space-y-2">
+          <div className={`text-xs space-y-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             <p>
               <strong className="text-cyan-400">偏振态</strong>
               由两个互相垂直的电场分量 (Ex, Ey) 的振幅比和相位差(δ)决定。

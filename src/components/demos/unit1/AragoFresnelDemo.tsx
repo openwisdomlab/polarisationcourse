@@ -23,6 +23,7 @@ import {
   Toggle,
   ValueDisplay,
 } from '../DemoControls'
+import { useTheme } from '@/contexts/ThemeContext'
 
 // 计算干涉条纹强度
 function calculateInterferencePattern(
@@ -473,6 +474,7 @@ function PolarizationVectorDiagram({
 // 主演示组件
 export function AragoFresnelDemo() {
   const { t } = useTranslation()
+  const { theme } = useTheme()
 
   // 状态
   const [pol1, setPol1] = useState(0)      // 光束1偏振角
@@ -509,7 +511,7 @@ export function AragoFresnelDemo() {
         <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent">
           {t('demoUi.aragoFresnel.title') || '阿拉戈-菲涅尔定律'}
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           {t('demoUi.aragoFresnel.subtitle') || '正交偏振光的干涉与检偏器的作用'}
         </p>
       </div>
@@ -522,7 +524,7 @@ export function AragoFresnelDemo() {
             className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
               pol1 === preset.pol1 && pol2 === preset.pol2 && showAnalyzer === preset.analyzer
                 ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50'
-                : 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+                : theme === 'dark' ? 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-slate-500' : 'bg-gray-100/50 text-gray-600 border-gray-300/50 hover:border-gray-400'
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -543,8 +545,8 @@ export function AragoFresnelDemo() {
         {/* 左侧：光路图和干涉图样 */}
         <div className="lg:col-span-2 space-y-4">
           {/* 光路示意图 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90 border border-pink-500/30 p-4">
-            <h3 className="text-sm font-semibold text-white mb-3">光路示意图</h3>
+          <div className={`rounded-xl border border-pink-500/30 p-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90' : 'bg-gradient-to-br from-white via-gray-50 to-pink-50'}`}>
+            <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>光路示意图</h3>
             <OpticalSetupDiagram
               pol1={pol1}
               pol2={pol2}
@@ -555,9 +557,9 @@ export function AragoFresnelDemo() {
           </div>
 
           {/* 干涉图样 */}
-          <div className="rounded-xl bg-slate-900/80 border border-slate-600/30 p-4">
+          <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-slate-900/80 border-slate-600/30' : 'bg-white border-gray-200'}`}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white">干涉图样</h3>
+              <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>干涉图样</h3>
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 visibility > 0.5 ? 'bg-green-500/20 text-green-400' :
                 visibility > 0.1 ? 'bg-yellow-500/20 text-yellow-400' :
@@ -631,8 +633,8 @@ export function AragoFresnelDemo() {
             />
 
             {/* 检偏器开关 */}
-            <div className="flex items-center justify-between py-2 border-t border-slate-700/50">
-              <span className="text-xs text-gray-400">启用检偏器</span>
+            <div className={`flex items-center justify-between py-2 border-t ${theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'}`}>
+              <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>启用检偏器</span>
               <Toggle
                 label=""
                 checked={showAnalyzer}
@@ -659,7 +661,7 @@ export function AragoFresnelDemo() {
               className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 animate
                   ? 'bg-pink-400/20 text-pink-400 border border-pink-400/50'
-                  : 'bg-slate-700/50 text-gray-400 border border-slate-600'
+                  : theme === 'dark' ? 'bg-slate-700/50 text-gray-400 border border-slate-600' : 'bg-gray-100 text-gray-600 border border-gray-300'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -716,24 +718,24 @@ export function AragoFresnelDemo() {
       </div>
 
       {/* 公式说明 */}
-      <div className="bg-slate-900/50 rounded-xl border border-slate-700/50 p-4">
-        <h3 className="text-sm font-semibold text-white mb-3">干涉公式</h3>
+      <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-slate-900/50 border-slate-700/50' : 'bg-gray-50 border-gray-200'}`}>
+        <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>干涉公式</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="p-3 bg-slate-800/50 rounded-lg">
+          <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'}`}>
             <div className="font-mono text-cyan-400 mb-1">无检偏器时:</div>
-            <div className="text-gray-300">
+            <div className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
               I = I₁ + I₂ + 2√(I₁I₂)·cos(δ)·cos²(Δθ/2)
             </div>
-            <div className="text-gray-500 mt-1">
+            <div className={`mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
               当 Δθ = 90° 时，cos²(45°) = 0.5，干涉项消失
             </div>
           </div>
-          <div className="p-3 bg-slate-800/50 rounded-lg">
+          <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'}`}>
             <div className="font-mono text-purple-400 mb-1">有检偏器时:</div>
-            <div className="text-gray-300">
+            <div className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
               I = |E₁·cos(θ₁-α) + E₂·cos(θ₂-α)·e^(iδ)|²
             </div>
-            <div className="text-gray-500 mt-1">
+            <div className={`mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
               检偏器角度 α 将两束光投影到同一方向
             </div>
           </div>

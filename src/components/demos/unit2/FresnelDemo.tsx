@@ -6,6 +6,7 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { useTheme } from '@/contexts/ThemeContext'
 
 // 菲涅尔方程计算
 function fresnelEquations(theta1: number, n1: number, n2: number) {
@@ -572,6 +573,7 @@ function FresnelCurveChart({
 
 // 主演示组件
 export function FresnelDemo() {
+  const { theme } = useTheme()
   const [incidentAngle, setIncidentAngle] = useState(45)
   const [n1, setN1] = useState(1.0)
   const [n2, setN2] = useState(1.5)
@@ -612,10 +614,10 @@ export function FresnelDemo() {
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${theme === 'dark' ? 'from-white via-cyan-100 to-white' : 'from-gray-800 via-cyan-600 to-gray-800'}`}>
           菲涅尔方程交互演示
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
           探索s偏振和p偏振光在界面反射/折射时的行为差异
         </p>
       </div>
@@ -625,7 +627,7 @@ export function FresnelDemo() {
         {/* 左侧：可视化 */}
         <div className="space-y-4">
           {/* 光线图 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border-cyan-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'bg-gradient-to-br from-white via-gray-50 to-cyan-50 border-cyan-200 shadow-lg'}`}>
             <FresnelDiagram
               incidentAngle={incidentAngle}
               n1={n1}
@@ -636,8 +638,8 @@ export function FresnelDemo() {
           </div>
 
           {/* 反射率/透射率条 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4 space-y-3">
-            <h4 className="text-sm font-semibold text-white mb-3">反射率与透射率</h4>
+          <div className={`rounded-xl border p-4 space-y-3 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30' : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 shadow-sm'}`}>
+            <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>反射率与透射率</h4>
             {showS && (
               <>
                 <IntensityBar label="Rs (s偏振反射率)" value={Rs} color="cyan" />
@@ -690,23 +692,23 @@ export function FresnelDemo() {
 
             {/* 偏振选择 */}
             <div className="flex gap-4 pt-2">
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className={`flex items-center gap-2 text-sm cursor-pointer ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 <input
                   type="checkbox"
                   checked={showS}
                   onChange={(e) => setShowS(e.target.checked)}
                   className="rounded border-cyan-500 text-cyan-500 focus:ring-cyan-500"
                 />
-                <span className="text-cyan-400">s偏振</span>
+                <span className="text-cyan-500">s偏振</span>
               </label>
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className={`flex items-center gap-2 text-sm cursor-pointer ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 <input
                   type="checkbox"
                   checked={showP}
                   onChange={(e) => setShowP(e.target.checked)}
                   className="rounded border-pink-500 text-pink-500 focus:ring-pink-500"
                 />
-                <span className="text-pink-400">p偏振</span>
+                <span className="text-pink-500">p偏振</span>
               </label>
             </div>
 
@@ -718,7 +720,7 @@ export function FresnelDemo() {
                   <button
                     key={m.name}
                     onClick={() => { setN1(m.n1); setN2(m.n2) }}
-                    className="px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                    className={`px-2 py-1.5 text-xs rounded transition-colors ${theme === 'dark' ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     {m.name}
                   </button>
@@ -730,29 +732,29 @@ export function FresnelDemo() {
           {/* 计算结果 */}
           <ControlPanel title="计算结果">
             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-              <div className="text-gray-400">
-                折射角 θ₂ = <span className="text-green-400 font-mono">
+              <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                折射角 θ₂ = <span className="text-green-500 font-mono">
                   {fresnel.totalReflection ? '全反射' : `${fresnel.theta2.toFixed(1)}°`}
                 </span>
               </div>
-              <div className="text-gray-400">
-                布儒斯特角 = <span className="text-yellow-400 font-mono">{brewsterAngle.toFixed(1)}°</span>
+              <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                布儒斯特角 = <span className="text-yellow-500 font-mono">{brewsterAngle.toFixed(1)}°</span>
               </div>
               {criticalAngle && (
-                <div className="col-span-2 text-gray-400">
-                  临界角 = <span className="text-red-400 font-mono">{criticalAngle.toFixed(1)}°</span>
+                <div className={`col-span-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  临界角 = <span className="text-red-500 font-mono">{criticalAngle.toFixed(1)}°</span>
                   <span className="text-gray-500 text-xs ml-2">(全内反射)</span>
                 </div>
               )}
             </div>
 
             {/* 公式显示 */}
-            <div className="mt-3 p-3 bg-slate-900/50 rounded-lg">
+            <div className={`mt-3 p-3 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
               <div className="text-xs text-gray-500 mb-2">菲涅尔方程</div>
-              <div className="font-mono text-xs text-gray-300 space-y-1">
+              <div className={`font-mono text-xs space-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 <p>rs = (n₁cosθ₁ - n₂cosθ₂) / (n₁cosθ₁ + n₂cosθ₂)</p>
                 <p>rp = (n₂cosθ₁ - n₁cosθ₂) / (n₂cosθ₁ + n₁cosθ₂)</p>
-                <p className="text-cyan-400 pt-1">Rs = rs², Rp = rp²</p>
+                <p className="text-cyan-500 pt-1">Rs = rs², Rp = rp²</p>
               </div>
             </div>
           </ControlPanel>
@@ -760,7 +762,7 @@ export function FresnelDemo() {
           {/* 反射率曲线 */}
           <ControlPanel title="反射率曲线 R(θ)">
             <FresnelCurveChart n1={n1} n2={n2} currentAngle={incidentAngle} />
-            <p className="text-xs text-gray-400 mt-2">
+            <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               红点表示当前入射角对应的反射率。在布儒斯特角处，p偏振反射率为零。
             </p>
           </ControlPanel>

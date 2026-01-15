@@ -64,10 +64,10 @@ export function SourceCodeViewer({
 
   if (!demoSource || !currentImpl) {
     return (
-      <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
-        <div className="bg-slate-900 p-8 rounded-xl text-white">
+      <div className="fixed inset-0 bg-black/50 dark:bg-black/80 z-50 flex items-center justify-center">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-xl text-gray-800 dark:text-white shadow-xl">
           <p>{isZh ? '未找到源码' : 'Source code not found'}</p>
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-cyan-600 rounded">
+          <button onClick={onClose} className="mt-4 px-4 py-2 bg-cyan-600 text-white rounded">
             {isZh ? '关闭' : 'Close'}
           </button>
         </div>
@@ -147,21 +147,21 @@ export function SourceCodeViewer({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 overflow-y-auto"
+        className="fixed inset-0 bg-black/50 dark:bg-black/90 z-50 flex items-center justify-center p-4 overflow-y-auto"
       >
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={e => e.stopPropagation()}
-          className="bg-slate-900 rounded-xl w-full max-w-6xl max-h-[95vh] flex flex-col shadow-2xl border border-slate-700"
+          className="bg-white dark:bg-slate-900 rounded-xl w-full max-w-6xl max-h-[95vh] flex flex-col shadow-2xl border border-gray-200 dark:border-slate-700"
         >
           {/* Header */}
-          <div className="flex items-start justify-between p-6 border-b border-slate-700">
+          <div className="flex items-start justify-between p-6 border-b border-gray-200 dark:border-slate-700">
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <FileCode className="w-6 h-6 text-cyan-400" />
-                <h2 className="text-2xl font-bold text-white">
+                <FileCode className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
                   {isZh ? demoSource.nameZh : demoSource.name}
                 </h2>
                 <span className={`px-2 py-1 rounded text-xs ${complexityColor}`}>
@@ -172,7 +172,7 @@ export function SourceCodeViewer({
                     : isZh ? '高级' : 'Advanced'}
                 </span>
               </div>
-              <p className="text-slate-400 mt-2 text-sm">
+              <p className="text-gray-600 dark:text-slate-400 mt-2 text-sm">
                 {isZh ? demoSource.descriptionZh : demoSource.description}
               </p>
 
@@ -181,7 +181,7 @@ export function SourceCodeViewer({
                 {(isZh ? demoSource.conceptsZh : demoSource.concepts).map((concept, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 bg-slate-800 text-slate-300 rounded text-xs"
+                    className="px-2 py-1 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 rounded text-xs"
                   >
                     {concept}
                   </span>
@@ -191,7 +191,7 @@ export function SourceCodeViewer({
 
             <button
               onClick={onClose}
-              className="ml-4 p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white"
+              className="ml-4 p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
@@ -199,7 +199,7 @@ export function SourceCodeViewer({
           </div>
 
           {/* Language Selector */}
-          <div className="px-6 py-4 border-b border-slate-700 bg-slate-900/50">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50">
             <LanguageSelector
               availableLanguages={availableLanguages}
               selectedLanguage={selectedLanguage}
@@ -208,11 +208,11 @@ export function SourceCodeViewer({
           </div>
 
           {/* Toolbar */}
-          <div className="flex items-center justify-between px-6 py-3 border-b border-slate-700 bg-slate-900/50">
+          <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50">
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-gray-200 dark:bg-slate-800 hover:bg-gray-300 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-lg text-sm transition-colors"
               >
                 {copied ? (
                   <>
@@ -229,7 +229,7 @@ export function SourceCodeViewer({
 
               <button
                 onClick={handleDownloadSource}
-                className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-gray-200 dark:bg-slate-800 hover:bg-gray-300 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-lg text-sm transition-colors"
               >
                 <Download className="w-4 h-4" />
                 <span>{isZh ? '下载源文件' : 'Download Source'}</span>
@@ -249,13 +249,13 @@ export function SourceCodeViewer({
               </button>
             </div>
 
-            <div className="text-xs text-slate-500">
+            <div className="text-xs text-gray-500 dark:text-slate-500">
               {languageInfo.icon} {isZh ? languageInfo.nameZh : languageInfo.name}
             </div>
           </div>
 
           {/* Code Display */}
-          <div className="flex-1 overflow-auto bg-slate-950 p-6">
+          <div className="flex-1 overflow-auto bg-gray-100 dark:bg-slate-950 p-6">
             {selectedLanguage === 'prompt' ? (
               // Special rendering for AI prompts with markdown styling
               <div className="prose prose-invert prose-sm max-w-none
@@ -311,30 +311,30 @@ export function SourceCodeViewer({
           </div>
 
           {/* Footer - Dependencies and Resources */}
-          <div className="border-t border-slate-700 bg-slate-900/50">
+          <div className="border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50">
             {/* Setup Instructions */}
             {currentImpl.setup && (
-              <div className="px-6 py-4 border-b border-slate-700">
-                <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+                <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
                   <BookOpen className="w-4 h-4" />
                   {isZh ? '安装说明' : 'Setup Instructions'}
                 </h3>
-                <pre className="text-xs text-slate-300 bg-slate-950 p-3 rounded overflow-x-auto">
+                <pre className="text-xs text-gray-700 dark:text-slate-300 bg-gray-100 dark:bg-slate-950 p-3 rounded overflow-x-auto">
                   {isZh ? currentImpl.setupZh || currentImpl.setup : currentImpl.setup}
                 </pre>
               </div>
             )}
 
             {/* Dependencies */}
-            <div className="px-6 py-4 border-b border-slate-700">
-              <h3 className="text-sm font-semibold text-white mb-2">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-2">
                 {isZh ? '依赖项' : 'Dependencies'}:
               </h3>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(currentImpl.dependencies).map(([name, version]) => (
                   <span
                     key={name}
-                    className="px-3 py-1 bg-slate-800 rounded text-xs text-slate-300 font-mono"
+                    className="px-3 py-1 bg-gray-200 dark:bg-slate-800 rounded text-xs text-gray-700 dark:text-slate-300 font-mono"
                   >
                     {name}
                     {typeof version === 'string' && version.match(/^[\d\^~>=<]/)
@@ -348,7 +348,7 @@ export function SourceCodeViewer({
             {/* Learning Resources */}
             {demoSource.resources && demoSource.resources.length > 0 && (
               <div className="px-6 py-4">
-                <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
                   <BookOpen className="w-4 h-4" />
                   {isZh ? '学习资源' : 'Learning Resources'}
                 </h3>
@@ -359,10 +359,10 @@ export function SourceCodeViewer({
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded text-sm transition-colors group"
+                      className="flex items-center gap-2 px-3 py-2 bg-gray-200 dark:bg-slate-800 hover:bg-gray-300 dark:hover:bg-slate-700 rounded text-sm transition-colors group"
                     >
-                      <ExternalLink className="w-3 h-3 text-cyan-400 group-hover:text-cyan-300" />
-                      <span className="text-slate-300 group-hover:text-white text-xs">
+                      <ExternalLink className="w-3 h-3 text-cyan-600 dark:text-cyan-400 group-hover:text-cyan-700 dark:group-hover:text-cyan-300" />
+                      <span className="text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-xs">
                         {isZh ? resource.titleZh || resource.title : resource.title}
                       </span>
                     </a>
@@ -373,8 +373,8 @@ export function SourceCodeViewer({
 
             {/* Notes */}
             {currentImpl.notes && (
-              <div className="px-6 py-4 border-t border-slate-700 bg-slate-900">
-                <p className="text-xs text-slate-400 italic">
+              <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-900">
+                <p className="text-xs text-gray-600 dark:text-slate-400 italic">
                   💡 {isZh ? currentImpl.notesZh || currentImpl.notes : currentImpl.notes}
                 </p>
               </div>

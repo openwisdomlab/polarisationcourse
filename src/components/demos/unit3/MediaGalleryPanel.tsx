@@ -22,6 +22,7 @@ import {
   Camera,
   Film
 } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
 import {
   CULTURAL_MEDIA,
   CULTURAL_SERIES,
@@ -105,6 +106,7 @@ function MediaThumbnail({
   isVideo?: boolean
   size?: 'sm' | 'md' | 'lg' | 'xl'
 }) {
+  const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
   const sizeClasses = {
@@ -116,8 +118,8 @@ function MediaThumbnail({
 
   return (
     <motion.button
-      className={`${sizeClasses[size]} relative rounded-lg overflow-hidden border border-slate-600/50
-        hover:border-purple-500/50 transition-all group cursor-pointer`}
+      className={`${sizeClasses[size]} relative rounded-lg overflow-hidden border
+        hover:border-purple-500/50 transition-all group cursor-pointer ${theme === 'dark' ? 'border-slate-600/50' : 'border-gray-200'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
@@ -374,12 +376,14 @@ function CategoryTab({
   active,
   onClick,
   count,
+  theme,
 }: {
   icon: ComponentType<{ className?: string }>
   label: string
   active: boolean
   onClick: () => void
   count: number
+  theme: 'light' | 'dark'
 }) {
   return (
     <button
@@ -387,7 +391,9 @@ function CategoryTab({
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
         active
           ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-          : 'bg-slate-700/50 text-gray-400 hover:text-gray-300 hover:bg-slate-600/50'
+          : theme === 'dark'
+            ? 'bg-slate-700/50 text-gray-400 hover:text-gray-300 hover:bg-slate-600/50'
+            : 'bg-gray-100 text-gray-600 hover:text-gray-700 hover:bg-gray-200'
       }`}
     >
       <Icon className="w-3.5 h-3.5" />
@@ -401,17 +407,19 @@ function CategoryTab({
 function SeriesLinkCard({
   series,
   isZh,
+  theme,
 }: {
   series: CulturalSeries
   isZh: boolean
+  theme: 'light' | 'dark'
 }) {
   return (
     <Link
       to={`/experiments/showcase`}
-      className="group flex items-center gap-3 p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50
-        hover:border-pink-500/50 hover:bg-slate-800 transition-all"
+      className={`group flex items-center gap-3 p-2.5 rounded-lg border
+        hover:border-pink-500/50 transition-all ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700/50 hover:bg-slate-800' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}
     >
-      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-slate-900">
+      <div className={`w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 ${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-200'}`}>
         <img
           src={series.thumbnail}
           alt={isZh ? series.nameZh : series.name}
@@ -420,7 +428,7 @@ function SeriesLinkCard({
         />
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="text-xs font-medium text-white truncate group-hover:text-pink-300 transition-colors">
+        <h4 className={`text-xs font-medium truncate group-hover:text-pink-500 transition-colors ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
           {isZh ? series.nameZh : series.name}
         </h4>
         <p className="text-[10px] text-gray-500 truncate">
@@ -434,6 +442,7 @@ function SeriesLinkCard({
 
 // 主组件
 export function MediaGalleryPanel() {
+  const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
@@ -494,16 +503,15 @@ export function MediaGalleryPanel() {
   }
 
   return (
-    <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-purple-950/30
-      border border-purple-500/20 overflow-hidden">
+    <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/80 to-purple-950/30 border-purple-500/20' : 'bg-gradient-to-br from-white to-purple-50/30 border-purple-200'}`}>
       {/* 头部 - 可点击展开/折叠 */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        className={`w-full flex items-center justify-between p-4 transition-colors ${theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-purple-50'}`}
       >
         <div className="flex items-center gap-2">
-          <Camera className="w-5 h-5 text-purple-400" />
-          <h3 className="text-sm font-semibold text-white">
+          <Camera className={`w-5 h-5 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-500'}`} />
+          <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
             {isZh ? '真实实验场景' : 'Real Experiment Scenes'}
           </h3>
           <span className="text-xs text-gray-500">
@@ -522,10 +530,10 @@ export function MediaGalleryPanel() {
       {!isExpanded && (
         <div className="px-4 pb-4 space-y-4">
           {/* 内容说明 */}
-          <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/30">
-            <Film className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
+          <div className={`flex items-start gap-3 p-3 rounded-lg border ${theme === 'dark' ? 'bg-slate-800/30 border-slate-700/30' : 'bg-gray-50 border-gray-200'}`}>
+            <Film className={`w-4 h-4 flex-shrink-0 mt-0.5 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-500'}`} />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-300 leading-relaxed">
+              <p className={`text-xs leading-relaxed ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                 {isZh
                   ? '包含实验室拍摄的色偏振照片和视频：应力双折射、保鲜膜干涉、透明胶带效果等真实实验记录，以及偏振艺术文创作品展示。'
                   : 'Contains lab-captured chromatic polarization photos and videos: stress birefringence, plastic wrap interference, tape effects, and polarization art creations.'}
@@ -559,9 +567,9 @@ export function MediaGalleryPanel() {
                 />
               ))}
               <motion.button
-                className="w-28 h-28 flex-shrink-0 rounded-lg border border-dashed border-slate-600
+                className={`w-28 h-28 flex-shrink-0 rounded-lg border border-dashed
                   flex flex-col items-center justify-center text-gray-500 hover:text-gray-400
-                  hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors gap-1"
+                  hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors gap-1 ${theme === 'dark' ? 'border-slate-600' : 'border-gray-300'}`}
                 whileHover={{ scale: 1.02 }}
                 onClick={() => setIsExpanded(true)}
               >
@@ -591,6 +599,7 @@ export function MediaGalleryPanel() {
                   key={series.id}
                   series={series}
                   isZh={isZh}
+                  theme={theme}
                 />
               ))}
             </div>
@@ -617,6 +626,7 @@ export function MediaGalleryPanel() {
                   active={activeCategory === 'all'}
                   onClick={() => setActiveCategory('all')}
                   count={allMedia.all.length}
+                  theme={theme}
                 />
                 <CategoryTab
                   icon={Palette}
@@ -624,6 +634,7 @@ export function MediaGalleryPanel() {
                   active={activeCategory === 'art'}
                   onClick={() => setActiveCategory('art')}
                   count={allMedia.art.length}
+                  theme={theme}
                 />
                 <CategoryTab
                   icon={FlaskConical}
@@ -631,6 +642,7 @@ export function MediaGalleryPanel() {
                   active={activeCategory === 'experiment'}
                   onClick={() => setActiveCategory('experiment')}
                   count={allMedia.experiments.length}
+                  theme={theme}
                 />
               </div>
 
@@ -648,9 +660,9 @@ export function MediaGalleryPanel() {
               </div>
 
               {/* 文创作品系列链接 */}
-              <div className="mt-4 pt-4 border-t border-slate-700/50">
+              <div className={`mt-4 pt-4 border-t ${theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'}`}>
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-medium text-gray-400 flex items-center gap-2">
+                  <h4 className={`text-xs font-medium flex items-center gap-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     <Palette className="w-3.5 h-3.5" />
                     {isZh ? '相关文创作品系列' : 'Related Art Series'}
                   </h4>
@@ -668,6 +680,7 @@ export function MediaGalleryPanel() {
                       key={series.id}
                       series={series}
                       isZh={isZh}
+                      theme={theme}
                     />
                   ))}
                 </div>

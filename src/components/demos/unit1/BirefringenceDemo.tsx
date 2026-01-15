@@ -21,6 +21,7 @@ import {
   SideBySideComparison,
 } from '@/components/real-experiments'
 import { getResourcesByModule } from '@/data/resource-gallery'
+import { useTheme } from '@/contexts/ThemeContext'
 
 // 光源组件
 function LightSource({ position }: { position: [number, number, number] }) {
@@ -412,6 +413,7 @@ function TabButton({
 // 主演示组件
 export function BirefringenceDemo() {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
   const [activeTab, setActiveTab] = useState<DemoTab>('theory')
@@ -436,7 +438,7 @@ export function BirefringenceDemo() {
         <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
           {isZh ? '双折射效应 - 3D交互' : 'Birefringence - 3D Interactive'}
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           {isZh
             ? '方解石晶体将一束光分裂为偏振方向垂直的o光和e光 · 拖动旋转视角'
             : 'Calcite crystal splits light into o-ray and e-ray with perpendicular polarizations'}
@@ -472,7 +474,7 @@ export function BirefringenceDemo() {
             className="flex flex-col gap-6"
           >
             {/* 3D可视化面板 */}
-            <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden" style={{ height: 400 }}>
+            <div className={`rounded-xl border border-cyan-400/20 overflow-hidden ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'}`} style={{ height: 400 }}>
               <Canvas
                 camera={{ position: [0, 2, 8], fov: 50 }}
                 gl={{ antialias: true, pixelRatio: Math.min(window.devicePixelRatio, 2) }}
@@ -611,14 +613,14 @@ export function BirefringenceDemo() {
             className="flex flex-col gap-6"
           >
             {/* Real World Lab content */}
-            <div className="bg-slate-900/50 rounded-xl border border-emerald-400/20 p-4">
+            <div className={`rounded-xl border border-emerald-400/20 p-4 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
               <div className="flex items-center gap-2 mb-4">
                 <Beaker className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {isZh ? '厚度与干涉色实验' : 'Thickness & Interference Color Experiment'}
                 </h3>
               </div>
-              <p className="text-gray-400 text-sm mb-4">
+              <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 {isZh
                   ? '在正交偏振系统中，双折射材料的厚度直接影响观察到的干涉色。增加保鲜膜层数，观察颜色如何变化！'
                   : 'In crossed polarizers, the thickness of birefringent materials directly affects the observed interference colors. Add layers of plastic wrap and observe the color changes!'}
@@ -627,14 +629,14 @@ export function BirefringenceDemo() {
             </div>
 
             {/* Real vs Simulation Comparison */}
-            <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 p-4">
+            <div className={`rounded-xl border border-cyan-400/20 p-4 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
               <div className="flex items-center gap-2 mb-4">
                 <Box className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {isZh ? '双折射对比演示' : 'Birefringence Comparison Demo'}
                 </h3>
               </div>
-              <p className="text-gray-400 text-sm mb-4">
+              <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 {isZh
                   ? '拖动中间分割线，对比真实双折射实验与3D模拟器。调整参数查看相似度匹配！'
                   : 'Drag the center divider to compare real birefringence experiment with 3D simulator. Adjust parameters to see similarity matching!'}
@@ -714,14 +716,14 @@ export function BirefringenceDemo() {
             </div>
 
             {/* Stress comparison */}
-            <div className="bg-slate-900/50 rounded-xl border border-purple-400/20 p-4">
+            <div className={`rounded-xl border border-purple-400/20 p-4 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
               <div className="flex items-center gap-2 mb-4">
                 <FlaskConical className="w-5 h-5 text-purple-400" />
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {isZh ? '玻璃应力对比' : 'Glass Stress Comparison'}
                 </h3>
               </div>
-              <p className="text-gray-400 text-sm mb-4">
+              <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 {isZh
                   ? '钢化玻璃经过热处理产生预应力，在正交偏振下显示特征图案。拖动滑块对比钢化玻璃和普通玻璃的差异！'
                   : 'Tempered glass has pre-stress from heat treatment, showing characteristic patterns under crossed polarizers. Drag the slider to compare tempered and ordinary glass!'}

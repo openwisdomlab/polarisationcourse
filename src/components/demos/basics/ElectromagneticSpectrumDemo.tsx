@@ -6,6 +6,7 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { ControlPanel, Toggle, InfoCard } from '../DemoControls'
 
 // 电磁波谱区域定义
@@ -190,6 +191,7 @@ function formatWavelength(meters: number): string {
 
 export function ElectromagneticSpectrumDemo() {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
   const [selectedRegion, setSelectedRegion] = useState<string | null>('visible')
@@ -208,7 +210,7 @@ export function ElectromagneticSpectrumDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 主可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 rounded-xl border border-indigo-500/20 p-4 overflow-hidden">
+          <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 border-indigo-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-indigo-50 border-indigo-200'} rounded-xl border p-4 overflow-hidden`}>
             <svg viewBox="0 0 800 400" className="w-full h-auto" style={{ minHeight: '360px' }}>
               <defs>
                 {/* 背景网格 */}
@@ -545,8 +547,8 @@ export function ElectromagneticSpectrumDemo() {
             onChange={setShowVisibleExpanded}
           />
 
-          <div className="border-t border-slate-700 pt-4 mt-4">
-            <h4 className="text-sm font-medium text-gray-300 mb-2">
+          <div className={`border-t ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'} pt-4 mt-4`}>
+            <h4 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
               {isZh ? '选择波段' : 'Select Region'}
             </h4>
             <div className="grid grid-cols-2 gap-2">
@@ -576,7 +578,7 @@ export function ElectromagneticSpectrumDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title={isZh ? '光的本质' : 'Nature of Light'} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>
               • {isZh ? '光是电磁波，不需要介质传播' : 'Light is EM wave, no medium needed'}
             </li>
@@ -590,7 +592,7 @@ export function ElectromagneticSpectrumDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '能量与波长' : 'Energy & Wavelength'} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>
               • {isZh ? '光子能量：E = hf = hc/λ' : 'Photon energy: E = hf = hc/λ'}
             </li>
@@ -604,7 +606,7 @@ export function ElectromagneticSpectrumDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '人眼视觉' : 'Human Vision'} color="green">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>
               • {isZh ? '人眼仅能看见380-700nm范围' : 'Human eyes see only 380-700nm'}
             </li>

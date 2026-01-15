@@ -3,6 +3,7 @@
  * 用于菲涅尔方程、斯托克斯矢量等2D可视化
  */
 import { useRef, useEffect, useCallback } from 'react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface Demo2DCanvasProps {
   width?: number
@@ -18,6 +19,7 @@ export function Demo2DCanvas({
   className = '',
 }: Demo2DCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { theme } = useTheme()
 
   const render = useCallback(() => {
     const canvas = canvasRef.current
@@ -48,7 +50,7 @@ export function Demo2DCanvas({
   return (
     <canvas
       ref={canvasRef}
-      className={`bg-slate-900/50 rounded-lg ${className}`}
+      className={`rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100/50'} ${className}`}
       style={{ width, height }}
     />
   )

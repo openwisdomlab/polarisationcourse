@@ -737,7 +737,7 @@ export function OpticalRotationDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border-cyan-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'bg-gradient-to-br from-white via-gray-50 to-cyan-50 border-cyan-200 shadow-lg'}`}>
             <OpticalRotationDiagram
               substance={substance}
               concentration={concentration}
@@ -797,7 +797,9 @@ export function OpticalRotationDemo() {
                 className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                   lightMode === 'monochromatic'
                     ? 'bg-amber-500/20 border border-amber-500/50 text-amber-300'
-                    : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                    : theme === 'dark'
+                      ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                      : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -809,7 +811,9 @@ export function OpticalRotationDemo() {
                 className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                   lightMode === 'polychromatic'
                     ? 'bg-gradient-to-r from-red-500/20 via-green-500/20 to-blue-500/20 border border-white/30 text-white'
-                    : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                    : theme === 'dark'
+                      ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                      : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -831,7 +835,9 @@ export function OpticalRotationDemo() {
                     className={`w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors ${
                       selectedWavelength === opt.wavelength
                         ? 'border-2'
-                        : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                        : theme === 'dark'
+                          ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                          : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
                     }`}
                     style={{
                       borderColor: selectedWavelength === opt.wavelength ? opt.color : undefined,
@@ -874,14 +880,16 @@ export function OpticalRotationDemo() {
                   className={`w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors ${
                     substance === s.value
                       ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
-                      : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                      : theme === 'dark'
+                        ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                        : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
                   }`}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   onClick={() => setSubstance(s.value)}
                 >
                   <span className="font-medium">{s.label}</span>
-                  <span className={`font-mono text-sm ${s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400'}`}>
+                  <span className={`font-mono text-sm ${s.rotation.startsWith('-') ? 'text-pink-500' : 'text-cyan-500'}`}>
                     [α] = {s.rotation}
                   </span>
                 </motion.button>

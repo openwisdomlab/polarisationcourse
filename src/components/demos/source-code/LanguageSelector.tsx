@@ -7,6 +7,7 @@
  */
 
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { LANGUAGE_INFO, type SourceLanguage } from '@/types/source-code'
 import { motion } from 'framer-motion'
 
@@ -22,11 +23,12 @@ export function LanguageSelector({
   onLanguageChange,
 }: LanguageSelectorProps) {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-2 text-sm text-slate-400">
+      <div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'}`}>
         <span>{isZh ? '选择语言' : 'Choose Language'}:</span>
         <span className="text-xs">
           {isZh ? '同一演示的不同实现' : 'Different implementations of the same demo'}
@@ -48,8 +50,12 @@ export function LanguageSelector({
                 relative px-4 py-2.5 rounded-lg border-2 transition-all
                 ${
                   isSelected
-                    ? 'border-cyan-500 bg-cyan-500/10 text-white'
-                    : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-slate-600'
+                    ? theme === 'dark'
+                      ? 'border-cyan-500 bg-cyan-500/10 text-white'
+                      : 'border-cyan-600 bg-cyan-50 text-cyan-700'
+                    : theme === 'dark'
+                      ? 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-slate-600'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
                 }
               `}
             >
@@ -102,7 +108,7 @@ export function LanguageSelector({
       </div>
 
       {/* Description of selected language */}
-      <div className="text-xs text-slate-500 mt-1">
+      <div className={`text-xs mt-1 ${theme === 'dark' ? 'text-slate-500' : 'text-gray-500'}`}>
         {isZh
           ? LANGUAGE_INFO[selectedLanguage].descriptionZh
           : LANGUAGE_INFO[selectedLanguage].description}

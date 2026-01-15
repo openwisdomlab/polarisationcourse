@@ -12,6 +12,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard, Toggle } from '../DemoControls'
+import { useTheme } from '@/contexts/ThemeContext'
 import {
   sellmeierIndex,
   cauchyIndex,
@@ -720,6 +721,7 @@ function PolarizationDegreeChart({
 
 // 主演示组件
 export function BrewsterDemo() {
+  const { theme } = useTheme()
   const { t } = useTranslation()
   const [incidentAngle, setIncidentAngle] = useState(56)
   const [wavelength, setWavelength] = useState(550) // 绿光默认
@@ -769,10 +771,10 @@ export function BrewsterDemo() {
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${theme === 'dark' ? 'from-white via-cyan-100 to-white' : 'from-gray-800 via-cyan-600 to-gray-800'}`}>
           {t('demoUi.brewster.title')}
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
           {t('demoUi.brewster.subtitle')}
         </p>
       </div>
@@ -781,36 +783,36 @@ export function BrewsterDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border-cyan-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'bg-gradient-to-br from-white via-gray-50 to-cyan-50 border-cyan-200 shadow-lg'}`}>
             <BrewsterDiagram incidentAngle={incidentAngle} n1={n1} n2={n2} labels={diagramLabels} />
           </div>
 
           {/* 状态指示 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+          <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30' : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 shadow-sm'}`}>
             <div className="flex items-center justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400">{t('demoUi.brewster.currentIncidentAngle')}</span>
-                  <span className="font-mono text-lg text-orange-400">{incidentAngle}°</span>
+                  <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{t('demoUi.brewster.currentIncidentAngle')}</span>
+                  <span className="font-mono text-lg text-orange-500">{incidentAngle}°</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400">{t('demoUi.brewster.brewsterAngle')}</span>
-                  <span className="font-mono text-lg text-cyan-400">{brewsterAngle.toFixed(1)}°</span>
+                  <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{t('demoUi.brewster.brewsterAngle')}</span>
+                  <span className="font-mono text-lg text-cyan-500">{brewsterAngle.toFixed(1)}°</span>
                 </div>
               </div>
               <div className="text-right">
-                <div className={`text-2xl font-bold ${isAtBrewster ? 'text-green-400' : 'text-gray-500'}`}>
+                <div className={`text-2xl font-bold ${isAtBrewster ? 'text-green-500' : 'text-gray-500'}`}>
                   {isAtBrewster ? t('demoUi.brewster.match') : `${t('demoUi.brewster.difference')} ${Math.abs(incidentAngle - brewsterAngle).toFixed(1)}°`}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {t('demoUi.brewster.polarizationDegree')} <span className="text-purple-400 font-mono">{(polarizationDegree * 100).toFixed(0)}%</span>
+                  {t('demoUi.brewster.polarizationDegree')} <span className="text-purple-500 font-mono">{(polarizationDegree * 100).toFixed(0)}%</span>
                 </div>
               </div>
             </div>
 
             {/* 进度条 */}
             <div className="mt-4">
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div className={`h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'}`}>
                 <motion.div
                   className="h-full rounded-full"
                   style={{
@@ -842,8 +844,8 @@ export function BrewsterDemo() {
             />
 
             {/* 色散模式开关 */}
-            <div className="flex items-center justify-between py-2 border-t border-slate-700/50">
-              <span className="text-xs text-gray-400">{t('demoUi.brewster.dispersionMode')}</span>
+            <div className={`flex items-center justify-between py-2 border-t ${theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'}`}>
+              <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{t('demoUi.brewster.dispersionMode')}</span>
               <Toggle
                 label=""
                 checked={showDispersion}
@@ -876,7 +878,7 @@ export function BrewsterDemo() {
             )}
 
             {/* 材料选择器 */}
-            <div className="pt-2 border-t border-slate-700/50">
+            <div className={`pt-2 border-t ${theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'}`}>
               <div className="text-xs text-gray-500 mb-2">{t('demoUi.brewster.selectMaterial')}</div>
               <div className="grid grid-cols-2 gap-1.5">
                 {DISPERSIVE_MATERIALS.map((m, index) => {
@@ -893,7 +895,9 @@ export function BrewsterDemo() {
                       className={`px-2 py-1.5 text-xs rounded transition-all ${
                         isSelected
                           ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/50'
-                          : 'bg-slate-700/50 text-gray-400 border border-transparent hover:bg-slate-600'
+                          : theme === 'dark'
+                            ? 'bg-slate-700/50 text-gray-400 border border-transparent hover:bg-slate-600'
+                            : 'bg-gray-100 text-gray-600 border border-transparent hover:bg-gray-200'
                       }`}
                     >
                       {t(m.nameKey).replace('demoUi.brewster.', '')}
@@ -904,15 +908,15 @@ export function BrewsterDemo() {
             </div>
 
             {/* 显示当前折射率 */}
-            <div className="mt-2 p-2 bg-slate-900/50 rounded-lg">
+            <div className={`mt-2 p-2 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
               <div className="flex justify-between text-xs">
                 <span className="text-gray-500">n({wavelength}nm)</span>
-                <span className="text-cyan-400 font-mono">{n2.toFixed(4)}</span>
+                <span className="text-cyan-500 font-mono">{n2.toFixed(4)}</span>
               </div>
               {showDispersion && (
                 <div className="flex justify-between text-xs mt-1">
                   <span className="text-gray-500">{t('demoUi.brewster.dispersionRange')}</span>
-                  <span className="text-purple-400 font-mono">{dispersionRange.toFixed(2)}°</span>
+                  <span className="text-purple-500 font-mono">{dispersionRange.toFixed(2)}°</span>
                 </div>
               )}
             </div>
@@ -931,31 +935,31 @@ export function BrewsterDemo() {
           {/* 计算结果 */}
           <ControlPanel title={t('demoUi.common.calculationResult')}>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
                 <div className="text-gray-500 text-xs">{t('demoUi.brewster.sPolReflectance')}</div>
-                <div className="text-cyan-400 font-mono text-lg">{(result.Rs * 100).toFixed(1)}%</div>
+                <div className="text-cyan-500 font-mono text-lg">{(result.Rs * 100).toFixed(1)}%</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
                 <div className="text-gray-500 text-xs">{t('demoUi.brewster.pPolReflectance')}</div>
-                <div className={`font-mono text-lg ${result.Rp < 0.01 ? 'text-green-400' : 'text-pink-400'}`}>
+                <div className={`font-mono text-lg ${result.Rp < 0.01 ? 'text-green-500' : 'text-pink-500'}`}>
                   {(result.Rp * 100).toFixed(1)}%
                 </div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
                 <div className="text-gray-500 text-xs">{t('demoUi.brewster.refractionAngle')}</div>
-                <div className="text-green-400 font-mono text-lg">{result.theta2.toFixed(1)}°</div>
+                <div className="text-green-500 font-mono text-lg">{result.theta2.toFixed(1)}°</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
                 <div className="text-gray-500 text-xs">θ₁ + θ₂</div>
-                <div className={`font-mono text-lg ${Math.abs(incidentAngle + result.theta2 - 90) < 1.5 ? 'text-green-400' : 'text-gray-400'}`}>
+                <div className={`font-mono text-lg ${Math.abs(incidentAngle + result.theta2 - 90) < 1.5 ? 'text-green-500' : 'text-gray-400'}`}>
                   {(incidentAngle + result.theta2).toFixed(1)}°
                 </div>
               </div>
             </div>
 
             {/* 公式 */}
-            <div className="mt-3 p-3 bg-slate-900/50 rounded-lg text-center">
-              <span className="font-mono text-lg bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent">
+            <div className={`mt-3 p-3 rounded-lg text-center ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
+              <span className={`font-mono text-lg bg-gradient-to-r bg-clip-text text-transparent ${theme === 'dark' ? 'from-cyan-400 to-white' : 'from-cyan-600 to-gray-800'}`}>
                 tan(θB) = n₂/n₁ = {n2.toFixed(2)}/{n1.toFixed(2)} = {(n2/n1).toFixed(3)}
               </span>
             </div>
@@ -964,7 +968,7 @@ export function BrewsterDemo() {
           {/* 偏振度曲线 */}
           <ControlPanel title={t('demoUi.brewster.reflectedPolDegree')}>
             <PolarizationDegreeChart n1={n1} n2={n2} currentAngle={incidentAngle} />
-            <p className="text-xs text-gray-400 mt-2">
+            <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               {t('demoUi.brewster.chartDesc')}
             </p>
           </ControlPanel>

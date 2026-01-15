@@ -6,6 +6,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import {
   ControlPanel,
   SliderControl,
@@ -59,6 +60,7 @@ const ANGLE_PRESETS = [
 
 export function MalusLawGraphDemo() {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
   // 状态
@@ -121,7 +123,7 @@ export function MalusLawGraphDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 主可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+          <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-blue-50 border-blue-200'} rounded-xl border p-4 overflow-hidden`}>
             <svg viewBox="0 0 600 420" className="w-full h-auto" style={{ minHeight: '400px' }}>
               <defs>
                 <pattern id="malus-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -435,10 +437,10 @@ export function MalusLawGraphDemo() {
 
           {/* 强度条 */}
           {showIntensityBar && (
-            <div className="mt-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+            <div className={`mt-4 p-4 ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700/50' : 'bg-gray-50 border-gray-200'} rounded-lg border`}>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-400 w-20">{isZh ? '输出光强' : 'Output I'}</span>
-                <div className="flex-1 h-6 bg-slate-700 rounded-full overflow-hidden">
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} w-20`}>{isZh ? '输出光强' : 'Output I'}</span>
+                <div className={`flex-1 h-6 ${theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'} rounded-full overflow-hidden`}>
                   <motion.div
                     className="h-full rounded-full"
                     style={{
@@ -551,7 +553,7 @@ export function MalusLawGraphDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title={isZh ? '关键特点' : 'Key Features'} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>• {isZh ? '曲线关于θ=90°对称' : 'Curve symmetric about θ=90°'}</li>
             <li>• {isZh ? '最大值在θ=0°和180°' : 'Maximum at θ=0° and 180°'}</li>
             <li>• {isZh ? '最小值在θ=90°（完全消光）' : 'Minimum at θ=90° (extinction)'}</li>
@@ -560,7 +562,7 @@ export function MalusLawGraphDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '物理意义' : 'Physical Meaning'} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>• {isZh ? 'cos(θ)代表电场分量的投影' : 'cos(θ) = E-field component projection'}</li>
             <li>• {isZh ? '光强与电场幅度的平方成正比' : 'Intensity ∝ E-field amplitude²'}</li>
             <li>• {isZh ? '因此光强与cos²(θ)成正比' : 'Therefore intensity ∝ cos²(θ)'}</li>
@@ -568,7 +570,7 @@ export function MalusLawGraphDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '实际应用' : 'Applications'} color="green">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>• {isZh ? '偏振眼镜减少眩光' : 'Polarized sunglasses reduce glare'}</li>
             <li>• {isZh ? 'LCD显示器亮度控制' : 'LCD brightness control'}</li>
             <li>• {isZh ? '光学仪器中的光强调节' : 'Light intensity modulation in optics'}</li>

@@ -12,6 +12,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { Sparkles, FlaskConical, Volume2, VolumeX } from 'lucide-react'
 import { useHapticAudio } from '@/hooks/useHapticAudio'
 import {
@@ -174,6 +175,7 @@ interface Props {
 
 export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Props) {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
   const config = useDifficultyConfig(difficultyLevel)
 
@@ -355,13 +357,13 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
   return (
     <div className="space-y-6">
       {/* View Mode Tabs */}
-      <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg w-fit">
+      <div className={`flex gap-2 p-1 ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100'} rounded-lg w-fit`}>
         <button
           onClick={() => setViewMode('types')}
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
             viewMode === 'types'
               ? 'bg-orange-500/20 text-orange-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50'
+              : `${theme === 'dark' ? 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}`
           }`}
         >
           <Sparkles className="w-4 h-4" />
@@ -372,7 +374,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
             viewMode === 'paradox'
               ? 'bg-purple-500/20 text-purple-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50'
+              : `${theme === 'dark' ? 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}`
           }`}
         >
           <FlaskConical className="w-4 h-4" />
@@ -392,7 +394,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
             {/* Types View */}
             <div className="flex gap-6 flex-col lg:flex-row">
               <div className="flex-1">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 rounded-xl border border-indigo-500/20 p-4">
+                <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 border-indigo-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-indigo-50 border-indigo-200'} rounded-xl border p-4`}>
                   <svg viewBox="0 0 400 400" className="w-full h-auto max-w-[400px] mx-auto">
                     <defs>
                       <filter id="glow-cyan">
@@ -439,8 +441,8 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
                 </div>
 
                 {/* Type selector */}
-                <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                  <h4 className="text-sm font-semibold text-gray-300 mb-3">{isZh ? '偏振类型' : 'Polarization Type'}</h4>
+                <div className={`mt-4 p-4 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700/50' : 'bg-gray-50 border-gray-200'} border`}>
+                  <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-3`}>{isZh ? '偏振类型' : 'Polarization Type'}</h4>
                   <div className="grid grid-cols-3 gap-2">
                     {(['linear', 'circular', 'elliptical'] as PolarizationType[]).map((type) => {
                       const colors = {
@@ -456,7 +458,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
                           className={`py-2.5 px-3 rounded-lg text-sm font-medium border transition-all ${
                             polarizationType === type
                               ? colors[type].active
-                              : `bg-slate-700/50 text-gray-400 border-slate-600/50 ${colors[type].inactive}`
+                              : `${theme === 'dark' ? 'bg-slate-700/50 text-gray-400 border-slate-600/50' : 'bg-gray-100 text-gray-500 border-gray-300'} ${colors[type].inactive}`
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -486,13 +488,13 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
 
                 {(polarizationType === 'circular' || polarizationType === 'elliptical') && (
                   <div className="space-y-2">
-                    <span className="text-xs text-gray-400">{isZh ? '旋转方向' : 'Rotation Direction'}</span>
+                    <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{isZh ? '旋转方向' : 'Rotation Direction'}</span>
                     <div className="grid grid-cols-2 gap-2">
                       <motion.button
                         className={`py-2 rounded-lg text-sm font-medium border transition-all ${
                           circularDirection === 'right'
                             ? 'bg-green-400/20 text-green-400 border-green-400/50'
-                            : 'bg-slate-700/50 text-gray-400 border-slate-600/50'
+                            : `${theme === 'dark' ? 'bg-slate-700/50 text-gray-400 border-slate-600/50' : 'bg-gray-100 text-gray-500 border-gray-300'}`
                         }`}
                         whileHover={{ scale: 1.02 }}
                         onClick={() => setCircularDirection('right')}
@@ -503,7 +505,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
                         className={`py-2 rounded-lg text-sm font-medium border transition-all ${
                           circularDirection === 'left'
                             ? 'bg-purple-400/20 text-purple-400 border-purple-400/50'
-                            : 'bg-slate-700/50 text-gray-400 border-slate-600/50'
+                            : `${theme === 'dark' ? 'bg-slate-700/50 text-gray-400 border-slate-600/50' : 'bg-gray-100 text-gray-500 border-gray-300'}`
                         }`}
                         whileHover={{ scale: 1.02 }}
                         onClick={() => setCircularDirection('left')}
@@ -574,13 +576,13 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
             {/* Info cards */}
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
               <InfoCard title={isZh ? '线偏振' : 'Linear Polarization'} color={polarizationType === 'linear' ? 'orange' : 'cyan'}>
-                <p className="text-xs text-gray-300">{isZh ? '电场在固定平面内振荡，如同钟摆运动。' : 'E-field oscillates in a fixed plane, like a pendulum.'}</p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{isZh ? '电场在固定平面内振荡，如同钟摆运动。' : 'E-field oscillates in a fixed plane, like a pendulum.'}</p>
               </InfoCard>
               <InfoCard title={isZh ? '圆偏振' : 'Circular Polarization'} color={polarizationType === 'circular' ? 'green' : 'cyan'}>
-                <p className="text-xs text-gray-300">{isZh ? '电场矢量端点描绘圆形轨迹，等振幅、相位差90°。' : 'E-field tip traces a circle, equal amplitudes with 90° phase difference.'}</p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{isZh ? '电场矢量端点描绘圆形轨迹，等振幅、相位差90°。' : 'E-field tip traces a circle, equal amplitudes with 90° phase difference.'}</p>
               </InfoCard>
               <InfoCard title={isZh ? '椭圆偏振' : 'Elliptical Polarization'} color={polarizationType === 'elliptical' ? 'purple' : 'cyan'}>
-                <p className="text-xs text-gray-300">{isZh ? '最一般的偏振态，线偏振和圆偏振是特例。' : 'Most general state; linear and circular are special cases.'}</p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{isZh ? '最一般的偏振态，线偏振和圆偏振是特例。' : 'Most general state; linear and circular are special cases.'}</p>
               </InfoCard>
             </div>
           </motion.div>
@@ -607,7 +609,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
 
             <div className="flex gap-6 flex-col lg:flex-row">
               <div className="flex-1">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+                <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-blue-50 border-blue-200'} rounded-xl border p-4 overflow-hidden`}>
                   <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
                     <defs>
                       <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -705,10 +707,10 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
                   <Toggle label={isZh ? '偏振颜色' : 'Polarization Colors'} checked={showPolarization} onChange={setShowPolarization} />
                   <Toggle label={isZh ? '公式标注' : 'Show Formulas'} checked={showFormulas} onChange={setShowFormulas} />
 
-                  <div className="pt-2 border-t border-slate-700/50 mt-2">
+                  <div className={`pt-2 border-t ${theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'} mt-2`}>
                     <button onClick={toggleAudio}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full transition-colors ${
-                        isAudioEnabled ? 'bg-cyan-500/20 text-cyan-400' : 'bg-slate-700/50 text-gray-400'
+                        isAudioEnabled ? 'bg-cyan-500/20 text-cyan-400' : `${theme === 'dark' ? 'bg-slate-700/50 text-gray-400' : 'bg-gray-100 text-gray-500'}`
                       }`}
                     >
                       {isAudioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -752,14 +754,14 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'explore' }: Pr
             {/* Knowledge cards */}
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <InfoCard title={isZh ? '三偏振片悖论' : 'The Paradox'} color="purple">
-                <ul className="text-xs text-gray-300 space-y-1.5">
+                <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
                   <li>• {isZh ? '两个正交偏振片完全阻挡光' : 'Crossed polarizers block all light'}</li>
                   <li>• {isZh ? '加入45°偏振片，反而有光通过！' : 'Adding 45° polarizer allows light through!'}</li>
                   <li>• {isZh ? '最大透射率：0°→45°→90° = 12.5%' : 'Max transmission: 0°→45°→90° = 12.5%'}</li>
                 </ul>
               </InfoCard>
               <InfoCard title={isZh ? '物理解释' : 'Physical Explanation'} color="cyan">
-                <ul className="text-xs text-gray-300 space-y-1.5">
+                <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
                   <li>• {isZh ? '偏振片不只"过滤"，还"重新定向"' : 'Polarizers redirect, not just filter'}</li>
                   <li>• {isZh ? '中间片将0°偏振光转为45°' : 'Middle polarizer converts 0° to 45°'}</li>
                   <li>• {isZh ? '45°偏振光可部分通过90°偏振片' : '45° light can partially pass 90° polarizer'}</li>
