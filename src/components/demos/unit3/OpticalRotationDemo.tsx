@@ -70,6 +70,7 @@ function OpticalRotationDiagram({
   lightMode,
   wavelength,
   lightColor,
+  theme,
 }: {
   substance: string
   concentration: number
@@ -78,6 +79,7 @@ function OpticalRotationDiagram({
   lightMode: LightMode
   wavelength: number
   lightColor: string
+  theme: 'dark' | 'light'
 }) {
   const specificRotationD = SPECIFIC_ROTATIONS[substance]?.value || 66.5
 
@@ -154,7 +156,7 @@ function OpticalRotationDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="700" height="300" fill="#0f172a" rx="8" />
+      <rect x="0" y="0" width="700" height="300" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
 
       {/* 光源 */}
       <g transform="translate(50, 150)">
@@ -186,7 +188,7 @@ function OpticalRotationDiagram({
             />
           </>
         )}
-        <text x="0" y="45" textAnchor="middle" fill="#94a3b8" fontSize="11">
+        <text x="0" y="45" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">
           {lightMode === 'monochromatic' ? '单色光源' : '多色光源'}
         </text>
       </g>
@@ -226,10 +228,10 @@ function OpticalRotationDiagram({
 
       {/* 起偏器 */}
       <g transform="translate(130, 150)">
-        <rect x="-8" y="-40" width="16" height="80" fill="#1e3a5f" stroke="#22d3ee" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-40" width="16" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
         <line x1="0" y1="-30" x2="0" y2="30" stroke="#22d3ee" strokeWidth="3" />
         <text x="0" y="55" textAnchor="middle" fill="#22d3ee" fontSize="11">起偏器</text>
-        <text x="0" y="68" textAnchor="middle" fill="#94a3b8" fontSize="10">0°</text>
+        <text x="0" y="68" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">0°</text>
       </g>
 
       {/* 偏振光 (水平偏振) */}
@@ -334,7 +336,7 @@ function OpticalRotationDiagram({
         <text x={(pathLength * 60) / 2} y="50" textAnchor="middle" fill="#67e8f9" fontSize="11">
           样品管 (L={pathLength.toFixed(1)} dm)
         </text>
-        <text x={(pathLength * 60) / 2} y="65" textAnchor="middle" fill="#94a3b8" fontSize="10">
+        <text x={(pathLength * 60) / 2} y="65" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
           c={concentration.toFixed(2)} g/mL
         </text>
       </g>
@@ -473,7 +475,7 @@ function OpticalRotationDiagram({
                 opacity="0.7"
               />
             ))}
-            <text x="0" y="-25" textAnchor="middle" fill="#94a3b8" fontSize="8">
+            <text x="0" y="-25" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="8">
               色散
             </text>
           </>
@@ -482,7 +484,7 @@ function OpticalRotationDiagram({
 
       {/* 检偏器 */}
       <g transform={`translate(${500 + pathLength * 60}, 150)`}>
-        <rect x="-8" y="-40" width="16" height="80" fill="#1e3a5f" stroke="#a78bfa" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-40" width="16" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
         <motion.line
           x1="0"
           y1="-30"
@@ -493,7 +495,7 @@ function OpticalRotationDiagram({
           transform={`rotate(${analyzerAngle})`}
         />
         <text x="0" y="55" textAnchor="middle" fill="#a78bfa" fontSize="11">检偏器</text>
-        <text x="0" y="68" textAnchor="middle" fill="#94a3b8" fontSize="10">{analyzerAngle.toFixed(0)}°</text>
+        <text x="0" y="68" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{analyzerAngle.toFixed(0)}°</text>
       </g>
 
       {/* 到屏幕的光束 */}
@@ -545,7 +547,7 @@ function OpticalRotationDiagram({
               animate={{ opacity: [intensity * 0.7, intensity * 0.9, intensity * 0.7] }}
               transition={{ duration: 1, repeat: Infinity }}
             />
-            <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="11">
+            <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">
               {(intensity * 100).toFixed(0)}%
             </text>
           </>
@@ -557,8 +559,8 @@ function OpticalRotationDiagram({
               y="-35"
               width="50"
               height="70"
-              fill="#1e293b"
-              stroke="#475569"
+              fill={theme === 'dark' ? '#1e293b' : '#f1f5f9'}
+              stroke={theme === 'dark' ? '#475569' : '#cbd5e1'}
               strokeWidth="2"
               rx="6"
             />
@@ -576,14 +578,14 @@ function OpticalRotationDiagram({
                 <text
                   x="22"
                   y={-19 + i * 12}
-                  fill="#94a3b8"
+                  fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
                   fontSize="7"
                 >
                   {(comp.intensity * 100).toFixed(0)}%
                 </text>
               </g>
             ))}
-            <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="9">
+            <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="9">
               色散强度
             </text>
           </>
@@ -593,15 +595,15 @@ function OpticalRotationDiagram({
       {/* 旋转方向标注 */}
       {lightMode === 'monochromatic' ? (
         <g transform="translate(350, 230)">
-          <rect x="-80" y="-15" width="160" height="30" fill="rgba(30,41,59,0.8)" rx="6" />
+          <rect x="-80" y="-15" width="160" height="30" fill={theme === 'dark' ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)'} rx="6" />
           <text x="0" y="5" textAnchor="middle" fill={lightColor} fontSize="13" fontWeight="500">
             {isRightRotation ? '右旋 (d/+)' : '左旋 (l/-)'}: α = {rotationAngle.toFixed(1)}°
           </text>
         </g>
       ) : (
         <g transform="translate(350, 230)">
-          <rect x="-100" y="-15" width="200" height="30" fill="rgba(30,41,59,0.8)" rx="6" />
-          <text x="0" y="5" textAnchor="middle" fill="#94a3b8" fontSize="12" fontWeight="500">
+          <rect x="-100" y="-15" width="200" height="30" fill={theme === 'dark' ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)'} rx="6" />
+          <text x="0" y="5" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#475569'} fontSize="12" fontWeight="500">
             旋光色散: 短波长旋转角更大 (Drude方程)
           </text>
         </g>
@@ -633,10 +635,12 @@ function RotationChart({
   substance,
   pathLength,
   currentConcentration,
+  theme,
 }: {
   substance: string
   pathLength: number
   currentConcentration: number
+  theme: 'dark' | 'light'
 }) {
   const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
   const isPositive = specificRotation >= 0
@@ -662,26 +666,26 @@ function RotationChart({
 
   return (
     <svg viewBox="0 0 300 160" className="w-full h-auto">
-      <rect x="40" y="30" width="220" height="100" fill="#1e293b" rx="4" />
+      <rect x="40" y="30" width="220" height="100" fill={theme === 'dark' ? '#1e293b' : '#f1f5f9'} rx="4" />
 
       {/* 坐标轴 */}
-      <line x1="40" y1="100" x2="270" y2="100" stroke="#475569" strokeWidth="1" />
-      <line x1="40" y1="30" x2="40" y2="130" stroke="#475569" strokeWidth="1" />
+      <line x1="40" y1="100" x2="270" y2="100" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
 
       {/* X轴刻度 */}
       {[0, 0.5, 1].map((c) => {
         const x = 40 + c * 220
         return (
           <g key={c}>
-            <line x1={x} y1="130" x2={x} y2="135" stroke="#94a3b8" strokeWidth="1" />
-            <text x={x} y="147" textAnchor="middle" fill="#94a3b8" fontSize="10">{c}</text>
+            <line x1={x} y1="130" x2={x} y2="135" stroke={theme === 'dark' ? '#94a3b8' : '#64748b'} strokeWidth="1" />
+            <text x={x} y="147" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{c}</text>
           </g>
         )
       })}
 
       {/* Y轴刻度 */}
-      <text x="30" y="104" textAnchor="end" fill="#94a3b8" fontSize="10">0°</text>
-      <text x="30" y="44" textAnchor="end" fill="#94a3b8" fontSize="10">
+      <text x="30" y="104" textAnchor="end" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">0°</text>
+      <text x="30" y="44" textAnchor="end" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
         {isPositive ? '+' : ''}{maxRotation.toFixed(0)}°
       </text>
 
@@ -704,8 +708,8 @@ function RotationChart({
       />
 
       {/* 轴标签 */}
-      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="11">浓度 c (g/mL)</text>
-      <text x="15" y="70" fill="#94a3b8" fontSize="10" transform="rotate(-90 15 70)">α</text>
+      <text x="155" y="158" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">浓度 c (g/mL)</text>
+      <text x="15" y="70" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10" transform="rotate(-90 15 70)">α</text>
     </svg>
   )
 }
@@ -771,7 +775,12 @@ export function OpticalRotationDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={cn(
+            "rounded-xl border p-4",
+            theme === 'dark'
+              ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border-cyan-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]'
+              : 'bg-gradient-to-br from-slate-50 via-white to-cyan-50 border-cyan-200 shadow-lg'
+          )}>
             <OpticalRotationDiagram
               substance={substance}
               concentration={concentration}
@@ -780,6 +789,7 @@ export function OpticalRotationDemo() {
               lightMode={lightMode}
               wavelength={wavelength}
               lightColor={lightColor}
+              theme={theme}
             />
           </div>
 
@@ -791,12 +801,12 @@ export function OpticalRotationDemo() {
               : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 shadow-sm'
           )}>
             {/* 光源信息 */}
-            <div className="flex items-center justify-center gap-2 mb-3 pb-2 border-b border-slate-700/50">
+            <div className={cn("flex items-center justify-center gap-2 mb-3 pb-2 border-b", theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200')}>
               <span
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: lightMode === 'monochromatic' ? lightColor : '#a855f7' }}
               />
-              <span className="text-sm text-gray-400">
+              <span className={cn("text-sm", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
                 {lightMode === 'monochromatic'
                   ? `${selectedSpectralLine.name} (λ = ${wavelength} nm)`
                   : '多色光 (旋光色散)'}
@@ -841,11 +851,16 @@ export function OpticalRotationDemo() {
             {/* 光源模式切换 */}
             <div className="flex gap-2 mb-3">
               <motion.button
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
                   lightMode === 'monochromatic'
-                    ? 'bg-amber-500/20 border border-amber-500/50 text-amber-300'
-                    : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                }`}
+                    ? theme === 'dark'
+                      ? 'bg-amber-500/20 border border-amber-500/50 text-amber-300'
+                      : 'bg-amber-100 border border-amber-300 text-amber-700'
+                    : theme === 'dark'
+                      ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                      : 'bg-gray-100 border border-gray-200 text-gray-500 hover:bg-gray-200'
+                )}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={() => setLightMode('monochromatic')}
@@ -853,11 +868,16 @@ export function OpticalRotationDemo() {
                 单色光
               </motion.button>
               <motion.button
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
                   lightMode === 'polychromatic'
-                    ? 'bg-gradient-to-r from-red-500/20 via-green-500/20 to-violet-500/20 border border-purple-500/50 text-purple-300'
-                    : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                }`}
+                    ? theme === 'dark'
+                      ? 'bg-gradient-to-r from-red-500/20 via-green-500/20 to-violet-500/20 border border-purple-500/50 text-purple-300'
+                      : 'bg-gradient-to-r from-red-100 via-green-100 to-violet-100 border border-purple-300 text-purple-700'
+                    : theme === 'dark'
+                      ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                      : 'bg-gray-100 border border-gray-200 text-gray-500 hover:bg-gray-200'
+                )}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={() => setLightMode('polychromatic')}
@@ -869,17 +889,20 @@ export function OpticalRotationDemo() {
             {/* 单色光波长选择 */}
             {lightMode === 'monochromatic' && (
               <div className="space-y-2">
-                <div className="text-xs text-gray-500 mb-2">选择光谱线</div>
+                <div className={cn("text-xs mb-2", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>选择光谱线</div>
                 {SPECTRAL_LINES.map((line) => (
                   <motion.button
                     key={line.id}
-                    className={`w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors ${
+                    className={cn(
+                      "w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors",
                       selectedWavelengthId === line.id
                         ? 'border-2'
-                        : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                    }`}
+                        : theme === 'dark'
+                          ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                          : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
+                    )}
                     style={selectedWavelengthId === line.id ? {
-                      backgroundColor: `${line.color}20`,
+                      backgroundColor: theme === 'dark' ? `${line.color}20` : `${line.color}15`,
                       borderColor: `${line.color}80`,
                       color: line.color,
                     } : {}}
@@ -904,11 +927,11 @@ export function OpticalRotationDemo() {
 
             {/* 多色光说明 */}
             {lightMode === 'polychromatic' && (
-              <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-700">
-                <div className="text-xs text-gray-400 space-y-2">
-                  <p className="font-medium text-purple-400">旋光色散效应</p>
+              <div className={cn("p-3 rounded-lg border", theme === 'dark' ? 'bg-slate-900/50 border-slate-700' : 'bg-purple-50 border-purple-200')}>
+                <div className={cn("text-xs space-y-2", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+                  <p className={cn("font-medium", theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>旋光色散效应</p>
                   <p>不同波长的光具有不同的比旋光度，导致各色光旋转角度不同。</p>
-                  <p className="font-mono text-[10px] text-gray-500">
+                  <p className={cn("font-mono text-[10px]", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                     Drude方程: [α]<sub>λ</sub> ≈ [α]<sub>D</sub> × (589/λ)²
                   </p>
                   <div className="flex flex-wrap gap-1 mt-2">
@@ -916,7 +939,7 @@ export function OpticalRotationDemo() {
                       <span
                         key={comp.wavelength}
                         className="px-2 py-0.5 rounded text-[10px] font-mono"
-                        style={{ backgroundColor: `${comp.color}30`, color: comp.color }}
+                        style={{ backgroundColor: theme === 'dark' ? `${comp.color}30` : `${comp.color}20`, color: comp.color }}
                       >
                         {comp.name} {comp.wavelength}nm
                       </span>
@@ -933,17 +956,22 @@ export function OpticalRotationDemo() {
               {substances.map((s) => (
                 <motion.button
                   key={s.value}
-                  className={`w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors ${
+                  className={cn(
+                    "w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors",
                     substance === s.value
-                      ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
-                      : 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                  }`}
+                      ? theme === 'dark'
+                        ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
+                        : 'bg-cyan-100 border border-cyan-300 text-cyan-700'
+                      : theme === 'dark'
+                        ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                        : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
+                  )}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   onClick={() => setSubstance(s.value)}
                 >
                   <span className="font-medium">{s.label}</span>
-                  <span className={`font-mono text-sm ${s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400'}`}>
+                  <span className={cn("font-mono text-sm", s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400')}>
                     [α] = {s.rotation}
                   </span>
                 </motion.button>
@@ -986,7 +1014,12 @@ export function OpticalRotationDemo() {
 
             <div className="flex gap-2 mt-2">
               <motion.button
-                className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 rounded-lg border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors text-sm"
+                className={cn(
+                  "flex-1 py-2 rounded-lg border transition-colors text-sm",
+                  theme === 'dark'
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/30'
+                    : 'bg-gradient-to-r from-cyan-100 to-purple-100 text-cyan-700 border-cyan-300 hover:bg-cyan-200'
+                )}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setAnalyzerAngle(Math.round(rotationAngle))}
@@ -994,7 +1027,12 @@ export function OpticalRotationDemo() {
                 最亮位置 (平行)
               </motion.button>
               <motion.button
-                className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 rounded-lg border border-purple-500/30 hover:bg-purple-500/30 transition-colors text-sm"
+                className={cn(
+                  "flex-1 py-2 rounded-lg border transition-colors text-sm",
+                  theme === 'dark'
+                    ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30'
+                    : 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-purple-300 hover:bg-purple-200'
+                )}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
@@ -1036,7 +1074,7 @@ export function OpticalRotationDemo() {
               <p>c = 浓度 (g/mL)</p>
               <p>L = 光程 (dm)</p>
               {lightMode === 'monochromatic' && (
-                <p className="mt-1 pt-1 border-t border-slate-700/50" style={{ color: lightColor }}>
+                <p className={cn("mt-1 pt-1 border-t", theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200')} style={{ color: lightColor }}>
                   当前: λ = {wavelength} nm
                 </p>
               )}
@@ -1049,6 +1087,7 @@ export function OpticalRotationDemo() {
               substance={substance}
               pathLength={pathLength}
               currentConcentration={concentration}
+              theme={theme}
             />
           </ControlPanel>
         </div>
@@ -1057,17 +1096,17 @@ export function OpticalRotationDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="旋光性原理" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
             手性分子具有不重合的镜像结构，可使线偏振光的偏振面发生旋转。右旋(d/+)为顺时针，左旋(l/-)为逆时针。
           </p>
         </InfoCard>
         <InfoCard title="比旋光度" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
             [α]是物质的特征常数，定义为单位浓度(1 g/mL)和单位光程(1 dm)时的旋光角。依赖于波长和温度。
           </p>
         </InfoCard>
         <InfoCard title="应用场景" color="orange">
-          <ul className="text-xs text-gray-300 space-y-1">
+          <ul className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
             <li>• 糖度计测量糖浓度</li>
             <li>• 手性药物对映体鉴定</li>
             <li>• 食品工业质量控制</li>
