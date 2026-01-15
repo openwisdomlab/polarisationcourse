@@ -404,7 +404,7 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
             {t(unit.descriptionKey)}
           </p>
 
-          {/* Course sections - clickable to link to demos */}
+          {/* Course sections - display only, with optional demo link button */}
           {unit.sections && unit.sections.length > 0 && (
             <div className="mb-4">
               <h4 className={`text-sm font-medium mb-2 ${
@@ -414,14 +414,13 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
               </h4>
               <div className="space-y-2">
                 {unit.sections.map((section) => (
-                  <Link
+                  <div
                     key={section.id}
-                    to={section.demoLink || '#'}
                     onClick={e => e.stopPropagation()}
-                    className={`block p-3 rounded-lg transition-all hover:scale-[1.02] ${
+                    className={`block p-3 rounded-lg ${
                       theme === 'dark'
-                        ? 'bg-slate-700/50 hover:bg-slate-700'
-                        : 'bg-gray-50 hover:bg-gray-100'
+                        ? 'bg-slate-700/50'
+                        : 'bg-gray-50'
                     }`}
                   >
                     <div className="flex items-start gap-2">
@@ -443,13 +442,22 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
                           {t(section.descriptionKey)}
                         </p>
                       </div>
-                      <ArrowRight
-                        className={`w-4 h-4 flex-shrink-0 ${
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                        }`}
-                      />
+                      {section.demoLink && (
+                        <Link
+                          to={section.demoLink}
+                          onClick={e => e.stopPropagation()}
+                          className={`flex-shrink-0 p-1.5 rounded-full transition-colors ${
+                            theme === 'dark'
+                              ? 'hover:bg-slate-600 text-cyan-400'
+                              : 'hover:bg-gray-200 text-cyan-600'
+                          }`}
+                          title={t('course.viewDemo')}
+                        >
+                          <Play className="w-4 h-4" />
+                        </Link>
+                      )}
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>

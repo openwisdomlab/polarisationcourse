@@ -124,6 +124,7 @@
     "game": "Game",
     "experiment": "Experiment",
     "tool": "Tool",
+    "viewDemo": "View Demo",
     "stats": {
       "units": "{{count}} Units",
       "games": "Puzzle Games",
