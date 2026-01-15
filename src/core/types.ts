@@ -19,21 +19,32 @@ export interface LightPacket {
   phase: Phase;
 }
 
-// 方块类型 - 扩展版
+/**
+ * 方块类型 - 扩展版
+ *
+ * ⚠️ SCIENTIFIC NOTE: This game uses SIMPLIFIED physics models for some components.
+ * For scientifically accurate simulations, use the Jones Calculus engine in WaveOptics.ts.
+ *
+ * Key simplifications in the game engine (LightPhysics.ts):
+ * - quarterWave: Acts as 45° rotator, NOT true QWP (no circular polarization)
+ * - halfWave: Acts as 90° rotator, NOT true HWP (no fast-axis dependent rotation)
+ * - splitter: 90° separation like PBS/Wollaston, NOT natural calcite (~6° walk-off)
+ * - Phase: Binary (±1) only, NOT continuous (0-2π radians)
+ */
 export type BlockType =
   | 'air'
   | 'solid'
   | 'emitter'        // 光源 - 发射偏振光
   | 'polarizer'      // 偏振片 - 马吕斯定律过滤
   | 'rotator'        // 波片（旋光器）- 旋转偏振角度
-  | 'splitter'       // 方解石（双折射晶体）- 分裂o光和e光
+  | 'splitter'       // ⚠️ 偏振分束器(PBS) - 90°分束 (非天然方解石~6°)
   | 'sensor'         // 光感应器 - 检测光强
   | 'mirror'         // 反射镜 - 反射光线
   | 'prism'          // 棱镜 - 折射并分散光线（色散效果）
   | 'lens'           // 透镜 - 聚焦或发散光线
   | 'beamSplitter'   // 分束器 - 50/50分光
-  | 'quarterWave'    // 四分之一波片 - 线偏振转圆偏振
-  | 'halfWave'       // 二分之一波片 - 翻转偏振方向
+  | 'quarterWave'    // ⚠️ 简化模型：45°旋转器 (非真正QWP，无圆偏振)
+  | 'halfWave'       // ⚠️ 简化模型：90°旋转器 (非真正HWP)
   | 'absorber'       // 吸收器 - 部分吸收光强
   | 'phaseShifter'   // 相位调制器 - 改变相位
   | 'portal';        // 传送门 - 传送光线到另一位置

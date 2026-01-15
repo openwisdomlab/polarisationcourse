@@ -197,7 +197,9 @@ function MalusVisualization({ isActive }: { isActive: boolean }) {
   )
 }
 
-// Birefringence Visualization - Crystal splitting light
+// Birefringence Visualization - Polarizing Beam Splitter (PBS)
+// NOTE: This visualization shows 90° beam separation (like PBS/Wollaston Prism),
+// NOT natural calcite crystal which has ~6° walk-off angle.
 function BirefringenceVisualization({ isActive }: { isActive: boolean }) {
   const [time, setTime] = useState(0)
 
@@ -222,7 +224,7 @@ function BirefringenceVisualization({ isActive }: { isActive: boolean }) {
         </linearGradient>
       </defs>
 
-      {/* Crystal (calcite) */}
+      {/* PBS Cube */}
       <polygon
         points="35,25 65,25 70,75 30,75"
         fill="url(#crystal-fill)"
@@ -231,19 +233,17 @@ function BirefringenceVisualization({ isActive }: { isActive: boolean }) {
         opacity="0.8"
       />
 
-      {/* Crystal pattern lines */}
-      {[30, 40, 50, 60].map((x, i) => (
-        <line
-          key={i}
-          x1={x + 2}
-          y1="28"
-          x2={x - 3}
-          y2="72"
-          stroke="#a78bfa"
-          strokeWidth="0.3"
-          opacity="0.4"
-        />
-      ))}
+      {/* Diagonal interface line (characteristic of PBS) */}
+      <line
+        x1="35"
+        y1="25"
+        x2="70"
+        y2="75"
+        stroke="#a78bfa"
+        strokeWidth="1"
+        strokeDasharray="2,1"
+        opacity="0.6"
+      />
 
       {/* Input beam (unpolarized/mixed) */}
       <rect x="5" y="46" width="28" height="8" fill="#ffffff" opacity="0.8" rx="1">
@@ -255,7 +255,7 @@ function BirefringenceVisualization({ isActive }: { isActive: boolean }) {
         />
       </rect>
 
-      {/* O-ray (ordinary ray - 0°) */}
+      {/* p-ray (transmitted - horizontal polarization) */}
       {showSplit && (
         <g>
           <line
@@ -268,11 +268,11 @@ function BirefringenceVisualization({ isActive }: { isActive: boolean }) {
             strokeLinecap="round"
             opacity={isActive ? 0.9 : 0.5}
           />
-          <text x="88" y="35" fontSize="4" fill="#ff4444">o-ray (0°)</text>
+          <text x="88" y="35" fontSize="4" fill="#ff4444">p (0°)</text>
         </g>
       )}
 
-      {/* E-ray (extraordinary ray - 90°) */}
+      {/* s-ray (reflected - vertical polarization) */}
       {showSplit && (
         <g>
           <line
@@ -285,13 +285,13 @@ function BirefringenceVisualization({ isActive }: { isActive: boolean }) {
             strokeLinecap="round"
             opacity={isActive ? 0.9 : 0.5}
           />
-          <text x="88" y="68" fontSize="4" fill="#44ff44">e-ray (90°)</text>
+          <text x="88" y="68" fontSize="4" fill="#44ff44">s (90°)</text>
         </g>
       )}
 
-      {/* Labels */}
+      {/* Labels - PBS instead of Calcite */}
       <text x="50" y="18" textAnchor="middle" fontSize="4" fill="#a78bfa" opacity="0.8">
-        Calcite
+        PBS
       </text>
     </svg>
   )

@@ -1165,15 +1165,34 @@ function MuseumFooter() {
             )}>
               {t('museum.footer.tagline')}
             </p>
-            {/* Polarization visual */}
-            <div className="flex gap-1">
-              {POLARIZATION_COLORS.map((color, i) => (
-                <div
-                  key={i}
-                  className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: color, opacity: 0.8 }}
-                />
-              ))}
+            {/* Polarization visual with disclaimer tooltip */}
+            <div className="group relative">
+              <div className="flex gap-1 cursor-help">
+                {POLARIZATION_COLORS.map((color, i) => (
+                  <div
+                    key={i}
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: color, opacity: 0.8 }}
+                  />
+                ))}
+              </div>
+              {/* Tooltip disclaimer for false colors */}
+              <div className={cn(
+                "absolute bottom-full left-0 mb-2 px-3 py-2 rounded-lg text-xs w-64",
+                "opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200",
+                "z-50 pointer-events-none",
+                theme === 'dark'
+                  ? "bg-slate-700 text-slate-200 border border-slate-600"
+                  : "bg-white text-slate-700 border border-slate-200 shadow-lg"
+              )}>
+                <div className="font-semibold mb-1 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {t('museum.colorDisclaimer.title', 'Visual Note')}
+                </div>
+                <p>{t('museum.colorDisclaimer.description', 'These colors represent polarization direction (0°, 45°, 90°, 135°), not actual light wavelength. False colors are used for visualization purposes.')}</p>
+              </div>
             </div>
           </div>
 
@@ -1245,7 +1264,7 @@ function MuseumFooter() {
               </li>
               <li>
                 <a
-                  href="https://github.com/openwisdomlab/polarisation"
+                  href="https://github.com/openwisdomlab/polarisationcourse"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
@@ -1284,7 +1303,7 @@ function MuseumFooter() {
               </li>
               <li>
                 <a
-                  href="https://github.com/openwisdomlab/polarisation/blob/main/CONTRIBUTING.md"
+                  href="https://github.com/openwisdomlab/polarisationcourse/blob/main/CONTRIBUTING.md"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(

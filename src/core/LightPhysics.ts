@@ -1,10 +1,37 @@
 /**
- * PolarCraft - 光物理引擎
+ * PolarCraft - 光物理引擎 (Light Physics Engine)
  * 实现偏振光的四大公理
  *
- * This module provides both:
- * 1. Legacy scalar-based methods for game compatibility
- * 2. New Jones Calculus-based methods for accurate wave optics
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ⚠️  SCIENTIFIC ACCURACY NOTICE
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *
+ * This module provides TWO levels of physics simulation:
+ *
+ * 1. LEGACY SCALAR MODEL (LightPacket-based) - For game compatibility
+ *    ├── Simplifications for gameplay:
+ *    │   • quarterWave: Acts as 45° rotator (NOT true QWP, no circular polarization)
+ *    │   • halfWave: Acts as 90° rotator (NOT true HWP, no fast-axis rotation)
+ *    │   • splitter: 90° separation like PBS/Wollaston (NOT calcite ~6° walk-off)
+ *    │   • phase: Binary ±1 only (NOT continuous 0-2π radians)
+ *    │   • interference: Binary constructive/destructive only
+ *    └── Use for: Game engine, educational overviews, quick prototyping
+ *
+ * 2. ACCURATE WAVE MODEL (WaveLight/Jones-based) - For scientific simulations
+ *    ├── Full Jones Calculus with complex vectors
+ *    │   • True QWP/HWP with phase retardation (π/2 and π)
+ *    │   • Circular/elliptical polarization support
+ *    │   • Continuous phase (0-2π radians)
+ *    │   • Accurate interference: I = I₁ + I₂ + 2√(I₁I₂)cos(δ)
+ *    │   • Wavelength-dependent calculations (chromatic dispersion)
+ *    └── Use for: Demos, Optical Studio, educational accuracy
+ *
+ * See also:
+ * - WaveOptics.ts: Accurate wave-based calculations
+ * - JonesCalculus.ts: Full Jones vector/matrix implementation
+ * - types.ts: Type definitions with accuracy notes
+ *
+ * ═══════════════════════════════════════════════════════════════════════════════
  */
 
 import {
@@ -72,46 +99,68 @@ export class LightPhysics {
   }
 
   /**
-   * 公理三：双折射分叉 (Birefringence Splitting)
+   * 公理三：偏振分束 (Polarizing Beam Splitting)
    * 将一束光分解为两束正交偏振的光
    *
+   * ⚠️ SCIENTIFIC NOTE: This model represents a POLARIZING BEAM SPLITTER (PBS)
+   * or WOLLASTON PRISM, which separates orthogonal polarizations by ~90°.
+   *
+   * Natural birefringent crystals like CALCITE have much smaller walk-off angles:
+   * - Calcite walk-off angle: ~6° (not 90°!)
+   * - This model uses 90° separation for game visualization clarity
+   *
+   * The naming in UI should be "Polarizing Beam Splitter (PBS)" or "Wollaston Prism"
+   * rather than "Calcite" to be scientifically accurate.
+   *
    * @param input 输入光包
-   * @param crystalFacing 晶体朝向（决定e光折射方向）
-   * @returns 两个光包：o光（直射）和e光（折射）
+   * @param crystalFacing 分束器朝向（决定e光/反射光方向）
+   * @returns 两个光包：p光（直射，水平偏振）和s光（偏折，垂直偏振）
    */
   static splitLight(input: LightPacket, crystalFacing: Direction): [LightPacket, LightPacket] {
     // 将输入光分解为0度和90度两个分量
     // 使用向量分解：分量强度与cos²和sin²成正比
     const radians = (input.polarization * Math.PI) / 180;
 
-    // o光强度（与cos²成正比）
-    const oIntensity = Math.floor(input.intensity * Math.pow(Math.cos(radians), 2));
-    // e光强度（与sin²成正比）
-    const eIntensity = Math.floor(input.intensity * Math.pow(Math.sin(radians), 2));
+    // p光 (transmitted) 强度（与cos²成正比）- 水平偏振分量
+    const pIntensity = Math.floor(input.intensity * Math.pow(Math.cos(radians), 2));
+    // s光 (reflected/deflected) 强度（与sin²成正比）- 垂直偏振分量
+    const sIntensity = Math.floor(input.intensity * Math.pow(Math.sin(radians), 2));
 
-    // o光：0度偏振，继续原方向
-    const oLight: LightPacket = {
+    // p光：0度偏振（水平），继续原方向
+    const pLight: LightPacket = {
       direction: input.direction,
-      intensity: oIntensity,
+      intensity: pIntensity,
       polarization: 0,
       phase: input.phase
     };
 
-    // e光：90度偏振，折射方向（基于晶体朝向）
-    const eLight: LightPacket = {
+    // s光：90度偏振（垂直），偏折方向（基于分束器朝向）
+    const sLight: LightPacket = {
       direction: this.getRefractedDirection(input.direction, crystalFacing),
-      intensity: eIntensity,
+      intensity: sIntensity,
       polarization: 90,
       phase: input.phase
     };
 
-    return [oLight, eLight];
+    return [pLight, sLight];
   }
 
   /**
-   * 公理四：干涉叠加 (Interference)
+   * 公理四：干涉叠加 (Interference) - SIMPLIFIED BINARY MODEL
    * 计算两束光的干涉结果
    * 同相叠加，反相抵消
+   *
+   * ⚠️ SCIENTIFIC NOTE: This is a SIMPLIFIED BINARY interference model.
+   * Real interference follows a continuous formula:
+   *   I = I₁ + I₂ + 2√(I₁I₂)cos(δ)
+   * where δ is the phase difference (can be any value from 0 to 2π).
+   *
+   * This simplified model only supports phase = +1 (0°) or -1 (180°):
+   * - Same phase (+1, +1) → Constructive: I = I₁ + I₂
+   * - Opposite phase (+1, -1) → Destructive: I = |I₁ - I₂|
+   *
+   * For accurate continuous interference with arbitrary phase differences,
+   * use the Wave Optics engine (calculateInterferenceWave / superposeLights).
    *
    * @param lights 同一位置的光包数组
    * @returns 干涉后的光包数组
@@ -151,9 +200,9 @@ export class LightPhysics {
         continue;
       }
 
-      // 计算干涉
-      // 正相(+1)和正相(+1) = 强度相加
-      // 正相(+1)和反相(-1) = 强度相减
+      // 计算干涉 (Binary model: phase is +1 or -1)
+      // 正相(+1)和正相(+1) = 强度相加 (constructive)
+      // 正相(+1)和反相(-1) = 强度相减 (destructive)
       let positiveSum = 0;
       let negativeSum = 0;
 
@@ -184,6 +233,25 @@ export class LightPhysics {
     }
 
     return result;
+  }
+
+  /**
+   * 计算连续相位干涉强度 (Continuous Interference)
+   * Uses the proper interference formula: I = I₁ + I₂ + 2√(I₁I₂)cos(δ)
+   *
+   * @param intensity1 First beam intensity (0-1 scale)
+   * @param intensity2 Second beam intensity (0-1 scale)
+   * @param phaseDifferenceRadians Phase difference δ in radians
+   * @returns Resulting intensity (0-1 scale, can exceed 1 for constructive)
+   */
+  static calculateContinuousInterference(
+    intensity1: number,
+    intensity2: number,
+    phaseDifferenceRadians: number
+  ): number {
+    // Interference formula: I = I₁ + I₂ + 2√(I₁I₂)cos(δ)
+    const interferenceterm = 2 * Math.sqrt(intensity1 * intensity2) * Math.cos(phaseDifferenceRadians);
+    return Math.max(0, intensity1 + intensity2 + interferenceterm);
   }
 
   /**
@@ -224,14 +292,18 @@ export class LightPhysics {
   }
 
   /**
-   * 处理光通过方解石（双折射晶体）
+   * 处理光通过偏振分束器 (PBS/Wollaston Prism)
+   *
+   * ⚠️ SCIENTIFIC NOTE: See splitLight() documentation for accuracy notes.
+   * This block represents a PBS or Wollaston Prism with 90° beam separation,
+   * NOT a natural calcite crystal (~6° walk-off).
    */
   static processSplitterBlock(input: LightPacket, blockState: BlockState): LightPacket[] {
-    const [oLight, eLight] = this.splitLight(input, blockState.facing);
+    const [pLight, sLight] = this.splitLight(input, blockState.facing);
     const result: LightPacket[] = [];
 
-    if (oLight.intensity > 0) result.push(oLight);
-    if (eLight.intensity > 0) result.push(eLight);
+    if (pLight.intensity > 0) result.push(pLight);
+    if (sLight.intensity > 0) result.push(sLight);
 
     return result;
   }
@@ -468,12 +540,22 @@ export class LightPhysics {
   }
 
   /**
-   * 处理光通过四分之一波片
-   * 将线偏振光转换为圆偏振光（简化模型：旋转45度）
+   * 处理光通过光学旋转器 (45°)
+   *
+   * ⚠️ SCIENTIFIC NOTE: This is a SIMPLIFIED MODEL for game compatibility.
+   * A real Quarter-Wave Plate (QWP) introduces a π/2 phase retardation between
+   * orthogonal polarization components, converting linear → circular polarization.
+   *
+   * This game engine block functions as a 45° OPTICAL ROTATOR, NOT a true QWP:
+   * - True QWP: Linear (45°) + QWP → Circular polarization (requires complex Jones vector)
+   * - This model: Linear (θ) + "QWP" → Linear (θ + 45°) (simplified scalar rotation)
+   *
+   * For accurate QWP simulation, use the Jones Calculus engine (processQuarterWaveWave).
+   * The UI should label this as "Rotator (45°)" to avoid misleading students.
    */
   static processQuarterWaveBlock(input: LightPacket, _blockState: BlockState): LightPacket {
-    // 四分之一波片引入90度相位差
-    // 简化模型：旋转偏振角45度
+    // Simplified model: rotate polarization angle by 45°
+    // This is physically equivalent to an optical rotator, NOT a quarter-wave plate
     const newAngle = this.normalizeAngle(input.polarization + 45);
 
     return {
@@ -485,12 +567,23 @@ export class LightPhysics {
   }
 
   /**
-   * 处理光通过二分之一波片
-   * 翻转偏振方向（镜像关于快轴）
+   * 处理光通过光学旋转器 (90°)
+   *
+   * ⚠️ SCIENTIFIC NOTE: This is a SIMPLIFIED MODEL for game compatibility.
+   * A real Half-Wave Plate (HWP) introduces a π phase retardation and rotates
+   * the polarization direction by 2θ (where θ is the angle between input
+   * polarization and the fast axis).
+   *
+   * This game engine block functions as a 90° OPTICAL ROTATOR:
+   * - True HWP: Rotates polarization by 2 × (fast_axis_angle - input_angle)
+   * - This model: Linear (θ) + "HWP" → Linear (θ + 90°) (simplified scalar rotation)
+   *
+   * For accurate HWP simulation, use the Jones Calculus engine (processHalfWaveWave).
+   * The UI should label this as "Rotator (90°)" to avoid misleading students.
    */
   static processHalfWaveBlock(input: LightPacket, _blockState: BlockState): LightPacket {
-    // 二分之一波片：偏振角关于快轴镜像
-    // 简化模型：旋转90度（相当于翻转）
+    // Simplified model: rotate polarization angle by 90°
+    // This is physically equivalent to an optical rotator, NOT a half-wave plate
     const newAngle = this.normalizeAngle(input.polarization + 90);
 
     return {
