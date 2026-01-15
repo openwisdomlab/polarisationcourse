@@ -534,7 +534,7 @@ const TAPE_MATERIALS = [
  * - 3-4 layers: Vivid first-order colors (pink, green)
  * - 6+ layers: Higher order, more pastel colors
  */
-function VirtualTapeExperiment() {
+function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
   const [layers, setLayers] = useState(1)
   const [materialId, setMaterialId] = useState<string>('scotch')
   const [crossedPolarizers, setCrossedPolarizers] = useState(true)
@@ -593,20 +593,25 @@ function VirtualTapeExperiment() {
   }, [layers])
 
   return (
-    <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-indigo-950/90 to-slate-900/90 border border-indigo-500/30 p-5 shadow-lg">
+    <div className={cn(
+      "rounded-xl border p-5 shadow-lg",
+      theme === 'dark'
+        ? 'bg-gradient-to-br from-slate-900/90 via-indigo-950/90 to-slate-900/90 border-indigo-500/30'
+        : 'bg-gradient-to-br from-slate-50 via-indigo-50 to-white border-indigo-200'
+    )}>
       <div className="flex items-center gap-2 mb-4">
-        <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={cn("w-5 h-5", theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
         </svg>
-        <h3 className="text-lg font-semibold text-indigo-300">虚拟胶带实验</h3>
-        <span className="text-xs text-gray-500 ml-2">Virtual Tape Experiment</span>
+        <h3 className={cn("text-lg font-semibold", theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700')}>虚拟胶带实验</h3>
+        <span className={cn("text-xs ml-2", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>Virtual Tape Experiment</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Left: Visualization */}
         <div className="space-y-4">
           {/* Tape stack SVG */}
-          <svg viewBox="0 0 400 220" className="w-full h-auto bg-slate-950/50 rounded-lg">
+          <svg viewBox="0 0 400 220" className={cn("w-full h-auto rounded-lg", theme === 'dark' ? 'bg-slate-950/50' : 'bg-gray-100')}>
             <defs>
               <filter id="tapeGlow" x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur stdDeviation="4" result="coloredBlur" />
@@ -619,9 +624,9 @@ function VirtualTapeExperiment() {
 
             {/* Polarizer */}
             <g transform="translate(30, 110)">
-              <rect x="-10" y="-40" width="20" height="80" fill="#1e3a5f" stroke="#22d3ee" strokeWidth="2" rx="3" />
+              <rect x="-10" y="-40" width="20" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
               <line x1="0" y1="-30" x2="0" y2="30" stroke="#22d3ee" strokeWidth="2" />
-              <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="10">起偏器</text>
+              <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">起偏器</text>
             </g>
 
             {/* Light beam to tape */}
@@ -630,7 +635,7 @@ function VirtualTapeExperiment() {
             {/* Tape layers */}
             <g transform="translate(0, 10)">
               {tapeStackElements}
-              <text x="200" y={135 + Math.min(layers, 8) * 6} textAnchor="middle" fill="#a5b4fc" fontSize="11">
+              <text x="200" y={135 + Math.min(layers, 8) * 6} textAnchor="middle" fill={theme === 'dark' ? '#a5b4fc' : '#6366f1'} fontSize="11">
                 {layers} 层 ({(layers * material.thickness).toFixed(0)} μm)
               </text>
             </g>
@@ -640,13 +645,13 @@ function VirtualTapeExperiment() {
 
             {/* Analyzer */}
             <g transform="translate(370, 110)">
-              <rect x="-10" y="-40" width="20" height="80" fill="#1e3a5f" stroke="#a78bfa" strokeWidth="2" rx="3" />
+              <rect x="-10" y="-40" width="20" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
               <line
                 x1="0" y1="-30" x2="0" y2="30"
                 stroke="#a78bfa" strokeWidth="2"
                 transform={`rotate(${crossedPolarizers ? 90 : 0})`}
               />
-              <text x="0" y="55" textAnchor="middle" fill="#94a3b8" fontSize="10">
+              <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
                 检偏器 {crossedPolarizers ? '⊥' : '∥'}
               </text>
             </g>
@@ -655,7 +660,7 @@ function VirtualTapeExperiment() {
           {/* Result color display */}
           <div className="flex items-center gap-4">
             <motion.div
-              className="w-20 h-20 rounded-xl border-2 border-slate-600 shadow-lg"
+              className={cn("w-20 h-20 rounded-xl border-2 shadow-lg", theme === 'dark' ? 'border-slate-600' : 'border-gray-300')}
               style={{
                 backgroundColor: color.hex,
                 boxShadow: `0 0 25px ${color.hex}50`,
@@ -664,10 +669,10 @@ function VirtualTapeExperiment() {
               transition={{ duration: 2, repeat: Infinity }}
             />
             <div className="flex-1 space-y-1">
-              <div className="text-sm font-medium text-white">干涉色</div>
-              <div className="font-mono text-xs text-gray-400">{color.rgb}</div>
-              <div className="font-mono text-xs text-gray-400 uppercase">{color.hex}</div>
-              <div className="text-xs text-indigo-400">
+              <div className={cn("text-sm font-medium", theme === 'dark' ? 'text-white' : 'text-gray-800')}>干涉色</div>
+              <div className={cn("font-mono text-xs", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{color.rgb}</div>
+              <div className={cn("font-mono text-xs uppercase", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{color.hex}</div>
+              <div className={cn("text-xs", theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')}>
                 级次: {analysis.retardationOrder.toFixed(2)} λ
               </div>
             </div>
@@ -679,12 +684,15 @@ function VirtualTapeExperiment() {
           {/* Layer control */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-300">胶带层数</span>
-              <span className="font-mono text-indigo-400">{layers}</span>
+              <span className={cn("text-sm", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>胶带层数</span>
+              <span className={cn("font-mono", theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')}>{layers}</span>
             </div>
             <div className="flex items-center gap-3">
               <motion.button
-                className="w-10 h-10 rounded-lg bg-slate-700 text-white text-xl font-bold disabled:opacity-30"
+                className={cn(
+                  "w-10 h-10 rounded-lg text-xl font-bold disabled:opacity-30",
+                  theme === 'dark' ? 'bg-slate-700 text-white' : 'bg-gray-200 text-gray-800'
+                )}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setLayers(Math.max(1, layers - 1))}
@@ -698,10 +706,16 @@ function VirtualTapeExperiment() {
                 max="12"
                 value={layers}
                 onChange={(e) => setLayers(parseInt(e.target.value))}
-                className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                className={cn(
+                  "flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-indigo-500",
+                  theme === 'dark' ? 'bg-slate-700' : 'bg-gray-300'
+                )}
               />
               <motion.button
-                className="w-10 h-10 rounded-lg bg-slate-700 text-white text-xl font-bold disabled:opacity-30"
+                className={cn(
+                  "w-10 h-10 rounded-lg text-xl font-bold disabled:opacity-30",
+                  theme === 'dark' ? 'bg-slate-700 text-white' : 'bg-gray-200 text-gray-800'
+                )}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setLayers(Math.min(12, layers + 1))}
@@ -714,22 +728,27 @@ function VirtualTapeExperiment() {
 
           {/* Material selection */}
           <div className="space-y-2">
-            <span className="text-sm text-gray-300">材料类型</span>
+            <span className={cn("text-sm", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>材料类型</span>
             <div className="grid grid-cols-3 gap-2">
               {TAPE_MATERIALS.map((m) => (
                 <motion.button
                   key={m.id}
-                  className={`p-2 rounded-lg text-xs transition-colors ${
+                  className={cn(
+                    "p-2 rounded-lg text-xs transition-colors",
                     materialId === m.id
-                      ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50'
-                      : 'bg-slate-700/50 text-gray-300 hover:bg-slate-600/50'
-                  }`}
+                      ? theme === 'dark'
+                        ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50'
+                        : 'bg-indigo-100 text-indigo-700 border border-indigo-300'
+                      : theme === 'dark'
+                        ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600/50'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  )}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setMaterialId(m.id)}
                 >
                   <div className="font-medium">{m.name}</div>
-                  <div className="text-[10px] text-gray-500">Δn={m.birefringence}</div>
+                  <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>Δn={m.birefringence}</div>
                 </motion.button>
               ))}
             </div>
@@ -737,14 +756,19 @@ function VirtualTapeExperiment() {
 
           {/* Polarizer configuration */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-300">偏振片配置</span>
+            <span className={cn("text-sm", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>偏振片配置</span>
             <div className="flex gap-2">
               <motion.button
-                className={`px-3 py-1.5 rounded text-xs transition-colors ${
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs transition-colors",
                   crossedPolarizers
-                    ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-                    : 'bg-slate-700/50 text-gray-300'
-                }`}
+                    ? theme === 'dark'
+                      ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
+                      : 'bg-purple-100 text-purple-700 border border-purple-300'
+                    : theme === 'dark'
+                      ? 'bg-slate-700/50 text-gray-300'
+                      : 'bg-gray-100 text-gray-600'
+                )}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setCrossedPolarizers(true)}
@@ -752,11 +776,16 @@ function VirtualTapeExperiment() {
                 正交 ⊥
               </motion.button>
               <motion.button
-                className={`px-3 py-1.5 rounded text-xs transition-colors ${
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs transition-colors",
                   !crossedPolarizers
-                    ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/50'
-                    : 'bg-slate-700/50 text-gray-300'
-                }`}
+                    ? theme === 'dark'
+                      ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/50'
+                      : 'bg-cyan-100 text-cyan-700 border border-cyan-300'
+                    : theme === 'dark'
+                      ? 'bg-slate-700/50 text-gray-300'
+                      : 'bg-gray-100 text-gray-600'
+                )}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setCrossedPolarizers(false)}
@@ -768,7 +797,12 @@ function VirtualTapeExperiment() {
 
           {/* Analysis toggle */}
           <motion.button
-            className="w-full py-2 rounded-lg bg-slate-700/50 text-gray-300 text-sm hover:bg-slate-600/50 transition-colors"
+            className={cn(
+              "w-full py-2 rounded-lg text-sm transition-colors",
+              theme === 'dark'
+                ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600/50'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            )}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             onClick={() => setShowAnalysis(!showAnalysis)}
@@ -779,38 +813,41 @@ function VirtualTapeExperiment() {
           {/* Detailed analysis */}
           {showAnalysis && (
             <motion.div
-              className="p-3 bg-slate-900/70 rounded-lg space-y-2 text-xs"
+              className={cn(
+                "p-3 rounded-lg space-y-2 text-xs",
+                theme === 'dark' ? 'bg-slate-900/70' : 'bg-gray-100'
+              )}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
             >
               <div className="grid grid-cols-2 gap-2">
-                <div className="p-2 bg-slate-800/50 rounded">
-                  <div className="text-gray-500">光程差 OPD</div>
-                  <div className="font-mono text-cyan-400">{analysis.opticalPathDifference.toFixed(0)} nm</div>
+                <div className={cn("p-2 rounded", theme === 'dark' ? 'bg-slate-800/50' : 'bg-white')}>
+                  <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>光程差 OPD</div>
+                  <div className={cn("font-mono", theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')}>{analysis.opticalPathDifference.toFixed(0)} nm</div>
                 </div>
-                <div className="p-2 bg-slate-800/50 rounded">
-                  <div className="text-gray-500">级次 Order</div>
-                  <div className="font-mono text-purple-400">{analysis.retardationOrder.toFixed(3)} λ</div>
+                <div className={cn("p-2 rounded", theme === 'dark' ? 'bg-slate-800/50' : 'bg-white')}>
+                  <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>级次 Order</div>
+                  <div className={cn("font-mono", theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>{analysis.retardationOrder.toFixed(3)} λ</div>
                 </div>
               </div>
-              <div className="p-2 bg-slate-800/50 rounded">
-                <div className="text-gray-500 mb-1">RGB透过率</div>
+              <div className={cn("p-2 rounded", theme === 'dark' ? 'bg-slate-800/50' : 'bg-white')}>
+                <div className={cn("mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>RGB透过率</div>
                 <div className="flex gap-2">
                   <div className="flex-1 text-center">
-                    <div className="text-red-400 font-mono">{(analysis.transmission.red * 100).toFixed(1)}%</div>
-                    <div className="text-[10px] text-gray-600">650nm</div>
+                    <div className={cn("font-mono", theme === 'dark' ? 'text-red-400' : 'text-red-600')}>{(analysis.transmission.red * 100).toFixed(1)}%</div>
+                    <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>650nm</div>
                   </div>
                   <div className="flex-1 text-center">
-                    <div className="text-green-400 font-mono">{(analysis.transmission.green * 100).toFixed(1)}%</div>
-                    <div className="text-[10px] text-gray-600">550nm</div>
+                    <div className={cn("font-mono", theme === 'dark' ? 'text-green-400' : 'text-green-600')}>{(analysis.transmission.green * 100).toFixed(1)}%</div>
+                    <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>550nm</div>
                   </div>
                   <div className="flex-1 text-center">
-                    <div className="text-blue-400 font-mono">{(analysis.transmission.blue * 100).toFixed(1)}%</div>
-                    <div className="text-[10px] text-gray-600">450nm</div>
+                    <div className={cn("font-mono", theme === 'dark' ? 'text-blue-400' : 'text-blue-600')}>{(analysis.transmission.blue * 100).toFixed(1)}%</div>
+                    <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>450nm</div>
                   </div>
                 </div>
               </div>
-              <div className="text-[10px] text-gray-500 italic">
+              <div className={cn("text-[10px] italic", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
                 使用 SpectralJonesSolver 进行物理精确计算: δ(λ) = 2π·d·Δn/λ
               </div>
             </motion.div>
@@ -819,9 +856,14 @@ function VirtualTapeExperiment() {
       </div>
 
       {/* Scientific note */}
-      <div className="mt-4 p-3 bg-indigo-950/30 rounded-lg border border-indigo-500/20">
-        <div className="text-xs text-indigo-300 font-medium mb-1">物理原理</div>
-        <div className="text-xs text-gray-400">
+      <div className={cn(
+        "mt-4 p-3 rounded-lg border",
+        theme === 'dark'
+          ? 'bg-indigo-950/30 border-indigo-500/20'
+          : 'bg-indigo-50 border-indigo-200'
+      )}>
+        <div className={cn("text-xs font-medium mb-1", theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700')}>物理原理</div>
+        <div className={cn("text-xs", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
           相位延迟 δ = 2π × d × Δn / λ 随波长变化。厚度 d = {(layers * material.thickness).toFixed(0)} μm，
           双折射率 Δn = {material.birefringence}。不同波长(R:{'\u00A0'}650nm, G:{'\u00A0'}550nm, B:{'\u00A0'}450nm)
           的透过率不同，产生干涉色。
@@ -878,14 +920,14 @@ export function ChromaticDemo() {
 
       {/* 交互演示区域标题 */}
       <div className="flex items-center gap-3 pt-2">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-        <h3 className="text-lg font-semibold text-purple-300 flex items-center gap-2">
+        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-purple-500/30' : 'via-purple-300/50')} />
+        <h3 className={cn("text-lg font-semibold flex items-center gap-2", theme === 'dark' ? 'text-purple-300' : 'text-purple-600')}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
           </svg>
           交互演示
         </h3>
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-purple-500/30' : 'via-purple-300/50')} />
       </div>
 
       {/* 主体内容 */}
@@ -1061,18 +1103,18 @@ export function ChromaticDemo() {
 
       {/* 虚拟胶带实验区域标题 */}
       <div className="flex items-center gap-3 pt-4">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
-        <h3 className="text-lg font-semibold text-indigo-300 flex items-center gap-2">
+        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-indigo-500/30' : 'via-indigo-300/50')} />
+        <h3 className={cn("text-lg font-semibold flex items-center gap-2", theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600')}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
           动手实验
         </h3>
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-indigo-500/30' : 'via-indigo-300/50')} />
       </div>
 
       {/* Virtual Tape Experiment */}
-      <VirtualTapeExperiment />
+      <VirtualTapeExperiment theme={theme} />
 
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
