@@ -5,6 +5,7 @@
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from '@/contexts/ThemeContext'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { Microscope, Grid3X3, Layers } from 'lucide-react'
 
@@ -224,9 +225,11 @@ function MicroscopyImage({
 function MuellerMatrixDisplay({
   matrix,
   highlight,
+  theme,
 }: {
   matrix: number[][]
   highlight?: [number, number]
+  theme: string
 }) {
   return (
     <div className="grid grid-cols-4 gap-1">
@@ -237,14 +240,14 @@ function MuellerMatrixDisplay({
             className={`p-1.5 rounded text-center font-mono text-xs ${highlight && highlight[0] === i && highlight[1] === j
                 ? 'bg-cyan-600 text-white'
                 : i === 0 || j === 0
-                  ? 'bg-slate-700 text-cyan-400'
-                  : 'bg-slate-800 text-gray-300'
+                  ? theme === 'dark' ? 'bg-slate-700 text-cyan-400' : 'bg-gray-200 text-cyan-600'
+                  : theme === 'dark' ? 'bg-slate-800 text-gray-300' : 'bg-gray-100 text-gray-700'
               }`}
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             whileHover={{ scale: 1.1 }}
           >
-            <div className="text-[8px] text-gray-500">{MUELLER_NAMES[i][j]}</div>
+            <div className={`text-[8px] ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>{MUELLER_NAMES[i][j]}</div>
             <div>{val.toFixed(2)}</div>
           </motion.div>
         ))
@@ -260,24 +263,26 @@ function ParamBar({
   max,
   color,
   unit,
+  theme,
 }: {
   label: string
   value: number
   max: number
   color: string
   unit?: string
+  theme: string
 }) {
   const percentage = Math.min((value / max) * 100, 100)
 
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs">
-        <span className="text-gray-400">{label}</span>
+        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>{label}</span>
         <span className={`font-mono text-${color}-400`}>
           {value.toFixed(2)}{unit}
         </span>
       </div>
-      <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+      <div className={`h-2 ${theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'} rounded-full overflow-hidden`}>
         <motion.div
           className={`h-full bg-${color}-500`}
           initial={{ width: 0 }}
@@ -291,6 +296,7 @@ function ParamBar({
 
 // Main demo component
 export function PolarimetricMicroscopyDemo() {
+  const { theme } = useTheme()
   const [sampleType, setSampleType] = useState<SampleType>('fiber')
   const [showOverlay, setShowOverlay] = useState(true)
   const [overlayType, setOverlayType] = useState<'retardance' | 'depol' | 'diattenuation'>('retardance')
@@ -304,10 +310,10 @@ export function PolarimetricMicroscopyDemo() {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-violet-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r ${theme === 'dark' ? 'from-white via-violet-100 to-white' : 'from-violet-600 via-violet-500 to-violet-600'} bg-clip-text text-transparent`}>
           全偏振显微成像
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
           Mueller矩阵显微镜的工作原理与应用
         </p>
       </div>
@@ -316,16 +322,16 @@ export function PolarimetricMicroscopyDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Microscopy view */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-violet-950/90 border border-violet-500/30 p-4">
+          <div className={`rounded-xl bg-gradient-to-br ${theme === 'dark' ? 'from-slate-900/90 via-slate-900/95 to-violet-950/90 border-violet-500/30' : 'from-white via-gray-50 to-violet-50 border-violet-200'} border p-4`}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Microscope className="w-5 h-5 text-violet-400" />
-                <span className="text-sm font-medium text-gray-300">Mueller显微成像</span>
+                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Mueller显微成像</span>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowOverlay(!showOverlay)}
-                  className={`px-2 py-1 text-xs rounded flex items-center gap-1 transition-colors ${showOverlay ? 'bg-violet-600 text-white' : 'bg-slate-700 text-gray-400'
+                  className={`px-2 py-1 text-xs rounded flex items-center gap-1 transition-colors ${showOverlay ? 'bg-violet-600 text-white' : theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-200 text-gray-500'
                     }`}
                 >
                   <Layers size={12} />
@@ -354,7 +360,7 @@ export function PolarimetricMicroscopyDemo() {
                   onClick={() => setOverlayType(type)}
                   className={`px-3 py-1.5 text-xs rounded-full transition-colors ${overlayType === type
                       ? `bg-${color}-600 text-white`
-                      : 'bg-slate-700 text-gray-400 hover:bg-slate-600'
+                      : theme === 'dark' ? 'bg-slate-700 text-gray-400 hover:bg-slate-600' : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
                     }`}
                 >
                   {label}
@@ -364,16 +370,16 @@ export function PolarimetricMicroscopyDemo() {
           )}
 
           {/* Polarization parameters */}
-          <div className="rounded-xl bg-slate-800/50 border border-slate-700 p-4">
-            <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+          <div className={`rounded-xl ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'} border p-4`}>
+            <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mb-3 flex items-center gap-2`}>
               <Grid3X3 size={16} className="text-violet-400" />
               偏振参数提取
             </h3>
             <div className="space-y-3">
-              <ParamBar label="线性延迟 R" value={params.R} max={180} color="cyan" unit="°" />
-              <ParamBar label="退偏振指数" value={params.depol} max={1} color="green" />
-              <ParamBar label="二向衰减 D" value={params.D} max={1} color="orange" />
-              <ParamBar label="偏振度 DOP" value={params.dop} max={1} color="pink" />
+              <ParamBar label="线性延迟 R" value={params.R} max={180} color="cyan" unit="°" theme={theme} />
+              <ParamBar label="退偏振指数" value={params.depol} max={1} color="green" theme={theme} />
+              <ParamBar label="二向衰减 D" value={params.D} max={1} color="orange" theme={theme} />
+              <ParamBar label="偏振度 DOP" value={params.dop} max={1} color="pink" theme={theme} />
             </div>
           </div>
         </div>
@@ -389,7 +395,7 @@ export function PolarimetricMicroscopyDemo() {
                   onClick={() => setSampleType(type)}
                   className={`p-3 rounded-lg text-left transition-all ${sampleType === type
                       ? 'bg-violet-600/30 border border-violet-500'
-                      : 'bg-slate-800/50 border border-slate-700 hover:border-slate-500'
+                      : theme === 'dark' ? 'bg-slate-800/50 border border-slate-700 hover:border-slate-500' : 'bg-gray-100 border border-gray-200 hover:border-gray-300'
                     }`}
                 >
                   <div className="flex items-center gap-2">
@@ -397,11 +403,11 @@ export function PolarimetricMicroscopyDemo() {
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: SAMPLES[type].color }}
                     />
-                    <span className="text-sm font-medium text-white">
+                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
                       {SAMPLES[type].nameZh}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
                     {SAMPLES[type].descriptionZh}
                   </p>
                 </button>
@@ -414,8 +420,9 @@ export function PolarimetricMicroscopyDemo() {
             <MuellerMatrixDisplay
               matrix={sample.muellerMatrix}
               highlight={highlightElement}
+              theme={theme}
             />
-            <div className="mt-3 text-xs text-gray-400">
+            <div className={`mt-3 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
               <p>• M₀₀: 总强度透过率</p>
               <p>• 对角元素: 偏振保持特性</p>
               <p>• 非对角元素: 偏振转换特性</p>
@@ -438,16 +445,16 @@ export function PolarimetricMicroscopyDemo() {
 
           {/* Microscope setup */}
           <ControlPanel title="显微镜原理">
-            <div className="space-y-2 text-xs text-gray-300">
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+            <div className={`space-y-2 text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              <div className={`p-2 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg`}>
                 <span className="text-violet-400 font-medium">照明臂:</span>
                 <p className="mt-1">偏振态发生器(PSG)产生4种已知偏振态照明样品</p>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg`}>
                 <span className="text-violet-400 font-medium">探测臂:</span>
                 <p className="mt-1">偏振态分析器(PSA)分析出射光的偏振态</p>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg`}>
                 <span className="text-violet-400 font-medium">数据处理:</span>
                 <p className="mt-1">16次测量重建完整4×4 Mueller矩阵</p>
               </div>
@@ -459,17 +466,17 @@ export function PolarimetricMicroscopyDemo() {
       {/* Knowledge cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="Mueller矩阵显微镜" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             通过测量样品的完整4×4 Mueller矩阵，可以获得样品的所有偏振特性信息，包括双折射、二向衰减、退偏振等，是最完备的偏振成像技术。
           </p>
         </InfoCard>
         <InfoCard title="生物医学应用" color="orange">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             用于肿瘤边界识别、胶原纤维取向分析、眼科角膜检测等。偏振参数可提供组织微结构的定量信息，辅助临床诊断。
           </p>
         </InfoCard>
         <InfoCard title="材料表征" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             分析材料内部应力分布、液晶取向、薄膜厚度等。Mueller矩阵分解可提取双折射、旋光、退偏振等独立参数。
           </p>
         </InfoCard>

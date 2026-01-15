@@ -5,6 +5,7 @@
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from '@/contexts/ThemeContext'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 波长到RGB颜色转换
@@ -433,6 +434,7 @@ function SizeParameterChart({
 
 // 主演示组件
 export function MieScatteringDemo() {
+  const { theme } = useTheme()
   const [particleSize, setParticleSize] = useState(0.5) // μm
   const [wavelength, setWavelength] = useState(550) // nm
 
@@ -476,10 +478,10 @@ export function MieScatteringDemo() {
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r ${theme === 'dark' ? 'from-white via-pink-100 to-white' : 'from-pink-600 via-pink-500 to-pink-600'} bg-clip-text text-transparent`}>
           米氏散射交互演示
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
           探索粒径与波长可比时的散射特性
         </p>
       </div>
@@ -488,27 +490,27 @@ export function MieScatteringDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90 border border-pink-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl bg-gradient-to-br ${theme === 'dark' ? 'from-slate-900/90 via-slate-900/95 to-pink-950/90 border-pink-500/30' : 'from-white via-gray-50 to-pink-50 border-pink-200'} border p-4 ${theme === 'dark' ? 'shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'shadow-lg'}`}>
             <MieScatteringDiagram particleSize={particleSize} wavelength={wavelength} />
           </div>
 
           {/* 散射特征摘要 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+          <div className={`rounded-xl bg-gradient-to-br ${theme === 'dark' ? 'from-slate-900/80 to-slate-800/80 border-slate-600/30' : 'from-white to-gray-50 border-gray-200'} border p-4`}>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-slate-900/50 rounded-lg text-center">
-                <div className="text-gray-500 text-xs mb-1">尺寸参数 x</div>
+              <div className={`p-3 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg text-center`}>
+                <div className={`${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} text-xs mb-1`}>尺寸参数 x</div>
                 <div className={`font-mono text-xl text-${scatterInfo.color}-400`}>
                   {sizeParameter.toFixed(3)}
                 </div>
               </div>
-              <div className="p-3 bg-slate-900/50 rounded-lg text-center">
-                <div className="text-gray-500 text-xs mb-1">散射区域</div>
+              <div className={`p-3 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg text-center`}>
+                <div className={`${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} text-xs mb-1`}>散射区域</div>
                 <div className={`font-bold text-lg text-${scatterInfo.color}-400`}>
                   {scatterInfo.type}
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-3 text-center">
+            <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mt-3 text-center`}>
               {scatterInfo.description}
             </p>
           </div>
@@ -542,13 +544,13 @@ export function MieScatteringDemo() {
 
             {/* 粒子预设 */}
             <div className="pt-2">
-              <div className="text-xs text-gray-500 mb-2">典型粒子</div>
+              <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} mb-2`}>典型粒子</div>
               <div className="grid grid-cols-2 gap-2">
                 {presets.map((p) => (
                   <button
                     key={p.name}
                     onClick={() => { setParticleSize(p.size); setWavelength(p.λ) }}
-                    className="px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                    className={`px-2 py-1.5 text-xs ${theme === 'dark' ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} rounded transition-colors`}
                   >
                     {p.name}
                   </button>
@@ -560,9 +562,9 @@ export function MieScatteringDemo() {
           {/* 计算结果 */}
           <ControlPanel title="物理参数">
             <div className="space-y-3">
-              <div className="p-3 bg-slate-900/50 rounded-lg">
-                <div className="text-xs text-gray-500 mb-1">尺寸参数公式</div>
-                <div className="font-mono text-sm text-white">
+              <div className={`p-3 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg`}>
+                <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} mb-1`}>尺寸参数公式</div>
+                <div className={`font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
                   x = 2πr/λ = 2π × {particleSize.toFixed(3)} × 1000 / {wavelength}
                 </div>
                 <div className={`font-mono text-lg text-${scatterInfo.color}-400 mt-1`}>
@@ -571,12 +573,12 @@ export function MieScatteringDemo() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2 bg-slate-900/50 rounded-lg">
-                  <div className="text-gray-500">粒径/波长</div>
+                <div className={`p-2 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg`}>
+                  <div className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}>粒径/波长</div>
                   <div className="text-cyan-400 font-mono">{((particleSize * 1000) / wavelength).toFixed(3)}</div>
                 </div>
-                <div className="p-2 bg-slate-900/50 rounded-lg">
-                  <div className="text-gray-500">散射效率</div>
+                <div className={`p-2 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'} rounded-lg`}>
+                  <div className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}>散射效率</div>
                   <div className="text-pink-400 font-mono">{mieIntensity(sizeParameter).toFixed(2)}</div>
                 </div>
               </div>
@@ -595,7 +597,7 @@ export function MieScatteringDemo() {
 
           {/* 散射特征 */}
           <ControlPanel title="米氏散射特征">
-            <ul className="text-xs text-gray-300 space-y-2">
+            <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-2`}>
               <li className="flex items-start gap-2">
                 <span className="text-pink-400">•</span>
                 <span>前向散射增强：大粒子的散射光主要集中在前进方向</span>
@@ -616,17 +618,17 @@ export function MieScatteringDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="米氏散射理论" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             由Gustav Mie在1908年发展，完整描述球形粒子对电磁波的散射。适用于粒径与波长可比的情况(x≈1-10)。
           </p>
         </InfoCard>
         <InfoCard title="前向散射" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             米氏散射的显著特征是前向散射增强。粒子越大，散射越集中在前进方向，形成尖锐的前向散射峰。
           </p>
         </InfoCard>
         <InfoCard title="自然现象" color="orange">
-          <ul className="text-xs text-gray-300 space-y-1">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1`}>
             <li>• 云和雾的白色</li>
             <li>• 牛奶的乳白色</li>
             <li>• 日晕和虹</li>

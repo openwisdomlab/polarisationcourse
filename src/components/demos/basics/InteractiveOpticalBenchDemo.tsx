@@ -6,6 +6,7 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { ControlPanel, SliderControl, Toggle, InfoCard, PresetButtons, Formula } from '../DemoControls'
 
 // 导入共享模块
@@ -32,6 +33,7 @@ const PRESETS = [
 
 export function InteractiveOpticalBenchDemo() {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
   // 交互状态
@@ -97,7 +99,7 @@ export function InteractiveOpticalBenchDemo() {
     <div className="flex flex-col lg:flex-row gap-6 w-full">
       {/* 可视化区域 */}
       <div className="flex-1 min-w-0">
-        <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/50">
+        <div className={`${theme === 'dark' ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-gray-200'} rounded-xl p-4 border`}>
           <svg viewBox="0 0 100 70" className="w-full h-auto max-h-[280px]" style={{ background: '#0a0a1a' }}>
             <defs>
               <LightBeamDefs />
@@ -193,16 +195,16 @@ export function InteractiveOpticalBenchDemo() {
 
         {/* 物理量显示 */}
         <div className="mt-4 grid grid-cols-3 gap-3">
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-            <div className="text-xs text-slate-400 mb-1">{isZh ? '角度差' : 'Angle Diff'}</div>
+          <div className={`${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'} rounded-lg p-3 text-center`}>
+            <div className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'} mb-1`}>{isZh ? '角度差' : 'Angle Diff'}</div>
             <div className="text-xl font-mono text-cyan-400">{angleDiff}°</div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-            <div className="text-xs text-slate-400 mb-1">{isZh ? '透射率' : 'Transmission'}</div>
+          <div className={`${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'} rounded-lg p-3 text-center`}>
+            <div className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'} mb-1`}>{isZh ? '透射率' : 'Transmission'}</div>
             <div className="text-xl font-mono text-green-400">{(transmission * 100).toFixed(1)}%</div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-            <div className="text-xs text-slate-400 mb-1">{isZh ? '输出光强' : 'Output I'}</div>
+          <div className={`${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'} rounded-lg p-3 text-center`}>
+            <div className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'} mb-1`}>{isZh ? '输出光强' : 'Output I'}</div>
             <div className="text-xl font-mono text-yellow-400">{outputIntensity.toFixed(1)}%</div>
           </div>
         </div>
@@ -213,7 +215,7 @@ export function InteractiveOpticalBenchDemo() {
             {POLARIZATION_DISPLAY_CONFIG.map(({ angle, label, color }) => (
               <div key={angle} className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded" style={{ backgroundColor: color }} />
-                <span className="text-xs text-slate-400">{label}</span>
+                <span className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-gray-600'}`}>{label}</span>
               </div>
             ))}
           </div>
@@ -283,7 +285,7 @@ export function InteractiveOpticalBenchDemo() {
           </p>
         </InfoCard>
 
-        <div className="text-xs text-slate-500 text-center">
+        <div className={`text-xs ${theme === 'dark' ? 'text-slate-500' : 'text-gray-500'} text-center`}>
           {isZh
             ? '此Demo使用共享的光学组件库构建'
             : 'Built with shared optical component library'}

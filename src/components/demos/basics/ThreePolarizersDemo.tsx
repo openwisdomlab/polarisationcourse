@@ -6,6 +6,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { Volume2, VolumeX } from 'lucide-react'
 import { useHapticAudio } from '@/hooks/useHapticAudio'
 import {
@@ -179,6 +180,7 @@ const PRESETS = [
 
 export function ThreePolarizersDemo() {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
   // Haptic audio for precision feedback
@@ -294,7 +296,7 @@ export function ThreePolarizersDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+          <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-blue-50 border-blue-200'} rounded-xl border p-4 overflow-hidden`}>
             <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
               <defs>
                 <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -627,13 +629,13 @@ export function ThreePolarizersDemo() {
             />
 
             {/* Audio Feedback Toggle */}
-            <div className="pt-2 border-t border-slate-700/50 mt-2">
+            <div className={`pt-2 border-t ${theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'} mt-2`}>
               <button
                 onClick={toggleAudio}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full transition-colors ${
                   isAudioEnabled
                     ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
-                    : 'bg-slate-700/50 text-gray-400 hover:bg-slate-700'
+                    : `${theme === 'dark' ? 'bg-slate-700/50 text-gray-400 hover:bg-slate-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`
                 }`}
                 title={isZh ? '切换精密角度音效反馈' : 'Toggle precision angle audio feedback'}
               >
@@ -688,7 +690,7 @@ export function ThreePolarizersDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InfoCard title={isZh ? '三偏振片悖论' : 'Three Polarizer Paradox'} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>
               •{' '}
               {isZh
@@ -717,7 +719,7 @@ export function ThreePolarizersDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '物理解释' : 'Physical Explanation'} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             <li>
               •{' '}
               {isZh

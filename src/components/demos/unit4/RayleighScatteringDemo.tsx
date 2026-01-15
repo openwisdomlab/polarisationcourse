@@ -6,6 +6,7 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { SliderControl, ControlPanel, InfoCard, ValueDisplay, Toggle } from '../DemoControls'
 
 // 瑞利散射强度 (与λ^-4成正比)
@@ -606,7 +607,7 @@ function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
 }
 
 // 散射强度对比柱状图
-function ScatteringIntensityBars() {
+function ScatteringIntensityBars({ theme }: { theme: string }) {
   const wavelengths = [
     { wl: 450, label: '蓝光', color: '#3b82f6' },
     { wl: 550, label: '绿光', color: '#22c55e' },
@@ -625,9 +626,9 @@ function ScatteringIntensityBars() {
           <div key={i} className="space-y-1">
             <div className="flex justify-between text-xs">
               <span style={{ color: item.color }}>{item.label} ({item.wl}nm)</span>
-              <span className="text-gray-400">{intensity.toFixed(2)}</span>
+              <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>{intensity.toFixed(2)}</span>
             </div>
-            <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+            <div className={`h-3 ${theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'} rounded-full overflow-hidden`}>
               <motion.div
                 className="h-full rounded-full"
                 style={{ backgroundColor: item.color }}
@@ -639,7 +640,7 @@ function ScatteringIntensityBars() {
           </div>
         )
       })}
-      <p className="text-xs text-gray-500 mt-2 text-center">
+      <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} mt-2 text-center`}>
         蓝光散射约为红光的 {(rayleighIntensity(450) / rayleighIntensity(650)).toFixed(1)} 倍
       </p>
     </div>
@@ -649,6 +650,7 @@ function ScatteringIntensityBars() {
 // 主演示组件
 export function RayleighScatteringDemo() {
   const { t: _t } = useTranslation() // Reserved for future i18n
+  const { theme } = useTheme()
   const [sunAngle, setSunAngle] = useState(60)
   const [observerAngle, setObserverAngle] = useState(45)
   const [showPolarization, setShowPolarization] = useState(true)
@@ -671,10 +673,10 @@ export function RayleighScatteringDemo() {
     <div className="flex flex-col gap-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-cyan-600 to-blue-600'} bg-clip-text text-transparent`}>
           瑞利散射演示
         </h2>
-        <p className="text-gray-400 text-sm mt-1">Rayleigh Scattering - 蓝天与红日的秘密</p>
+        <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm mt-1`}>Rayleigh Scattering - 蓝天与红日的秘密</p>
       </div>
 
       {/* 主要内容区 */}
@@ -682,8 +684,8 @@ export function RayleighScatteringDemo() {
         {/* 左侧：可视化 */}
         <div className="space-y-4">
           {/* 散射场景 */}
-          <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 p-4">
-            <h3 className="text-sm font-medium text-cyan-400 mb-3">大气散射场景</h3>
+          <div className={`${theme === 'dark' ? 'bg-slate-900/50 border-cyan-400/20' : 'bg-white border-cyan-200 shadow-sm'} rounded-xl border p-4`}>
+            <h3 className={`text-sm font-medium ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'} mb-3`}>大气散射场景</h3>
             <div className="aspect-[16/10]">
               <RayleighDiagram
                 sunAngle={sunAngle}
@@ -695,12 +697,12 @@ export function RayleighScatteringDemo() {
 
           {/* 图表区 */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 p-3">
-              <h4 className="text-xs font-medium text-cyan-400 mb-2">波长依赖性 (λ⁻⁴)</h4>
+            <div className={`${theme === 'dark' ? 'bg-slate-900/50 border-cyan-400/20' : 'bg-white border-cyan-200 shadow-sm'} rounded-xl border p-3`}>
+              <h4 className={`text-xs font-medium ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'} mb-2`}>波长依赖性 (λ⁻⁴)</h4>
               <WavelengthDependenceChart />
             </div>
-            <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 p-3">
-              <h4 className="text-xs font-medium text-cyan-400 mb-2">偏振度 vs 散射角</h4>
+            <div className={`${theme === 'dark' ? 'bg-slate-900/50 border-cyan-400/20' : 'bg-white border-cyan-200 shadow-sm'} rounded-xl border p-3`}>
+              <h4 className={`text-xs font-medium ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'} mb-2`}>偏振度 vs 散射角</h4>
               <PolarizationAngleChart currentAngle={scatterAngle} />
             </div>
           </div>
@@ -739,7 +741,7 @@ export function RayleighScatteringDemo() {
                   className={`flex-1 px-3 py-1.5 rounded text-xs transition-colors ${
                     sunAngle === preset.angle
                       ? 'bg-cyan-500 text-white'
-                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                      : theme === 'dark' ? 'bg-slate-700 text-gray-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
                   {preset.label}
@@ -762,13 +764,13 @@ export function RayleighScatteringDemo() {
               unit="%"
               color={polarization > 0.8 ? 'green' : 'cyan'}
             />
-            <div className="mt-2 p-2 bg-slate-800/50 rounded text-center">
-              <span className="text-yellow-400 font-mono text-lg">I ∝ λ⁻⁴</span>
+            <div className={`mt-2 p-2 ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'} rounded text-center`}>
+              <span className={`${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} font-mono text-lg`}>I ∝ λ⁻⁴</span>
             </div>
           </ControlPanel>
 
           <ControlPanel title="各波长相对散射强度">
-            <ScatteringIntensityBars />
+            <ScatteringIntensityBars theme={theme} />
           </ControlPanel>
         </div>
       </div>
@@ -776,7 +778,7 @@ export function RayleighScatteringDemo() {
       {/* 底部知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InfoCard title="瑞利散射特性" color="cyan">
-          <ul className="text-sm space-y-1 text-gray-300">
+          <ul className={`text-sm space-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             <li>• <strong>适用条件：</strong>粒径 ≪ 波长（空气分子 ~0.3nm）</li>
             <li>• <strong>波长依赖：</strong>I ∝ λ⁻⁴（短波散射更强）</li>
             <li>• <strong>偏振特性：</strong>90°散射时完全线偏振</li>
@@ -785,7 +787,7 @@ export function RayleighScatteringDemo() {
         </InfoCard>
 
         <InfoCard title="自然现象解释" color="blue">
-          <ul className="text-sm space-y-1 text-gray-300">
+          <ul className={`text-sm space-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             <li>• <strong>蓝天：</strong>蓝光散射是红光的~10倍，充满天空</li>
             <li>• <strong>红日落：</strong>阳光穿过更多大气，蓝光散射殆尽</li>
             <li>• <strong>天空偏振：</strong>与太阳成90°方向偏振最强</li>

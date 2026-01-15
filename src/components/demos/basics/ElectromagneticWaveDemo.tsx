@@ -12,6 +12,7 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { Waves, BarChart3 } from 'lucide-react'
 import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard, Formula } from '../DemoControls'
 import { DifficultyLevel, useDifficultyConfig, WhyButton, DifficultyGate } from '../DifficultyStrategy'
@@ -197,6 +198,7 @@ interface Props {
 
 export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) {
   const { t, i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
   const config = useDifficultyConfig(difficultyLevel)
 
@@ -289,13 +291,13 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
   return (
     <div className="space-y-6">
       {/* View Mode Tabs */}
-      <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg w-fit">
+      <div className={`flex gap-2 p-1 ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100'} rounded-lg w-fit`}>
         <button
           onClick={() => setViewMode('wave')}
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
             viewMode === 'wave'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50'
+              : `${theme === 'dark' ? 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}`
           }`}
         >
           <Waves className="w-4 h-4" />
@@ -306,7 +308,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
             viewMode === 'spectrum'
               ? 'bg-purple-500/20 text-purple-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50'
+              : `${theme === 'dark' ? 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}`
           }`}
         >
           <BarChart3 className="w-4 h-4" />
@@ -326,7 +328,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
             {/* Wave View Content */}
             <div className="flex gap-6 flex-col lg:flex-row">
               <div className="flex-1">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+                <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-blue-50 border-blue-200'} rounded-xl border p-4 overflow-hidden`}>
                   <svg
                     viewBox="0 0 700 300"
                     className="w-full h-auto"
@@ -410,8 +412,8 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
                 </div>
 
                 {/* Visible Spectrum Bar */}
-                <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                  <h4 className="text-sm font-semibold text-gray-300 mb-2">{t('demoUi.common.visibleSpectrum')}</h4>
+                <div className={`mt-4 p-4 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700/50' : 'bg-gray-50 border-gray-200'} border`}>
+                  <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-2`}>{t('demoUi.common.visibleSpectrum')}</h4>
                   <div
                     className="h-8 rounded cursor-pointer relative"
                     style={{
@@ -431,7 +433,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
                       layoutId="wavelength-indicator"
                     />
                   </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <div className={`flex justify-between text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
                     <span>380 nm ({t('demoUi.common.violet')})</span>
                     <span>550 nm ({t('demoUi.common.green')})</span>
                     <span>700 nm ({t('demoUi.common.red')})</span>
@@ -488,7 +490,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
                   {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
                 </motion.button>
 
-                <div className="pt-2 border-t border-slate-700">
+                <div className={`pt-2 border-t ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'}`}>
                   <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
                   {/* 使用精确光速值 c = 2.998×10^8 m/s 计算频率 f = c/λ */}
                   <ValueDisplay label={t('demoUi.common.frequency')} value={`${(2.998e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
@@ -519,7 +521,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
             <DifficultyGate level="explore" currentLevel={difficultyLevel} showWhen="at-least">
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InfoCard title={isZh ? '电磁波特性' : 'EM Wave Properties'} color="cyan">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
                     <li>• {isZh ? 'E场和B场相互垂直' : 'E and B fields are perpendicular'}</li>
                     <li>• {isZh ? '横波：振动方向垂直于传播方向' : 'Transverse: oscillation ⊥ propagation'}</li>
                     <li>• {isZh ? '真空中速度恒定：c = 3×10⁸ m/s' : 'Constant speed in vacuum: c = 3×10⁸ m/s'}</li>
@@ -529,7 +531,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
                   )}
                 </InfoCard>
                 <InfoCard title={isZh ? '与偏振的联系' : 'Connection to Polarization'} color="purple">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
                     <li>• {isZh ? '偏振描述电场振动方向' : 'Polarization describes E-field oscillation direction'}</li>
                     <li>• {isZh ? '自然光包含所有偏振方向' : 'Natural light contains all polarization directions'}</li>
                     <li>• {isZh ? '只有横波才能偏振' : 'Only transverse waves can be polarized'}</li>
@@ -549,7 +551,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
             {/* Spectrum View Content */}
             <div className="flex gap-6 flex-col lg:flex-row">
               <div className="flex-1">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 rounded-xl border border-indigo-500/20 p-4 overflow-hidden">
+                <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 border-indigo-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-indigo-50 border-indigo-200'} rounded-xl border p-4 overflow-hidden`}>
                   <svg viewBox="0 0 800 380" className="w-full h-auto" style={{ minHeight: '360px' }}>
                     <defs>
                       <pattern id="spectrum-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -753,8 +755,8 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
                   onChange={setShowSizeComparison}
                 />
 
-                <div className="border-t border-slate-700 pt-4 mt-4">
-                  <h4 className="text-sm font-medium text-gray-300 mb-2">
+                <div className={`border-t ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'} pt-4 mt-4`}>
+                  <h4 className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
                     {isZh ? '选择波段' : 'Select Region'}
                   </h4>
                   <div className="grid grid-cols-2 gap-2">
@@ -804,7 +806,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
             <DifficultyGate level="explore" currentLevel={difficultyLevel} showWhen="at-least">
               <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <InfoCard title={isZh ? '光的本质' : 'Nature of Light'} color="cyan">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
                     <li>• {isZh ? '光是电磁波，不需要介质' : 'Light is EM wave, no medium needed'}</li>
                     <li>• {isZh ? '波长与频率成反比' : 'λ inversely proportional to f'}</li>
                     {config.showFormula && <li className="font-mono text-cyan-400">c = λf = 3×10⁸ m/s</li>}
@@ -812,7 +814,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
                 </InfoCard>
 
                 <InfoCard title={isZh ? '能量与波长' : 'Energy & Wavelength'} color="purple">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
                     <li>• {isZh ? '波长越短，能量越高' : 'Shorter λ = higher energy'}</li>
                     <li>• {isZh ? '伽马射线能量最高' : 'Gamma rays have highest energy'}</li>
                     {config.showFormula && <li className="font-mono text-purple-400">E = hf = hc/λ</li>}
@@ -820,7 +822,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'explore' }: Props) 
                 </InfoCard>
 
                 <InfoCard title={isZh ? '人眼视觉' : 'Human Vision'} color="green">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
                     <li>• {isZh ? '人眼仅见380-700nm' : 'Eyes see only 380-700nm'}</li>
                     <li>• {isZh ? '对绿光最敏感(~555nm)' : 'Most sensitive to green (~555nm)'}</li>
                     <li>• {isZh ? '可见光只占极小部分' : 'Visible is tiny fraction of spectrum'}</li>

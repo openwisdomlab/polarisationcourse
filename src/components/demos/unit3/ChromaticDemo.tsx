@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { MediaGalleryPanel } from './MediaGalleryPanel'
 import { RealExperimentMicroGallery } from '@/components/real-experiments'
+import { useTheme } from '@/contexts/ThemeContext'
 
 // 波长到RGB颜色转换
 function wavelengthToRGB(wavelength: number): [number, number, number] {
@@ -491,6 +492,7 @@ function ColorDisplayPanel({
 
 // 主演示组件
 export function ChromaticDemo() {
+  const { theme } = useTheme()
   // 默认值设置为能显示明显干涉色的参数
   // OPD = 0.05mm × 0.04 × 1000 = 2000nm ≈ 3.6λ (云母)
   const [thickness, setThickness] = useState(0.05)
@@ -518,10 +520,10 @@ export function ChromaticDemo() {
     <div className="space-y-6">
       {/* 页面标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${theme === 'dark' ? 'from-white via-purple-100 to-white' : 'from-gray-800 via-purple-600 to-gray-800'}`}>
           光学各向异性 - 色偏振
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
           探索双折射材料产生的彩色干涉效应
         </p>
       </div>
@@ -531,14 +533,14 @@ export function ChromaticDemo() {
 
       {/* 交互演示区域标题 */}
       <div className="flex items-center gap-3 pt-2">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-        <h3 className="text-lg font-semibold text-purple-300 flex items-center gap-2">
+        <div className={`h-px flex-1 bg-gradient-to-r from-transparent to-transparent ${theme === 'dark' ? 'via-purple-500/30' : 'via-purple-300/50'}`} />
+        <h3 className={`text-lg font-semibold flex items-center gap-2 ${theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}`}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
           </svg>
           交互演示
         </h3>
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+        <div className={`h-px flex-1 bg-gradient-to-r from-transparent to-transparent ${theme === 'dark' ? 'via-purple-500/30' : 'via-purple-300/50'}`} />
       </div>
 
       {/* 主体内容 */}
@@ -546,7 +548,7 @@ export function ChromaticDemo() {
         {/* 左侧：可视化 */}
         <div className="space-y-4">
           {/* 光路图 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-purple-950/90 border border-purple-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-purple-950/90 border-purple-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'bg-gradient-to-br from-white via-gray-50 to-purple-50 border-purple-200 shadow-lg'}`}>
             <OpticalPathDiagram
               thickness={thickness}
               birefringence={birefringence}
@@ -557,8 +559,8 @@ export function ChromaticDemo() {
           </div>
 
           {/* 观察到的颜色 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
-            <h4 className="text-sm font-semibold text-white mb-3">观察到的颜色</h4>
+          <div className={`rounded-xl border p-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30' : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 shadow-sm'}`}>
+            <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>观察到的颜色</h4>
             <ColorDisplayPanel color={resultColor} />
           </div>
         </div>
@@ -599,7 +601,9 @@ export function ChromaticDemo() {
                     className={`px-2 py-1.5 text-xs rounded transition-colors ${
                       Math.abs(birefringence - m.br) < 0.0001
                         ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-                        : 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                        : theme === 'dark'
+                          ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
                     {m.name}
@@ -634,7 +638,7 @@ export function ChromaticDemo() {
 
             <div className="flex gap-2 pt-2">
               <motion.button
-                className="flex-1 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                className={`flex-1 py-1.5 text-xs rounded transition-colors ${theme === 'dark' ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setAnalyzerAngle(polarizerAngle)}
@@ -642,7 +646,7 @@ export function ChromaticDemo() {
                 平行设置
               </motion.button>
               <motion.button
-                className="flex-1 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                className={`flex-1 py-1.5 text-xs rounded transition-colors ${theme === 'dark' ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setAnalyzerAngle((polarizerAngle + 90) % 180)}
@@ -655,17 +659,17 @@ export function ChromaticDemo() {
           {/* 相位延迟信息 */}
           <ControlPanel title="相位延迟">
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
                 <div className="text-gray-500 text-xs">光程差 Δn×d</div>
-                <div className="text-cyan-400 font-mono">{opticalPathDiff.toFixed(1)} nm</div>
+                <div className="text-cyan-500 font-mono">{opticalPathDiff.toFixed(1)} nm</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 rounded-lg ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
                 <div className="text-gray-500 text-xs">相位延迟 (550nm)</div>
-                <div className="text-purple-400 font-mono">{(phaseRetardation * 180 / Math.PI).toFixed(0)}°</div>
+                <div className="text-purple-500 font-mono">{(phaseRetardation * 180 / Math.PI).toFixed(0)}°</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg col-span-2">
+              <div className={`p-2 rounded-lg col-span-2 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100'}`}>
                 <div className="text-gray-500 text-xs">延迟级次</div>
-                <div className="text-orange-400 font-mono">{retardationOrders.toFixed(2)} λ</div>
+                <div className="text-orange-500 font-mono">{retardationOrders.toFixed(2)} λ</div>
               </div>
             </div>
           </ControlPanel>
@@ -678,7 +682,7 @@ export function ChromaticDemo() {
               polarizerAngle={polarizerAngle}
               analyzerAngle={analyzerAngle}
             />
-            <p className="text-xs text-gray-400 mt-2">
+            <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               不同波长的透过率不同，导致出射光呈现特定颜色。
             </p>
           </ControlPanel>

@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { RealExperimentMicroGallery } from '@/components/real-experiments'
 import { DifficultyLevel } from '../DifficultyStrategy'
+import { useTheme } from '@/contexts/ThemeContext'
 
 // 组件属性接口
 interface MalusLawDemoProps {
@@ -372,6 +373,7 @@ function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; in
 // 主组件
 export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps) {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [angle, setAngle] = useState(30)
   const [incidentIntensity, setIncidentIntensity] = useState(1)
   const [autoPlay, setAutoPlay] = useState(false)
@@ -429,7 +431,7 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
         <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
           {t('demoUi.malus.title')}
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           {t('demoUi.malus.subtitle')}
         </p>
       </div>
@@ -437,11 +439,11 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
       {/* 主体内容 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
-        <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-blue-950/90 border border-blue-500/30 p-5 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
-          <h3 className="text-lg font-semibold text-white mb-4">{t('demoUi.malus.visualization')}</h3>
+        <div className={`rounded-xl border border-blue-500/30 p-5 shadow-[0_15px_40px_rgba(0,0,0,0.5)] ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-blue-950/90' : 'bg-gradient-to-br from-white via-gray-50 to-blue-50'}`}>
+          <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{t('demoUi.malus.visualization')}</h3>
 
           {/* 光学装置 */}
-          <div className="rounded-lg bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-blue-400/30 p-4 space-y-4">
+          <div className={`rounded-lg border border-blue-400/30 p-4 space-y-4 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-800/50 to-slate-900/50' : 'bg-gradient-to-br from-gray-100/50 to-gray-200/50'}`}>
             {/* 入射光 */}
             <LightBar label="I₀" intensity={incidentIntensity} color="blue" />
 
@@ -481,17 +483,17 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
           </div>
 
           {/* 解释框 */}
-          <div className="mt-4 p-4 rounded-lg bg-slate-800/70 border border-blue-400/20">
-            <h4 className="text-sm font-semibold text-white mb-2">{t('demoUi.malus.currentMeaning')}</h4>
+          <div className={`mt-4 p-4 rounded-lg border border-blue-400/20 ${theme === 'dark' ? 'bg-slate-800/70' : 'bg-gray-100/70'}`}>
+            <h4 className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{t('demoUi.malus.currentMeaning')}</h4>
             <motion.p
-              className="text-sm text-gray-300"
+              className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
               key={Math.floor(angle / 10)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
               {getExplanation(angle)}
             </motion.p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
               {t('demoUi.malus.assumption')}
             </p>
           </div>
@@ -526,7 +528,7 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
 
             {/* 研究级别: 消光比参数 */}
             {isResearch && (
-              <div className="pt-2 border-t border-slate-700/50">
+              <div className={`pt-2 border-t ${theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'}`}>
                 <SliderControl
                   label="消光比 (ER)"
                   value={Math.log10(extinctionRatio)}
@@ -536,7 +538,7 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
                   onChange={(v) => setExtinctionRatio(Math.pow(10, v))}
                   color="cyan"
                 />
-                <p className="text-[10px] text-gray-500 mt-1">
+                <p className={`text-[10px] mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
                   ER = 10^{Math.log10(extinctionRatio).toFixed(1)} ≈ {extinctionRatio.toFixed(0)}
                   {extinctionRatio >= 10000 ? ' (高品质)' : extinctionRatio >= 100 ? ' (普通)' : ' (低品质)'}
                 </p>
@@ -589,29 +591,29 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
               </div>
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                <div className="text-gray-400">
+                <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                   I₀ = <span className="text-cyan-400 font-mono">{incidentIntensity.toFixed(3)}</span>
                 </div>
-                <div className="text-gray-400">
+                <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                   θ = <span className="text-purple-400 font-mono">{angle.toFixed(2)}°</span>
                 </div>
-                <div className="text-gray-400">
+                <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                   cos θ ≈ <span className="text-cyan-400 font-mono">{cosTheta.toFixed(4)}</span>
                 </div>
-                <div className="text-gray-400">
+                <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                   cos²θ ≈ <span className="text-cyan-400 font-mono">{cos2Theta.toFixed(4)}</span>
                 </div>
                 {isResearch && (
                   <>
-                    <div className="text-gray-400">
+                    <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                       sin²θ ≈ <span className="text-cyan-400 font-mono">{sin2Theta.toFixed(4)}</span>
                     </div>
-                    <div className="text-gray-400">
+                    <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                       sin²θ/ER ≈ <span className="text-cyan-400 font-mono">{(sin2Theta / extinctionRatio).toFixed(6)}</span>
                     </div>
                   </>
                 )}
-                <div className="col-span-2 text-gray-400 pt-1 border-t border-slate-700 mt-1">
+                <div className={`col-span-2 pt-1 mt-1 border-t ${theme === 'dark' ? 'text-gray-400 border-slate-700' : 'text-gray-600 border-gray-200'}`}>
                   {isResearch ? (
                     <>
                       I = I₀ · [cos²θ + sin²θ/ER] ≈{' '}
@@ -628,7 +630,7 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
                     </>
                   )}
                 </div>
-                <div className="col-span-2 text-gray-400">
+                <div className={`col-span-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   I/I₀ ≈{' '}
                   <span className="text-orange-400 font-mono font-semibold">{(transmittedIntensity / incidentIntensity).toFixed(4)}</span>
                   {isResearch && Math.abs(angle - 90) < 5 && (
@@ -654,18 +656,18 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
           {isFoundation && (
             <ControlPanel title="简单理解">
               <div className="space-y-3">
-                <div className="p-3 rounded-lg bg-slate-800/50">
-                  <p className="text-sm text-gray-300">
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100/50'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                     当两个偏振片的角度<strong className="text-cyan-400">相同</strong>时，光可以<strong className="text-green-400">完全通过</strong>。
                   </p>
                 </div>
-                <div className="p-3 rounded-lg bg-slate-800/50">
-                  <p className="text-sm text-gray-300">
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100/50'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                     当两个偏振片的角度<strong className="text-purple-400">相差90°</strong>时，光会被<strong className="text-red-400">完全阻挡</strong>。
                   </p>
                 </div>
-                <div className="p-3 rounded-lg bg-slate-800/50">
-                  <p className="text-sm text-gray-300">
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100/50'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                     其他角度时，通过的光量在0%到100%之间变化。
                   </p>
                 </div>
@@ -673,7 +675,7 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
                   <span className="text-2xl font-bold text-orange-400">
                     {(transmittedIntensity * 100).toFixed(0)}%
                   </span>
-                  <span className="text-gray-400 text-sm ml-2">的光通过</span>
+                  <span className={`text-sm ml-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>的光通过</span>
                 </div>
               </div>
             </ControlPanel>
@@ -683,7 +685,7 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
           {!isFoundation && (
             <ControlPanel title={t('demoUi.malus.curveTitle')}>
               <MalusCurveChart currentAngle={angle} intensity={isResearch ? transmittedIntensity / incidentIntensity : cos2Theta} />
-              <p className="text-xs text-gray-400 mt-2">
+              <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 {t('demoUi.malus.curveDesc')}
                 {isResearch && ' 注意: 非理想偏振片在90°处仍有微小透射。'}
               </p>
@@ -693,8 +695,8 @@ export function MalusLawDemo({ difficultyLevel = 'explore' }: MalusLawDemoProps)
       </div>
 
       {/* 底部提示 */}
-      <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-        <p className="text-sm text-gray-400">
+      <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700/50' : 'bg-gray-100/50 border-gray-200'}`}>
+        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           <strong className="text-cyan-400">{t('demoUi.common.learningTip')}：</strong>
           {t('demoUi.malus.tip')}
         </p>

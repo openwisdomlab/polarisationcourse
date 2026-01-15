@@ -5,10 +5,12 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
 import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard } from '../DemoControls'
 
 export function LightWaveDemo() {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [wavelength, setWavelength] = useState(550) // nm
   const [amplitude, setAmplitude] = useState(50)
   const [speed, setSpeed] = useState(0.5)
@@ -84,7 +86,7 @@ export function LightWaveDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+          <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-blue-50 border-blue-200'} rounded-xl border p-4 overflow-hidden`}>
             <svg
               viewBox="0 0 700 300"
               className="w-full h-auto"
@@ -177,8 +179,8 @@ export function LightWaveDemo() {
           </div>
 
           {/* 可见光谱 */}
-          <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">{t('demoUi.common.visibleSpectrum')}</h4>
+          <div className={`mt-4 p-4 rounded-lg ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700/50' : 'bg-gray-50 border-gray-200'} border`}>
+            <h4 className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-2`}>{t('demoUi.common.visibleSpectrum')}</h4>
             <div
               className="h-8 rounded cursor-pointer relative"
               style={{
@@ -199,7 +201,7 @@ export function LightWaveDemo() {
                 layoutId="wavelength-indicator"
               />
             </div>
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
+            <div className={`flex justify-between text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
               <span>380 nm ({t('demoUi.common.violet')})</span>
               <span>550 nm ({t('demoUi.common.green')})</span>
               <span>700 nm ({t('demoUi.common.red')})</span>
@@ -259,7 +261,7 @@ export function LightWaveDemo() {
             {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
           </motion.button>
 
-          <div className="pt-2 border-t border-slate-700">
+          <div className={`pt-2 border-t ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'}`}>
             <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
             <ValueDisplay label={t('demoUi.common.frequency')} value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
           </div>
@@ -269,14 +271,14 @@ export function LightWaveDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InfoCard title={t('demoUi.lightWave.emWaveFeatures')} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             {(t('demoUi.lightWave.emWaveDetails', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}
           </ul>
         </InfoCard>
         <InfoCard title={t('demoUi.lightWave.transverseFeatures')} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} space-y-1.5`}>
             {(t('demoUi.lightWave.transverseDetails', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}
