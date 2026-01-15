@@ -647,7 +647,7 @@ export function BirefringenceDemo() {
                 simulatorComponent={
                   <svg viewBox="0 0 600 400" className="w-full h-auto">
                     {/* Background */}
-                    <rect x="0" y="0" width="600" height="400" fill="#0f172a" rx="8" />
+                    <rect x="0" y="0" width="600" height="400" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
 
                     {/* Incident light */}
                     <line x1="50" y1="200" x2="200" y2="200" stroke="#ffffff" strokeWidth="4" />

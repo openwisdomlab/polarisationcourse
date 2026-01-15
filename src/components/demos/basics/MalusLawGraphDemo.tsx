@@ -414,8 +414,8 @@ export function MalusLawGraphDemo() {
                       width="30"
                       height="40"
                       rx="3"
-                      fill={transmission > 0.1 ? '#22c55e20' : '#1e293b'}
-                      stroke={transmission > 0.1 ? '#22c55e' : '#475569'}
+                      fill={transmission > 0.1 ? '#22c55e20' : (theme === 'dark' ? '#1e293b' : '#e2e8f0')}
+                      stroke={transmission > 0.1 ? '#22c55e' : (theme === 'dark' ? '#475569' : '#94a3b8')}
                       strokeWidth="2"
                     />
                     <text x="0" y="35" textAnchor="middle" fill="#6b7280" fontSize="9">

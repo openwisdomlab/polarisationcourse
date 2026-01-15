@@ -36,7 +36,8 @@ function PolarizerVisualizer({
   color,
   isActive,
   showLines = true,
-}: PolarizerVisualizerProps) {
+  isDark = true,
+}: PolarizerVisualizerProps & { isDark?: boolean }) {
   const lineCount = 7
   const radius = 35
 
@@ -48,8 +49,8 @@ function PolarizerVisualizer({
         cy="0"
         rx={radius}
         ry={radius * 1.2}
-        fill={isActive ? `${color}15` : '#1e293b'}
-        stroke={isActive ? color : '#475569'}
+        fill={isActive ? `${color}15` : (isDark ? '#1e293b' : '#e2e8f0')}
+        stroke={isActive ? color : (isDark ? '#475569' : '#94a3b8')}
         strokeWidth={isActive ? 2 : 1}
         animate={{ scale: isActive ? 1.05 : 1 }}
         transition={{ duration: 0.3 }}
@@ -83,7 +84,7 @@ function PolarizerVisualizer({
       )}
 
       {/* 角度标签 */}
-      <text x="0" y={radius + 25} textAnchor="middle" fill="#9ca3af" fontSize="11">
+      <text x="0" y={radius + 25} textAnchor="middle" fill={isDark ? '#9ca3af' : '#6b7280'} fontSize="11">
         {label}
       </text>
       <text x="0" y={radius + 40} textAnchor="middle" fill={color} fontSize="12" fontWeight="bold">
@@ -297,13 +298,13 @@ export function ThreePolarizersDemo() {
         {/* 可视化区域 */}
         <div className="flex-1">
           <div className={`${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20' : 'bg-gradient-to-br from-white via-gray-50 to-blue-50 border-blue-200'} rounded-xl border p-4 overflow-hidden`}>
-            <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
+            <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px', background: theme === 'dark' ? '#0f172a' : '#f8fafc' }}>
               <defs>
                 <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
                   <path
                     d="M 40 0 L 0 0 0 40"
                     fill="none"
-                    stroke="rgba(100,150,255,0.05)"
+                    stroke={theme === 'dark' ? 'rgba(100,150,255,0.05)' : 'rgba(100,150,255,0.15)'}
                     strokeWidth="1"
                   />
                 </pattern>
@@ -319,7 +320,7 @@ export function ThreePolarizersDemo() {
               <rect width="700" height="320" fill="url(#three-pol-grid)" />
 
               {/* 标题 */}
-              <text x="350" y="25" textAnchor="middle" fill="#e2e8f0" fontSize="14" fontWeight="bold">
+              <text x="350" y="25" textAnchor="middle" fill={theme === 'dark' ? '#e2e8f0' : '#1e293b'} fontSize="14" fontWeight="bold">
                 {isZh ? '三偏振片实验' : 'Three Polarizer Experiment'}
               </text>
 
@@ -334,7 +335,7 @@ export function ThreePolarizersDemo() {
                   transition={{ duration: 2, repeat: Infinity }}
                 />
                 <circle cx="0" cy="0" r="15" fill="#fff" opacity="0.5" />
-                <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
+                <text x="0" y="45" textAnchor="middle" fill={theme === 'dark' ? '#9ca3af' : '#6b7280'} fontSize="11">
                   {isZh ? '非偏振光' : 'Unpolarized'}
                 </text>
                 <text x="0" y="60" textAnchor="middle" fill="#ffd700" fontSize="11">
@@ -388,6 +389,7 @@ export function ThreePolarizersDemo() {
                 label={isZh ? '起偏器 P₁' : 'Polarizer P₁'}
                 color="#22d3ee"
                 isActive={true}
+                isDark={theme === 'dark'}
               />
 
               {/* 偏振片2（中间） */}
@@ -405,6 +407,7 @@ export function ThreePolarizersDemo() {
                       label={isZh ? '中间片 P₂' : 'Middle P₂'}
                       color="#fbbf24"
                       isActive={true}
+                      isDark={theme === 'dark'}
                     />
                   </motion.g>
                 )}
@@ -417,6 +420,7 @@ export function ThreePolarizersDemo() {
                 label={isZh ? '检偏器 P₃' : 'Analyzer P₃'}
                 color="#4ade80"
                 isActive={true}
+                isDark={theme === 'dark'}
               />
 
               {/* 探测器 */}
@@ -427,11 +431,11 @@ export function ThreePolarizersDemo() {
                   width="40"
                   height="50"
                   rx="4"
-                  fill={calculations.I3 > 0.01 ? '#22c55e20' : '#1e293b'}
-                  stroke={calculations.I3 > 0.01 ? '#22c55e' : '#475569'}
+                  fill={calculations.I3 > 0.01 ? '#22c55e20' : (theme === 'dark' ? '#1e293b' : '#e2e8f0')}
+                  stroke={calculations.I3 > 0.01 ? '#22c55e' : (theme === 'dark' ? '#475569' : '#94a3b8')}
                   strokeWidth="2"
                 />
-                <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
+                <text x="0" y="45" textAnchor="middle" fill={theme === 'dark' ? '#9ca3af' : '#6b7280'} fontSize="11">
                   {isZh ? '探测器' : 'Detector'}
                 </text>
                 <text x="0" y="60" textAnchor="middle" fill="#22c55e" fontSize="11" fontWeight="bold">
