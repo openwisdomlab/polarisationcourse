@@ -9,6 +9,8 @@ import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import {
   ChevronDown,
   Play,
@@ -434,6 +436,7 @@ function SeriesLinkCard({
 
 // 主组件
 export function MediaGalleryPanel() {
+  const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
@@ -494,16 +497,23 @@ export function MediaGalleryPanel() {
   }
 
   return (
-    <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-purple-950/30
-      border border-purple-500/20 overflow-hidden">
+    <div className={cn(
+      "rounded-xl border overflow-hidden",
+      theme === 'dark'
+        ? 'bg-gradient-to-br from-slate-900/80 to-purple-950/30 border-purple-500/20'
+        : 'bg-gradient-to-br from-slate-50 to-purple-50 border-purple-200'
+    )}>
       {/* 头部 - 可点击展开/折叠 */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        className={cn(
+          "w-full flex items-center justify-between p-4 transition-colors",
+          theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-purple-50'
+        )}
       >
         <div className="flex items-center gap-2">
           <Camera className="w-5 h-5 text-purple-400" />
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className={cn("text-sm font-semibold", theme === 'dark' ? 'text-white' : 'text-gray-800')}>
             {isZh ? '真实实验场景' : 'Real Experiment Scenes'}
           </h3>
           <span className="text-xs text-gray-500">
@@ -522,10 +532,15 @@ export function MediaGalleryPanel() {
       {!isExpanded && (
         <div className="px-4 pb-4 space-y-4">
           {/* 内容说明 */}
-          <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/30">
+          <div className={cn(
+            "flex items-start gap-3 p-3 rounded-lg border",
+            theme === 'dark'
+              ? 'bg-slate-800/30 border-slate-700/30'
+              : 'bg-white/50 border-gray-200'
+          )}>
             <Film className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-300 leading-relaxed">
+              <p className={cn("text-xs leading-relaxed", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
                 {isZh
                   ? '包含实验室拍摄的色偏振照片和视频：应力双折射、保鲜膜干涉、透明胶带效果等真实实验记录，以及偏振艺术文创作品展示。'
                   : 'Contains lab-captured chromatic polarization photos and videos: stress birefringence, plastic wrap interference, tape effects, and polarization art creations.'}
@@ -559,9 +574,12 @@ export function MediaGalleryPanel() {
                 />
               ))}
               <motion.button
-                className="w-28 h-28 flex-shrink-0 rounded-lg border border-dashed border-slate-600
-                  flex flex-col items-center justify-center text-gray-500 hover:text-gray-400
-                  hover:border-purple-500/50 hover:bg-purple-500/5 transition-colors gap-1"
+                className={cn(
+                  "w-28 h-28 flex-shrink-0 rounded-lg border border-dashed flex flex-col items-center justify-center transition-colors gap-1",
+                  theme === 'dark'
+                    ? 'border-slate-600 text-gray-500 hover:text-gray-400 hover:border-purple-500/50 hover:bg-purple-500/5'
+                    : 'border-gray-300 text-gray-500 hover:text-gray-600 hover:border-purple-400 hover:bg-purple-50'
+                )}
                 whileHover={{ scale: 1.02 }}
                 onClick={() => setIsExpanded(true)}
               >
