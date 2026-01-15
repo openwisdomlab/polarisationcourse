@@ -1,13 +1,17 @@
 /**
  * Polarization Introduction Demo - 偏振光入门演示
  * 使用 DOM + Framer Motion 对比非偏振光和偏振光
+ *
+ * Scientific Note: Unpolarized light is NOT multiple simultaneous polarization directions,
+ * but rather a single polarization direction that changes randomly and rapidly over time.
+ * The animation reflects this by showing a jittering vector rather than a static starburst.
  */
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
-// 电场矢量组件
+// 电场矢量组件 - 用于偏振光
 function EFieldVector({
   angle,
   length,
@@ -75,6 +79,97 @@ function EFieldVector({
   )
 }
 
+// 随机抖动电场矢量组件 - 用于非偏振光
+// 科学准确性：非偏振光是单一振动方向随时间快速随机变化，而非同时存在多个方向
+function JitteringEFieldVector({
+  length,
+  isAnimating,
+}: {
+  length: number
+  isAnimating: boolean
+}) {
+  const [currentAngle, setCurrentAngle] = useState(0)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    if (isAnimating) {
+      // 每100ms随机改变角度，模拟非偏振光的快速随机变化
+      intervalRef.current = setInterval(() => {
+        setCurrentAngle(Math.random() * 360)
+      }, 100)
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [isAnimating])
+
+  // 根据当前角度计算颜色 (HSL色轮)
+  const color = `hsl(${currentAngle}, 70%, 60%)`
+
+  return (
+    <motion.div
+      className="absolute left-1/2 top-1/2 origin-center"
+      animate={{
+        rotate: currentAngle,
+      }}
+      transition={{
+        duration: 0.08,
+        ease: "linear",
+      }}
+      style={{
+        width: length * 2,
+        height: 3,
+        marginLeft: -length,
+        marginTop: -1.5,
+      }}
+    >
+      <motion.div
+        className="w-full h-full rounded-full"
+        animate={isAnimating ? {
+          scaleX: [0, 1, 0, -1, 0],
+        } : { scaleX: 1 }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        style={{
+          background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
+          boxShadow: `0 0 10px ${color}`,
+        }}
+      />
+      {/* 箭头 */}
+      <motion.div
+        className="absolute right-0 top-1/2"
+        style={{
+          width: 0,
+          height: 0,
+          borderTop: '5px solid transparent',
+          borderBottom: '5px solid transparent',
+          borderLeft: `8px solid ${color}`,
+          marginTop: -5,
+          marginRight: -4,
+        }}
+        animate={isAnimating ? {
+          opacity: [0, 1, 0, 0, 0],
+        } : { opacity: 1 }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </motion.div>
+  )
+}
+
 // 偏振光面板
 function PolarizedPanel({
   title,
@@ -91,9 +186,6 @@ function PolarizedPanel({
   animationSpeed: number
   propagationText: string
 }) {
-  // 非偏振光的随机角度
-  const randomAngles = [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350]
-
   return (
     <div className="flex-1 rounded-xl bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-800 border border-slate-700/50 p-4">
       <div className="text-center mb-4">
@@ -125,17 +217,11 @@ function PolarizedPanel({
 
         {/* 电场矢量 */}
         {isUnpolarized ? (
-          // 非偏振光 - 多个随机方向的矢量
-          randomAngles.map((angle, i) => (
-            <EFieldVector
-              key={i}
-              angle={angle}
-              length={70}
-              color={`hsl(${angle}, 70%, 60%)`}
-              animate={animationSpeed > 0}
-              delay={i * 0.1}
-            />
-          ))
+          // 非偏振光 - 单一矢量随机抖动（科学准确：振动方向随时间快速随机变化）
+          <JitteringEFieldVector
+            length={70}
+            isAnimating={animationSpeed > 0}
+          />
         ) : (
           // 偏振光 - 单一方向的矢量
           <EFieldVector
