@@ -31,7 +31,6 @@ import {
   TrendingUp,
   Clock,
   Flame,
-  ArrowRight,
   Users
 } from 'lucide-react'
 
