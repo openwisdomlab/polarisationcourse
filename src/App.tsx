@@ -1,6 +1,7 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { initScrollbarManager } from '@/utils/scrollbarManager'
 
 // Lazy load all pages for code splitting
 const HomePage = lazy(() => import('@/pages/HomePage'))
@@ -39,6 +40,14 @@ function PageLoader() {
 }
 
 export function App() {
+  useEffect(() => {
+    const scrollbarManager = initScrollbarManager(1500)
+
+    return () => {
+      scrollbarManager.destroy()
+    }
+  }, [])
+
   return (
     <ErrorBoundary>
       <BrowserRouter>

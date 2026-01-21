@@ -1,0 +1,152 @@
+/* ==================== Custom Scrollbar Styles ==================== */
+
+/* Base scrollbar styles for Webkit browsers (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== Auto-hide Animation ==================== */
+
+/* Hidden state */
+.custom-scrollbar.scrollbar-hidden::-webkit-scrollbar {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.custom-scrollbar.scrollbar-hidden {
+  scrollbar-color: transparent transparent;
+}
+
+/* Visible state */
+.custom-scrollbar.scrollbar-visible::-webkit-scrollbar {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.custom-scrollbar.scrollbar-visible {
+  scrollbar-color: rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== High Contrast Mode ==================== */
+@media (prefers-contrast: high) {
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.95);
+  }
+
+  .custom-scrollbar {
+    scrollbar-color: rgba(0, 0, 0, 0.95) rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ==================== Touch Devices ==================== */
+@media (hover: none) and (pointer: coarse) {
+  /* On touch devices, keep native scrolling but apply custom visual styles */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  /* Disable auto-hide on touch devices for better UX */
+  .custom-scrollbar.scrollbar-hidden::-webkit-scrollbar,
+  .custom-scrollbar.scrollbar-visible::-webkit-scrollbar {
+    opacity: 1;
+  }
+
+  .custom-scrollbar.scrollbar-hidden,
+  .custom-scrollbar.scrollbar-visible {
+    scrollbar-color: rgba(0, 0, 0, 0.6) rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ==================== Reduced Motion ==================== */
+@media (prefers-reduced-motion: reduce) {
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+
+  .custom-scrollbar.scrollbar-hidden::-webkit-scrollbar,
+  .custom-scrollbar.scrollbar-visible::-webkit-scrollbar {
+    transition: none;
+  }
+}
+
+/* ==================== Global Application ==================== */
+
+/* Apply custom scrollbar to all elements with overflow-y: auto */
+[data-overflow-auto="true"],
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.7) rgba(0, 0, 0, 0.3);
+}
+
+[data-overflow-auto="true"]::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-overflow-auto="true"]::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+[data-overflow-auto="true"]::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+[data-overflow-auto="true"]::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* ==================== Excluded Elements ==================== */
+
+/* Elements with data-scrollbar-exclude attribute use native scrollbar */
+[data-scrollbar-exclude="true"] {
+  scrollbar-width: auto !important;
+}
+
+[data-scrollbar-exclude="true"]::-webkit-scrollbar {
+  width: auto !important;
+}
+
+[data-scrollbar-exclude="true"]::-webkit-scrollbar-track,
+[data-scrollbar-exclude="true"]::-webkit-scrollbar-thumb {
+  background: initial !important;
+  border-radius: initial !important;
+}
