@@ -3,37 +3,42 @@
  *
  * Comprehensive catalog of optical devices with specifications,
  * principles, and applications in both English and Chinese.
+ * 
+ * 光学器件的综合目录，包含规格、原理和应用的中英文描述。
+ * 
+ * Defines types and data structures for optical devices used in
+ * the Optical Design Studio module.
  */
 
-import type { BenchComponentType } from '@/stores/opticalBenchStore'
+import type { BenchComponentType } from '@/stores/opticalBenchStore'   // 导入光学工作台组件类型
 
-export type DeviceCategory = 'polarizers' | 'waveplates' | 'splitters' | 'retarders' | 'analyzers' | 'modulators' | 'other'
-export type DeviceDifficulty = 'basic' | 'intermediate' | 'advanced'
+export type DeviceCategory = 'polarizers' | 'waveplates' | 'splitters' | 'retarders' | 'analyzers' | 'modulators' | 'other'  // 设备类别类型
+export type DeviceDifficulty = 'basic' | 'intermediate' | 'advanced'  // 设备难度等级类型
 
 export interface DeviceSpecification {
   key: string
   valueEn: string
   valueZh: string
-}
+}   // 设备规格接口
 
 export interface Device {
-  id: string
-  nameEn: string
-  nameZh: string
-  category: DeviceCategory
-  descriptionEn: string
-  descriptionZh: string
-  principleEn: string
-  principleZh: string
-  icon: string
-  specifications?: DeviceSpecification[]
-  applications?: { en: string[]; zh: string[] }
-  mathFormula?: string
-  relatedDevices?: string[]
-  purchaseLinks?: { name: string; url: string }[]
-  difficulty: DeviceDifficulty
-  benchComponentType?: BenchComponentType
-}
+  id: string   // 设备唯一标识符
+  nameEn: string   // 设备英文名称
+  nameZh: string   // 设备中文名称
+  category: DeviceCategory    // 设备类别
+  descriptionEn: string    // 设备英文描述
+  descriptionZh: string   // 设备中文描述
+  principleEn: string   // 设备工作原理英文描述
+  principleZh: string   // 设备工作原理中文描述
+  icon: string   // 设备图标
+  specifications?: DeviceSpecification[]  // 设备规格列表
+  applications?: { en: string[]; zh: string[] }   // 设备应用领域
+  mathFormula?: string   // 设备相关数学公式
+  relatedDevices?: string[]   // 相关设备ID列表
+  purchaseLinks?: { name: string; url: string }[]   // 购买链接列表
+  difficulty: DeviceDifficulty    // 设备难度等级
+  benchComponentType?: BenchComponentType   // 对应的光学工作台组件类型
+}   // 设备接口
 
 export interface DeviceCategoryConfig {
   id: DeviceCategory | 'all'

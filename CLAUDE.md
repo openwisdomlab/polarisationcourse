@@ -5,6 +5,7 @@
 PolarCraft is an educational voxel puzzle game based on polarized light physics. It combines real optical principles (Malus's Law, birefringence, interference) with Minecraft-style voxel gameplay. Players manipulate polarized light beams to solve puzzles using various optical components.
 
 **Tech Stack:**
+
 - **Frontend**: React 19 + TypeScript (strict mode)
 - **3D Rendering**: React Three Fiber + Three.js + drei
 - **2D Animations**: Framer Motion (for course demo visualizations)
@@ -17,6 +18,7 @@ PolarCraft is an educational voxel puzzle game based on polarized light physics.
 - **Backend** (planned): NestJS + Colyseus for real-time multiplayer
 
 **Key Features:**
+
 - Interactive 3D voxel puzzle game with 5 tutorial levels
 - 2D puzzle game with 11 levels across 4 difficulty tiers (easy/medium/hard/expert)
 - Educational course platform with 20+ interactive physics demos across 6 units
@@ -50,12 +52,14 @@ npm run build        # Build for production
 ## Git Workflow
 
 **Branch Strategy:**
+
 - All development work should be merged to `main` branch after completion
 - Create feature branches from `main` for new features or fixes
 - After code review/testing, merge feature branches directly to `main`
 - Keep `main` branch always deployable
 
 **Commit Guidelines:**
+
 - Use conventional commit format: `feat:`, `fix:`, `chore:`, `docs:`, etc.
 - Write clear, concise commit messages in English
 - Reference issue numbers when applicable
@@ -64,7 +68,7 @@ npm run build        # Build for production
 
 ### Directory Structure
 
-```
+```txt
 polarisation/
 ├── src/                          # React application source
 │   ├── App.tsx                   # Root component with React Router
@@ -730,6 +734,7 @@ A suite of calculators for polarization mathematics:
 ## Course Structure (Interactive Demos)
 
 The demos use two visualization approaches:
+
 - **2D**: SVG + Framer Motion animations (clearer for wave/diagram visualizations)
 - **3D**: React Three Fiber (for spatial relationships and 3D components)
 
@@ -837,6 +842,7 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
 2. Import component in `DemosPage.tsx`
 3. Add demo info to `getDemoInfo()` function in `DemosPage.tsx`
 4. Add demo entry to `DEMOS` array in `DemosPage.tsx`:
+
    ```typescript
    {
      id: 'my-demo',
@@ -847,6 +853,7 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
      visualType: '2D', // or '3D'
    }
    ```
+
 5. Add translations to `src/i18n/locales/en.json` and `zh.json`
 6. Export from `src/components/demos/index.ts`
 
@@ -909,6 +916,7 @@ All 2D levels are defined in `src/pages/Game2DPage.tsx` in the `LEVELS` array:
 ```
 
 Usage:
+
 ```tsx
 const { t } = useTranslation()
 return <span>{t('namespace.key')}</span>
@@ -957,6 +965,7 @@ function MyComponent() {
 ### Dependencies
 
 **Frontend Production:**
+
 - `react`, `react-dom` (v19) - UI framework
 - `react-router-dom` (v7) - Client-side routing
 - `three`, `@react-three/fiber`, `@react-three/drei` - 3D rendering
@@ -965,6 +974,7 @@ function MyComponent() {
 - `i18next`, `react-i18next`, `i18next-browser-languagedetector` - Internationalization
 
 **Frontend Development:**
+
 - `typescript` - Type safety
 - `vite`, `@vitejs/plugin-react` - Build tool
 - `vitest`, `@testing-library/react`, `@testing-library/jest-dom` - Testing
@@ -973,6 +983,7 @@ function MyComponent() {
 - `class-variance-authority`, `clsx`, `tailwind-merge` - Utility classes
 
 **Backend:**
+
 - `@nestjs/*` - Server framework
 - `@colyseus/*` - Real-time multiplayer
 
@@ -1004,6 +1015,7 @@ const store = window.__ZUSTAND_DEVTOOLS_GLOBAL_STORE__
 ### Light Propagation
 
 The World class exposes methods for debugging:
+
 ```typescript
 world.getAllBlocks()      // Get all placed blocks
 world.getAllLightStates() // Get all light positions and packets

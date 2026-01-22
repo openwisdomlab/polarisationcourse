@@ -1,14 +1,11 @@
-# PolarCraft - Polarized Light Creative Platform
-
 # PolarCraft - 偏振光创意平台
 
 ---
 
-[English](#english) | [中文](#中文)
+[English](#english) | [中文](#中文) | [How to contribute code](#代码文档)
 
 ---
 
-<a name="english"></a>
 ## English
 
 > Explore the Hidden Geometry of Light
@@ -211,7 +208,7 @@ The 2D game offers a simplified, more accessible puzzle experience using SVG-bas
 
 A comprehensive polarized light art design tool combining Device Library and Optical Bench for creating and simulating optical systems.
 
-#### Features
+#### Studio Features
 
 - **Device Library (器件图鉴)** - Browse 80+ optical devices with detailed specifications, working principles, and formulas
 - **Optical Bench (光学工作台)** - Interactive canvas for designing custom optical paths
@@ -232,7 +229,7 @@ A comprehensive polarized light art design tool combining Device Library and Opt
 | **Sensor** | Detects light intensity and polarization |
 | **Lens** | Focus or defocus light beams |
 
-#### Controls
+#### Controls Tips
 
 - **Drag & Drop** - Move components on the canvas
 - **Click** - Select component to edit properties
@@ -262,7 +259,7 @@ The educational platform covers 6 units of polarization optics with 21 interacti
 | 4 | Turbid Media Scattering | Mie Scattering, Rayleigh Scattering, Monte Carlo Scattering |
 | 5 | Full Polarimetry | Stokes Vectors, Mueller Matrices, Jones Matrices, Polarization Calculator, Polarimetric Microscopy |
 
-#### Difficulty Levels
+#### Difficulty Levels Settings
 
 The course offers three difficulty levels to accommodate different learners:
 
@@ -276,7 +273,7 @@ Visit `/demos` to explore interactive visualizations.
 
 ### Project Structure
 
-```
+```txt
 polarisation/
 ├── src/
 │   ├── core/                  # Physics engine & world logic
@@ -323,7 +320,6 @@ MIT License
 
 ---
 
-<a name="中文"></a>
 ## 中文
 
 > 探索光的隐形几何
@@ -591,7 +587,7 @@ npm run preview  # 预览生产构建
 
 ### 项目结构
 
-```
+```txt
 polarisation/
 ├── src/
 │   ├── core/                  # 物理引擎和世界逻辑
@@ -635,3 +631,9 @@ PolarCraft通过多种途径将抽象的光学物理转化为交互式体验：�
 ### 许可证
 
 MIT 许可证
+
+## 代码文档
+
+此处为代码文档
+
+### 进度
