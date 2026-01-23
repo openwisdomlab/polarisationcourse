@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
+import { LightBeamEffect } from '@/components/effects'
 import {
   PolarCraftLogo,
   HistoryModuleIcon,
@@ -319,15 +320,21 @@ function ModuleCard({ module, theme }: { module: ModuleConfig; theme: 'dark' | '
 export function HomePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const logoRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   return (
     <div
+      ref={containerRef}
       className={`min-h-screen flex flex-col ${
         theme === 'dark'
           ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950'
           : 'bg-gradient-to-br from-slate-50 via-white to-slate-100'
       }`}
     >
+      {/* Light beam effect from logo following mouse */}
+      <LightBeamEffect logoRef={logoRef} containerRef={containerRef} />
+
       {/* Settings */}
       <div className="fixed top-4 right-4 z-50">
         <LanguageThemeSwitcher />
@@ -335,8 +342,8 @@ export function HomePage() {
 
       {/* Hero Section */}
       <header className="flex flex-col items-center justify-center pt-16 pb-12 px-4 text-center">
-        {/* Logo */}
-        <div className="mb-6">
+        {/* Logo - Light source for beam effect */}
+        <div ref={logoRef} className="mb-6">
           <PolarCraftLogo size={80} theme={theme} animated />
         </div>
 
