@@ -427,7 +427,7 @@ export function PolarizationDevicesPanel({ onClose, compact: _compact = false }:
   const [selectedCategory, setSelectedCategory] = useState<DeviceCategory | 'all'>('all')
   const [expandedDeviceId, setExpandedDeviceId] = useState<string | null>(null)
 
-  // Filter devices
+  // Filter devices based on category and search query  
   const filteredDevices = useMemo(() => {
     let devices = DEVICES
 

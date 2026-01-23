@@ -3,9 +3,9 @@
  * 管理方块和光传播的元胞自动机
  *
  * Refactored to use:
- * - Iterative BFS propagation (replaces recursive DFS)
- * - Jones Calculus wave optics (WaveLight)
- * - Energy threshold-based termination
+ * - Iterative BFS propagation (replaces recursive DFS) 提高性能和防止堆栈溢出
+ * - Jones Calculus wave optics (WaveLight) 替代传统标量光模型
+ * - Energy threshold-based termination 能量阈值终止
  */
 
 import {
@@ -49,7 +49,7 @@ function parseKey(key: string): BlockPosition {
 }
 
 /**
- * Propagation queue item for BFS light propagation
+ * Propagation queue item for BFS light propagation 生成传播队列项用于BFS光传播
  */
 interface PropagationItem {
   position: BlockPosition;
@@ -57,21 +57,21 @@ interface PropagationItem {
 }
 
 /**
- * Wave light state at a position (for coherent superposition)
+ * Wave light state at a position (for coherent superposition) 波动光在位置的状态（用于相干叠加）
  */
 interface WaveLightState {
   lights: WaveLight[];
 }
 
 /**
- * Configuration for light propagation
+ * Configuration for light propagation 光传播配置
  */
 interface PropagationConfig {
-  /** Use wave optics (Jones Calculus) instead of legacy scalar model */
+  /** Use wave optics (Jones Calculus) instead of legacy scalar model 使用波动光学（琼斯计算法）替代传统标量光模型 */
   useWaveOptics: boolean;
-  /** Maximum iterations for BFS (prevents infinite loops) */
+  /** Maximum iterations for BFS (prevents infinite loops) 最大迭代次数（防止无限循环） */
   maxIterations: number;
-  /** Energy threshold for stopping propagation */
+  /** Energy threshold for stopping propagation 能量阈值停止传播 */
   energyThreshold: number;
 }
 
@@ -99,14 +99,14 @@ export class World {
   }
 
   /**
-   * Configure propagation behavior
+   * Configure propagation behavior 配置传播行为
    */
   setPropagationConfig(config: Partial<PropagationConfig>): void {
     this.propagationConfig = { ...this.propagationConfig, ...config };
   }
 
   /**
-   * Get current propagation configuration
+   * Get current propagation configuration 获取当前传播配置
    */
   getPropagationConfig(): PropagationConfig {
     return { ...this.propagationConfig };

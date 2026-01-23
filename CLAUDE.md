@@ -5,6 +5,7 @@
 PolarCraft is an educational voxel puzzle game based on polarized light physics. It combines real optical principles (Malus's Law, birefringence, interference) with Minecraft-style voxel gameplay. Players manipulate polarized light beams to solve puzzles using various optical components.
 
 **Tech Stack:**
+
 - **Frontend**: React 19 + TypeScript (strict mode)
 - **3D Rendering**: React Three Fiber + Three.js + drei
 - **2D Animations**: Framer Motion (for course demo visualizations)
@@ -17,6 +18,7 @@ PolarCraft is an educational voxel puzzle game based on polarized light physics.
 - **Backend** (planned): NestJS + Colyseus for real-time multiplayer
 
 **Key Features:**
+
 - Interactive 3D voxel puzzle game with 5 tutorial levels
 - 2D puzzle game with 11 levels across 4 difficulty tiers (easy/medium/hard/expert)
 - Educational course platform with 20+ interactive physics demos across 6 units
@@ -50,12 +52,14 @@ npm run build        # Build for production
 ## Git Workflow
 
 **Branch Strategy:**
+
 - All development work should be merged to `main` branch after completion
 - Create feature branches from `main` for new features or fixes
 - After code review/testing, merge feature branches directly to `main`
 - Keep `main` branch always deployable
 
 **Commit Guidelines:**
+
 - Use conventional commit format: `feat:`, `fix:`, `chore:`, `docs:`, etc.
 - Write clear, concise commit messages in English
 - Reference issue numbers when applicable
@@ -64,7 +68,7 @@ npm run build        # Build for production
 
 ### Directory Structure
 
-```
+```txt
 polarisation/
 ├── src/                          # React application source
 │   ├── App.tsx                   # Root component with React Router
@@ -307,7 +311,7 @@ polarisation/
 ### Application Routes
 
 | Route | Component | Purpose |
-|-------|-----------|---------|
+| ------- | ----------- | --------- |
 | `/` | `HomePage` | Landing page with game/course navigation |
 | `/games` | `GameHubPage` | Games hub with all game modes |
 | `/games/2d` | `Game2DPage` | 2D SVG-based puzzle game |
@@ -334,7 +338,7 @@ polarisation/
 ### Legacy Route Redirects
 
 | Old Route | Redirects To |
-|-----------|--------------|
+| ----------- | -------------- |
 | `/game` | `/games/3d` |
 | `/game2d` | `/games/2d` |
 | `/cardgame` | `/games/card` |
@@ -352,7 +356,7 @@ polarisation/
 ### Core Components
 
 | Component | Responsibility |
-|-----------|----------------|
+| ----------- | ---------------- |
 | `src/core/types.ts` | Type definitions, direction vectors, polarization colors |
 | `src/core/World.ts` | Block storage, light propagation cellular automaton, levels |
 | `src/core/LightPhysics.ts` | Static physics methods (four optical axioms) |
@@ -425,7 +429,7 @@ interface BlockState {
 **Core Blocks:**
 
 | Type | Purpose | Key State |
-|------|---------|-----------|
+| ------ | --------- | ----------- |
 | `emitter` | Emits polarized light | `polarizationAngle`, `facing` |
 | `polarizer` | Filters light (Malus's Law) | `polarizationAngle` |
 | `rotator` | Rotates polarization without loss | `rotationAmount` (45 or 90) |
@@ -437,7 +441,7 @@ interface BlockState {
 **Advanced Blocks (extended system):**
 
 | Type | Purpose | Key State |
-|------|---------|-----------|
+| ------ | --------- | ----------- |
 | `prism` | Refracts and disperses light | `dispersive` |
 | `lens` | Focuses or diverges light | `focalLength` |
 | `beamSplitter` | Splits beam 50/50 | `splitRatio` |
@@ -503,7 +507,7 @@ function MyComponent() {
 ## Game Controls
 
 | Input | First-Person | Isometric/Top-Down |
-|-------|--------------|-------------------|
+| ------- | -------------- | ------------------- |
 | WASD | Move player | Pan camera |
 | Space | Jump | - |
 | Mouse | Look around | Camera control |
@@ -519,7 +523,7 @@ function MyComponent() {
 ## Tutorial Levels (3D Game)
 
 | Level | Name | Concept |
-|-------|------|---------|
+| ------- | ------ | --------- |
 | 0 | Light and Gate | Basic emitter → sensor, polarization matching |
 | 1 | Polarizer | Light through filter, Malus's Law introduction |
 | 2 | Malus's Law | Two polarizers, 90° blocking |
@@ -541,7 +545,7 @@ The 2D game (`/games/2d`) offers a simplified, more accessible puzzle experience
 ### 2D Level Difficulty
 
 | Difficulty | Levels | Complexity |
-|------------|--------|------------|
+| ------------ | -------- | ------------ |
 | Easy | 0-2 | Basic polarizer/mirror mechanics |
 | Medium | 3-5 | Rotators, splitters, L-shaped paths |
 | Hard | 6-8 | Multiple sensors, maze navigation |
@@ -550,7 +554,7 @@ The 2D game (`/games/2d`) offers a simplified, more accessible puzzle experience
 ### 2D Component Types
 
 | Component | Interaction | Behavior |
-|-----------|-------------|----------|
+| ----------- | ------------- | ---------- |
 | Emitter | Locked (view only) | Emits polarized light in one direction |
 | Polarizer | Click to select, rotate with ±15° | Filters light by Malus's Law |
 | Mirror | Click to select, rotate 45°/135° | Reflects light at specified angle |
@@ -582,7 +586,7 @@ A comprehensive polarized light art design tool that combines a Device Library w
 ### Component Types (Optical Bench)
 
 | Component | Function | Key Properties |
-|-----------|----------|----------------|
+| ----------- | ---------- | ---------------- |
 | `emitter` | Light source | `polarization` (0-180° or -1 for unpolarized) |
 | `polarizer` | Linear polarizer filter | `angle` (transmission axis) |
 | `waveplate` | Phase retarder | `retardation` (90 for λ/4, 180 for λ/2) |
@@ -663,7 +667,7 @@ The Optical Bench uses recursive ray tracing to calculate light paths:
 ### Controls (Optical Bench)
 
 | Input | Action |
-|-------|--------|
+| ------- | -------- |
 | Click + Drag | Move component |
 | Click | Select component |
 | Double-click | Open properties panel |
@@ -721,7 +725,7 @@ const challenge: Challenge = {
 A suite of calculators for polarization mathematics:
 
 | Calculator | Route | Purpose |
-|------------|-------|---------|
+| ------------ | ------- | --------- |
 | Jones Calculator | `/calc/jones` | Jones vector/matrix operations |
 | Stokes Calculator | `/calc/stokes` | Stokes parameter calculations |
 | Mueller Calculator | `/calc/mueller` | Mueller matrix operations |
@@ -730,11 +734,12 @@ A suite of calculators for polarization mathematics:
 ## Course Structure (Interactive Demos)
 
 The demos use two visualization approaches:
+
 - **2D**: SVG + Framer Motion animations (clearer for wave/diagram visualizations)
 - **3D**: React Three Fiber (for spatial relationships and 3D components)
 
 | Unit | Topic | Demos | Visual Type |
-|------|-------|-------|-------------|
+| ------ | ------- | ------- | ------------- |
 | 0 (Basics) | Optical Fundamentals | Light Wave, EM Wave, EM Spectrum, Polarization Intro, Polarization Types, Malus Graph, Three Polarizers, Polarizer Scenarios, Virtual Lens, Interactive Bench | Mixed |
 | 1 | Light Polarization | Polarization State (3D), Malus's Law (2D), Birefringence (3D), Waveplate (3D), Arago-Fresnel | Mixed |
 | 2 | Interface Reflection | Fresnel Equations, Brewster's Angle | 2D |
@@ -837,7 +842,8 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
 2. Import component in `DemosPage.tsx`
 3. Add demo info to `getDemoInfo()` function in `DemosPage.tsx`
 4. Add demo entry to `DEMOS` array in `DemosPage.tsx`:
-   ```typescript
+
+  ```typescript
    {
      id: 'my-demo',
      titleKey: 'demos.myDemo.title',
@@ -846,9 +852,10 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
      descriptionKey: 'demos.myDemo.description',
      visualType: '2D', // or '3D'
    }
-   ```
-5. Add translations to `src/i18n/locales/en.json` and `zh.json`
-6. Export from `src/components/demos/index.ts`
+  ```
+
+1. Add translations to `src/i18n/locales/en.json` and `zh.json`
+2. Export from `src/components/demos/index.ts`
 
 ### Adding a New Block Type (3D Game)
 
@@ -909,6 +916,7 @@ All 2D levels are defined in `src/pages/Game2DPage.tsx` in the `LEVELS` array:
 ```
 
 Usage:
+
 ```tsx
 const { t } = useTranslation()
 return <span>{t('namespace.key')}</span>
@@ -957,6 +965,7 @@ function MyComponent() {
 ### Dependencies
 
 **Frontend Production:**
+
 - `react`, `react-dom` (v19) - UI framework
 - `react-router-dom` (v7) - Client-side routing
 - `three`, `@react-three/fiber`, `@react-three/drei` - 3D rendering
@@ -965,6 +974,7 @@ function MyComponent() {
 - `i18next`, `react-i18next`, `i18next-browser-languagedetector` - Internationalization
 
 **Frontend Development:**
+
 - `typescript` - Type safety
 - `vite`, `@vitejs/plugin-react` - Build tool
 - `vitest`, `@testing-library/react`, `@testing-library/jest-dom` - Testing
@@ -973,6 +983,7 @@ function MyComponent() {
 - `class-variance-authority`, `clsx`, `tailwind-merge` - Utility classes
 
 **Backend:**
+
 - `@nestjs/*` - Server framework
 - `@colyseus/*` - Real-time multiplayer
 
@@ -1004,6 +1015,7 @@ const store = window.__ZUSTAND_DEVTOOLS_GLOBAL_STORE__
 ### Light Propagation
 
 The World class exposes methods for debugging:
+
 ```typescript
 world.getAllBlocks()      // Get all placed blocks
 world.getAllLightStates() // Get all light positions and packets
