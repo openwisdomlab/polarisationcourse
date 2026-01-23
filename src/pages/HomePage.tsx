@@ -10,6 +10,7 @@ import {
   Gamepad2,
   Award,
   FlaskConical,
+  type LucideIcon,
 } from 'lucide-react'
 
 // Module configuration for the 6 core modules
@@ -18,7 +19,7 @@ interface ModuleConfig {
   titleKey: string
   descriptionKey: string
   path: string
-  icon: React.ElementType
+  icon: LucideIcon
   colorTheme: {
     bg: string
     bgHover: string
