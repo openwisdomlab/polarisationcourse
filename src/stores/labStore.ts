@@ -11,6 +11,7 @@ export interface DataPoint {
   angle: number      // Polarizer angle in degrees
   intensity: number  // Measured intensity (0-100)
   id: string        // Unique ID for React keys
+  uncertainty?: number  // Measurement uncertainty (standard deviation)
 }
 
 // Fit result from analysis

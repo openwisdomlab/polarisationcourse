@@ -80,6 +80,19 @@ export function HelpPanel() {
             </ul>
           </section>
 
+          {/* Advanced Block Types */}
+          <section>
+            <h3 className="text-white font-semibold mb-2">🔶 {t('game.helpPanel.advancedBlockGuide')}</h3>
+            <ul className="space-y-1 text-gray-400">
+              <li><strong className="text-gray-200">¼ {t('game.blocks.quarterWave')}</strong> - {t('game.helpPanel.quarterWaveDesc')}</li>
+              <li><strong className="text-gray-200">½ {t('game.blocks.halfWave')}</strong> - {t('game.helpPanel.halfWaveDesc')}</li>
+              <li><strong className="text-gray-200">⊠ {t('game.blocks.beamSplitter')}</strong> - {t('game.helpPanel.beamSplitterDesc')}</li>
+              <li><strong className="text-gray-200">▣ {t('game.blocks.absorber')}</strong> - {t('game.helpPanel.absorberDesc')}</li>
+              <li><strong className="text-gray-200">◉ {t('game.blocks.phaseShifter')}</strong> - {t('game.helpPanel.phaseShifterDesc')}</li>
+              <li><strong className="text-gray-200">⊛ {t('game.blocks.portal')}</strong> - {t('game.helpPanel.portalDesc')}</li>
+            </ul>
+          </section>
+
           {/* Polarization Colors */}
           <section>
             <h3 className="text-white font-semibold mb-2">👁 {t('game.helpPanel.polarizationColors')}</h3>
@@ -96,6 +109,19 @@ export function HelpPanel() {
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* Simplified Model Warning */}
+          <section className="bg-amber-900/30 border border-amber-500/30 rounded-lg p-3">
+            <h3 className="text-amber-400 font-semibold mb-2">⚠️ {t('game.helpPanel.simplifiedModelWarning')}</h3>
+            <p className="text-gray-400 text-xs mb-2">{t('game.helpPanel.simplifiedModelNote')}</p>
+            <ul className="space-y-1 text-gray-400 text-xs list-disc list-inside">
+              <li>{t('game.helpPanel.realQuarterWave')}</li>
+              <li>{t('game.helpPanel.realHalfWave')}</li>
+              <li>{t('game.helpPanel.realSplitter')}</li>
+              <li>{t('game.helpPanel.realPhase')}</li>
+            </ul>
+            <p className="text-cyan-400 text-xs mt-2 font-medium">{t('game.helpPanel.seeAccurateDemos')}</p>
           </section>
         </div>
       </DialogContent>

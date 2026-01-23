@@ -232,14 +232,96 @@ export function generateTheoreticalMalusData(
 }
 
 /**
+ * Box-Muller transform for Gaussian random numbers
+ * Box-Muller变换生成高斯随机数
+ */
+function gaussianRandom(mean: number = 0, stdDev: number = 1): number {
+  const u1 = Math.random()
+  const u2 = Math.random()
+  const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2)
+  return z0 * stdDev + mean
+}
+
+/**
+ * Noise model parameters for realistic experimental simulation
+ * 真实实验模拟的噪声模型参数
+ */
+export interface NoiseParams {
+  /** Read noise (Gaussian, detector electronics) - 读出噪声 */
+  readNoise: number
+  /** Shot noise factor (√I dependence) - 散粒噪声系数 */
+  shotNoiseFactor: number
+  /** Systematic bias (calibration error) - 系统偏移 */
+  systematicBias: number
+}
+
+/** Default noise parameters matching typical photodetector */
+export const DEFAULT_NOISE_PARAMS: NoiseParams = {
+  readNoise: 2.0,        // ±2% baseline noise
+  shotNoiseFactor: 0.1,  // Shot noise proportional to √intensity
+  systematicBias: 0,     // No systematic error by default
+}
+
+/**
  * Add realistic noise to data (for simulation mode)
  * 添加真实噪声到数据（用于模拟模式）
+ *
+ * Uses physically accurate noise model:
+ * - Shot noise: σ_shot = k × √I (Poisson statistics)
+ * - Read noise: σ_read = constant (Gaussian, detector electronics)
+ * - Total: σ_total = √(σ_shot² + σ_read²)
+ *
+ * @deprecated Use addRealisticNoise for more accurate simulation
  */
 export function addNoise(data: DataPoint[], noiseLevel: number = 5): DataPoint[] {
-  return data.map(point => ({
-    ...point,
-    intensity: Math.max(0, point.intensity + (Math.random() - 0.5) * 2 * noiseLevel),
-  }))
+  // Legacy function now uses Gaussian noise instead of uniform
+  return data.map(point => {
+    const noise = gaussianRandom(0, noiseLevel)
+    const newIntensity = Math.max(0, point.intensity + noise)
+    return {
+      ...point,
+      intensity: newIntensity,
+      uncertainty: noiseLevel,
+    }
+  })
+}
+
+/**
+ * Add realistic experimental noise with proper physics model
+ * 添加具有正确物理模型的真实实验噪声
+ *
+ * Noise sources in optical experiments:
+ * 1. Shot noise (散粒噪声): From quantum nature of light, follows √I
+ * 2. Read noise (读出噪声): Electronic noise in detector, Gaussian
+ * 3. Systematic bias (系统偏移): Calibration errors
+ */
+export function addRealisticNoise(
+  data: DataPoint[],
+  params: NoiseParams = DEFAULT_NOISE_PARAMS
+): DataPoint[] {
+  return data.map(point => {
+    // Shot noise: proportional to √intensity (Poisson → Gaussian for large N)
+    const shotNoiseStd = params.shotNoiseFactor * Math.sqrt(Math.max(1, point.intensity))
+    const shotNoise = gaussianRandom(0, shotNoiseStd)
+
+    // Read noise: constant Gaussian (thermal noise in electronics)
+    const readNoise = gaussianRandom(0, params.readNoise)
+
+    // Systematic bias: constant offset (e.g., dark current, stray light)
+    const bias = params.systematicBias
+
+    // Total noise (independent sources add in quadrature for uncertainty)
+    const totalNoise = shotNoise + readNoise + bias
+    const uncertainty = Math.sqrt(shotNoiseStd ** 2 + params.readNoise ** 2)
+
+    const newIntensity = Math.max(0, Math.min(100, point.intensity + totalNoise))
+
+    return {
+      ...point,
+      intensity: newIntensity,
+      uncertainty: uncertainty,
+    }
+  })
 }
 
 /**
