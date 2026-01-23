@@ -210,6 +210,7 @@ function OpticalSetupDiagram({
       }, 50)
       return () => clearInterval(interval)
     }
+    return undefined
   }, [animate])
 
   return (
