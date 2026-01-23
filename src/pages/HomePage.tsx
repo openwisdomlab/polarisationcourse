@@ -1,17 +1,25 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { PolarCraftLogo } from '@/components/icons'
 import {
-  History,
-  Box,
-  Calculator,
-  Gamepad2,
-  Award,
-  FlaskConical,
-  type LucideIcon,
-} from 'lucide-react'
+  PolarCraftLogo,
+  HistoryModuleIcon,
+  ArsenalModuleIcon,
+  TheoryModuleIcon,
+  GamesModuleIcon,
+  GalleryModuleIcon,
+  ResearchModuleIcon,
+} from '@/components/icons'
+
+// Icon component type for animated module icons
+type AnimatedIconComponent = React.ComponentType<{
+  className?: string
+  size?: number
+  isHovered?: boolean
+  theme?: 'dark' | 'light'
+}>
 
 // Module configuration for the 6 core modules
 interface ModuleConfig {
@@ -19,7 +27,7 @@ interface ModuleConfig {
   titleKey: string
   descriptionKey: string
   path: string
-  icon: LucideIcon
+  IconComponent: AnimatedIconComponent
   colorTheme: {
     bg: string
     bgHover: string
@@ -28,6 +36,7 @@ interface ModuleConfig {
     iconBg: string
     iconColor: string
     shadow: string
+    glowColor: string
   }
 }
 
@@ -38,15 +47,16 @@ const MODULES: ModuleConfig[] = [
     titleKey: 'home.modules.history.title',
     descriptionKey: 'home.modules.history.description',
     path: '/education',
-    icon: History,
+    IconComponent: HistoryModuleIcon,
     colorTheme: {
       bg: 'bg-amber-50 dark:bg-amber-950/30',
       bgHover: 'hover:bg-amber-100 dark:hover:bg-amber-900/40',
       border: 'border-amber-200 dark:border-amber-800/50',
       borderHover: 'hover:border-amber-400 dark:hover:border-amber-600',
-      iconBg: 'bg-amber-100 dark:bg-amber-900/50',
+      iconBg: 'bg-amber-100/50 dark:bg-amber-900/30',
       iconColor: 'text-amber-600 dark:text-amber-400',
       shadow: 'hover:shadow-amber-200/50 dark:hover:shadow-amber-900/30',
+      glowColor: 'amber',
     },
   },
   {
@@ -55,15 +65,16 @@ const MODULES: ModuleConfig[] = [
     titleKey: 'home.modules.arsenal.title',
     descriptionKey: 'home.modules.arsenal.description',
     path: '/arsenal',
-    icon: Box,
+    IconComponent: ArsenalModuleIcon,
     colorTheme: {
       bg: 'bg-cyan-50 dark:bg-cyan-950/30',
       bgHover: 'hover:bg-cyan-100 dark:hover:bg-cyan-900/40',
       border: 'border-cyan-200 dark:border-cyan-800/50',
       borderHover: 'hover:border-cyan-400 dark:hover:border-cyan-600',
-      iconBg: 'bg-cyan-100 dark:bg-cyan-900/50',
+      iconBg: 'bg-cyan-100/50 dark:bg-cyan-900/30',
       iconColor: 'text-cyan-600 dark:text-cyan-400',
       shadow: 'hover:shadow-cyan-200/50 dark:hover:shadow-cyan-900/30',
+      glowColor: 'cyan',
     },
   },
   {
@@ -72,15 +83,16 @@ const MODULES: ModuleConfig[] = [
     titleKey: 'home.modules.theory.title',
     descriptionKey: 'home.modules.theory.description',
     path: '/theory',
-    icon: Calculator,
+    IconComponent: TheoryModuleIcon,
     colorTheme: {
       bg: 'bg-indigo-50 dark:bg-indigo-950/30',
       bgHover: 'hover:bg-indigo-100 dark:hover:bg-indigo-900/40',
       border: 'border-indigo-200 dark:border-indigo-800/50',
       borderHover: 'hover:border-indigo-400 dark:hover:border-indigo-600',
-      iconBg: 'bg-indigo-100 dark:bg-indigo-900/50',
+      iconBg: 'bg-indigo-100/50 dark:bg-indigo-900/30',
       iconColor: 'text-indigo-600 dark:text-indigo-400',
       shadow: 'hover:shadow-indigo-200/50 dark:hover:shadow-indigo-900/30',
+      glowColor: 'indigo',
     },
   },
   {
@@ -89,15 +101,16 @@ const MODULES: ModuleConfig[] = [
     titleKey: 'home.modules.games.title',
     descriptionKey: 'home.modules.games.description',
     path: '/games',
-    icon: Gamepad2,
+    IconComponent: GamesModuleIcon,
     colorTheme: {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
       bgHover: 'hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
       border: 'border-emerald-200 dark:border-emerald-800/50',
       borderHover: 'hover:border-emerald-400 dark:hover:border-emerald-600',
-      iconBg: 'bg-emerald-100 dark:bg-emerald-900/50',
+      iconBg: 'bg-emerald-100/50 dark:bg-emerald-900/30',
       iconColor: 'text-emerald-600 dark:text-emerald-400',
       shadow: 'hover:shadow-emerald-200/50 dark:hover:shadow-emerald-900/30',
+      glowColor: 'emerald',
     },
   },
   {
@@ -106,15 +119,16 @@ const MODULES: ModuleConfig[] = [
     titleKey: 'home.modules.gallery.title',
     descriptionKey: 'home.modules.gallery.description',
     path: '/gallery',
-    icon: Award,
+    IconComponent: GalleryModuleIcon,
     colorTheme: {
       bg: 'bg-pink-50 dark:bg-pink-950/30',
       bgHover: 'hover:bg-pink-100 dark:hover:bg-pink-900/40',
       border: 'border-pink-200 dark:border-pink-800/50',
       borderHover: 'hover:border-pink-400 dark:hover:border-pink-600',
-      iconBg: 'bg-pink-100 dark:bg-pink-900/50',
+      iconBg: 'bg-pink-100/50 dark:bg-pink-900/30',
       iconColor: 'text-pink-600 dark:text-pink-400',
       shadow: 'hover:shadow-pink-200/50 dark:hover:shadow-pink-900/30',
+      glowColor: 'pink',
     },
   },
   {
@@ -123,66 +137,138 @@ const MODULES: ModuleConfig[] = [
     titleKey: 'home.modules.research.title',
     descriptionKey: 'home.modules.research.description',
     path: '/research',
-    icon: FlaskConical,
+    IconComponent: ResearchModuleIcon,
     colorTheme: {
       bg: 'bg-teal-50 dark:bg-teal-950/30',
       bgHover: 'hover:bg-teal-100 dark:hover:bg-teal-900/40',
       border: 'border-teal-200 dark:border-teal-800/50',
       borderHover: 'hover:border-teal-400 dark:hover:border-teal-600',
-      iconBg: 'bg-teal-100 dark:bg-teal-900/50',
+      iconBg: 'bg-teal-100/50 dark:bg-teal-900/30',
       iconColor: 'text-teal-600 dark:text-teal-400',
       shadow: 'hover:shadow-teal-200/50 dark:hover:shadow-teal-900/30',
+      glowColor: 'teal',
     },
   },
 ]
 
-// Module Card Component
-function ModuleCard({ module }: { module: ModuleConfig }) {
+// Glow effect configuration for each color theme
+const GLOW_STYLES: Record<string, string> = {
+  amber: 'rgba(251, 191, 36, 0.4)',
+  cyan: 'rgba(34, 211, 238, 0.4)',
+  indigo: 'rgba(129, 140, 248, 0.4)',
+  emerald: 'rgba(52, 211, 153, 0.4)',
+  pink: 'rgba(244, 114, 182, 0.4)',
+  teal: 'rgba(45, 212, 191, 0.4)',
+}
+
+// Module Card Component with hover interactions
+function ModuleCard({ module, theme }: { module: ModuleConfig; theme: 'dark' | 'light' }) {
   const { t } = useTranslation()
-  const Icon = module.icon
+  const [isHovered, setIsHovered] = useState(false)
+  const IconComponent = module.IconComponent
 
   return (
     <Link
       to={module.path}
       className={`
-        group relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-300
+        group relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-500
         ${module.colorTheme.bg} ${module.colorTheme.bgHover}
         ${module.colorTheme.border} ${module.colorTheme.borderHover}
-        hover:-translate-y-2 hover:shadow-xl ${module.colorTheme.shadow}
+        hover:-translate-y-3 hover:shadow-2xl ${module.colorTheme.shadow}
+        overflow-hidden
       `}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Icon */}
+      {/* Background glow effect on hover */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at 30% 30%, ${GLOW_STYLES[module.colorTheme.glowColor]} 0%, transparent 60%)`,
+        }}
+      />
+
+      {/* Light beam decoration on hover */}
       <div
         className={`
-          w-14 h-14 rounded-xl flex items-center justify-center mb-4
+          absolute -top-20 -right-20 w-40 h-40 rounded-full
+          transition-all duration-700 pointer-events-none
+          ${isHovered ? 'opacity-30 scale-100' : 'opacity-0 scale-50'}
+        `}
+        style={{
+          background: `conic-gradient(from 0deg, ${GLOW_STYLES[module.colorTheme.glowColor]}, transparent, ${GLOW_STYLES[module.colorTheme.glowColor]})`,
+        }}
+      />
+
+      {/* Animated Icon */}
+      <div
+        className={`
+          relative w-16 h-16 rounded-xl flex items-center justify-center mb-4
           ${module.colorTheme.iconBg}
-          transition-transform duration-300 group-hover:scale-110
+          transition-all duration-500
+          ${isHovered ? 'scale-110 rotate-3' : 'scale-100 rotate-0'}
         `}
       >
-        <Icon className={`w-7 h-7 ${module.colorTheme.iconColor}`} strokeWidth={1.5} />
+        <IconComponent
+          size={56}
+          isHovered={isHovered}
+          theme={theme}
+        />
+
+        {/* Pulse ring effect on hover */}
+        <div
+          className={`
+            absolute inset-0 rounded-xl border-2
+            ${module.colorTheme.border}
+            transition-all duration-500 pointer-events-none
+            ${isHovered ? 'scale-125 opacity-0' : 'scale-100 opacity-0'}
+          `}
+        />
       </div>
 
-      {/* Title */}
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+      {/* Title with subtle animation */}
+      <h3
+        className={`
+          text-lg font-bold text-gray-900 dark:text-white mb-2
+          transition-all duration-300
+          ${isHovered ? 'translate-x-1' : 'translate-x-0'}
+        `}
+      >
         {t(module.titleKey)}
       </h3>
 
       {/* Description */}
-      <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-1">
+      <p
+        className={`
+          text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-1
+          transition-all duration-300
+          ${isHovered ? 'text-gray-700 dark:text-gray-300' : ''}
+        `}
+      >
         {t(module.descriptionKey)}
       </p>
 
-      {/* Arrow indicator */}
+      {/* Arrow indicator with enhanced animation */}
       <div
         className={`
           mt-4 flex items-center text-sm font-medium
           ${module.colorTheme.iconColor}
-          transition-transform duration-300 group-hover:translate-x-1
+          transition-all duration-300
         `}
       >
-        <span>{t('common.explore')}</span>
+        <span
+          className={`
+            transition-all duration-300
+            ${isHovered ? 'mr-2' : 'mr-0'}
+          `}
+        >
+          {t('common.explore')}
+        </span>
         <svg
-          className="w-4 h-4 ml-1"
+          className={`
+            w-4 h-4 transition-all duration-300
+            ${isHovered ? 'translate-x-2 scale-110' : 'translate-x-0 scale-100'}
+          `}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -194,7 +280,38 @@ function ModuleCard({ module }: { module: ModuleConfig }) {
             d="M9 5l7 7-7 7"
           />
         </svg>
+
+        {/* Trail effect on hover */}
+        <svg
+          className={`
+            w-4 h-4 absolute transition-all duration-500
+            ${isHovered ? 'translate-x-4 opacity-30' : 'translate-x-0 opacity-0'}
+          `}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          style={{ marginLeft: '1rem' }}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
       </div>
+
+      {/* Corner light beam decoration */}
+      <div
+        className={`
+          absolute bottom-0 left-0 w-full h-1
+          transition-all duration-500 pointer-events-none
+          ${isHovered ? 'opacity-60' : 'opacity-0'}
+        `}
+        style={{
+          background: `linear-gradient(90deg, transparent, ${GLOW_STYLES[module.colorTheme.glowColor]}, transparent)`,
+        }}
+      />
     </Link>
   )
 }
@@ -249,7 +366,7 @@ export function HomePage() {
         <div className="max-w-6xl mx-auto">
           <nav className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {MODULES.map((module) => (
-              <ModuleCard key={module.id} module={module} />
+              <ModuleCard key={module.id} module={module} theme={theme} />
             ))}
           </nav>
         </div>
