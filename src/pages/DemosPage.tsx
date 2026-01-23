@@ -45,6 +45,7 @@ import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/Polariza
 
 // Museum Components
 import { GalleryHero } from '@/components/museum'
+import MathText from '@/components/MathText'
 
 // Icon components - memoized for performance
 const PhysicsIcon = memo(function PhysicsIcon() {
@@ -2533,7 +2534,7 @@ export function DemosPage() {
               <p className={cn(
                 theme === 'dark' ? 'text-gray-400 text-sm' : 'text-gray-700 text-sm'
               )}>
-                {t(currentDemo?.descriptionKey || '')}
+                {MathText({text:t(currentDemo?.descriptionKey || '')})}
               </p>
             </div>
 

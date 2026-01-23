@@ -37,6 +37,7 @@ import {
   type Device,
   type DeviceCategory,
 } from '@/data/optical-devices'
+import MathText from '../MathText'
 
 // ============================================
 // Category Icon Mapping
@@ -121,7 +122,7 @@ function DeviceCard({ device, onClick, isSelected }: DeviceCardProps) {
           'mt-3 px-2 py-1 rounded-md text-xs font-mono',
           theme === 'dark' ? 'bg-slate-800 text-cyan-400' : 'bg-gray-100 text-cyan-700'
         )}>
-          {device.mathFormula}
+          {MathText({text:device.mathFormula})}
         </div>
       )}
     </button>
@@ -230,7 +231,7 @@ function DeviceDetail({ device, onClose }: DeviceDetailProps) {
               'p-3 rounded-lg font-mono text-center text-lg',
               theme === 'dark' ? 'bg-slate-800 text-purple-400' : 'bg-purple-50 text-purple-700'
             )}>
-              {device.mathFormula}
+              {MathText({ text: device.mathFormula })}
             </div>
           </section>
         )}
@@ -267,7 +268,7 @@ function DeviceDetail({ device, onClose }: DeviceDetailProps) {
                     'font-medium',
                     theme === 'dark' ? 'text-white' : 'text-gray-900'
                   )}>
-                    {isZh ? spec.valueZh : spec.valueEn}
+                    {MathText({ text: isZh ? spec.valueZh : spec.valueEn })}
                   </span>
                 </div>
               ))}

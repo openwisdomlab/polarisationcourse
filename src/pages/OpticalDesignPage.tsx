@@ -28,6 +28,9 @@ import {
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 
+// Import KaTeX for rendering mathematical formulas 导入 KaTeX 用于渲染数学公式
+import 'katex/dist/katex.min.css';
+
 // Lazy load sub-modules
 import { DeviceGalleryModule } from '@/components/optical-design/DeviceGalleryModule'
 import { OpticalPathsModule } from '@/components/optical-design/OpticalPathsModule'

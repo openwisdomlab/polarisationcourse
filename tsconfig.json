@@ -21,6 +21,10 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "allowSyntheticDefaultImports": true,
 
     /* Aliases */
     "baseUrl": ".",
@@ -28,6 +32,13 @@
       "@/*": ["./src/*"]
     }
   },
+
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "exclude": ["node_modules",
+  "dist",
+  "**/*.spec.ts",
+  "**/*.spec.tsx",
+  "**/*.test.ts",
+  "**/*.test.tsx"]
 }

@@ -2,19 +2,24 @@
  * Experiment Tools - Digital companion tools for physical experiments
  * 实验工具 - 物理实验的数字伴侣工具
  *
+ * 该组件充当路由器/包装器，根据实验 ID 显示相应的交互工具。
+ * 它通过提供数字工具帮助用户进行物理实验，
+ * 从而实现“物理+数字”（phygital）体验。
  * This component acts as a router/wrapper that displays the appropriate
  * interactive tool based on the experiment ID. It enables the "phygital"
  * (physical + digital) experience by providing digital tools to assist
  * users in performing physical experiments.
  */
 
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useTheme } from '@/contexts/ThemeContext'
-import { cn } from '@/lib/utils'
-import { Wrench, Smartphone, Palette, FlaskConical } from 'lucide-react'
-import { PolarizerSource } from './PolarizerSource'
-import { MichelLevyChart } from './MichelLevyChart'
+import { useState } from 'react'   // React hook 用于状态管理
+import { useTranslation } from 'react-i18next'   // 国际化翻译钩子
+import { useTheme } from '@/contexts/ThemeContext'   // 主题上下文钩子
+import { cn } from '@/lib/utils'   // 类名合并工具函数
+import { Wrench, Smartphone, Palette, FlaskConical } from 'lucide-react'   // 图标组件
+import { PolarizerSource } from './PolarizerSource'   // 偏振片光源组件
+import { MichelLevyChart } from './MichelLevyChart'   // 米歇尔-列维色图组件
+
+// Props for ExperimentTools component 实验工具组件的属性
 
 interface ExperimentToolsProps {
   experimentId: string
@@ -100,7 +105,7 @@ const EXPERIMENT_TOOLS: Record<string, {
   ],
 }
 
-// Tool component renderer
+// Tool component renderer 工具组件渲染器
 function ToolComponent({ toolId }: { toolId: string }) {
   switch (toolId) {
     case 'polarizer-source':

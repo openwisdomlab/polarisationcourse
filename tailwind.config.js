@@ -1,4 +1,9 @@
 /** @type {import('tailwindcss').Config} */
+
+// 这是 Tailwind CSS 配置文件
+// 它定义了项目中使用的样式和主题扩展
+// 有关配置选项的详细信息，请参阅 https://tailwindcss.com/docs/configuration
+
 export default {
   darkMode: ["class"],
   content: [

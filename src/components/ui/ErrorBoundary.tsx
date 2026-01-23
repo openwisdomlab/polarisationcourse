@@ -1,10 +1,19 @@
 /**
  * Error Boundary Component
  * Catches JavaScript errors in child components and displays fallback UI
+ * 捕获子组件中的JavaScript错误并显示回退UI
+ *
+ * Props:
+ * - children: ReactNode - Child components to wrap  包装的子组件
+ * - fallback?: ReactNode - Optional fallback UI to display on error  错误时显示的可选回退UI
+ * - onError?: (error: Error, errorInfo: React.ErrorInfo) => void - Optional error logging callback  可选的错误记录回调
+ * State:
+ * - hasError: boolean - Indicates if an error has occurred  指示是否发生错误
+ * - error: Error | null - The caught error object  捕获的错误对象
  */
 
-import { Component, ReactNode } from 'react'
-import { logger } from '@/lib/logger'
+import { Component, ReactNode } from 'react'   // 导入 React 组件和类型
+import { logger } from '@/lib/logger'   // 导入日志记录库
 
 interface Props {
   children: ReactNode
@@ -17,6 +26,7 @@ interface State {
   error: Error | null
 }
 
+// Error Boundary class component 错误边界类组件
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
