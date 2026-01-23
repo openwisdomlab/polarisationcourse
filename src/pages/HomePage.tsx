@@ -163,10 +163,23 @@ const GLOW_STYLES: Record<string, string> = {
 }
 
 // Module Card Component with hover interactions
-function ModuleCard({ module, theme }: { module: ModuleConfig; theme: 'dark' | 'light' }) {
+function ModuleCard({
+  module,
+  theme,
+  onHoverChange,
+}: {
+  module: ModuleConfig
+  theme: 'dark' | 'light'
+  onHoverChange?: (isHovered: boolean) => void
+}) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const IconComponent = module.IconComponent
+
+  const handleHoverChange = (hovered: boolean) => {
+    setIsHovered(hovered)
+    onHoverChange?.(hovered)
+  }
 
   return (
     <Link
@@ -178,8 +191,8 @@ function ModuleCard({ module, theme }: { module: ModuleConfig; theme: 'dark' | '
         hover:-translate-y-3 hover:shadow-2xl ${module.colorTheme.shadow}
         overflow-hidden
       `}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => handleHoverChange(true)}
+      onMouseLeave={() => handleHoverChange(false)}
     >
       {/* Background glow effect on hover */}
       <div
@@ -322,6 +335,18 @@ export function HomePage() {
   const { theme } = useTheme()
   const logoRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [isAnyCardHovered, setIsAnyCardHovered] = useState(false)
+  const hoverCountRef = useRef(0)
+
+  // Track hover state across all cards
+  const handleCardHoverChange = (isHovered: boolean) => {
+    if (isHovered) {
+      hoverCountRef.current++
+    } else {
+      hoverCountRef.current = Math.max(0, hoverCountRef.current - 1)
+    }
+    setIsAnyCardHovered(hoverCountRef.current > 0)
+  }
 
   return (
     <div
@@ -332,8 +357,8 @@ export function HomePage() {
           : 'bg-gradient-to-br from-slate-50 via-white to-slate-100'
       }`}
     >
-      {/* Light beam effect from logo following mouse */}
-      <LightBeamEffect logoRef={logoRef} containerRef={containerRef} />
+      {/* Light beam effect from logo - only active when hovering module cards */}
+      <LightBeamEffect logoRef={logoRef} containerRef={containerRef} active={isAnyCardHovered} />
 
       {/* Settings */}
       <div className="fixed top-4 right-4 z-50">
@@ -373,7 +398,12 @@ export function HomePage() {
         <div className="max-w-6xl mx-auto">
           <nav className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {MODULES.map((module) => (
-              <ModuleCard key={module.id} module={module} theme={theme} />
+              <ModuleCard
+                key={module.id}
+                module={module}
+                theme={theme}
+                onHoverChange={handleCardHoverChange}
+              />
             ))}
           </nav>
         </div>
