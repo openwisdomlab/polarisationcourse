@@ -11,7 +11,8 @@
     "english": "English",
     "chinese": "Chinese",
     "comingSoon": "Coming Soon",
-    "close": "Close"
+    "close": "Close",
+    "explore": "Explore"
   },
   "discovery": {
     "newDiscovery": "Discovery!",
@@ -23,6 +24,36 @@
     "title": "PolarCraft",
     "subtitle": "Ultimate Exploration of Polarized Light Physics",
     "description": "A gamified education and open science platform based on real polarization physics. From stories to simulations, from puzzles to experiments, from gaming to frontier research in a virtual lab group — explore the fascinating world of polarized light.",
+    "hero": {
+      "title": "The New World Under Polarized Light",
+      "subtitle": "A gamified education and open science platform for polarization optics — from classic experiments to frontier research, explore the fascinating world of polarized light."
+    },
+    "modules": {
+      "history": {
+        "title": "History & Experiments",
+        "description": "Recreate classic optical experiments since 1669, exploring the physical essence from a historical perspective."
+      },
+      "arsenal": {
+        "title": "Optical Arsenal",
+        "description": "Explore commercial polarization components, learn principles and build typical application optical paths."
+      },
+      "theory": {
+        "title": "Theory & Simulation",
+        "description": "Interactive physics demos and calculation tools — change parameters and instantly verify Jones matrices and Stokes parameters."
+      },
+      "games": {
+        "title": "Gamification",
+        "description": "Master optical principles through game challenges in PolarQuest and PolarCraft."
+      },
+      "gallery": {
+        "title": "Showcase",
+        "description": "Student personalized research showcase, including chromatic polarization art, creative products and DIY devices."
+      },
+      "research": {
+        "title": "Virtual Lab",
+        "description": "Participate in ESRT/ORIC level research topics, record data and analyze like a scientist."
+      }
+    },
     "chronicles": {
       "title": "Chronicles of Light",
       "subtitle": "Historical Stories × Classic Experiments",

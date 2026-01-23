@@ -11,7 +11,8 @@
     "english": "英文",
     "chinese": "中文",
     "comingSoon": "待更新",
-    "close": "关闭"
+    "close": "关闭",
+    "explore": "探索"
   },
   "discovery": {
     "newDiscovery": "新发现!",
@@ -23,6 +24,36 @@
     "title": "PolarCraft",
     "subtitle": "偏振光物理世界终极探索",
     "description": "一个基于真实偏振物理的游戏化教育和开放科学平台，从故事到仿真，从谜题到实验，从玩游戏到前沿科学的虚拟课题组——探索偏振光的奇妙世界。",
+    "hero": {
+      "title": "偏振光下的新世界",
+      "subtitle": "一个偏振光学的游戏化教育和开放科学平台——从经典实验到前沿研究，探索偏振光的奇妙世界。"
+    },
+    "modules": {
+      "history": {
+        "title": "实验与历史",
+        "description": "重现1669年以来的经典光学实验，从历史发展的视角探索物理本质。"
+      },
+      "arsenal": {
+        "title": "光学器件库",
+        "description": "探索商业化偏振元器件，学习原理并搭建典型应用光路。"
+      },
+      "theory": {
+        "title": "理论与模拟",
+        "description": "交互式物理演示与计算工具，改变参数即时验证琼斯矩阵与斯托克斯参量。"
+      },
+      "games": {
+        "title": "游戏化探索",
+        "description": "在 PolarQuest 和 PolarCraft 中通过游戏挑战掌握光学原理。"
+      },
+      "gallery": {
+        "title": "成果展示",
+        "description": "学生个性化研究成果展，包括色偏振画、文创产品与自制装置。"
+      },
+      "research": {
+        "title": "虚拟课题组",
+        "description": "参与 ESRT/ORIC 层级的研究课题，像科学家一样记录数据与分析。"
+      }
+    },
     "chronicles": {
       "title": "光的编年史",
       "subtitle": "历史故事 × 经典实验",
