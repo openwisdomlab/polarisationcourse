@@ -17,7 +17,7 @@ import {
   Clock, MapPin,
   FlaskConical, BookOpen, Compass,
   Sun, Sparkles, Camera, Film,
-  Users, Share2
+  Users, Share2, Beaker
 } from 'lucide-react'
 
 // Data imports
@@ -37,6 +37,7 @@ import {
   ScientistNetwork,
   ConceptNetwork,
   ExplorationMode,
+  ExperimentResourcesTab,
   DEMO_ITEMS
 } from '@/components/chronicles'
 
@@ -47,6 +48,7 @@ const TABS = [
   { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Share2 className="w-4 h-4" /> },
   { id: 'exploration', label: 'Exploration', labelZh: '探索模式', icon: <Compass className="w-4 h-4" /> },
   { id: 'experiments', label: 'Key Experiments', labelZh: '关键实验', icon: <FlaskConical className="w-4 h-4" /> },
+  { id: 'resources', label: 'Experiment Gallery', labelZh: '实验资源库', icon: <Beaker className="w-4 h-4" /> },
 ]
 
 export function ChroniclesPage() {
@@ -867,6 +869,10 @@ export function ChroniclesPage() {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'resources' && (
+          <ExperimentResourcesTab theme={theme} isZh={isZh} />
         )}
       </main>
 
