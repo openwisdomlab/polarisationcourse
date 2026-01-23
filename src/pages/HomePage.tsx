@@ -130,8 +130,8 @@ const MODULES: ModuleConfig[] = [
     },
     mainRoute: '/games',
     quickLinks: [
-      { labelKey: 'link1', route: '/game2d?level=0' },
-      { labelKey: 'link2', route: '/game?level=0' },
+      { labelKey: 'link1', route: '/games/2d?level=0' },
+      { labelKey: 'link2', route: '/games/3d?level=0' },
       { labelKey: 'link3', route: '/games?mode=challenge' },
     ],
   },
