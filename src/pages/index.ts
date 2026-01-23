@@ -22,5 +22,12 @@ export { DetectiveGamePage } from './DetectiveGamePage'
 export { CoursePage } from './CoursePage'
 export { default as LearningHubPage } from './LearningHubPage'
 
+// Hub pages - module entry points
+export { EducationHubPage } from './EducationHubPage'
+export { ArsenalHubPage } from './ArsenalHubPage'
+export { TheoryHubPage } from './TheoryHubPage'
+export { GalleryHubPage } from './GalleryHubPage'
+export { ResearchHubPage } from './ResearchHubPage'
+
 // Note: Legacy pages (DevicesPage, BenchPage, OpticalDesignStudioPage, OpticalDesignStudioPageV2)
 // have been removed and consolidated into OpticalDesignPage

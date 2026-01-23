@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
 import { LightBeamEffect, type ModuleEffectType } from '@/components/effects'
+import { Footer } from '@/components/shared/Footer'
 import {
   PolarCraftLogo,
   HistoryModuleIcon,
@@ -430,13 +431,7 @@ export function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer
-        className={`py-6 text-center text-sm ${
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-        }`}
-      >
-        <p>PolarCraft · Open Wisdom Lab</p>
-      </footer>
+      <Footer />
     </div>
   )
 }
