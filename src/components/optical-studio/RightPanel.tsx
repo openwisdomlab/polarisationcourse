@@ -22,6 +22,7 @@ import { PALETTE_COMPONENTS, DIFFICULTY_CONFIG } from '@/data'
 import type { Device } from '@/data'
 import { DeviceIconMap, DefaultDeviceIcon } from '@/components/icons'
 import { Badge } from '@/components/shared'
+import MathText from '../MathText'
 
 // ============================================
 // Slider Input Component
@@ -599,7 +600,7 @@ function DeviceDetailSection({ device, onClose, onAddToBench }: DeviceDetailSect
             'p-1.5 rounded font-mono text-[10px]',
             theme === 'dark' ? 'bg-slate-800/50 text-cyan-400' : 'bg-cyan-50 text-cyan-700'
           )}>
-            {device.mathFormula}
+            {MathText({text:device.mathFormula})}
           </div>
         )}
 

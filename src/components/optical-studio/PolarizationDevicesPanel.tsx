@@ -50,6 +50,7 @@ import {
   type Device,
   type DeviceCategory,
 } from '@/data/optical-devices'
+import MathText from '../MathText'
 
 // ============================================
 // Category Icons Mapping
@@ -244,7 +245,7 @@ function DeviceCard({ device, isExpanded, onToggle }: DeviceCardProps) {
                         {spec.key}
                       </span>
                       <span className={cn('font-medium', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-                        {isZh ? spec.valueZh : spec.valueEn}
+                        {MathText({ text: isZh ? spec.valueZh : spec.valueEn })}
                       </span>
                     </div>
                   ))}
