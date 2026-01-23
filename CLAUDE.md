@@ -22,10 +22,16 @@ PolarCraft is an educational voxel puzzle game based on polarized light physics.
 - Interactive 3D voxel puzzle game with 5 tutorial levels
 - 2D puzzle game with 11 levels across 4 difficulty tiers (easy/medium/hard/expert)
 - Educational course platform with 20+ interactive physics demos across 6 units
+- **6-Module Architecture**: Organized learning experience from history to research
+  - Education Hub: Chronicles, P-SRT Course, Learning Center
+  - Optical Arsenal: Device Library, Optical Studio, Hardware Guide
+  - Theory Hub: Interactive Demos, Calculation Workshop
+  - Games Hub: 2D/3D puzzles, Card Game, Escape Room, Detective
+  - Gallery Hub: Experiments, Merchandise, Student Showcases
+  - Research Hub: Virtual Lab, Applications, Research Projects
 - **Optical Design Studio**: Polarized light art design tool with Device Library + Optical Bench
 - **Calculation Workshop**: Jones, Stokes, Mueller calculators + Poincare Sphere viewer
 - **Lab Module**: Research simulation and data analysis tools
-- **Games Hub**: Multiple game modes including card game, escape room, detective game
 - Multi-language support (English/Chinese)
 - Dark/Light theme switching
 - Three camera modes in 3D game (first-person, isometric, top-down)
@@ -89,28 +95,48 @@ polarisation/
 │   │   └── discoveryStore.ts     # Discovery/achievement tracking
 │   │
 │   ├── pages/                    # Page components
-│   │   ├── HomePage.tsx          # Landing page with navigation
-│   │   ├── GamePage.tsx          # Full 3D game with HUD
-│   │   ├── Game2DPage.tsx        # 2D CSS/SVG-based puzzle game
-│   │   ├── GameHubPage.tsx       # Games hub with all game modes
-│   │   ├── DemosPage.tsx         # Interactive physics demos
-│   │   ├── CoursePage.tsx        # Structured course content
-│   │   ├── OpticalDesignPage.tsx # Modular optical design studio
-│   │   ├── OpticalDesignStudioPageV2.tsx  # Legacy optical studio
-│   │   ├── LabPage.tsx           # Research lab simulation
-│   │   ├── ExperimentsPage.tsx   # Creative experiments module
-│   │   ├── ApplicationsPage.tsx  # Real-world applications showcase
+│   │   ├── HomePage.tsx          # Landing page with 6-module navigation
+│   │   │
+│   │   │   # Hub Pages (Module Entry Points)
+│   │   ├── EducationHubPage.tsx  # Module 1: Education hub
+│   │   ├── ArsenalHubPage.tsx    # Module 2: Optical arsenal hub
+│   │   ├── TheoryHubPage.tsx     # Module 3: Theory & simulation hub
+│   │   ├── GameHubPage.tsx       # Module 4: Games hub
+│   │   ├── GalleryHubPage.tsx    # Module 5: Gallery/showcase hub
+│   │   ├── ResearchHubPage.tsx   # Module 6: Research hub
+│   │   │
+│   │   │   # Module 1: Education (Experiments & Chronicles)
 │   │   ├── ChroniclesPage.tsx    # Historical chronicles
+│   │   ├── CoursePage.tsx        # Structured course content
+│   │   ├── LearningHubPage.tsx   # Learning center with progress
+│   │   │
+│   │   │   # Module 2: Optical Arsenal
+│   │   ├── OpticalDesignPage.tsx # Modular optical design studio
+│   │   ├── HardwarePage.tsx      # Hardware components guide
+│   │   │
+│   │   │   # Module 3: Theory & Simulation
+│   │   ├── DemosPage.tsx         # Interactive physics demos
 │   │   ├── CalculationWorkshopPage.tsx   # Calculator hub
 │   │   ├── JonesCalculatorPage.tsx       # Jones matrix calculator
 │   │   ├── StokesCalculatorPage.tsx      # Stokes vector calculator
 │   │   ├── MuellerCalculatorPage.tsx     # Mueller matrix calculator
 │   │   ├── PoincareSphereViewerPage.tsx  # Poincare sphere visualization
+│   │   │
+│   │   │   # Module 4: Games
+│   │   ├── GamePage.tsx          # Full 3D game with HUD
+│   │   ├── Game2DPage.tsx        # 2D CSS/SVG-based puzzle game
 │   │   ├── CardGamePage.tsx      # Polarization card game
 │   │   ├── EscapeRoomPage.tsx    # Escape room puzzle game
 │   │   ├── DetectiveGamePage.tsx # Detective mystery game
-│   │   ├── HardwarePage.tsx      # Hardware components guide
+│   │   │
+│   │   │   # Module 5: Gallery
+│   │   ├── ExperimentsPage.tsx   # Creative experiments module
 │   │   ├── MerchandisePage.tsx   # Educational merchandise
+│   │   │
+│   │   │   # Module 6: Research
+│   │   ├── LabPage.tsx           # Research lab simulation
+│   │   ├── ApplicationsPage.tsx  # Real-world applications showcase
+│   │   │
 │   │   └── index.ts              # Barrel export
 │   │
 │   ├── components/
@@ -174,6 +200,7 @@ polarisation/
 │   │   │   ├── DemoCanvas.tsx    # 3D demo wrapper (R3F)
 │   │   │   ├── Demo2DCanvas.tsx  # 2D demo wrapper (Canvas)
 │   │   │   ├── DemoControls.tsx  # Shared demo UI controls
+│   │   │   ├── DemoErrorBoundary.tsx  # Demo-specific error boundary
 │   │   │   ├── DifficultyStrategy.tsx  # Difficulty level handling
 │   │   │   ├── LifeSceneIllustrations.tsx
 │   │   │   └── index.ts          # Barrel export
@@ -214,7 +241,14 @@ polarisation/
 │   │   │   │   ├── PhaseShifterSVG.tsx
 │   │   │   │   ├── OpticalIsolatorSVG.tsx
 │   │   │   │   ├── LightBeamSVG.tsx
-│   │   │   │   └── ...more
+│   │   │   │   ├── CircularFilterSVG.tsx
+│   │   │   │   ├── CoincidenceCounterSVG.tsx
+│   │   │   │   ├── InterferometerTargetSVG.tsx
+│   │   │   │   ├── MysteryBoxSVG.tsx
+│   │   │   │   ├── OpticalMineSVG.tsx
+│   │   │   │   ├── PhaseVisualizerSVG.tsx
+│   │   │   │   ├── QuantumLockSVG.tsx
+│   │   │   │   └── VectorScopeSVG.tsx
 │   │   │   ├── SEO.tsx
 │   │   │   ├── ExperimentModule.tsx
 │   │   │   ├── ModuleTabs.tsx
@@ -223,7 +257,8 @@ polarisation/
 │   │   │   ├── PersistentHeader.tsx
 │   │   │   ├── PolarizationArt.tsx
 │   │   │   ├── SecureVideoPlayer.tsx
-│   │   │   └── ExportUtils.tsx
+│   │   │   ├── ExportUtils.tsx
+│   │   │   └── Footer.tsx        # Site-wide footer
 │   │   │
 │   │   ├── course/               # Course-related components
 │   │   │   ├── RelatedDemos.tsx
@@ -231,7 +266,9 @@ polarisation/
 │   │   │   ├── LearningPathMap.tsx
 │   │   │   ├── PSRTQuestStage.tsx
 │   │   │   ├── DemoQuiz.tsx
-│   │   │   └── MysteryCard.tsx
+│   │   │   ├── MysteryCard.tsx
+│   │   │   ├── InsightCollection.tsx
+│   │   │   └── WorldMap.tsx
 │   │   │
 │   │   ├── lab/                  # Lab module components
 │   │   │   ├── ResearchTaskModal.tsx
@@ -259,17 +296,49 @@ polarisation/
 │   │   │   └── OpticalComponents.tsx
 │   │   │
 │   │   ├── chronicles/           # Historical chronicles components
+│   │   │   ├── BranchCard.tsx
+│   │   │   ├── CenturyNavigator.tsx
+│   │   │   ├── ChapterSelector.tsx
+│   │   │   ├── ChroniclesPSRTView.tsx
+│   │   │   ├── ConceptNetwork.tsx
+│   │   │   ├── CourseNavigator.tsx
+│   │   │   ├── DemoNavigator.tsx
+│   │   │   ├── DualTrackCard.tsx
+│   │   │   ├── ExperimentIllustration.tsx
+│   │   │   ├── ExplorationMode.tsx
+│   │   │   ├── OpticalOverviewDiagram.tsx
+│   │   │   ├── ResourceGallery.tsx
+│   │   │   ├── ScientistNetwork.tsx
+│   │   │   ├── SpectrumScaleBar.tsx
+│   │   │   ├── StoryModal.tsx
+│   │   │   └── index.ts
+│   │   │
 │   │   ├── museum/               # Museum exhibit components
+│   │   │   ├── GalleryHero.tsx
+│   │   │   ├── KnowledgeMap.tsx
+│   │   │   ├── LightPathOdyssey.tsx
+│   │   │   ├── MuseumHomepage.tsx
+│   │   │   ├── PolarizationLawsSection.tsx
+│   │   │   └── PrinciplesVisualization.tsx
 │   │   ├── effects/              # Visual effects
 │   │   │   └── LightBeamEffect.tsx
+│   │   │
 │   │   ├── icons/                # Custom icon components
+│   │   │   ├── ModuleIcons.tsx       # Module navigation icons
+│   │   │   ├── HomeModuleIcons.tsx   # Homepage module icons (animated)
+│   │   │   ├── DeviceIcons.tsx       # Optical device icons
+│   │   │   ├── NodeIcons.tsx         # Node/graph icons
+│   │   │   ├── PolarCraftLogo.tsx    # Project logo
+│   │   │   ├── OpenWisdomLabLogo.tsx # Lab branding logo
+│   │   │   └── index.ts
 │   │   │
 │   │   └── ui/                   # Reusable UI primitives
 │   │       ├── button.tsx        # Button component
 │   │       ├── dialog.tsx        # Dialog component
 │   │       ├── tooltip.tsx       # Tooltip component
 │   │       ├── DiscoveryNotification.tsx
-│   │       └── LanguageThemeSwitcher.tsx
+│   │       ├── LanguageThemeSwitcher.tsx
+│   │       └── ErrorBoundary.tsx # React error boundary
 │   │
 │   ├── contexts/                 # React contexts
 │   │   └── ThemeContext.tsx      # Dark/light theme provider
@@ -310,6 +379,9 @@ polarisation/
 
 ### Application Routes
 
+The application uses a **6-module architecture** with hub pages as entry points:
+
+#### Home
 | Route | Component | Purpose |
 | ------- | ----------- | --------- |
 | `/` | `HomePage` | Landing page with game/course navigation |
@@ -319,21 +391,60 @@ polarisation/
 | `/games/card` | `CardGamePage` | Polarization card game |
 | `/games/escape` | `EscapeRoomPage` | Escape room puzzle game |
 | `/games/detective` | `DetectiveGamePage` | Detective mystery game |
+|-------|-----------|---------|
+| `/` | `HomePage` | Landing page with 6-module navigation |
+
+#### Module 1: Education (实验内容与历史故事)
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/education` | `EducationHubPage` | Education module hub |
+| `/chronicles` | `ChroniclesPage` | Historical chronicles |
+| `/course` | `CoursePage` | Structured P-SRT course content |
+| `/learn` | `LearningHubPage` | Learning center with progress tracking |
+
+#### Module 2: Optical Arsenal (光学器件和典型光路)
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/arsenal` | `ArsenalHubPage` | Optical arsenal hub |
+| `/optical-studio` | `OpticalDesignPage` | Modular optical design studio |
+| `/hardware` | `HardwarePage` | Hardware components guide |
+
+#### Module 3: Theory & Simulation (基本理论和计算模拟)
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/theory` | `TheoryHubPage` | Theory module hub |
 | `/demos` | `DemosPage` | Interactive physics demos |
 | `/demos/:demoId` | `DemosPage` | Deep link to specific demo |
-| `/course` | `CoursePage` | Structured course content |
-| `/optical-studio` | `OpticalDesignPage` | Modular optical design studio |
-| `/lab` | `LabPage` | Research lab simulation |
-| `/experiments` | `ExperimentsPage` | Creative experiments module |
-| `/applications` | `ApplicationsPage` | Real-world applications |
-| `/chronicles` | `ChroniclesPage` | Historical chronicles |
 | `/calc` | `CalculationWorkshopPage` | Calculator hub |
 | `/calc/jones` | `JonesCalculatorPage` | Jones matrix calculator |
 | `/calc/stokes` | `StokesCalculatorPage` | Stokes vector calculator |
 | `/calc/mueller` | `MuellerCalculatorPage` | Mueller matrix calculator |
 | `/calc/poincare` | `PoincareSphereViewerPage` | Poincare sphere visualization |
-| `/hardware` | `HardwarePage` | Hardware components guide |
+
+#### Module 4: Games (游戏化模块)
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/games` | `GameHubPage` | Games hub with all game modes |
+| `/games/2d` | `Game2DPage` | 2D SVG-based puzzle game |
+| `/games/3d` | `GamePage` | Full 3D voxel puzzle game |
+| `/games/card` | `CardGamePage` | Polarization card game |
+| `/games/escape` | `EscapeRoomPage` | Escape room puzzle game |
+| `/games/detective` | `DetectiveGamePage` | Detective mystery game |
+
+#### Module 5: Gallery (成果展示)
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/gallery` | `GalleryHubPage` | Gallery/showcase hub |
+| `/experiments` | `ExperimentsPage` | Creative experiments module |
+| `/experiments/:tabId` | `ExperimentsPage` | Deep link to specific tab |
 | `/merchandise` | `MerchandisePage` | Educational merchandise |
+
+#### Module 6: Research (虚拟课题组)
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/research` | `ResearchHubPage` | Research module hub |
+| `/lab` | `LabPage` | Research lab simulation |
+| `/applications` | `ApplicationsPage` | Real-world applications
 
 ### Legacy Route Redirects
 
@@ -346,6 +457,7 @@ polarisation/
 | `/devices` | `/optical-studio` |
 | `/bench` | `/optical-studio` |
 | `/optics` | `/optical-studio` |
+| `/optical-studio-v2` | `/optical-studio` |
 | `/creative` | `/experiments` |
 | `/simulation` | `/lab` |
 | `/lab/poincare` | `/calc/poincare` |
@@ -370,6 +482,69 @@ polarisation/
 | `src/pages/Game2DPage.tsx` | 2D puzzle game logic, SVG rendering, level definitions |
 | `src/pages/DemosPage.tsx` | Demo navigation, info cards, SVG diagrams |
 | `src/pages/OpticalDesignPage.tsx` | Modular optical design studio |
+| `src/pages/HomePage.tsx` | 6-module landing page with animated icons |
+| `src/pages/EducationHubPage.tsx` | Module 1 hub: Education entry point |
+| `src/pages/ArsenalHubPage.tsx` | Module 2 hub: Optical arsenal entry point |
+| `src/pages/TheoryHubPage.tsx` | Module 3 hub: Theory & simulation entry point |
+| `src/pages/GameHubPage.tsx` | Module 4 hub: Games entry point |
+| `src/pages/GalleryHubPage.tsx` | Module 5 hub: Gallery entry point |
+| `src/pages/ResearchHubPage.tsx` | Module 6 hub: Research entry point |
+| `src/components/shared/Footer.tsx` | Site-wide footer navigation |
+| `src/components/ui/ErrorBoundary.tsx` | React error boundary for graceful failures |
+
+## 6-Module Architecture
+
+The application is organized into 6 pedagogical modules, each with a dedicated hub page:
+
+### Module 1: Education (实验内容与历史故事)
+**Entry Point**: `/education` → `EducationHubPage`
+
+Combines historical narrative with hands-on experimentation:
+- **Chronicles**: Interactive historical stories from 1669 to present
+- **P-SRT Course**: Problem-Solving Research Training curriculum
+- **Learning Hub**: Personalized learning paths and progress tracking
+
+### Module 2: Optical Arsenal (光学器件和典型光路)
+**Entry Point**: `/arsenal` → `ArsenalHubPage`
+
+Commercial optical devices and system design:
+- **Optical Studio**: Drag-and-drop optical bench simulation
+- **Device Library**: 80+ polarization devices with specifications
+- **Hardware Guide**: Real-world components and purchasing info
+
+### Module 3: Theory & Simulation (基本理论和计算模拟)
+**Entry Point**: `/theory` → `TheoryHubPage`
+
+Physical principles and computational tools:
+- **Interactive Demos**: 20+ physics visualizations across 6 units
+- **Calculation Workshop**: Jones, Stokes, Mueller matrix calculators
+- **Poincare Sphere**: 3D polarization state visualization
+
+### Module 4: Games (游戏化模块)
+**Entry Point**: `/games` → `GameHubPage`
+
+Gamified learning through puzzle mechanics:
+- **2D Puzzles**: SVG-based light routing puzzles (11 levels)
+- **3D Voxel Game**: Minecraft-style optical puzzles (5 levels)
+- **Card Game**: Strategic polarization card battles
+- **Escape Room**: Immersive puzzle-solving experience
+- **Detective Game**: Mystery investigation with optical clues
+
+### Module 5: Gallery (成果展示)
+**Entry Point**: `/gallery` → `GalleryHubPage`
+
+Student work and creative applications:
+- **Experiments**: Hands-on creative experiments
+- **Merchandise**: Educational products and art
+- **Showcases**: Student project displays
+
+### Module 6: Research (虚拟课题组)
+**Entry Point**: `/research` → `ResearchHubPage`
+
+Research simulation and real-world applications:
+- **Virtual Lab**: Research project simulation
+- **Applications**: Industrial and scientific use cases
+- **Collaboration**: Team-based research experiences
 
 ## Key Concepts
 
@@ -835,6 +1010,41 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
 - Use Zustand for global state, local state only for UI-specific concerns
 - Use `cn()` utility for conditional classnames (Tailwind)
 - All angles in degrees (converted to radians when needed)
+
+### Adding a New Hub Page
+
+Hub pages serve as module entry points. Follow this pattern:
+
+1. Create the page in `src/pages/`:
+   ```typescript
+   // src/pages/MyHubPage.tsx
+   import { Link } from 'react-router-dom'
+   import { useTranslation } from 'react-i18next'
+   import { PersistentHeader } from '@/components/shared/PersistentHeader'
+   import type { ModuleTab } from '@/components/shared'
+
+   const SUB_MODULES: ModuleTab[] = [
+     {
+       id: 'sub-module-1',
+       route: '/my-module/sub1',
+       icon: SomeIcon,
+       label: 'Sub Module 1',
+       labelZh: '子模块1',
+       description: 'Description here',
+       descriptionZh: '描述在此',
+       status: 'active', // or 'coming-soon'
+     },
+   ]
+
+   export default function MyHubPage() {
+     // Hub page implementation
+   }
+   ```
+2. Add lazy import in `App.tsx`
+3. Add route in `App.tsx` within appropriate module section
+4. Export from `src/pages/index.ts`
+5. Add translations to locale files
+6. Add link in `Footer.tsx` if needed
 
 ### Adding a New Demo
 

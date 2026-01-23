@@ -72,29 +72,28 @@ export class LightPhysics {
    * 计算光通过偏振片后的强度
    * I = I₀ × cos²(θ)
    *
-   * @param inputIntensity 输入光强度
+   * NOTE: This is the game engine version that returns discrete intensity values.
+   * For continuous float values, use getMalusTransmission() from '@/lib/opticsPhysics'.
+   *
+   * @param inputIntensity 输入光强度 (0-15 for game, 0-100 for simulation)
    * @param inputAngle 输入光偏振角
    * @param filterAngle 偏振片角度
    * @returns 输出强度（向下取整）
+   * @see {@link getMalusTransmission} for continuous transmission calculation
    */
   static applyMalusLaw(
     inputIntensity: number,
     inputAngle: PolarizationAngle,
     filterAngle: PolarizationAngle
   ): number {
-    // 计算角度差（以度为单位）
-    let angleDiff = Math.abs(inputAngle - filterAngle);
-    // 处理大于90度的情况
-    if (angleDiff > 90) {
-      angleDiff = 180 - angleDiff;
-    }
+    // Use canonical transmission calculation
+    // Core formula: I = I₀ × cos²(θ) where θ is the angle difference
+    const angleDiff = Math.abs(inputAngle - filterAngle) % 180;
+    const normalizedDiff = angleDiff > 90 ? 180 - angleDiff : angleDiff;
+    const radians = (normalizedDiff * Math.PI) / 180;
+    const transmissionFactor = Math.cos(radians) ** 2;
 
-    // 转换为弧度
-    const radians = (angleDiff * Math.PI) / 180;
-
-    // 应用马吕斯定律
-    const transmissionFactor = Math.pow(Math.cos(radians), 2);
-
+    // Game engine uses discrete intensities
     return Math.floor(inputIntensity * transmissionFactor);
   }
 

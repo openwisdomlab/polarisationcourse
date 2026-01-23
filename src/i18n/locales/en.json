@@ -11,7 +11,8 @@
     "english": "English",
     "chinese": "Chinese",
     "comingSoon": "Coming Soon",
-    "close": "Close"
+    "close": "Close",
+    "explore": "Explore"
   },
   "discovery": {
     "newDiscovery": "Discovery!",
@@ -23,6 +24,36 @@
     "title": "PolarCraft",
     "subtitle": "Ultimate Exploration of Polarized Light Physics",
     "description": "A gamified education and open science platform based on real polarization physics. From stories to simulations, from puzzles to experiments, from gaming to frontier research in a virtual lab group — explore the fascinating world of polarized light.",
+    "hero": {
+      "title": "The New World Under Polarized Light",
+      "subtitle": "A gamified education and open science platform for polarization optics — from classic experiments to frontier research, explore the fascinating world of polarized light."
+    },
+    "modules": {
+      "history": {
+        "title": "History & Experiments",
+        "description": "Recreate classic optical experiments since 1669, exploring the physical essence from a historical perspective."
+      },
+      "arsenal": {
+        "title": "Optical Arsenal",
+        "description": "Explore commercial polarization components, learn principles and build typical application optical paths."
+      },
+      "theory": {
+        "title": "Theory & Simulation",
+        "description": "Interactive physics demos and calculation tools — change parameters and instantly verify Jones matrices and Stokes parameters."
+      },
+      "games": {
+        "title": "Gamification",
+        "description": "Master optical principles through game challenges in PolarQuest and PolarCraft."
+      },
+      "gallery": {
+        "title": "Showcase",
+        "description": "Student personalized research showcase, including chromatic polarization art, creative products and DIY devices."
+      },
+      "research": {
+        "title": "Virtual Lab",
+        "description": "Participate in ESRT/ORIC level research topics, record data and analyze like a scientist."
+      }
+    },
     "chronicles": {
       "title": "Chronicles of Light",
       "subtitle": "Historical Stories × Classic Experiments",
@@ -782,6 +813,20 @@
       "splitterDesc": "Splits light into two perpendicular beams",
       "sensorDesc": "Detects light, can set angle threshold",
       "mirrorDesc": "Reflects light direction",
+      "advancedBlockGuide": "Advanced Blocks",
+      "quarterWaveDesc": "Rotates polarization 45° (simplified model)",
+      "halfWaveDesc": "Rotates polarization 90° (simplified model)",
+      "beamSplitterDesc": "Splits beam 50/50 regardless of polarization",
+      "absorberDesc": "Partially absorbs light intensity",
+      "phaseShifterDesc": "Shifts light phase (simplified binary model)",
+      "portalDesc": "Teleports light to linked portal",
+      "simplifiedModelWarning": "Simplified Physics Model",
+      "simplifiedModelNote": "This game uses simplified physics for educational purposes. In reality:",
+      "realQuarterWave": "λ/4 plates convert linear to circular polarization (phase retardation), not simple rotation",
+      "realHalfWave": "λ/2 plates reflect polarization about the fast axis, not simple 90° rotation",
+      "realSplitter": "Calcite separates beams by ~6°, not 90° (game uses PBS model)",
+      "realPhase": "Phase is continuous (0-2π), not binary (±1)",
+      "seeAccurateDemos": "For accurate physics, explore the Demos and Optical Studio modules!",
       "polarizationColors": "Polarization Colors in Vision Mode",
       "horizontal": "Horizontal",
       "diagonal": "Diagonal",
