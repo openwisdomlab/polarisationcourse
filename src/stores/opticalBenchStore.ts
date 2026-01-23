@@ -28,7 +28,13 @@ import {
   polarizerMatrix,
   halfWavePlateMatrix,
   quarterWavePlateMatrix,
+  nonIdealPolarizerMatrix,
 } from '@/core/JonesCalculus'
+import {
+  type NonIdealPolarizerParams,
+  IDEAL_POLARIZER,
+  TYPICAL_POLARIZER,
+} from '@/core/WaveOptics'
 import { logger } from '@/lib/logger'
 
 // ============================================
@@ -45,6 +51,20 @@ export interface Position {
   y: number
 }
 
+/** Device quality level for non-ideal component simulation */
+export type DeviceQuality = 'ideal' | 'typical' | 'low-quality'
+
+/** Non-ideal device parameters by quality level */
+export const POLARIZER_QUALITY_PARAMS: Record<DeviceQuality, NonIdealPolarizerParams> = {
+  'ideal': IDEAL_POLARIZER,
+  'typical': TYPICAL_POLARIZER,
+  'low-quality': {
+    extinctionRatio: 100,        // Poor extinction (100:1)
+    principalTransmittance: 0.75, // 25% loss
+    angularAcceptance: 10,
+  },
+}
+
 export interface BenchComponent {
   id: string
   type: BenchComponentType
@@ -59,6 +79,7 @@ export interface BenchComponent {
     splitType?: 'pbs' | 'npbs' | 'calcite'  // For splitter
     focalLength?: number       // For lens
     label?: string             // Custom label
+    deviceQuality?: DeviceQuality  // Device quality: 'ideal' | 'typical' | 'low-quality'
     [key: string]: number | string | boolean | undefined
   }
 }
@@ -1376,14 +1397,31 @@ function traceLightRays(
       // Process component and potentially create new rays
       switch (nextComponent.type) {
         case 'polarizer': {
-          // Use Jones matrix for accurate polarizer transformation
+          // Use Jones matrix for polarizer transformation
+          // Support non-ideal polarizers with extinction ratio and transmittance
           const polarizerAngle = nextComponent.properties.angle ?? 0
-          const matrix = polarizerMatrix(polarizerAngle)
+          const deviceQuality = (nextComponent.properties.deviceQuality as DeviceQuality) ?? 'typical'
+          const qualityParams = POLARIZER_QUALITY_PARAMS[deviceQuality]
+
+          // Use non-ideal polarizer matrix for realistic simulation
+          const matrix = deviceQuality === 'ideal'
+            ? polarizerMatrix(polarizerAngle)
+            : nonIdealPolarizerMatrix(
+                polarizerAngle,
+                qualityParams.extinctionRatio,
+                qualityParams.principalTransmittance
+              )
           const result = applyJonesTransformation(ray.jonesVector, matrix)
 
           // Generate formula for educational display
           const angleDiff = Math.abs(ray.polarization - polarizerAngle)
-          formulas.push(`Polarizer(${polarizerAngle}°): I = ${ray.intensity.toFixed(1)}% × cos²(${angleDiff.toFixed(0)}°) = ${result.intensity.toFixed(1)}%`)
+          if (deviceQuality === 'ideal') {
+            formulas.push(`Polarizer(${polarizerAngle}°): I = ${ray.intensity.toFixed(1)}% × cos²(${angleDiff.toFixed(0)}°) = ${result.intensity.toFixed(1)}%`)
+          } else {
+            const transmittance = (qualityParams.principalTransmittance * 100).toFixed(0)
+            const er = qualityParams.extinctionRatio === Infinity ? '∞' : qualityParams.extinctionRatio.toString()
+            formulas.push(`Polarizer(${polarizerAngle}°, T=${transmittance}%, ER=${er}:1): I = ${result.intensity.toFixed(1)}%`)
+          }
 
           // Continue with filtered ray if above threshold
           if (result.intensity >= INTENSITY_THRESHOLD) {
