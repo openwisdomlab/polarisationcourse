@@ -28,6 +28,8 @@ interface LightBeamEffectProps {
   logoRef: React.RefObject<HTMLDivElement | null>
   /** Container ref to constrain beam effect area */
   containerRef?: React.RefObject<HTMLDivElement | null>
+  /** External active control - when false, beam will not show */
+  active?: boolean
 }
 
 // Individual beam particle for soft animation
@@ -65,17 +67,20 @@ function getPolarizationColor(angle: number): string {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
 
-export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps) {
+export function LightBeamEffect({ logoRef, containerRef, active = true }: LightBeamEffectProps) {
   const { theme } = useTheme()
   const svgRef = useRef<SVGSVGElement>(null)
   const [logoPos, setLogoPos] = useState<Position>({ x: 0, y: 0 })
   const [mousePos, setMousePos] = useState<Position>({ x: 0, y: 0 })
   const [particles, setParticles] = useState<BeamParticle[]>([])
-  const [isActive, setIsActive] = useState(false)
+  const [isMouseActive, setIsMouseActive] = useState(false)
   const [beamOpacity, setBeamOpacity] = useState(0)
   const animationRef = useRef<number | null>(null)
   const particleIdRef = useRef(0)
   const lastMouseMoveRef = useRef<number>(0)
+
+  // Combined active state - both external control and mouse activity
+  const isActive = active && isMouseActive
 
   // Calculate logo center position
   const updateLogoPosition = useCallback(() => {
@@ -101,18 +106,18 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
           e.clientY <= containerRect.bottom
 
         if (!isInContainer) {
-          setIsActive(false)
+          setIsMouseActive(false)
           return
         }
       }
 
       setMousePos({ x: e.clientX, y: e.clientY })
-      setIsActive(true)
+      setIsMouseActive(true)
       lastMouseMoveRef.current = Date.now()
     }
 
     const handleMouseLeave = () => {
-      setIsActive(false)
+      setIsMouseActive(false)
     }
 
     updateLogoPosition()
@@ -134,7 +139,7 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
   useEffect(() => {
     const checkInactivity = setInterval(() => {
       if (Date.now() - lastMouseMoveRef.current > 2000) {
-        setIsActive(false)
+        setIsMouseActive(false)
       }
     }, 500)
 
@@ -177,23 +182,23 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
   // Animate beam particles
   useEffect(() => {
     if (isActive || beamOpacity > 0) {
-      // Create new particles
+      // Create new particles (fewer for softer effect)
       const createParticle = () => {
         if (!isActive) return
 
         const angle = Math.atan2(dy, dx) * (180 / Math.PI)
         setParticles(prev => [
-          ...prev.slice(-12), // Keep more particles for smoother effect
+          ...prev.slice(-6), // Keep fewer particles for subtler effect
           {
             id: particleIdRef.current++,
             progress: 0,
-            opacity: 0.5 + Math.random() * 0.4,
+            opacity: 0.3 + Math.random() * 0.3,
             color: getPolarizationColor(angle + 90 + (Math.random() - 0.5) * 20),
           },
         ])
       }
 
-      const intervalId = setInterval(createParticle, 120)
+      const intervalId = setInterval(createParticle, 180)
 
       // Animate particles
       const animate = () => {
@@ -237,18 +242,18 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
       style={{ width: '100vw', height: '100vh' }}
     >
       <defs>
-        {/* Soft glow filter for beam */}
+        {/* Soft glow filter for beam - reduced for subtler effect */}
         <filter id="beam-mouse-glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="8" result="blur" />
+          <feGaussianBlur stdDeviation="5" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
 
-        {/* Particle glow */}
+        {/* Particle glow - reduced */}
         <filter id="particle-mouse-glow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -264,8 +269,8 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
           y2={targetY}
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor={beamColor} stopOpacity="0.5" />
-          <stop offset="60%" stopColor={beamColor} stopOpacity="0.3" />
+          <stop offset="0%" stopColor={beamColor} stopOpacity="0.25" />
+          <stop offset="60%" stopColor={beamColor} stopOpacity="0.15" />
           <stop offset="100%" stopColor={beamColor} stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -277,21 +282,21 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
         x2={targetX}
         y2={targetY}
         stroke="url(#beam-mouse-gradient)"
-        strokeWidth={theme === 'dark' ? 4 : 3}
-        strokeOpacity={beamOpacity * 0.6}
+        strokeWidth={theme === 'dark' ? 2.5 : 2}
+        strokeOpacity={beamOpacity * 0.4}
         filter="url(#beam-mouse-glow)"
         strokeLinecap="round"
       />
 
-      {/* Secondary beam for more glow effect */}
+      {/* Secondary beam for subtle glow effect */}
       <line
         x1={logoPos.x}
         y1={logoPos.y}
         x2={targetX}
         y2={targetY}
         stroke={beamColor}
-        strokeWidth={theme === 'dark' ? 2 : 1.5}
-        strokeOpacity={beamOpacity * 0.3}
+        strokeWidth={theme === 'dark' ? 1.5 : 1}
+        strokeOpacity={beamOpacity * 0.15}
         strokeLinecap="round"
       />
 
@@ -308,10 +313,10 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
         const x = logoPos.x + pDx * progress + curveOffset * (-pDy / pDist)
         const y = logoPos.y + pDy * progress + curveOffset * (pDx / pDist)
 
-        // Particle appearance - grows and fades
+        // Particle appearance - grows and fades (softened)
         const sizeProgress = Math.sin(progress * Math.PI)
-        const size = 2 + sizeProgress * 6
-        const opacity = sizeProgress * particle.opacity * beamOpacity * 0.7
+        const size = 1.5 + sizeProgress * 4
+        const opacity = sizeProgress * particle.opacity * beamOpacity * 0.35
 
         return (
           <circle
@@ -326,13 +331,13 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
         )
       })}
 
-      {/* Source glow at logo */}
+      {/* Source glow at logo - subtle */}
       <circle
         cx={logoPos.x}
         cy={logoPos.y}
-        r={theme === 'dark' ? 20 : 16}
+        r={theme === 'dark' ? 14 : 12}
         fill={beamColor}
-        opacity={beamOpacity * 0.2}
+        opacity={beamOpacity * 0.1}
         filter="url(#beam-mouse-glow)"
       />
 
@@ -340,9 +345,9 @@ export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps)
       <circle
         cx={targetX}
         cy={targetY}
-        r={theme === 'dark' ? 12 : 10}
+        r={theme === 'dark' ? 8 : 6}
         fill={beamColor}
-        opacity={beamOpacity * 0.15}
+        opacity={beamOpacity * 0.08}
         filter="url(#particle-mouse-glow)"
       />
     </svg>
