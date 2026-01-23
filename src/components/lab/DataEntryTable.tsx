@@ -9,7 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { DataPoint } from '@/stores/labStore'
 import { Plus, Trash2, RefreshCw, Dice5, ArrowUpDown } from 'lucide-react'
-import { addNoise, generateTheoreticalMalusData } from './dataAnalysis'
+import { addRealisticNoise, generateTheoreticalMalusData, DEFAULT_NOISE_PARAMS } from './dataAnalysis'
 
 interface DataEntryTableProps {
   data: DataPoint[]
@@ -73,10 +73,16 @@ export function DataEntryTable({
     onChange([])
   }, [onChange])
 
-  // Generate simulated data with noise
+  // Generate simulated data with realistic noise model
+  // 使用真实噪声模型生成模拟数据
   const generateSimulatedData = useCallback(() => {
     const theoretical = generateTheoreticalMalusData(100, 0, 19) // 0-180 in 10° steps
-    const noisy = addNoise(theoretical, 8)
+    // Use realistic noise with shot noise + read noise
+    const noisy = addRealisticNoise(theoretical, {
+      ...DEFAULT_NOISE_PARAMS,
+      readNoise: 3.0,        // Typical photodetector noise
+      shotNoiseFactor: 0.15, // Shot noise ~15% of √I
+    })
     onChange(noisy.map((p, i) => ({
       ...p,
       id: `sim-${Date.now()}-${i}`,

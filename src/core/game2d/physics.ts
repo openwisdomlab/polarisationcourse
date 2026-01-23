@@ -1,42 +1,38 @@
 /**
  * 2D Physics Engine for the puzzle game
  * Light propagation and optical component interactions
+ *
+ * NOTE: Core physics calculations are imported from the shared optics library
+ * to ensure consistency across all modules (2D game, 3D game, demos, optical bench).
  */
 import { Direction2D, OpticalComponent, LightBeamSegment, SensorState, DIRECTION_VECTORS } from './types'
+import {
+  applyMalusLaw as malusLaw,
+  getMirrorReflection as mirrorReflection,
+  type Direction2D as SharedDirection2D,
+} from '@/lib/opticsPhysics'
 
 /**
  * Calculate mirror reflection based on mirror angle
  * Mirror at 45° reflects: right<->up, left<->down
  * Mirror at 135° reflects: right<->down, left<->up
+ *
+ * @see {@link getMirrorReflection} from '@/lib/opticsPhysics' for canonical implementation
  */
 export function getMirrorReflection(incomingDir: Direction2D, mirrorAngle: number): Direction2D | null {
-  const normalizedAngle = ((mirrorAngle % 180) + 180) % 180
-
-  if (normalizedAngle >= 40 && normalizedAngle <= 50) { // ~45°
-    const reflections: Record<Direction2D, Direction2D> = {
-      right: 'up', up: 'right', left: 'down', down: 'left'
-    }
-    return reflections[incomingDir]
-  } else if (normalizedAngle >= 130 && normalizedAngle <= 140) { // ~135°
-    const reflections: Record<Direction2D, Direction2D> = {
-      right: 'down', down: 'right', left: 'up', up: 'left'
-    }
-    return reflections[incomingDir]
-  }
-  return null
+  // Use shared implementation, cast types as they're compatible
+  return mirrorReflection(incomingDir as SharedDirection2D, mirrorAngle) as Direction2D | null
 }
 
 /**
  * Apply Malus's Law for polarizer intensity calculation
  * I = I₀ × cos²(θ)
+ *
+ * @see {@link applyMalusLaw} from '@/lib/opticsPhysics' for canonical implementation
  */
 export function applyMalusLaw(inputIntensity: number, inputAngle: number, filterAngle: number): number {
-  let angleDiff = Math.abs(inputAngle - filterAngle)
-  if (angleDiff > 90) {
-    angleDiff = 180 - angleDiff
-  }
-  const radians = (angleDiff * Math.PI) / 180
-  return inputIntensity * Math.pow(Math.cos(radians), 2)
+  // Use shared implementation
+  return malusLaw(inputIntensity, inputAngle, filterAngle)
 }
 
 /**

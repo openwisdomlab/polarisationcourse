@@ -373,7 +373,7 @@ export function identityMatrix(): JonesMatrix {
 // ============================================
 
 /**
- * Linear polarizer at angle θ
+ * Linear polarizer at angle θ (ideal)
  * @param angleDeg - Transmission axis angle in degrees
  */
 export function polarizerMatrix(angleDeg: number): JonesMatrix {
@@ -383,6 +383,50 @@ export function polarizerMatrix(angleDeg: number): JonesMatrix {
   return [
     [complex.create(c * c), complex.create(c * s)],
     [complex.create(c * s), complex.create(s * s)],
+  ]
+}
+
+/**
+ * Non-ideal linear polarizer with extinction ratio and transmittance
+ * 非理想偏振片，考虑消光比和透过率
+ *
+ * Real polarizers have:
+ * - Finite extinction ratio (ER): some light leaks through perpendicular axis
+ * - Principal transmittance < 100%: absorption even for aligned polarization
+ *
+ * Matrix form: R(-θ) × diag(t1, t2) × R(θ)
+ * where t1 = √(principalTransmittance), t2 = t1/√(extinctionRatio)
+ *
+ * @param angleDeg - Transmission axis angle in degrees
+ * @param extinctionRatio - Extinction ratio (e.g., 10000 for 10000:1)
+ * @param principalTransmittance - Max transmittance for aligned light (0-1)
+ */
+export function nonIdealPolarizerMatrix(
+  angleDeg: number,
+  extinctionRatio: number = 10000,
+  principalTransmittance: number = 0.88
+): JonesMatrix {
+  const theta = (angleDeg * Math.PI) / 180
+  const c = Math.cos(theta)
+  const s = Math.sin(theta)
+  const c2 = c * c
+  const s2 = s * s
+  const cs = c * s
+
+  // Principal transmittance amplitude for passed polarization
+  const t1 = Math.sqrt(principalTransmittance)
+
+  // Transmittance amplitude for blocked polarization (leakage)
+  const t2 = extinctionRatio === Infinity || extinctionRatio <= 0
+    ? 0
+    : t1 / Math.sqrt(extinctionRatio)
+
+  // Build matrix: R(-θ) × diag(t1, t2) × R(θ)
+  // Result: [t1*c² + t2*s²,  (t1-t2)*cs  ]
+  //         [(t1-t2)*cs,     t1*s² + t2*c²]
+  return [
+    [complex.create(t1 * c2 + t2 * s2), complex.create((t1 - t2) * cs)],
+    [complex.create((t1 - t2) * cs), complex.create(t1 * s2 + t2 * c2)],
   ]
 }
 
