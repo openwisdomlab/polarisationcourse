@@ -153,6 +153,7 @@ export function ControlHints() {
       }, 2000)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [hasInteracted])
 
   if (!isVisible) return null

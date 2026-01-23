@@ -173,6 +173,7 @@ export function VirtualPolarizerLens({
 
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [enableGamification, isAtTarget, taskCompleted, hasInteracted, angle, onTaskComplete])
 
   // 重置任务
