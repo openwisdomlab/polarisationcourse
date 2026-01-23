@@ -1,25 +1,23 @@
 /**
  * LightBeamEffect - 光束特效组件
- * 从主Logo发射偏振光束到悬停的模块的图标上，产生柔和的光学效果
+ * 从主Logo发射偏振光束跟随鼠标移动，产生柔和的光学效果
  *
  * Design concept:
  * - Light beams emanate from central logo (light source)
- * - Beams animate slowly and softly towards hovered module's icon
- * - Module icons glow/pulse in response, avoiding information coverage
+ * - Beams follow mouse cursor with smooth animation
+ * - Creates polarization color cycling effect based on angle
  */
 
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { useTheme } from '@/contexts/ThemeContext'
 
-// Module color mapping for beam effects
-const MODULE_COLORS: Record<string, string> = {
-  chronicles: '#C9A227',        // Warm Amber
-  opticalDesignStudio: '#6366F1', // Indigo
-  formulaLab: '#0891B2',        // Deep Cyan
-  polarquest: '#F59E0B',        // Warm Orange
-  creativeLab: '#EC4899',       // Vivid Pink
-  labGroup: '#10B981',          // Bright Emerald
-}
+// Polarization colors based on angle (physics-based)
+const POLARIZATION_COLORS = [
+  '#ff4444', // 0° - Red
+  '#ffaa00', // 45° - Orange
+  '#44ff44', // 90° - Green
+  '#4488ff', // 135° - Blue
+]
 
 interface Position {
   x: number
@@ -28,9 +26,8 @@ interface Position {
 
 interface LightBeamEffectProps {
   logoRef: React.RefObject<HTMLDivElement | null>
-  hoveredModule: string | null
-  moduleRefs: Map<string, HTMLDivElement | null>
-  iconRefs?: Map<string, HTMLDivElement | null>
+  /** Container ref to constrain beam effect area */
+  containerRef?: React.RefObject<HTMLDivElement | null>
 }
 
 // Individual beam particle for soft animation
@@ -38,121 +35,171 @@ interface BeamParticle {
   id: number
   progress: number
   opacity: number
+  color: string
 }
 
-export function LightBeamEffect({ logoRef, hoveredModule, moduleRefs, iconRefs }: LightBeamEffectProps) {
-  useTheme() // Keep hook for consistency but theme not used in simplified version
+// Get polarization color based on angle
+function getPolarizationColor(angle: number): string {
+  // Normalize angle to 0-180 range (polarization is symmetric)
+  const normalizedAngle = ((angle % 180) + 180) % 180
+  const index = Math.floor((normalizedAngle / 45) % 4)
+  const nextIndex = (index + 1) % 4
+  const fraction = (normalizedAngle % 45) / 45
+
+  // Interpolate between colors
+  const color1 = POLARIZATION_COLORS[index]
+  const color2 = POLARIZATION_COLORS[nextIndex]
+
+  // Simple hex color interpolation
+  const r1 = parseInt(color1.slice(1, 3), 16)
+  const g1 = parseInt(color1.slice(3, 5), 16)
+  const b1 = parseInt(color1.slice(5, 7), 16)
+  const r2 = parseInt(color2.slice(1, 3), 16)
+  const g2 = parseInt(color2.slice(3, 5), 16)
+  const b2 = parseInt(color2.slice(5, 7), 16)
+
+  const r = Math.round(r1 + (r2 - r1) * fraction)
+  const g = Math.round(g1 + (g2 - g1) * fraction)
+  const b = Math.round(b1 + (b2 - b1) * fraction)
+
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+}
+
+export function LightBeamEffect({ logoRef, containerRef }: LightBeamEffectProps) {
+  const { theme } = useTheme()
   const svgRef = useRef<SVGSVGElement>(null)
   const [logoPos, setLogoPos] = useState<Position>({ x: 0, y: 0 })
-  const [targetPos, setTargetPos] = useState<Position>({ x: 0, y: 0 })
+  const [mousePos, setMousePos] = useState<Position>({ x: 0, y: 0 })
   const [particles, setParticles] = useState<BeamParticle[]>([])
-  const [isAnimating, setIsAnimating] = useState(false)
+  const [isActive, setIsActive] = useState(false)
   const [beamOpacity, setBeamOpacity] = useState(0)
   const animationRef = useRef<number | null>(null)
   const particleIdRef = useRef(0)
+  const lastMouseMoveRef = useRef<number>(0)
 
-  // Calculate positions when hover changes - prioritize icon position
-  const updatePositions = useCallback(() => {
+  // Calculate logo center position
+  const updateLogoPosition = useCallback(() => {
     if (!logoRef.current) return
 
     const logoRect = logoRef.current.getBoundingClientRect()
-    const newLogoPos = {
+    setLogoPos({
       x: logoRect.left + logoRect.width / 2,
       y: logoRect.top + logoRect.height / 2,
-    }
-    setLogoPos(newLogoPos)
+    })
+  }, [logoRef])
 
-    if (hoveredModule) {
-      // First try to get icon position, fall back to module card position
-      const iconRef = iconRefs?.get(hoveredModule)
-      const moduleRef = moduleRefs.get(hoveredModule)
-
-      if (iconRef) {
-        // Target the icon specifically
-        const iconRect = iconRef.getBoundingClientRect()
-        setTargetPos({
-          x: iconRect.left + iconRect.width / 2,
-          y: iconRect.top + iconRect.height / 2,
-        })
-      } else if (moduleRef) {
-        // Fall back to top area of card (where icon is)
-        const moduleRect = moduleRef.getBoundingClientRect()
-        setTargetPos({
-          x: moduleRect.left + moduleRect.width / 2,
-          y: moduleRect.top + 48, // Target icon area at top
-        })
-      }
-    }
-  }, [logoRef, hoveredModule, moduleRefs, iconRefs])
-
-  // Update positions on hover change and scroll/resize
+  // Handle mouse movement
   useEffect(() => {
-    updatePositions()
+    const handleMouseMove = (e: MouseEvent) => {
+      // Check if mouse is within container bounds if containerRef provided
+      if (containerRef?.current) {
+        const containerRect = containerRef.current.getBoundingClientRect()
+        const isInContainer =
+          e.clientX >= containerRect.left &&
+          e.clientX <= containerRect.right &&
+          e.clientY >= containerRect.top &&
+          e.clientY <= containerRect.bottom
 
-    const handleScroll = () => updatePositions()
-    const handleResize = () => updatePositions()
+        if (!isInContainer) {
+          setIsActive(false)
+          return
+        }
+      }
 
-    window.addEventListener('scroll', handleScroll, true)
-    window.addEventListener('resize', handleResize)
+      setMousePos({ x: e.clientX, y: e.clientY })
+      setIsActive(true)
+      lastMouseMoveRef.current = Date.now()
+    }
+
+    const handleMouseLeave = () => {
+      setIsActive(false)
+    }
+
+    updateLogoPosition()
+
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('resize', updateLogoPosition)
+    window.addEventListener('scroll', updateLogoPosition, true)
+    document.addEventListener('mouseleave', handleMouseLeave)
 
     return () => {
-      window.removeEventListener('scroll', handleScroll, true)
-      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('resize', updateLogoPosition)
+      window.removeEventListener('scroll', updateLogoPosition, true)
+      document.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [updatePositions])
+  }, [updateLogoPosition, containerRef])
+
+  // Auto-hide beam after inactivity
+  useEffect(() => {
+    const checkInactivity = setInterval(() => {
+      if (Date.now() - lastMouseMoveRef.current > 2000) {
+        setIsActive(false)
+      }
+    }, 500)
+
+    return () => clearInterval(checkInactivity)
+  }, [])
 
   // Smooth fade in/out of beam
   useEffect(() => {
-    if (hoveredModule) {
+    if (isActive) {
       // Fade in
       const fadeIn = setInterval(() => {
-        setBeamOpacity(prev => Math.min(prev + 0.1, 1))
-      }, 50)
+        setBeamOpacity(prev => Math.min(prev + 0.15, 1))
+      }, 30)
 
-      setTimeout(() => clearInterval(fadeIn), 500)
+      setTimeout(() => clearInterval(fadeIn), 300)
 
       return () => clearInterval(fadeIn)
     } else {
       // Fade out
       const fadeOut = setInterval(() => {
         setBeamOpacity(prev => {
-          if (prev <= 0.1) {
+          if (prev <= 0.05) {
             clearInterval(fadeOut)
             return 0
           }
-          return prev - 0.15
+          return prev - 0.08
         })
       }, 30)
 
       return () => clearInterval(fadeOut)
     }
-  }, [hoveredModule])
+  }, [isActive])
 
-  // Animate beam particles - slower and softer
+  // Calculate beam angle for color
+  const dx = mousePos.x - logoPos.x
+  const dy = mousePos.y - logoPos.y
+  const beamAngle = Math.atan2(dy, dx) * (180 / Math.PI)
+  const beamColor = getPolarizationColor(beamAngle + 90) // Offset for visual effect
+
+  // Animate beam particles
   useEffect(() => {
-    if (hoveredModule) {
-      setIsAnimating(true)
-
-      // Create new particles at slower interval for softer effect
+    if (isActive || beamOpacity > 0) {
+      // Create new particles
       const createParticle = () => {
+        if (!isActive) return
+
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI)
         setParticles(prev => [
-          ...prev.slice(-8), // Keep fewer particles
+          ...prev.slice(-12), // Keep more particles for smoother effect
           {
             id: particleIdRef.current++,
             progress: 0,
-            opacity: 0.6 + Math.random() * 0.3,
+            opacity: 0.5 + Math.random() * 0.4,
+            color: getPolarizationColor(angle + 90 + (Math.random() - 0.5) * 20),
           },
         ])
       }
 
-      // Slower particle creation (200ms instead of 80ms)
-      const intervalId = setInterval(createParticle, 200)
+      const intervalId = setInterval(createParticle, 120)
 
-      // Animate particles with slower movement
+      // Animate particles
       const animate = () => {
         setParticles(prev =>
           prev
-            .map(p => ({ ...p, progress: p.progress + 0.012 })) // Slower speed
+            .map(p => ({ ...p, progress: p.progress + 0.018 }))
             .filter(p => p.progress < 1.1)
         )
         animationRef.current = requestAnimationFrame(animate)
@@ -166,99 +213,105 @@ export function LightBeamEffect({ logoRef, hoveredModule, moduleRefs, iconRefs }
         }
       }
     } else {
-      // Keep animating briefly during fade out
-      if (beamOpacity > 0) {
-        const animate = () => {
-          setParticles(prev =>
-            prev
-              .map(p => ({ ...p, progress: p.progress + 0.015 }))
-              .filter(p => p.progress < 1.1)
-          )
-          if (beamOpacity > 0) {
-            animationRef.current = requestAnimationFrame(animate)
-          }
-        }
-        animationRef.current = requestAnimationFrame(animate)
-      } else {
-        setIsAnimating(false)
-        setParticles([])
-      }
-
-      return () => {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current)
-        }
-      }
+      setParticles([])
+      return
     }
-  }, [hoveredModule, beamOpacity])
+  }, [isActive, beamOpacity, dx, dy])
 
-  if (!isAnimating && beamOpacity <= 0) return null
+  // Don't render if completely hidden
+  if (beamOpacity <= 0 && !isActive) return null
 
-  const moduleColor = MODULE_COLORS[hoveredModule || ''] || '#22d3ee'
+  // Calculate distance for beam length limiting
+  const distance = Math.sqrt(dx * dx + dy * dy)
+  const maxDistance = 600 // Maximum beam length
+  const effectiveDistance = Math.min(distance, maxDistance)
+  const ratio = distance > 0 ? effectiveDistance / distance : 0
 
-  // Calculate beam path
-  const dx = targetPos.x - logoPos.x
-  const dy = targetPos.y - logoPos.y
+  const targetX = logoPos.x + dx * ratio
+  const targetY = logoPos.y + dy * ratio
 
   return (
     <svg
       ref={svgRef}
-      className="fixed inset-0 pointer-events-none z-20"
+      className="fixed inset-0 pointer-events-none z-10"
       style={{ width: '100vw', height: '100vh' }}
     >
       <defs>
-        {/* Soft beam gradient - fades along the path */}
-        <linearGradient id="beam-soft-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor={moduleColor} stopOpacity="0.4" />
-          <stop offset="40%" stopColor={moduleColor} stopOpacity="0.25" />
-          <stop offset="100%" stopColor={moduleColor} stopOpacity="0.1" />
+        {/* Soft glow filter for beam */}
+        <filter id="beam-mouse-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        {/* Particle glow */}
+        <filter id="particle-mouse-glow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        {/* Gradient along beam path */}
+        <linearGradient
+          id="beam-mouse-gradient"
+          x1={logoPos.x}
+          y1={logoPos.y}
+          x2={targetX}
+          y2={targetY}
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor={beamColor} stopOpacity="0.5" />
+          <stop offset="60%" stopColor={beamColor} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={beamColor} stopOpacity="0" />
         </linearGradient>
-
-        {/* Very soft glow filter */}
-        <filter id="beam-soft-glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-
-        {/* Particle soft glow */}
-        <filter id="particle-soft-glow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
 
-      {/* Main soft beam line - very subtle */}
+      {/* Main beam line - soft gradient */}
       <line
         x1={logoPos.x}
         y1={logoPos.y}
-        x2={targetPos.x}
-        y2={targetPos.y}
-        stroke={moduleColor}
-        strokeWidth="3"
-        strokeOpacity={0.12 * beamOpacity}
-        filter="url(#beam-soft-glow)"
+        x2={targetX}
+        y2={targetY}
+        stroke="url(#beam-mouse-gradient)"
+        strokeWidth={theme === 'dark' ? 4 : 3}
+        strokeOpacity={beamOpacity * 0.6}
+        filter="url(#beam-mouse-glow)"
         strokeLinecap="round"
       />
 
-      {/* Soft flowing particles along beam */}
+      {/* Secondary beam for more glow effect */}
+      <line
+        x1={logoPos.x}
+        y1={logoPos.y}
+        x2={targetX}
+        y2={targetY}
+        stroke={beamColor}
+        strokeWidth={theme === 'dark' ? 2 : 1.5}
+        strokeOpacity={beamOpacity * 0.3}
+        strokeLinecap="round"
+      />
+
+      {/* Particles flowing along beam */}
       {particles.map(particle => {
         const progress = Math.min(particle.progress, 1)
 
-        // Calculate particle position along beam with slight curve
-        const curveOffset = Math.sin(progress * Math.PI) * 3
-        const x = logoPos.x + dx * progress + curveOffset * (-dy / Math.sqrt(dx*dx + dy*dy || 1))
-        const y = logoPos.y + dy * progress + curveOffset * (dx / Math.sqrt(dx*dx + dy*dy || 1))
+        // Calculate particle position along beam
+        const curveOffset = Math.sin(progress * Math.PI) * 4
+        const pDx = targetX - logoPos.x
+        const pDy = targetY - logoPos.y
+        const pDist = Math.sqrt(pDx * pDx + pDy * pDy) || 1
 
-        // Soft particle appearance - grows and fades
+        const x = logoPos.x + pDx * progress + curveOffset * (-pDy / pDist)
+        const y = logoPos.y + pDy * progress + curveOffset * (pDx / pDist)
+
+        // Particle appearance - grows and fades
         const sizeProgress = Math.sin(progress * Math.PI)
-        const size = 3 + sizeProgress * 5
-        const opacity = sizeProgress * particle.opacity * beamOpacity * 0.5
+        const size = 2 + sizeProgress * 6
+        const opacity = sizeProgress * particle.opacity * beamOpacity * 0.7
 
         return (
           <circle
@@ -266,31 +319,31 @@ export function LightBeamEffect({ logoRef, hoveredModule, moduleRefs, iconRefs }
             cx={x}
             cy={y}
             r={size}
-            fill={moduleColor}
+            fill={particle.color}
             opacity={opacity}
-            filter="url(#particle-soft-glow)"
+            filter="url(#particle-mouse-glow)"
           />
         )
       })}
 
-      {/* Subtle source glow at logo - very soft pulse */}
+      {/* Source glow at logo */}
       <circle
         cx={logoPos.x}
         cy={logoPos.y}
-        r="15"
-        fill={moduleColor}
-        opacity={0.15 * beamOpacity}
-        filter="url(#beam-soft-glow)"
+        r={theme === 'dark' ? 20 : 16}
+        fill={beamColor}
+        opacity={beamOpacity * 0.2}
+        filter="url(#beam-mouse-glow)"
       />
 
-      {/* Very subtle target glow at icon - just a hint */}
+      {/* Subtle cursor glow */}
       <circle
-        cx={targetPos.x}
-        cy={targetPos.y}
-        r="20"
-        fill={moduleColor}
-        opacity={0.1 * beamOpacity}
-        filter="url(#beam-soft-glow)"
+        cx={targetX}
+        cy={targetY}
+        r={theme === 'dark' ? 12 : 10}
+        fill={beamColor}
+        opacity={beamOpacity * 0.15}
+        filter="url(#particle-mouse-glow)"
       />
     </svg>
   )
