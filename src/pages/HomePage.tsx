@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { LightBeamEffect, AmbientParticles, DiscoveryTimeline, type ModuleEffectType } from '@/components/effects'
+import { LightBeamEffect, AmbientParticles, type ModuleEffectType } from '@/components/effects'
 import { Footer } from '@/components/shared/Footer'
 import {
-  PolarCraftLogo,
+  CombinedLogo,
   HistoryModuleIcon,
   ArsenalModuleIcon,
   TheoryModuleIcon,
@@ -14,16 +14,6 @@ import {
   GalleryModuleIcon,
   ResearchModuleIcon,
 } from '@/components/icons'
-
-// 模块颜色映射，用于Logo光束效果
-const MODULE_ACTIVE_COLORS: Record<ModuleEffectType, string> = {
-  history: '#fbbf24',
-  arsenal: '#22d3ee',
-  theory: '#818cf8',
-  games: '#34d399',
-  gallery: '#f472b6',
-  research: '#2dd4bf',
-}
 
 // Icon component type for animated module icons
 type AnimatedIconComponent = React.ComponentType<{
@@ -455,10 +445,10 @@ export function HomePage() {
       </div>
 
       {/* Hero Section */}
-      <header className="flex flex-col items-center justify-center pt-16 pb-12 px-4 text-center">
-        {/* Logo + Timeline Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
-          {/* Main Logo - PolarCraft */}
+      <header className="flex flex-col items-center justify-center pt-12 pb-8 px-4 text-center">
+        {/* Logo Row - Compact inline layout */}
+        <div className="flex items-center justify-center gap-6 mb-4">
+          {/* Combined Logo - X-Institute + Open Wisdom Lab */}
           <div
             ref={logoRef}
             className={`
@@ -468,26 +458,13 @@ export function HomePage() {
             onMouseEnter={() => setLogoHovered(true)}
             onMouseLeave={() => setLogoHovered(false)}
           >
-            <PolarCraftLogo
-              size={80}
+            <CombinedLogo
+              height={56}
               theme={theme}
-              animated
-              rotating={logoHovered || !!activeModule}
-              rotationSpeed={activeModule ? 'medium' : 'slow'}
-              beamActive={!!activeModule}
-              activeColor={activeModule ? MODULE_ACTIVE_COLORS[activeModule] : undefined}
               className={`
                 transition-all duration-500
-                ${logoHovered ? 'drop-shadow-[0_0_12px_rgba(34,211,238,0.3)]' : activeModule ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.2)]' : ''}
+                ${logoHovered ? 'drop-shadow-[0_0_12px_rgba(37,99,235,0.3)]' : activeModule ? 'drop-shadow-[0_0_8px_rgba(37,99,235,0.2)]' : ''}
               `}
-            />
-          </div>
-
-          {/* Discovery Timeline - 随机展示偏振光重要发现 */}
-          <div className="w-full max-w-xs">
-            <DiscoveryTimeline
-              theme={theme}
-              isLogoHovered={logoHovered}
             />
           </div>
         </div>
