@@ -25,8 +25,8 @@ interface FooterSection {
 const FOOTER_SECTIONS: FooterSection[] = [
   {
     // 6 Core Modules - 六大核心模块
-    titleKey: 'Modules',
-    titleZh: '核心模块',
+    titleKey: 'Explore',
+    titleZh: '探索',
     links: [
       { labelKey: 'Chronicles', labelZh: '光的编年史', path: '/chronicles' },
       { labelKey: 'Optical Studio', labelZh: '光学设计室', path: '/studio' },
@@ -38,32 +38,21 @@ const FOOTER_SECTIONS: FooterSection[] = [
   },
   {
     // Course System - 课程体系
-    titleKey: 'Course',
-    titleZh: '课程',
+    titleKey: 'Learn',
+    titleZh: '学习',
     links: [
       { labelKey: 'P-SRT Course', labelZh: 'P-SRT课程', path: '/course' },
       { labelKey: 'Learning Hub', labelZh: '学习中心', path: '/learn' },
+      { labelKey: 'Calculators', labelZh: '计算工坊', path: '/calc' },
     ],
   },
   {
-    // Tools - 工具
-    titleKey: 'Tools',
-    titleZh: '工具',
+    // Resources - 资源
+    titleKey: 'Resources',
+    titleZh: '资源',
     links: [
-      { labelKey: 'Calculators', labelZh: '计算工坊', path: '/calc' },
       { labelKey: 'Hardware Guide', labelZh: '硬件器件', path: '/hardware' },
       { labelKey: 'Merchandise', labelZh: '文创商品', path: '/merchandise' },
-    ],
-  },
-  {
-    // Games - 游戏快捷入口
-    titleKey: 'Games',
-    titleZh: '游戏',
-    links: [
-      { labelKey: '2D Puzzles', labelZh: '2D 解谜', path: '/games/2d' },
-      { labelKey: '3D Voxel', labelZh: '3D 体素', path: '/games/3d' },
-      { labelKey: 'Card Game', labelZh: '卡牌对战', path: '/games/card' },
-      { labelKey: 'Escape Room', labelZh: '密室逃脱', path: '/games/escape' },
     ],
   },
   {
@@ -93,7 +82,7 @@ export function Footer() {
     >
       <div className="max-w-6xl mx-auto">
         {/* Navigation Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           {FOOTER_SECTIONS.map((section) => (
             <div key={section.titleKey}>
               <h3
