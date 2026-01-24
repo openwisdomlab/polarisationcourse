@@ -14,7 +14,6 @@ import {
   GalleryModuleIcon,
   ResearchModuleIcon,
 } from '@/components/icons'
-import { ChevronRight } from 'lucide-react'
 
 // Icon component type for animated module icons
 type AnimatedIconComponent = React.ComponentType<{
@@ -247,18 +246,17 @@ function ModuleCard({
   const titleZh = t(`${module.i18nNamespace}.titleZh`)
   const subtitle = t(`${module.i18nNamespace}.subtitle`)
   const description = t(`${module.i18nNamespace}.description`)
-  // Use the module-specific CTA if available, fallback to common explore
-  const cta = t('common.explore')
 
   return (
-    <div
-      ref={cardRef}
+    <Link
+      to={module.path}
+      ref={cardRef as unknown as React.RefObject<HTMLAnchorElement>}
       className={`
         group relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-500
         ${module.colorTheme.bg} ${module.colorTheme.bgHover}
         ${module.colorTheme.border} ${module.colorTheme.borderHover}
         hover:-translate-y-2 hover:shadow-2xl ${module.colorTheme.shadow}
-        overflow-hidden
+        overflow-hidden cursor-pointer
       `}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -326,14 +324,14 @@ function ModuleCard({
             {subtitle}
           </h3>
           {/* Subtitle (e.g., "追溯" / "Trace") */}
-          <div className="flex items-center gap-2">
-            <span className={`text-sm font-medium ${module.colorTheme.iconColor}`}>
+          <div className="flex items-center gap-1">
+            <span className={`text-xs font-medium ${module.colorTheme.iconColor}`}>
               {titleZh || titleEn}
             </span>
             {titleZh && (
               <>
-                <span className={theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}>·</span>
-                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                <span className={`text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>·</span>
+                <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                   {titleEn}
                 </span>
               </>
@@ -373,28 +371,6 @@ function ModuleCard({
         ))}
       </div>
 
-      {/* CTA Button */}
-      <Link
-        to={module.path}
-        className={`
-          inline-flex items-center justify-center gap-2
-          px-4 py-2 rounded-lg text-sm font-medium
-          transition-all duration-300
-          ${module.colorTheme.iconColor}
-          ${theme === 'dark'
-            ? 'bg-white/10 hover:bg-white/20'
-            : 'bg-gray-900/5 hover:bg-gray-900/10'}
-        `}
-      >
-        <span>{cta}</span>
-        <ChevronRight
-          className={`
-            w-4 h-4 transition-transform duration-300
-            ${isHovered ? 'translate-x-1' : 'translate-x-0'}
-          `}
-        />
-      </Link>
-
       {/* Corner light beam decoration */}
       <div
         className={`
@@ -406,7 +382,7 @@ function ModuleCard({
           background: `linear-gradient(90deg, transparent, ${GLOW_STYLES[module.colorTheme.glowColor]}, transparent)`,
         }}
       />
-    </div>
+    </Link>
   )
 }
 
@@ -472,7 +448,7 @@ export function HomePage() {
           ref={logoRef}
           className={`
             mb-6 transition-all duration-500 cursor-pointer
-            ${logoHovered || activeModule ? 'scale-110' : 'scale-100'}
+            ${logoHovered ? 'scale-105' : activeModule ? 'scale-102' : 'scale-100'}
           `}
           onMouseEnter={() => setLogoHovered(true)}
           onMouseLeave={() => setLogoHovered(false)}
@@ -482,8 +458,8 @@ export function HomePage() {
             theme={theme}
             animated
             className={`
-              transition-all duration-300
-              ${logoHovered || activeModule ? 'drop-shadow-[0_0_25px_rgba(34,211,238,0.6)]' : ''}
+              transition-all duration-500
+              ${logoHovered ? 'drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]' : activeModule ? 'drop-shadow-[0_0_10px_rgba(34,211,238,0.25)]' : ''}
             `}
           />
         </div>
@@ -541,27 +517,18 @@ export function HomePage() {
 
         {/* Platform Introduction */}
         <div
-          className={`max-w-3xl mx-auto mb-6 p-6 rounded-2xl ${
+          className={`max-w-3xl mx-auto mb-6 p-6 rounded-2xl text-left ${
             theme === 'dark'
               ? 'bg-slate-800/50 border border-slate-700/50'
               : 'bg-white/70 border border-gray-200 shadow-sm'
           }`}
         >
           <p
-            className={`text-sm sm:text-base leading-relaxed mb-4 ${
+            className={`text-sm sm:text-base leading-relaxed ${
               theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
             }`}
           >
             {t('home.hero.platformIntro')}
-          </p>
-          <p
-            className={`text-sm sm:text-base font-semibold ${
-              theme === 'dark'
-                ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400'
-                : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600'
-            }`}
-          >
-            {t('home.hero.callToAction')}
           </p>
         </div>
 
