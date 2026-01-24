@@ -6,6 +6,7 @@
  * - Central crystal/prism representing optical components
  * - Four light beams in polarization colors (0°, 45°, 90°, 135°)
  * - Animated pulse effect to simulate light propagation
+ * - Rotation effect when light beam is active
  * - Works in both dark and light themes
  */
 
@@ -16,14 +17,32 @@ interface PolarCraftLogoProps {
   size?: number
   animated?: boolean
   theme?: 'dark' | 'light'
+  /** Enable slow rotation animation */
+  rotating?: boolean
+  /** Rotation speed: 'slow' (60s), 'medium' (30s), 'fast' (15s) */
+  rotationSpeed?: 'slow' | 'medium' | 'fast'
+  /** Whether light beam is currently active (triggers enhanced glow) */
+  beamActive?: boolean
+  /** Active module color for glow effect */
+  activeColor?: string
 }
 
 export function PolarCraftLogo({
   className,
   size = 80,
   animated = true,
-  theme = 'dark'
+  theme = 'dark',
+  rotating = false,
+  rotationSpeed = 'slow',
+  beamActive = false,
+  activeColor,
 }: PolarCraftLogoProps) {
+  // 旋转速度映射
+  const rotationDurations = {
+    slow: '60s',
+    medium: '30s',
+    fast: '15s',
+  }
   // Polarization angle colors
   const colors = {
     deg0: '#ff4444',    // 0° - Red (horizontal)
@@ -41,7 +60,25 @@ export function PolarCraftLogo({
       viewBox="0 0 100 100"
       fill="none"
       className={cn('transition-all duration-300', className)}
+      style={{
+        // 添加旋转动画样式
+        animation: rotating ? `logo-spin ${rotationDurations[rotationSpeed]} linear infinite` : 'none',
+      }}
     >
+      <style>{`
+        @keyframes logo-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes beam-pulse {
+          0%, 100% { opacity: 0.7; }
+          50% { opacity: 1; }
+        }
+        @keyframes crystal-shimmer {
+          0%, 100% { opacity: 0.9; filter: brightness(1); }
+          50% { opacity: 1; filter: brightness(1.2); }
+        }
+      `}</style>
       <defs>
         {/* Crystal gradient */}
         <linearGradient id="crystal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -104,14 +141,24 @@ export function PolarCraftLogo({
         cy="50"
         r="46"
         fill="none"
-        stroke={colors.crystal}
-        strokeWidth="1"
-        strokeDasharray="4 4"
-        opacity="0.3"
+        stroke={beamActive ? (activeColor || colors.crystal) : colors.crystal}
+        strokeWidth={beamActive ? '1.5' : '1'}
+        strokeDasharray={beamActive ? '6 3' : '4 4'}
+        opacity={beamActive ? 0.5 : 0.3}
+        style={{
+          transition: 'all 0.3s ease-out',
+          animation: beamActive ? 'crystal-shimmer 2s ease-in-out infinite' : 'none',
+        }}
       />
 
       {/* Light beams - 4 polarization directions */}
-      <g opacity="0.7">
+      <g
+        opacity={beamActive ? 0.85 : 0.7}
+        style={{
+          transition: 'opacity 0.3s ease-out',
+          animation: beamActive ? 'beam-pulse 2s ease-in-out infinite' : 'none',
+        }}
+      >
         {/* 0° beam (horizontal) - Red */}
         <line
           x1="8"
@@ -119,9 +166,10 @@ export function PolarCraftLogo({
           x2="92"
           y2="50"
           stroke="url(#beam-0)"
-          strokeWidth="3"
+          strokeWidth={beamActive ? '3.5' : '3'}
           strokeLinecap="round"
           filter="url(#logo-glow)"
+          style={{ transition: 'stroke-width 0.3s ease-out' }}
         />
 
         {/* 90° beam (vertical) - Green */}
@@ -131,9 +179,10 @@ export function PolarCraftLogo({
           x2="50"
           y2="92"
           stroke="url(#beam-90)"
-          strokeWidth="3"
+          strokeWidth={beamActive ? '3.5' : '3'}
           strokeLinecap="round"
           filter="url(#logo-glow)"
+          style={{ transition: 'stroke-width 0.3s ease-out' }}
         />
 
         {/* 45° beam (diagonal) - Orange */}
@@ -143,9 +192,10 @@ export function PolarCraftLogo({
           x2="85"
           y2="15"
           stroke="url(#beam-45)"
-          strokeWidth="2.5"
+          strokeWidth={beamActive ? '3' : '2.5'}
           strokeLinecap="round"
           filter="url(#logo-glow)"
+          style={{ transition: 'stroke-width 0.3s ease-out' }}
         />
 
         {/* 135° beam (diagonal) - Blue */}
@@ -155,9 +205,10 @@ export function PolarCraftLogo({
           x2="85"
           y2="85"
           stroke="url(#beam-135)"
-          strokeWidth="2.5"
+          strokeWidth={beamActive ? '3' : '2.5'}
           strokeLinecap="round"
           filter="url(#logo-glow)"
+          style={{ transition: 'stroke-width 0.3s ease-out' }}
         />
       </g>
 
@@ -181,21 +232,40 @@ export function PolarCraftLogo({
         />
       </g>
 
+      {/* Enhanced glow when beam is active */}
+      {beamActive && (
+        <circle
+          cx="50"
+          cy="50"
+          r="20"
+          fill={activeColor || colors.glow}
+          opacity="0.25"
+          filter="url(#pulse-glow)"
+          style={{ animation: 'beam-pulse 1.5s ease-in-out infinite' }}
+        />
+      )}
+
       {/* Central glowing core - pulsing light source */}
       <circle
         cx="50"
         cy="50"
-        r="8"
-        fill={colors.glow}
+        r={beamActive ? 10 : 8}
+        fill={beamActive ? (activeColor || colors.glow) : colors.glow}
         filter="url(#pulse-glow)"
         className={animated ? 'animate-pulse' : ''}
+        style={{
+          transition: 'r 0.3s ease-out, fill 0.3s ease-out',
+        }}
       />
       <circle
         cx="50"
         cy="50"
-        r="4"
+        r={beamActive ? 5 : 4}
         fill={theme === 'dark' ? '#ffffff' : colors.crystal}
         opacity="0.9"
+        style={{
+          transition: 'r 0.3s ease-out',
+        }}
       />
 
       {/* Polarization angle markers - small dots at beam endpoints */}
