@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { LightBeamEffect, StoryHookEffect, AmbientParticles, type ModuleEffectType } from '@/components/effects'
+import { LightBeamEffect, StoryHookEffect, AmbientParticles, DiscoveryTimeline, type ModuleEffectType } from '@/components/effects'
 import { Footer } from '@/components/shared/Footer'
 import {
   PolarCraftLogo,
@@ -456,29 +456,40 @@ export function HomePage() {
 
       {/* Hero Section */}
       <header className="flex flex-col items-center justify-center pt-16 pb-12 px-4 text-center">
-        {/* Main Logo - PolarCraft */}
-        <div
-          ref={logoRef}
-          className={`
-            mb-6 transition-all duration-500 cursor-pointer
-            ${logoHovered ? 'scale-105' : activeModule ? 'scale-102' : 'scale-100'}
-          `}
-          onMouseEnter={() => setLogoHovered(true)}
-          onMouseLeave={() => setLogoHovered(false)}
-        >
-          <PolarCraftLogo
-            size={80}
-            theme={theme}
-            animated
-            rotating={logoHovered || !!activeModule}
-            rotationSpeed={activeModule ? 'medium' : 'slow'}
-            beamActive={!!activeModule}
-            activeColor={activeModule ? MODULE_ACTIVE_COLORS[activeModule] : undefined}
+        {/* Logo + Timeline Row */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
+          {/* Main Logo - PolarCraft */}
+          <div
+            ref={logoRef}
             className={`
-              transition-all duration-500
-              ${logoHovered ? 'drop-shadow-[0_0_12px_rgba(34,211,238,0.3)]' : activeModule ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.2)]' : ''}
+              transition-all duration-500 cursor-pointer
+              ${logoHovered ? 'scale-105' : activeModule ? 'scale-102' : 'scale-100'}
             `}
-          />
+            onMouseEnter={() => setLogoHovered(true)}
+            onMouseLeave={() => setLogoHovered(false)}
+          >
+            <PolarCraftLogo
+              size={80}
+              theme={theme}
+              animated
+              rotating={logoHovered || !!activeModule}
+              rotationSpeed={activeModule ? 'medium' : 'slow'}
+              beamActive={!!activeModule}
+              activeColor={activeModule ? MODULE_ACTIVE_COLORS[activeModule] : undefined}
+              className={`
+                transition-all duration-500
+                ${logoHovered ? 'drop-shadow-[0_0_12px_rgba(34,211,238,0.3)]' : activeModule ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.2)]' : ''}
+              `}
+            />
+          </div>
+
+          {/* Discovery Timeline - 随机展示偏振光重要发现 */}
+          <div className="w-full max-w-xs">
+            <DiscoveryTimeline
+              theme={theme}
+              isLogoHovered={logoHovered}
+            />
+          </div>
         </div>
 
         {/* Badges */}
