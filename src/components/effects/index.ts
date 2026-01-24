@@ -1,1 +1,1 @@
-export { LightBeamEffect } from './LightBeamEffect'
+export { LightBeamEffect, type ModuleEffectType } from './LightBeamEffect'

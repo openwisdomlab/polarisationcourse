@@ -1,6 +1,6 @@
-import { Suspense, lazy } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { Suspense, lazy } from 'react'   // React 组件懒加载和 Suspense
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'   // React Router 组件
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'   // 错误边界组件
 
 // ============================================================
 // Lazy load all pages for code splitting
@@ -14,6 +14,7 @@ const HomePage = lazy(() => import('@/pages/HomePage'))
 // Module 1: 实验内容与历史故事 (Experiments & Chronicles)
 // 结合历史发展历程，重现典型实验，展示实验内容和结果数据
 // ============================================================
+const EducationHubPage = lazy(() => import('@/pages/EducationHubPage'))
 const ChroniclesPage = lazy(() => import('@/pages/ChroniclesPage'))
 const CoursePage = lazy(() => import('@/pages/CoursePage'))
 const LearningHubPage = lazy(() => import('@/pages/LearningHubPage'))
@@ -22,6 +23,7 @@ const LearningHubPage = lazy(() => import('@/pages/LearningHubPage'))
 // Module 2: 光学器件和典型光路 (Optical Arsenal)
 // 介绍商业化偏振元器件（原理、应用、光路图），展示市场资源
 // ============================================================
+const ArsenalHubPage = lazy(() => import('@/pages/ArsenalHubPage'))
 const OpticalDesignPage = lazy(() => import('@/pages/OpticalDesignPage'))
 const HardwarePage = lazy(() => import('@/pages/HardwarePage'))
 
@@ -29,6 +31,7 @@ const HardwarePage = lazy(() => import('@/pages/HardwarePage'))
 // Module 3: 基本理论和计算模拟 (Theory & Simulation)
 // 提供物理原理公式，以及计算/模拟工具
 // ============================================================
+const TheoryHubPage = lazy(() => import('@/pages/TheoryHubPage'))
 const DemosPage = lazy(() => import('@/pages/DemosPage'))
 const CalculationWorkshopPage = lazy(() => import('@/pages/CalculationWorkshopPage'))
 const JonesCalculatorPage = lazy(() => import('@/pages/JonesCalculatorPage'))
@@ -51,6 +54,7 @@ const DetectiveGamePage = lazy(() => import('@/pages/DetectiveGamePage'))
 // Module 5: 成果展示 (Showcase & Gallery)
 // 展示学生的个性化研究成果（色偏振画、装置、文创）
 // ============================================================
+const GalleryHubPage = lazy(() => import('@/pages/GalleryHubPage'))
 const ExperimentsPage = lazy(() => import('@/pages/ExperimentsPage'))
 const MerchandisePage = lazy(() => import('@/pages/MerchandisePage'))
 
@@ -58,6 +62,7 @@ const MerchandisePage = lazy(() => import('@/pages/MerchandisePage'))
 // Module 6: 虚拟课题组 (Virtual Lab & Research)
 // 提供不同层级的研究课题，组队开展研究
 // ============================================================
+const ResearchHubPage = lazy(() => import('@/pages/ResearchHubPage'))
 const LabPage = lazy(() => import('@/pages/LabPage'))
 const ApplicationsPage = lazy(() => import('@/pages/ApplicationsPage'))
 
@@ -67,14 +72,21 @@ const ApplicationsPage = lazy(() => import('@/pages/ApplicationsPage'))
 // ============================================================
 function PageLoader() {
   return (
+    <>
+    {/* Fullscreen centered loader 全屏居中加载器 */}
     <div className="min-h-screen flex items-center justify-center bg-slate-900">
+      {/* Animated spinner with text 带文字的动画旋转器 */}
       <div className="animate-pulse flex flex-col items-center gap-4">
+        {/* Spinner 旋转器 */}
         <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
         <span className="text-cyan-400 text-sm">Loading...</span>
       </div>
     </div>
+    </>
   )
-}
+}   // 页面加载器组件
+
+// Main application component 主应用组件
 
 // ============================================================
 // Main App Component
@@ -95,6 +107,7 @@ export function App() {
                 Module 1: 实验内容与历史故事 (Experiments & Chronicles)
                 历史发展 × 经典实验
             ======================================== */}
+            <Route path="/education" element={<EducationHubPage />} />
             <Route path="/chronicles" element={<ChroniclesPage />} />
             <Route path="/course" element={<CoursePage />} />
             <Route path="/learn" element={<LearningHubPage />} />
@@ -103,6 +116,7 @@ export function App() {
                 Module 2: 光学器件和典型光路 (Optical Arsenal)
                 偏振器件 × 光路设计
             ======================================== */}
+            <Route path="/arsenal" element={<ArsenalHubPage />} />
             <Route path="/optical-studio" element={<OpticalDesignPage />} />
             <Route path="/hardware" element={<HardwarePage />} />
 
@@ -110,6 +124,7 @@ export function App() {
                 Module 3: 基本理论和计算模拟 (Theory & Simulation)
                 物理原理 × 交互演示
             ======================================== */}
+            <Route path="/theory" element={<TheoryHubPage />} />
             {/* Interactive physics demos with optional deep linking */}
             <Route path="/demos" element={<DemosPage />} />
             <Route path="/demos/:demoId" element={<DemosPage />} />
@@ -136,6 +151,7 @@ export function App() {
                 Module 5: 偏振造物局 - 成果展示 (Showcase & Gallery)
                 偏振艺术 × 创意作品
             ======================================== */}
+            <Route path="/gallery" element={<GalleryHubPage />} />
             <Route path="/experiments" element={<ExperimentsPage />} />
             <Route path="/experiments/:tabId" element={<ExperimentsPage />} />
             <Route path="/merchandise" element={<MerchandisePage />} />
@@ -144,6 +160,7 @@ export function App() {
                 Module 6: 虚拟课题组 (Virtual Lab & Research)
                 开放研究 × 课题实践
             ======================================== */}
+            <Route path="/research" element={<ResearchHubPage />} />
             <Route path="/lab" element={<LabPage />} />
             <Route path="/applications" element={<ApplicationsPage />} />
 

@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { LightBeamEffect } from '@/components/effects'
+import { LightBeamEffect, type ModuleEffectType } from '@/components/effects'
+import { Footer } from '@/components/shared/Footer'
 import {
   PolarCraftLogo,
   HistoryModuleIcon,
@@ -166,23 +167,33 @@ const GLOW_STYLES: Record<string, string> = {
 function ModuleCard({
   module,
   theme,
-  onHoverChange,
+  onHoverStart,
+  onHoverEnd,
+  cardRef,
 }: {
   module: ModuleConfig
   theme: 'dark' | 'light'
-  onHoverChange?: (isHovered: boolean) => void
+  onHoverStart: () => void
+  onHoverEnd: () => void
+  cardRef: React.RefObject<HTMLAnchorElement | null>
 }) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const IconComponent = module.IconComponent
 
-  const handleHoverChange = (hovered: boolean) => {
-    setIsHovered(hovered)
-    onHoverChange?.(hovered)
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    onHoverStart()
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    onHoverEnd()
   }
 
   return (
     <Link
+      ref={cardRef}
       to={module.path}
       className={`
         group relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-500
@@ -191,8 +202,8 @@ function ModuleCard({
         hover:-translate-y-3 hover:shadow-2xl ${module.colorTheme.shadow}
         overflow-hidden
       `}
-      onMouseEnter={() => handleHoverChange(true)}
-      onMouseLeave={() => handleHoverChange(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Background glow effect on hover */}
       <div
@@ -335,18 +346,21 @@ export function HomePage() {
   const { theme } = useTheme()
   const logoRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isAnyCardHovered, setIsAnyCardHovered] = useState(false)
-  const hoverCountRef = useRef(0)
 
-  // Track hover state across all cards
-  const handleCardHoverChange = (isHovered: boolean) => {
-    if (isHovered) {
-      hoverCountRef.current++
-    } else {
-      hoverCountRef.current = Math.max(0, hoverCountRef.current - 1)
+  // Track which module is hovered for beam effect
+  const [activeModule, setActiveModule] = useState<ModuleEffectType | null>(null)
+  const cardRefs = useRef<Map<string, React.RefObject<HTMLAnchorElement | null>>>(new Map())
+
+  // Get or create a ref for each module card
+  const getCardRef = useCallback((moduleId: string) => {
+    if (!cardRefs.current.has(moduleId)) {
+      cardRefs.current.set(moduleId, { current: null })
     }
-    setIsAnyCardHovered(hoverCountRef.current > 0)
-  }
+    return cardRefs.current.get(moduleId)!
+  }, [])
+
+  // Get the ref for the currently hovered card
+  const activeCardRef = activeModule ? cardRefs.current.get(activeModule) : undefined
 
   return (
     <div
@@ -357,8 +371,13 @@ export function HomePage() {
           : 'bg-gradient-to-br from-slate-50 via-white to-slate-100'
       }`}
     >
-      {/* Light beam effect from logo - only active when hovering module cards */}
-      <LightBeamEffect logoRef={logoRef} containerRef={containerRef} active={isAnyCardHovered} />
+      {/* Light beam effect from logo to hovered module card */}
+      <LightBeamEffect
+        logoRef={logoRef}
+        containerRef={containerRef}
+        activeModule={activeModule}
+        targetRef={activeCardRef}
+      />
 
       {/* Settings */}
       <div className="fixed top-4 right-4 z-50">
@@ -402,7 +421,9 @@ export function HomePage() {
                 key={module.id}
                 module={module}
                 theme={theme}
-                onHoverChange={handleCardHoverChange}
+                cardRef={getCardRef(module.id)}
+                onHoverStart={() => setActiveModule(module.id as ModuleEffectType)}
+                onHoverEnd={() => setActiveModule(null)}
               />
             ))}
           </nav>
@@ -410,13 +431,7 @@ export function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer
-        className={`py-6 text-center text-sm ${
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-        }`}
-      >
-        <p>PolarCraft · Open Wisdom Lab</p>
-      </footer>
+      <Footer />
     </div>
   )
 }

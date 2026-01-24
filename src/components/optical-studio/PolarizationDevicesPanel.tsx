@@ -50,6 +50,7 @@ import {
   type Device,
   type DeviceCategory,
 } from '@/data/optical-devices'
+import MathText from '../MathText'
 
 // ============================================
 // Category Icons Mapping
@@ -244,7 +245,7 @@ function DeviceCard({ device, isExpanded, onToggle }: DeviceCardProps) {
                         {spec.key}
                       </span>
                       <span className={cn('font-medium', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-                        {isZh ? spec.valueZh : spec.valueEn}
+                        {MathText({ text: isZh ? spec.valueZh : spec.valueEn })}
                       </span>
                     </div>
                   ))}
@@ -426,7 +427,7 @@ export function PolarizationDevicesPanel({ onClose, compact: _compact = false }:
   const [selectedCategory, setSelectedCategory] = useState<DeviceCategory | 'all'>('all')
   const [expandedDeviceId, setExpandedDeviceId] = useState<string | null>(null)
 
-  // Filter devices
+  // Filter devices based on category and search query  
   const filteredDevices = useMemo(() => {
     let devices = DEVICES
 

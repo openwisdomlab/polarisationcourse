@@ -433,6 +433,7 @@ export function OpticalCanvas() {
         window.removeEventListener('mouseup', handleMouseUp)
       }
     }
+    return undefined
   }, [isDragging, handleMouseMove, handleMouseUp])
 
   // Recalculate light paths when simulation starts or components change
