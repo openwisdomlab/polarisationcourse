@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { LightBeamEffect, StoryHookEffect, AmbientParticles, DiscoveryTimeline, type ModuleEffectType } from '@/components/effects'
+import { LightBeamEffect, AmbientParticles, DiscoveryTimeline, type ModuleEffectType } from '@/components/effects'
 import { Footer } from '@/components/shared/Footer'
 import {
   PolarCraftLogo,
@@ -560,8 +560,6 @@ export function HomePage() {
           </p>
         </div>
 
-        {/* Story Hook - 1669年历史故事展示 */}
-        <StoryHookEffect theme={theme} className="mt-2" />
       </header>
 
       {/* Module Grid */}
