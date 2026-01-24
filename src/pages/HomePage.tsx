@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
-import { LightBeamEffect, type ModuleEffectType } from '@/components/effects'
+import { LightBeamEffect, StoryHookEffect, AmbientParticles, type ModuleEffectType } from '@/components/effects'
 import { Footer } from '@/components/shared/Footer'
 import {
   PolarCraftLogo,
@@ -14,6 +14,16 @@ import {
   GalleryModuleIcon,
   ResearchModuleIcon,
 } from '@/components/icons'
+
+// 模块颜色映射，用于Logo光束效果
+const MODULE_ACTIVE_COLORS: Record<ModuleEffectType, string> = {
+  history: '#fbbf24',
+  arsenal: '#22d3ee',
+  theory: '#818cf8',
+  games: '#34d399',
+  gallery: '#f472b6',
+  research: '#2dd4bf',
+}
 
 // Icon component type for animated module icons
 type AnimatedIconComponent = React.ComponentType<{
@@ -427,6 +437,9 @@ export function HomePage() {
           : 'bg-gradient-to-br from-slate-50 via-white to-slate-100'
       }`}
     >
+      {/* Ambient floating particles background */}
+      <AmbientParticles theme={theme} count={15} enabled />
+
       {/* Light beam effect from logo to hovered module icons */}
       <LightBeamEffect
         logoRef={logoRef}
@@ -457,9 +470,13 @@ export function HomePage() {
             size={80}
             theme={theme}
             animated
+            rotating={logoHovered || !!activeModule}
+            rotationSpeed={activeModule ? 'medium' : 'slow'}
+            beamActive={!!activeModule}
+            activeColor={activeModule ? MODULE_ACTIVE_COLORS[activeModule] : undefined}
             className={`
               transition-all duration-500
-              ${logoHovered ? 'drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]' : activeModule ? 'drop-shadow-[0_0_10px_rgba(34,211,238,0.25)]' : ''}
+              ${logoHovered ? 'drop-shadow-[0_0_12px_rgba(34,211,238,0.3)]' : activeModule ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.2)]' : ''}
             `}
           />
         </div>
@@ -532,14 +549,8 @@ export function HomePage() {
           </p>
         </div>
 
-        {/* Story Hook */}
-        <div
-          className={`max-w-2xl mx-auto text-sm leading-relaxed italic ${
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-          }`}
-        >
-          <p>{t('home.hero.storyHook')}</p>
-        </div>
+        {/* Story Hook - 1669年历史故事展示 */}
+        <StoryHookEffect theme={theme} className="mt-2" />
       </header>
 
       {/* Module Grid */}
