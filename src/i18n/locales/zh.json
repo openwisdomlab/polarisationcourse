@@ -155,6 +155,26 @@
         "title": "偏振前沿研究",
         "description": "全偏振成像、Mueller矩阵及生物医学应用等前沿研究课题。"
       }
+    },
+    "course": {
+      "psrt": {
+        "title": "A New World Under Polarized Light",
+        "titleZh": "偏振光下的新世界",
+        "description": "Shenzhen 01 Academy Innovation Challenge Camp - A gamified education and scientific practice platform for polarization optics with progressive experiments, historical stories, and frontier research.",
+        "descriptionZh": "深圳零一学院颠覆创新挑战营课程 - 偏振光学的游戏化教育和科学实践平台，包含进阶式课程实验、历史故事和前沿研究。"
+      },
+      "esrt": {
+        "title": "Polarization Experiments Lab",
+        "titleZh": "偏振实验训练营",
+        "description": "Hands-on experimental training with advanced polarization measurement techniques and instruments.",
+        "descriptionZh": "实操型实验训练，掌握先进的偏振测量技术和仪器使用方法。"
+      },
+      "oric": {
+        "title": "Frontier Research in Polarization",
+        "titleZh": "偏振前沿研究",
+        "description": "Advanced research topics in full-polarization imaging, Mueller matrices, and biomedical applications.",
+        "descriptionZh": "全偏振成像、Mueller矩阵及生物医学应用等前沿研究课题。"
+      }
     }
   },
   "course": {

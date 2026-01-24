@@ -24,24 +24,39 @@ interface FooterSection {
 
 const FOOTER_SECTIONS: FooterSection[] = [
   {
-    titleKey: 'Learn',
-    titleZh: '学习',
+    // 6 Core Modules - 六大核心模块
+    titleKey: 'Modules',
+    titleZh: '核心模块',
     links: [
-      { labelKey: 'Demos', labelZh: '交互演示', path: '/demos' },
-      { labelKey: 'Course', labelZh: 'P-SRT课程', path: '/course' },
-      { labelKey: 'Chronicles', labelZh: '历史故事', path: '/chronicles' },
+      { labelKey: 'Chronicles', labelZh: '光的编年史', path: '/chronicles' },
+      { labelKey: 'Optical Studio', labelZh: '光学设计室', path: '/studio' },
+      { labelKey: 'Demo Gallery', labelZh: '偏振演示馆', path: '/demos' },
+      { labelKey: 'PolarQuest', labelZh: '偏振光探秘', path: '/games' },
+      { labelKey: 'Gallery', labelZh: '偏振造物局', path: '/gallery' },
+      { labelKey: 'Research Lab', labelZh: '虚拟课题组', path: '/research' },
     ],
   },
   {
+    // Course System - 课程体系
+    titleKey: 'Course',
+    titleZh: '课程',
+    links: [
+      { labelKey: 'P-SRT Course', labelZh: 'P-SRT课程', path: '/course' },
+      { labelKey: 'Learning Hub', labelZh: '学习中心', path: '/learn' },
+    ],
+  },
+  {
+    // Tools - 工具
     titleKey: 'Tools',
     titleZh: '工具',
     links: [
-      { labelKey: 'Optical Studio', labelZh: '光学设计室', path: '/optical-studio' },
       { labelKey: 'Calculators', labelZh: '计算工坊', path: '/calc' },
-      { labelKey: 'Hardware', labelZh: '硬件器件', path: '/hardware' },
+      { labelKey: 'Hardware Guide', labelZh: '硬件器件', path: '/hardware' },
+      { labelKey: 'Merchandise', labelZh: '文创商品', path: '/merchandise' },
     ],
   },
   {
+    // Games - 游戏快捷入口
     titleKey: 'Games',
     titleZh: '游戏',
     links: [
@@ -52,15 +67,7 @@ const FOOTER_SECTIONS: FooterSection[] = [
     ],
   },
   {
-    titleKey: 'Community',
-    titleZh: '社区',
-    links: [
-      { labelKey: 'Gallery', labelZh: '作品展示', path: '/experiments' },
-      { labelKey: 'Lab', labelZh: '虚拟实验室', path: '/lab' },
-      { labelKey: 'Applications', labelZh: '应用案例', path: '/applications' },
-    ],
-  },
-  {
+    // About - 关于
     titleKey: 'About',
     titleZh: '关于',
     links: [

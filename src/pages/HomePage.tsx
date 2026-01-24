@@ -14,6 +14,7 @@ import {
   GalleryModuleIcon,
   ResearchModuleIcon,
 } from '@/components/icons'
+import { BookOpen, GraduationCap, FlaskConical, ChevronRight } from 'lucide-react'
 
 // Icon component type for animated module icons
 type AnimatedIconComponent = React.ComponentType<{
@@ -46,13 +47,14 @@ interface ModuleConfig {
 
 const MODULES: ModuleConfig[] = [
   {
-    // 1. 实验内容与历史故事 (Experiments & Chronicles)
+    // 1. 光的编年史 (Chronicles of Light)
+    // 历史故事 × 经典实验
     id: 'history',
     titleKey: 'home.modules.history.title',
     titleZhKey: 'home.modules.history.titleZh',
     subtitleKey: 'home.modules.history.subtitle',
     descriptionKey: 'home.modules.history.description',
-    path: '/education',
+    path: '/chronicles',  // Direct to chronicles page
     IconComponent: HistoryModuleIcon,
     colorTheme: {
       bg: 'bg-amber-50 dark:bg-amber-950/30',
@@ -66,13 +68,14 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 2. 光学器件和典型光路 (Optical Arsenal)
+    // 2. 光学设计室 (Optical Design Studio)
+    // 偏振器件 × 光路设计
     id: 'arsenal',
     titleKey: 'home.modules.arsenal.title',
     titleZhKey: 'home.modules.arsenal.titleZh',
     subtitleKey: 'home.modules.arsenal.subtitle',
     descriptionKey: 'home.modules.arsenal.description',
-    path: '/arsenal',
+    path: '/studio',  // Direct to optical studio
     IconComponent: ArsenalModuleIcon,
     colorTheme: {
       bg: 'bg-cyan-50 dark:bg-cyan-950/30',
@@ -86,13 +89,14 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 3. 基本理论和计算模拟 (Theory & Simulation)
+    // 3. 偏振演示馆 (Demo Gallery)
+    // 基础理论 × 计算模拟
     id: 'theory',
     titleKey: 'home.modules.theory.title',
     titleZhKey: 'home.modules.theory.titleZh',
     subtitleKey: 'home.modules.theory.subtitle',
     descriptionKey: 'home.modules.theory.description',
-    path: '/theory',
+    path: '/demos',  // Direct to demos page
     IconComponent: TheoryModuleIcon,
     colorTheme: {
       bg: 'bg-indigo-50 dark:bg-indigo-950/30',
@@ -106,13 +110,14 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 4. 课程内容的游戏化改造 (Gamification)
+    // 4. 偏振光探秘 (PolarQuest - Games)
+    // 解谜游戏 × 偏振策略
     id: 'games',
     titleKey: 'home.modules.games.title',
     titleZhKey: 'home.modules.games.titleZh',
     subtitleKey: 'home.modules.games.subtitle',
     descriptionKey: 'home.modules.games.description',
-    path: '/games',
+    path: '/games',  // Games hub
     IconComponent: GamesModuleIcon,
     colorTheme: {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
@@ -126,13 +131,14 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 5. 成果展示 (Showcase & Gallery)
+    // 5. 偏振造物局 (Creative Gallery)
+    // 偏振艺术 × 文创作品
     id: 'gallery',
     titleKey: 'home.modules.gallery.title',
     titleZhKey: 'home.modules.gallery.titleZh',
     subtitleKey: 'home.modules.gallery.subtitle',
     descriptionKey: 'home.modules.gallery.description',
-    path: '/gallery',
+    path: '/gallery',  // Direct to gallery/experiments
     IconComponent: GalleryModuleIcon,
     colorTheme: {
       bg: 'bg-pink-50 dark:bg-pink-950/30',
@@ -146,13 +152,14 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 6. 虚拟课题组 (Virtual Lab & Research)
+    // 6. 虚拟课题组 (Virtual Research Lab)
+    // 开放研究 × 课题实践
     id: 'research',
     titleKey: 'home.modules.research.title',
     titleZhKey: 'home.modules.research.titleZh',
     subtitleKey: 'home.modules.research.subtitle',
     descriptionKey: 'home.modules.research.description',
-    path: '/research',
+    path: '/research',  // Direct to research lab
     IconComponent: ResearchModuleIcon,
     colorTheme: {
       bg: 'bg-teal-50 dark:bg-teal-950/30',
@@ -366,6 +373,284 @@ function ModuleCard({
   )
 }
 
+// Course section configuration
+interface CourseItem {
+  id: string
+  titleKey: string
+  titleZhKey: string
+  descriptionKey: string
+  descriptionZhKey: string
+  path: string
+  icon: React.ComponentType<{ className?: string }>
+  status: 'active' | 'coming-soon'
+  badge?: string
+  badgeZh?: string
+  units?: number
+  demos?: number
+}
+
+const COURSES: CourseItem[] = [
+  {
+    id: 'psrt',
+    titleKey: 'home.course.psrt.title',
+    titleZhKey: 'home.course.psrt.titleZh',
+    descriptionKey: 'home.course.psrt.description',
+    descriptionZhKey: 'home.course.psrt.descriptionZh',
+    path: '/course',
+    icon: GraduationCap,
+    status: 'active',
+    badge: 'P-SRT',
+    badgeZh: 'P-SRT',
+    units: 5,
+    demos: 17,
+  },
+  {
+    id: 'esrt',
+    titleKey: 'home.course.esrt.title',
+    titleZhKey: 'home.course.esrt.titleZh',
+    descriptionKey: 'home.course.esrt.description',
+    descriptionZhKey: 'home.course.esrt.descriptionZh',
+    path: '/learn',
+    icon: FlaskConical,
+    status: 'coming-soon',
+    badge: 'E-SRT',
+    badgeZh: 'E-SRT',
+  },
+  {
+    id: 'oric',
+    titleKey: 'home.course.oric.title',
+    titleZhKey: 'home.course.oric.titleZh',
+    descriptionKey: 'home.course.oric.description',
+    descriptionZhKey: 'home.course.oric.descriptionZh',
+    path: '/research',
+    icon: BookOpen,
+    status: 'coming-soon',
+    badge: 'ORIC',
+    badgeZh: 'ORIC',
+  },
+]
+
+// Course card component
+function CourseCard({
+  course,
+  featured = false,
+}: {
+  course: CourseItem
+  featured?: boolean
+}) {
+  const { t, i18n } = useTranslation()
+  const { theme } = useTheme()
+  const isZh = i18n.language === 'zh'
+  const Icon = course.icon
+  const isComingSoon = course.status === 'coming-soon'
+
+  const cardContent = (
+    <div
+      className={`
+        relative overflow-hidden rounded-2xl border-2 transition-all duration-300
+        ${featured ? 'p-6 lg:p-8' : 'p-5'}
+        ${
+          isComingSoon
+            ? `border-dashed cursor-not-allowed opacity-60 ${
+                theme === 'dark'
+                  ? 'border-slate-700 bg-slate-800/30'
+                  : 'border-gray-300 bg-gray-50'
+              }`
+            : `hover:-translate-y-1 hover:shadow-xl cursor-pointer ${
+                theme === 'dark'
+                  ? 'border-blue-500/30 bg-gradient-to-br from-blue-950/50 to-purple-950/50 hover:border-blue-500/60'
+                  : 'border-blue-300 bg-gradient-to-br from-blue-50 to-purple-50 hover:border-blue-400 hover:shadow-blue-500/10'
+              }`
+        }
+      `}
+    >
+      {/* Background decoration */}
+      {!isComingSoon && (
+        <div className="absolute top-0 right-0 w-40 h-40 -mr-20 -mt-20 rounded-full bg-blue-500/10 blur-2xl" />
+      )}
+
+      {/* Badge */}
+      {course.badge && (
+        <div
+          className={`
+            absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold
+            ${
+              isComingSoon
+                ? theme === 'dark'
+                  ? 'bg-gray-700 text-gray-400'
+                  : 'bg-gray-200 text-gray-500'
+                : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
+            }
+          `}
+        >
+          {isZh ? course.badgeZh : course.badge}
+        </div>
+      )}
+
+      {/* Icon */}
+      <div
+        className={`
+          relative w-12 h-12 rounded-xl flex items-center justify-center mb-4
+          ${featured && 'w-14 h-14'}
+          ${
+            isComingSoon
+              ? theme === 'dark'
+                ? 'bg-slate-700'
+                : 'bg-gray-200'
+              : 'bg-gradient-to-br from-blue-500 to-purple-600'
+          }
+        `}
+      >
+        <Icon
+          className={`
+            ${featured ? 'w-7 h-7' : 'w-6 h-6'}
+            ${
+              isComingSoon
+                ? theme === 'dark'
+                  ? 'text-gray-500'
+                  : 'text-gray-400'
+                : 'text-white'
+            }
+          `}
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative">
+        <div className="flex items-center gap-2 mb-2">
+          <h3
+            className={`
+              font-bold
+              ${featured ? 'text-xl' : 'text-lg'}
+              ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
+            `}
+          >
+            {isZh ? t(course.titleZhKey) : t(course.titleKey)}
+          </h3>
+          {isComingSoon && (
+            <span
+              className={`
+                text-[10px] px-2 py-0.5 rounded-full
+                ${
+                  theme === 'dark'
+                    ? 'bg-gray-700 text-gray-400'
+                    : 'bg-gray-200 text-gray-500'
+                }
+              `}
+            >
+              {isZh ? '待更新' : 'Coming Soon'}
+            </span>
+          )}
+        </div>
+
+        <p
+          className={`
+            text-sm leading-relaxed mb-3
+            ${featured && 'text-base'}
+            ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}
+          `}
+        >
+          {isZh ? t(course.descriptionZhKey) : t(course.descriptionKey)}
+        </p>
+
+        {/* Stats for active courses */}
+        {!isComingSoon && course.units && (
+          <div className="flex items-center gap-4 mb-3">
+            <span
+              className={`text-xs ${
+                theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+              }`}
+            >
+              {course.units} {isZh ? '单元' : 'course.units.label'}
+            </span>
+            {course.demos && (
+              <span
+                className={`text-xs ${
+                  theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
+                }`}
+              >
+                {course.demos} {isZh ? '演示' : 'demos'}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Enter button */}
+        {!isComingSoon && (
+          <div
+            className={`
+              flex items-center gap-2 font-medium
+              ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}
+            `}
+          >
+            <span className="text-sm">{isZh ? '查看全部' : 'View All'}</span>
+            <ChevronRight className="w-4 h-4" />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  if (isComingSoon) {
+    return cardContent
+  }
+
+  return <Link to={course.path}>{cardContent}</Link>
+}
+
+// Course section component
+function CourseSection() {
+  const { i18n } = useTranslation()
+  const { theme } = useTheme()
+  const isZh = i18n.language === 'zh'
+
+  return (
+    <section className="px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto">
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <h2
+              className={`text-2xl font-bold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              {isZh ? '课程体系' : 'Course System'}
+            </h2>
+            <span
+              className={`px-3 py-1 text-xs font-medium rounded-full ${
+                theme === 'dark'
+                  ? 'bg-blue-500/20 text-blue-300'
+                  : 'bg-blue-100 text-blue-700'
+              }`}
+            >
+              P-SRT
+            </span>
+          </div>
+          <Link
+            to="/course"
+            className={`flex items-center gap-1 text-sm font-medium ${
+              theme === 'dark'
+                ? 'text-blue-400 hover:text-blue-300'
+                : 'text-blue-600 hover:text-blue-700'
+            }`}
+          >
+            {isZh ? '查看全部' : 'View All'}
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Course cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {COURSES.map((course, index) => (
+            <CourseCard key={course.id} course={course} featured={index === 0} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export function HomePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
@@ -500,7 +785,7 @@ export function HomePage() {
       </header>
 
       {/* Module Grid */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-16">
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-8">
         <div className="max-w-6xl mx-auto">
           <nav className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {MODULES.map((module) => (
@@ -516,6 +801,9 @@ export function HomePage() {
           </nav>
         </div>
       </main>
+
+      {/* Course Section */}
+      <CourseSection />
 
       {/* Footer */}
       <Footer />
