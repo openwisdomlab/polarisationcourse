@@ -6,7 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { LightBeamEffect, AmbientParticles, type ModuleEffectType } from '@/components/effects'
 import { Footer } from '@/components/shared/Footer'
 import {
-  CombinedLogo,
+  PolarCraftLogo,
   HistoryModuleIcon,
   ArsenalModuleIcon,
   TheoryModuleIcon,
@@ -458,12 +458,14 @@ export function HomePage() {
             onMouseEnter={() => setLogoHovered(true)}
             onMouseLeave={() => setLogoHovered(false)}
           >
-            <CombinedLogo
-              height={56}
+            <PolarCraftLogo
+              size={80}
               theme={theme}
+              animated
+              beamActive={logoHovered || activeModule !== null}
               className={`
                 transition-all duration-500
-                ${logoHovered ? 'drop-shadow-[0_0_12px_rgba(37,99,235,0.3)]' : activeModule ? 'drop-shadow-[0_0_8px_rgba(37,99,235,0.2)]' : ''}
+                ${logoHovered ? 'drop-shadow-[0_0_12px_rgba(34,211,238,0.3)]' : activeModule ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.2)]' : ''}
               `}
             />
           </div>
