@@ -7,7 +7,6 @@ import { LightBeamEffect, type ModuleEffectType } from '@/components/effects'
 import { Footer } from '@/components/shared/Footer'
 import {
   PolarCraftLogo,
-  OpenWisdomLabLogo,
   HistoryModuleIcon,
   ArsenalModuleIcon,
   TheoryModuleIcon,
@@ -15,7 +14,7 @@ import {
   GalleryModuleIcon,
   ResearchModuleIcon,
 } from '@/components/icons'
-import { BookOpen, GraduationCap, FlaskConical, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 // Icon component type for animated module icons
 type AnimatedIconComponent = React.ComponentType<{
@@ -213,24 +212,25 @@ const GLOW_STYLES: Record<string, string> = {
   teal: 'rgba(45, 212, 191, 0.4)',
 }
 
-// Module Card Component with hover interactions and quick links
+// Module Card Component with redesigned layout - icon left, title right, subtitle below
 function ModuleCard({
   module,
   theme,
   onHoverStart,
   onHoverEnd,
   cardRef,
+  iconRef,
 }: {
   module: ModuleConfig
   theme: 'dark' | 'light'
   onHoverStart: () => void
   onHoverEnd: () => void
   cardRef: React.RefObject<HTMLDivElement | null>
+  iconRef: React.RefObject<HTMLDivElement | null>
 }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const IconComponent = module.IconComponent
-  const isZh = i18n.language === 'zh'
 
   const handleMouseEnter = () => {
     setIsHovered(true)
@@ -283,58 +283,64 @@ function ModuleCard({
         }}
       />
 
-      {/* Animated Icon */}
-      <div
-        className={`
-          relative w-16 h-16 rounded-xl flex items-center justify-center mb-4
-          ${module.colorTheme.iconBg}
-          transition-all duration-500
-          ${isHovered ? 'scale-110 rotate-3' : 'scale-100 rotate-0'}
-        `}
-      >
-        <IconComponent
-          size={56}
-          isHovered={isHovered}
-          theme={theme}
-        />
-
-        {/* Pulse ring effect on hover */}
+      {/* Header: Icon + Title side by side */}
+      <div className="flex items-start gap-4 mb-3">
+        {/* Animated Icon with ref for light beam targeting */}
         <div
+          ref={iconRef}
           className={`
-            absolute inset-0 rounded-xl border-2
-            ${module.colorTheme.border}
-            transition-all duration-500 pointer-events-none
-            ${isHovered ? 'scale-125 opacity-0' : 'scale-100 opacity-0'}
+            relative w-16 h-16 rounded-xl flex items-center justify-center shrink-0
+            ${module.colorTheme.iconBg}
+            transition-all duration-500
+            ${isHovered ? 'scale-110 rotate-3' : 'scale-100 rotate-0'}
           `}
-        />
+        >
+          <IconComponent
+            size={56}
+            isHovered={isHovered}
+            theme={theme}
+          />
+
+          {/* Pulse ring effect on hover */}
+          <div
+            className={`
+              absolute inset-0 rounded-xl border-2
+              ${module.colorTheme.border}
+              transition-all duration-500 pointer-events-none
+              ${isHovered ? 'scale-125 opacity-0' : 'scale-100 opacity-0'}
+            `}
+          />
+        </div>
+
+        {/* Title block - right of icon */}
+        <div className="flex-1 min-w-0 pt-1">
+          {/* Main Title (e.g., "历史与实验") */}
+          <h3
+            className={`
+              text-xl font-bold leading-tight mb-1
+              transition-all duration-300
+              ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
+              ${isHovered ? 'translate-x-1' : 'translate-x-0'}
+            `}
+          >
+            {subtitle}
+          </h3>
+          {/* Subtitle (e.g., "追溯" / "Trace") */}
+          <div className="flex items-center gap-2">
+            <span className={`text-sm font-medium ${module.colorTheme.iconColor}`}>
+              {titleZh || titleEn}
+            </span>
+            {titleZh && (
+              <>
+                <span className={theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}>·</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {titleEn}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-
-      {/* Title - Format: "Trace(痕量) · 追溯" or "Conquer(征服) · 征服" */}
-      <h3
-        className={`
-          text-lg font-bold mb-1
-          transition-all duration-300
-          ${isHovered ? 'translate-x-1' : 'translate-x-0'}
-        `}
-      >
-        <span className={module.colorTheme.iconColor}>{titleEn}</span>
-        {isZh && titleZh && (
-          <>
-            <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}> · </span>
-            <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>{titleZh}</span>
-          </>
-        )}
-      </h3>
-
-      {/* Subtitle */}
-      <span
-        className={`
-          text-xs font-medium mb-3 block
-          ${module.colorTheme.tagText}
-        `}
-      >
-        {subtitle}
-      </span>
 
       {/* Description */}
       <p
@@ -404,297 +410,18 @@ function ModuleCard({
   )
 }
 
-// Course section configuration
-interface CourseItem {
-  id: string
-  titleKey: string
-  titleZhKey: string
-  descriptionKey: string
-  descriptionZhKey: string
-  path: string
-  icon: React.ComponentType<{ className?: string }>
-  status: 'active' | 'coming-soon'
-  badge?: string
-  badgeZh?: string
-  units?: number
-  demos?: number
-}
-
-const COURSES: CourseItem[] = [
-  {
-    id: 'psrt',
-    titleKey: 'home.course.psrt.title',
-    titleZhKey: 'home.course.psrt.titleZh',
-    descriptionKey: 'home.course.psrt.description',
-    descriptionZhKey: 'home.course.psrt.descriptionZh',
-    path: '/course',
-    icon: GraduationCap,
-    status: 'active',
-    badge: 'P-SRT',
-    badgeZh: 'P-SRT',
-    units: 5,
-    demos: 17,
-  },
-  {
-    id: 'esrt',
-    titleKey: 'home.course.esrt.title',
-    titleZhKey: 'home.course.esrt.titleZh',
-    descriptionKey: 'home.course.esrt.description',
-    descriptionZhKey: 'home.course.esrt.descriptionZh',
-    path: '/learn',
-    icon: FlaskConical,
-    status: 'coming-soon',
-    badge: 'E-SRT',
-    badgeZh: 'E-SRT',
-  },
-  {
-    id: 'oric',
-    titleKey: 'home.course.oric.title',
-    titleZhKey: 'home.course.oric.titleZh',
-    descriptionKey: 'home.course.oric.description',
-    descriptionZhKey: 'home.course.oric.descriptionZh',
-    path: '/research',
-    icon: BookOpen,
-    status: 'coming-soon',
-    badge: 'ORIC',
-    badgeZh: 'ORIC',
-  },
-]
-
-// Course card component
-function CourseCard({
-  course,
-  featured = false,
-}: {
-  course: CourseItem
-  featured?: boolean
-}) {
-  const { t, i18n } = useTranslation()
-  const { theme } = useTheme()
-  const isZh = i18n.language === 'zh'
-  const Icon = course.icon
-  const isComingSoon = course.status === 'coming-soon'
-
-  const cardContent = (
-    <div
-      className={`
-        relative overflow-hidden rounded-2xl border-2 transition-all duration-300
-        ${featured ? 'p-6 lg:p-8' : 'p-5'}
-        ${
-          isComingSoon
-            ? `border-dashed cursor-not-allowed opacity-60 ${
-                theme === 'dark'
-                  ? 'border-slate-700 bg-slate-800/30'
-                  : 'border-gray-300 bg-gray-50'
-              }`
-            : `hover:-translate-y-1 hover:shadow-xl cursor-pointer ${
-                theme === 'dark'
-                  ? 'border-blue-500/30 bg-gradient-to-br from-blue-950/50 to-purple-950/50 hover:border-blue-500/60'
-                  : 'border-blue-300 bg-gradient-to-br from-blue-50 to-purple-50 hover:border-blue-400 hover:shadow-blue-500/10'
-              }`
-        }
-      `}
-    >
-      {/* Background decoration */}
-      {!isComingSoon && (
-        <div className="absolute top-0 right-0 w-40 h-40 -mr-20 -mt-20 rounded-full bg-blue-500/10 blur-2xl" />
-      )}
-
-      {/* Badge */}
-      {course.badge && (
-        <div
-          className={`
-            absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold
-            ${
-              isComingSoon
-                ? theme === 'dark'
-                  ? 'bg-gray-700 text-gray-400'
-                  : 'bg-gray-200 text-gray-500'
-                : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
-            }
-          `}
-        >
-          {isZh ? course.badgeZh : course.badge}
-        </div>
-      )}
-
-      {/* Icon */}
-      <div
-        className={`
-          relative w-12 h-12 rounded-xl flex items-center justify-center mb-4
-          ${featured && 'w-14 h-14'}
-          ${
-            isComingSoon
-              ? theme === 'dark'
-                ? 'bg-slate-700'
-                : 'bg-gray-200'
-              : 'bg-gradient-to-br from-blue-500 to-purple-600'
-          }
-        `}
-      >
-        <Icon
-          className={`
-            ${featured ? 'w-7 h-7' : 'w-6 h-6'}
-            ${
-              isComingSoon
-                ? theme === 'dark'
-                  ? 'text-gray-500'
-                  : 'text-gray-400'
-                : 'text-white'
-            }
-          `}
-        />
-      </div>
-
-      {/* Content */}
-      <div className="relative">
-        <div className="flex items-center gap-2 mb-2">
-          <h3
-            className={`
-              font-bold
-              ${featured ? 'text-xl' : 'text-lg'}
-              ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
-            `}
-          >
-            {isZh ? t(course.titleZhKey) : t(course.titleKey)}
-          </h3>
-          {isComingSoon && (
-            <span
-              className={`
-                text-[10px] px-2 py-0.5 rounded-full
-                ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 text-gray-400'
-                    : 'bg-gray-200 text-gray-500'
-                }
-              `}
-            >
-              {isZh ? '待更新' : 'Coming Soon'}
-            </span>
-          )}
-        </div>
-
-        <p
-          className={`
-            text-sm leading-relaxed mb-3
-            ${featured && 'text-base'}
-            ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}
-          `}
-        >
-          {isZh ? t(course.descriptionZhKey) : t(course.descriptionKey)}
-        </p>
-
-        {/* Stats for active courses */}
-        {!isComingSoon && course.units && (
-          <div className="flex items-center gap-4 mb-3">
-            <span
-              className={`text-xs ${
-                theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-              }`}
-            >
-              {course.units} {isZh ? '单元' : 'course.units.label'}
-            </span>
-            {course.demos && (
-              <span
-                className={`text-xs ${
-                  theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
-                }`}
-              >
-                {course.demos} {isZh ? '演示' : 'demos'}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Enter button */}
-        {!isComingSoon && (
-          <div
-            className={`
-              flex items-center gap-2 font-medium
-              ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}
-            `}
-          >
-            <span className="text-sm">{isZh ? '查看全部' : 'View All'}</span>
-            <ChevronRight className="w-4 h-4" />
-          </div>
-        )}
-      </div>
-    </div>
-  )
-
-  if (isComingSoon) {
-    return cardContent
-  }
-
-  return <Link to={course.path}>{cardContent}</Link>
-}
-
-// Course section component
-function CourseSection() {
-  const { i18n } = useTranslation()
-  const { theme } = useTheme()
-  const isZh = i18n.language === 'zh'
-
-  return (
-    <section className="px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <h2
-              className={`text-2xl font-bold ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              {isZh ? '课程体系' : 'Course System'}
-            </h2>
-            <span
-              className={`px-3 py-1 text-xs font-medium rounded-full ${
-                theme === 'dark'
-                  ? 'bg-blue-500/20 text-blue-300'
-                  : 'bg-blue-100 text-blue-700'
-              }`}
-            >
-              P-SRT
-            </span>
-          </div>
-          <Link
-            to="/course"
-            className={`flex items-center gap-1 text-sm font-medium ${
-              theme === 'dark'
-                ? 'text-blue-400 hover:text-blue-300'
-                : 'text-blue-600 hover:text-blue-700'
-            }`}
-          >
-            {isZh ? '查看全部' : 'View All'}
-            <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Course cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {COURSES.map((course, index) => (
-            <CourseCard key={course.id} course={course} featured={index === 0} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 export function HomePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const logoLeftRef = useRef<HTMLDivElement>(null)
-  const logoRightRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Track which module is hovered for beam effect
   const [activeModule, setActiveModule] = useState<ModuleEffectType | null>(null)
-  // Track logo hover states for interactive effects
-  const [leftLogoHovered, setLeftLogoHovered] = useState(false)
-  const [rightLogoHovered, setRightLogoHovered] = useState(false)
+  // Track logo hover state for interactive effects
+  const [logoHovered, setLogoHovered] = useState(false)
   const cardRefs = useRef<Map<string, React.RefObject<HTMLDivElement | null>>>(new Map())
+  const iconRefs = useRef<Map<string, React.RefObject<HTMLDivElement | null>>>(new Map())
 
   // Get or create a ref for each module card
   const getCardRef = useCallback((moduleId: string) => {
@@ -704,8 +431,16 @@ export function HomePage() {
     return cardRefs.current.get(moduleId)!
   }, [])
 
-  // Get the ref for the currently hovered card
-  const activeCardRef = activeModule ? cardRefs.current.get(activeModule) : undefined
+  // Get or create a ref for each module icon (for light beam targeting)
+  const getIconRef = useCallback((moduleId: string) => {
+    if (!iconRefs.current.has(moduleId)) {
+      iconRefs.current.set(moduleId, { current: null })
+    }
+    return iconRefs.current.get(moduleId)!
+  }, [])
+
+  // Get the ref for the currently hovered module's icon
+  const activeIconRef = activeModule ? iconRefs.current.get(activeModule) : undefined
 
   return (
     <div
@@ -716,15 +451,13 @@ export function HomePage() {
           : 'bg-gradient-to-br from-slate-50 via-white to-slate-100'
       }`}
     >
-      {/* Light beam effect between two logos */}
+      {/* Light beam effect from logo to hovered module icons */}
       <LightBeamEffect
-        logoRef={logoLeftRef}
-        logoRightRef={logoRightRef}
+        logoRef={logoRef}
         containerRef={containerRef}
         activeModule={activeModule}
-        targetRef={activeCardRef}
-        leftLogoActive={leftLogoHovered}
-        rightLogoActive={rightLogoHovered}
+        targetRef={activeIconRef}
+        leftLogoActive={logoHovered || activeModule !== null}
       />
 
       {/* Settings */}
@@ -734,73 +467,25 @@ export function HomePage() {
 
       {/* Hero Section */}
       <header className="flex flex-col items-center justify-center pt-16 pb-12 px-4 text-center">
-        {/* Two Logos with light beam between them */}
-        <div className="flex items-center justify-center gap-8 sm:gap-16 mb-6">
-          {/* Left Logo - PolarCraft */}
-          <div
-            ref={logoLeftRef}
+        {/* Main Logo - PolarCraft */}
+        <div
+          ref={logoRef}
+          className={`
+            mb-6 transition-all duration-500 cursor-pointer
+            ${logoHovered || activeModule ? 'scale-110' : 'scale-100'}
+          `}
+          onMouseEnter={() => setLogoHovered(true)}
+          onMouseLeave={() => setLogoHovered(false)}
+        >
+          <PolarCraftLogo
+            size={80}
+            theme={theme}
+            animated
             className={`
-              transition-all duration-500 cursor-pointer
-              ${leftLogoHovered ? 'scale-110' : 'scale-100'}
+              transition-all duration-300
+              ${logoHovered || activeModule ? 'drop-shadow-[0_0_25px_rgba(34,211,238,0.6)]' : ''}
             `}
-            onMouseEnter={() => setLeftLogoHovered(true)}
-            onMouseLeave={() => setLeftLogoHovered(false)}
-          >
-            <PolarCraftLogo
-              size={70}
-              theme={theme}
-              animated
-              className={`
-                transition-all duration-300
-                ${leftLogoHovered ? 'drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]' : ''}
-              `}
-            />
-          </div>
-
-          {/* Visual beam connector indicator */}
-          <div
-            className={`
-              hidden sm:flex items-center gap-1
-              transition-all duration-500
-              ${leftLogoHovered || rightLogoHovered ? 'opacity-100' : 'opacity-30'}
-            `}
-          >
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className={`
-                  w-2 h-2 rounded-full
-                  transition-all duration-300
-                  ${theme === 'dark' ? 'bg-cyan-400' : 'bg-cyan-500'}
-                `}
-                style={{
-                  opacity: 0.3 + i * 0.15,
-                  animationDelay: `${i * 100}ms`,
-                  transform: leftLogoHovered || rightLogoHovered ? 'scale(1.2)' : 'scale(1)',
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Right Logo - Open Wisdom Lab */}
-          <div
-            ref={logoRightRef}
-            className={`
-              transition-all duration-500 cursor-pointer
-              ${rightLogoHovered ? 'scale-110' : 'scale-100'}
-            `}
-            onMouseEnter={() => setRightLogoHovered(true)}
-            onMouseLeave={() => setRightLogoHovered(false)}
-          >
-            <OpenWisdomLabLogo
-              height={55}
-              theme={theme}
-              className={`
-                transition-all duration-300
-                ${rightLogoHovered ? 'drop-shadow-[0_0_20px_rgba(233,30,140,0.6)]' : ''}
-              `}
-            />
-          </div>
+          />
         </div>
 
         {/* Badges */}
@@ -896,6 +581,7 @@ export function HomePage() {
                 module={module}
                 theme={theme}
                 cardRef={getCardRef(module.id)}
+                iconRef={getIconRef(module.id)}
                 onHoverStart={() => setActiveModule(module.id as ModuleEffectType)}
                 onHoverEnd={() => setActiveModule(null)}
               />
@@ -903,9 +589,6 @@ export function HomePage() {
           </nav>
         </div>
       </main>
-
-      {/* Course Section */}
-      <CourseSection />
 
       {/* Footer */}
       <Footer />

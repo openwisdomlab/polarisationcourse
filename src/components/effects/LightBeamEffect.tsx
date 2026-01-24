@@ -355,7 +355,7 @@ export function LightBeamEffect({
           <stop offset="100%" stopColor="#E91E8C" stopOpacity="0.6" />
         </linearGradient>
 
-        {/* Module beam gradient */}
+        {/* Module beam gradient - more visible with stronger colors */}
         <linearGradient
           id="module-beam-gradient"
           x1={logoPos.x}
@@ -364,9 +364,10 @@ export function LightBeamEffect({
           y2={targetPos.y}
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor={colors.primary} stopOpacity="0.3" />
-          <stop offset="50%" stopColor={colors.primary} stopOpacity="0.15" />
-          <stop offset="100%" stopColor={colors.primary} stopOpacity="0" />
+          <stop offset="0%" stopColor={colors.primary} stopOpacity="0.9" />
+          <stop offset="40%" stopColor={colors.primary} stopOpacity="0.6" />
+          <stop offset="80%" stopColor={colors.secondary} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={colors.secondary} stopOpacity="0.2" />
         </linearGradient>
       </defs>
 
@@ -438,15 +439,27 @@ export function LightBeamEffect({
       {/* Module beam - shows when hovering a module card */}
       {beamOpacity > 0 && activeModule && (
         <g>
-          {/* Main beam line - very subtle */}
+          {/* Main beam line - thicker and more visible */}
           <line
             x1={logoPos.x}
             y1={logoPos.y}
             x2={targetPos.x}
             y2={targetPos.y}
             stroke="url(#module-beam-gradient)"
-            strokeWidth={theme === 'dark' ? 2 : 1.5}
-            strokeOpacity={beamOpacity * 0.4}
+            strokeWidth={theme === 'dark' ? 6 : 5}
+            strokeOpacity={beamOpacity * 0.6}
+            filter="url(#module-beam-glow)"
+            strokeLinecap="round"
+          />
+          {/* Inner bright core */}
+          <line
+            x1={logoPos.x}
+            y1={logoPos.y}
+            x2={targetPos.x}
+            y2={targetPos.y}
+            stroke={colors.primary}
+            strokeWidth={theme === 'dark' ? 3 : 2.5}
+            strokeOpacity={beamOpacity * 0.8}
             filter="url(#module-beam-glow)"
             strokeLinecap="round"
           />
@@ -463,13 +476,23 @@ export function LightBeamEffect({
             angle,
           })}
 
-          {/* Source glow at logo - subtle */}
+          {/* Source glow at logo - more prominent */}
           <circle
             cx={logoPos.x}
             cy={logoPos.y}
-            r={12}
+            r={18}
             fill={colors.primary}
-            opacity={beamOpacity * 0.15}
+            opacity={beamOpacity * 0.4}
+            filter="url(#module-beam-glow)"
+          />
+
+          {/* Target glow at module icon */}
+          <circle
+            cx={targetPos.x}
+            cy={targetPos.y}
+            r={24}
+            fill={colors.secondary}
+            opacity={beamOpacity * 0.35}
             filter="url(#module-beam-glow)"
           />
         </g>
@@ -478,27 +501,27 @@ export function LightBeamEffect({
   )
 }
 
-// Particle configuration for each module type
+// Particle configuration for each module type - larger and more visible
 function getParticleConfig(moduleType: ModuleEffectType) {
   switch (moduleType) {
     case 'history':
       // Warm, slow flowing particles like candlelight
-      return { maxParticles: 8, interval: 200, spread: 20, minSize: 2, maxSize: 5, speed: 0.8 }
+      return { maxParticles: 12, interval: 150, spread: 25, minSize: 4, maxSize: 8, speed: 0.8 }
     case 'arsenal':
       // Fast, precise laser particles
-      return { maxParticles: 10, interval: 100, spread: 6, minSize: 1.5, maxSize: 3, speed: 1.4 }
+      return { maxParticles: 15, interval: 80, spread: 10, minSize: 3, maxSize: 6, speed: 1.4 }
     case 'theory':
       // Wave-like oscillating particles
-      return { maxParticles: 12, interval: 80, spread: 30, minSize: 2, maxSize: 4, speed: 1.0 }
+      return { maxParticles: 15, interval: 60, spread: 35, minSize: 4, maxSize: 7, speed: 1.0 }
     case 'games':
       // Playful bouncing particles
-      return { maxParticles: 15, interval: 60, spread: 40, minSize: 2, maxSize: 6, speed: 1.2 }
+      return { maxParticles: 18, interval: 50, spread: 45, minSize: 4, maxSize: 9, speed: 1.2 }
     case 'gallery':
       // Colorful sparkle particles
-      return { maxParticles: 10, interval: 150, spread: 25, minSize: 2, maxSize: 5, speed: 0.9 }
+      return { maxParticles: 14, interval: 100, spread: 30, minSize: 4, maxSize: 8, speed: 0.9 }
     case 'research':
       // Scientific measurement particles
-      return { maxParticles: 8, interval: 120, spread: 10, minSize: 1.5, maxSize: 3, speed: 1.1 }
+      return { maxParticles: 12, interval: 90, spread: 15, minSize: 3, maxSize: 6, speed: 1.1 }
   }
 }
 
@@ -539,14 +562,14 @@ function renderModuleEffect(
             const x = logoPos.x + dx * progress + perpX * particle.offset * (1 - progress * 0.5)
             const y = logoPos.y + dy * progress + perpY * particle.offset * (1 - progress * 0.5)
             const sizeProgress = Math.sin(progress * Math.PI)
-            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.5 * flicker
+            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.8 * flicker
 
             return (
               <circle
                 key={particle.id}
                 cx={x}
                 cy={y}
-                r={particle.size * sizeProgress}
+                r={particle.size * sizeProgress * 1.2}
                 fill={colors.primary}
                 opacity={opacity}
                 filter="url(#module-particle-glow)"
@@ -560,15 +583,15 @@ function renderModuleEffect(
       // Precise laser beam with trailing particles
       return (
         <g>
-          {/* Sharp center beam */}
+          {/* Sharp center beam - thicker */}
           <line
             x1={logoPos.x}
             y1={logoPos.y}
             x2={targetPos.x}
             y2={targetPos.y}
             stroke={colors.primary}
-            strokeWidth={1}
-            strokeOpacity={beamOpacity * 0.6}
+            strokeWidth={3}
+            strokeOpacity={beamOpacity * 0.8}
             strokeLinecap="round"
           />
           {/* Fast particles */}
@@ -577,15 +600,15 @@ function renderModuleEffect(
             const x = logoPos.x + dx * progress + perpX * particle.offset * 0.3
             const y = logoPos.y + dy * progress + perpY * particle.offset * 0.3
             const sizeProgress = Math.sin(progress * Math.PI)
-            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.6
+            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.8
 
             return (
               <ellipse
                 key={particle.id}
                 cx={x}
                 cy={y}
-                rx={particle.size * sizeProgress * 1.5}
-                ry={particle.size * sizeProgress * 0.5}
+                rx={particle.size * sizeProgress * 1.8}
+                ry={particle.size * sizeProgress * 0.6}
                 fill={colors.primary}
                 opacity={opacity}
                 transform={`rotate(${angle * 180 / Math.PI}, ${x}, ${y})`}
@@ -600,23 +623,23 @@ function renderModuleEffect(
       // Wave pattern with oscillating path
       return (
         <g>
-          {/* Wave path */}
+          {/* Wave path - thicker */}
           <path
-            d={generateWavePath(logoPos, targetPos, beamOpacity * 8)}
+            d={generateWavePath(logoPos, targetPos, beamOpacity * 12)}
             fill="none"
             stroke={colors.primary}
-            strokeWidth={1.5}
-            strokeOpacity={beamOpacity * 0.4}
+            strokeWidth={4}
+            strokeOpacity={beamOpacity * 0.6}
             filter="url(#module-beam-glow)"
           />
           {/* Particles following wave */}
           {particles.map((particle) => {
             const progress = Math.min(particle.progress, 1)
-            const waveOffset = Math.sin(progress * Math.PI * 6) * 15 * (1 - progress)
+            const waveOffset = Math.sin(progress * Math.PI * 6) * 20 * (1 - progress)
             const x = logoPos.x + dx * progress + perpX * waveOffset
             const y = logoPos.y + dy * progress + perpY * waveOffset
             const sizeProgress = Math.sin(progress * Math.PI)
-            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.5
+            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.7
 
             return (
               <circle
@@ -639,11 +662,11 @@ function renderModuleEffect(
         <g>
           {particles.map((particle) => {
             const progress = Math.min(particle.progress, 1)
-            const bounce = Math.abs(Math.sin(progress * Math.PI * 3)) * 20
+            const bounce = Math.abs(Math.sin(progress * Math.PI * 3)) * 25
             const x = logoPos.x + dx * progress + perpX * particle.offset
             const y = logoPos.y + dy * progress + perpY * particle.offset - bounce * (1 - progress)
             const sizeProgress = Math.sin(progress * Math.PI)
-            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.6
+            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.85
             // Alternate colors for playful effect
             const hueShift = (particle.id % 3) * 30
             const particleColor = shiftHue(colors.primary, hueShift)
@@ -653,7 +676,7 @@ function renderModuleEffect(
                 key={particle.id}
                 cx={x}
                 cy={y}
-                r={particle.size * sizeProgress}
+                r={particle.size * sizeProgress * 1.1}
                 fill={particleColor}
                 opacity={opacity}
                 filter="url(#module-particle-glow)"
@@ -664,7 +687,7 @@ function renderModuleEffect(
       )
 
     case 'gallery':
-      // Sparkle effect with star shapes
+      // Sparkle effect with star shapes - larger and more visible
       return (
         <g>
           {particles.map((particle) => {
@@ -672,21 +695,21 @@ function renderModuleEffect(
             const x = logoPos.x + dx * progress + perpX * particle.offset * Math.sin(progress * Math.PI * 2)
             const y = logoPos.y + dy * progress + perpY * particle.offset * Math.sin(progress * Math.PI * 2)
             const sizeProgress = Math.sin(progress * Math.PI)
-            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.5
+            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.75
             const rotation = progress * 360
 
             return (
               <g key={particle.id} transform={`translate(${x}, ${y}) rotate(${rotation})`}>
-                {/* 4-point star */}
+                {/* 4-point star - larger */}
                 <path
-                  d={`M 0 ${-particle.size * sizeProgress * 2}
-                      L ${particle.size * sizeProgress * 0.3} 0
-                      L 0 ${particle.size * sizeProgress * 2}
-                      L ${-particle.size * sizeProgress * 0.3} 0 Z
-                      M ${-particle.size * sizeProgress * 2} 0
-                      L 0 ${particle.size * sizeProgress * 0.3}
-                      L ${particle.size * sizeProgress * 2} 0
-                      L 0 ${-particle.size * sizeProgress * 0.3} Z`}
+                  d={`M 0 ${-particle.size * sizeProgress * 2.5}
+                      L ${particle.size * sizeProgress * 0.4} 0
+                      L 0 ${particle.size * sizeProgress * 2.5}
+                      L ${-particle.size * sizeProgress * 0.4} 0 Z
+                      M ${-particle.size * sizeProgress * 2.5} 0
+                      L 0 ${particle.size * sizeProgress * 0.4}
+                      L ${particle.size * sizeProgress * 2.5} 0
+                      L 0 ${-particle.size * sizeProgress * 0.4} Z`}
                   fill={colors.primary}
                   opacity={opacity}
                   filter="url(#module-particle-glow)"
@@ -701,23 +724,23 @@ function renderModuleEffect(
       // Scientific measurement beam with tick marks
       return (
         <g>
-          {/* Main precise beam */}
+          {/* Main precise beam - thicker */}
           <line
             x1={logoPos.x}
             y1={logoPos.y}
             x2={targetPos.x}
             y2={targetPos.y}
             stroke={colors.primary}
-            strokeWidth={1}
-            strokeOpacity={beamOpacity * 0.5}
-            strokeDasharray="8 4"
+            strokeWidth={3}
+            strokeOpacity={beamOpacity * 0.7}
+            strokeDasharray="12 6"
           />
           {/* Measurement tick marks */}
           {Array.from({ length: 5 }).map((_, i) => {
             const progress = (i + 1) / 6
             const x = logoPos.x + dx * progress
             const y = logoPos.y + dy * progress
-            const tickLength = 6
+            const tickLength = 10
 
             return (
               <line
@@ -727,8 +750,8 @@ function renderModuleEffect(
                 x2={x + perpX * tickLength}
                 y2={y + perpY * tickLength}
                 stroke={colors.primary}
-                strokeWidth={1}
-                strokeOpacity={beamOpacity * 0.4}
+                strokeWidth={2}
+                strokeOpacity={beamOpacity * 0.6}
               />
             )
           })}
@@ -738,7 +761,7 @@ function renderModuleEffect(
             const x = logoPos.x + dx * progress + perpX * particle.offset * 0.5
             const y = logoPos.y + dy * progress + perpY * particle.offset * 0.5
             const sizeProgress = Math.sin(progress * Math.PI)
-            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.5
+            const opacity = sizeProgress * particle.opacity * beamOpacity * 0.7
 
             return (
               <rect
