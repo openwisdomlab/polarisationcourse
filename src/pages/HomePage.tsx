@@ -812,15 +812,6 @@ export function HomePage() {
                 : 'bg-cyan-100 text-cyan-700'
             }`}
           >
-            {t('home.hero.badges.course')}
-          </span>
-          <span
-            className={`px-3 py-1 text-xs font-medium rounded-full ${
-              theme === 'dark'
-                ? 'bg-purple-500/20 text-purple-300'
-                : 'bg-purple-100 text-purple-700'
-            }`}
-          >
             {t('home.hero.badges.badge1')}
           </span>
           <span
@@ -863,27 +854,40 @@ export function HomePage() {
           {t('home.hero.subtitle')}
         </p>
 
-        {/* Narrative Intro */}
+        {/* Platform Introduction */}
         <div
-          className={`max-w-2xl mx-auto space-y-2 text-base leading-relaxed ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          className={`max-w-3xl mx-auto mb-6 p-6 rounded-2xl ${
+            theme === 'dark'
+              ? 'bg-slate-800/50 border border-slate-700/50'
+              : 'bg-white/70 border border-gray-200 shadow-sm'
           }`}
         >
-          <p>{t('home.hero.intro1')}</p>
-          <p>{t('home.hero.intro2')}</p>
-          <p>{t('home.hero.intro3')}</p>
+          <p
+            className={`text-sm sm:text-base leading-relaxed mb-4 ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}
+          >
+            {t('home.hero.platformIntro')}
+          </p>
+          <p
+            className={`text-sm sm:text-base font-semibold ${
+              theme === 'dark'
+                ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400'
+                : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600'
+            }`}
+          >
+            {t('home.hero.callToAction')}
+          </p>
         </div>
 
-        {/* Tagline */}
-        <p
-          className={`mt-4 text-lg font-semibold ${
-            theme === 'dark'
-              ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400'
-              : 'text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600'
+        {/* Story Hook */}
+        <div
+          className={`max-w-2xl mx-auto text-sm leading-relaxed italic ${
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           }`}
         >
-          {t('home.hero.tagline')}
-        </p>
+          <p>{t('home.hero.storyHook')}</p>
+        </div>
       </header>
 
       {/* Module Grid */}
