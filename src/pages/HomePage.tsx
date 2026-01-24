@@ -7,6 +7,7 @@ import { LightBeamEffect, type ModuleEffectType } from '@/components/effects'
 import { Footer } from '@/components/shared/Footer'
 import {
   PolarCraftLogo,
+  OpenWisdomLabLogo,
   HistoryModuleIcon,
   ArsenalModuleIcon,
   TheoryModuleIcon,
@@ -54,10 +55,9 @@ interface ModuleConfig {
 
 const MODULES: ModuleConfig[] = [
   {
-    // 1. 光的编年史 (Chronicles of Light)
-    // 历史故事 × 经典实验
+    // 1. Trace(痕量) · 追溯 - 历史与实验
     id: 'history',
-    i18nNamespace: 'home.chronicles',
+    i18nNamespace: 'home.modules.history',
     path: '/chronicles',
     IconComponent: HistoryModuleIcon,
     quickLinks: [
@@ -79,10 +79,9 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 2. 光学设计室 (Optical Design Studio)
-    // 偏振器件 × 光路设计
+    // 2. Gather · 收集 - 光学器件
     id: 'arsenal',
-    i18nNamespace: 'home.opticalDesignStudio',
+    i18nNamespace: 'home.modules.arsenal',
     path: '/studio',
     IconComponent: ArsenalModuleIcon,
     quickLinks: [
@@ -104,10 +103,9 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 3. 偏振演示馆 (Demo Gallery)
-    // 基础理论 × 计算模拟
+    // 3. Decode · 解码 - 理论与模拟
     id: 'theory',
-    i18nNamespace: 'home.formulaLab',
+    i18nNamespace: 'home.modules.theory',
     path: '/demos',
     IconComponent: TheoryModuleIcon,
     quickLinks: [
@@ -116,23 +114,22 @@ const MODULES: ModuleConfig[] = [
       { labelKey: 'home.formulaLab.link3', path: '/demos/stokes-vector' },
     ],
     colorTheme: {
-      bg: 'bg-indigo-50 dark:bg-indigo-950/30',
-      bgHover: 'hover:bg-indigo-100 dark:hover:bg-indigo-900/40',
-      border: 'border-indigo-200 dark:border-indigo-800/50',
-      borderHover: 'hover:border-indigo-400 dark:hover:border-indigo-600',
-      iconBg: 'bg-indigo-100/50 dark:bg-indigo-900/30',
-      iconColor: 'text-indigo-600 dark:text-indigo-400',
-      shadow: 'hover:shadow-indigo-200/50 dark:hover:shadow-indigo-900/30',
-      glowColor: 'indigo',
-      tagBg: 'bg-indigo-100/80 dark:bg-indigo-900/50',
-      tagText: 'text-indigo-700 dark:text-indigo-300',
+      bg: 'bg-violet-50 dark:bg-violet-950/30',
+      bgHover: 'hover:bg-violet-100 dark:hover:bg-violet-900/40',
+      border: 'border-violet-200 dark:border-violet-800/50',
+      borderHover: 'hover:border-violet-400 dark:hover:border-violet-600',
+      iconBg: 'bg-violet-100/50 dark:bg-violet-900/30',
+      iconColor: 'text-violet-600 dark:text-violet-400',
+      shadow: 'hover:shadow-violet-200/50 dark:hover:shadow-violet-900/30',
+      glowColor: 'violet',
+      tagBg: 'bg-violet-100/80 dark:bg-violet-900/50',
+      tagText: 'text-violet-700 dark:text-violet-300',
     },
   },
   {
-    // 4. 偏振光探秘 (PolarQuest - Games)
-    // 解谜游戏 × 偏振策略
+    // 4. Conquer(征服) · 征服 - 游戏挑战
     id: 'games',
-    i18nNamespace: 'home.polarquest',
+    i18nNamespace: 'home.modules.games',
     path: '/games',
     IconComponent: GamesModuleIcon,
     quickLinks: [
@@ -154,10 +151,9 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 5. 偏振造物局 (Creative Gallery)
-    // 偏振艺术 × 文创作品
+    // 5. Shine · 闪耀 - 成果展示
     id: 'gallery',
-    i18nNamespace: 'home.creativeLab',
+    i18nNamespace: 'home.modules.gallery',
     path: '/gallery',
     IconComponent: GalleryModuleIcon,
     quickLinks: [
@@ -180,10 +176,9 @@ const MODULES: ModuleConfig[] = [
     },
   },
   {
-    // 6. 虚拟课题组 (Virtual Research Lab)
-    // 开放研究 × 课题实践
+    // 6. Venture(创业) · 冒险 - 虚拟课题组
     id: 'research',
-    i18nNamespace: 'home.labGroup',
+    i18nNamespace: 'home.modules.research',
     path: '/research',
     IconComponent: ResearchModuleIcon,
     quickLinks: [
@@ -212,6 +207,7 @@ const GLOW_STYLES: Record<string, string> = {
   amber: 'rgba(251, 191, 36, 0.4)',
   cyan: 'rgba(34, 211, 238, 0.4)',
   indigo: 'rgba(129, 140, 248, 0.4)',
+  violet: 'rgba(139, 92, 246, 0.4)',
   emerald: 'rgba(52, 211, 153, 0.4)',
   pink: 'rgba(244, 114, 182, 0.4)',
   teal: 'rgba(45, 212, 191, 0.4)',
@@ -231,9 +227,10 @@ function ModuleCard({
   onHoverEnd: () => void
   cardRef: React.RefObject<HTMLDivElement | null>
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const IconComponent = module.IconComponent
+  const isZh = i18n.language === 'zh'
 
   const handleMouseEnter = () => {
     setIsHovered(true)
@@ -246,10 +243,12 @@ function ModuleCard({
   }
 
   // Get translated content from i18n namespace
-  const title = t(`${module.i18nNamespace}.title`)
+  const titleEn = t(`${module.i18nNamespace}.title`)
+  const titleZh = t(`${module.i18nNamespace}.titleZh`)
   const subtitle = t(`${module.i18nNamespace}.subtitle`)
   const description = t(`${module.i18nNamespace}.description`)
-  const cta = t(`${module.i18nNamespace}.cta`)
+  // Use the module-specific CTA if available, fallback to common explore
+  const cta = t('common.explore')
 
   return (
     <div
@@ -310,23 +309,28 @@ function ModuleCard({
         />
       </div>
 
-      {/* Title */}
+      {/* Title - Format: "Trace(痕量) · 追溯" or "Conquer(征服) · 征服" */}
       <h3
         className={`
           text-lg font-bold mb-1
           transition-all duration-300
           ${isHovered ? 'translate-x-1' : 'translate-x-0'}
-          ${module.colorTheme.iconColor}
         `}
       >
-        {title}
+        <span className={module.colorTheme.iconColor}>{titleEn}</span>
+        {isZh && titleZh && (
+          <>
+            <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}> · </span>
+            <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>{titleZh}</span>
+          </>
+        )}
       </h3>
 
       {/* Subtitle */}
       <span
         className={`
           text-xs font-medium mb-3 block
-          ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}
+          ${module.colorTheme.tagText}
         `}
       >
         {subtitle}
@@ -681,11 +685,15 @@ function CourseSection() {
 export function HomePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const logoRef = useRef<HTMLDivElement>(null)
+  const logoLeftRef = useRef<HTMLDivElement>(null)
+  const logoRightRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Track which module is hovered for beam effect
   const [activeModule, setActiveModule] = useState<ModuleEffectType | null>(null)
+  // Track logo hover states for interactive effects
+  const [leftLogoHovered, setLeftLogoHovered] = useState(false)
+  const [rightLogoHovered, setRightLogoHovered] = useState(false)
   const cardRefs = useRef<Map<string, React.RefObject<HTMLDivElement | null>>>(new Map())
 
   // Get or create a ref for each module card
@@ -708,12 +716,15 @@ export function HomePage() {
           : 'bg-gradient-to-br from-slate-50 via-white to-slate-100'
       }`}
     >
-      {/* Light beam effect from logo to hovered module card */}
+      {/* Light beam effect between two logos */}
       <LightBeamEffect
-        logoRef={logoRef}
+        logoRef={logoLeftRef}
+        logoRightRef={logoRightRef}
         containerRef={containerRef}
         activeModule={activeModule}
         targetRef={activeCardRef}
+        leftLogoActive={leftLogoHovered}
+        rightLogoActive={rightLogoHovered}
       />
 
       {/* Settings */}
@@ -723,9 +734,73 @@ export function HomePage() {
 
       {/* Hero Section */}
       <header className="flex flex-col items-center justify-center pt-16 pb-12 px-4 text-center">
-        {/* Logo - Light source for beam effect */}
-        <div ref={logoRef} className="mb-6">
-          <PolarCraftLogo size={80} theme={theme} animated />
+        {/* Two Logos with light beam between them */}
+        <div className="flex items-center justify-center gap-8 sm:gap-16 mb-6">
+          {/* Left Logo - PolarCraft */}
+          <div
+            ref={logoLeftRef}
+            className={`
+              transition-all duration-500 cursor-pointer
+              ${leftLogoHovered ? 'scale-110' : 'scale-100'}
+            `}
+            onMouseEnter={() => setLeftLogoHovered(true)}
+            onMouseLeave={() => setLeftLogoHovered(false)}
+          >
+            <PolarCraftLogo
+              size={70}
+              theme={theme}
+              animated
+              className={`
+                transition-all duration-300
+                ${leftLogoHovered ? 'drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]' : ''}
+              `}
+            />
+          </div>
+
+          {/* Visual beam connector indicator */}
+          <div
+            className={`
+              hidden sm:flex items-center gap-1
+              transition-all duration-500
+              ${leftLogoHovered || rightLogoHovered ? 'opacity-100' : 'opacity-30'}
+            `}
+          >
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className={`
+                  w-2 h-2 rounded-full
+                  transition-all duration-300
+                  ${theme === 'dark' ? 'bg-cyan-400' : 'bg-cyan-500'}
+                `}
+                style={{
+                  opacity: 0.3 + i * 0.15,
+                  animationDelay: `${i * 100}ms`,
+                  transform: leftLogoHovered || rightLogoHovered ? 'scale(1.2)' : 'scale(1)',
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Right Logo - Open Wisdom Lab */}
+          <div
+            ref={logoRightRef}
+            className={`
+              transition-all duration-500 cursor-pointer
+              ${rightLogoHovered ? 'scale-110' : 'scale-100'}
+            `}
+            onMouseEnter={() => setRightLogoHovered(true)}
+            onMouseLeave={() => setRightLogoHovered(false)}
+          >
+            <OpenWisdomLabLogo
+              height={55}
+              theme={theme}
+              className={`
+                transition-all duration-300
+                ${rightLogoHovered ? 'drop-shadow-[0_0_20px_rgba(233,30,140,0.6)]' : ''}
+              `}
+            />
+          </div>
         </div>
 
         {/* Badges */}
