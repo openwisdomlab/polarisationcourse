@@ -37,11 +37,17 @@ interface Position {
 
 interface LightBeamEffectProps {
   logoRef: React.RefObject<HTMLDivElement | null>
+  /** Right logo ref for beam between two logos */
+  logoRightRef?: React.RefObject<HTMLDivElement | null>
   containerRef?: React.RefObject<HTMLDivElement | null>
   /** Currently hovered module ID - only show effect when this is set */
   activeModule?: ModuleEffectType | null
   /** Target position (center of hovered card) */
   targetRef?: React.RefObject<HTMLElement | null>
+  /** Left logo hover state for interactive effects */
+  leftLogoActive?: boolean
+  /** Right logo hover state for interactive effects */
+  rightLogoActive?: boolean
 }
 
 // Particle configuration for different effects
@@ -56,19 +62,30 @@ interface BeamParticle {
 
 export function LightBeamEffect({
   logoRef,
+  logoRightRef,
   activeModule,
   targetRef,
+  leftLogoActive = false,
+  rightLogoActive = false,
 }: LightBeamEffectProps) {
   const { theme } = useTheme()
   const svgRef = useRef<SVGSVGElement>(null)
   const [logoPos, setLogoPos] = useState<Position>({ x: 0, y: 0 })
+  const [logoRightPos, setLogoRightPos] = useState<Position>({ x: 0, y: 0 })
   const [targetPos, setTargetPos] = useState<Position>({ x: 0, y: 0 })
   const [particles, setParticles] = useState<BeamParticle[]>([])
+  const [logoBeamParticles, setLogoBeamParticles] = useState<BeamParticle[]>([])
   const [beamOpacity, setBeamOpacity] = useState(0)
+  const [logoBeamOpacity, setLogoBeamOpacity] = useState(0)
   const animationRef = useRef<number | null>(null)
+  const logoBeamAnimationRef = useRef<number | null>(null)
   const particleIdRef = useRef(0)
+  const logoParticleIdRef = useRef(0)
 
-  // Calculate logo center position
+  // Check if logo beam should be active
+  const isLogoBeamActive = leftLogoActive || rightLogoActive
+
+  // Calculate left logo center position
   const updateLogoPosition = useCallback(() => {
     if (!logoRef.current) return
 
@@ -78,6 +95,17 @@ export function LightBeamEffect({
       y: logoRect.top + logoRect.height / 2,
     })
   }, [logoRef])
+
+  // Calculate right logo center position
+  const updateLogoRightPosition = useCallback(() => {
+    if (!logoRightRef?.current) return
+
+    const logoRect = logoRightRef.current.getBoundingClientRect()
+    setLogoRightPos({
+      x: logoRect.left + logoRect.width / 2,
+      y: logoRect.top + logoRect.height / 2,
+    })
+  }, [logoRightRef])
 
   // Calculate target position (center of hovered card)
   const updateTargetPosition = useCallback(() => {
@@ -93,25 +121,35 @@ export function LightBeamEffect({
   // Update positions on mount and resize
   useEffect(() => {
     updateLogoPosition()
+    updateLogoRightPosition()
     updateTargetPosition()
 
     window.addEventListener('resize', updateLogoPosition)
     window.addEventListener('scroll', updateLogoPosition, true)
+    window.addEventListener('resize', updateLogoRightPosition)
+    window.addEventListener('scroll', updateLogoRightPosition, true)
     window.addEventListener('resize', updateTargetPosition)
     window.addEventListener('scroll', updateTargetPosition, true)
 
     return () => {
       window.removeEventListener('resize', updateLogoPosition)
       window.removeEventListener('scroll', updateLogoPosition, true)
+      window.removeEventListener('resize', updateLogoRightPosition)
+      window.removeEventListener('scroll', updateLogoRightPosition, true)
       window.removeEventListener('resize', updateTargetPosition)
       window.removeEventListener('scroll', updateTargetPosition, true)
     }
-  }, [updateLogoPosition, updateTargetPosition])
+  }, [updateLogoPosition, updateLogoRightPosition, updateTargetPosition])
 
   // Update target position when targetRef changes
   useEffect(() => {
     updateTargetPosition()
   }, [targetRef?.current, updateTargetPosition])
+
+  // Update right logo position when ref changes
+  useEffect(() => {
+    updateLogoRightPosition()
+  }, [logoRightRef?.current, updateLogoRightPosition])
 
   // Smooth fade in/out of beam based on activeModule
   useEffect(() => {
@@ -139,6 +177,76 @@ export function LightBeamEffect({
       return () => clearInterval(fadeOut)
     }
   }, [activeModule])
+
+  // Smooth fade in/out of logo beam based on logo hover
+  useEffect(() => {
+    if (isLogoBeamActive) {
+      // Fade in
+      const fadeIn = setInterval(() => {
+        setLogoBeamOpacity((prev) => Math.min(prev + 0.15, 1))
+      }, 20)
+
+      setTimeout(() => clearInterval(fadeIn), 300)
+
+      return () => clearInterval(fadeIn)
+    } else {
+      // Fade out
+      const fadeOut = setInterval(() => {
+        setLogoBeamOpacity((prev) => {
+          if (prev <= 0.05) {
+            clearInterval(fadeOut)
+            return 0
+          }
+          return prev - 0.08
+        })
+      }, 20)
+
+      return () => clearInterval(fadeOut)
+    }
+  }, [isLogoBeamActive])
+
+  // Animate logo beam particles
+  useEffect(() => {
+    if (!isLogoBeamActive || logoBeamOpacity <= 0 || !logoRightRef) {
+      setLogoBeamParticles([])
+      return
+    }
+
+    // Create particles for logo beam
+    const createParticle = () => {
+      setLogoBeamParticles((prev) => [
+        ...prev.slice(-12),
+        {
+          id: logoParticleIdRef.current++,
+          progress: 0,
+          opacity: 0.5 + Math.random() * 0.4,
+          offset: (Math.random() - 0.5) * 15,
+          size: 2 + Math.random() * 3,
+          speed: 0.8 + Math.random() * 0.4,
+        },
+      ])
+    }
+
+    const intervalId = setInterval(createParticle, 80)
+
+    // Animate particles
+    const animate = () => {
+      setLogoBeamParticles((prev) =>
+        prev
+          .map((p) => ({ ...p, progress: p.progress + p.speed * 0.015 }))
+          .filter((p) => p.progress < 1.1)
+      )
+      logoBeamAnimationRef.current = requestAnimationFrame(animate)
+    }
+    logoBeamAnimationRef.current = requestAnimationFrame(animate)
+
+    return () => {
+      clearInterval(intervalId)
+      if (logoBeamAnimationRef.current) {
+        cancelAnimationFrame(logoBeamAnimationRef.current)
+      }
+    }
+  }, [isLogoBeamActive, logoBeamOpacity, logoPos, logoRightPos, logoRightRef])
 
   // Animate particles based on module type
   useEffect(() => {
@@ -188,8 +296,8 @@ export function LightBeamEffect({
     }
   }, [activeModule, beamOpacity, logoPos, targetPos])
 
-  // Don't render if no active module and fully faded
-  if (!activeModule && beamOpacity <= 0) return null
+  // Don't render if no active module and no logo beam
+  if (!activeModule && beamOpacity <= 0 && logoBeamOpacity <= 0) return null
 
   const colors = activeModule ? MODULE_COLORS[activeModule] : MODULE_COLORS.history
   const dx = targetPos.x - logoPos.x
@@ -199,6 +307,13 @@ export function LightBeamEffect({
   // Perpendicular direction for particle offsets
   const perpX = -Math.sin(angle)
   const perpY = Math.cos(angle)
+
+  // Logo beam calculations
+  const logoDx = logoRightPos.x - logoPos.x
+  const logoDy = logoRightPos.y - logoPos.y
+  const logoAngle = Math.atan2(logoDy, logoDx)
+  const logoPerpX = -Math.sin(logoAngle)
+  const logoPerpY = Math.cos(logoAngle)
 
   return (
     <svg
@@ -225,7 +340,22 @@ export function LightBeamEffect({
           </feMerge>
         </filter>
 
-        {/* Beam gradient */}
+        {/* Logo beam gradient - cyan to magenta */}
+        <linearGradient
+          id="logo-beam-gradient"
+          x1={logoPos.x}
+          y1={logoPos.y}
+          x2={logoRightPos.x}
+          y2={logoRightPos.y}
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.6" />
+          <stop offset="30%" stopColor="#22d3ee" stopOpacity="0.4" />
+          <stop offset="70%" stopColor="#E91E8C" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#E91E8C" stopOpacity="0.6" />
+        </linearGradient>
+
+        {/* Module beam gradient */}
         <linearGradient
           id="module-beam-gradient"
           x1={logoPos.x}
@@ -240,40 +370,110 @@ export function LightBeamEffect({
         </linearGradient>
       </defs>
 
-      {/* Main beam line - very subtle */}
-      <line
-        x1={logoPos.x}
-        y1={logoPos.y}
-        x2={targetPos.x}
-        y2={targetPos.y}
-        stroke="url(#module-beam-gradient)"
-        strokeWidth={theme === 'dark' ? 2 : 1.5}
-        strokeOpacity={beamOpacity * 0.4}
-        filter="url(#module-beam-glow)"
-        strokeLinecap="round"
-      />
+      {/* Logo-to-Logo beam - shows when either logo is hovered */}
+      {logoBeamOpacity > 0 && logoRightPos.x > 0 && (
+        <g>
+          {/* Main beam line between logos */}
+          <line
+            x1={logoPos.x}
+            y1={logoPos.y}
+            x2={logoRightPos.x}
+            y2={logoRightPos.y}
+            stroke="url(#logo-beam-gradient)"
+            strokeWidth={theme === 'dark' ? 3 : 2}
+            strokeOpacity={logoBeamOpacity * 0.5}
+            filter="url(#module-beam-glow)"
+            strokeLinecap="round"
+          />
 
-      {/* Module-specific effects */}
-      {activeModule && renderModuleEffect(activeModule, {
-        logoPos,
-        targetPos,
-        particles,
-        beamOpacity,
-        colors,
-        perpX,
-        perpY,
-        angle,
-      })}
+          {/* Flowing particles between logos */}
+          {logoBeamParticles.map((particle) => {
+            const progress = Math.min(particle.progress, 1)
+            const x = logoPos.x + logoDx * progress + logoPerpX * particle.offset * Math.sin(progress * Math.PI * 2)
+            const y = logoPos.y + logoDy * progress + logoPerpY * particle.offset * Math.sin(progress * Math.PI * 2)
+            const sizeProgress = Math.sin(progress * Math.PI)
+            const opacity = sizeProgress * particle.opacity * logoBeamOpacity * 0.6
+            // Color interpolation from cyan to magenta
+            const colorProgress = progress
+            const r = Math.round(34 + (233 - 34) * colorProgress)
+            const g = Math.round(211 + (30 - 211) * colorProgress)
+            const b = Math.round(238 + (140 - 238) * colorProgress)
+            const particleColor = `rgb(${r}, ${g}, ${b})`
 
-      {/* Source glow at logo - subtle */}
-      <circle
-        cx={logoPos.x}
-        cy={logoPos.y}
-        r={12}
-        fill={colors.primary}
-        opacity={beamOpacity * 0.15}
-        filter="url(#module-beam-glow)"
-      />
+            return (
+              <circle
+                key={particle.id}
+                cx={x}
+                cy={y}
+                r={particle.size * sizeProgress}
+                fill={particleColor}
+                opacity={opacity}
+                filter="url(#module-particle-glow)"
+              />
+            )
+          })}
+
+          {/* Glow at left logo (cyan) */}
+          <circle
+            cx={logoPos.x}
+            cy={logoPos.y}
+            r={leftLogoActive ? 16 : 10}
+            fill="#22d3ee"
+            opacity={logoBeamOpacity * (leftLogoActive ? 0.4 : 0.2)}
+            filter="url(#module-beam-glow)"
+          />
+
+          {/* Glow at right logo (magenta) */}
+          <circle
+            cx={logoRightPos.x}
+            cy={logoRightPos.y}
+            r={rightLogoActive ? 16 : 10}
+            fill="#E91E8C"
+            opacity={logoBeamOpacity * (rightLogoActive ? 0.4 : 0.2)}
+            filter="url(#module-beam-glow)"
+          />
+        </g>
+      )}
+
+      {/* Module beam - shows when hovering a module card */}
+      {beamOpacity > 0 && activeModule && (
+        <g>
+          {/* Main beam line - very subtle */}
+          <line
+            x1={logoPos.x}
+            y1={logoPos.y}
+            x2={targetPos.x}
+            y2={targetPos.y}
+            stroke="url(#module-beam-gradient)"
+            strokeWidth={theme === 'dark' ? 2 : 1.5}
+            strokeOpacity={beamOpacity * 0.4}
+            filter="url(#module-beam-glow)"
+            strokeLinecap="round"
+          />
+
+          {/* Module-specific effects */}
+          {renderModuleEffect(activeModule, {
+            logoPos,
+            targetPos,
+            particles,
+            beamOpacity,
+            colors,
+            perpX,
+            perpY,
+            angle,
+          })}
+
+          {/* Source glow at logo - subtle */}
+          <circle
+            cx={logoPos.x}
+            cy={logoPos.y}
+            r={12}
+            fill={colors.primary}
+            opacity={beamOpacity * 0.15}
+            filter="url(#module-beam-glow)"
+          />
+        </g>
+      )}
     </svg>
   )
 }
