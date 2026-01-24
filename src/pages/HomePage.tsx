@@ -24,15 +24,20 @@ type AnimatedIconComponent = React.ComponentType<{
   theme?: 'dark' | 'light'
 }>
 
+// Quick link configuration
+interface QuickLink {
+  labelKey: string
+  path: string
+}
+
 // Module configuration for the 6 core modules
 interface ModuleConfig {
   id: string
-  titleKey: string
-  titleZhKey: string
-  subtitleKey: string
-  descriptionKey: string
+  // Use the dedicated i18n namespace for each module card content
+  i18nNamespace: string  // e.g., 'home.chronicles'
   path: string
   IconComponent: AnimatedIconComponent
+  quickLinks: QuickLink[]
   colorTheme: {
     bg: string
     bgHover: string
@@ -42,6 +47,8 @@ interface ModuleConfig {
     iconColor: string
     shadow: string
     glowColor: string
+    tagBg: string
+    tagText: string
   }
 }
 
@@ -50,12 +57,14 @@ const MODULES: ModuleConfig[] = [
     // 1. 光的编年史 (Chronicles of Light)
     // 历史故事 × 经典实验
     id: 'history',
-    titleKey: 'home.modules.history.title',
-    titleZhKey: 'home.modules.history.titleZh',
-    subtitleKey: 'home.modules.history.subtitle',
-    descriptionKey: 'home.modules.history.description',
-    path: '/chronicles',  // Direct to chronicles page
+    i18nNamespace: 'home.chronicles',
+    path: '/chronicles',
     IconComponent: HistoryModuleIcon,
+    quickLinks: [
+      { labelKey: 'home.chronicles.link1', path: '/chronicles' },
+      { labelKey: 'home.chronicles.link2', path: '/chronicles' },
+      { labelKey: 'home.chronicles.link3', path: '/chronicles' },
+    ],
     colorTheme: {
       bg: 'bg-amber-50 dark:bg-amber-950/30',
       bgHover: 'hover:bg-amber-100 dark:hover:bg-amber-900/40',
@@ -65,18 +74,22 @@ const MODULES: ModuleConfig[] = [
       iconColor: 'text-amber-600 dark:text-amber-400',
       shadow: 'hover:shadow-amber-200/50 dark:hover:shadow-amber-900/30',
       glowColor: 'amber',
+      tagBg: 'bg-amber-100/80 dark:bg-amber-900/50',
+      tagText: 'text-amber-700 dark:text-amber-300',
     },
   },
   {
     // 2. 光学设计室 (Optical Design Studio)
     // 偏振器件 × 光路设计
     id: 'arsenal',
-    titleKey: 'home.modules.arsenal.title',
-    titleZhKey: 'home.modules.arsenal.titleZh',
-    subtitleKey: 'home.modules.arsenal.subtitle',
-    descriptionKey: 'home.modules.arsenal.description',
-    path: '/studio',  // Direct to optical studio
+    i18nNamespace: 'home.opticalDesignStudio',
+    path: '/studio',
     IconComponent: ArsenalModuleIcon,
+    quickLinks: [
+      { labelKey: 'home.opticalDesignStudio.link1', path: '/studio' },
+      { labelKey: 'home.opticalDesignStudio.link2', path: '/studio' },
+      { labelKey: 'home.opticalDesignStudio.link3', path: '/studio' },
+    ],
     colorTheme: {
       bg: 'bg-cyan-50 dark:bg-cyan-950/30',
       bgHover: 'hover:bg-cyan-100 dark:hover:bg-cyan-900/40',
@@ -86,18 +99,22 @@ const MODULES: ModuleConfig[] = [
       iconColor: 'text-cyan-600 dark:text-cyan-400',
       shadow: 'hover:shadow-cyan-200/50 dark:hover:shadow-cyan-900/30',
       glowColor: 'cyan',
+      tagBg: 'bg-cyan-100/80 dark:bg-cyan-900/50',
+      tagText: 'text-cyan-700 dark:text-cyan-300',
     },
   },
   {
     // 3. 偏振演示馆 (Demo Gallery)
     // 基础理论 × 计算模拟
     id: 'theory',
-    titleKey: 'home.modules.theory.title',
-    titleZhKey: 'home.modules.theory.titleZh',
-    subtitleKey: 'home.modules.theory.subtitle',
-    descriptionKey: 'home.modules.theory.description',
-    path: '/demos',  // Direct to demos page
+    i18nNamespace: 'home.formulaLab',
+    path: '/demos',
     IconComponent: TheoryModuleIcon,
+    quickLinks: [
+      { labelKey: 'home.formulaLab.link1', path: '/demos/malus-law' },
+      { labelKey: 'home.formulaLab.link2', path: '/demos/birefringence' },
+      { labelKey: 'home.formulaLab.link3', path: '/demos/stokes-vector' },
+    ],
     colorTheme: {
       bg: 'bg-indigo-50 dark:bg-indigo-950/30',
       bgHover: 'hover:bg-indigo-100 dark:hover:bg-indigo-900/40',
@@ -107,18 +124,22 @@ const MODULES: ModuleConfig[] = [
       iconColor: 'text-indigo-600 dark:text-indigo-400',
       shadow: 'hover:shadow-indigo-200/50 dark:hover:shadow-indigo-900/30',
       glowColor: 'indigo',
+      tagBg: 'bg-indigo-100/80 dark:bg-indigo-900/50',
+      tagText: 'text-indigo-700 dark:text-indigo-300',
     },
   },
   {
     // 4. 偏振光探秘 (PolarQuest - Games)
     // 解谜游戏 × 偏振策略
     id: 'games',
-    titleKey: 'home.modules.games.title',
-    titleZhKey: 'home.modules.games.titleZh',
-    subtitleKey: 'home.modules.games.subtitle',
-    descriptionKey: 'home.modules.games.description',
-    path: '/games',  // Games hub
+    i18nNamespace: 'home.polarquest',
+    path: '/games',
     IconComponent: GamesModuleIcon,
+    quickLinks: [
+      { labelKey: 'home.polarquest.link1', path: '/games/2d' },
+      { labelKey: 'home.polarquest.link2', path: '/games/3d' },
+      { labelKey: 'home.polarquest.link3', path: '/games/card' },
+    ],
     colorTheme: {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
       bgHover: 'hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
@@ -128,18 +149,23 @@ const MODULES: ModuleConfig[] = [
       iconColor: 'text-emerald-600 dark:text-emerald-400',
       shadow: 'hover:shadow-emerald-200/50 dark:hover:shadow-emerald-900/30',
       glowColor: 'emerald',
+      tagBg: 'bg-emerald-100/80 dark:bg-emerald-900/50',
+      tagText: 'text-emerald-700 dark:text-emerald-300',
     },
   },
   {
     // 5. 偏振造物局 (Creative Gallery)
     // 偏振艺术 × 文创作品
     id: 'gallery',
-    titleKey: 'home.modules.gallery.title',
-    titleZhKey: 'home.modules.gallery.titleZh',
-    subtitleKey: 'home.modules.gallery.subtitle',
-    descriptionKey: 'home.modules.gallery.description',
-    path: '/gallery',  // Direct to gallery/experiments
+    i18nNamespace: 'home.creativeLab',
+    path: '/gallery',
     IconComponent: GalleryModuleIcon,
+    quickLinks: [
+      { labelKey: 'home.creativeLab.link1', path: '/gallery/diy' },
+      { labelKey: 'home.creativeLab.link2', path: '/gallery/showcase' },
+      { labelKey: 'home.creativeLab.link3', path: '/gallery/generator' },
+      { labelKey: 'home.creativeLab.link4', path: '/gallery/gallery' },
+    ],
     colorTheme: {
       bg: 'bg-pink-50 dark:bg-pink-950/30',
       bgHover: 'hover:bg-pink-100 dark:hover:bg-pink-900/40',
@@ -149,18 +175,23 @@ const MODULES: ModuleConfig[] = [
       iconColor: 'text-pink-600 dark:text-pink-400',
       shadow: 'hover:shadow-pink-200/50 dark:hover:shadow-pink-900/30',
       glowColor: 'pink',
+      tagBg: 'bg-pink-100/80 dark:bg-pink-900/50',
+      tagText: 'text-pink-700 dark:text-pink-300',
     },
   },
   {
     // 6. 虚拟课题组 (Virtual Research Lab)
     // 开放研究 × 课题实践
     id: 'research',
-    titleKey: 'home.modules.research.title',
-    titleZhKey: 'home.modules.research.titleZh',
-    subtitleKey: 'home.modules.research.subtitle',
-    descriptionKey: 'home.modules.research.description',
-    path: '/research',  // Direct to research lab
+    i18nNamespace: 'home.labGroup',
+    path: '/research',
     IconComponent: ResearchModuleIcon,
+    quickLinks: [
+      { labelKey: 'home.labGroup.link1', path: '/research' },
+      { labelKey: 'home.labGroup.link2', path: '/research/applications' },
+      { labelKey: 'home.labGroup.link3', path: '/calc' },
+      { labelKey: 'home.labGroup.link4', path: '/research' },
+    ],
     colorTheme: {
       bg: 'bg-teal-50 dark:bg-teal-950/30',
       bgHover: 'hover:bg-teal-100 dark:hover:bg-teal-900/40',
@@ -170,6 +201,8 @@ const MODULES: ModuleConfig[] = [
       iconColor: 'text-teal-600 dark:text-teal-400',
       shadow: 'hover:shadow-teal-200/50 dark:hover:shadow-teal-900/30',
       glowColor: 'teal',
+      tagBg: 'bg-teal-100/80 dark:bg-teal-900/50',
+      tagText: 'text-teal-700 dark:text-teal-300',
     },
   },
 ]
@@ -184,7 +217,7 @@ const GLOW_STYLES: Record<string, string> = {
   teal: 'rgba(45, 212, 191, 0.4)',
 }
 
-// Module Card Component with hover interactions
+// Module Card Component with hover interactions and quick links
 function ModuleCard({
   module,
   theme,
@@ -196,7 +229,7 @@ function ModuleCard({
   theme: 'dark' | 'light'
   onHoverStart: () => void
   onHoverEnd: () => void
-  cardRef: React.RefObject<HTMLAnchorElement | null>
+  cardRef: React.RefObject<HTMLDivElement | null>
 }) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
@@ -212,15 +245,20 @@ function ModuleCard({
     onHoverEnd()
   }
 
+  // Get translated content from i18n namespace
+  const title = t(`${module.i18nNamespace}.title`)
+  const subtitle = t(`${module.i18nNamespace}.subtitle`)
+  const description = t(`${module.i18nNamespace}.description`)
+  const cta = t(`${module.i18nNamespace}.cta`)
+
   return (
-    <Link
+    <div
       ref={cardRef}
-      to={module.path}
       className={`
         group relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-500
         ${module.colorTheme.bg} ${module.colorTheme.bgHover}
         ${module.colorTheme.border} ${module.colorTheme.borderHover}
-        hover:-translate-y-3 hover:shadow-2xl ${module.colorTheme.shadow}
+        hover:-translate-y-2 hover:shadow-2xl ${module.colorTheme.shadow}
         overflow-hidden
       `}
       onMouseEnter={handleMouseEnter}
@@ -272,91 +310,80 @@ function ModuleCard({
         />
       </div>
 
-      {/* Title with subtle animation - "Trace · 追溯" format */}
+      {/* Title */}
       <h3
         className={`
-          text-lg font-bold text-gray-900 dark:text-white mb-1
+          text-lg font-bold mb-1
           transition-all duration-300
           ${isHovered ? 'translate-x-1' : 'translate-x-0'}
+          ${module.colorTheme.iconColor}
         `}
       >
-        {t(module.titleKey)} · {t(module.titleZhKey)}
+        {title}
       </h3>
 
-      {/* Subtitle - original module category */}
+      {/* Subtitle */}
       <span
         className={`
-          text-xs font-medium mb-2 block
-          ${module.colorTheme.iconColor}
-          opacity-80
+          text-xs font-medium mb-3 block
+          ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}
         `}
       >
-        {t(module.subtitleKey)}
+        {subtitle}
       </span>
 
       {/* Description */}
       <p
         className={`
-          text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-1
+          text-sm leading-relaxed mb-4 flex-1
           transition-all duration-300
-          ${isHovered ? 'text-gray-700 dark:text-gray-300' : ''}
+          ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}
+          ${isHovered ? (theme === 'dark' ? 'text-gray-300' : 'text-gray-700') : ''}
         `}
       >
-        {t(module.descriptionKey)}
+        {description}
       </p>
 
-      {/* Arrow indicator with enhanced animation */}
-      <div
+      {/* Quick Links Tags */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {module.quickLinks.map((link, index) => (
+          <Link
+            key={index}
+            to={link.path}
+            onClick={(e) => e.stopPropagation()}
+            className={`
+              px-2.5 py-1 text-xs font-medium rounded-full
+              transition-all duration-200
+              ${module.colorTheme.tagBg} ${module.colorTheme.tagText}
+              hover:scale-105 hover:shadow-sm
+            `}
+          >
+            {t(link.labelKey)}
+          </Link>
+        ))}
+      </div>
+
+      {/* CTA Button */}
+      <Link
+        to={module.path}
         className={`
-          mt-4 flex items-center text-sm font-medium
-          ${module.colorTheme.iconColor}
+          inline-flex items-center justify-center gap-2
+          px-4 py-2 rounded-lg text-sm font-medium
           transition-all duration-300
+          ${module.colorTheme.iconColor}
+          ${theme === 'dark'
+            ? 'bg-white/10 hover:bg-white/20'
+            : 'bg-gray-900/5 hover:bg-gray-900/10'}
         `}
       >
-        <span
+        <span>{cta}</span>
+        <ChevronRight
           className={`
-            transition-all duration-300
-            ${isHovered ? 'mr-2' : 'mr-0'}
+            w-4 h-4 transition-transform duration-300
+            ${isHovered ? 'translate-x-1' : 'translate-x-0'}
           `}
-        >
-          {t('common.explore')}
-        </span>
-        <svg
-          className={`
-            w-4 h-4 transition-all duration-300
-            ${isHovered ? 'translate-x-2 scale-110' : 'translate-x-0 scale-100'}
-          `}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-
-        {/* Trail effect on hover */}
-        <svg
-          className={`
-            w-4 h-4 absolute transition-all duration-500
-            ${isHovered ? 'translate-x-4 opacity-30' : 'translate-x-0 opacity-0'}
-          `}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          style={{ marginLeft: '1rem' }}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </div>
+        />
+      </Link>
 
       {/* Corner light beam decoration */}
       <div
@@ -369,7 +396,7 @@ function ModuleCard({
           background: `linear-gradient(90deg, transparent, ${GLOW_STYLES[module.colorTheme.glowColor]}, transparent)`,
         }}
       />
-    </Link>
+    </div>
   )
 }
 
@@ -659,7 +686,7 @@ export function HomePage() {
 
   // Track which module is hovered for beam effect
   const [activeModule, setActiveModule] = useState<ModuleEffectType | null>(null)
-  const cardRefs = useRef<Map<string, React.RefObject<HTMLAnchorElement | null>>>(new Map())
+  const cardRefs = useRef<Map<string, React.RefObject<HTMLDivElement | null>>>(new Map())
 
   // Get or create a ref for each module card
   const getCardRef = useCallback((moduleId: string) => {
