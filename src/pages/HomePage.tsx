@@ -27,6 +27,8 @@ type AnimatedIconComponent = React.ComponentType<{
 interface ModuleConfig {
   id: string
   titleKey: string
+  titleZhKey: string
+  subtitleKey: string
   descriptionKey: string
   path: string
   IconComponent: AnimatedIconComponent
@@ -47,6 +49,8 @@ const MODULES: ModuleConfig[] = [
     // 1. 实验内容与历史故事 (Experiments & Chronicles)
     id: 'history',
     titleKey: 'home.modules.history.title',
+    titleZhKey: 'home.modules.history.titleZh',
+    subtitleKey: 'home.modules.history.subtitle',
     descriptionKey: 'home.modules.history.description',
     path: '/education',
     IconComponent: HistoryModuleIcon,
@@ -65,6 +69,8 @@ const MODULES: ModuleConfig[] = [
     // 2. 光学器件和典型光路 (Optical Arsenal)
     id: 'arsenal',
     titleKey: 'home.modules.arsenal.title',
+    titleZhKey: 'home.modules.arsenal.titleZh',
+    subtitleKey: 'home.modules.arsenal.subtitle',
     descriptionKey: 'home.modules.arsenal.description',
     path: '/arsenal',
     IconComponent: ArsenalModuleIcon,
@@ -83,6 +89,8 @@ const MODULES: ModuleConfig[] = [
     // 3. 基本理论和计算模拟 (Theory & Simulation)
     id: 'theory',
     titleKey: 'home.modules.theory.title',
+    titleZhKey: 'home.modules.theory.titleZh',
+    subtitleKey: 'home.modules.theory.subtitle',
     descriptionKey: 'home.modules.theory.description',
     path: '/theory',
     IconComponent: TheoryModuleIcon,
@@ -101,6 +109,8 @@ const MODULES: ModuleConfig[] = [
     // 4. 课程内容的游戏化改造 (Gamification)
     id: 'games',
     titleKey: 'home.modules.games.title',
+    titleZhKey: 'home.modules.games.titleZh',
+    subtitleKey: 'home.modules.games.subtitle',
     descriptionKey: 'home.modules.games.description',
     path: '/games',
     IconComponent: GamesModuleIcon,
@@ -119,6 +129,8 @@ const MODULES: ModuleConfig[] = [
     // 5. 成果展示 (Showcase & Gallery)
     id: 'gallery',
     titleKey: 'home.modules.gallery.title',
+    titleZhKey: 'home.modules.gallery.titleZh',
+    subtitleKey: 'home.modules.gallery.subtitle',
     descriptionKey: 'home.modules.gallery.description',
     path: '/gallery',
     IconComponent: GalleryModuleIcon,
@@ -137,6 +149,8 @@ const MODULES: ModuleConfig[] = [
     // 6. 虚拟课题组 (Virtual Lab & Research)
     id: 'research',
     titleKey: 'home.modules.research.title',
+    titleZhKey: 'home.modules.research.titleZh',
+    subtitleKey: 'home.modules.research.subtitle',
     descriptionKey: 'home.modules.research.description',
     path: '/research',
     IconComponent: ResearchModuleIcon,
@@ -251,16 +265,27 @@ function ModuleCard({
         />
       </div>
 
-      {/* Title with subtle animation */}
+      {/* Title with subtle animation - "Trace · 追溯" format */}
       <h3
         className={`
-          text-lg font-bold text-gray-900 dark:text-white mb-2
+          text-lg font-bold text-gray-900 dark:text-white mb-1
           transition-all duration-300
           ${isHovered ? 'translate-x-1' : 'translate-x-0'}
         `}
       >
-        {t(module.titleKey)}
+        {t(module.titleKey)} · {t(module.titleZhKey)}
       </h3>
+
+      {/* Subtitle - original module category */}
+      <span
+        className={`
+          text-xs font-medium mb-2 block
+          ${module.colorTheme.iconColor}
+          opacity-80
+        `}
+      >
+        {t(module.subtitleKey)}
+      </span>
 
       {/* Description */}
       <p
@@ -391,6 +416,46 @@ export function HomePage() {
           <PolarCraftLogo size={80} theme={theme} animated />
         </div>
 
+        {/* Badges */}
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          <span
+            className={`px-3 py-1 text-xs font-medium rounded-full ${
+              theme === 'dark'
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'bg-cyan-100 text-cyan-700'
+            }`}
+          >
+            {t('home.hero.badges.course')}
+          </span>
+          <span
+            className={`px-3 py-1 text-xs font-medium rounded-full ${
+              theme === 'dark'
+                ? 'bg-purple-500/20 text-purple-300'
+                : 'bg-purple-100 text-purple-700'
+            }`}
+          >
+            {t('home.hero.badges.badge1')}
+          </span>
+          <span
+            className={`px-3 py-1 text-xs font-medium rounded-full ${
+              theme === 'dark'
+                ? 'bg-emerald-500/20 text-emerald-300'
+                : 'bg-emerald-100 text-emerald-700'
+            }`}
+          >
+            {t('home.hero.badges.badge2')}
+          </span>
+          <span
+            className={`px-3 py-1 text-xs font-medium rounded-full ${
+              theme === 'dark'
+                ? 'bg-amber-500/20 text-amber-300'
+                : 'bg-amber-100 text-amber-700'
+            }`}
+          >
+            {t('home.hero.badges.badge3')}
+          </span>
+        </div>
+
         {/* Title */}
         <h1
           className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${
@@ -404,11 +469,33 @@ export function HomePage() {
 
         {/* Subtitle */}
         <p
-          className={`text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          className={`text-lg sm:text-xl font-medium mb-6 ${
+            theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
           }`}
         >
           {t('home.hero.subtitle')}
+        </p>
+
+        {/* Narrative Intro */}
+        <div
+          className={`max-w-2xl mx-auto space-y-2 text-base leading-relaxed ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          }`}
+        >
+          <p>{t('home.hero.intro1')}</p>
+          <p>{t('home.hero.intro2')}</p>
+          <p>{t('home.hero.intro3')}</p>
+        </div>
+
+        {/* Tagline */}
+        <p
+          className={`mt-4 text-lg font-semibold ${
+            theme === 'dark'
+              ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400'
+              : 'text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600'
+          }`}
+        >
+          {t('home.hero.tagline')}
         </p>
       </header>
 

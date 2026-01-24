@@ -26,32 +26,52 @@
     "description": "A gamified education and open science platform based on real polarization physics. From stories to simulations, from puzzles to experiments, from gaming to frontier research in a virtual lab group — explore the fascinating world of polarized light.",
     "hero": {
       "title": "The New World Under Polarized Light",
-      "subtitle": "A gamified education and open science platform for polarization optics — from classic experiments to frontier research, explore the fascinating world of polarized light."
+      "subtitle": "This is not a course, it's an adventure.",
+      "intro1": "1669, Denmark. A transparent crystal from Iceland split a beam of light in two.",
+      "intro2": "At that moment, the hidden dimension of light was revealed for the first time — polarization.",
+      "intro3": "Three hundred years later, we put this legend in your hands:",
+      "tagline": "Your journey begins here.",
+      "badges": {
+        "org": "Shenzhen 01 Academy · Innovation Challenge Camp",
+        "features": "Gamified Education · Scientific Practice · Research-based Learning"
+      }
     },
     "modules": {
       "history": {
-        "title": "History & Experiments",
-        "description": "Recreate classic optical experiments since 1669, exploring the physical essence from a historical perspective."
+        "title": "Trace",
+        "titleZh": "追溯",
+        "subtitle": "History & Experiments",
+        "description": "In 1669, an Icelandic crystal began the journey of exploring polarized light. Here, you can travel back to the masters' laboratories — using their conditions, reading their data, following their reasoning. Not reading history, but remaking history with your own hands. From Malus's windowsill to Brewster's reflection experiment, every discovery awaits your recreation."
       },
       "arsenal": {
-        "title": "Optical Arsenal",
-        "description": "Explore commercial polarization components, learn principles and build typical application optical paths."
+        "title": "Gather",
+        "titleZh": "收集",
+        "subtitle": "Optical Components",
+        "description": "Polarizers, waveplates, beam splitters, analyzers... these aren't just textbook terms, but real optical components you can buy and use. Open this component encyclopedia to see each device's working principle, real photos, typical optical paths, and application scenarios. Before building your experiment, come here to pick your equipment."
       },
       "theory": {
-        "title": "Theory & Simulation",
-        "description": "Interactive physics demos and calculation tools — change parameters and instantly verify Jones matrices and Stokes parameters."
+        "title": "Decode",
+        "titleZh": "解码",
+        "subtitle": "Theory & Simulation",
+        "description": "Can't understand the formulas? That's because they haven't moved yet. Here, Jones matrices can be dragged, Stokes parameters change in real-time, and the Poincaré sphere can rotate 360°. Drag a slider, change a parameter, see results instantly — no memorization needed, build intuition through play. 20+ interactive demos covering core concepts of polarization optics."
       },
       "games": {
-        "title": "Gamification",
-        "description": "Master optical principles through game challenges in PolarQuest and PolarCraft."
+        "title": "Conquer",
+        "titleZh": "征服",
+        "subtitle": "Puzzle Games",
+        "description": "Light is your weapon, polarizers are your shield, every level is an intellectual showdown. Plan light paths in 2D puzzles, build devices in 3D worlds, use strategy in card battles, crack mechanisms in escape rooms. Don't learn then play — learn by playing. Four game modes with progressive difficulty, waiting for your challenge."
       },
       "gallery": {
-        "title": "Showcase",
-        "description": "Student personalized research showcase, including chromatic polarization art, creative products and DIY devices."
+        "title": "Shine",
+        "titleZh": "闪耀",
+        "subtitle": "Showcase",
+        "description": "What you learn becomes real when you make it. Chromatic polarization art, tape birefringence works, phone screen polarization experiments, DIY simple polarization devices... this is your stage to showcase creativity. Turn your 'aha moments' into works and let more people see them. Outstanding works may even be featured in other modules of the platform."
       },
       "research": {
-        "title": "Virtual Lab",
-        "description": "Participate in ESRT/ORIC level research topics, record data and analyze like a scientist."
+        "title": "Venture",
+        "titleZh": "冒险",
+        "subtitle": "Virtual Lab Group",
+        "description": "Real research is never a solo journey. Here, you can find like-minded teammates to tackle research topics from beginner to advanced. Start by validating a small idea, design complete experimental plans, write research reports — work like a real researcher. Self-organized teams, division of labor, problem-solving, reflection and iteration — unlock research capabilities through practice."
       }
     },
     "chronicles": {
