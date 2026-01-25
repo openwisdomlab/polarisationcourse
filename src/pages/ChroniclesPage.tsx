@@ -17,7 +17,7 @@ import {
   Clock, MapPin,
   FlaskConical, BookOpen,
   Sun, Sparkles, Camera, Film,
-  Beaker
+  Beaker, Users, Share2, Compass
 } from 'lucide-react'
 
 // Data imports
