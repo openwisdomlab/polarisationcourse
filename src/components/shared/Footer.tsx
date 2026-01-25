@@ -10,8 +10,10 @@ import { cn } from '@/lib/utils'
 import { Github, ExternalLink, Mail, Sparkles } from 'lucide-react'
 
 // 偏振光知识和历史事件数据
+type CoolFactType = 'knowledge' | 'history' | 'experiment' | 'daily'
+
 interface CoolFact {
-  type: 'knowledge' | 'history'
+  type: CoolFactType
   year?: number
   titleEn: string
   titleZh: string
@@ -143,30 +145,141 @@ const COOL_FACTS: CoolFact[] = [
     contentEn: 'Light from rainbows is partially polarized, especially at 42° from the sun',
     contentZh: '彩虹的光是部分偏振的，尤其在与太阳成42°角时',
   },
+  // 小实验 - Simple experiments
+  {
+    type: 'experiment',
+    titleEn: 'Tape Art Experiment',
+    titleZh: '胶带艺术实验',
+    contentEn: 'Layer transparent tape on glass, view between crossed polarizers to create colorful birefringence art',
+    contentZh: '在玻璃上层叠透明胶带，用交叉偏振片观察，可以创造出彩色双折射艺术',
+  },
+  {
+    type: 'experiment',
+    titleEn: 'Screen Polarization Test',
+    titleZh: '屏幕偏振测试',
+    contentEn: 'Rotate polarized sunglasses in front of your phone screen — watch it go dark at 90°!',
+    contentZh: '在手机屏幕前旋转偏振太阳镜——旋转90°时屏幕会变黑！',
+  },
+  {
+    type: 'experiment',
+    titleEn: 'Sugar Water Rotation',
+    titleZh: '糖水旋光实验',
+    contentEn: 'Shine light through sugar water between polarizers — different concentrations create different colors',
+    contentZh: '让光线穿过偏振片之间的糖水——不同浓度会产生不同颜色',
+  },
+  {
+    type: 'experiment',
+    titleEn: 'Plastic Stress Patterns',
+    titleZh: '塑料应力图案',
+    contentEn: 'Bend a clear plastic ruler between crossed polarizers to see rainbow stress patterns',
+    contentZh: '在交叉偏振片间弯曲透明塑料尺，可以看到彩虹应力图案',
+  },
+  {
+    type: 'experiment',
+    titleEn: 'Sky Polarization Map',
+    titleZh: '天空偏振地图',
+    contentEn: 'Use polarized sunglasses to scan the sky — the polarization pattern changes with sun position',
+    contentZh: '用偏振太阳镜扫描天空——偏振图案会随太阳位置变化',
+  },
+  // 生活中的偏振 - Polarization in daily life
+  {
+    type: 'daily',
+    titleEn: 'Camera Filters',
+    titleZh: '相机偏振滤镜',
+    contentEn: 'Photographers use polarizing filters to reduce reflections and enhance sky contrast',
+    contentZh: '摄影师使用偏振滤镜减少反射并增强天空对比度',
+  },
+  {
+    type: 'daily',
+    titleEn: 'Car Windshields',
+    titleZh: '汽车挡风玻璃',
+    contentEn: 'Some car windshields have polarizing layers to reduce dashboard reflections',
+    contentZh: '一些汽车挡风玻璃有偏振涂层，用于减少仪表盘反射',
+  },
+  {
+    type: 'daily',
+    titleEn: 'Fishing Glasses',
+    titleZh: '钓鱼眼镜',
+    contentEn: 'Anglers use polarized glasses to see through water surface glare and spot fish',
+    contentZh: '钓鱼者使用偏振眼镜穿透水面眩光来发现鱼',
+  },
+  {
+    type: 'daily',
+    titleEn: 'LCD Displays Everywhere',
+    titleZh: '无处不在的液晶屏',
+    contentEn: 'Every LCD screen uses two polarizers — your phone, laptop, TV, and digital watch',
+    contentZh: '每个液晶屏都使用两个偏振片——你的手机、笔记本、电视和电子手表',
+  },
+  {
+    type: 'daily',
+    titleEn: 'Stress Testing Glass',
+    titleZh: '玻璃应力检测',
+    contentEn: 'Engineers use polarized light to detect stress in glass windows and safety equipment',
+    contentZh: '工程师使用偏振光检测玻璃窗和安全设备中的应力',
+  },
+  {
+    type: 'daily',
+    titleEn: 'Scientific Microscopy',
+    titleZh: '科学显微镜',
+    contentEn: 'Geologists identify minerals using polarizing microscopes — each crystal has unique patterns',
+    contentZh: '地质学家使用偏光显微镜鉴定矿物——每种晶体都有独特图案',
+  },
 ]
 
-// 根据localStorage存储和时间控制cool fact显示
-function useCoolFact() {
-  const [factIndex] = useState<number>(() => {
+// 分类数组
+const FACT_CATEGORIES: CoolFactType[] = ['history', 'knowledge', 'experiment', 'daily']
+
+// 获取指定类型的所有facts
+function getFactsByType(type: CoolFactType): CoolFact[] {
+  return COOL_FACTS.filter(f => f.type === type)
+}
+
+// 类型标签配置
+const TYPE_LABELS: Record<CoolFactType, { en: string; zh: string }> = {
+  history: { en: 'History', zh: '历史' },
+  knowledge: { en: 'Fun Fact', zh: '知识' },
+  experiment: { en: 'Try It', zh: '小实验' },
+  daily: { en: 'Daily Life', zh: '生活应用' },
+}
+
+// 根据localStorage存储和时间控制cool fact显示 - 返回两个不同类型的facts
+function useCoolFacts(): [CoolFact, CoolFact] {
+  const [facts] = useState<[CoolFact, CoolFact]>(() => {
     // 检查localStorage中的存储
-    const stored = localStorage.getItem('polarcraft_cool_fact')
+    const stored = localStorage.getItem('polarcraft_cool_facts_v2')
     if (stored) {
-      const { index, timestamp } = JSON.parse(stored)
+      const { indices, types, timestamp } = JSON.parse(stored)
       // 如果存储时间小于1小时，使用存储的索引
       if (Date.now() - timestamp < 3600000) {
-        return index
+        const factsByType1 = getFactsByType(types[0])
+        const factsByType2 = getFactsByType(types[1])
+        if (factsByType1[indices[0]] && factsByType2[indices[1]]) {
+          return [factsByType1[indices[0]], factsByType2[indices[1]]]
+        }
       }
     }
-    // 否则生成新的随机索引
-    const newIndex = Math.floor(Math.random() * COOL_FACTS.length)
-    localStorage.setItem('polarcraft_cool_fact', JSON.stringify({
-      index: newIndex,
+
+    // 随机选择两个不同的类型
+    const shuffledTypes = [...FACT_CATEGORIES].sort(() => Math.random() - 0.5)
+    const type1 = shuffledTypes[0]
+    const type2 = shuffledTypes[1]
+
+    // 从每个类型中随机选择一个fact
+    const facts1 = getFactsByType(type1)
+    const facts2 = getFactsByType(type2)
+    const index1 = Math.floor(Math.random() * facts1.length)
+    const index2 = Math.floor(Math.random() * facts2.length)
+
+    localStorage.setItem('polarcraft_cool_facts_v2', JSON.stringify({
+      indices: [index1, index2],
+      types: [type1, type2],
       timestamp: Date.now()
     }))
-    return newIndex
+
+    return [facts1[index1], facts2[index2]]
   })
 
-  return COOL_FACTS[factIndex]
+  return facts
 }
 
 // About section links
@@ -179,16 +292,97 @@ interface FooterLink {
 }
 
 const ABOUT_LINKS: FooterLink[] = [
-  { labelKey: 'Open Wisdom Lab', labelZh: '开悟工坊', path: 'https://openwisdom.cn', external: true, icon: 'external' },
   { labelKey: 'GitHub', labelZh: 'GitHub', path: 'https://github.com/openwisdomlab/polarisationcourse', external: true, icon: 'github' },
-  { labelKey: 'Feedback', labelZh: '反馈建议', path: 'https://github.com/openwisdomlab/polarisationcourse/issues', external: true, icon: 'mail' },
 ]
+
+// 单个fact卡片组件
+function FactCard({ fact, theme, isZh }: { fact: CoolFact; theme: 'dark' | 'light'; isZh: boolean }) {
+  const typeColors: Record<CoolFactType, { bg: string; text: string; iconBg: string; iconColor: string }> = {
+    history: {
+      bg: theme === 'dark' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-100 text-amber-700',
+      text: theme === 'dark' ? 'text-amber-400' : 'text-amber-600',
+      iconBg: theme === 'dark' ? 'bg-amber-500/20' : 'bg-amber-100',
+      iconColor: theme === 'dark' ? 'text-amber-400' : 'text-amber-600',
+    },
+    knowledge: {
+      bg: theme === 'dark' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-cyan-100 text-cyan-700',
+      text: theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600',
+      iconBg: theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100',
+      iconColor: theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600',
+    },
+    experiment: {
+      bg: theme === 'dark' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-100 text-emerald-700',
+      text: theme === 'dark' ? 'text-emerald-400' : 'text-emerald-600',
+      iconBg: theme === 'dark' ? 'bg-emerald-500/20' : 'bg-emerald-100',
+      iconColor: theme === 'dark' ? 'text-emerald-400' : 'text-emerald-600',
+    },
+    daily: {
+      bg: theme === 'dark' ? 'bg-violet-500/20 text-violet-300' : 'bg-violet-100 text-violet-700',
+      text: theme === 'dark' ? 'text-violet-400' : 'text-violet-600',
+      iconBg: theme === 'dark' ? 'bg-violet-500/20' : 'bg-violet-100',
+      iconColor: theme === 'dark' ? 'text-violet-400' : 'text-violet-600',
+    },
+  }
+
+  const colors = typeColors[fact.type]
+
+  return (
+    <div className="flex items-start gap-3">
+      <div
+        className={cn(
+          'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center',
+          colors.iconBg
+        )}
+      >
+        <Sparkles className={cn('w-4 h-4', colors.iconColor)} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          {fact.year && (
+            <span className={cn('text-sm font-bold tabular-nums', colors.text)}>
+              {fact.year}
+            </span>
+          )}
+          <span className={cn('text-xs px-1.5 py-0.5 rounded', colors.bg)}>
+            {isZh ? TYPE_LABELS[fact.type].zh : TYPE_LABELS[fact.type].en}
+          </span>
+        </div>
+        <h4
+          className={cn(
+            'text-sm font-semibold mb-1',
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          )}
+        >
+          {isZh ? fact.titleZh : fact.titleEn}
+        </h4>
+        <p
+          className={cn(
+            'text-xs leading-relaxed',
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+          )}
+        >
+          {isZh ? fact.contentZh : fact.contentEn}
+        </p>
+        {fact.scientistEn && (
+          <p
+            className={cn(
+              'text-[10px] italic mt-1',
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            )}
+          >
+            — {isZh ? fact.scientistZh : fact.scientistEn}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export function Footer() {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
-  const coolFact = useCoolFact()
+  const [fact1, fact2] = useCoolFacts()
 
   const getIcon = (iconType?: string) => {
     switch (iconType) {
@@ -209,7 +403,7 @@ export function Footer() {
       )}
     >
       <div className="max-w-4xl mx-auto">
-        {/* Cool Fact Section */}
+        {/* Cool Facts Section - Two columns with different categories */}
         <div
           className={cn(
             'mb-6 p-4 rounded-xl',
@@ -218,76 +412,9 @@ export function Footer() {
               : 'bg-white/70 border border-gray-200'
           )}
         >
-          <div className="flex items-start gap-3">
-            <div
-              className={cn(
-                'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center',
-                coolFact.type === 'history'
-                  ? theme === 'dark' ? 'bg-amber-500/20' : 'bg-amber-100'
-                  : theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-100'
-              )}
-            >
-              <Sparkles
-                className={cn(
-                  'w-4 h-4',
-                  coolFact.type === 'history'
-                    ? theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                    : theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                )}
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                {coolFact.year && (
-                  <span
-                    className={cn(
-                      'text-sm font-bold tabular-nums',
-                      theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                    )}
-                  >
-                    {coolFact.year}
-                  </span>
-                )}
-                <span
-                  className={cn(
-                    'text-xs px-1.5 py-0.5 rounded',
-                    coolFact.type === 'history'
-                      ? theme === 'dark' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-100 text-amber-700'
-                      : theme === 'dark' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-cyan-100 text-cyan-700'
-                  )}
-                >
-                  {coolFact.type === 'history'
-                    ? (isZh ? '历史' : 'History')
-                    : (isZh ? '知识' : 'Fun Fact')}
-                </span>
-              </div>
-              <h4
-                className={cn(
-                  'text-sm font-semibold mb-1',
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                )}
-              >
-                {isZh ? coolFact.titleZh : coolFact.titleEn}
-              </h4>
-              <p
-                className={cn(
-                  'text-xs leading-relaxed',
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                )}
-              >
-                {isZh ? coolFact.contentZh : coolFact.contentEn}
-              </p>
-              {coolFact.scientistEn && (
-                <p
-                  className={cn(
-                    'text-[10px] italic mt-1',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                  )}
-                >
-                  — {isZh ? coolFact.scientistZh : coolFact.scientistEn}
-                </p>
-              )}
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <FactCard fact={fact1} theme={theme} isZh={isZh} />
+            <FactCard fact={fact2} theme={theme} isZh={isZh} />
           </div>
         </div>
 
