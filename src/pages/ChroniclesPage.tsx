@@ -42,13 +42,14 @@ import {
 } from '@/components/chronicles'
 
 const TABS = [
+  { id: 'resources', label: 'Experiment Gallery', labelZh: '实验资源库', icon: <Beaker className="w-4 h-4" /> },
   { id: 'timeline', label: 'Timeline', labelZh: '时间线', icon: <Clock className="w-4 h-4" /> },
   { id: 'psrt', label: 'P-SRT Course', labelZh: 'P-SRT课程', icon: <BookOpen className="w-4 h-4" /> },
-  { id: 'scientists', label: 'Scientists', labelZh: '科学家网络', icon: <Users className="w-4 h-4" /> },
-  { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Share2 className="w-4 h-4" /> },
-  { id: 'exploration', label: 'Exploration', labelZh: '探索模式', icon: <Compass className="w-4 h-4" /> },
   { id: 'experiments', label: 'Key Experiments', labelZh: '关键实验', icon: <FlaskConical className="w-4 h-4" /> },
-  { id: 'resources', label: 'Experiment Gallery', labelZh: '实验资源库', icon: <Beaker className="w-4 h-4" /> },
+  // Hidden tabs - can be restored later by uncommenting:
+  // { id: 'scientists', label: 'Scientists', labelZh: '科学家网络', icon: <Users className="w-4 h-4" /> },
+  // { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Share2 className="w-4 h-4" /> },
+  // { id: 'exploration', label: 'Exploration', labelZh: '探索模式', icon: <Compass className="w-4 h-4" /> },
 ]
 
 export function ChroniclesPage() {
@@ -56,7 +57,7 @@ export function ChroniclesPage() {
   const { i18n } = useTranslation()
   const { isMobile, isTablet } = useIsMobile()
   const isZh = i18n.language === 'zh'
-  const [activeTab, setActiveTab] = useState('timeline')
+  const [activeTab, setActiveTab] = useState('resources')
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
@@ -435,7 +436,7 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Demo Navigator - 光学演示馆导航 (Desktop only, left side) */}
+            {/* Demo Navigator - 光学演示馆导航 (Desktop only, left side) - Hidden, can be restored later by uncommenting:
             {!useSingleTrack && (
               <DemoNavigator
                 selectedDemos={selectedDemos}
@@ -444,6 +445,7 @@ export function ChroniclesPage() {
                 onEventClick={handleEventClickFromNav}
               />
             )}
+            */}
 
             {/* Century Navigator - 世纪导航 (Desktop only, right side) */}
             {!useSingleTrack && (
@@ -723,6 +725,7 @@ export function ChroniclesPage() {
           </>
         )}
 
+        {/* Hidden tabs - can be restored later by uncommenting the tabs in TABS array above:
         {activeTab === 'scientists' && (
           <ScientistNetwork
             theme={theme}
@@ -754,6 +757,7 @@ export function ChroniclesPage() {
             onSelectScientist={handleSelectScientistFromExploration}
           />
         )}
+        */}
 
         {activeTab === 'experiments' && (
           <div className="space-y-4">
