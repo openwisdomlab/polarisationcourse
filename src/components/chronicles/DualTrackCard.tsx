@@ -16,8 +16,7 @@ import {
 import { Badge } from '@/components/shared'
 import { CATEGORY_LABELS, ILLUSTRATION_TO_DEMO_MAP, ILLUSTRATION_TO_BENCH_MAP } from '@/data/chronicles-constants'
 import type { TimelineEvent } from '@/data/timeline-events'
-import { ExperimentIllustration } from './ExperimentIllustration'
-import { ResourceGallery } from './ResourceGallery'
+// ExperimentIllustration and ResourceGallery removed - content unified in Experiment Resources Tab
 import { getDemosByEvent, UNIT_INFO } from '@/data/course-event-mapping'
 
 export interface DualTrackCardProps {
@@ -167,15 +166,7 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
             {isZh ? event.descriptionZh : event.descriptionEn}
           </p>
 
-          {/* Illustration */}
-          {event.illustrationType && (
-            <div className={cn(
-              'mb-3 p-2 rounded-lg flex items-center justify-center',
-              theme === 'dark' ? 'bg-slate-800/50' : 'bg-white/50'
-            )}>
-              <ExperimentIllustration type={event.illustrationType} className="w-full max-w-[180px] h-auto" />
-            </div>
-          )}
+          {/* Illustration - 已移除演示SVG图，相关资源统一在实验资源库展示 */}
 
           {/* Details */}
           {event.details && (
@@ -216,15 +207,7 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
             </div>
           )}
 
-          {/* Compact Resource Gallery - 紧凑资源画廊 */}
-          {event.experimentalResources && (
-            <ResourceGallery
-              resources={event.experimentalResources}
-              isZh={isZh}
-              theme={theme}
-              compact
-            />
-          )}
+          {/* Resource Gallery - 已移除，相关资源统一在实验资源库展示 */}
 
           {/* 关联课程模块 */}
           {relatedDemos.length > 0 && (
