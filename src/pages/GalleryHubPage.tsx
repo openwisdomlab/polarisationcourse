@@ -235,7 +235,8 @@ export function GalleryHubPage() {
     )}>
       {/* Header */}
       <PersistentHeader
-        moduleName={isZh ? '作品展示' : 'Showcase'}
+        moduleKey="creativeLab"
+        moduleName={isZh ? '偏振造物局' : 'Polarization Workshop'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',

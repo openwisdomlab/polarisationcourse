@@ -253,7 +253,7 @@ export function ChroniclesPage() {
       {/* Header with Persistent Logo */}
       <PersistentHeader
         moduleKey="chronicles"
-        moduleName={isZh ? '历史和实验' : 'History & Experiments'}
+        moduleName={isZh ? '光的编年史' : 'Chronicles of Light'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',
