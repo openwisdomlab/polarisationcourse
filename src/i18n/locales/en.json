@@ -40,31 +40,31 @@
       "history": {
         "title": "Trace",
         "titleZh": "追溯",
-        "subtitle": "Chronicles of Light",
+        "subtitle": "History & Experiments",
         "description": "Journey through 350 years of optics history. From Iceland spar double images to Malus's Law, each story connects to a hands-on experiment. Don't just read history — recreate the moments that changed the world."
       },
       "arsenal": {
         "title": "Gather",
         "titleZh": "工坊",
-        "subtitle": "Optical Design Studio",
+        "subtitle": "Optical Devices",
         "description": "80+ polarization devices catalog with principles and applications. Build optical paths freely on the virtual bench, simulate classic experiments, and turn textbook diagrams into interactive experiences."
       },
       "theory": {
         "title": "Decode",
         "titleZh": "解码",
-        "subtitle": "Demo Gallery",
+        "subtitle": "Theory & Simulation",
         "description": "20+ interactive demos that bring abstract formulas to life. Drag parameters to see Malus's Law in action, rotate waveplates to observe polarization changes, trace light on the Poincaré sphere — build intuition through hands-on exploration."
       },
       "games": {
         "title": "Conquer",
         "titleZh": "挑战",
-        "subtitle": "PolarQuest",
+        "subtitle": "Game Challenges",
         "description": "Turn physics principles into winning strategies. Plan light paths in 2D levels, build devices in 3D voxels, battle with cards, escape from puzzle rooms — four game modes with progressive difficulty."
       },
       "gallery": {
         "title": "Shine",
         "titleZh": "创作",
-        "subtitle": "Polarization Workshop",
+        "subtitle": "Achievements",
         "description": "Transform learning into creation. Tape birefringence art, polarization photography, phone screen experiments, DIY devices... showcase your creativity. Outstanding works get featured on the platform."
       },
       "research": {
@@ -75,7 +75,7 @@
       }
     },
     "chronicles": {
-      "title": "Chronicles of Light",
+      "title": "History & Experiments",
       "subtitle": "Historical Stories × Classic Experiments",
       "description": "Journey through 350 years of optics history. Each story connects to a hands-on experiment — recreate the moments that changed the world.",
       "cta": "Explore",
@@ -84,7 +84,7 @@
       "link3": "Polarization Journey"
     },
     "opticalDesignStudio": {
-      "title": "Optical Design Studio",
+      "title": "Optical Devices",
       "subtitle": "Device Catalog × Light Path Design",
       "description": "80+ device catalog, virtual optical bench. Turn textbook diagrams into interactive experiences you can build and explore.",
       "cta": "Enter Studio",
@@ -93,7 +93,7 @@
       "link3": "Free Design"
     },
     "formulaLab": {
-      "title": "Demo Gallery",
+      "title": "Theory & Simulation",
       "subtitle": "Interactive Demos × Computational Simulation",
       "description": "20+ interactive demos bring formulas to life. Drag parameters, rotate waveplates, trace light paths — build intuition through exploration.",
       "cta": "Start Exploring",
@@ -102,7 +102,7 @@
       "link3": "Stokes Vector"
     },
     "polarquest": {
-      "title": "PolarQuest",
+      "title": "Game Challenges",
       "subtitle": "Puzzle Game × Polarization Strategy",
       "description": "Physics becomes strategy. 2D paths, 3D voxels, card battles, escape rooms — four game modes with progressive difficulty.",
       "cta": "Play Now",
@@ -111,7 +111,7 @@
       "link3": "Challenge Mode"
     },
     "creativeLab": {
-      "title": "Polarization Workshop",
+      "title": "Achievements",
       "subtitle": "Polarization Art × Creative Works",
       "description": "Transform learning into creation. Tape art, polarization photography, DIY devices... showcase your creativity. Outstanding works get featured.",
       "cta": "Enter Workshop",

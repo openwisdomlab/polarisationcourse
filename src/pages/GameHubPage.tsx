@@ -265,7 +265,7 @@ export function GameHubPage() {
       {/* Header with Persistent Logo */}
       <PersistentHeader
         moduleKey="polarquest"
-        moduleName={isZh ? '偏振光探秘' : 'PolarQuest'}
+        moduleName={isZh ? '游戏挑战' : 'Game Challenges'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',
