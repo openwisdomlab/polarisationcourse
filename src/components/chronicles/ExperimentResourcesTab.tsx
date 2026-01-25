@@ -168,7 +168,7 @@ const EXPLORATION_PATHS = [
 ]
 
 // 获取颜色类名
-function getColorClasses(color: string, theme: 'dark' | 'light', isActive: boolean) {
+function getColorClasses(color: string, theme: 'dark' | 'light', _isActive: boolean) {
   const colorMap: Record<string, { active: string; inactive: string; bg: string; border: string }> = {
     orange: {
       active: theme === 'dark' ? 'bg-orange-500/20 text-orange-400 border-orange-500/50' : 'bg-orange-100 text-orange-700 border-orange-300',
