@@ -427,7 +427,7 @@ export function Footer() {
           {/* Left: Logo and Copyright */}
           <div className="flex items-center gap-4">
             <img
-              src="/images/combined-logo.png"
+              src={theme === 'dark' ? '/images/combined-logo-white.png' : '/images/combined-logo.png'}
               alt="X-Institute & Open Wisdom Lab"
               className="h-10 w-auto"
             />
