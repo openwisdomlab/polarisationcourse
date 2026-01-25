@@ -318,7 +318,7 @@ function ModuleCard({
             className={`
               text-lg sm:text-xl font-bold leading-tight mb-1
               transition-all duration-300
-              ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
+              ${theme === 'dark' ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-gray-900'}
               ${isHovered ? 'translate-x-1' : 'translate-x-0'}
             `}
           >
@@ -326,13 +326,13 @@ function ModuleCard({
           </h3>
           {/* Subtitle (e.g., "追溯" / "Trace") */}
           <div className="flex items-center gap-1">
-            <span className={`text-xs font-medium ${module.colorTheme.iconColor}`}>
+            <span className={`text-xs font-medium ${module.colorTheme.iconColor} ${theme === 'dark' ? 'drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]' : ''}`}>
               {titleZh || titleEn}
             </span>
             {titleZh && (
               <>
-                <span className={`text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>·</span>
-                <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>·</span>
+                <span className={`text-xs ${theme === 'dark' ? 'text-gray-300 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]' : 'text-gray-500'}`}>
                   {titleEn}
                 </span>
               </>
@@ -346,8 +346,8 @@ function ModuleCard({
         className={`
           text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-1
           transition-all duration-300
-          ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}
-          ${isHovered ? (theme === 'dark' ? 'text-gray-300' : 'text-gray-700') : ''}
+          ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
+          ${isHovered ? (theme === 'dark' ? 'text-gray-200' : 'text-gray-700') : ''}
         `}
       >
         {description}
