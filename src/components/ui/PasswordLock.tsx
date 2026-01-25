@@ -1,65 +1,50 @@
 /**
- * PasswordLock - Entry password screen with polarizer puzzle
- * 密码锁组件 - 通过偏振片解谜输入密码进入
+ * PasswordLock - Entry password screen with dual polarizer puzzle
+ * 密码锁组件 - 通过调整两个偏振片观察光通过的场景来解开密码
+ *
+ * Physics simulation:
+ * - Light source emits unpolarized light
+ * - First polarizer (P1) filters light to linear polarization
+ * - Second polarizer (P2/Analyzer) follows Malus's Law: I = I₀ × cos²(θ)
+ * - Password becomes visible when intensity is high enough
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { Lock, Unlock, Eye, RotateCcw } from 'lucide-react'
+import { Lock, Unlock, RotateCcw, Info } from 'lucide-react'
 
 interface PasswordLockProps {
   onUnlock: () => void
   correctPassword?: string
 }
 
-// Character reveal based on polarizer angle alignment
-function PolarizedChar({
-  char,
-  polarizerAngle,
-  targetAngle,
-  theme,
-}: {
-  char: string
-  polarizerAngle: number
-  targetAngle: number
-  theme: 'dark' | 'light'
-}) {
-  // Calculate clarity based on Malus's Law: I = I₀ * cos²(θ)
-  const angleDiff = Math.abs(polarizerAngle - targetAngle)
-  const normalizedDiff = Math.min(angleDiff, 180 - angleDiff)
-  const clarity = Math.pow(Math.cos((normalizedDiff * Math.PI) / 180), 2)
-
-  return (
-    <span
-      className={cn(
-        'inline-block font-mono font-bold text-3xl md:text-4xl transition-all duration-300',
-        theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-      )}
-      style={{
-        opacity: 0.1 + clarity * 0.9,
-        filter: `blur(${(1 - clarity) * 8}px)`,
-        transform: `scale(${0.8 + clarity * 0.2})`,
-      }}
-    >
-      {char}
-    </span>
-  )
-}
-
-// Polarizer dial control
-function PolarizerDial({
+// Polarizer component with rotation handle
+function Polarizer({
+  id,
   angle,
   onChange,
-  theme,
+  label,
+  labelZh,
+  isZh,
+  color,
+  disabled = false,
 }: {
+  id: string
   angle: number
   onChange: (angle: number) => void
-  theme: 'dark' | 'light'
+  label: string
+  labelZh: string
+  isZh: boolean
+  color: string
+  disabled?: boolean
 }) {
   const [isDragging, setIsDragging] = useState(false)
 
-  const handleMouseDown = useCallback(() => setIsDragging(true), [])
+  const handleMouseDown = useCallback(() => {
+    if (!disabled) setIsDragging(true)
+  }, [disabled])
+
   const handleMouseUp = useCallback(() => setIsDragging(false), [])
 
   useEffect(() => {
@@ -68,7 +53,7 @@ function PolarizerDial({
     const handleMove = (e: MouseEvent | TouchEvent) => {
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-      const rect = document.getElementById('polarizer-dial')?.getBoundingClientRect()
+      const rect = document.getElementById(`polarizer-${id}`)?.getBoundingClientRect()
       if (rect) {
         const centerX = rect.left + rect.width / 2
         const centerY = rect.top + rect.height / 2
@@ -88,69 +73,369 @@ function PolarizerDial({
       window.removeEventListener('mouseup', handleMouseUp)
       window.removeEventListener('touchend', handleMouseUp)
     }
-  }, [isDragging, onChange, handleMouseUp])
+  }, [isDragging, onChange, handleMouseUp, id])
 
   return (
-    <div
-      id="polarizer-dial"
-      className={cn(
-        'relative w-32 h-32 rounded-full cursor-grab active:cursor-grabbing',
-        'border-4 transition-colors',
-        theme === 'dark'
-          ? 'border-cyan-500/50 bg-slate-800/50'
-          : 'border-cyan-400 bg-white/50'
-      )}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleMouseDown}
-    >
-      {/* Dial markings */}
-      {[0, 45, 90, 135].map((mark) => (
-        <div
-          key={mark}
-          className={cn(
-            'absolute w-0.5 h-3 left-1/2 -translate-x-1/2',
-            theme === 'dark' ? 'bg-gray-600' : 'bg-gray-400'
-          )}
-          style={{
-            top: '4px',
-            transformOrigin: 'center 60px',
-            transform: `rotate(${mark}deg)`,
-          }}
-        />
-      ))}
-
-      {/* Pointer */}
+    <div className="flex flex-col items-center">
       <div
-        className="absolute inset-4 rounded-full flex items-center justify-center"
-        style={{ transform: `rotate(${angle}deg)` }}
+        id={`polarizer-${id}`}
+        className={cn(
+          'relative w-24 h-24 md:w-28 md:h-28 rounded-full transition-all duration-200',
+          disabled ? 'cursor-not-allowed opacity-60' : 'cursor-grab active:cursor-grabbing',
+          isDragging && 'ring-4 ring-white/30 scale-105'
+        )}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleMouseDown}
+        style={{
+          background: `conic-gradient(from ${angle}deg,
+            transparent 0deg,
+            ${color}20 20deg,
+            ${color}40 40deg,
+            ${color}20 60deg,
+            transparent 80deg,
+            transparent 90deg,
+            transparent 180deg,
+            ${color}20 200deg,
+            ${color}40 220deg,
+            ${color}20 240deg,
+            transparent 260deg,
+            transparent 270deg,
+            transparent 360deg
+          )`,
+          border: `3px solid ${color}`,
+          boxShadow: `0 0 20px ${color}40, inset 0 0 30px ${color}20`,
+        }}
       >
+        {/* Polarization lines */}
         <div
-          className={cn(
-            'w-1 h-12 rounded-full',
-            theme === 'dark'
-              ? 'bg-gradient-to-t from-cyan-500 to-cyan-300'
-              : 'bg-gradient-to-t from-cyan-600 to-cyan-400'
-          )}
-          style={{ transformOrigin: 'center bottom', transform: 'translateY(-50%)' }}
+          className="absolute inset-2 rounded-full overflow-hidden"
+          style={{ transform: `rotate(${angle}deg)` }}
+        >
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute left-1/2 -translate-x-1/2 w-[2px] rounded-full"
+              style={{
+                height: '100%',
+                left: `${10 + i * 10}%`,
+                background: `linear-gradient(to bottom, transparent, ${color}60, transparent)`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Rotation indicator */}
+        <div
+          className="absolute inset-3 rounded-full flex items-start justify-center"
+          style={{ transform: `rotate(${angle}deg)` }}
+        >
+          <div
+            className="w-1.5 h-8 rounded-full"
+            style={{
+              background: `linear-gradient(to bottom, ${color}, ${color}60)`,
+              boxShadow: `0 0 8px ${color}`,
+            }}
+          />
+        </div>
+
+        {/* Center dot */}
+        <div
+          className="absolute top-1/2 left-1/2 w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ background: color, boxShadow: `0 0 10px ${color}` }}
         />
       </div>
 
-      {/* Center dot */}
-      <div
-        className={cn(
-          'absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full',
-          theme === 'dark' ? 'bg-cyan-400' : 'bg-cyan-500'
-        )}
+      {/* Label and angle */}
+      <div className="mt-3 text-center">
+        <div className="text-sm font-medium text-gray-300">
+          {isZh ? labelZh : label}
+        </div>
+        <div
+          className="text-lg font-mono font-bold"
+          style={{ color }}
+        >
+          {Math.round(angle)}°
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Light beam visualization passing through polarizers
+function LightBeamVisualization({
+  p1Angle,
+  p2Angle,
+  intensity,
+}: {
+  p1Angle: number
+  p2Angle: number
+  intensity: number
+}) {
+  // Generate wave points for the light beam
+  const generateWave = (startX: number, endX: number, amplitude: number, opacity: number) => {
+    const points: string[] = []
+    const segments = 40
+    for (let i = 0; i <= segments; i++) {
+      const x = startX + (endX - startX) * (i / segments)
+      const y = 50 + Math.sin((i / segments) * Math.PI * 8) * amplitude
+      points.push(`${x},${y}`)
+    }
+    return { points: points.join(' '), opacity }
+  }
+
+  // Light before P1: unpolarized (show multiple overlapping waves)
+  const unpolarizedWaves = useMemo(() => [
+    generateWave(0, 140, 15, 0.5),
+    generateWave(0, 140, 12, 0.4),
+    generateWave(0, 140, 10, 0.3),
+  ], [])
+
+  // Light between P1 and P2: polarized at P1 angle
+  const polarizedWave = useMemo(() =>
+    generateWave(160, 340, 12, 0.8)
+  , [])
+
+  // Light after P2: intensity based on Malus's Law
+  const outputWave = useMemo(() =>
+    generateWave(360, 500, 12 * intensity, intensity * 0.9)
+  , [intensity])
+
+  return (
+    <svg viewBox="0 0 500 100" className="w-full h-20 md:h-24">
+      <defs>
+        {/* Glow filter */}
+        <filter id="beam-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        {/* Light source gradient */}
+        <radialGradient id="light-source" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+          <stop offset="50%" stopColor="#fef08a" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.3" />
+        </radialGradient>
+
+        {/* Polarizer gradient */}
+        <linearGradient id="p1-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.1" />
+          <stop offset="50%" stopColor="#22d3ee" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.1" />
+        </linearGradient>
+        <linearGradient id="p2-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#a855f7" stopOpacity="0.1" />
+          <stop offset="50%" stopColor="#a855f7" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#a855f7" stopOpacity="0.1" />
+        </linearGradient>
+      </defs>
+
+      {/* Light source */}
+      <circle cx="10" cy="50" r="12" fill="url(#light-source)" filter="url(#beam-glow)" />
+
+      {/* Unpolarized light - multiple directions */}
+      <g opacity="0.7">
+        {unpolarizedWaves.map((wave, i) => (
+          <polyline
+            key={`unpol-${i}`}
+            points={wave.points}
+            fill="none"
+            stroke="#fef08a"
+            strokeWidth="2"
+            opacity={wave.opacity}
+            filter="url(#beam-glow)"
+            style={{
+              transform: `rotate(${i * 45}deg)`,
+              transformOrigin: '70px 50px',
+            }}
+          />
+        ))}
+      </g>
+
+      {/* First polarizer (P1) */}
+      <g transform={`rotate(${p1Angle}, 150, 50)`}>
+        <rect x="145" y="20" width="10" height="60" fill="url(#p1-gradient)" rx="2" />
+        {/* Polarization lines */}
+        {Array.from({ length: 5 }).map((_, i) => (
+          <line
+            key={`p1-line-${i}`}
+            x1="150"
+            y1={25 + i * 12}
+            x2="150"
+            y2={30 + i * 12}
+            stroke="#22d3ee"
+            strokeWidth="2"
+            opacity="0.6"
+          />
+        ))}
+      </g>
+
+      {/* Polarized light between P1 and P2 */}
+      <g style={{ transform: `rotate(${p1Angle}deg)`, transformOrigin: '250px 50px' }}>
+        <polyline
+          points={polarizedWave.points}
+          fill="none"
+          stroke="#22d3ee"
+          strokeWidth="2.5"
+          opacity={polarizedWave.opacity}
+          filter="url(#beam-glow)"
+        />
+      </g>
+
+      {/* Second polarizer (P2 / Analyzer) */}
+      <g transform={`rotate(${p2Angle}, 350, 50)`}>
+        <rect x="345" y="20" width="10" height="60" fill="url(#p2-gradient)" rx="2" />
+        {/* Polarization lines */}
+        {Array.from({ length: 5 }).map((_, i) => (
+          <line
+            key={`p2-line-${i}`}
+            x1="350"
+            y1={25 + i * 12}
+            x2="350"
+            y2={30 + i * 12}
+            stroke="#a855f7"
+            strokeWidth="2"
+            opacity="0.6"
+          />
+        ))}
+      </g>
+
+      {/* Output light - intensity based on Malus's Law */}
+      {intensity > 0.05 && (
+        <polyline
+          points={outputWave.points}
+          fill="none"
+          stroke={`rgba(168, 85, 247, ${0.5 + intensity * 0.5})`}
+          strokeWidth={1.5 + intensity * 2}
+          opacity={outputWave.opacity}
+          filter="url(#beam-glow)"
+        />
+      )}
+
+      {/* Detector/Screen */}
+      <rect
+        x="488"
+        y="30"
+        width="8"
+        height="40"
+        fill={`rgba(168, 85, 247, ${0.2 + intensity * 0.6})`}
+        stroke="#a855f7"
+        strokeWidth="1"
+        rx="2"
+        style={{
+          boxShadow: intensity > 0.5 ? `0 0 ${intensity * 20}px #a855f7` : 'none',
+        }}
       />
 
-      {/* Angle display */}
-      <div
-        className={cn(
-          'absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm font-mono',
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      {/* Labels */}
+      <text x="10" y="90" fill="#fbbf24" fontSize="8" textAnchor="middle" opacity="0.8">
+        Light
+      </text>
+      <text x="150" y="90" fill="#22d3ee" fontSize="8" textAnchor="middle" opacity="0.8">
+        P₁
+      </text>
+      <text x="350" y="90" fill="#a855f7" fontSize="8" textAnchor="middle" opacity="0.8">
+        P₂
+      </text>
+    </svg>
+  )
+}
+
+// Intensity meter with Malus's Law formula
+function IntensityMeter({
+  intensity,
+  angleDiff,
+  isZh,
+}: {
+  intensity: number
+  angleDiff: number
+  isZh: boolean
+}) {
+  const percentage = Math.round(intensity * 100)
+  const barColor = intensity > 0.7 ? '#22c55e' : intensity > 0.3 ? '#eab308' : '#ef4444'
+
+  return (
+    <div className="w-full max-w-sm">
+      {/* Formula display */}
+      <div className="text-center mb-3 px-4 py-2 bg-slate-800/50 rounded-lg border border-slate-700">
+        <div className="text-xs text-gray-400 mb-1">
+          {isZh ? '马吕斯定律' : "Malus's Law"}
+        </div>
+        <div className="font-mono text-sm text-cyan-400">
+          I = I₀ × cos²({Math.round(angleDiff)}°) = <span className="text-white font-bold">{percentage}%</span>
+        </div>
+      </div>
+
+      {/* Intensity bar */}
+      <div className="relative h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+        <div
+          className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+          style={{
+            width: `${percentage}%`,
+            background: `linear-gradient(90deg, ${barColor}80, ${barColor})`,
+            boxShadow: `0 0 10px ${barColor}60`,
+          }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-xs font-mono font-bold text-white drop-shadow-lg">
+            {percentage}%
+          </span>
+        </div>
+      </div>
+
+      {/* Status text */}
+      <div className="text-center mt-2 text-xs">
+        {intensity > 0.9 ? (
+          <span className="text-emerald-400 font-medium">
+            {isZh ? '[ 光束最强 - 密码可见 ]' : '[ Maximum brightness - Password visible ]'}
+          </span>
+        ) : intensity > 0.5 ? (
+          <span className="text-yellow-400">
+            {isZh ? '继续调整...' : 'Keep adjusting...'}
+          </span>
+        ) : (
+          <span className="text-gray-500">
+            {isZh ? '光强太弱' : 'Light too dim'}
+          </span>
         )}
-      >
-        {Math.round(angle)}°
+      </div>
+    </div>
+  )
+}
+
+// Password display that reveals based on light intensity
+function PasswordDisplay({
+  password,
+  intensity,
+}: {
+  password: string
+  intensity: number
+}) {
+  return (
+    <div
+      className={cn(
+        'px-6 py-4 rounded-xl border-2 transition-all duration-500',
+        'bg-slate-800/30 backdrop-blur-sm',
+        intensity > 0.9 ? 'border-emerald-500/50 shadow-lg shadow-emerald-500/20' : 'border-slate-700'
+      )}
+    >
+      <div className="flex gap-3 justify-center">
+        {password.split('').map((char, index) => (
+          <span
+            key={index}
+            className="inline-block font-mono font-bold text-3xl md:text-4xl text-purple-400 transition-all duration-300"
+            style={{
+              opacity: 0.05 + intensity * 0.95,
+              filter: `blur(${(1 - intensity) * 10}px)`,
+              transform: `scale(${0.7 + intensity * 0.3})`,
+              textShadow: intensity > 0.8 ? '0 0 20px rgba(168, 85, 247, 0.5)' : 'none',
+            }}
+          >
+            {char}
+          </span>
+        ))}
       </div>
     </div>
   )
@@ -159,28 +444,31 @@ function PolarizerDial({
 export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLockProps) {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
-  const theme = 'dark' // Always dark for lock screen
 
-  const [polarizerAngle, setPolarizerAngle] = useState(0)
+  // Two polarizer angles - both start misaligned
+  const [p1Angle, setP1Angle] = useState(0)    // First polarizer (fixed at 45° is target)
+  const [p2Angle, setP2Angle] = useState(90)   // Second polarizer (analyzer)
+
   const [inputPassword, setInputPassword] = useState('')
   const [isRevealed, setIsRevealed] = useState(false)
   const [error, setError] = useState(false)
   const [shake, setShake] = useState(false)
+  const [showHint, setShowHint] = useState(false)
 
-  // Target angle for each character (they align at 45°)
-  const targetAngle = 45
+  // Calculate intensity using Malus's Law: I = I₀ × cos²(θ)
+  const angleDiff = Math.abs(p1Angle - p2Angle)
+  const normalizedDiff = Math.min(angleDiff, 180 - Math.abs(angleDiff - 180))
+  const intensity = Math.pow(Math.cos((normalizedDiff * Math.PI) / 180), 2)
 
-  // Check if password is fully visible
-  const clarity = Math.pow(Math.cos(((polarizerAngle - targetAngle) * Math.PI) / 180), 2)
+  // Password revealed when intensity is high enough
   useEffect(() => {
-    if (clarity > 0.95) {
+    if (intensity > 0.9) {
       setIsRevealed(true)
     }
-  }, [clarity])
+  }, [intensity])
 
   const handleSubmit = () => {
     if (inputPassword.toUpperCase() === correctPassword) {
-      // Store unlock state
       localStorage.setItem('polarcraft_unlocked', 'true')
       onUnlock()
     } else {
@@ -199,80 +487,106 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
     }
   }
 
+  const handleReset = () => {
+    setP1Angle(0)
+    setP2Angle(90)
+    setIsRevealed(false)
+    setInputPassword('')
+    setShowHint(false)
+  }
+
   return (
     <div
       className={cn(
-        'fixed inset-0 z-[100] flex items-center justify-center',
+        'fixed inset-0 z-[100] flex items-center justify-center p-4',
         'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950'
       )}
     >
-      {/* Background pattern */}
+      {/* Subtle background pattern */}
       <div
-        className="absolute inset-0 opacity-5"
+        className="absolute inset-0 opacity-[0.03]"
         style={{
-          backgroundImage: `repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 10px,
-            rgba(34, 211, 238, 0.1) 10px,
-            rgba(34, 211, 238, 0.1) 20px
-          )`,
+          backgroundImage: `
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 40px,
+              rgba(34, 211, 238, 0.1) 40px,
+              rgba(34, 211, 238, 0.1) 41px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 40px,
+              rgba(168, 85, 247, 0.1) 40px,
+              rgba(168, 85, 247, 0.1) 41px
+            )
+          `,
         }}
       />
 
-      <div className="relative z-10 flex flex-col items-center gap-8 p-8">
+      <div className="relative z-10 flex flex-col items-center gap-6 max-w-2xl w-full">
         {/* Title */}
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             {isRevealed ? (
-              <Unlock className="w-8 h-8 text-emerald-400" />
+              <Unlock className="w-7 h-7 text-emerald-400" />
             ) : (
-              <Lock className="w-8 h-8 text-cyan-400" />
+              <Lock className="w-7 h-7 text-cyan-400" />
             )}
-            <h1 className="text-2xl md:text-3xl font-bold text-white">
+            <h1 className="text-xl md:text-2xl font-bold text-white">
               {isZh ? '偏振光密码锁' : 'Polarization Lock'}
             </h1>
           </div>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 text-sm max-w-md">
             {isZh
-              ? '调整偏振片角度，解开隐藏的密码'
-              : 'Adjust the polarizer to reveal the hidden password'}
+              ? '调整两个偏振片的角度，使它们对齐以让最多光通过'
+              : 'Rotate both polarizers to align them and let maximum light through'}
           </p>
         </div>
 
-        {/* Polarizer dial */}
-        <div className="flex flex-col items-center gap-6">
-          <PolarizerDial angle={polarizerAngle} onChange={setPolarizerAngle} theme={theme} />
-
-          {/* Hint */}
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <Eye className="w-4 h-4" />
-            <span>{isZh ? '提示：对准 45° 角' : 'Hint: Align to 45°'}</span>
-          </div>
+        {/* Light beam visualization */}
+        <div className="w-full bg-slate-900/50 rounded-xl p-4 border border-slate-800">
+          <LightBeamVisualization
+            p1Angle={p1Angle}
+            p2Angle={p2Angle}
+            intensity={intensity}
+          />
         </div>
 
-        {/* Hidden password display */}
-        <div
-          className={cn(
-            'px-8 py-4 rounded-xl border-2 transition-all',
-            'bg-slate-800/50 border-slate-700',
-            isRevealed && 'border-emerald-500/50 bg-emerald-950/30'
-          )}
-        >
-          <div className="flex gap-2 justify-center">
-            {correctPassword.split('').map((char, index) => (
-              <PolarizedChar
-                key={index}
-                char={char}
-                polarizerAngle={polarizerAngle}
-                targetAngle={targetAngle}
-                theme={theme}
-              />
-            ))}
-          </div>
+        {/* Two polarizer controls */}
+        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+          <Polarizer
+            id="p1"
+            angle={p1Angle}
+            onChange={setP1Angle}
+            label="Polarizer 1"
+            labelZh="偏振片 1"
+            isZh={isZh}
+            color="#22d3ee"
+          />
+          <Polarizer
+            id="p2"
+            angle={p2Angle}
+            onChange={setP2Angle}
+            label="Polarizer 2"
+            labelZh="偏振片 2"
+            isZh={isZh}
+            color="#a855f7"
+          />
         </div>
 
-        {/* Password input */}
+        {/* Intensity meter */}
+        <IntensityMeter
+          intensity={intensity}
+          angleDiff={normalizedDiff}
+          isZh={isZh}
+        />
+
+        {/* Password display */}
+        <PasswordDisplay password={correctPassword} intensity={intensity} />
+
+        {/* Password input - shown when revealed */}
         {isRevealed && (
           <div
             className={cn(
@@ -280,9 +594,6 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
               shake && 'animate-shake'
             )}
           >
-            <p className="text-emerald-400 text-sm font-medium">
-              {isZh ? '[ 密码已解锁 - 请输入 ]' : '[ Password Revealed - Enter Below ]'}
-            </p>
             <div className="flex gap-3">
               <input
                 type="text"
@@ -291,13 +602,13 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
                 onKeyDown={handleKeyDown}
                 placeholder={isZh ? '输入密码...' : 'Enter password...'}
                 className={cn(
-                  'px-4 py-2 rounded-lg border-2 bg-slate-800 text-white',
-                  'font-mono text-lg uppercase tracking-wider',
-                  'focus:outline-none focus:ring-2 focus:ring-cyan-500/50',
+                  'px-4 py-2.5 rounded-lg border-2 bg-slate-800/80 text-white',
+                  'font-mono text-lg uppercase tracking-wider w-40',
+                  'focus:outline-none focus:ring-2 focus:ring-purple-500/50',
                   'placeholder:text-gray-600',
                   error
                     ? 'border-red-500'
-                    : 'border-slate-600 focus:border-cyan-500'
+                    : 'border-slate-600 focus:border-purple-500'
                 )}
                 maxLength={correctPassword.length}
                 autoFocus
@@ -305,9 +616,10 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
               <button
                 onClick={handleSubmit}
                 className={cn(
-                  'px-6 py-2 rounded-lg font-medium transition-all',
-                  'bg-cyan-600 hover:bg-cyan-500 text-white',
-                  'focus:outline-none focus:ring-2 focus:ring-cyan-500/50'
+                  'px-6 py-2.5 rounded-lg font-medium transition-all',
+                  'bg-gradient-to-r from-purple-600 to-cyan-600',
+                  'hover:from-purple-500 hover:to-cyan-500 text-white',
+                  'focus:outline-none focus:ring-2 focus:ring-purple-500/50'
                 )}
               >
                 {isZh ? '进入' : 'Enter'}
@@ -321,21 +633,47 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
           </div>
         )}
 
-        {/* Reset button */}
-        <button
-          onClick={() => {
-            setPolarizerAngle(0)
-            setIsRevealed(false)
-            setInputPassword('')
-          }}
-          className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm',
-            'text-gray-500 hover:text-gray-300 transition-colors'
-          )}
-        >
-          <RotateCcw className="w-4 h-4" />
-          {isZh ? '重置' : 'Reset'}
-        </button>
+        {/* Bottom controls */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleReset}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm',
+              'text-gray-500 hover:text-gray-300 transition-colors',
+              'hover:bg-slate-800/50'
+            )}
+          >
+            <RotateCcw className="w-4 h-4" />
+            {isZh ? '重置' : 'Reset'}
+          </button>
+
+          <button
+            onClick={() => setShowHint(!showHint)}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm',
+              'text-gray-500 hover:text-gray-300 transition-colors',
+              'hover:bg-slate-800/50',
+              showHint && 'text-cyan-400'
+            )}
+          >
+            <Info className="w-4 h-4" />
+            {isZh ? '提示' : 'Hint'}
+          </button>
+        </div>
+
+        {/* Hint panel */}
+        {showHint && (
+          <div className="text-center text-xs text-gray-500 bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 max-w-sm animate-fade-in">
+            <p className="mb-1 font-medium text-gray-400">
+              {isZh ? '物理原理' : 'Physics Principle'}
+            </p>
+            <p>
+              {isZh
+                ? '当两个偏振片的偏振方向平行（角度差为0°或180°）时，光强最大。角度差为90°时，光被完全阻挡。'
+                : 'When two polarizers are parallel (0° or 180° difference), light intensity is maximum. At 90° difference, light is completely blocked.'}
+            </p>
+          </div>
+        )}
       </div>
 
       <style>{`
