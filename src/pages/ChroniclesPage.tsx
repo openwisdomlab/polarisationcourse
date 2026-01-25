@@ -15,9 +15,9 @@ import { cn } from '@/lib/utils'
 import { Tabs, Badge, PersistentHeader } from '@/components/shared'
 import {
   Clock, MapPin,
-  FlaskConical, BookOpen, Compass,
+  FlaskConical, BookOpen,
   Sun, Sparkles, Camera, Film,
-  Users, Share2, Beaker
+  Beaker
 } from 'lucide-react'
 
 // Data imports
@@ -31,12 +31,8 @@ import {
   DualTrackCard,
   StoryModal,
   CenturyNavigator,
-  DemoNavigator,
   ChapterSelector,
   ChroniclesPSRTView,
-  ScientistNetwork,
-  ConceptNetwork,
-  ExplorationMode,
   ExperimentResourcesTab,
   DEMO_ITEMS
 } from '@/components/chronicles'
@@ -72,8 +68,6 @@ export function ChroniclesPage() {
   const [selectedSections, setSelectedSections] = useState<string[]>([]) // P-SRT章节筛选状态
   const [highlightedSections, setHighlightedSections] = useState<Set<string>>(new Set()) // 事件点击高亮的课程章节 (reserved for future use)
   const [selectedDemos, setSelectedDemos] = useState<string[]>([]) // 演示筛选状态
-  const [highlightedDemos, setHighlightedDemos] = useState<Set<string>>(new Set()) // 事件点击高亮的演示
-  const [selectedScientistFromExploration, setSelectedScientistFromExploration] = useState<string | null>(null) // 从探索模式选中的科学家
 
   // Suppress unused variable warning (highlightedSections is set but not yet used after removing CourseNavigator)
   void highlightedSections
@@ -158,10 +152,6 @@ export function ChroniclesPage() {
     setSelectedSections(sections)
   }, [])
 
-  // 处理演示筛选变化
-  const handleDemoFilterChange = useCallback((demos: string[]) => {
-    setSelectedDemos(demos)
-  }, [])
 
   // 处理从导航点击事件跳转到时间线
   const handleEventClickFromNav = useCallback((year: number, track: 'optics' | 'polarization') => {
@@ -191,34 +181,19 @@ export function ChroniclesPage() {
     }
   }, [])
 
-  // 处理点击时间线事件，高亮相关P-SRT章节和演示
+  // 处理点击时间线事件，高亮相关P-SRT章节
   const handleEventClickForHighlight = useCallback((year: number, track: 'optics' | 'polarization') => {
     // Get related sections for this event using getSectionsForEvent
     const mappings = getSectionsForEvent(year, track)
     const relatedSections = new Set(mappings.map(m => m.sectionId))
     setHighlightedSections(relatedSections)
 
-    // Get related demos for this event
-    const relatedDemos = new Set<string>()
-    DEMO_ITEMS.forEach(demo => {
-      if (demo.relatedEvents?.some(e => e.year === year && e.track === track)) {
-        relatedDemos.add(demo.id)
-      }
-    })
-    setHighlightedDemos(relatedDemos)
-
     // Clear after 5 seconds
     setTimeout(() => {
       setHighlightedSections(new Set())
-      setHighlightedDemos(new Set())
     }, 5000)
   }, [])
 
-  // 处理从探索模式选择科学家，并切换到科学家网络标签页
-  const handleSelectScientistFromExploration = useCallback((scientistId: string) => {
-    setSelectedScientistFromExploration(scientistId)
-    setActiveTab('scientists')
-  }, [])
 
   
   // Story modal navigation
