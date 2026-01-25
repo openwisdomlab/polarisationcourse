@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { Github, ExternalLink, Mail, Sparkles } from 'lucide-react'
-import { CombinedLogo } from '@/components/icons'
 
 // 偏振光知识和历史事件数据
 interface CoolFact {
@@ -300,7 +299,11 @@ export function Footer() {
         >
           {/* Left: Logo and Copyright */}
           <div className="flex items-center gap-4">
-            <CombinedLogo height={40} theme={theme} />
+            <img
+              src="/images/combined-logo.png"
+              alt="X-Institute & Open Wisdom Lab"
+              className="h-10 w-auto"
+            />
             <div className="flex flex-col">
               <p
                 className={cn(

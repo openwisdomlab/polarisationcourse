@@ -1,10 +1,10 @@
 /**
  * Combined Logo - X-Institute + Open Wisdom Lab
  *
- * Design:
- * - Left: X-Institute (深圳零一学院) blue geometric α symbol
+ * Design based on official logos:
+ * - Left: X-Institute (深圳零一学院) blue infinity/α symbol
  * - Separator: Vertical line
- * - Right: Open Wisdom Lab stylized eye with pink feathers
+ * - Right: Open Wisdom Lab stylized eye with magenta feathers
  */
 
 import { cn } from '@/lib/utils'
@@ -20,12 +20,12 @@ export function CombinedLogo({
   height = 60,
   theme = 'dark'
 }: CombinedLogoProps) {
-  // Colors
-  const xInstituteBlue = '#2563EB' // Blue for X-Institute
+  // Colors matching official branding
+  const xInstituteBlue = '#1E3A8A' // Darker blue for X-Institute
   const separatorColor = theme === 'dark' ? '#4B5563' : '#9CA3AF'
-  const owlPink = '#E91E8C'
-  const owlPinkDark = '#C01670'
-  const owlBlue = '#2563EB'
+  const owlMagenta = '#D946A0' // Magenta/pink for feathers
+  const owlMagentaDark = '#BE185D'
+  const owlBlue = '#1E40AF' // Blue for eye
 
   return (
     <svg
@@ -36,46 +36,57 @@ export function CombinedLogo({
     >
       <defs>
         {/* Gradient for X-Institute symbol */}
-        <linearGradient id="x-inst-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="x-inst-grad-footer" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor={xInstituteBlue} />
-          <stop offset="100%" stopColor="#1D4ED8" />
+          <stop offset="100%" stopColor="#1E3A8A" />
         </linearGradient>
         {/* Gradient for owl feathers */}
-        <linearGradient id="owl-feather-grad" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor={owlPink} />
-          <stop offset="100%" stopColor={owlPinkDark} />
+        <linearGradient id="owl-feather-grad-footer" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor={owlMagenta} />
+          <stop offset="100%" stopColor={owlMagentaDark} />
         </linearGradient>
       </defs>
 
       {/* ===== Left: X-Institute Logo ===== */}
       <g transform="translate(0, 5)">
-        {/* X-Institute α-like geometric symbol */}
-        <g transform="translate(5, 8)">
-          {/* Main α shape - geometric interpretation */}
+        {/* X-Institute infinity/α-like symbol - based on official logo */}
+        <g transform="translate(5, 5)">
+          {/* Main infinity-like shape with crossing */}
+          {/* Left loop */}
           <path
-            d="M 0 30
-               Q 0 15 15 15
-               L 30 15
-               Q 40 15 45 25
-               L 55 45
-               Q 60 55 50 55
-               Q 40 55 35 45
-               L 30 35
-               Q 28 32 25 32
-               L 15 32
-               Q 5 32 5 45
-               Q 5 55 15 55
-               L 20 55"
-            stroke="url(#x-inst-grad)"
+            d="M 25 35
+               C 5 35, 5 15, 25 15
+               L 35 15
+               C 45 15, 50 20, 55 30"
+            stroke="url(#x-inst-grad-footer)"
             strokeWidth="5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          {/* Crossing line of α */}
+          {/* Diagonal crossing line */}
           <path
-            d="M 35 55 L 55 15"
-            stroke="url(#x-inst-grad)"
+            d="M 35 55 L 58 12"
+            stroke="url(#x-inst-grad-footer)"
+            strokeWidth="5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* Bottom continuation */}
+          <path
+            d="M 25 55
+               C 5 55, 5 35, 25 35"
+            stroke="url(#x-inst-grad-footer)"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+          {/* Right extension */}
+          <path
+            d="M 50 40
+               C 55 50, 50 58, 35 55"
+            stroke="url(#x-inst-grad-footer)"
             strokeWidth="5"
             strokeLinecap="round"
             fill="none"
@@ -84,11 +95,11 @@ export function CombinedLogo({
 
         {/* Chinese text: 深圳零一学院 */}
         <text
-          x="75"
-          y="30"
-          fontFamily="'Microsoft YaHei', 'PingFang SC', sans-serif"
-          fontSize="18"
-          fontWeight="500"
+          x="78"
+          y="32"
+          fontFamily="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif"
+          fontSize="20"
+          fontWeight="600"
           fill={xInstituteBlue}
         >
           深圳零一学院
@@ -96,9 +107,9 @@ export function CombinedLogo({
 
         {/* English text: X-Institute */}
         <text
-          x="75"
-          y="55"
-          fontFamily="Arial, sans-serif"
+          x="78"
+          y="56"
+          fontFamily="Arial, Helvetica, sans-serif"
           fontSize="16"
           fontWeight="600"
           fill={xInstituteBlue}
@@ -109,117 +120,120 @@ export function CombinedLogo({
 
       {/* ===== Separator ===== */}
       <line
-        x1="235"
-        y1="15"
-        x2="235"
-        y2="65"
+        x1="240"
+        y1="12"
+        x2="240"
+        y2="68"
         stroke={separatorColor}
         strokeWidth="1.5"
       />
 
       {/* ===== Right: Open Wisdom Lab Logo ===== */}
-      <g transform="translate(255, 5)">
+      <g transform="translate(260, 5)">
         {/* Stylized eye with feather/wing elements */}
-        <g transform="translate(0, 5)">
-          {/* Feather/wing elements - radiating from top-right */}
+        <g transform="translate(0, 0)">
+          {/* Feather/wing elements - radiating upward from eye */}
+          {/* Feather 1 - leftmost */}
           <path
-            d="M 30 35 Q 45 10 65 5"
-            stroke="url(#owl-feather-grad)"
+            d="M 22 28 C 25 10, 40 0, 50 2"
+            stroke="url(#owl-feather-grad-footer)"
+            strokeWidth="5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* Feather 2 */}
+          <path
+            d="M 28 26 C 35 8, 55 -2, 68 2"
+            stroke="url(#owl-feather-grad-footer)"
+            strokeWidth="4.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* Feather 3 */}
+          <path
+            d="M 34 25 C 45 10, 65 5, 80 10"
+            stroke="url(#owl-feather-grad-footer)"
             strokeWidth="4"
             strokeLinecap="round"
             fill="none"
           />
+          {/* Feather 4 - rightmost */}
           <path
-            d="M 32 32 Q 55 5 75 3"
-            stroke="url(#owl-feather-grad)"
+            d="M 40 28 C 52 18, 70 15, 85 22"
+            stroke="url(#owl-feather-grad-footer)"
             strokeWidth="3.5"
             strokeLinecap="round"
             fill="none"
           />
-          <path
-            d="M 35 30 Q 60 8 80 8"
-            stroke="url(#owl-feather-grad)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path
-            d="M 38 30 Q 62 15 82 18"
-            stroke="url(#owl-feather-grad)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            fill="none"
-          />
 
-          {/* Eye shape - outer */}
-          <ellipse
-            cx="30"
-            cy="42"
-            rx="25"
-            ry="18"
+          {/* Eye shape - almond/leaf shape */}
+          <path
+            d="M 5 45
+               Q 30 25, 55 45
+               Q 30 65, 5 45"
             stroke={owlBlue}
             strokeWidth="3"
             fill="none"
           />
 
-          {/* Iris */}
+          {/* Iris - blue circle */}
           <circle
             cx="30"
-            cy="42"
-            r="10"
+            cy="45"
+            r="12"
             fill={owlBlue}
           />
 
-          {/* Pupil */}
+          {/* Pupil - white center */}
           <circle
             cx="30"
-            cy="42"
-            r="4"
+            cy="45"
+            r="5"
             fill="white"
           />
 
           {/* Eye highlight */}
           <circle
-            cx="33"
-            cy="39"
-            r="2"
+            cx="34"
+            cy="42"
+            r="2.5"
             fill="white"
-            opacity="0.8"
+            opacity="0.9"
           />
         </g>
 
         {/* OPEN WISDOM LAB text - stacked */}
-        <g transform="translate(95, 0)">
+        <g transform="translate(100, 8)">
           <text
             x="0"
-            y="22"
-            fontFamily="Arial, sans-serif"
-            fontSize="16"
-            fontWeight="700"
+            y="16"
+            fontFamily="Arial, Helvetica, sans-serif"
+            fontSize="17"
+            fontWeight="800"
             fill={owlBlue}
-            letterSpacing="2"
+            letterSpacing="1.5"
           >
             OPEN
           </text>
           <text
             x="0"
-            y="42"
-            fontFamily="Arial, sans-serif"
-            fontSize="16"
-            fontWeight="700"
+            y="36"
+            fontFamily="Arial, Helvetica, sans-serif"
+            fontSize="17"
+            fontWeight="800"
             fill={owlBlue}
-            letterSpacing="2"
+            letterSpacing="1.5"
           >
             WISDOM
           </text>
           <text
             x="0"
-            y="62"
-            fontFamily="Arial, sans-serif"
-            fontSize="16"
-            fontWeight="700"
+            y="56"
+            fontFamily="Arial, Helvetica, sans-serif"
+            fontSize="17"
+            fontWeight="800"
             fill={owlBlue}
-            letterSpacing="2"
+            letterSpacing="1.5"
           >
             LAB
           </text>

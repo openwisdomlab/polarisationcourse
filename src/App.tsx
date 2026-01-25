@@ -1,6 +1,8 @@
-import { Suspense, lazy } from 'react'   // React 组件懒加载和 Suspense
+import { Suspense, lazy, useState } from 'react'   // React 组件懒加载和 Suspense
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'   // React Router 组件
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'   // 错误边界组件
+import { PasswordLock } from '@/components/ui/PasswordLock'   // 密码锁组件
+import { FeedbackWidget } from '@/components/ui/FeedbackWidget'   // 反馈组件
 
 // ============================================================
 // Lazy load all pages for code splitting
@@ -91,9 +93,27 @@ function PageLoader() {
 // 主应用组件
 // ============================================================
 export function App() {
+  // Password lock state - check localStorage on mount
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    return localStorage.getItem('polarcraft_unlocked') === 'true'
+  })
+
+  // Handle unlock
+  const handleUnlock = () => {
+    setIsUnlocked(true)
+  }
+
+  // Show password lock if not unlocked
+  if (!isUnlocked) {
+    return <PasswordLock onUnlock={handleUnlock} correctPassword="POLAR" />
+  }
+
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        {/* Feedback widget - always visible */}
+        <FeedbackWidget />
+
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* ========================================
