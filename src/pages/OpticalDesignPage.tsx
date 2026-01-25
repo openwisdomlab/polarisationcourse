@@ -410,7 +410,10 @@ export function OpticalDesignPage() {
       )}
     >
       {/* Header */}
-      <PersistentHeader />
+      <PersistentHeader
+        moduleKey="opticalDesignStudio"
+        moduleNameKey="home.opticalDesignStudio.title"
+      />
 
       {/* Mobile Menu Button */}
       {isCompact && (
