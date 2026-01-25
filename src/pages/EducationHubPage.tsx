@@ -246,7 +246,8 @@ export function EducationHubPage() {
     )}>
       {/* Header */}
       <PersistentHeader
-        moduleName={isZh ? '历史与实验' : 'History & Experiments'}
+        moduleKey="chronicles"
+        moduleName={isZh ? '光的编年史' : 'Chronicles of Light'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',
