@@ -347,85 +347,313 @@ export function MalusLawGraphDemo() {
                 </g>
               </g>
 
-              {/* 偏振片示意图 */}
+              {/* 偏振片示意图 - Enhanced Design */}
               {showPolarizers && (
-                <g transform="translate(80, 300)">
-                  <text x="210" y="0" textAnchor="middle" fill="#9ca3af" fontSize="12">
-                    {isZh ? '偏振片配置示意' : 'Polarizer Configuration'}
-                  </text>
+                <g transform="translate(50, 290)">
+                  {/* Definitions for this section */}
+                  <defs>
+                    {/* Light beam gradient */}
+                    <linearGradient id="light-beam-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#ffd700" stopOpacity="0.9" />
+                      <stop offset="100%" stopColor="#ffd700" stopOpacity="0.3" />
+                    </linearGradient>
 
-                  {/* 光源 */}
-                  <g transform="translate(20, 50)">
+                    {/* Polarized beam gradient */}
+                    <linearGradient id="polarized-beam-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.9" />
+                      <stop offset="100%" stopColor="#a855f7" stopOpacity={0.2 + transmission * 0.7} />
+                    </linearGradient>
+
+                    {/* Output beam gradient */}
+                    <linearGradient id="output-beam-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#a855f7" stopOpacity={0.2 + transmission * 0.8} />
+                      <stop offset="100%" stopColor="#a855f7" stopOpacity={transmission * 0.6} />
+                    </linearGradient>
+
+                    {/* Glow filter for light source */}
+                    <filter id="light-source-glow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="6" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+
+                    {/* Beam glow filter */}
+                    <filter id="beam-glow-filter" x="-20%" y="-100%" width="140%" height="300%">
+                      <feGaussianBlur stdDeviation="4" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+
+                    {/* Detector glow */}
+                    <filter id="detector-glow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="8" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+
+                    {/* Polarizer grid pattern */}
+                    <pattern id="polarizer-grid" width="6" height="6" patternUnits="userSpaceOnUse">
+                      <line x1="3" y1="0" x2="3" y2="6" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+                    </pattern>
+                  </defs>
+
+                  {/* 光源 - Enhanced Sun-like Source */}
+                  <g transform="translate(35, 60)">
+                    {/* Outer glow */}
                     <motion.circle
                       cx="0"
                       cy="0"
-                      r="15"
+                      r="28"
                       fill="#ffd700"
+                      opacity="0.15"
+                      filter="url(#light-source-glow)"
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    {/* Middle glow */}
+                    <motion.circle
+                      cx="0"
+                      cy="0"
+                      r="20"
+                      fill="#ffd700"
+                      opacity="0.4"
                       animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     />
-                    <text x="0" y="30" textAnchor="middle" fill="#6b7280" fontSize="9">
-                      {isZh ? '光源' : 'Source'}
+                    {/* Core */}
+                    <circle cx="0" cy="0" r="14" fill="#ffd700" />
+                    <circle cx="0" cy="0" r="8" fill="#fff" opacity="0.7" />
+                    {/* Label */}
+                    <text x="0" y="48" textAnchor="middle" fill="#fbbf24" fontSize="11" fontWeight="500">
+                      {isZh ? '光源' : 'Light'}
                     </text>
                   </g>
 
-                  {/* 起偏器 */}
-                  <g transform="translate(100, 50)">
-                    <rect x="-15" y="-30" width="30" height="60" rx="2" fill="#22d3ee20" stroke="#22d3ee" strokeWidth="2" />
-                    <line x1="0" y1="-25" x2="0" y2="25" stroke="#22d3ee" strokeWidth="2" />
-                    <text x="0" y="45" textAnchor="middle" fill="#22d3ee" fontSize="9">
-                      P₁ (0°)
+                  {/* Light beam from source to P1 - Animated */}
+                  <g filter="url(#beam-glow-filter)">
+                    {/* Main beam */}
+                    <motion.line
+                      x1="55"
+                      y1="60"
+                      x2="110"
+                      y2="60"
+                      stroke="url(#light-beam-gradient)"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    {/* Animated particles */}
+                    {[0, 1, 2].map((i) => (
+                      <motion.circle
+                        key={`particle-1-${i}`}
+                        r="3"
+                        fill="#ffd700"
+                        opacity="0.8"
+                        animate={{
+                          cx: [55, 110],
+                          opacity: [0.8, 0.3],
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          repeat: Infinity,
+                          delay: i * 0.25,
+                          ease: "linear"
+                        }}
+                        cy={60}
+                      />
+                    ))}
+                  </g>
+
+                  {/* 起偏器 P₁ - Circular Design */}
+                  <g transform="translate(140, 60)">
+                    {/* Outer ring */}
+                    <circle cx="0" cy="0" r="32" fill="none" stroke="#22d3ee" strokeWidth="2" opacity="0.3" />
+                    {/* Main body */}
+                    <circle cx="0" cy="0" r="28" fill="#22d3ee10" stroke="#22d3ee" strokeWidth="2.5" />
+                    {/* Polarization grid lines */}
+                    <g clipPath="url(#p1-clip)">
+                      <defs>
+                        <clipPath id="p1-clip">
+                          <circle cx="0" cy="0" r="26" />
+                        </clipPath>
+                      </defs>
+                      {/* Vertical lines representing 0° polarization */}
+                      {[-20, -12, -4, 4, 12, 20].map((x) => (
+                        <line key={x} x1={x} y1="-26" x2={x} y2="26" stroke="#22d3ee" strokeWidth="1.5" opacity="0.5" />
+                      ))}
+                    </g>
+                    {/* Center axis indicator */}
+                    <line x1="0" y1="-32" x2="0" y2="32" stroke="#22d3ee" strokeWidth="2" />
+                    <polygon points="0,-36 -4,-30 4,-30" fill="#22d3ee" />
+                    <polygon points="0,36 -4,30 4,30" fill="#22d3ee" />
+                    {/* Label */}
+                    <text x="0" y="52" textAnchor="middle" fill="#22d3ee" fontSize="11" fontWeight="500">
+                      P₁
+                    </text>
+                    <text x="0" y="65" textAnchor="middle" fill="#22d3ee" fontSize="10" opacity="0.8">
+                      0°
                     </text>
                   </g>
 
-                  {/* 光束 */}
-                  <line x1="35" y1="50" x2="85" y2="50" stroke="#ffd700" strokeWidth="3" opacity="0.8" />
-                  <line x1="115" y1="50" x2="185" y2="50" stroke="#22d3ee" strokeWidth={2 + transmission * 2} opacity={0.3 + transmission * 0.7} />
-
-                  {/* 检偏器 */}
-                  <g transform="translate(200, 50)">
-                    <rect x="-15" y="-30" width="30" height="60" rx="2" fill="#4ade8020" stroke="#4ade80" strokeWidth="2" />
-                    <motion.g animate={{ rotate: angle }}>
-                      <line x1="0" y1="-25" x2="0" y2="25" stroke="#4ade80" strokeWidth="2" />
+                  {/* Polarized beam from P1 to P2 */}
+                  <g filter="url(#beam-glow-filter)">
+                    {/* Main beam */}
+                    <motion.line
+                      x1="172"
+                      y1="60"
+                      x2="258"
+                      y2="60"
+                      stroke="url(#polarized-beam-gradient)"
+                      strokeWidth={4 + transmission * 3}
+                      strokeLinecap="round"
+                      opacity={0.4 + transmission * 0.5}
+                    />
+                    {/* Polarization direction indicator */}
+                    <motion.g
+                      animate={{ x: [180, 250] }}
+                      transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                    >
+                      <line x1="0" y1="-8" x2="0" y2="8" stroke="#22d3ee" strokeWidth="2" opacity="0.7" />
                     </motion.g>
-                    <text x="0" y="45" textAnchor="middle" fill="#4ade80" fontSize="9">
-                      P₂ ({angle}°)
+                  </g>
+
+                  {/* 检偏器 P₂ - Rotatable Circular Design */}
+                  <g transform="translate(290, 60)">
+                    {/* Outer ring */}
+                    <circle cx="0" cy="0" r="32" fill="none" stroke="#a855f7" strokeWidth="2" opacity="0.3" />
+                    {/* Main body */}
+                    <circle cx="0" cy="0" r="28" fill="#a855f710" stroke="#a855f7" strokeWidth="2.5" />
+                    {/* Rotating polarization grid */}
+                    <motion.g
+                      animate={{ rotate: angle }}
+                      transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                    >
+                      <g clipPath="url(#p2-clip)">
+                        <defs>
+                          <clipPath id="p2-clip">
+                            <circle cx="0" cy="0" r="26" />
+                          </clipPath>
+                        </defs>
+                        {[-20, -12, -4, 4, 12, 20].map((x) => (
+                          <line key={x} x1={x} y1="-26" x2={x} y2="26" stroke="#a855f7" strokeWidth="1.5" opacity="0.5" />
+                        ))}
+                      </g>
+                      {/* Rotating axis */}
+                      <line x1="0" y1="-32" x2="0" y2="32" stroke="#a855f7" strokeWidth="2" />
+                      <polygon points="0,-36 -4,-30 4,-30" fill="#a855f7" />
+                      <polygon points="0,36 -4,30 4,30" fill="#a855f7" />
+                    </motion.g>
+                    {/* Label */}
+                    <text x="0" y="52" textAnchor="middle" fill="#a855f7" fontSize="11" fontWeight="500">
+                      P₂
+                    </text>
+                    <text x="0" y="65" textAnchor="middle" fill="#a855f7" fontSize="10" opacity="0.8">
+                      {angle}°
                     </text>
                   </g>
 
-                  {/* 输出光束 */}
-                  <line
-                    x1="215"
-                    y1="50"
-                    x2="300"
-                    y2="50"
-                    stroke="#4ade80"
-                    strokeWidth={1 + transmission * 4}
-                    opacity={0.1 + transmission * 0.9}
-                  />
-
-                  {/* 探测器 */}
-                  <g transform="translate(320, 50)">
-                    <rect
-                      x="-15"
-                      y="-20"
-                      width="30"
-                      height="40"
-                      rx="3"
-                      fill={transmission > 0.1 ? '#22c55e20' : '#1e293b'}
-                      stroke={transmission > 0.1 ? '#22c55e' : '#475569'}
-                      strokeWidth="2"
+                  {/* Output beam from P2 to detector */}
+                  <g filter="url(#beam-glow-filter)">
+                    {/* Main beam - intensity varies with transmission */}
+                    <motion.line
+                      x1="322"
+                      y1="60"
+                      x2="395"
+                      y2="60"
+                      stroke="url(#output-beam-gradient)"
+                      strokeWidth={2 + transmission * 5}
+                      strokeLinecap="round"
+                      opacity={0.1 + transmission * 0.8}
+                      animate={{
+                        strokeWidth: 2 + transmission * 5,
+                        opacity: 0.1 + transmission * 0.8,
+                      }}
+                      transition={{ duration: 0.3 }}
                     />
-                    <text x="0" y="35" textAnchor="middle" fill="#6b7280" fontSize="9">
-                      {isZh ? '探测器' : 'Detector'}
+                    {/* Animated particles when light passes through */}
+                    {transmission > 0.05 && [0, 1, 2].map((i) => (
+                      <motion.circle
+                        key={`particle-out-${i}`}
+                        r={2 + transmission * 2}
+                        fill="#a855f7"
+                        cy={60}
+                        animate={{
+                          cx: [322, 395],
+                          opacity: [transmission * 0.8, transmission * 0.2],
+                        }}
+                        transition={{
+                          duration: 0.6,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                          ease: "linear"
+                        }}
+                      />
+                    ))}
+                  </g>
+
+                  {/* 检测器 - Enhanced Detector with Glow */}
+                  <g transform="translate(430, 60)">
+                    {/* Glow effect based on intensity */}
+                    <motion.rect
+                      x="-22"
+                      y="-32"
+                      width="44"
+                      height="64"
+                      rx="6"
+                      fill="#a855f7"
+                      opacity={transmission * 0.3}
+                      filter="url(#detector-glow)"
+                      animate={{ opacity: transmission * 0.3 }}
+                    />
+                    {/* Main body */}
+                    <rect
+                      x="-18"
+                      y="-28"
+                      width="36"
+                      height="56"
+                      rx="4"
+                      fill={transmission > 0.05 ? '#a855f720' : '#1e293b'}
+                      stroke={transmission > 0.05 ? '#a855f7' : '#475569'}
+                      strokeWidth="2.5"
+                    />
+                    {/* Active indicator */}
+                    <motion.rect
+                      x="-12"
+                      y="-22"
+                      width="24"
+                      height="44"
+                      rx="2"
+                      fill="#a855f7"
+                      opacity={transmission * 0.6}
+                      animate={{ opacity: transmission * 0.6 }}
+                    />
+                    {/* Label */}
+                    <text x="0" y="48" textAnchor="middle" fill="#a855f7" fontSize="11" fontWeight="500">
+                      {isZh ? '检测' : 'Detect'}
                     </text>
                   </g>
 
-                  {/* 角度标注 */}
-                  <g transform="translate(150, 50)">
-                    <path d="M 0 0 A 25 25 0 0 1 25 0" fill="none" stroke="#fbbf24" strokeWidth="1" strokeDasharray="3 2" />
-                    <text x="35" y="5" fill="#fbbf24" fontSize="10">
-                      θ = {angle}°
+                  {/* Info Panel - Angle and Intensity */}
+                  <g transform="translate(500, 30)">
+                    <rect x="0" y="0" width="90" height="60" rx="8" fill="#1e293b" stroke="#475569" strokeWidth="1" />
+                    {/* Angle display */}
+                    <text x="45" y="18" textAnchor="middle" fill="#9ca3af" fontSize="10">
+                      {isZh ? '夹角' : 'Angle'} θ
+                    </text>
+                    <text x="45" y="34" textAnchor="middle" fill="#fbbf24" fontSize="14" fontWeight="bold">
+                      {angle}°
+                    </text>
+                    {/* Intensity display */}
+                    <text x="45" y="52" textAnchor="middle" fill="#22c55e" fontSize="12" fontWeight="600">
+                      I = {(transmission * 100).toFixed(0)}%
                     </text>
                   </g>
                 </g>

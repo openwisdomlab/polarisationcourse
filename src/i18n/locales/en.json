@@ -3145,6 +3145,40 @@
           "observation": "At 45°, 25% of light gets through (cos²45° × cos²45° = 0.25). The middle filter doesn't 'unblock' - it rotates the polarization partway, letting some through each filter!"
         }
       },
+      "polarizationLock": {
+        "title": "Polarization Lock",
+        "description": "Gamified learning of Malus's Law through an optical password lock challenge",
+        "lifeScene": {
+          "title": "The Optical Password",
+          "imageAlt": "An optical lock mechanism that uses polarized light intensity as its password",
+          "hook": "What if a lock only opens when exactly the right amount of light passes through? Welcome to the polarization lock!",
+          "facts": [
+            "Security systems can use polarization as an additional authentication layer",
+            "The 'password' is the angle that produces the target light intensity",
+            "Malus's Law (I = I₀cos²θ) determines the only correct angle"
+          ]
+        },
+        "physics": {
+          "principle": "Use Malus's Law to find the exact polarizer angle that produces a target light intensity",
+          "formula": "I = I₀ × cos²(θ)",
+          "details": [
+            "50% transmission requires θ = 45° (cos²45° = 0.5)",
+            "75% transmission requires θ = 30° (cos²30° = 0.75)",
+            "0% transmission requires θ = 90° (crossed polarizers)"
+          ]
+        },
+        "questions": {
+          "leading": "Can you crack the optical lock by finding the exact angle?",
+          "guided": [
+            "What angle gives 50% light transmission?",
+            "How can you calculate the angle from target intensity?"
+          ],
+          "openEnded": [
+            "Design a multi-stage lock using polarization",
+            "What real security applications could use optical passwords?"
+          ]
+        }
+      },
       "emSpectrum": {
         "title": "Electromagnetic Spectrum",
         "description": "Explore the full electromagnetic spectrum from radio waves to gamma rays",
