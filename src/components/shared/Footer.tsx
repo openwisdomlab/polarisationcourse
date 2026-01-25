@@ -402,7 +402,7 @@ export function Footer() {
           : 'bg-gray-50 border-gray-200'
       )}
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Cool Facts Section - Two columns with different categories */}
         <div
           className={cn(

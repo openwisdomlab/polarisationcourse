@@ -252,7 +252,7 @@ function ModuleCard({
       to={module.path}
       ref={cardRef as unknown as React.RefObject<HTMLAnchorElement>}
       className={`
-        group relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-500
+        group relative flex flex-col p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-500
         ${module.colorTheme.bg} ${module.colorTheme.bgHover}
         ${module.colorTheme.border} ${module.colorTheme.borderHover}
         hover:-translate-y-2 hover:shadow-2xl ${module.colorTheme.shadow}
@@ -282,21 +282,22 @@ function ModuleCard({
       />
 
       {/* Header: Icon + Title side by side */}
-      <div className="flex items-start gap-4 mb-3">
+      <div className="flex items-start gap-3 sm:gap-4 mb-3">
         {/* Animated Icon with ref for light beam targeting */}
         <div
           ref={iconRef}
           className={`
-            relative w-16 h-16 rounded-xl flex items-center justify-center shrink-0
+            relative w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0
             ${module.colorTheme.iconBg}
             transition-all duration-500
             ${isHovered ? 'scale-110 rotate-3' : 'scale-100 rotate-0'}
           `}
         >
           <IconComponent
-            size={56}
+            size={48}
             isHovered={isHovered}
             theme={theme}
+            className="w-10 h-10 sm:w-14 sm:h-14"
           />
 
           {/* Pulse ring effect on hover */}
@@ -311,11 +312,11 @@ function ModuleCard({
         </div>
 
         {/* Title block - right of icon */}
-        <div className="flex-1 min-w-0 pt-1">
+        <div className="flex-1 min-w-0 pt-0.5 sm:pt-1">
           {/* Main Title (e.g., "历史与实验") */}
           <h3
             className={`
-              text-xl font-bold leading-tight mb-1
+              text-lg sm:text-xl font-bold leading-tight mb-1
               transition-all duration-300
               ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
               ${isHovered ? 'translate-x-1' : 'translate-x-0'}
@@ -343,7 +344,7 @@ function ModuleCard({
       {/* Description */}
       <p
         className={`
-          text-sm leading-relaxed mb-4 flex-1
+          text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-1
           transition-all duration-300
           ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}
           ${isHovered ? (theme === 'dark' ? 'text-gray-300' : 'text-gray-700') : ''}
@@ -353,14 +354,14 @@ function ModuleCard({
       </p>
 
       {/* Quick Links Tags */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
         {module.quickLinks.map((link, index) => (
           <Link
             key={index}
             to={link.path}
             onClick={(e) => e.stopPropagation()}
             className={`
-              px-2.5 py-1 text-xs font-medium rounded-full
+              px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-medium rounded-full
               transition-all duration-200
               ${module.colorTheme.tagBg} ${module.colorTheme.tagText}
               hover:scale-105 hover:shadow-sm
@@ -522,29 +523,29 @@ export function HomePage() {
           {t('home.hero.subtitle')}
         </p>
 
-        {/* Platform Introduction */}
-        <div
-          className={`max-w-3xl mx-auto mb-6 p-6 rounded-2xl text-left ${
-            theme === 'dark'
-              ? 'bg-slate-800/50 border border-slate-700/50'
-              : 'bg-white/70 border border-gray-200 shadow-sm'
-          }`}
-        >
-          <p
-            className={`text-sm sm:text-base leading-relaxed ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-            }`}
-          >
-            {t('home.hero.platformIntro')}
-          </p>
-        </div>
-
       </header>
 
-      {/* Module Grid */}
+      {/* Main Content - consistent width container */}
       <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-8">
         <div className="max-w-6xl mx-auto">
-          <nav className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Platform Introduction */}
+          <div
+            className={`mb-8 p-4 sm:p-6 rounded-2xl text-left ${
+              theme === 'dark'
+                ? 'bg-slate-800/50 border border-slate-700/50'
+                : 'bg-white/70 border border-gray-200 shadow-sm'
+            }`}
+          >
+            <p
+              className={`text-sm sm:text-base leading-relaxed ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              }`}
+            >
+              {t('home.hero.platformIntro')}
+            </p>
+          </div>
+          {/* Module Grid */}
+          <nav className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {MODULES.map((module) => (
               <ModuleCard
                 key={module.id}
