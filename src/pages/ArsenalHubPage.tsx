@@ -236,7 +236,7 @@ export function ArsenalHubPage() {
       {/* Header */}
       <PersistentHeader
         moduleKey="opticalDesignStudio"
-        moduleName={isZh ? '光学设计室' : 'Optical Design Studio'}
+        moduleName={isZh ? '光学器件' : 'Optical Devices'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',

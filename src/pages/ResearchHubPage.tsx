@@ -235,7 +235,8 @@ export function ResearchHubPage() {
     )}>
       {/* Header */}
       <PersistentHeader
-        moduleName={isZh ? '虚拟课题组' : 'Virtual Lab'}
+        moduleKey="labGroup"
+        moduleName={isZh ? '虚拟课题组' : 'Virtual Lab Group'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',
