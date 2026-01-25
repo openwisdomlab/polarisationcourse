@@ -708,6 +708,7 @@ export function ChroniclesPage() {
           </>
         )}
 
+        {/* Hidden tabs - can be restored later by uncommenting the tabs in TABS array above:
         {activeTab === 'scientists' && (
           <ScientistNetwork
             theme={theme}
@@ -739,6 +740,7 @@ export function ChroniclesPage() {
             onSelectScientist={handleSelectScientistFromExploration}
           />
         )}
+        */}
 
         {activeTab === 'experiments' && (
           <div className="space-y-4">
