@@ -41,22 +41,30 @@ import {
   DEMO_ITEMS
 } from '@/components/chronicles'
 
+// Visible tabs - reordered: resources (default), timeline, psrt
 const TABS = [
+  { id: 'resources', label: 'Experiment Gallery', labelZh: '实验资源库', icon: <Beaker className="w-4 h-4" /> },
   { id: 'timeline', label: 'Timeline', labelZh: '时间线', icon: <Clock className="w-4 h-4" /> },
-  { id: 'psrt', label: 'P-SRT Course', labelZh: 'P-SRT课程', icon: <BookOpen className="w-4 h-4" /> },
+  { id: 'psrt', label: 'Course Outline', labelZh: '课程大纲', icon: <BookOpen className="w-4 h-4" /> },
+]
+
+// Hidden tabs - content preserved for future use
+const HIDDEN_TABS = [
   { id: 'scientists', label: 'Scientists', labelZh: '科学家网络', icon: <Users className="w-4 h-4" /> },
   { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Share2 className="w-4 h-4" /> },
   { id: 'exploration', label: 'Exploration', labelZh: '探索模式', icon: <Compass className="w-4 h-4" /> },
   { id: 'experiments', label: 'Key Experiments', labelZh: '关键实验', icon: <FlaskConical className="w-4 h-4" /> },
-  { id: 'resources', label: 'Experiment Gallery', labelZh: '实验资源库', icon: <Beaker className="w-4 h-4" /> },
 ]
+
+// Suppress unused warning - HIDDEN_TABS preserved for future use
+void HIDDEN_TABS
 
 export function ChroniclesPage() {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const { isMobile, isTablet } = useIsMobile()
   const isZh = i18n.language === 'zh'
-  const [activeTab, setActiveTab] = useState('timeline')
+  const [activeTab, setActiveTab] = useState('resources')
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
@@ -270,7 +278,7 @@ export function ChroniclesPage() {
       {/* Header with Persistent Logo */}
       <PersistentHeader
         moduleKey="chronicles"
-        moduleName={isZh ? '光的编年史' : 'Chronicles of Light'}
+        moduleName={isZh ? '历史和实验' : 'History & Experiments'}
         variant="glass"
         className={cn(
           'sticky top-0 z-40',
@@ -288,31 +296,16 @@ export function ChroniclesPage() {
             'text-2xl sm:text-3xl font-bold mb-3',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
-            {isZh ? '双线叙事：光学与偏振' : 'Dual Narrative: Optics & Polarization'}
+            {isZh ? '历史和实验' : 'History & Experiments'}
           </h2>
           <p className={cn(
             'text-base max-w-3xl mx-auto mb-4',
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           )}>
             {isZh
-              ? '从17世纪的偶然发现到现代应用，探索三个多世纪的光学奥秘。左侧追溯广义光学史上的核心发现，右侧聚焦偏振光的专属旅程。'
-              : 'From 17th-century discoveries to modern applications — explore over three centuries of optical mysteries. Left track traces core optics history, right track follows the polarization journey.'}
+              ? '探索偏振光的奇妙世界：从真实实验资源开始你的探索之旅，追溯三个多世纪的光学发现历程，了解系统的课程体系。'
+              : 'Explore the wonderful world of polarized light: start your journey with real experiment resources, trace over three centuries of optical discoveries, and learn about the systematic curriculum.'}
           </p>
-          {/* Dual track legend */}
-          <div className="flex justify-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <Sun className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
-              <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}>
-                {isZh ? '广义光学' : 'General Optics'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
-              <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
-                {isZh ? '偏振光' : 'Polarization'}
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Optical Overview Diagram - 光学全景图 (Static Panorama) */}
@@ -435,15 +428,7 @@ export function ChroniclesPage() {
               ))}
             </div>
 
-            {/* Demo Navigator - 光学演示馆导航 (Desktop only, left side) */}
-            {!useSingleTrack && (
-              <DemoNavigator
-                selectedDemos={selectedDemos}
-                onFilterChange={handleDemoFilterChange}
-                highlightedDemos={highlightedDemos}
-                onEventClick={handleEventClickFromNav}
-              />
-            )}
+            {/* Demo Navigator removed - 光学演示馆导航已移除，简化时间线界面 */}
 
             {/* Century Navigator - 世纪导航 (Desktop only, right side) */}
             {!useSingleTrack && (
