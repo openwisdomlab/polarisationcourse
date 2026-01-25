@@ -2,11 +2,17 @@
  * PasswordLock - Entry password screen with dual polarizer puzzle
  * 密码锁组件 - 通过调整两个偏振片观察光通过的场景来解开密码
  *
- * Physics simulation:
+ * Physics simulation based on Malus's Law:
  * - Light source emits unpolarized light
- * - First polarizer (P1) filters light to linear polarization
- * - Second polarizer (P2/Analyzer) follows Malus's Law: I = I₀ × cos²(θ)
- * - Password becomes visible when intensity is high enough
+ * - First polarizer (P1) filters light to linear polarization at angle θ₁
+ * - Second polarizer (P2/Analyzer) at angle θ₂
+ * - Output intensity: I = I₀ × cos²(θ₂ - θ₁)
+ *
+ * Key physics principles:
+ * - θ = 0° (parallel): cos²(0°) = 1 → 100% transmission
+ * - θ = 45°: cos²(45°) = 0.5 → 50% transmission
+ * - θ = 90° (crossed): cos²(90°) = 0 → 0% transmission
+ * - Polarizers have 180° symmetry: 0° ≡ 180°, 45° ≡ 225°, etc.
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
@@ -17,6 +23,35 @@ import { Lock, Unlock, RotateCcw, Info } from 'lucide-react'
 interface PasswordLockProps {
   onUnlock: () => void
   correctPassword?: string
+}
+
+/**
+ * Calculate the effective angle difference between two polarizers
+ * Accounts for 180° symmetry of polarizers
+ * Returns angle in range [0, 90] for display purposes
+ */
+function calculateEffectiveAngle(p1: number, p2: number): number {
+  // Normalize angles to [0, 180) due to polarizer symmetry
+  const a1 = ((p1 % 180) + 180) % 180
+  const a2 = ((p2 % 180) + 180) % 180
+
+  // Calculate difference
+  let diff = Math.abs(a1 - a2)
+
+  // Normalize to [0, 90] for intuitive display
+  // (90° is max blocking, 0° is max transmission)
+  if (diff > 90) diff = 180 - diff
+
+  return diff
+}
+
+/**
+ * Calculate light intensity using Malus's Law
+ * I = I₀ × cos²(θ) where θ is the angle between polarizer axes
+ */
+function calculateIntensity(effectiveAngle: number): number {
+  const theta = effectiveAngle * Math.PI / 180
+  return Math.pow(Math.cos(theta), 2)
 }
 
 // Polarizer component with rotation handle
@@ -57,8 +92,10 @@ function Polarizer({
       if (rect) {
         const centerX = rect.left + rect.width / 2
         const centerY = rect.top + rect.height / 2
-        const newAngle = Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI) + 90
-        onChange(((newAngle % 360) + 360) % 360)
+        const rawAngle = Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI) + 90
+        // Normalize to [0, 180) since polarizers have 180° symmetry
+        const newAngle = ((rawAngle % 180) + 180) % 180
+        onChange(newAngle)
       }
     }
 
@@ -75,6 +112,9 @@ function Polarizer({
     }
   }, [isDragging, onChange, handleMouseUp, id])
 
+  // Display angle normalized to [0, 180)
+  const displayAngle = ((angle % 180) + 180) % 180
+
   return (
     <div className="flex flex-col items-center">
       <div
@@ -87,53 +127,47 @@ function Polarizer({
         onMouseDown={handleMouseDown}
         onTouchStart={handleMouseDown}
         style={{
-          background: `conic-gradient(from ${angle}deg,
-            transparent 0deg,
-            ${color}20 20deg,
-            ${color}40 40deg,
-            ${color}20 60deg,
-            transparent 80deg,
-            transparent 90deg,
-            transparent 180deg,
-            ${color}20 200deg,
-            ${color}40 220deg,
-            ${color}20 240deg,
-            transparent 260deg,
-            transparent 270deg,
-            transparent 360deg
-          )`,
+          background: `radial-gradient(circle at center, ${color}10 0%, ${color}05 50%, transparent 70%)`,
           border: `3px solid ${color}`,
-          boxShadow: `0 0 20px ${color}40, inset 0 0 30px ${color}20`,
+          boxShadow: `0 0 20px ${color}40, inset 0 0 30px ${color}10`,
         }}
       >
-        {/* Polarization lines */}
+        {/* Polarization lines - show transmission axis direction */}
         <div
           className="absolute inset-2 rounded-full overflow-hidden"
-          style={{ transform: `rotate(${angle}deg)` }}
+          style={{ transform: `rotate(${displayAngle}deg)` }}
         >
-          {Array.from({ length: 9 }).map((_, i) => (
+          {/* Main transmission axis line (thicker, brighter) */}
+          <div
+            className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2"
+            style={{
+              background: `linear-gradient(to bottom, ${color}80, ${color}, ${color}80)`,
+              boxShadow: `0 0 6px ${color}`,
+            }}
+          />
+          {/* Secondary lines (thinner, dimmer) */}
+          {[-3, -2, -1, 1, 2, 3].map((offset) => (
             <div
-              key={i}
-              className="absolute left-1/2 -translate-x-1/2 w-[2px] rounded-full"
+              key={offset}
+              className="absolute top-0 bottom-0 w-[1px]"
               style={{
-                height: '100%',
-                left: `${10 + i * 10}%`,
-                background: `linear-gradient(to bottom, transparent, ${color}60, transparent)`,
+                left: `calc(50% + ${offset * 8}px)`,
+                background: `linear-gradient(to bottom, transparent, ${color}40, transparent)`,
               }}
             />
           ))}
         </div>
 
-        {/* Rotation indicator */}
+        {/* Rotation indicator arrow */}
         <div
           className="absolute inset-3 rounded-full flex items-start justify-center"
-          style={{ transform: `rotate(${angle}deg)` }}
+          style={{ transform: `rotate(${displayAngle}deg)` }}
         >
           <div
-            className="w-1.5 h-8 rounded-full"
+            className="w-2 h-8 rounded-full"
             style={{
-              background: `linear-gradient(to bottom, ${color}, ${color}60)`,
-              boxShadow: `0 0 8px ${color}`,
+              background: `linear-gradient(to bottom, ${color}, ${color}80)`,
+              boxShadow: `0 0 10px ${color}`,
             }}
           />
         </div>
@@ -154,191 +188,138 @@ function Polarizer({
           className="text-lg font-mono font-bold"
           style={{ color }}
         >
-          {Math.round(angle)}°
+          {Math.round(displayAngle)}°
         </div>
       </div>
     </div>
   )
 }
 
-// Light beam visualization passing through polarizers
+/**
+ * Simplified light beam visualization
+ * Shows: Light source → P1 (polarizer) → P2 (analyzer) → Detector
+ * Focus on: Rotating polarizers and seeing the intensity change
+ */
 function LightBeamVisualization({
   p1Angle,
   p2Angle,
   intensity,
+  effectiveAngle,
 }: {
   p1Angle: number
   p2Angle: number
   intensity: number
+  effectiveAngle: number
 }) {
-  // Generate wave points for the light beam
-  const generateWave = (startX: number, endX: number, amplitude: number, opacity: number) => {
-    const points: string[] = []
-    const segments = 40
-    for (let i = 0; i <= segments; i++) {
-      const x = startX + (endX - startX) * (i / segments)
-      const y = 50 + Math.sin((i / segments) * Math.PI * 8) * amplitude
-      points.push(`${x},${y}`)
-    }
-    return { points: points.join(' '), opacity }
-  }
-
-  // Light before P1: unpolarized (show multiple overlapping waves)
-  const unpolarizedWaves = useMemo(() => [
-    generateWave(0, 140, 15, 0.5),
-    generateWave(0, 140, 12, 0.4),
-    generateWave(0, 140, 10, 0.3),
-  ], [])
-
-  // Light between P1 and P2: polarized at P1 angle
-  const polarizedWave = useMemo(() =>
-    generateWave(160, 340, 12, 0.8)
-  , [])
-
-  // Light after P2: intensity based on Malus's Law
-  const outputWave = useMemo(() =>
-    generateWave(360, 500, 12 * intensity, intensity * 0.9)
-  , [intensity])
+  // Normalize angles for display (0-180 due to polarizer symmetry)
+  const p1Display = ((p1Angle % 180) + 180) % 180
+  const p2Display = ((p2Angle % 180) + 180) % 180
 
   return (
-    <svg viewBox="0 0 500 100" className="w-full h-20 md:h-24">
+    <svg viewBox="0 0 400 90" className="w-full h-24">
       <defs>
-        {/* Glow filter */}
-        <filter id="beam-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-
-        {/* Light source gradient */}
-        <radialGradient id="light-source" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-          <stop offset="50%" stopColor="#fef08a" stopOpacity="0.8" />
+        <radialGradient id="light-src" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="60%" stopColor="#fef08a" />
           <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.3" />
         </radialGradient>
-
-        {/* Polarizer gradient */}
-        <linearGradient id="p1-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.1" />
-          <stop offset="50%" stopColor="#22d3ee" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.1" />
-        </linearGradient>
-        <linearGradient id="p2-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#a855f7" stopOpacity="0.1" />
-          <stop offset="50%" stopColor="#a855f7" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#a855f7" stopOpacity="0.1" />
-        </linearGradient>
       </defs>
 
       {/* Light source */}
-      <circle cx="10" cy="50" r="12" fill="url(#light-source)" filter="url(#beam-glow)" />
+      <circle cx="25" cy="45" r="15" fill="url(#light-src)" filter="url(#glow)" />
+      <text x="25" y="75" fill="#fbbf24" fontSize="9" textAnchor="middle">光源</text>
 
-      {/* Unpolarized light - multiple directions */}
-      <g opacity="0.7">
-        {unpolarizedWaves.map((wave, i) => (
-          <polyline
-            key={`unpol-${i}`}
-            points={wave.points}
-            fill="none"
-            stroke="#fef08a"
-            strokeWidth="2"
-            opacity={wave.opacity}
-            filter="url(#beam-glow)"
-            style={{
-              transform: `rotate(${i * 45}deg)`,
-              transformOrigin: '70px 50px',
-            }}
-          />
+      {/* Light beam: Source → P1 */}
+      <line x1="42" y1="45" x2="85" y2="45" stroke="#fef08a" strokeWidth="6" opacity="0.7" filter="url(#glow)" />
+
+      {/* P1 Polarizer */}
+      <g transform={`rotate(${p1Display}, 100, 45)`}>
+        <rect x="93" y="15" width="14" height="60" fill="rgba(34, 211, 238, 0.25)" stroke="#22d3ee" strokeWidth="2" rx="3" />
+        {/* Transmission axis lines */}
+        <line x1="100" y1="18" x2="100" y2="72" stroke="#22d3ee" strokeWidth="3" />
+        {[25, 35, 45, 55, 65].map(y => (
+          <line key={y} x1="95" y1={y} x2="105" y2={y} stroke="#22d3ee" strokeWidth="1.5" opacity="0.6" />
         ))}
       </g>
+      <text x="100" y="82" fill="#22d3ee" fontSize="9" textAnchor="middle" fontWeight="600">
+        P₁ {Math.round(p1Display)}°
+      </text>
 
-      {/* First polarizer (P1) */}
-      <g transform={`rotate(${p1Angle}, 150, 50)`}>
-        <rect x="145" y="20" width="10" height="60" fill="url(#p1-gradient)" rx="2" />
-        {/* Polarization lines */}
-        {Array.from({ length: 5 }).map((_, i) => (
-          <line
-            key={`p1-line-${i}`}
-            x1="150"
-            y1={25 + i * 12}
-            x2="150"
-            y2={30 + i * 12}
-            stroke="#22d3ee"
-            strokeWidth="2"
-            opacity="0.6"
-          />
+      {/* Light beam: P1 → P2 (polarized) */}
+      <line x1="115" y1="45" x2="185" y2="45" stroke="#22d3ee" strokeWidth="5" opacity="0.8" filter="url(#glow)" />
+
+      {/* P2 Polarizer (Analyzer) */}
+      <g transform={`rotate(${p2Display}, 200, 45)`}>
+        <rect x="193" y="15" width="14" height="60" fill="rgba(168, 85, 247, 0.25)" stroke="#a855f7" strokeWidth="2" rx="3" />
+        {/* Transmission axis lines */}
+        <line x1="200" y1="18" x2="200" y2="72" stroke="#a855f7" strokeWidth="3" />
+        {[25, 35, 45, 55, 65].map(y => (
+          <line key={y} x1="195" y1={y} x2="205" y2={y} stroke="#a855f7" strokeWidth="1.5" opacity="0.6" />
         ))}
       </g>
+      <text x="200" y="82" fill="#a855f7" fontSize="9" textAnchor="middle" fontWeight="600">
+        P₂ {Math.round(p2Display)}°
+      </text>
 
-      {/* Polarized light between P1 and P2 */}
-      <g style={{ transform: `rotate(${p1Angle}deg)`, transformOrigin: '250px 50px' }}>
-        <polyline
-          points={polarizedWave.points}
-          fill="none"
-          stroke="#22d3ee"
-          strokeWidth="2.5"
-          opacity={polarizedWave.opacity}
-          filter="url(#beam-glow)"
-        />
-      </g>
-
-      {/* Second polarizer (P2 / Analyzer) */}
-      <g transform={`rotate(${p2Angle}, 350, 50)`}>
-        <rect x="345" y="20" width="10" height="60" fill="url(#p2-gradient)" rx="2" />
-        {/* Polarization lines */}
-        {Array.from({ length: 5 }).map((_, i) => (
-          <line
-            key={`p2-line-${i}`}
-            x1="350"
-            y1={25 + i * 12}
-            x2="350"
-            y2={30 + i * 12}
-            stroke="#a855f7"
-            strokeWidth="2"
-            opacity="0.6"
-          />
-        ))}
-      </g>
-
-      {/* Output light - intensity based on Malus's Law */}
-      {intensity > 0.05 && (
-        <polyline
-          points={outputWave.points}
-          fill="none"
-          stroke={`rgba(168, 85, 247, ${0.5 + intensity * 0.5})`}
-          strokeWidth={1.5 + intensity * 2}
-          opacity={outputWave.opacity}
-          filter="url(#beam-glow)"
+      {/* Light beam: P2 → Detector (intensity varies) */}
+      {intensity > 0.02 && (
+        <line
+          x1="215"
+          y1="45"
+          x2="280"
+          y2="45"
+          stroke="#a855f7"
+          strokeWidth={2 + intensity * 4}
+          opacity={0.3 + intensity * 0.7}
+          filter="url(#glow)"
         />
       )}
 
-      {/* Detector/Screen */}
+      {/* Detector */}
       <rect
-        x="488"
-        y="30"
-        width="8"
-        height="40"
-        fill={`rgba(168, 85, 247, ${0.2 + intensity * 0.6})`}
+        x="285"
+        y="20"
+        width="15"
+        height="50"
+        fill={`rgba(168, 85, 247, ${0.15 + intensity * 0.6})`}
         stroke="#a855f7"
-        strokeWidth="1"
-        rx="2"
-        style={{
-          boxShadow: intensity > 0.5 ? `0 0 ${intensity * 20}px #a855f7` : 'none',
-        }}
+        strokeWidth="2"
+        rx="3"
       />
+      {intensity > 0.5 && (
+        <rect
+          x="285"
+          y="20"
+          width="15"
+          height="50"
+          fill="none"
+          stroke="#a855f7"
+          strokeWidth={intensity * 8}
+          rx="3"
+          opacity={intensity * 0.5}
+          filter="url(#glow)"
+        />
+      )}
+      <text x="292" y="82" fill="#a855f7" fontSize="9" textAnchor="middle">检测</text>
 
-      {/* Labels */}
-      <text x="10" y="90" fill="#fbbf24" fontSize="8" textAnchor="middle" opacity="0.8">
-        Light
-      </text>
-      <text x="150" y="90" fill="#22d3ee" fontSize="8" textAnchor="middle" opacity="0.8">
-        P₁
-      </text>
-      <text x="350" y="90" fill="#a855f7" fontSize="8" textAnchor="middle" opacity="0.8">
-        P₂
-      </text>
+      {/* Angle and intensity display */}
+      <g transform="translate(355, 45)">
+        <rect x="-35" y="-30" width="70" height="60" fill="rgba(15, 23, 42, 0.9)" stroke="#475569" rx="4" />
+        <text x="0" y="-15" fill="#94a3b8" fontSize="8" textAnchor="middle">夹角 θ</text>
+        <text x="0" y="0" fill="#fff" fontSize="14" textAnchor="middle" fontWeight="700" fontFamily="monospace">
+          {Math.round(effectiveAngle)}°
+        </text>
+        <text x="0" y="18" fill={intensity > 0.9 ? '#22c55e' : intensity > 0.5 ? '#eab308' : '#ef4444'} fontSize="12" textAnchor="middle" fontWeight="600">
+          I = {Math.round(intensity * 100)}%
+        </text>
+      </g>
     </svg>
   )
 }
@@ -346,58 +327,87 @@ function LightBeamVisualization({
 // Intensity meter with Malus's Law formula
 function IntensityMeter({
   intensity,
-  angleDiff,
+  effectiveAngle,
   isZh,
 }: {
   intensity: number
-  angleDiff: number
+  effectiveAngle: number
   isZh: boolean
 }) {
   const percentage = Math.round(intensity * 100)
-  const barColor = intensity > 0.7 ? '#22c55e' : intensity > 0.3 ? '#eab308' : '#ef4444'
+  const barColor = intensity > 0.9 ? '#22c55e' : intensity > 0.5 ? '#eab308' : '#ef4444'
+
+  // Calculate cos² value for display
+  const cosSquared = Math.pow(Math.cos(effectiveAngle * Math.PI / 180), 2)
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-full max-w-md">
       {/* Formula display */}
-      <div className="text-center mb-3 px-4 py-2 bg-slate-800/50 rounded-lg border border-slate-700">
-        <div className="text-xs text-gray-400 mb-1">
-          {isZh ? '马吕斯定律' : "Malus's Law"}
+      <div className="text-center mb-3 px-4 py-3 bg-slate-800/50 rounded-lg border border-slate-700">
+        <div className="text-xs text-gray-400 mb-2">
+          {isZh ? '马吕斯定律 (Malus\'s Law)' : "Malus's Law"}
         </div>
-        <div className="font-mono text-sm text-cyan-400">
-          I = I₀ × cos²({Math.round(angleDiff)}°) = <span className="text-white font-bold">{percentage}%</span>
+        <div className="font-mono text-sm space-y-1">
+          <div className="text-cyan-400">
+            I = I₀ × cos²(θ)
+          </div>
+          <div className="text-gray-300">
+            I = I₀ × cos²(<span className="text-purple-400">{Math.round(effectiveAngle)}°</span>)
+            {' = '}
+            I₀ × <span className="text-purple-400">{cosSquared.toFixed(3)}</span>
+            {' = '}
+            <span className={cn(
+              'font-bold',
+              intensity > 0.9 ? 'text-emerald-400' : intensity > 0.5 ? 'text-yellow-400' : 'text-red-400'
+            )}>
+              {percentage}%
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Intensity bar */}
-      <div className="relative h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+      <div className="relative h-5 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
           style={{
             width: `${percentage}%`,
             background: `linear-gradient(90deg, ${barColor}80, ${barColor})`,
-            boxShadow: `0 0 10px ${barColor}60`,
+            boxShadow: `0 0 15px ${barColor}60`,
           }}
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-xs font-mono font-bold text-white drop-shadow-lg">
-            {percentage}%
+            {percentage}% {isZh ? '透过率' : 'Transmission'}
           </span>
         </div>
       </div>
 
-      {/* Status text */}
+      {/* Status text with physics explanation */}
       <div className="text-center mt-2 text-xs">
-        {intensity > 0.9 ? (
+        {effectiveAngle < 10 ? (
           <span className="text-emerald-400 font-medium">
-            {isZh ? '[ 光束最强 - 密码可见 ]' : '[ Maximum brightness - Password visible ]'}
+            {isZh
+              ? '✓ 偏振片几乎平行 (θ ≈ 0°) → 最大透过'
+              : '✓ Polarizers nearly parallel (θ ≈ 0°) → Maximum transmission'}
           </span>
-        ) : intensity > 0.5 ? (
+        ) : effectiveAngle > 80 ? (
+          <span className="text-red-400">
+            {isZh
+              ? '✗ 偏振片接近正交 (θ ≈ 90°) → 几乎阻断'
+              : '✗ Polarizers nearly crossed (θ ≈ 90°) → Nearly blocked'}
+          </span>
+        ) : effectiveAngle > 40 && effectiveAngle < 50 ? (
           <span className="text-yellow-400">
-            {isZh ? '继续调整...' : 'Keep adjusting...'}
+            {isZh
+              ? '◐ θ = 45° → 透过率约 50%'
+              : '◐ θ = 45° → ~50% transmission'}
           </span>
         ) : (
-          <span className="text-gray-500">
-            {isZh ? '光强太弱' : 'Light too dim'}
+          <span className="text-gray-400">
+            {isZh
+              ? `调整偏振片使 θ → 0° 以获得最大透过`
+              : `Adjust polarizers so θ → 0° for maximum transmission`}
           </span>
         )}
       </div>
@@ -445,9 +455,11 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
-  // Two polarizer angles - both start misaligned
-  const [p1Angle, setP1Angle] = useState(0)    // First polarizer (fixed at 45° is target)
-  const [p2Angle, setP2Angle] = useState(90)   // Second polarizer (analyzer)
+  // Two polarizer angles - start at standard positions
+  // P1 at 45°, P2 at 135° = 90° difference = crossed polarizers = 0% transmission
+  // Goal: Align P2 with P1 (both at 45°) for 0° difference = 100% transmission
+  const [p1Angle, setP1Angle] = useState(45)   // First polarizer at 45°
+  const [p2Angle, setP2Angle] = useState(135)  // Second polarizer at 135° (crossed)
 
   const [inputPassword, setInputPassword] = useState('')
   const [isRevealed, setIsRevealed] = useState(false)
@@ -455,14 +467,19 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
   const [shake, setShake] = useState(false)
   const [showHint, setShowHint] = useState(false)
 
-  // Calculate intensity using Malus's Law: I = I₀ × cos²(θ)
-  const angleDiff = Math.abs(p1Angle - p2Angle)
-  const normalizedDiff = Math.min(angleDiff, 180 - Math.abs(angleDiff - 180))
-  const intensity = Math.pow(Math.cos((normalizedDiff * Math.PI) / 180), 2)
+  // Calculate effective angle and intensity using helper functions
+  const effectiveAngle = useMemo(
+    () => calculateEffectiveAngle(p1Angle, p2Angle),
+    [p1Angle, p2Angle]
+  )
+  const intensity = useMemo(
+    () => calculateIntensity(effectiveAngle),
+    [effectiveAngle]
+  )
 
-  // Password revealed when intensity is high enough
+  // Password revealed when intensity is high enough (θ < 20° → cos²(20°) ≈ 88%)
   useEffect(() => {
-    if (intensity > 0.9) {
+    if (intensity > 0.88) {
       setIsRevealed(true)
     }
   }, [intensity])
@@ -488,8 +505,8 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
   }
 
   const handleReset = () => {
-    setP1Angle(0)
-    setP2Angle(90)
+    setP1Angle(45)    // Reset to 45°
+    setP2Angle(135)   // Reset to 135° (90° difference = crossed)
     setIsRevealed(false)
     setInputPassword('')
     setShowHint(false)
@@ -540,8 +557,8 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
           </div>
           <p className="text-gray-400 text-sm max-w-md">
             {isZh
-              ? '调整两个偏振片的角度，使它们对齐以让最多光通过'
-              : 'Rotate both polarizers to align them and let maximum light through'}
+              ? '旋转偏振片 P₂ 使其与 P₁ 平行 (θ → 0°)，根据马吕斯定律可获得最大透过率'
+              : 'Rotate polarizer P₂ to align with P₁ (θ → 0°). By Malus\'s Law, this gives maximum transmission'}
           </p>
         </div>
 
@@ -551,6 +568,7 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
             p1Angle={p1Angle}
             p2Angle={p2Angle}
             intensity={intensity}
+            effectiveAngle={effectiveAngle}
           />
         </div>
 
@@ -579,7 +597,7 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
         {/* Intensity meter */}
         <IntensityMeter
           intensity={intensity}
-          angleDiff={normalizedDiff}
+          effectiveAngle={effectiveAngle}
           isZh={isZh}
         />
 
@@ -663,15 +681,33 @@ export function PasswordLock({ onUnlock, correctPassword = 'POLAR' }: PasswordLo
 
         {/* Hint panel */}
         {showHint && (
-          <div className="text-center text-xs text-gray-500 bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 max-w-sm animate-fade-in">
-            <p className="mb-1 font-medium text-gray-400">
-              {isZh ? '物理原理' : 'Physics Principle'}
+          <div className="text-xs text-gray-400 bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700 max-w-md animate-fade-in">
+            <p className="mb-2 font-medium text-cyan-400">
+              {isZh ? '马吕斯定律 (Malus\'s Law)' : "Malus's Law"}
             </p>
-            <p>
-              {isZh
-                ? '当两个偏振片的偏振方向平行（角度差为0°或180°）时，光强最大。角度差为90°时，光被完全阻挡。'
-                : 'When two polarizers are parallel (0° or 180° difference), light intensity is maximum. At 90° difference, light is completely blocked.'}
-            </p>
+            <div className="space-y-1.5 text-left">
+              <p>
+                <span className="text-purple-400">I = I₀ × cos²(θ)</span>
+                {isZh ? '，其中 θ 是两个偏振片的夹角' : ', where θ is the angle between polarizers'}
+              </p>
+              <p>
+                <span className="text-emerald-400">θ = 0°</span>
+                {isZh ? ' → cos²(0°) = 1 → 100% 透过' : ' → cos²(0°) = 1 → 100% transmission'}
+              </p>
+              <p>
+                <span className="text-yellow-400">θ = 45°</span>
+                {isZh ? ' → cos²(45°) = 0.5 → 50% 透过' : ' → cos²(45°) = 0.5 → 50% transmission'}
+              </p>
+              <p>
+                <span className="text-red-400">θ = 90°</span>
+                {isZh ? ' → cos²(90°) = 0 → 0% 透过 (正交偏振)' : ' → cos²(90°) = 0 → 0% transmission (crossed)'}
+              </p>
+              <p className="mt-2 text-gray-500 italic">
+                {isZh
+                  ? '提示：旋转 P₂ 使其与 P₁ 平行（夹角 = 0°）'
+                  : 'Tip: Rotate P₂ to align with P₁ (angle difference = 0°)'}
+              </p>
+            </div>
           </div>
         )}
       </div>
