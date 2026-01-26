@@ -27,7 +27,6 @@ import { PSRT_CURRICULUM, getSectionsForEvent } from '@/data/psrt-curriculum'
 
 // Component imports
 import {
-  OpticalOverviewDiagram,
   DualTrackCard,
   StoryModal,
   CenturyNavigator,
@@ -282,9 +281,6 @@ export function ChroniclesPage() {
               : 'Explore the wonderful world of polarized light: start your journey with real experiment resources, trace over three centuries of optical discoveries, and learn about the systematic curriculum.'}
           </p>
         </div>
-
-        {/* Optical Overview Diagram - 光学全景图 (Static Panorama) */}
-        <OpticalOverviewDiagram />
 
         {/* Tabs */}
         <div className="mb-6">

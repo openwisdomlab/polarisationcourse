@@ -39,13 +39,16 @@ import { PolarizationIntroDemo } from '@/components/demos/basics/PolarizationInt
 import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/InteractiveOpticalBenchDemo'
 // Unified demos (merged versions)
 // Note: MalusLawGraphDemo removed - functionality integrated into unit1/MalusLawDemo
+// Note: PolarizationLockDemo moved to Optical Design Studio
 import { ElectromagneticWaveDemo } from '@/components/demos/basics/ElectromagneticWaveDemo'
 import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/PolarizationTypesUnifiedDemo'
-import { PolarizationLockDemo } from '@/components/demos/basics/PolarizationLockDemo'
 
 // Museum Components
 import { GalleryHero } from '@/components/museum'
 import MathText from '@/components/MathText'
+
+// Optical Overview Diagram (moved from Chronicles)
+import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 
 // Icon components - memoized for performance
 const PhysicsIcon = memo(function PhysicsIcon() {
@@ -1271,15 +1274,7 @@ const DEMOS: DemoItem[] = [
     visualType: '2D',
     difficulty: 'application', // 交互式实验设计
   },
-  {
-    id: 'polarization-lock',
-    titleKey: 'basics.demos.polarizationLock.title',
-    unit: 0,
-    component: PolarizationLockDemo,
-    descriptionKey: 'basics.demos.polarizationLock.description',
-    visualType: '2D',
-    difficulty: 'application', // 偏振密码锁 - 游戏化学习马吕斯定律
-  },
+  // Note: 'polarization-lock' moved to Optical Design Studio (偏振光路模块)
   // Legacy demos kept for backward compatibility (can be accessed directly)
   // Note: These are now included in unified demos above
   // - light-wave → merged into em-wave
@@ -2335,12 +2330,14 @@ export function DemosPage() {
         )}>
           {/* Show Gallery Hero when no demo is selected, otherwise show demo content */}
           {showMuseumHomepage || !currentDemo ? (
-            <div className="max-w-[1400px] mx-auto">
+            <div className="max-w-[1400px] mx-auto space-y-8">
               <GalleryHero
                 onSelectDemo={handleDemoChange}
                 onSelectUnit={(unit) => setExpandedUnit(unit)}
                 isCompact={isCompact}
               />
+              {/* Optical Overview Diagram - 光学全景图 */}
+              <OpticalOverviewDiagram />
             </div>
           ) : (
           <>

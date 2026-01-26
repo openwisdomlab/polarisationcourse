@@ -9,7 +9,6 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
-import { MediaGalleryPanel } from './MediaGalleryPanel'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import {
@@ -914,9 +913,6 @@ export function ChromaticDemo() {
           探索双折射材料产生的彩色干涉效应
         </p>
       </div>
-
-      {/* 真实实验场景展示 */}
-      <MediaGalleryPanel />
 
       {/* 交互演示区域标题 */}
       <div className="flex items-center gap-3 pt-2">
