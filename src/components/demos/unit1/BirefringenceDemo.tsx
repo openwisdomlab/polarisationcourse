@@ -511,7 +511,7 @@ export function BirefringenceDemo() {
   // 新增控制参数
   const [crystalRotation, setCrystalRotation] = useState(0) // 晶体旋转角度
   const [envRefractiveIndex, setEnvRefractiveIndex] = useState(1.0) // 环境折射率
-  const [opticalAxisAngle, setOpticalAxisAngle] = useState(45) // 光轴方向角度
+  const [opticalAxisAngle, setOpticalAxisAngle] = useState(0) // 光轴方向角度 (0°=水平)
 
   // 方解石折射率（标准值，可作为常量或可调参数）
   const no = 1.6584 // o光折射率
@@ -528,11 +528,12 @@ export function BirefringenceDemo() {
   const birefringence = Math.abs(no - ne)
   const separationFactor = birefringence / envRefractiveIndex
 
-  // 预设选项
+  // 预设选项 (基于光轴=0°水平方向)
+  // o光振动垂直于光轴，e光振动平行于光轴
   const presets = [
-    { label: '0° (纯o光)', value: 0 },
-    { label: '45° (等分)', value: 45 },
-    { label: '90° (纯e光)', value: 90 },
+    { label: '0° (纯e光)', value: 0 },   // 平行于光轴 → 全部e光
+    { label: '45° (等分)', value: 45 },  // 45°分量 → 50/50
+    { label: '90° (纯o光)', value: 90 }, // 垂直于光轴 → 全部o光
   ]
 
   return (
