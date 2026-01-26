@@ -35,18 +35,20 @@ import { PolarizationCalculatorDemo } from '@/components/demos/unit5/Polarizatio
 import { PolarimetricMicroscopyDemo } from '@/components/demos/unit5/PolarimetricMicroscopyDemo'
 
 // Optical Basics demos
-import { LIFE_SCENE_ILLUSTRATIONS } from '@/components/demos/LifeSceneIllustrations'
 import { PolarizationIntroDemo } from '@/components/demos/basics/PolarizationIntroDemo'
 import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/InteractiveOpticalBenchDemo'
 // Unified demos (merged versions)
 // Note: MalusLawGraphDemo removed - functionality integrated into unit1/MalusLawDemo
+// Note: PolarizationLockDemo moved to Optical Design Studio
 import { ElectromagneticWaveDemo } from '@/components/demos/basics/ElectromagneticWaveDemo'
 import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/PolarizationTypesUnifiedDemo'
-import { PolarizationLockDemo } from '@/components/demos/basics/PolarizationLockDemo'
 
 // Museum Components
 import { GalleryHero } from '@/components/museum'
 import MathText from '@/components/MathText'
+
+// Optical Overview Diagram (moved from Chronicles)
+import { OpticalOverviewDiagram } from '@/components/chronicles/OpticalOverviewDiagram'
 
 // Icon components - memoized for performance
 const PhysicsIcon = memo(function PhysicsIcon() {
@@ -76,16 +78,6 @@ const FrontierIcon = memo(function FrontierIcon() {
       <path d="M12 2L2 7l10 5 10-5-10-5z" />
       <path d="M2 17l10 5 10-5" />
       <path d="M2 12l10 5 10-5" />
-    </svg>
-  )
-})
-
-const LifeSceneIcon = memo(function LifeSceneIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-      <path d="M2 12h20" />
     </svg>
   )
 })
@@ -251,12 +243,6 @@ interface DemoQuestions {
 
 interface DemoInfo {
   questions?: DemoQuestions
-  lifeScene?: {
-    title: string
-    imageAlt: string  // Description for AI-generated image placeholder
-    hook: string      // Engaging question or statement
-    facts: string[]   // Interesting facts connecting to daily life
-  }
   physics: {
     principle: string
     principle_foundation?: string  // 基础层：简单易懂的描述
@@ -368,60 +354,6 @@ const getQuestions = (
   return undefined
 }
 
-// Helper to get lifeScene data from translations with difficulty level support
-const getLifeScene = (
-  t: (key: string) => string,
-  basePath: string,
-  difficultyLevel?: DifficultyLevel
-): DemoInfo['lifeScene'] | undefined => {
-  try {
-    // Get the difficulty suffix
-    const suffix = difficultyLevel === 'foundation' ? '_foundation' :
-                   difficultyLevel === 'research' ? '_research' : ''
-
-    // Try difficulty-specific title first, fallback to default
-    let title = t(`${basePath}.lifeScene.title${suffix}`)
-    if (title.includes('.lifeScene.')) {
-      title = t(`${basePath}.lifeScene.title`)
-    }
-    const hasTitle = title && !title.includes('.lifeScene.')
-    if (!hasTitle) return undefined
-
-    const imageAlt = t(`${basePath}.lifeScene.imageAlt`)
-
-    // Try difficulty-specific hook first, fallback to default
-    let hook = t(`${basePath}.lifeScene.hook${suffix}`)
-    if (hook.includes('.lifeScene.')) {
-      hook = t(`${basePath}.lifeScene.hook`)
-    }
-
-    // Try difficulty-specific facts first, fallback to default
-    let facts = [
-      t(`${basePath}.lifeScene.facts${suffix}.0`),
-      t(`${basePath}.lifeScene.facts${suffix}.1`),
-      t(`${basePath}.lifeScene.facts${suffix}.2`),
-    ].filter(f => f && !f.includes('.lifeScene.'))
-
-    // Fallback to default facts if no difficulty-specific content
-    if (facts.length === 0) {
-      facts = [
-        t(`${basePath}.lifeScene.facts.0`),
-        t(`${basePath}.lifeScene.facts.1`),
-        t(`${basePath}.lifeScene.facts.2`),
-      ].filter(f => f && !f.includes('.lifeScene.'))
-    }
-
-    return {
-      title,
-      imageAlt: imageAlt && !imageAlt.includes('.lifeScene.') ? imageAlt : '',
-      hook: hook && !hook.includes('.lifeScene.') ? hook : '',
-      facts
-    }
-  } catch {
-    return undefined
-  }
-}
-
 // Helper to get DIY data from translations
 const getDiy = (t: (key: string) => string, basePath: string): DemoInfo['diy'] | undefined => {
   try {
@@ -460,7 +392,6 @@ const getDiy = (t: (key: string) => string, basePath: string): DemoInfo['diy'] |
 const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLevel): Record<string, DemoInfo> => ({
   'light-wave': {
     questions: getQuestions(t, 'basics.demos.lightWave', difficultyLevel),
-    lifeScene: getLifeScene(t, 'basics.demos.lightWave', difficultyLevel),
     physics: {
       principle: t('basics.demos.lightWave.physics.principle'),
       formula: t('basics.demos.lightWave.physics.formula'),
@@ -486,7 +417,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   'polarization-intro': {
     questions: getQuestions(t, 'basics.demos.polarizationIntro', difficultyLevel),
-    lifeScene: getLifeScene(t, 'basics.demos.polarizationIntro', difficultyLevel),
     physics: {
       principle: t('basics.demos.polarizationIntro.physics.principle'),
       details: [
@@ -510,7 +440,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   'polarization-types': {
     questions: getQuestions(t, 'basics.demos.polarizationTypes', difficultyLevel),
-    lifeScene: getLifeScene(t, 'basics.demos.polarizationTypes', difficultyLevel),
     physics: {
       principle: t('basics.demos.polarizationTypes.physics.principle'),
       details: [
@@ -535,7 +464,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   'optical-bench': {
     questions: getQuestions(t, 'basics.demos.opticalBench', difficultyLevel),
-    lifeScene: getLifeScene(t, 'basics.demos.opticalBench', difficultyLevel),
     physics: {
       principle: t('basics.demos.opticalBench.physics.principle'),
       details: [
@@ -559,7 +487,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   'em-spectrum': {
     questions: getQuestions(t, 'basics.demos.emSpectrum', difficultyLevel),
-    lifeScene: getLifeScene(t, 'basics.demos.emSpectrum', difficultyLevel),
     physics: {
       principle: t('basics.demos.emSpectrum.physics.principle'),
       formula: t('basics.demos.emSpectrum.physics.formula'),
@@ -584,7 +511,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   'three-polarizers': {
     questions: getQuestions(t, 'basics.demos.threePolarizers', difficultyLevel),
-    lifeScene: getLifeScene(t, 'basics.demos.threePolarizers', difficultyLevel),
     physics: {
       principle: t('basics.demos.threePolarizers.physics.principle'),
       formula: t('basics.demos.threePolarizers.physics.formula'),
@@ -610,7 +536,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   // Note: 'malus-graph' removed - functionality integrated into unit1/MalusLawDemo
   'polarization-state': {
     questions: getQuestions(t, 'demos.polarizationState', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.polarizationState', difficultyLevel),
     physics: {
       principle: t('demos.polarizationState.physics.principle'),
       formula: t('demos.polarizationState.physics.formula'),
@@ -644,7 +569,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   malus: {
     questions: getQuestions(t, 'demos.malus', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.malus', difficultyLevel),
     physics: {
       principle: t('demos.malus.physics.principle'),
       formula: t('demos.malus.physics.formula'),
@@ -678,7 +602,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   birefringence: {
     questions: getQuestions(t, 'demos.birefringence', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.birefringence', difficultyLevel),
     physics: {
       principle: t('demos.birefringence.physics.principle'),
       formula: t('demos.birefringence.physics.formula'),
@@ -712,7 +635,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   waveplate: {
     questions: getQuestions(t, 'demos.waveplate', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.waveplate', difficultyLevel),
     physics: {
       principle: t('demos.waveplate.physics.principle'),
       formula: t('demos.waveplate.physics.formula'),
@@ -746,7 +668,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   fresnel: {
     questions: getQuestions(t, 'demos.fresnel', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.fresnel', difficultyLevel),
     physics: {
       principle: t('demos.fresnel.physics.principle'),
       formula: t('demos.fresnel.physics.formula'),
@@ -780,7 +701,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   brewster: {
     questions: getQuestions(t, 'demos.brewster', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.brewster', difficultyLevel),
     physics: {
       principle: t('demos.brewster.physics.principle'),
       formula: t('demos.brewster.physics.formula'),
@@ -814,7 +734,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   chromatic: {
     questions: getQuestions(t, 'demos.chromatic', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.chromatic', difficultyLevel),
     physics: {
       principle: t('demos.chromatic.physics.principle'),
       formula: t('demos.chromatic.physics.formula'),
@@ -847,7 +766,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   'optical-rotation': {
     questions: getQuestions(t, 'demos.opticalRotation', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.opticalRotation', difficultyLevel),
     physics: {
       principle: t('demos.opticalRotation.physics.principle'),
       formula: t('demos.opticalRotation.physics.formula'),
@@ -880,7 +798,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   anisotropy: {
     questions: getQuestions(t, 'demos.anisotropy', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.anisotropy', difficultyLevel),
     physics: {
       principle: t('demos.anisotropy.physics.principle'),
       formula: t('demos.anisotropy.physics.formula'),
@@ -913,7 +830,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   'mie-scattering': {
     questions: getQuestions(t, 'demos.mieScattering', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.mieScattering', difficultyLevel),
     physics: {
       principle: t('demos.mieScattering.physics.principle'),
       formula: t('demos.mieScattering.physics.formula'),
@@ -947,7 +863,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   rayleigh: {
     questions: getQuestions(t, 'demos.rayleigh', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.rayleigh', difficultyLevel),
     physics: {
       principle: t('demos.rayleigh.physics.principle'),
       formula: t('demos.rayleigh.physics.formula'),
@@ -981,7 +896,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   stokes: {
     questions: getQuestions(t, 'demos.stokes', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.stokes', difficultyLevel),
     physics: {
       principle: t('demos.stokes.physics.principle'),
       formula: t('demos.stokes.physics.formula'),
@@ -1016,7 +930,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   mueller: {
     questions: getQuestions(t, 'demos.mueller', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.mueller', difficultyLevel),
     physics: {
       principle: t('demos.mueller.physics.principle'),
       formula: t('demos.mueller.physics.formula'),
@@ -1050,7 +963,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   jones: {
     questions: getQuestions(t, 'demos.jones', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.jones', difficultyLevel),
     physics: {
       principle: t('demos.jones.physics.principle'),
       formula: t('demos.jones.physics.formula'),
@@ -1083,7 +995,6 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
   },
   calculator: {
     questions: getQuestions(t, 'demos.calculator', difficultyLevel),
-    lifeScene: getLifeScene(t, 'demos.calculator', difficultyLevel),
     physics: {
       principle: t('demos.calculator.physics.principle'),
       formula: t('demos.calculator.physics.formula'),
@@ -1135,7 +1046,7 @@ interface DemoItem {
 }
 
 // 搜索匹配结果接口 - 包含匹配位置信息
-type SearchSection = 'title' | 'description' | 'physics' | 'lifeScene' | 'experiment' | 'frontier' | 'diy' | 'questions'
+type SearchSection = 'title' | 'description' | 'physics' | 'experiment' | 'frontier' | 'diy' | 'questions'
 
 interface SearchMatch {
   demo: DemoItem
@@ -1153,7 +1064,6 @@ const getSectionLabel = (section: SearchSection, t: (key: string) => string): st
     title: t('gallery.search.section.title') || '标题',
     description: t('gallery.search.section.description') || '描述',
     physics: t('gallery.cards.physics') || '物理原理',
-    lifeScene: t('gallery.cards.lifeScene') || '生活中的偏振',
     experiment: t('gallery.cards.experiment') || '实验应用',
     frontier: t('gallery.cards.frontier') || '前沿应用',
     diy: t('gallery.cards.diy') || '动手试试',
@@ -1364,15 +1274,7 @@ const DEMOS: DemoItem[] = [
     visualType: '2D',
     difficulty: 'application', // 交互式实验设计
   },
-  {
-    id: 'polarization-lock',
-    titleKey: 'basics.demos.polarizationLock.title',
-    unit: 0,
-    component: PolarizationLockDemo,
-    descriptionKey: 'basics.demos.polarizationLock.description',
-    visualType: '2D',
-    difficulty: 'application', // 偏振密码锁 - 游戏化学习马吕斯定律
-  },
+  // Note: 'polarization-lock' moved to Optical Design Studio (偏振光路模块)
   // Legacy demos kept for backward compatibility (can be accessed directly)
   // Note: These are now included in unified demos above
   // - light-wave → merged into em-wave
@@ -1792,10 +1694,9 @@ export function DemosPage() {
   // Tab-based deep linking - allows /demos/chromatic?tab=experiment
   const getInitialExpandedCards = (): Record<string, boolean> => {
     const tabParam = searchParams.get('tab')
-    const validTabs = ['lifeScene', 'physics', 'experiment', 'frontier', 'diy']
+    const validTabs = ['physics', 'experiment', 'frontier', 'diy']
     if (tabParam && validTabs.includes(tabParam)) {
       return {
-        lifeScene: tabParam === 'lifeScene',
         physics: tabParam === 'physics',
         experiment: tabParam === 'experiment',
         frontier: tabParam === 'frontier',
@@ -1803,8 +1704,7 @@ export function DemosPage() {
       }
     }
     return {
-      lifeScene: true,  // Life scene card expanded by default
-      physics: false,
+      physics: true,  // Physics card expanded by default
       experiment: false,
       frontier: false,
       diy: false,
@@ -1888,34 +1788,6 @@ export function DemosPage() {
               sectionLabel: getSectionLabel('physics', t) + ` [${i + 1}]`,
               text: getMatchContext(d, query),
               highlightedText: highlightText(getMatchContext(d, query), query)
-            })
-          }
-        })
-
-        // Life scene
-        if (info.lifeScene?.title.toLowerCase().includes(query)) {
-          matches.push({
-            section: 'lifeScene',
-            sectionLabel: getSectionLabel('lifeScene', t) + ' - 标题',
-            text: getMatchContext(info.lifeScene.title, query),
-            highlightedText: highlightText(getMatchContext(info.lifeScene.title, query), query)
-          })
-        }
-        if (info.lifeScene?.hook.toLowerCase().includes(query)) {
-          matches.push({
-            section: 'lifeScene',
-            sectionLabel: getSectionLabel('lifeScene', t) + ' - 引言',
-            text: getMatchContext(info.lifeScene.hook, query),
-            highlightedText: highlightText(getMatchContext(info.lifeScene.hook, query), query)
-          })
-        }
-        info.lifeScene?.facts.forEach((f, i) => {
-          if (f.toLowerCase().includes(query)) {
-            matches.push({
-              section: 'lifeScene',
-              sectionLabel: getSectionLabel('lifeScene', t) + ` - 事实${i + 1}`,
-              text: getMatchContext(f, query),
-              highlightedText: highlightText(getMatchContext(f, query), query)
             })
           }
         })
@@ -2042,8 +1914,7 @@ export function DemosPage() {
     // Reset cards to collapsed when switching to a new (not previously visited) demo
     if (!visitedDemos.has(demoId)) {
       setExpandedCards({
-        lifeScene: true,  // Life scene card expanded by default
-        physics: false,
+        physics: true,  // Physics card expanded by default
         experiment: false,
         frontier: false,
         diy: false,
@@ -2086,7 +1957,7 @@ export function DemosPage() {
       const demoPath = activeDemo ? `/demos/${activeDemo}` : '/demos'
       navigate(`${demoPath}${paramString ? `?${paramString}` : ''}`, { replace: true })
     } else {
-      // Other cards (lifeScene, diy) toggle independently
+      // Other cards (diy) toggle independently
       const newState = !expandedCards[card]
       setExpandedCards(prev => ({ ...prev, [card]: newState }))
 
@@ -2459,12 +2330,14 @@ export function DemosPage() {
         )}>
           {/* Show Gallery Hero when no demo is selected, otherwise show demo content */}
           {showMuseumHomepage || !currentDemo ? (
-            <div className="max-w-[1400px] mx-auto">
+            <div className="max-w-[1400px] mx-auto space-y-8">
               <GalleryHero
                 onSelectDemo={handleDemoChange}
                 onSelectUnit={(unit) => setExpandedUnit(unit)}
                 isCompact={isCompact}
               />
+              {/* Optical Overview Diagram - 光学全景图 */}
+              <OpticalOverviewDiagram />
             </div>
           ) : (
           <>
@@ -2690,84 +2563,6 @@ export function DemosPage() {
             {/* Collapsible Info cards - responsive grid layout */}
             {demoInfo && (
               <div className="mt-5 space-y-4">
-                {/* Life Scene card - full width, at top */}
-                {demoInfo.lifeScene && (
-                  <CollapsibleCard
-                    title={t('gallery.cards.lifeScene')}
-                    icon={<LifeSceneIcon />}
-                    color="orange"
-                    isExpanded={expandedCards.lifeScene}
-                    onToggle={() => toggleCard('lifeScene')}
-                  >
-                    <div className="space-y-4">
-                      {/* Illustration or placeholder */}
-                      {activeDemo && LIFE_SCENE_ILLUSTRATIONS[activeDemo] ? (
-                        <div
-                          className={cn(
-                            'rounded-lg p-3 border overflow-hidden',
-                            theme === 'dark'
-                              ? 'bg-slate-900/50 border-orange-400/30'
-                              : 'bg-orange-50/50 border-orange-200'
-                          )}
-                        >
-                          {(() => {
-                            const IllustrationComponent = LIFE_SCENE_ILLUSTRATIONS[activeDemo]
-                            return <IllustrationComponent />
-                          })()}
-                        </div>
-                      ) : (
-                        <div
-                          className={cn(
-                            'rounded-lg p-4 border-2 border-dashed flex items-center justify-center min-h-[120px]',
-                            theme === 'dark'
-                              ? 'bg-orange-400/5 border-orange-400/30'
-                              : 'bg-orange-50 border-orange-300'
-                          )}
-                        >
-                          <div className="text-center">
-                            <div className={cn(
-                              'text-4xl mb-2',
-                              theme === 'dark' ? 'text-orange-400/50' : 'text-orange-400'
-                            )}>
-                              🖼️
-                            </div>
-                            <p className={cn(
-                              'text-xs italic',
-                              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-                            )}>
-                              {demoInfo.lifeScene.imageAlt}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Hook question/statement */}
-                      <p className={cn(
-                        'text-base font-medium leading-relaxed',
-                        theme === 'dark' ? 'text-orange-200' : 'text-orange-900'
-                      )}>
-                        {demoInfo.lifeScene.hook}
-                      </p>
-
-                      {/* Facts list */}
-                      <div className="space-y-2">
-                        {demoInfo.lifeScene.facts.map((fact, i) => (
-                          <ListItem
-                            key={i}
-                            icon={
-                              <span className={theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}>
-                                ★
-                              </span>
-                            }
-                          >
-                            {fact}
-                          </ListItem>
-                        ))}
-                      </div>
-                    </div>
-                  </CollapsibleCard>
-                )}
-
                 {/* Physics, Experiment, Frontier cards in a grid - hide for Unit 0 (Optical Basics) */}
                 {currentDemo?.unit !== 0 && (
                 <div className={cn(

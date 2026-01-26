@@ -2,12 +2,17 @@
  * ThreePolarizersDemo - 三偏振片悖论演示
  * 展示经典的"三偏振片悖论"：在两个正交偏振片之间插入45°偏振片可以让光通过
  * 参考图片：偏振片（起偏器/检偏器）和马吕斯定律的应用
+ *
+ * Physics Engine Migration:
+ * - Uses unified CoherencyMatrix-based calculations via PolarizationPhysics
+ * - Polarizer chain computed through engine (handles unpolarized input + cascaded polarizers)
  */
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Volume2, VolumeX } from 'lucide-react'
 import { useHapticAudio } from '@/hooks/useHapticAudio'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 import {
   ControlPanel,
   SliderControl,
@@ -224,52 +229,61 @@ export function ThreePolarizersDemo() {
     checkAngle(value)
   }, [checkAngle])
 
-  // 计算光强
+  // 计算光强 - 使用统一物理引擎
+  // Physics: Unpolarized light passes through a chain of polarizers
+  // Engine computes: I₁ = I₀/2 (unpolarized→polarized), then cos²(θ) for each subsequent polarizer
   const calculations = useMemo(() => {
     const I0 = 1 // 初始光强
-
-    // 通过第一个偏振片（假设入射光为非偏振光，强度减半）
-    const I1 = I0 * 0.5
     const pol1 = polarizer1Angle
+
+    // Build polarizer chain based on configuration
+    const polarizers = showMiddlePolarizer && polarizer2Angle !== null
+      ? [polarizer1Angle, polarizer2Angle, polarizer3Angle]
+      : [polarizer1Angle, polarizer3Angle]
+
+    // Use unified physics engine for chain calculation
+    // Engine handles: unpolarized input → first polarizer (50%) → Malus for each subsequent
+    const chainResult = PolarizationPhysics.polarizerChain(
+      polarizers,
+      true, // isUnpolarizedInput
+      I0
+    )
 
     if (!showMiddlePolarizer || polarizer2Angle === null) {
       // 两偏振片情况
       const angleDiff = Math.abs(polarizer3Angle - polarizer1Angle) % 180
-      const theta = Math.min(angleDiff, 180 - angleDiff) * (Math.PI / 180)
-      const I2 = I1 * Math.cos(theta) ** 2
+      const normalizedAngleDiff = Math.min(angleDiff, 180 - angleDiff)
       return {
         I0,
-        I1,
+        I1: chainResult.stages[0] || 0.5,  // After first polarizer
         I2: null,
-        I3: I2,
+        I3: chainResult.intensity,         // Final intensity from engine
         pol1,
         pol2: null,
         pol3: polarizer3Angle,
         theta1: null,
-        theta2: angleDiff,
-        transmission: I2 / I0,
+        theta2: normalizedAngleDiff,
+        transmission: chainResult.intensity / I0,
       }
     } else {
       // 三偏振片情况
       const angleDiff1 = Math.abs(polarizer2Angle - polarizer1Angle) % 180
-      const theta1 = Math.min(angleDiff1, 180 - angleDiff1) * (Math.PI / 180)
-      const I2 = I1 * Math.cos(theta1) ** 2
+      const normalizedAngleDiff1 = Math.min(angleDiff1, 180 - angleDiff1)
 
       const angleDiff2 = Math.abs(polarizer3Angle - polarizer2Angle) % 180
-      const theta2 = Math.min(angleDiff2, 180 - angleDiff2) * (Math.PI / 180)
-      const I3 = I2 * Math.cos(theta2) ** 2
+      const normalizedAngleDiff2 = Math.min(angleDiff2, 180 - angleDiff2)
 
       return {
         I0,
-        I1,
-        I2,
-        I3,
+        I1: chainResult.stages[0] || 0.5,  // After P₁
+        I2: chainResult.stages[1] || 0,    // After P₂
+        I3: chainResult.intensity,         // Final intensity from engine
         pol1,
         pol2: polarizer2Angle,
         pol3: polarizer3Angle,
-        theta1: angleDiff1,
-        theta2: angleDiff2,
-        transmission: I3 / I0,
+        theta1: normalizedAngleDiff1,
+        theta2: normalizedAngleDiff2,
+        transmission: chainResult.intensity / I0,
       }
     }
   }, [polarizer1Angle, polarizer2Angle, polarizer3Angle, showMiddlePolarizer])

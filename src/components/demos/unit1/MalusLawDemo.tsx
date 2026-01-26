@@ -3,6 +3,11 @@
  * I = I₀ × cos²(θ)
  * 参考设计：高级玻璃态UI风格
  *
+ * Physics Engine Migration:
+ * - Uses unified CoherencyMatrix-based calculations via PolarizationPhysics
+ * - Ideal polarizer physics computed through engine
+ * - Extinction ratio (research mode) applied as post-processing for non-ideal behavior
+ *
  * 支持难度分层:
  * - foundation: 隐藏公式和曲线图，简化说明
  * - application: 完整显示所有内容
@@ -12,6 +17,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 // 难度级别类型
 type DifficultyLevel = 'foundation' | 'application' | 'research'
@@ -266,14 +272,16 @@ function PolarizerCircle({
   )
 }
 
-// SVG 曲线图组件
+// SVG 曲线图组件 - 使用统一物理引擎生成曲线
 function MalusCurveChart({ currentAngle, intensity }: { currentAngle: number; intensity: number }) {
-  // 生成 cos² 曲线路径
+  // 生成 Malus's Law 曲线路径 (使用 CoherencyMatrix 物理引擎)
   const curvePath = useMemo(() => {
     const points: string[] = []
     for (let theta = 0; theta <= 180; theta += 2) {
       const x = 25 + (theta / 180) * 180
-      const y = 95 - Math.pow(Math.cos((theta * Math.PI) / 180), 2) * 70
+      // Engine computes: I = I₀ × cos²(θ) via CoherencyMatrix polarizer interaction
+      const transmission = PolarizationPhysics.malusIntensity(0, theta, 1.0)
+      const y = 95 - transmission * 70
       points.push(`${theta === 0 ? 'M' : 'L'} ${x},${y}`)
     }
     return points.join(' ')
@@ -384,12 +392,15 @@ export function MalusLawDemo({ difficultyLevel = 'application' }: MalusLawDemoPr
   const isFoundation = difficultyLevel === 'foundation'
   const isResearch = difficultyLevel === 'research'
 
-  // 计算透射强度 (考虑非理想偏振片的消光比)
-  const cosTheta = Math.cos((angle * Math.PI) / 180)
-  const cos2Theta = cosTheta * cosTheta
+  // 计算透射强度 - 使用统一物理引擎
+  // Physics: Input light at 0° (from first polarizer) passes through analyzer at 'angle'
+  // Engine computes ideal transmission via CoherencyMatrix: I = I₀ × cos²(θ)
+  const cos2Theta = PolarizationPhysics.malusIntensity(0, angle, 1.0)
+  const cosTheta = Math.sqrt(cos2Theta) // Derived for display purposes
 
-  // 对于研究级别,考虑消光比的影响
+  // 对于研究级别,考虑消光比的影响 (非理想偏振片的设备特性)
   // 非理想偏振片: I = I₀ × [cos²θ + sin²θ/ER] 其中 ER 是消光比
+  // This is a device imperfection correction, applied after engine physics
   const sin2Theta = 1 - cos2Theta
   const imperfectFactor = isResearch ? (cos2Theta + sin2Theta / extinctionRatio) : cos2Theta
   const transmittedIntensity = incidentIntensity * imperfectFactor

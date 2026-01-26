@@ -5,6 +5,7 @@
  */
 import { useTheme } from '@/contexts/ThemeContext'
 import { useState } from 'react'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 // 通用样式
 const useColors = () => {
@@ -924,9 +925,9 @@ export function PhonePolarizerIllustration() {
         )}
       </g>
 
-      {/* 强度公式 */}
+      {/* 强度公式 - 使用统一物理引擎 */}
       <text x="160" y="145" textAnchor="middle" fill={colors.text} fontSize="9">
-        I = I₀ × cos²({angle}°) = {Math.round(Math.cos(angle * Math.PI / 180) ** 2 * 100)}%
+        I = I₀ × cos²({angle}°) = {Math.round(PolarizationPhysics.malusIntensity(0, angle, 1.0) * 100)}%
       </text>
 
       {/* 点击提示 */}

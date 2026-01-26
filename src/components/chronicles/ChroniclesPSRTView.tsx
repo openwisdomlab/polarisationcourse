@@ -215,11 +215,11 @@ function SectionContent({
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
-  // 获取关联的历史事件
+  // 获取关联的历史事件（排除隐藏的事件）
   const relatedEvents = useMemo(() => {
     return section.relatedEvents
       .map(ref => {
-        const event = TIMELINE_EVENTS.find(e => e.year === ref.year && e.track === ref.track)
+        const event = TIMELINE_EVENTS.find(e => e.year === ref.year && e.track === ref.track && !e.hidden)
         const mapping = PSRT_EVENT_MAPPINGS.find(
           m => m.eventYear === ref.year && m.eventTrack === ref.track
         )

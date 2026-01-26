@@ -93,7 +93,7 @@ export function CourseNavigator({
 
     return section.relatedEvents.map(ref => {
       const event = TIMELINE_EVENTS.find(
-        e => e.year === ref.year && e.track === ref.track
+        e => e.year === ref.year && e.track === ref.track && !e.hidden
       )
       return event ? { ...ref, event } : null
     }).filter((e): e is NonNullable<typeof e> => e !== null)

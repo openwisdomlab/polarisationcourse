@@ -15,6 +15,8 @@ export interface TimelineEvent {
   importance: 1 | 2 | 3 // 1 = major milestone, 2 = significant, 3 = notable
   // 双轨分类: 'optics' = 广义光学, 'polarization' = 偏振光专属
   track: 'optics' | 'polarization'
+  // 是否隐藏：暂时隐藏与偏振光关系不大的事件
+  hidden?: boolean
   details?: {
     en: string[]
     zh: string[]
@@ -102,6 +104,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     category: 'theory',
     importance: 1,
     track: 'optics',
+    hidden: true, // 基础光学，与偏振关系较远
     details: {
       en: [
         'n₁ sin θ₁ = n₂ sin θ₂',
@@ -142,6 +145,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光谱色散，与偏振关系较远
     details: {
       en: [
         'Performed in his room at Trinity College, Cambridge during plague lockdown',
@@ -208,6 +212,7 @@ This insight, born in plague-time isolation, became the foundation of spectrosco
     category: 'discovery',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光速测量，与偏振关系较远
     details: {
       en: [
         'Observed delays in eclipses of Jupiter\'s moon Io',
@@ -443,37 +448,7 @@ Little did he know that this transparent stone from the frozen north would one d
       en: 'Why does calcite create two images? What property of light could cause it to split into two separate beams?',
       zh: '为什么方解石会产生两个像？光的什么性质会导致它分裂成两束？'
     },
-    illustrationType: 'calcite',
-    // 双折射现象的现代实验演示
-    experimentalResources: {
-      resourceIds: [
-        'calcite-double-refraction',  // 冰洲石双折射成像 (新增)
-        'calcite-polarizer-sequence', // 偏振片不同角度观察冰洲石 (新增)
-        'calcite-stacked',            // 堆叠冰洲石四个像 (新增)
-        'calcite-laser-red-beams',    // 绿色激光红色光束 (新增)
-        'tempered-glass',             // 钢化玻璃应力图案展示双折射
-        'plastic-wrap',               // 保鲜膜双折射
-        'plastic-wrap-thickness',     // 不同厚度的双折射色彩
-      ],
-      featuredImages: [
-        {
-          url: '/images/calcite/双折射成像.jpg',
-          caption: 'Classic calcite double refraction - Iceland spar crystal creating two images',
-          captionZh: '经典冰洲石双折射——冰洲石晶体产生双像'
-        },
-        {
-          url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
-          caption: 'Stress-induced birefringence in tempered glass - modern manifestation of Bartholin\'s discovery',
-          captionZh: '钢化玻璃中的应力双折射——巴托林发现在现代的体现'
-        }
-      ],
-      featuredVideo: {
-        url: '/videos/chromatic-polarization/实验-偏振片看钢化玻璃-朝西.mp4',
-        title: 'Observing birefringence in tempered glass under polarized light',
-        titleZh: '偏振光下观察钢化玻璃的双折射'
-      },
-      relatedModules: ['birefringence', 'stress-analysis', 'anisotropy']
-    }
+    illustrationType: 'calcite'
   },
   {
     year: 1690,
@@ -556,6 +531,7 @@ In his dedication, he wrote: "One finds in this subject a kind of demonstration 
     category: 'theory',
     importance: 1,
     track: 'optics',
+    hidden: true, // 粒子理论为主，与偏振关系较远
     details: {
       en: [
         'Published 40 years after his prism experiments during the plague',
@@ -689,27 +665,7 @@ Years later, dying young from tuberculosis contracted in Egypt, Malus would be r
       en: 'Malus discovered polarization by accident while looking at a sunset. What other great scientific discoveries were made by accident?',
       zh: '马吕斯在观看日落时偶然发现了偏振现象。还有哪些伟大的科学发现是偶然发生的？'
     },
-    illustrationType: 'reflection',
-    // 反射偏振的现代实验演示
-    experimentalResources: {
-      resourceIds: [
-        'glass-comparison',        // 玻璃在偏振光下的对比
-        'glasses',                 // 眼镜镜片的偏振效果
-      ],
-      featuredImages: [
-        {
-          url: '/images/chromatic-polarization/玻璃对比-正交偏振系统-正视图.jpg',
-          caption: 'Glass under crossed polarizers - modern demonstration of Malus\'s reflection discovery',
-          captionZh: '正交偏振下的玻璃——马吕斯反射发现的现代演示'
-        }
-      ],
-      featuredVideo: {
-        url: '/videos/chromatic-polarization/实验-眼镜-正交偏振系统-旋转样品视频.mp4',
-        title: 'Eyeglass lenses showing stress patterns under polarized light',
-        titleZh: '偏振光下眼镜镜片显示的应力图案'
-      },
-      relatedModules: ['polarization-intro', 'malus-law', 'daily-polarization']
-    }
+    illustrationType: 'reflection'
   },
   {
     year: 1809,
@@ -778,28 +734,7 @@ Tragically, Malus would not live to see his law's full impact. He died just thre
       en: 'Malus\'s Law shows that at 90° the light is completely blocked. What everyday objects use this "crossed polarizers" effect?',
       zh: '马吕斯定律表明在90°时光被完全阻挡。日常生活中有哪些物品利用这种"正交偏振片"效应？'
     },
-    illustrationType: 'polarizer',
-    // 马吕斯定律的现代实验演示
-    experimentalResources: {
-      resourceIds: [
-        'clear-tape',                // 透明胶展示偏振效果
-        'clear-tape-array',          // 透明胶阵列
-        'water-bottle',              // 矿泉水瓶偏振
-      ],
-      featuredImages: [
-        {
-          url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.jpg',
-          caption: 'Malus\'s Law in action - light intensity varies with polarizer angle',
-          captionZh: '马吕斯定律实际应用——光强随偏振片角度变化'
-        }
-      ],
-      featuredVideo: {
-        url: '/videos/chromatic-polarization/实验-透明胶条-正交偏振系统-旋转偏振片视频.mp4',
-        title: 'Rotating polarizer demonstrates Malus\'s cos²θ law',
-        titleZh: '旋转偏振片演示马吕斯cos²θ定律'
-      },
-      relatedModules: ['malus-law', 'polarization-intro']
-    }
+    illustrationType: 'polarizer'
   },
   {
     year: 1811,
@@ -885,68 +820,7 @@ Today, if you've ever seen the rainbow patterns in a stressed plastic ruler view
       descriptionEn: 'Arago\'s chromatic polarization provided key evidence for Fresnel\'s transverse wave theory',
       descriptionZh: '阿拉戈的色偏振为菲涅尔的横波理论提供了关键证据'
     },
-    illustrationType: 'chromaticpol',
-    // 色偏振实验资源 - 关联到 resource-gallery 中的多媒体资源
-    experimentalResources: {
-      resourceIds: [
-        'glass-heating-cooling',      // 玻璃应力加热冷却序列
-        'plastic-wrap-thickness',     // 保鲜膜厚度干涉色
-        'clear-tape-array',           // 透明胶阵列图案
-        'tempered-glass',             // 钢化玻璃应力图案
-        'plastic-wrap',               // 保鲜膜基础实验
-      ],
-      featuredImages: [
-        {
-          url: '/images/chromatic-polarization/透明胶条（重叠阵列）-正交偏振系统-正视图.jpg',
-          caption: 'Transparent tape array showing chromatic interference under crossed polarizers',
-          captionZh: '透明胶条阵列在正交偏振系统下展示的色偏振干涉图案'
-        },
-        {
-          url: '/images/chromatic-polarization/钢化玻璃-正交偏振系统-正视图.jpg',
-          caption: 'Stress patterns in tempered glass revealed by crossed polarizers',
-          captionZh: '正交偏振片揭示钢化玻璃中的应力图案'
-        },
-        {
-          url: '/images/chromatic-polarization/保鲜膜重叠4次-正交偏振系统-正视图.jpg',
-          caption: '4-layer plastic wrap showing color variation due to thickness changes',
-          captionZh: '四层保鲜膜因厚度变化产生的色彩干涉'
-        }
-      ],
-      featuredVideo: {
-        url: '/videos/chromatic-polarization/实验-透明胶条（重叠阵列）-正交偏振系统-旋转偏振片视频.mp4',
-        title: 'Rotating analyzer reveals changing interference colors',
-        titleZh: '旋转检偏器揭示不断变化的干涉色'
-      },
-      // 色偏振相关的多个实验视频
-      featuredVideos: [
-        {
-          url: '/videos/chromatic-polarization/实验-透明胶条（重叠阵列）-正交偏振系统-旋转偏振片视频.mp4',
-          title: 'Tape array - rotating analyzer shows color gradients',
-          titleZh: '透明胶阵列 - 旋转检偏器展示色彩渐变'
-        },
-        {
-          url: '/videos/chromatic-polarization/实验-保鲜膜3次重叠-正交偏振系统-旋转样品视频.mp4',
-          title: 'Plastic wrap layers - thickness changes color',
-          titleZh: '保鲜膜重叠 - 厚度变化产生不同颜色'
-        },
-        {
-          url: '/videos/chromatic-polarization/实验-打火机烧玻璃-正交偏振系统-长时间观察视频.mp4',
-          title: 'Glass heating - thermal stress evolution',
-          titleZh: '玻璃加热 - 热应力动态演变'
-        },
-        {
-          url: '/videos/chromatic-polarization/实验-透明胶条-正交偏振系统-旋转样品视频.mp4',
-          title: 'Tape rotation - angle-dependent colors',
-          titleZh: '透明胶旋转 - 角度相关的颜色变化'
-        },
-        {
-          url: '/videos/chromatic-polarization/实验-保鲜膜拉伸-正交偏振系统-旋转样品视频.mp4',
-          title: 'Plastic wrap stretching - stress birefringence',
-          titleZh: '保鲜膜拉伸 - 应力双折射效果'
-        }
-      ],
-      relatedModules: ['birefringence', 'stress-analysis', 'photoelasticity', 'interference']
-    }
+    illustrationType: 'chromaticpol'
   },
   {
     year: 1812,
@@ -1031,29 +905,7 @@ Brewster went on to invent the kaleidoscope and contribute to photography, but h
       en: 'Why do fishermen often wear polarized sunglasses? How does Brewster\'s angle help explain this?',
       zh: '为什么渔民经常戴偏振太阳镜？布儒斯特角如何帮助解释这一点？'
     },
-    illustrationType: 'reflection',
-    // 布儒斯特角实验演示
-    experimentalResources: {
-      resourceIds: [
-        'brewster-apparatus',           // 布儒斯特角反射装置 (新增)
-        'brewster-horizontal-dark-spot', // 横向偏振暗点现象 (新增)
-        'brewster-vertical-dark-spot',   // 纵向偏振暗点现象 (新增)
-        'glasses',                       // 偏振太阳镜效果
-      ],
-      featuredImages: [
-        {
-          url: '/images/brewster/反射装置正视图.jpg',
-          caption: 'Brewster angle reflection apparatus - demonstrating complete polarization at specific angle',
-          captionZh: '布儒斯特角反射装置——演示特定角度下的完全偏振'
-        },
-        {
-          url: '/images/brewster/横向绿色光束暗点现象.jpg',
-          caption: 'Dark spot phenomenon with horizontally polarized green laser at Brewster angle',
-          captionZh: '横向偏振绿色激光在布儒斯特角下的暗点现象'
-        }
-      ],
-      relatedModules: ['brewster', 'fresnel', 'polarization-intro']
-    }
+    illustrationType: 'reflection'
   },
   {
     year: 1815,
@@ -1148,42 +1000,7 @@ Today, measuring optical rotation remains a standard technique in chemistry and 
       descriptionEn: 'Biot\'s polarimeter enabled Pasteur\'s discovery of molecular chirality in tartaric acid crystals',
       descriptionZh: '毕奥的旋光仪使巴斯德得以发现酒石酸晶体的分子手性'
     },
-    illustrationType: 'opticalactivity',
-    // 旋光性的现代实验演示
-    experimentalResources: {
-      resourceIds: [
-        'optical-rotation-setup',        // 旋光实验装置 (新增)
-        'optical-rotation-white-light',  // 白光旋光实验 (新增)
-        'optical-rotation-laser-front',  // 激光旋光正视图 (新增)
-        'optical-rotation-laser-top',    // 激光旋光俯视图 (新增)
-        'optical-rotation-with-polarizer', // 有偏振片 (新增)
-        'optical-rotation-no-polarizer', // 无偏振片对比 (新增)
-        'sugar-bag',                     // 白砂糖的旋光性
-      ],
-      featuredImages: [
-        {
-          url: '/images/optical-rotation/关闭室内照明、开启白光光源并使光经过偏振片后的情形.jpg',
-          caption: 'Optical rotation experiment with white light through polarizer',
-          captionZh: '白光通过偏振片的旋光实验'
-        },
-        {
-          url: '/images/optical-rotation/关闭室内照明、开启绿色激光和红色激光并使光经过偏振片后的正视图.jpg',
-          caption: 'Optical rotation with green and red lasers - different wavelengths rotate by different amounts',
-          captionZh: '绿色和红色激光的旋光——不同波长旋转量不同'
-        },
-        {
-          url: '/images/chromatic-polarization/白砂糖袋子-正交偏振系统-正视图（横向）.jpg',
-          caption: 'Sugar demonstrating optical rotation - the chiral molecules rotate the polarization plane',
-          captionZh: '白砂糖展示旋光性——手性分子旋转偏振面'
-        }
-      ],
-      featuredVideo: {
-        url: '/videos/chromatic-polarization/实验-白砂糖袋子-正交偏振系统-旋转样品视频.mp4',
-        title: 'Optical rotation by sugar - Biot\'s discovery demonstrated',
-        titleZh: '白砂糖的旋光性——毕奥发现的演示'
-      },
-      relatedModules: ['optical-rotation', 'chromatic', 'daily-polarization']
-    }
+    illustrationType: 'opticalactivity'
   },
   {
     year: 1817,
@@ -1259,27 +1076,7 @@ The revolution he sparked continues to this day. Every polarizing sunglasses len
       season: 'Summer',
       mood: 'revolution'
     },
-    illustrationType: 'transverse',
-    // 横波理论的现代实验演示
-    experimentalResources: {
-      resourceIds: [
-        'plastic-wrap-stretching',  // 保鲜膜拉伸展示偏振特性
-        'clear-tape',              // 透明胶的偏振效果
-      ],
-      featuredImages: [
-        {
-          url: '/images/chromatic-polarization/透明胶-正交偏振系统-正视图.jpg',
-          caption: 'Transverse wave nature revealed by polarized light through stressed material',
-          captionZh: '应力材料在偏振光下揭示光的横波特性'
-        }
-      ],
-      featuredVideo: {
-        url: '/videos/chromatic-polarization/实验-保鲜膜拉伸-正交偏振系统-旋转样品视频.mp4',
-        title: 'Stretching creates optical axis - demonstrating transverse wave polarization',
-        titleZh: '拉伸产生光轴——演示横波偏振'
-      },
-      relatedModules: ['birefringence', 'waveplate', 'polarization-intro']
-    }
+    illustrationType: 'transverse'
   },
   {
     year: 1822,
@@ -1604,6 +1401,7 @@ Pasteur later said this moment changed his life. "The universe is asymmetric," h
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光速测量，与偏振关系较远
     details: {
       en: [
         'Newton\'s particle theory predicted light should travel faster in denser media',
@@ -1861,22 +1659,7 @@ The Tyndall effect, as it came to be known, remains a fundamental phenomenon in 
       en: 'Why does adding milk to water make it appear blue when viewed from the side but orange/yellow when viewed through it? How does this relate to sunsets?',
       zh: '为什么在水中加入牛奶后，从侧面看呈蓝色，但透过它看却呈橙黄色？这与日落有什么关系？'
     },
-    illustrationType: 'rayleigh',
-    // 廷德尔效应实验演示
-    experimentalResources: {
-      resourceIds: [
-        'scattering-mie-concentration',  // 不同浓度微球散射 (新增)
-        'scattering-particle-size',      // 不同粒径散射对比 (新增)
-      ],
-      featuredImages: [
-        {
-          url: '/images/scattering/不同浓度 80 nm 微球悬浊液透射光实物图（由左至右浓度递减）.jpg',
-          caption: 'Transmitted light through colloidal suspensions at different concentrations',
-          captionZh: '不同浓度胶体悬浊液的透射光对比'
-        }
-      ],
-      relatedModules: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering']
-    }
+    illustrationType: 'rayleigh'
   },
   {
     year: 1871,
@@ -1946,22 +1729,7 @@ Rayleigh's work showed that polarization isn't just a laboratory curiosity — i
       en: 'If you look at the sky through polarized sunglasses, what changes do you notice? Why is the effect strongest at 90° from the sun?',
       zh: '如果你通过偏振太阳镜看天空，你注意到什么变化？为什么在距太阳90°的方向效果最强？'
     },
-    illustrationType: 'rayleigh',
-    // 瑞利散射实验演示
-    experimentalResources: {
-      resourceIds: [
-        'scattering-mie-concentration',  // 不同浓度微球散射 (新增)
-        'scattering-particle-size',      // 不同粒径散射对比 (新增)
-      ],
-      featuredImages: [
-        {
-          url: '/images/scattering/分别为80nm-300nm-3um溶液小球散射效果.jpg',
-          caption: 'Scattering comparison: 80nm vs 300nm vs 3μm particles - demonstrating Rayleigh to Mie transition',
-          captionZh: '散射对比：80nm vs 300nm vs 3μm 颗粒——展示从瑞利散射到米氏散射的过渡'
-        }
-      ],
-      relatedModules: ['rayleigh', 'mie-scattering', 'monte-carlo-scattering']
-    }
+    illustrationType: 'rayleigh'
   },
   {
     year: 1875,
@@ -3378,6 +3146,7 @@ The same physics that Malus discovered in a Paris sunset, that Stokes formalized
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 引力波探测，与偏振关系较远
     details: {
       en: [
         'Two 4-km laser interferometer arms at right angles',
@@ -3582,6 +3351,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 望远镜，与偏振关系较远
     details: {
       en: [
         'Improved Dutch telescope design to 20x magnification',
@@ -3621,6 +3391,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'theory',
     importance: 1,
     track: 'optics',
+    hidden: true, // 最短时间原理，与偏振关系较远
     details: {
       en: [
         'Light chooses the path of least time, not shortest distance',
@@ -3660,6 +3431,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'discovery',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光谱学，与偏振关系较远
     details: {
       en: [
         'Mapped 574 dark lines in the solar spectrum',
@@ -3699,6 +3471,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 干涉仪，与偏振关系较远
     details: {
       en: [
         'Split light beam, sent along perpendicular paths, recombined',
@@ -3738,6 +3511,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 电磁波验证，与偏振关系较远
     details: {
       en: [
         'Generated radio waves using a spark-gap transmitter',
@@ -3828,6 +3602,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'theory',
     importance: 2,
     track: 'optics',
+    hidden: true, // 全息术，与偏振关系较远
     details: {
       en: [
         'Proposed recording interference pattern of object and reference beams',

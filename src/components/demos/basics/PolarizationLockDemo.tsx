@@ -29,20 +29,12 @@ import {
   Lightbulb,
 } from 'lucide-react'
 import { InfoCard, Formula, SliderControl } from '../DemoControls'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 // ============ 物理常量 ============
 
 // 密码区域的偏振方向（90°垂直偏振）
 const PASSWORD_POLARIZATION = 90
-
-/**
- * 马吕斯定律计算透过强度
- * I = I₀ × cos²(θ)
- */
-function malusLaw(inputIntensity: number, angleDiff: number): number {
-  const theta = angleDiff * (Math.PI / 180)
-  return inputIntensity * Math.cos(theta) ** 2
-}
 
 // ============ 子组件 ============
 
@@ -587,7 +579,7 @@ function PhysicsPanel({
             I₂ = {(intensity2 * 100).toFixed(0)}%
           </div>
           <div className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-            cos²({angleBetween}°) = {(Math.cos(angleBetween * Math.PI / 180) ** 2 * 100).toFixed(0)}%
+            cos²({angleBetween}°) = {(PolarizationPhysics.malusIntensity(0, angleBetween, 1.0) * 100).toFixed(0)}%
           </div>
         </div>
       </div>
@@ -705,21 +697,23 @@ export function PolarizationLockDemo() {
 
   const correctPassword = 'POLAR'
 
-  // 计算光强
+  // 计算光强 - 使用统一物理引擎
   // 1. 非偏振光经过起偏器后强度为50%
   const intensity1 = 0.5
 
   // 2. 偏振光经过检偏器后，根据马吕斯定律
   const angleBetween = Math.abs(polarizer2Angle - polarizer1Angle)
-  const intensity2 = useMemo(() => malusLaw(intensity1, angleBetween), [angleBetween])
+  const intensity2 = useMemo(
+    () => PolarizationPhysics.malusIntensity(polarizer1Angle, polarizer2Angle, intensity1),
+    [polarizer1Angle, polarizer2Angle]
+  )
 
   // 3. 密码可见度 = 检偏器与密码偏振方向的匹配程度
   // 密码在90°偏振，当检偏器也是90°时可见度最高
   const passwordVisibility = useMemo(() => {
-    const angleToPassword = Math.abs(polarizer2Angle - PASSWORD_POLARIZATION)
     // 当与密码偏振方向平行时(0°或180°)，可见度最高
     // 当垂直时(90°)，可见度最低
-    return Math.cos(angleToPassword * Math.PI / 180) ** 2
+    return PolarizationPhysics.malusIntensity(PASSWORD_POLARIZATION, polarizer2Angle, 1.0)
   }, [polarizer2Angle])
 
   // 当密码可见度足够高时显示输入框

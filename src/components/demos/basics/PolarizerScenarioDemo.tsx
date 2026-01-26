@@ -27,6 +27,7 @@ import {
 } from '../DifficultyStrategy'
 import { ControlPanel, InfoCard, Formula } from '../DemoControls'
 import { Camera, Droplets, Car, GalleryHorizontalEnd, ChevronDown } from 'lucide-react'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 interface PolarizerScenarioDemoProps {
   difficultyLevel?: DifficultyLevel
@@ -273,8 +274,8 @@ export function PolarizerScenarioDemo({
                     theme === 'dark' ? 'bg-slate-800 text-cyan-300' : 'bg-white text-cyan-700'
                   )}>
                     <div>I_transmitted = I_reflected × cos²({finalAngle}°)</div>
-                    <div>= I_reflected × {Math.pow(Math.cos(finalAngle * Math.PI / 180), 2).toFixed(4)}</div>
-                    <div>≈ {(Math.pow(Math.cos(finalAngle * Math.PI / 180), 2) * 100).toFixed(1)}% of reflected light passes</div>
+                    <div>= I_reflected × {PolarizationPhysics.malusIntensity(0, finalAngle, 1.0).toFixed(4)}</div>
+                    <div>≈ {(PolarizationPhysics.malusIntensity(0, finalAngle, 1.0) * 100).toFixed(1)}% of reflected light passes</div>
                   </div>
                 </div>
               </motion.div>
@@ -289,12 +290,12 @@ export function PolarizerScenarioDemo({
           showJonesVectors={config.showJonesVectors}
           showMuellerMatrices={config.showMuellerMatrices}
           onExportData={() => {
-            // Export raw measurement data
+            // Export raw measurement data - 使用统一物理引擎
             const data = {
               scenario: selectedScenario.id,
               measurements: Array.from({ length: 91 }, (_, i) => ({
                 angle: i,
-                transmittance: Math.pow(Math.cos(i * Math.PI / 180), 2),
+                transmittance: PolarizationPhysics.malusIntensity(0, i, 1.0),
               })),
             }
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
@@ -355,14 +356,14 @@ export function PolarizerScenarioDemo({
                 </thead>
                 <tbody>
                   {[0, 15, 30, 45, 60, 75, 90].map((angle) => {
-                    const cos2 = Math.pow(Math.cos(angle * Math.PI / 180), 2)
+                    const transmittance = PolarizationPhysics.malusIntensity(0, angle, 1.0)
                     return (
                       <tr key={angle} className={cn(
                         theme === 'dark' ? 'border-t border-slate-700' : 'border-t border-gray-200'
                       )}>
                         <td className="px-3 py-2">{angle}</td>
-                        <td className="px-3 py-2">{cos2.toFixed(4)}</td>
-                        <td className="px-3 py-2">{(cos2 * 100).toFixed(1)}%</td>
+                        <td className="px-3 py-2">{transmittance.toFixed(4)}</td>
+                        <td className="px-3 py-2">{(transmittance * 100).toFixed(1)}%</td>
                       </tr>
                     )
                   })}
