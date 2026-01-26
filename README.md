@@ -42,15 +42,15 @@ Visit `http://localhost:5173` to experience.
 | Path | Description |
 |------|-------------|
 | `/` | Homepage navigation |
-| `/games` | Game hub with 5 game modes |
-| `/optical-studio` | Optical Design Studio (component library + workbench) |
-| `/demos` | Polarization physics demo gallery |
-| `/chronicles` | Chronicles of Light |
-| `/creative` | Polarization art and experiment workshop |
-| `/lab` | Virtual lab group (research tasks and community) |
+| `/chronicles` | Module 1: Chronicles of Light |
+| `/studio` | Module 2: Optical Design Studio (component library + workbench) |
+| `/demos` | Module 3: Polarization physics demo gallery |
+| `/games` | Module 4: Game hub with 5 game modes |
+| `/gallery` | Module 5: Polarization art and experiment workshop |
+| `/research` | Module 6: Virtual lab group (research tasks and community) |
 | `/calc/*` | Calculation tools (Jones/Stokes/Mueller/Poincaré) |
 | `/hardware` | Optical hardware equipment library |
-| `/applications` | Real-world polarization technology applications |
+| `/research/applications` | Real-world polarization technology applications |
 
 ---
 
@@ -212,15 +212,15 @@ npm run preview  # 预览构建结果
 | 路径 | 说明 |
 |------|------|
 | `/` | 首页导航 |
-| `/games` | 游戏中心，包含5种游戏模式 |
-| `/optical-studio` | 光学设计室（器件库+工作台） |
-| `/demos` | 偏振物理演示馆 |
-| `/chronicles` | 光的编年史 |
-| `/creative` | 偏振艺术与实验工坊 |
-| `/lab` | 虚拟课题组（研究任务与社区） |
+| `/chronicles` | 模块1：光的编年史 |
+| `/studio` | 模块2：光学设计室（器件库+工作台） |
+| `/demos` | 模块3：偏振物理演示馆 |
+| `/games` | 模块4：游戏中心，包含5种游戏模式 |
+| `/gallery` | 模块5：偏振艺术与实验工坊 |
+| `/research` | 模块6：虚拟课题组（研究任务与社区） |
 | `/calc/*` | 计算工具（Jones/Stokes/Mueller/Poincaré） |
 | `/hardware` | 光学硬件设备库 |
-| `/applications` | 偏振技术实际应用案例 |
+| `/research/applications` | 偏振技术实际应用案例 |
 
 ---
 
