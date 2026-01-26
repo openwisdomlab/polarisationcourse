@@ -74,3 +74,24 @@ export type { InterferometerTargetSVGProps } from './InterferometerTargetSVG'
 
 export { OpticalMineSVG } from './OpticalMineSVG'
 export type { OpticalMineSVGProps } from './OpticalMineSVG'
+
+// === Physics-to-Rendering Adapter (Unified Physics Engine Bridge) ===
+
+export {
+  RayRenderAdapter,
+  createXYAdapter,
+  createXZAdapter,
+  convertSegmentToBeam,
+  convertSegmentsToBeams,
+  drawRayOnCanvas,
+  drawPolarizationEllipse,
+} from './RayRenderAdapter'
+export type {
+  RayRenderData,
+  RenderHint,
+  WaveVisualizationData,
+  RayRenderAdapterConfig,
+  PolarizationType,
+  Handedness,
+  ProjectionType,
+} from './RayRenderAdapter'
