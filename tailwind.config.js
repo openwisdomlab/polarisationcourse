@@ -62,6 +62,24 @@ export default {
           90: '#44ff44',   // 90° vertical - green
           135: '#4444ff',  // 135° diagonal - blue
         },
+        // Tech/Future Theme Palette
+        tech: {
+          cyan: {
+            DEFAULT: '#00f0ff',
+            dim: 'rgba(0, 240, 255, 0.1)',
+            glow: 'rgba(0, 240, 255, 0.5)',
+          },
+          violet: {
+            DEFAULT: '#7000ff',
+            dim: 'rgba(112, 0, 255, 0.1)',
+            glow: 'rgba(112, 0, 255, 0.5)',
+          },
+          dark: {
+            bg: '#050510',
+            card: 'rgba(10, 10, 25, 0.6)',
+            border: 'rgba(100, 200, 255, 0.1)',
+          }
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

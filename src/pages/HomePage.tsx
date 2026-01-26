@@ -64,16 +64,16 @@ const MODULES: ModuleConfig[] = [
       { labelKey: 'home.chronicles.link3', path: '/chronicles' },
     ],
     colorTheme: {
-      bg: 'bg-amber-50 dark:bg-amber-950/60',
-      bgHover: 'hover:bg-amber-100 dark:hover:bg-amber-900/70',
-      border: 'border-amber-200 dark:border-amber-800/50',
-      borderHover: 'hover:border-amber-400 dark:hover:border-amber-600',
-      iconBg: 'bg-amber-100/50 dark:bg-amber-900/30',
-      iconColor: 'text-amber-600 dark:text-amber-400',
-      shadow: 'hover:shadow-amber-200/50 dark:hover:shadow-amber-900/30',
-      glowColor: 'amber',
-      tagBg: 'bg-amber-100/80 dark:bg-amber-900/50',
-      tagText: 'text-amber-700 dark:text-amber-300',
+      bg: 'bg-cyan-950/20 backdrop-blur-sm',
+      bgHover: 'group-hover:bg-cyan-900/40',
+      border: 'border-cyan-800/50',
+      borderHover: 'group-hover:border-cyan-400/80 group-hover:shadow-[0_0_20px_rgba(34,211,238,0.3)]',
+      iconBg: 'bg-cyan-500/10',
+      iconColor: 'text-cyan-400',
+      shadow: '',
+      glowColor: 'cyan',
+      tagBg: 'bg-cyan-950/40 border border-cyan-800',
+      tagText: 'text-cyan-300',
     },
   },
   {
@@ -88,16 +88,16 @@ const MODULES: ModuleConfig[] = [
       { labelKey: 'home.opticalDesignStudio.link3', path: '/studio' },
     ],
     colorTheme: {
-      bg: 'bg-cyan-50 dark:bg-cyan-950/60',
-      bgHover: 'hover:bg-cyan-100 dark:hover:bg-cyan-900/70',
-      border: 'border-cyan-200 dark:border-cyan-800/50',
-      borderHover: 'hover:border-cyan-400 dark:hover:border-cyan-600',
-      iconBg: 'bg-cyan-100/50 dark:bg-cyan-900/30',
-      iconColor: 'text-cyan-600 dark:text-cyan-400',
-      shadow: 'hover:shadow-cyan-200/50 dark:hover:shadow-cyan-900/30',
-      glowColor: 'cyan',
-      tagBg: 'bg-cyan-100/80 dark:bg-cyan-900/50',
-      tagText: 'text-cyan-700 dark:text-cyan-300',
+      bg: 'bg-blue-950/20 backdrop-blur-sm',
+      bgHover: 'group-hover:bg-blue-900/40',
+      border: 'border-blue-800/50',
+      borderHover: 'group-hover:border-blue-400/80 group-hover:shadow-[0_0_20px_rgba(96,165,250,0.3)]',
+      iconBg: 'bg-blue-500/10',
+      iconColor: 'text-blue-400',
+      shadow: '',
+      glowColor: 'indigo',
+      tagBg: 'bg-blue-950/40 border border-blue-800',
+      tagText: 'text-blue-300',
     },
   },
   {
@@ -112,16 +112,16 @@ const MODULES: ModuleConfig[] = [
       { labelKey: 'home.formulaLab.link3', path: '/demos/stokes-vector' },
     ],
     colorTheme: {
-      bg: 'bg-violet-50 dark:bg-violet-950/60',
-      bgHover: 'hover:bg-violet-100 dark:hover:bg-violet-900/70',
-      border: 'border-violet-200 dark:border-violet-800/50',
-      borderHover: 'hover:border-violet-400 dark:hover:border-violet-600',
-      iconBg: 'bg-violet-100/50 dark:bg-violet-900/30',
-      iconColor: 'text-violet-600 dark:text-violet-400',
-      shadow: 'hover:shadow-violet-200/50 dark:hover:shadow-violet-900/30',
+      bg: 'bg-violet-950/20 backdrop-blur-sm',
+      bgHover: 'group-hover:bg-violet-900/40',
+      border: 'border-violet-800/50',
+      borderHover: 'group-hover:border-violet-400/80 group-hover:shadow-[0_0_20px_rgba(167,139,250,0.3)]',
+      iconBg: 'bg-violet-500/10',
+      iconColor: 'text-violet-400',
+      shadow: '',
       glowColor: 'violet',
-      tagBg: 'bg-violet-100/80 dark:bg-violet-900/50',
-      tagText: 'text-violet-700 dark:text-violet-300',
+      tagBg: 'bg-violet-950/40 border border-violet-800',
+      tagText: 'text-violet-300',
     },
   },
   {
@@ -136,16 +136,16 @@ const MODULES: ModuleConfig[] = [
       { labelKey: 'home.polarquest.link3', path: '/games/card' },
     ],
     colorTheme: {
-      bg: 'bg-emerald-50 dark:bg-emerald-950/60',
-      bgHover: 'hover:bg-emerald-100 dark:hover:bg-emerald-900/70',
-      border: 'border-emerald-200 dark:border-emerald-800/50',
-      borderHover: 'hover:border-emerald-400 dark:hover:border-emerald-600',
-      iconBg: 'bg-emerald-100/50 dark:bg-emerald-900/30',
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
-      shadow: 'hover:shadow-emerald-200/50 dark:hover:shadow-emerald-900/30',
-      glowColor: 'emerald',
-      tagBg: 'bg-emerald-100/80 dark:bg-emerald-900/50',
-      tagText: 'text-emerald-700 dark:text-emerald-300',
+      bg: 'bg-purple-950/20 backdrop-blur-sm',
+      bgHover: 'group-hover:bg-purple-900/40',
+      border: 'border-purple-800/50',
+      borderHover: 'group-hover:border-purple-400/80 group-hover:shadow-[0_0_20px_rgba(192,132,252,0.3)]',
+      iconBg: 'bg-purple-500/10',
+      iconColor: 'text-purple-400',
+      shadow: '',
+      glowColor: 'violet',
+      tagBg: 'bg-purple-950/40 border border-purple-800',
+      tagText: 'text-purple-300',
     },
   },
   {
@@ -161,16 +161,16 @@ const MODULES: ModuleConfig[] = [
       { labelKey: 'home.creativeLab.link4', path: '/gallery/gallery' },
     ],
     colorTheme: {
-      bg: 'bg-pink-50 dark:bg-pink-950/60',
-      bgHover: 'hover:bg-pink-100 dark:hover:bg-pink-900/70',
-      border: 'border-pink-200 dark:border-pink-800/50',
-      borderHover: 'hover:border-pink-400 dark:hover:border-pink-600',
-      iconBg: 'bg-pink-100/50 dark:bg-pink-900/30',
-      iconColor: 'text-pink-600 dark:text-pink-400',
-      shadow: 'hover:shadow-pink-200/50 dark:hover:shadow-pink-900/30',
+      bg: 'bg-fuchsia-950/20 backdrop-blur-sm',
+      bgHover: 'group-hover:bg-fuchsia-900/40',
+      border: 'border-fuchsia-800/50',
+      borderHover: 'group-hover:border-fuchsia-400/80 group-hover:shadow-[0_0_20px_rgba(232,121,249,0.3)]',
+      iconBg: 'bg-fuchsia-500/10',
+      iconColor: 'text-fuchsia-400',
+      shadow: '',
       glowColor: 'pink',
-      tagBg: 'bg-pink-100/80 dark:bg-pink-900/50',
-      tagText: 'text-pink-700 dark:text-pink-300',
+      tagBg: 'bg-fuchsia-950/40 border border-fuchsia-800',
+      tagText: 'text-fuchsia-300',
     },
   },
   {
@@ -186,16 +186,16 @@ const MODULES: ModuleConfig[] = [
       { labelKey: 'home.labGroup.link4', path: '/research' },
     ],
     colorTheme: {
-      bg: 'bg-teal-50 dark:bg-teal-950/60',
-      bgHover: 'hover:bg-teal-100 dark:hover:bg-teal-900/70',
-      border: 'border-teal-200 dark:border-teal-800/50',
-      borderHover: 'hover:border-teal-400 dark:hover:border-teal-600',
-      iconBg: 'bg-teal-100/50 dark:bg-teal-900/30',
-      iconColor: 'text-teal-600 dark:text-teal-400',
-      shadow: 'hover:shadow-teal-200/50 dark:hover:shadow-teal-900/30',
+      bg: 'bg-teal-950/20 backdrop-blur-sm',
+      bgHover: 'group-hover:bg-teal-900/40',
+      border: 'border-teal-800/50',
+      borderHover: 'group-hover:border-teal-400/80 group-hover:shadow-[0_0_20px_rgba(45,212,191,0.3)]',
+      iconBg: 'bg-teal-500/10',
+      iconColor: 'text-teal-400',
+      shadow: '',
       glowColor: 'teal',
-      tagBg: 'bg-teal-100/80 dark:bg-teal-900/50',
-      tagText: 'text-teal-700 dark:text-teal-300',
+      tagBg: 'bg-teal-950/40 border border-teal-800',
+      tagText: 'text-teal-300',
     },
   },
 ]
@@ -252,10 +252,10 @@ function ModuleCard({
       to={module.path}
       ref={cardRef as unknown as React.RefObject<HTMLAnchorElement>}
       className={`
-        group relative flex flex-col p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-500
+        group relative flex flex-col p-4 sm:p-6 rounded-xl sm:rounded-2xl border transition-all duration-500
         ${module.colorTheme.bg} ${module.colorTheme.bgHover}
         ${module.colorTheme.border} ${module.colorTheme.borderHover}
-        hover:-translate-y-2 hover:shadow-2xl ${module.colorTheme.shadow}
+        hover:-translate-y-2
         overflow-hidden cursor-pointer
       `}
       onMouseEnter={handleMouseEnter}
@@ -318,7 +318,7 @@ function ModuleCard({
             className={`
               text-lg sm:text-xl font-bold leading-tight mb-1
               transition-all duration-300
-              ${theme === 'dark' ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-gray-900'}
+              ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
               ${isHovered ? 'translate-x-1' : 'translate-x-0'}
             `}
           >
@@ -326,13 +326,13 @@ function ModuleCard({
           </h3>
           {/* Subtitle (e.g., "追溯" / "Trace") */}
           <div className="flex items-center gap-1">
-            <span className={`text-xs font-medium ${module.colorTheme.iconColor} ${theme === 'dark' ? 'drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]' : ''}`}>
+            <span className={`text-xs font-medium ${module.colorTheme.iconColor} tracking-wider`}>
               {titleZh || titleEn}
             </span>
             {titleZh && (
               <>
-                <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>·</span>
-                <span className={`text-xs ${theme === 'dark' ? 'text-gray-300 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]' : 'text-gray-500'}`}>
+                <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>·</span>
+                <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
                   {titleEn}
                 </span>
               </>
@@ -346,8 +346,8 @@ function ModuleCard({
         className={`
           text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-1
           transition-all duration-300
-          ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
-          ${isHovered ? (theme === 'dark' ? 'text-gray-200' : 'text-gray-700') : ''}
+          ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}
+          ${isHovered ? (theme === 'dark' ? 'text-gray-200' : 'text-gray-800') : ''}
         `}
       >
         {description}
@@ -362,9 +362,9 @@ function ModuleCard({
             onClick={(e) => e.stopPropagation()}
             className={`
               px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-medium rounded-full
-              transition-all duration-200
+              transition-all duration-200 border
               ${module.colorTheme.tagBg} ${module.colorTheme.tagText}
-              hover:scale-105 hover:shadow-sm
+              hover:scale-105 hover:bg-white/10
             `}
           >
             {t(link.labelKey)}
@@ -422,11 +422,10 @@ export function HomePage() {
   return (
     <div
       ref={containerRef}
-      className={`min-h-screen flex flex-col ${
-        theme === 'dark'
-          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950'
-          : 'bg-gradient-to-br from-slate-50 via-white to-slate-100'
-      }`}
+      className={`min-h-screen flex flex-col ${theme === 'dark'
+          ? 'bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black'
+          : 'bg-slate-50'
+        }`}
     >
       {/* Ambient floating particles background */}
       <AmbientParticles theme={theme} count={15} enabled />
@@ -475,29 +474,26 @@ export function HomePage() {
         {/* Badges */}
         <div className="flex flex-wrap justify-center gap-2 mb-4">
           <span
-            className={`px-3 py-1 text-xs font-medium rounded-full ${
-              theme === 'dark'
+            className={`px-3 py-1 text-xs font-medium rounded-full ${theme === 'dark'
                 ? 'bg-cyan-500/20 text-cyan-300'
                 : 'bg-cyan-100 text-cyan-700'
-            }`}
+              }`}
           >
             {t('home.hero.badges.badge1')}
           </span>
           <span
-            className={`px-3 py-1 text-xs font-medium rounded-full ${
-              theme === 'dark'
+            className={`px-3 py-1 text-xs font-medium rounded-full ${theme === 'dark'
                 ? 'bg-emerald-500/20 text-emerald-300'
                 : 'bg-emerald-100 text-emerald-700'
-            }`}
+              }`}
           >
             {t('home.hero.badges.badge2')}
           </span>
           <span
-            className={`px-3 py-1 text-xs font-medium rounded-full ${
-              theme === 'dark'
+            className={`px-3 py-1 text-xs font-medium rounded-full ${theme === 'dark'
                 ? 'bg-amber-500/20 text-amber-300'
                 : 'bg-amber-100 text-amber-700'
-            }`}
+              }`}
           >
             {t('home.hero.badges.badge3')}
           </span>
@@ -505,20 +501,18 @@ export function HomePage() {
 
         {/* Title */}
         <h1
-          className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${
-            theme === 'dark'
+          className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${theme === 'dark'
               ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400'
               : 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600'
-          }`}
+            }`}
         >
           {t('home.hero.title')}
         </h1>
 
         {/* Subtitle */}
         <p
-          className={`text-lg sm:text-xl font-medium mb-6 ${
-            theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-          }`}
+          className={`text-lg sm:text-xl font-medium mb-6 ${theme === 'dark' ? 'text-cyan-400/80' : 'text-cyan-600'
+            }`}
         >
           {t('home.hero.subtitle')}
         </p>
@@ -530,16 +524,14 @@ export function HomePage() {
         <div className="max-w-6xl mx-auto">
           {/* Platform Introduction */}
           <div
-            className={`mb-8 p-4 sm:p-6 rounded-2xl text-left ${
-              theme === 'dark'
+            className={`mb-8 p-4 sm:p-6 rounded-2xl text-left ${theme === 'dark'
                 ? 'bg-slate-800/50 border border-slate-700/50'
                 : 'bg-white/70 border border-gray-200 shadow-sm'
-            }`}
+              }`}
           >
             <p
-              className={`text-sm sm:text-base leading-relaxed ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}
+              className={`text-sm sm:text-base leading-relaxed ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}
             >
               {t('home.hero.platformIntro')}
             </p>
