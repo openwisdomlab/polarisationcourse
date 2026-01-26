@@ -42,6 +42,7 @@ import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/Interacti
 // Note: MalusLawGraphDemo removed - functionality integrated into unit1/MalusLawDemo
 import { ElectromagneticWaveDemo } from '@/components/demos/basics/ElectromagneticWaveDemo'
 import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/PolarizationTypesUnifiedDemo'
+import { PolarizationLockDemo } from '@/components/demos/basics/PolarizationLockDemo'
 
 // Museum Components
 import { GalleryHero } from '@/components/museum'
@@ -1362,6 +1363,15 @@ const DEMOS: DemoItem[] = [
     descriptionKey: 'basics.demos.opticalBench.description',
     visualType: '2D',
     difficulty: 'application', // 交互式实验设计
+  },
+  {
+    id: 'polarization-lock',
+    titleKey: 'basics.demos.polarizationLock.title',
+    unit: 0,
+    component: PolarizationLockDemo,
+    descriptionKey: 'basics.demos.polarizationLock.description',
+    visualType: '2D',
+    difficulty: 'application', // 偏振密码锁 - 游戏化学习马吕斯定律
   },
   // Legacy demos kept for backward compatibility (can be accessed directly)
   // Note: These are now included in unified demos above

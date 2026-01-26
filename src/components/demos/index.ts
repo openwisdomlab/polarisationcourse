@@ -17,6 +17,9 @@ export * from './basics/PolarizationTypesDemo'
 export * from './basics/InteractiveOpticalBenchDemo'
 export * from './basics/VirtualPolarizerLens'
 export * from './basics/PolarizerScenarioDemo'
+export * from './basics/PolarizationLockDemo'
+export * from './basics/MalusLawGraphDemo'
+export * from './basics/ThreePolarizersDemo'
 
 // Unit 1: 偏振态调制与测量
 export * from './unit1/MalusLawDemo'

@@ -235,6 +235,7 @@ export function TheoryHubPage() {
     )}>
       {/* Header */}
       <PersistentHeader
+        moduleKey="formulaLab"
         moduleName={isZh ? '理论与模拟' : 'Theory & Simulation'}
         variant="glass"
         className={cn(

@@ -26,74 +26,94 @@
     "description": "一个基于真实偏振物理的游戏化教育和开放科学平台，从故事到仿真，从谜题到实验，从玩游戏到前沿科学的虚拟课题组——探索偏振光的奇妙世界。",
     "hero": {
       "title": "偏振光下的新世界",
-      "subtitle": "一个偏振光学的游戏化教育和开放科学平台——从经典实验到前沿研究，探索偏振光的奇妙世界。"
+      "subtitle": "故事 · 实验 · 游戏 · 研究 —— 偏振光的沉浸式学习之旅",
+      "platformIntro": "这是深圳零一学院颠覆创新挑战营课程，提供一个偏振光学的游戏化教育和科学实践平台。内容包括偏振光学的进阶式课程实验和相关的历史故事，偏振器件和基本光路，以及偏振光学基础理论和计算仿真。平台也提供进一步提升功能，包括游戏化谜题闯关、课堂作品集锦，以及实际参与前沿科学研究的虚拟课题组。",
+      "callToAction": "期待大家充分利用这个平台，体验零一学院研究型学习的思路！",
+      "storyHook": "1669年，丹麦。一块来自冰岛的透明晶体将一束光一分为二，光的隐藏维度首次显现——偏振。三百多年后的今天，我们把这个传奇放在你手中。",
+      "badges": {
+        "badge1": "创新研究挑战",
+        "badge2": "游戏化学习",
+        "badge3": "开放科学"
+      }
     },
     "modules": {
       "history": {
-        "title": "实验与历史",
-        "description": "重现1669年以来的经典光学实验，从历史发展的视角探索物理本质。"
+        "title": "Trace",
+        "titleZh": "追溯",
+        "subtitle": "历史与实验",
+        "description": "穿越350年光学史，重走发现之路。从冰洲石双像到马吕斯定律，每个故事都连接一个动手实验。不只是读历史，而是亲手重现那些改变世界的瞬间。"
       },
       "arsenal": {
-        "title": "光学器件库",
-        "description": "探索商业化偏振元器件，学习原理并搭建典型应用光路。"
+        "title": "Gather",
+        "titleZh": "工坊",
+        "subtitle": "光学器件",
+        "description": "80+偏振器件图鉴，从原理到应用一目了然。在虚拟光学台上自由搭建光路，模拟经典实验，把教科书上的光路图变成可操作的交互体验。"
       },
       "theory": {
-        "title": "理论与模拟",
-        "description": "交互式物理演示与计算工具，改变参数即时验证琼斯矩阵与斯托克斯参量。"
+        "title": "Decode",
+        "titleZh": "解码",
+        "subtitle": "理论与模拟",
+        "description": "20+交互演示，让抽象公式「动」起来。拖动参数看马吕斯定律生效，旋转波片观察偏振态变化，在庞加莱球上追踪光的轨迹——用双手建立物理直觉。"
       },
       "games": {
-        "title": "游戏化探索",
-        "description": "在 PolarQuest 和 PolarCraft 中通过游戏挑战掌握光学原理。"
+        "title": "Conquer",
+        "titleZh": "挑战",
+        "subtitle": "游戏挑战",
+        "description": "物理原理变通关策略。2D关卡规划光路、3D体素搭建装置、卡牌对战验证直觉、密室逃脱破解机关——四种玩法，从入门到专家难度递进。"
       },
       "gallery": {
-        "title": "成果展示",
-        "description": "学生个性化研究成果展，包括色偏振画、文创产品与自制装置。"
+        "title": "Shine",
+        "titleZh": "创作",
+        "subtitle": "成果展示",
+        "description": "把学到的变成作品。胶带双折射艺术、偏振摄影、手机屏幕实验、DIY偏振器件……展示你的创意，优秀作品将被平台收录展示。"
       },
       "research": {
-        "title": "虚拟课题组",
-        "description": "参与 ESRT/ORIC 层级的研究课题，像科学家一样记录数据与分析。"
+        "title": "Venture",
+        "titleZh": "探索",
+        "subtitle": "虚拟课题组",
+        "description": "像研究生一样做研究。选课题、定方案、做实验、写报告，从验证已知到探索未知。组建团队，协作攻关，在实践中解锁真正的科研能力。"
       }
     },
     "chronicles": {
-      "title": "光的编年史",
+      "title": "历史与实验",
       "subtitle": "历史故事 × 经典实验",
-      "description": "双线叙事：左边追溯光学史上的核心发现，右边聚焦偏振光的专属旅程——用故事点燃好奇，用实验验证直觉。",
+      "description": "穿越350年光学史，重走发现之路。每个故事都连接一个动手实验，亲手重现那些改变世界的瞬间。",
       "cta": "探索",
       "link1": "马吕斯的发现",
       "link2": "重现马吕斯定律",
       "link3": "偏振光之旅"
     },
     "opticalDesignStudio": {
-      "title": "光学设计室",
-      "subtitle": "偏振器件 × 光路设计",
-      "description": "浏览完整的光学器件百科，设计自定义光路，模拟经典实验——一体化光学工作站。",
+      "title": "光学器件",
+      "subtitle": "器件图鉴 × 光路设计",
+      "description": "80+偏振器件图鉴，虚拟光学台自由搭建。把教科书上的光路图变成可操作的交互体验。",
       "cta": "进入设计室",
       "link1": "器件库",
       "link2": "实验库",
       "link3": "自由设计"
     },
     "formulaLab": {
-      "title": "偏振演示馆",
-      "subtitle": "基础理论 × 计算模拟",
-      "description": "把定律变成可见的实验：从马吕斯定律到双折射，让你「看得见、玩得转、记得住」。",
+      "title": "理论与模拟",
+      "subtitle": "交互演示 × 计算模拟",
+      "description": "20+交互演示，让抽象公式「动」起来。拖动参数、旋转波片、追踪光的轨迹——用双手建立物理直觉。",
       "cta": "开始探索",
       "link1": "马吕斯定律演示",
       "link2": "双折射晶体",
       "link3": "斯托克斯向量"
     },
     "polarquest": {
-      "title": "偏振光探秘",
+      "title": "游戏挑战",
       "subtitle": "解谜游戏 × 偏振策略",
-      "description": "在 2D 光路与 3D 体素世界里解谜闯关，把偏振原理变成可操作的策略。",
+      "description": "物理原理变通关策略。2D光路、3D体素、卡牌对战、密室逃脱——四种玩法，难度递进。",
       "cta": "开始游戏",
       "link1": "2D入门关卡",
       "link2": "3D体素关卡",
       "link3": "挑战模式"
     },
     "creativeLab": {
-      "title": "偏振造物局",
-      "subtitle": "偏振艺术 × 文创作品",
-      "description": "用偏振创造艺术：偏振摄影技法、胶带双折射艺术、手机屏幕实验——在造物中感受光学之美。",
+      "title": "成果展示",
+      "subtitle": "偏振艺术 × 创意作品",
+      "description": "把学到的变成作品。胶带艺术、偏振摄影、DIY器件……展示你的创意，优秀作品将被平台收录。",
       "cta": "进入造物局",
       "link1": "DIY实验",
       "link2": "作品与创意",
@@ -102,8 +122,8 @@
     },
     "labGroup": {
       "title": "虚拟课题组",
-      "subtitle": "开放研究 × 偏振社区",
-      "description": "以课题驱动学习：研究任务、偏振应用案例、专业计算工具——和伙伴一起把知识做成项目成果。",
+      "subtitle": "课题研究 × 团队协作",
+      "description": "像研究生一样做研究。选课题、做实验、写报告，组建团队协作攻关，解锁真正的科研能力。",
       "cta": "加入光研社",
       "link1": "研究任务",
       "link2": "应用案例",
@@ -132,6 +152,26 @@
       "course3": {
         "title": "偏振前沿研究",
         "description": "全偏振成像、Mueller矩阵及生物医学应用等前沿研究课题。"
+      }
+    },
+    "course": {
+      "psrt": {
+        "title": "A New World Under Polarized Light",
+        "titleZh": "偏振光下的新世界",
+        "description": "Shenzhen 01 Academy Innovation Challenge Camp - A gamified education and scientific practice platform for polarization optics with progressive experiments, historical stories, and frontier research.",
+        "descriptionZh": "深圳零一学院颠覆创新挑战营课程 - 偏振光学的游戏化教育和科学实践平台，包含进阶式课程实验、历史故事和前沿研究。"
+      },
+      "esrt": {
+        "title": "Polarization Experiments Lab",
+        "titleZh": "偏振实验训练营",
+        "description": "Hands-on experimental training with advanced polarization measurement techniques and instruments.",
+        "descriptionZh": "实操型实验训练，掌握先进的偏振测量技术和仪器使用方法。"
+      },
+      "oric": {
+        "title": "Frontier Research in Polarization",
+        "titleZh": "偏振前沿研究",
+        "description": "Advanced research topics in full-polarization imaging, Mueller matrices, and biomedical applications.",
+        "descriptionZh": "全偏振成像、Mueller矩阵及生物医学应用等前沿研究课题。"
       }
     }
   },
@@ -3288,6 +3328,40 @@
             "光神奇地出现了！试试其他角度。"
           ],
           "observation": "在45°时，25%的光通过（$\\cos^2(45°) \\times \\cos^2(45°) = 0.25$）。中间的滤光片不是'解除阻挡'——它将偏振方向旋转一部分，让光能通过每个滤光片！"
+        }
+      },
+      "polarizationLock": {
+        "title": "偏振密码锁",
+        "description": "通过光学密码锁挑战，游戏化学习马吕斯定律",
+        "lifeScene": {
+          "title": "光学密码",
+          "imageAlt": "一个使用偏振光强度作为密码的光学锁机构",
+          "hook": "如果一把锁只有在恰好正确的光量通过时才会打开呢？欢迎来到偏振密码锁！",
+          "facts": [
+            "安全系统可以使用偏振作为额外的身份验证层",
+            "「密码」就是产生目标光强的角度",
+            "马吕斯定律（I = I₀cos²θ）决定了唯一正确的角度"
+          ]
+        },
+        "physics": {
+          "principle": "使用马吕斯定律找到产生目标光强的精确偏振片角度",
+          "formula": "I = I₀ × cos²(θ)",
+          "details": [
+            "50%透过率需要 θ = 45°（cos²45° = 0.5）",
+            "75%透过率需要 θ = 30°（cos²30° = 0.75）",
+            "0%透过率需要 θ = 90°（正交偏振片）"
+          ]
+        },
+        "questions": {
+          "leading": "你能通过找到精确的角度来破解光学锁吗？",
+          "guided": [
+            "什么角度能让50%的光通过？",
+            "如何从目标光强计算出角度？"
+          ],
+          "openEnded": [
+            "设计一个使用偏振的多级密码锁",
+            "哪些真实的安全应用可以使用光学密码？"
+          ]
         }
       },
       "emSpectrum": {

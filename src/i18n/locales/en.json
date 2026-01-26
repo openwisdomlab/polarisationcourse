@@ -26,74 +26,94 @@
     "description": "A gamified education and open science platform based on real polarization physics. From stories to simulations, from puzzles to experiments, from gaming to frontier research in a virtual lab group — explore the fascinating world of polarized light.",
     "hero": {
       "title": "The New World Under Polarized Light",
-      "subtitle": "A gamified education and open science platform for polarization optics — from classic experiments to frontier research, explore the fascinating world of polarized light."
+      "subtitle": "Stories · Experiments · Games · Research — An Immersive Journey into Polarized Light",
+      "platformIntro": "This is a course from the Shenzhen 01 Academy Innovation Challenge Camp, providing a gamified education and scientific practice platform for polarization optics. The content includes progressive course experiments and historical stories of polarization optics, polarization devices and basic optical paths, as well as fundamental theory and computational simulation. The platform also offers advanced features including gamified puzzle challenges, classroom showcase galleries, and virtual research groups for participating in frontier scientific research.",
+      "callToAction": "We invite you to fully utilize this platform and experience the research-based learning approach of 01 Academy!",
+      "storyHook": "1669, Denmark. A transparent crystal from Iceland split a beam of light in two, revealing light's hidden dimension for the first time — polarization. Three hundred years later, we put this legend in your hands.",
+      "badges": {
+        "badge1": "Innovation Research Challenge",
+        "badge2": "Gamified Learning",
+        "badge3": "Open Science"
+      }
     },
     "modules": {
       "history": {
-        "title": "History & Experiments",
-        "description": "Recreate classic optical experiments since 1669, exploring the physical essence from a historical perspective."
+        "title": "Trace",
+        "titleZh": "追溯",
+        "subtitle": "History & Experiments",
+        "description": "Journey through 350 years of optics history. From Iceland spar double images to Malus's Law, each story connects to a hands-on experiment. Don't just read history — recreate the moments that changed the world."
       },
       "arsenal": {
-        "title": "Optical Arsenal",
-        "description": "Explore commercial polarization components, learn principles and build typical application optical paths."
+        "title": "Gather",
+        "titleZh": "工坊",
+        "subtitle": "Optical Devices",
+        "description": "80+ polarization devices catalog with principles and applications. Build optical paths freely on the virtual bench, simulate classic experiments, and turn textbook diagrams into interactive experiences."
       },
       "theory": {
-        "title": "Theory & Simulation",
-        "description": "Interactive physics demos and calculation tools — change parameters and instantly verify Jones matrices and Stokes parameters."
+        "title": "Decode",
+        "titleZh": "解码",
+        "subtitle": "Theory & Simulation",
+        "description": "20+ interactive demos that bring abstract formulas to life. Drag parameters to see Malus's Law in action, rotate waveplates to observe polarization changes, trace light on the Poincaré sphere — build intuition through hands-on exploration."
       },
       "games": {
-        "title": "Gamification",
-        "description": "Master optical principles through game challenges in PolarQuest and PolarCraft."
+        "title": "Conquer",
+        "titleZh": "挑战",
+        "subtitle": "Game Challenges",
+        "description": "Turn physics principles into winning strategies. Plan light paths in 2D levels, build devices in 3D voxels, battle with cards, escape from puzzle rooms — four game modes with progressive difficulty."
       },
       "gallery": {
-        "title": "Showcase",
-        "description": "Student personalized research showcase, including chromatic polarization art, creative products and DIY devices."
+        "title": "Shine",
+        "titleZh": "创作",
+        "subtitle": "Achievements",
+        "description": "Transform learning into creation. Tape birefringence art, polarization photography, phone screen experiments, DIY devices... showcase your creativity. Outstanding works get featured on the platform."
       },
       "research": {
-        "title": "Virtual Lab",
-        "description": "Participate in ESRT/ORIC level research topics, record data and analyze like a scientist."
+        "title": "Venture",
+        "titleZh": "探索",
+        "subtitle": "Virtual Lab Group",
+        "description": "Research like a graduate student. Choose topics, design experiments, analyze data, write reports. Build teams, collaborate on challenges, and unlock real research capabilities through practice."
       }
     },
     "chronicles": {
-      "title": "Chronicles of Light",
+      "title": "History & Experiments",
       "subtitle": "Historical Stories × Classic Experiments",
-      "description": "Dual narrative: left traces core discoveries in optics history, right follows the polarized light journey—ignite curiosity with stories, verify intuition with experiments.",
+      "description": "Journey through 350 years of optics history. Each story connects to a hands-on experiment — recreate the moments that changed the world.",
       "cta": "Explore",
       "link1": "Malus's Discovery",
       "link2": "Recreate Malus's Law",
       "link3": "Polarization Journey"
     },
     "opticalDesignStudio": {
-      "title": "Optical Design Studio",
-      "subtitle": "Device Library × Light Path Design",
-      "description": "Browse comprehensive optical device catalog, design custom light paths, simulate classic experiments, and interface with UC2 modular hardware—an all-in-one optics workstation.",
+      "title": "Optical Devices",
+      "subtitle": "Device Catalog × Light Path Design",
+      "description": "80+ device catalog, virtual optical bench. Turn textbook diagrams into interactive experiences you can build and explore.",
       "cta": "Enter Studio",
       "link1": "Device Library",
       "link2": "Experiments",
       "link3": "Free Design"
     },
     "formulaLab": {
-      "title": "Demo Gallery",
-      "subtitle": "Basic Theory × Computational Simulation",
-      "description": "Turn laws into visible experiments—from Malus's Law to birefringence, see it, interact with it, remember it.",
+      "title": "Theory & Simulation",
+      "subtitle": "Interactive Demos × Computational Simulation",
+      "description": "20+ interactive demos bring formulas to life. Drag parameters, rotate waveplates, trace light paths — build intuition through exploration.",
       "cta": "Start Exploring",
       "link1": "Malus's Law Demo",
       "link2": "Birefringence Crystal",
       "link3": "Stokes Vector"
     },
     "polarquest": {
-      "title": "PolarQuest",
+      "title": "Game Challenges",
       "subtitle": "Puzzle Game × Polarization Strategy",
-      "description": "Solve puzzles in 2D light paths and a 3D voxel world—turn polarization into playable strategy.",
+      "description": "Physics becomes strategy. 2D paths, 3D voxels, card battles, escape rooms — four game modes with progressive difficulty.",
       "cta": "Play Now",
       "link1": "2D Beginner Level",
       "link2": "3D Voxel Level",
       "link3": "Challenge Mode"
     },
     "creativeLab": {
-      "title": "Polarization Workshop",
-      "subtitle": "Polarization Art × Cultural Products",
-      "description": "Create with polarization: photography techniques, tape birefringence art, phone screen experiments—experience the beauty of optics through making.",
+      "title": "Achievements",
+      "subtitle": "Polarization Art × Creative Works",
+      "description": "Transform learning into creation. Tape art, polarization photography, DIY devices... showcase your creativity. Outstanding works get featured.",
       "cta": "Enter Workshop",
       "link1": "DIY Experiments",
       "link2": "Art & Creations",
@@ -101,10 +121,10 @@
       "link4": "Community Gallery"
     },
     "labGroup": {
-      "title": "Virtual Lab",
-      "subtitle": "Quests × Applications × Calculations × Community",
-      "description": "Learn by doing research: research tasks, application cases, professional calculation tools—turn knowledge into real projects with peers.",
-      "cta": "Join Guild",
+      "title": "Virtual Lab Group",
+      "subtitle": "Research Projects × Team Collaboration",
+      "description": "Research like a graduate student. Choose topics, run experiments, write reports. Build teams and unlock real research capabilities.",
+      "cta": "Join Lab",
       "link1": "Research Tasks",
       "link2": "Applications",
       "link3": "Calculators",
@@ -132,6 +152,26 @@
       "course3": {
         "title": "Frontier Research in Polarization",
         "description": "Advanced research topics in full-polarization imaging, Mueller matrices, and biomedical applications."
+      }
+    },
+    "course": {
+      "psrt": {
+        "title": "A New World Under Polarized Light",
+        "titleZh": "偏振光下的新世界",
+        "description": "Shenzhen 01 Academy Innovation Challenge Camp - A gamified education and scientific practice platform for polarization optics with progressive experiments, historical stories, and frontier research.",
+        "descriptionZh": "深圳零一学院颠覆创新挑战营课程 - 偏振光学的游戏化教育和科学实践平台，包含进阶式课程实验、历史故事和前沿研究。"
+      },
+      "esrt": {
+        "title": "Polarization Experiments Lab",
+        "titleZh": "偏振实验训练营",
+        "description": "Hands-on experimental training with advanced polarization measurement techniques and instruments.",
+        "descriptionZh": "实操型实验训练，掌握先进的偏振测量技术和仪器使用方法。"
+      },
+      "oric": {
+        "title": "Frontier Research in Polarization",
+        "titleZh": "偏振前沿研究",
+        "description": "Advanced research topics in full-polarization imaging, Mueller matrices, and biomedical applications.",
+        "descriptionZh": "全偏振成像、Mueller矩阵及生物医学应用等前沿研究课题。"
       }
     }
   },
@@ -3103,6 +3143,40 @@
             "Light magically appears! Try other angles too."
           ],
           "observation": "At 45°, 25% of light gets through (cos²45° × cos²45° = 0.25). The middle filter doesn't 'unblock' - it rotates the polarization partway, letting some through each filter!"
+        }
+      },
+      "polarizationLock": {
+        "title": "Polarization Lock",
+        "description": "Gamified learning of Malus's Law through an optical password lock challenge",
+        "lifeScene": {
+          "title": "The Optical Password",
+          "imageAlt": "An optical lock mechanism that uses polarized light intensity as its password",
+          "hook": "What if a lock only opens when exactly the right amount of light passes through? Welcome to the polarization lock!",
+          "facts": [
+            "Security systems can use polarization as an additional authentication layer",
+            "The 'password' is the angle that produces the target light intensity",
+            "Malus's Law (I = I₀cos²θ) determines the only correct angle"
+          ]
+        },
+        "physics": {
+          "principle": "Use Malus's Law to find the exact polarizer angle that produces a target light intensity",
+          "formula": "I = I₀ × cos²(θ)",
+          "details": [
+            "50% transmission requires θ = 45° (cos²45° = 0.5)",
+            "75% transmission requires θ = 30° (cos²30° = 0.75)",
+            "0% transmission requires θ = 90° (crossed polarizers)"
+          ]
+        },
+        "questions": {
+          "leading": "Can you crack the optical lock by finding the exact angle?",
+          "guided": [
+            "What angle gives 50% light transmission?",
+            "How can you calculate the angle from target intensity?"
+          ],
+          "openEnded": [
+            "Design a multi-stage lock using polarization",
+            "What real security applications could use optical passwords?"
+          ]
         }
       },
       "emSpectrum": {

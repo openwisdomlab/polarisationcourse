@@ -379,87 +379,65 @@ polarisation/
 
 ### Application Routes
 
-The application uses a **6-module architecture** with hub pages as entry points:
+The application uses a **simplified 6-module architecture** where each module is a first-level page (not a navigation hub):
 
-#### Home
+#### Home & 6 Core Modules (一级页面)
 | Route | Component | Purpose |
-| ------- | ----------- | --------- |
-| `/` | `HomePage` | Landing page with game/course navigation |
-| `/games` | `GameHubPage` | Games hub with all game modes |
+|-------|-----------|---------|
+| `/` | `HomePage` | Landing page with 6-module cards + Course section |
+| `/chronicles` | `ChroniclesPage` | **Module 1**: 光的编年史 - Historical stories & experiments |
+| `/studio` | `OpticalDesignPage` | **Module 2**: 光学设计室 - Device library & optical bench |
+| `/demos` | `DemosPage` | **Module 3**: 偏振演示馆 - Interactive physics demos |
+| `/demos/:demoId` | `DemosPage` | Deep link to specific demo |
+| `/games` | `GameHubPage` | **Module 4**: 偏振光探秘 - Games hub |
 | `/games/2d` | `Game2DPage` | 2D SVG-based puzzle game |
 | `/games/3d` | `GamePage` | Full 3D voxel puzzle game |
 | `/games/card` | `CardGamePage` | Polarization card game |
 | `/games/escape` | `EscapeRoomPage` | Escape room puzzle game |
 | `/games/detective` | `DetectiveGamePage` | Detective mystery game |
-|-------|-----------|---------|
-| `/` | `HomePage` | Landing page with 6-module navigation |
+| `/gallery` | `ExperimentsPage` | **Module 5**: 偏振造物局 - Creative gallery & experiments |
+| `/gallery/:tabId` | `ExperimentsPage` | Deep link to specific tab |
+| `/research` | `LabPage` | **Module 6**: 虚拟课题组 - Virtual research lab |
+| `/research/applications` | `ApplicationsPage` | Real-world applications |
 
-#### Module 1: Education (实验内容与历史故事)
+#### Course System (课程体系)
 | Route | Component | Purpose |
 |-------|-----------|---------|
-| `/education` | `EducationHubPage` | Education module hub |
-| `/chronicles` | `ChroniclesPage` | Historical chronicles |
-| `/course` | `CoursePage` | Structured P-SRT course content |
+| `/course` | `CoursePage` | P-SRT structured course content |
 | `/learn` | `LearningHubPage` | Learning center with progress tracking |
 
-#### Module 2: Optical Arsenal (光学器件和典型光路)
+#### Utility Pages (工具页面)
 | Route | Component | Purpose |
 |-------|-----------|---------|
-| `/arsenal` | `ArsenalHubPage` | Optical arsenal hub |
-| `/optical-studio` | `OpticalDesignPage` | Modular optical design studio |
-| `/hardware` | `HardwarePage` | Hardware components guide |
-
-#### Module 3: Theory & Simulation (基本理论和计算模拟)
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/theory` | `TheoryHubPage` | Theory module hub |
-| `/demos` | `DemosPage` | Interactive physics demos |
-| `/demos/:demoId` | `DemosPage` | Deep link to specific demo |
 | `/calc` | `CalculationWorkshopPage` | Calculator hub |
 | `/calc/jones` | `JonesCalculatorPage` | Jones matrix calculator |
 | `/calc/stokes` | `StokesCalculatorPage` | Stokes vector calculator |
 | `/calc/mueller` | `MuellerCalculatorPage` | Mueller matrix calculator |
 | `/calc/poincare` | `PoincareSphereViewerPage` | Poincare sphere visualization |
-
-#### Module 4: Games (游戏化模块)
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/games` | `GameHubPage` | Games hub with all game modes |
-| `/games/2d` | `Game2DPage` | 2D SVG-based puzzle game |
-| `/games/3d` | `GamePage` | Full 3D voxel puzzle game |
-| `/games/card` | `CardGamePage` | Polarization card game |
-| `/games/escape` | `EscapeRoomPage` | Escape room puzzle game |
-| `/games/detective` | `DetectiveGamePage` | Detective mystery game |
-
-#### Module 5: Gallery (成果展示)
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/gallery` | `GalleryHubPage` | Gallery/showcase hub |
-| `/experiments` | `ExperimentsPage` | Creative experiments module |
-| `/experiments/:tabId` | `ExperimentsPage` | Deep link to specific tab |
+| `/hardware` | `HardwarePage` | Hardware components guide |
 | `/merchandise` | `MerchandisePage` | Educational merchandise |
-
-#### Module 6: Research (虚拟课题组)
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/research` | `ResearchHubPage` | Research module hub |
-| `/lab` | `LabPage` | Research lab simulation |
-| `/applications` | `ApplicationsPage` | Real-world applications
 
 ### Legacy Route Redirects
 
 | Old Route | Redirects To |
-| ----------- | -------------- |
+|-----------|-------------|
+| `/education` | `/chronicles` |
+| `/arsenal` | `/studio` |
+| `/theory` | `/demos` |
+| `/optical-studio` | `/studio` |
+| `/experiments` | `/gallery` |
+| `/lab` | `/research` |
+| `/applications` | `/research/applications` |
 | `/game` | `/games/3d` |
 | `/game2d` | `/games/2d` |
 | `/cardgame` | `/games/card` |
 | `/escape` | `/games/escape` |
-| `/devices` | `/optical-studio` |
-| `/bench` | `/optical-studio` |
-| `/optics` | `/optical-studio` |
-| `/optical-studio-v2` | `/optical-studio` |
-| `/creative` | `/experiments` |
-| `/simulation` | `/lab` |
+| `/devices` | `/studio` |
+| `/bench` | `/studio` |
+| `/optics` | `/studio` |
+| `/optical-studio-v2` | `/studio` |
+| `/creative` | `/gallery` |
+| `/simulation` | `/research` |
 | `/lab/poincare` | `/calc/poincare` |
 | `/lab/jones` | `/calc/jones` |
 | `/lab/stokes` | `/calc/stokes` |
@@ -468,7 +446,7 @@ The application uses a **6-module architecture** with hub pages as entry points:
 ### Core Components
 
 | Component | Responsibility |
-| ----------- | ---------------- |
+|-----------|----------------|
 | `src/core/types.ts` | Type definitions, direction vectors, polarization colors |
 | `src/core/World.ts` | Block storage, light propagation cellular automaton, levels |
 | `src/core/LightPhysics.ts` | Static physics methods (four optical axioms) |
@@ -482,13 +460,11 @@ The application uses a **6-module architecture** with hub pages as entry points:
 | `src/pages/Game2DPage.tsx` | 2D puzzle game logic, SVG rendering, level definitions |
 | `src/pages/DemosPage.tsx` | Demo navigation, info cards, SVG diagrams |
 | `src/pages/OpticalDesignPage.tsx` | Modular optical design studio |
-| `src/pages/HomePage.tsx` | 6-module landing page with animated icons |
-| `src/pages/EducationHubPage.tsx` | Module 1 hub: Education entry point |
-| `src/pages/ArsenalHubPage.tsx` | Module 2 hub: Optical arsenal entry point |
-| `src/pages/TheoryHubPage.tsx` | Module 3 hub: Theory & simulation entry point |
-| `src/pages/GameHubPage.tsx` | Module 4 hub: Games entry point |
-| `src/pages/GalleryHubPage.tsx` | Module 5 hub: Gallery entry point |
-| `src/pages/ResearchHubPage.tsx` | Module 6 hub: Research entry point |
+| `src/pages/HomePage.tsx` | 6-module landing page with Course section |
+| `src/pages/ChroniclesPage.tsx` | Module 1: Historical chronicles |
+| `src/pages/GameHubPage.tsx` | Module 4: Games hub |
+| `src/pages/ExperimentsPage.tsx` | Module 5: Creative gallery |
+| `src/pages/LabPage.tsx` | Module 6: Virtual research lab |
 | `src/components/shared/Footer.tsx` | Site-wide footer navigation |
 | `src/components/ui/ErrorBoundary.tsx` | React error boundary for graceful failures |
 
