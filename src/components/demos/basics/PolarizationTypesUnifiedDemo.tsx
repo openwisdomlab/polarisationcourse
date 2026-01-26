@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Sparkles, FlaskConical, Volume2, VolumeX } from 'lucide-react'
 import { useHapticAudio } from '@/hooks/useHapticAudio'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 import {
   ControlPanel,
   SliderControl,
@@ -288,32 +289,48 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
     }
   }, [polarizationType, linearAngle, ellipseRatio])
 
-  // Calculate light intensity for Paradox view
+  // Calculate light intensity for Paradox view using unified physics engine
   const calculations = useMemo(() => {
     const I0 = 1
-    const I1 = I0 * 0.5
     const pol1 = polarizer1Angle
 
+    // Build polarizer chain based on configuration
+    const polarizers: (number | null)[] = showMiddlePolarizer && polarizer2Angle !== null
+      ? [polarizer1Angle, polarizer2Angle, polarizer3Angle]
+      : [polarizer1Angle, polarizer3Angle]
+
+    // Use unified physics engine for Malus's Law calculation
+    const result = PolarizationPhysics.polarizerChain(
+      polarizers,
+      true,  // isUnpolarizedInput
+      I0     // inputIntensity
+    )
+
+    // Extract intermediate intensities from stages
+    const stages = result.stages
+    const I1 = stages[0] ?? 0.5  // After first polarizer (always 50% for unpolarized)
+
     if (!showMiddlePolarizer || polarizer2Angle === null) {
+      // Two polarizers: P1 → P3
+      const I3 = stages[1] ?? 0
       const angleDiff = Math.abs(polarizer3Angle - polarizer1Angle) % 180
-      const theta = Math.min(angleDiff, 180 - angleDiff) * (Math.PI / 180)
-      const I2 = I1 * Math.cos(theta) ** 2
+      const theta2 = Math.min(angleDiff, 180 - angleDiff)
       return {
-        I0, I1, I2: null, I3: I2, pol1, pol2: null, pol3: polarizer3Angle,
-        theta1: null, theta2: angleDiff, transmission: I2 / I0,
+        I0, I1, I2: null, I3, pol1, pol2: null, pol3: polarizer3Angle,
+        theta1: null, theta2, transmission: result.intensity / I0,
       }
     } else {
+      // Three polarizers: P1 → P2 → P3
+      const I2 = stages[1] ?? 0
+      const I3 = stages[2] ?? 0
       const angleDiff1 = Math.abs(polarizer2Angle - polarizer1Angle) % 180
-      const theta1 = Math.min(angleDiff1, 180 - angleDiff1) * (Math.PI / 180)
-      const I2 = I1 * Math.cos(theta1) ** 2
-
+      const theta1 = Math.min(angleDiff1, 180 - angleDiff1)
       const angleDiff2 = Math.abs(polarizer3Angle - polarizer2Angle) % 180
-      const theta2 = Math.min(angleDiff2, 180 - angleDiff2) * (Math.PI / 180)
-      const I3 = I2 * Math.cos(theta2) ** 2
+      const theta2 = Math.min(angleDiff2, 180 - angleDiff2)
 
       return {
         I0, I1, I2, I3, pol1, pol2: polarizer2Angle, pol3: polarizer3Angle,
-        theta1: angleDiff1, theta2: angleDiff2, transmission: I3 / I0,
+        theta1, theta2, transmission: result.intensity / I0,
       }
     }
   }, [polarizer1Angle, polarizer2Angle, polarizer3Angle, showMiddlePolarizer])
