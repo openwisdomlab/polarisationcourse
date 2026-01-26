@@ -5,6 +5,8 @@
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { Play, Pause, RotateCcw } from 'lucide-react'
 
@@ -144,6 +146,7 @@ function PhotonVisualization({
   mediumHeight: number
   showPolarization: boolean
 }) {
+  const { theme } = useTheme()
   const scale = 500 / mediumWidth
   const offsetX = 50
   const offsetY = 200
@@ -169,7 +172,7 @@ function PhotonVisualization({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="600" height="400" fill="#0f172a" rx="8" />
+      <rect x="0" y="0" width="600" height="400" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
 
       {/* 介质区域 */}
       <rect
@@ -366,6 +369,7 @@ function ScatteringStats({
 
 // 主演示组件
 export function MonteCarloScatteringDemo() {
+  const { theme } = useTheme()
   const [meanFreePath, setMeanFreePath] = useState(0.5) // 平均自由程
   const [anisotropy, setAnisotropy] = useState(0.8) // 各向异性因子 g
   const [albedo, setAlbedo] = useState(0.9) // 单次散射反照率

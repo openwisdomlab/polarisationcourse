@@ -8,6 +8,8 @@ import { OrbitControls, Line, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import {
   SliderControl,
   ControlPanel,
@@ -502,6 +504,7 @@ const ENV_PRESETS = [
 // 主演示组件
 export function BirefringenceDemo() {
   const { i18n } = useTranslation()
+  const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
 
   const [activeTab, setActiveTab] = useState<DemoTab>('theory')
@@ -579,7 +582,12 @@ export function BirefringenceDemo() {
             className="flex flex-col gap-6"
           >
             {/* 3D可视化面板 */}
-            <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden" style={{ height: 400 }}>
+            <div className={cn(
+              "rounded-xl border overflow-hidden",
+              theme === 'dark'
+                ? "bg-slate-900/50 border-cyan-400/20"
+                : "bg-white border-cyan-200 shadow-sm"
+            )} style={{ height: 400 }}>
               <Canvas
                 camera={{ position: [0, 2, 8], fov: 50 }}
                 gl={{ antialias: true, pixelRatio: Math.min(window.devicePixelRatio, 2) }}
@@ -827,10 +835,15 @@ export function BirefringenceDemo() {
             className="flex flex-col gap-6"
           >
             {/* Real World Lab content */}
-            <div className="bg-slate-900/50 rounded-xl border border-emerald-400/20 p-4">
+            <div className={cn(
+              "rounded-xl border p-4",
+              theme === 'dark'
+                ? "bg-slate-900/50 border-emerald-400/20"
+                : "bg-white border-emerald-200 shadow-sm"
+            )}>
               <div className="flex items-center gap-2 mb-4">
-                <Beaker className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-lg font-semibold text-white">
+                <Beaker className={cn("w-5 h-5", theme === 'dark' ? "text-emerald-400" : "text-emerald-600")} />
+                <h3 className={cn("text-lg font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>
                   {isZh ? '厚度与干涉色实验' : 'Thickness & Interference Color Experiment'}
                 </h3>
               </div>
@@ -843,10 +856,15 @@ export function BirefringenceDemo() {
             </div>
 
             {/* Stress comparison */}
-            <div className="bg-slate-900/50 rounded-xl border border-purple-400/20 p-4">
+            <div className={cn(
+              "rounded-xl border p-4",
+              theme === 'dark'
+                ? "bg-slate-900/50 border-purple-400/20"
+                : "bg-white border-purple-200 shadow-sm"
+            )}>
               <div className="flex items-center gap-2 mb-4">
-                <FlaskConical className="w-5 h-5 text-purple-400" />
-                <h3 className="text-lg font-semibold text-white">
+                <FlaskConical className={cn("w-5 h-5", theme === 'dark' ? "text-purple-400" : "text-purple-600")} />
+                <h3 className={cn("text-lg font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>
                   {isZh ? '玻璃应力对比' : 'Glass Stress Comparison'}
                 </h3>
               </div>

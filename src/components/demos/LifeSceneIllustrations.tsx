@@ -1532,6 +1532,7 @@ export function TapeArtIllustration() {
 
 // 电磁波穿越太空对比 - 用于光波演示 (light-wave)
 export function WaveTravelIllustration() {
+  const { theme } = useTheme()
   const colors = useColors()
   const [showSpace, setShowSpace] = useState(true)
 
@@ -1577,8 +1578,8 @@ export function WaveTravelIllustration() {
           Light Waves
         </text>
 
-        {/* 太空背景 */}
-        <rect x="10" y="25" width="120" height="80" fill="#0f172a" rx="3" />
+        {/* 太空背景 - intentionally dark regardless of theme for space */}
+        <rect x="10" y="25" width="120" height="80" fill={theme === 'dark' ? '#0f172a' : '#1e293b'} rx="3" />
 
         {/* 星星 */}
         {[[25, 35], [50, 45], [80, 30], [105, 50], [35, 75], [90, 85], [115, 40], [60, 90]].map(([x, y], i) => (

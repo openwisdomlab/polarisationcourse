@@ -4,6 +4,7 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Grid } from '@react-three/drei'
 import { ReactNode } from 'react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface DemoCanvasProps {
   children: ReactNode
@@ -18,6 +19,13 @@ export function DemoCanvas({
   cameraPosition = [5, 5, 5],
   orthographic = false,
 }: DemoCanvasProps) {
+  const { theme } = useTheme()
+
+  // Theme-aware grid colors
+  const gridColors = theme === 'dark'
+    ? { cell: '#1e3a5f', section: '#2d5a87' }
+    : { cell: '#cbd5e1', section: '#94a3b8' }
+
   return (
     <Canvas
       shadows
@@ -63,10 +71,10 @@ export function DemoCanvas({
           args={[20, 20]}
           cellSize={1}
           cellThickness={0.5}
-          cellColor="#1e3a5f"
+          cellColor={gridColors.cell}
           sectionSize={5}
           sectionThickness={1}
-          sectionColor="#2d5a87"
+          sectionColor={gridColors.section}
           fadeDistance={30}
           fadeStrength={1}
           position={[0, -0.01, 0]}

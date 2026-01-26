@@ -5,6 +5,8 @@
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 波长到RGB颜色转换
@@ -121,6 +123,7 @@ function MieScatteringDiagram({
   particleSize: number
   wavelength: number
 }) {
+  const { theme } = useTheme()
   // 尺寸参数 x = 2πr/λ
   const sizeParameter = (2 * Math.PI * particleSize * 1000) / wavelength
   const lightColor = wavelengthToRGB(wavelength)
@@ -200,7 +203,7 @@ function MieScatteringDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="600" height="400" fill="#0f172a" rx="8" />
+      <rect x="0" y="0" width="600" height="400" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
 
       {/* 坐标参考线 */}
       <line x1="50" y1="200" x2="550" y2="200" stroke="#374151" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
@@ -424,6 +427,7 @@ function SizeParameterChart({
 
 // 主演示组件
 export function MieScatteringDemo() {
+  const { theme } = useTheme()
   const [particleSize, setParticleSize] = useState(0.5) // μm
   const [wavelength, setWavelength] = useState(550) // nm
 
