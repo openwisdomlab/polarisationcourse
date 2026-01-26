@@ -12,6 +12,7 @@ import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 // 旋光率数据 (deg/(dm·g/mL)) - 以钠黄光 (589nm) 为标准
 const SPECIFIC_ROTATIONS: Record<string, { value: number; direction: 'd' | 'l' }> = {
@@ -91,18 +92,16 @@ function OpticalRotationDiagram({
   const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
   const isRightRotation = rotationAngle >= 0
 
-  // 检偏器与偏振光的角度差
-  const angleDiff = Math.abs(rotationAngle - analyzerAngle)
-  const intensity = Math.pow(Math.cos((angleDiff * Math.PI) / 180), 2)
+  // 检偏器与偏振光的角度差 - 使用统一物理引擎的Malus定律
+  const intensity = PolarizationPhysics.malusIntensity(rotationAngle, analyzerAngle, 1.0)
 
-  // 多色光模式下计算各波长的旋转角和强度
+  // 多色光模式下计算各波长的旋转角和强度 - 使用统一物理引擎的Malus定律
   const polychromaticData = useMemo(() => {
     if (lightMode !== 'polychromatic') return []
     return POLYCHROMATIC_COMPONENTS.map(comp => {
       const specRot = calculateSpecificRotationAtWavelength(specificRotationD, comp.wavelength)
       const rot = calculateRotation(specRot, concentration, pathLength)
-      const diff = Math.abs(rot - analyzerAngle)
-      const inten = Math.pow(Math.cos((diff * Math.PI) / 180), 2)
+      const inten = PolarizationPhysics.malusIntensity(rot, analyzerAngle, 1.0)
       return {
         ...comp,
         rotation: rot,
@@ -739,9 +738,8 @@ export function OpticalRotationDemo() {
 
   const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
 
-  // 透过强度
-  const angleDiff = Math.abs(rotationAngle - analyzerAngle)
-  const intensity = Math.pow(Math.cos((angleDiff * Math.PI) / 180), 2)
+  // 透过强度 - 使用统一物理引擎的Malus定律
+  const intensity = PolarizationPhysics.malusIntensity(rotationAngle, analyzerAngle, 1.0)
 
   // 物质选项
   const substances = [

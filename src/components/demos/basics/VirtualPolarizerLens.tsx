@@ -22,6 +22,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { SliderControl } from '../DemoControls'
 import { CheckCircle, ExternalLink, RotateCcw } from 'lucide-react'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 // 预设的偏振镜像图组
 export interface PolarizerImageSet {
@@ -145,11 +146,11 @@ export function VirtualPolarizerLens({
   const [taskCompleted, setTaskCompleted] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
 
-  // 使用马吕斯定律计算透射率
+  // 使用马吕斯定律计算透射率 - 使用统一物理引擎
   // 0° = 完全显示 imageBase (cos²0° = 1 → glare = 100%)
   // 90° = 完全显示 imageFiltered (cos²90° = 0 → glare = 0%)
   const glareOpacity = useMemo(() => {
-    return Math.pow(Math.cos(angle * Math.PI / 180), 2)
+    return PolarizationPhysics.malusIntensity(0, angle, 1.0)
   }, [angle])
 
   // filteredOpacity 是 glareOpacity 的反向

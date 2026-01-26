@@ -16,6 +16,7 @@ import {
 } from '../DemoControls'
 import { ThicknessVisualizer, StressComparator } from '@/components/gallery'
 import { FlaskConical, Box, Beaker } from 'lucide-react'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 // 光源组件
 function LightSource({ position }: { position: [number, number, number] }) {
@@ -317,13 +318,13 @@ function BirefringenceScene({
   no: number
   ne: number
 }) {
-  // 计算有效的偏振角度（相对于光轴方向）
-  const effectivePolarization = inputPolarization - opticalAxisAngle
-  const radians = (effectivePolarization * Math.PI) / 180
-  // o光强度 = cos²θ（马吕斯定律）
-  const oIntensity = Math.pow(Math.cos(radians), 2)
-  // e光强度 = sin²θ（与o光互补，总和为1）
-  const eIntensity = Math.pow(Math.sin(radians), 2)
+  // 使用统一物理引擎计算双折射强度分配
+  // o光强度 = cos²θ, e光强度 = sin²θ (θ为相对于光轴的有效偏振角)
+  const { oIntensity, eIntensity } = PolarizationPhysics.birefringenceSplit(
+    inputPolarization,
+    opticalAxisAngle,
+    1.0
+  )
 
   // 计算折射导致的光束偏移（基于斯涅尔定律）
   // 双折射率差（有效值，取决于光轴角度）
@@ -510,27 +511,29 @@ export function BirefringenceDemo() {
   // 新增控制参数
   const [crystalRotation, setCrystalRotation] = useState(0) // 晶体旋转角度
   const [envRefractiveIndex, setEnvRefractiveIndex] = useState(1.0) // 环境折射率
-  const [opticalAxisAngle, setOpticalAxisAngle] = useState(45) // 光轴方向角度
+  const [opticalAxisAngle, setOpticalAxisAngle] = useState(0) // 光轴方向角度 (0°=水平)
 
   // 方解石折射率（标准值，可作为常量或可调参数）
   const no = 1.6584 // o光折射率
   const ne = 1.4864 // e光折射率
 
-  // 计算有效偏振角度（相对于光轴）
-  const effectivePolarization = inputPolarization - opticalAxisAngle
-  const radians = (effectivePolarization * Math.PI) / 180
-  const oIntensity = Math.pow(Math.cos(radians), 2)
-  const eIntensity = Math.pow(Math.sin(radians), 2)
+  // 使用统一物理引擎计算双折射强度分配
+  const { oIntensity, eIntensity } = PolarizationPhysics.birefringenceSplit(
+    inputPolarization,
+    opticalAxisAngle,
+    1.0
+  )
 
   // 计算双折射率差和光束分离
   const birefringence = Math.abs(no - ne)
   const separationFactor = birefringence / envRefractiveIndex
 
-  // 预设选项
+  // 预设选项 (基于光轴=0°水平方向)
+  // o光振动垂直于光轴，e光振动平行于光轴
   const presets = [
-    { label: '0° (纯o光)', value: 0 },
-    { label: '45° (等分)', value: 45 },
-    { label: '90° (纯e光)', value: 90 },
+    { label: '0° (纯e光)', value: 0 },   // 平行于光轴 → 全部e光
+    { label: '45° (等分)', value: 45 },  // 45°分量 → 50/50
+    { label: '90° (纯o光)', value: 90 }, // 垂直于光轴 → 全部o光
   ]
 
   return (

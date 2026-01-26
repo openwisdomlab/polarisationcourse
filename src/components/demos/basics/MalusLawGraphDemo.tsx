@@ -2,6 +2,10 @@
  * MalusLawGraphDemo - 马吕斯定律图形化演示
  * 交互式展示 I = I₀ × cos²(θ) 的关系曲线
  * 包含实时角度调节和图形可视化
+ *
+ * Physics Engine Migration:
+ * - Uses unified CoherencyMatrix-based calculations via PolarizationPhysics
+ * - All intensity values computed through proper polarizer interactions
  */
 import { useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
@@ -15,9 +19,13 @@ import {
   AnimatedValue,
   PresetButtons,
 } from '../DemoControls'
+import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
-// 生成cos²曲线的路径数据
-function generateCosSquaredPath(
+/**
+ * Generate Malus's Law curve path using the unified physics engine
+ * Each point is computed via CoherencyMatrix polarizer interaction
+ */
+function generateMalusCurvePath(
   width: number,
   height: number,
   startX: number,
@@ -27,9 +35,12 @@ function generateCosSquaredPath(
   const steps = 180
 
   for (let i = 0; i <= steps; i++) {
-    const angle = (i / steps) * 180 // 0 to 180 degrees
+    const polarizerAngle = (i / steps) * 180 // Polarizer angle: 0 to 180 degrees
     const x = startX + (i / steps) * width
-    const y = startY + height - Math.cos((angle * Math.PI) / 180) ** 2 * height
+    // Input light at 0° (horizontal), polarizer at polarizerAngle
+    // Engine computes: I = I₀ × cos²(θ) via CoherencyMatrix
+    const transmission = PolarizationPhysics.malusIntensity(0, polarizerAngle, 1.0)
+    const y = startY + height - transmission * height
     points.push(`${x},${y}`)
   }
 
@@ -69,11 +80,11 @@ export function MalusLawGraphDemo() {
   const [isAnimating, setIsAnimating] = useState(false)
   const animationSpeed = 2
 
-  // 计算透射率
+  // 计算透射率 - 使用统一物理引擎
+  // Physics: Input light at 0° (horizontal) passes through polarizer at 'angle'
+  // Engine computes intensity via CoherencyMatrix: I = I₀ × cos²(θ)
   const transmission = useMemo(() => {
-    const effectiveAngle = angle % 180
-    const normalizedAngle = effectiveAngle > 90 ? 180 - effectiveAngle : effectiveAngle
-    return Math.cos((normalizedAngle * Math.PI) / 180) ** 2
+    return PolarizationPhysics.malusIntensity(0, angle, 1.0)
   }, [angle])
 
   // 图形参数
@@ -110,9 +121,9 @@ export function MalusLawGraphDemo() {
     return () => clearInterval(interval)
   }, [animationSpeed])
 
-  // cos²曲线路径
+  // Malus's Law curve path - 使用物理引擎采样
   const curvePath = useMemo(
-    () => generateCosSquaredPath(graphConfig.width, graphConfig.height, graphConfig.startX, graphConfig.startY),
+    () => generateMalusCurvePath(graphConfig.width, graphConfig.height, graphConfig.startX, graphConfig.startY),
     []
   )
 
