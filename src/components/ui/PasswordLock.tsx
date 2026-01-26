@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
-import { motion, AnimatePresence, useSpring } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { Lock, Unlock, Zap, Disc, Scan, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { Zap, Scan, AlertTriangle, CheckCircle2 } from 'lucide-react'
 
 // ==========================================
 // Math Helpers
@@ -233,15 +233,9 @@ export function PasswordLock({ onUnlock }: { onUnlock: () => void; correctPasswo
   }
 
   // Visual Angles for Ribbons
-  // Ribbon 1: Unpolarized (Star)
-  // Ribbon 2: Polarized at P1 Angle
-  const ribbon2Angle = p1Angle
   // Ribbon 3: Modified by Crystal. It rotates the polarization by some amount (e.g. 45 deg).
   // So the "Signal" ribbon is at P1 + 45.
   const ribbon3SignalAngle = p1Angle + 45
-  // The "Glare" ribbon continues at P1 angle. We visualize the dominant one.
-  // If Glare is high, we show P1 angle. If Glare is low (Filtered), we show the Signal angle.
-  const visualRibbon3Angle = glare > 0.5 ? p1Angle : ribbon3SignalAngle
 
   return (
     <div className="fixed inset-0 z-[100] bg-zinc-950 flex flex-col items-center justify-center font-sans text-gray-200 overflow-hidden select-none">
