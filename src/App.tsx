@@ -105,7 +105,7 @@ export function App() {
 
   // Show password lock if not unlocked
   if (!isUnlocked) {
-    return <PasswordLock onUnlock={handleUnlock} correctPassword="POLAR" />
+    return <PasswordLock onUnlock={handleUnlock} />
   }
 
   return (
