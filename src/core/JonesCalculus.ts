@@ -1,4 +1,22 @@
 /**
+ * @deprecated This module is deprecated and will be removed in a future release.
+ * Use `src/core/physics/unified` instead, which provides:
+ * - CoherencyMatrix for polarization state representation (supports partial polarization)
+ * - Matrix2x2 for Jones matrix operations
+ * - Complex number class with full arithmetic support
+ *
+ * Migration guide:
+ * - Replace JonesVector with CoherencyMatrix.fromJones(ex, ey)
+ * - Replace JonesMatrix with Matrix2x2
+ * - Replace complex.* functions with Complex class methods
+ * - For optical elements, use OpticalSurface subclasses
+ *
+ * @see src/core/physics/unified/CoherencyMatrix.ts
+ * @see src/core/math/Matrix2x2.ts
+ * @see src/core/math/Complex.ts
+ */
+
+/**
  * Jones Calculus - 琼斯矢量/矩阵计算引擎
  *
  * This module provides a complete implementation of Jones calculus for
