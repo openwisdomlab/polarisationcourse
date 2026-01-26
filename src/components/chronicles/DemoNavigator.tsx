@@ -101,7 +101,7 @@ function getRelatedEventsForDemo(demoId: string): RelatedEventInfo[] {
 
   for (const mapping of mappings) {
     const event = TIMELINE_EVENTS.find(
-      e => e.year === mapping.eventYear && e.track === mapping.eventTrack
+      e => e.year === mapping.eventYear && e.track === mapping.eventTrack && !e.hidden
     )
     if (event) {
       results.push({

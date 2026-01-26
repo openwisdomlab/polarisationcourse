@@ -135,6 +135,9 @@ export function ChroniclesPage() {
   // Filter events by category, track, and selected course modules
   const filteredEvents = useMemo(() => {
     return TIMELINE_EVENTS.filter(e => {
+      // 首先排除隐藏的事件（与偏振光关系较远的事件）
+      if (e.hidden) return false
+
       const categoryMatch = !filter || e.category === filter
       const trackMatch = trackFilter === 'all' || e.track === trackFilter
 
@@ -160,8 +163,8 @@ export function ChroniclesPage() {
     setSelectedSections([])
     setSelectedDemos([])
 
-    // Find the target event in the filtered events
-    const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
+    // Find the target event in the filtered events (excluding hidden events)
+    const allEventsSorted = [...TIMELINE_EVENTS].filter(e => !e.hidden).sort((a, b) => a.year - b.year)
     const targetIndex = allEventsSorted.findIndex(
       e => e.year === year && e.track === track
     )
@@ -222,8 +225,8 @@ export function ChroniclesPage() {
     setTrackFilter('all')
     setFilter('')
 
-    // Find the target event in the full TIMELINE_EVENTS (sorted by year)
-    const allEventsSorted = [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year)
+    // Find the target event in the full TIMELINE_EVENTS (sorted by year, excluding hidden)
+    const allEventsSorted = [...TIMELINE_EVENTS].filter(e => !e.hidden).sort((a, b) => a.year - b.year)
     const targetIndex = allEventsSorted.findIndex(
       e => e.year === year && e.track === track
     )
@@ -746,7 +749,7 @@ export function ChroniclesPage() {
 
             {/* Experiment Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {TIMELINE_EVENTS.filter(e => e.category === 'experiment' || e.category === 'discovery').map((event) => (
+              {TIMELINE_EVENTS.filter(e => !e.hidden && (e.category === 'experiment' || e.category === 'discovery')).map((event) => (
                 <div
                   key={event.year}
                   className={cn(
@@ -756,7 +759,7 @@ export function ChroniclesPage() {
                       : 'bg-white border-gray-200 hover:border-cyan-400'
                   )}
                   onClick={() => {
-                    const idx = TIMELINE_EVENTS.findIndex(e => e.year === event.year)
+                    const idx = TIMELINE_EVENTS.filter(e => !e.hidden).findIndex(e => e.year === event.year)
                     if (idx >= 0) handleOpenStory(idx)
                   }}
                 >

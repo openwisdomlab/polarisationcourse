@@ -15,6 +15,8 @@ export interface TimelineEvent {
   importance: 1 | 2 | 3 // 1 = major milestone, 2 = significant, 3 = notable
   // 双轨分类: 'optics' = 广义光学, 'polarization' = 偏振光专属
   track: 'optics' | 'polarization'
+  // 是否隐藏：暂时隐藏与偏振光关系不大的事件
+  hidden?: boolean
   details?: {
     en: string[]
     zh: string[]
@@ -102,6 +104,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     category: 'theory',
     importance: 1,
     track: 'optics',
+    hidden: true, // 基础光学，与偏振关系较远
     details: {
       en: [
         'n₁ sin θ₁ = n₂ sin θ₂',
@@ -142,6 +145,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光谱色散，与偏振关系较远
     details: {
       en: [
         'Performed in his room at Trinity College, Cambridge during plague lockdown',
@@ -208,6 +212,7 @@ This insight, born in plague-time isolation, became the foundation of spectrosco
     category: 'discovery',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光速测量，与偏振关系较远
     details: {
       en: [
         'Observed delays in eclipses of Jupiter\'s moon Io',
@@ -526,6 +531,7 @@ In his dedication, he wrote: "One finds in this subject a kind of demonstration 
     category: 'theory',
     importance: 1,
     track: 'optics',
+    hidden: true, // 粒子理论为主，与偏振关系较远
     details: {
       en: [
         'Published 40 years after his prism experiments during the plague',
@@ -1395,6 +1401,7 @@ Pasteur later said this moment changed his life. "The universe is asymmetric," h
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光速测量，与偏振关系较远
     details: {
       en: [
         'Newton\'s particle theory predicted light should travel faster in denser media',
@@ -3139,6 +3146,7 @@ The same physics that Malus discovered in a Paris sunset, that Stokes formalized
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 引力波探测，与偏振关系较远
     details: {
       en: [
         'Two 4-km laser interferometer arms at right angles',
@@ -3343,6 +3351,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 望远镜，与偏振关系较远
     details: {
       en: [
         'Improved Dutch telescope design to 20x magnification',
@@ -3382,6 +3391,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'theory',
     importance: 1,
     track: 'optics',
+    hidden: true, // 最短时间原理，与偏振关系较远
     details: {
       en: [
         'Light chooses the path of least time, not shortest distance',
@@ -3421,6 +3431,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'discovery',
     importance: 1,
     track: 'optics',
+    hidden: true, // 光谱学，与偏振关系较远
     details: {
       en: [
         'Mapped 574 dark lines in the solar spectrum',
@@ -3460,6 +3471,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 干涉仪，与偏振关系较远
     details: {
       en: [
         'Split light beam, sent along perpendicular paths, recombined',
@@ -3499,6 +3511,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'experiment',
     importance: 1,
     track: 'optics',
+    hidden: true, // 电磁波验证，与偏振关系较远
     details: {
       en: [
         'Generated radio waves using a spark-gap transmitter',
@@ -3589,6 +3602,7 @@ And yet the mystery remained. Why does light have polarization at all? What fund
     category: 'theory',
     importance: 2,
     track: 'optics',
+    hidden: true, // 全息术，与偏振关系较远
     details: {
       en: [
         'Proposed recording interference pattern of object and reference beams',
