@@ -1,4 +1,22 @@
 /**
+ * @deprecated This module is deprecated and will be removed in a future release.
+ * Use `src/core/physics/unified` instead, which provides:
+ * - CoherencyMatrix for polarization state representation (supports partial polarization)
+ * - LightTracer for ray tracing through optical scenes
+ * - OpticalSurface for optical element interactions
+ * - PolarizationBasis for s-p basis transformations
+ *
+ * Migration guide:
+ * - Replace JonesVector with CoherencyMatrix.fromJones()
+ * - Replace manual Fresnel calculations with DielectricSurface
+ * - Replace Sellmeier dispersion with DispersiveMedium (when needed)
+ *
+ * @see src/core/physics/unified/CoherencyMatrix.ts
+ * @see src/core/physics/unified/LightTracer.ts
+ * @see src/core/physics/unified/OpticalSurface.ts
+ */
+
+/**
  * PolarCraft - Wave Optics Engine
  * Jones Calculus implementation for accurate polarization simulation
  *

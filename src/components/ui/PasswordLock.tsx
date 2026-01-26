@@ -1,405 +1,326 @@
-import { useState, useRef } from 'react'
+/**
+ * PolarizationCipher - 偏振密码锁
+ *
+ * 简化设计：单阶段多通道解密
+ * - 4个通道，每个通道用不同偏振方向编码一个字符
+ * - 用户旋转检偏器，当角度匹配时字符显现
+ * - 收集所有字符后自动解锁
+ *
+ * 物理原理：马吕斯定律 I = I₀ × cos²(θ)
+ * 当检偏器角度与信号偏振方向一致时，透过率最大，字符清晰可见
+ */
+
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { Zap, Scan, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import {
+  Unlock,
+  RotateCcw,
+  HelpCircle,
+  Zap,
+} from 'lucide-react'
 
 // ==========================================
-// Math Helpers
+// 物理计算
 // ==========================================
 const toRad = (deg: number) => (deg * Math.PI) / 180
 const normalize = (angle: number) => ((angle % 180) + 180) % 180
-
-// ==========================================
-// 3D Volumetric Components
-// ==========================================
-
-// 1. Light Source Generator
-const LightGenerator = () => (
-  <div className="relative w-20 h-20 group transform-style-3d">
-    {/* Core */}
-    <div className="absolute inset-0 bg-yellow-400/50 rounded-full blur-[20px] animate-pulse-slow" />
-    <div className="absolute inset-2 bg-gradient-to-br from-yellow-200 to-amber-600 rounded-full border-4 border-yellow-300 shadow-[0_0_30px_rgba(234,179,8,0.6)] flex items-center justify-center">
-      <Zap className="w-8 h-8 text-yellow-950 fill-yellow-950 animate-pulse" />
-    </div>
-    {/* Housing */}
-    <div className="absolute -inset-4 border-2 border-dashed border-yellow-600/30 rounded-full animate-[spin_10s_linear_infinite]" />
-  </div>
-)
-
-// 2. Volumetric Beam Segment
-// Represents the light traveling between components
-const BeamSegment = ({
-  intensity = 1,
-  color = "yellow",
-  rotate = 0,
-  type = "unpolarized", // unpolarized | polarized | blocked
-  label
-}: {
-  intensity?: number
-  color?: "yellow" | "cyan" | "purple"
-  rotate?: number
-  type?: "unpolarized" | "polarized" | "blocked"
-  label?: string
-}) => {
-  const colorClass = color === "yellow" ? "bg-yellow-400" : color === "cyan" ? "bg-cyan-400" : "bg-purple-500"
-  const shadowClass = color === "yellow" ? "shadow-yellow-400" : color === "cyan" ? "shadow-cyan-400" : "shadow-purple-500"
-
-  return (
-    <div className="relative w-32 h-16 flex items-center justify-center transform-style-3d group">
-
-      {/* Label */}
-      {label && (
-        <div className="absolute -top-12 text-[10px] uppercase font-mono text-gray-500 opacity-60 tracking-widest text-center w-full">
-          {label}
-        </div>
-      )}
-
-      {/* Beam Visualization */}
-      {type === "unpolarized" && (
-        <div className="relative w-full h-full flex items-center justify-center transform-style-3d animate-[spin_3s_linear_infinite]">
-          {/* Starburst Shape for Unpolarized */}
-          <div className={cn("absolute w-full h-1 opacity-40 blur-sm", colorClass)} />
-          <div className={cn("absolute w-full h-1 opacity-40 blur-sm rotate-45", colorClass)} />
-          <div className={cn("absolute w-full h-1 opacity-40 blur-sm rotate-90", colorClass)} />
-          <div className={cn("absolute w-full h-1 opacity-40 blur-sm -rotate-45", colorClass)} />
-        </div>
-      )}
-
-      {type === "polarized" && (
-        <motion.div
-          className="relative w-full flex items-center justify-center transform-style-3d"
-          animate={{ rotateX: rotate }} // Physical rotation of the ribbon!
-          transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        >
-          {/* Main Ribbon - The "Blade" of Light */}
-          <div
-            className={cn("w-full h-1 rounded-full opacity-80 shadow-[0_0_15px_currentColor]", colorClass, shadowClass)}
-            style={{ opacity: 0.3 + intensity * 0.7 }}
-          />
-          {/* Cross-section Glow */}
-          <div
-            className={cn("absolute left-0 w-2 h-8 blur-md opacity-50", colorClass)}
-            style={{ transform: 'rotateY(90deg)' }}
-          />
-        </motion.div>
-      )}
-
-      {type === "blocked" && (
-        <div className="w-full h-1 bg-gray-800 opacity-20 border-t border-b border-gray-700/50" />
-      )}
-    </div>
-  )
+const malusIntensity = (targetAngle: number, currentAngle: number) => {
+  const diff = toRad(currentAngle - targetAngle)
+  return Math.cos(diff) ** 2
 }
 
-// 3. Physical Component Disc (Polarizer / Analyzer)
-const OpticalDisc = ({
-  angle,
-  setAngle,
-  label,
-  color = "cyan",
-  fixed = false
-}: {
-  angle: number
-  setAngle?: (val: number) => void
-  label: string
-  color?: "cyan" | "purple"
-  fixed?: boolean
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  const handleWheel = (e: React.WheelEvent) => {
-    if (fixed || !setAngle) return
-    e.stopPropagation()
-    setAngle(angle + e.deltaY * 0.2)
-  }
-
-  return (
-    <div
-      className="relative w-32 h-40 flex flex-col items-center justify-center group perspective-500"
-      ref={containerRef}
-      onWheel={handleWheel}
-    >
-      {/* Label HUD */}
-      <div className="absolute -top-10 z-20 flex flex-col items-center">
-        <span className={cn("text-[9px] font-bold uppercase tracking-widest mb-1", color === "cyan" ? "text-cyan-400" : "text-purple-400")}>
-          {label}
-        </span>
-        <div className="text-lg font-mono font-bold text-white bg-black/60 px-2 rounded border border-white/10 backdrop-blur-md">
-          {Math.round(normalize(angle))}°
-        </div>
-      </div>
-
-      {/* The Disc */}
-      <motion.div
-        className={cn(
-          "w-28 h-28 relative rounded-full border-[6px] shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center justify-center transform-style-3d backdrop-blur-[2px]",
-          !fixed ? "cursor-grab active:cursor-grabbing" : "cursor-not-allowed opacity-90",
-          color === "cyan"
-            ? "border-cyan-500/40 bg-cyan-900/10 shadow-cyan-500/10"
-            : "border-purple-500/40 bg-purple-900/10 shadow-purple-500/10"
-        )}
-        drag={!fixed ? "x" : false} // Allow horizontal drag to rotate
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0}
-        onDrag={(_, info) => { if (setAngle) setAngle(angle + info.delta.x * 0.5) }}
-        animate={{ rotateZ: angle }}
-        style={{ rotateY: 20 }} // Isometric tilt
-      >
-        {/* Grating Lines */}
-        <div className="absolute inset-2 rounded-full overflow-hidden flex items-center justify-center opacity-70">
-          {/* Transmission Slot */}
-          <div className={cn("w-full h-[6px] blur-[1px]", color === "cyan" ? "bg-cyan-400/30" : "bg-purple-400/30")} />
-          {/* Grid Lines (Perpendicular to slot) */}
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div
-              key={i}
-              className={cn("absolute w-[1px] h-full", color === "cyan" ? "bg-cyan-500/20" : "bg-purple-500/20")}
-              style={{ left: `${20 + i * 10}%` }}
-            />
-          ))}
-        </div>
-
-        {/* Glossy Reflection */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
-      </motion.div>
-
-      {/* Stand */}
-      <div className="absolute bottom-2 w-16 h-4 bg-gray-800 rounded-full blur-md opacity-50 z-[-1]" />
-    </div>
-  )
+// ==========================================
+// 通道配置
+// ==========================================
+interface Channel {
+  id: string
+  symbol: string
+  targetAngle: number
+  color: string
 }
 
-// 4. Data Crystal (Birefringent Element)
-const DataCrystal = ({ active }: { active: boolean }) => (
-  <div className="relative w-24 h-32 flex items-center justify-center transform-style-3d group">
-    {/* Crystal Block */}
-    <div className={cn(
-      "w-16 h-20 border border-white/20 bg-white/5 backdrop-blur-[2px] rounded-lg relative overflow-hidden transition-all duration-500",
-      active ? "shadow-[0_0_30px_rgba(168,85,247,0.2)]" : "opacity-50 grayscale"
-    )}>
-      {/* Internal Data Structure */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <Scan className={cn("w-8 h-8 transition-all duration-500", active ? "text-purple-400 rotate-45" : "text-gray-500")} />
-      </div>
-      {/* Label */}
-      <div className="absolute top-1 left-2 text-[6px] font-mono text-white/40">MEMORY CORE</div>
-    </div>
+const CHANNELS: Channel[] = [
+  { id: 'A', symbol: 'P', targetAngle: 0, color: '#ef4444' },    // 水平 - 红
+  { id: 'B', symbol: 'O', targetAngle: 45, color: '#f59e0b' },   // 45° - 橙
+  { id: 'C', symbol: 'L', targetAngle: 90, color: '#22c55e' },   // 垂直 - 绿
+  { id: 'D', symbol: 'R', targetAngle: 135, color: '#3b82f6' },  // 135° - 蓝
+]
 
-    {/* Label */}
-    <div className="absolute -bottom-6 text-[9px] uppercase tracking-widest text-gray-500">
-      Data Crystal
-    </div>
-  </div>
-)
+const UNLOCK_THRESHOLD = 0.92 // cos²(15°) ≈ 0.93
 
-export function PasswordLock({ onUnlock }: { onUnlock: () => void; correctPassword?: string }) {
+// ==========================================
+// 主组件
+// ==========================================
+export function PasswordLock({ onUnlock }: { onUnlock: () => void }) {
   const { i18n } = useTranslation()
   const isZh = i18n.language.startsWith('zh')
 
-  // State
-  // P1 Angle (Polarizer) - Fixed Vertical (90 deg)
-  const p1Angle = 90
-  // P2 Angle (Analyzer) - User controlled
-  const [p2Angle, setP2Angle] = useState(10) // Start misaligned
+  const [analyzerAngle, setAnalyzerAngle] = useState(20)
+  const [decodedChannels, setDecodedChannels] = useState<Set<string>>(new Set())
+  const [isComplete, setIsComplete] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
 
-  // Physics Calculation
-  // 1. Glare (Background Noise)
-  // Intensity = cos^2(p2 - p1)
-  // When P2 = P1 (Aligned), Glare is Max (1.0). When P2 = P1 + 90 (Crossed), Glare is Min (0.0).
-  const angleDiff = Math.abs(normalize(p2Angle) - p1Angle)
-  const radians = toRad(angleDiff)
-  const glare = Math.pow(Math.cos(radians), 2)
+  // 计算每个通道的可见度
+  const channelVisibilities = useMemo(() => {
+    return CHANNELS.map(ch => ({
+      ...ch,
+      visibility: malusIntensity(ch.targetAngle, analyzerAngle),
+    }))
+  }, [analyzerAngle])
 
-  // 2. Data Signal (Birefringent Rotation)
-  // Simulating a wave plate at 45 deg that rotates polarization.
-  // Ideally, when Crossed (P1 perp P2), the rotated component passes through.
-  // Simplification: Signal strength peaks when Crossed (90 deg diff).
-  const signal = Math.pow(Math.sin(radians), 2)
+  // 检测通道解锁
+  useEffect(() => {
+    channelVisibilities.forEach(ch => {
+      if (ch.visibility >= UNLOCK_THRESHOLD && !decodedChannels.has(ch.id)) {
+        setDecodedChannels(prev => new Set([...prev, ch.id]))
+      }
+    })
+  }, [channelVisibilities, decodedChannels])
 
-  // 3. Contrast (S/N Ratio)
-  // Contrast = Signal - Glare
-  const contrast = signal - glare
-  const isSolved = contrast > 0.85 // Strict threshold
-  const [isUnlocked, setIsUnlocked] = useState(false)
-
-  const handleUnlock = () => {
-    if (isSolved) {
-      setIsUnlocked(true)
+  // 检测完成
+  useEffect(() => {
+    if (decodedChannels.size === 4 && !isComplete) {
+      setIsComplete(true)
       localStorage.setItem('polarcraft_unlocked', 'true')
-      setTimeout(onUnlock, 3000)
+      setTimeout(onUnlock, 2000)
     }
+  }, [decodedChannels, isComplete, onUnlock])
+
+  // 拖拽旋转
+  const handleDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isComplete) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI + 90
+    setAnalyzerAngle(normalize(angle))
   }
 
-  // Visual Angles for Ribbons
-  // Ribbon 3: Modified by Crystal. It rotates the polarization by some amount (e.g. 45 deg).
-  // So the "Signal" ribbon is at P1 + 45.
-  const ribbon3SignalAngle = p1Angle + 45
+  const handleWheel = (e: React.WheelEvent) => {
+    if (isComplete) return
+    e.preventDefault()
+    setAnalyzerAngle(prev => normalize(prev + (e.deltaY > 0 ? 3 : -3)))
+  }
+
+  const handleReset = () => {
+    setAnalyzerAngle(20)
+    setDecodedChannels(new Set())
+    setIsComplete(false)
+  }
+
+  const collectedSymbols = CHANNELS.filter(ch => decodedChannels.has(ch.id)).map(ch => ch.symbol).join('')
 
   return (
-    <div className="fixed inset-0 z-[100] bg-zinc-950 flex flex-col items-center justify-center font-sans text-gray-200 overflow-hidden select-none">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/20 via-zinc-950 to-black z-0" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 z-0" />
+    <div className="fixed inset-0 z-[100] bg-zinc-950 flex flex-col items-center justify-center overflow-hidden select-none">
+      {/* 背景 */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-950/20 via-zinc-950 to-black" />
 
-      {/* Header HUD */}
-      <div className="relative z-10 w-full max-w-5xl px-8 flex justify-between items-end mb-8 border-b border-white/5 pb-4">
-        <div>
-          <div className="flex items-center gap-3 text-red-500 mb-1">
-            <AlertTriangle className="w-5 h-5 animate-pulse" />
-            <h1 className="text-sm font-bold tracking-[0.2em] uppercase">
-              {isZh ? '数据恢复模式' : 'DATA RECOVERY MODE'}
-            </h1>
-          </div>
-          <h2 className="text-2xl font-black text-white/90 tracking-tight">
-            {isZh ? '光存储晶体读取器' : 'OPTICAL CRYSTAL READER'}
-          </h2>
-        </div>
-        <div className="text-right">
-          <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Status</div>
-          <div className={cn("font-mono font-bold", isUnlocked ? "text-emerald-500" : "text-amber-500")}>
-            {isUnlocked ? "RECOVERED" : "CORRUPTED"}
-          </div>
-        </div>
+      {/* 标题 */}
+      <div className="relative z-10 text-center mb-8">
+        <h1 className="text-2xl font-bold text-white mb-2">
+          {isZh ? '偏振密码锁' : 'Polarization Cipher'}
+        </h1>
+        <p className="text-sm text-gray-500">
+          {isZh ? '旋转检偏器，扫描出隐藏的字符' : 'Rotate the analyzer to reveal hidden symbols'}
+        </p>
       </div>
 
-      {/* Main Optical Bench (Volumetric Scene) */}
-      <div className="relative z-10 w-full max-w-7xl h-[350px] flex items-center justify-center gap-0 lg:gap-4 perspective-[1000px]">
+      {/* 主界面 */}
+      <div className="relative z-10 flex items-center gap-8">
+        {/* 光源 */}
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full bg-yellow-500/20 border-2 border-yellow-500 flex items-center justify-center mb-2">
+            <Zap className="w-8 h-8 text-yellow-400" />
+          </div>
+          <span className="text-xs text-gray-500">{isZh ? '偏振光源' : 'Source'}</span>
+        </div>
 
-        {/* Rail Grounding */}
-        <div className="absolute top-1/2 left-20 right-20 h-[1px] bg-gradient-to-r from-transparent via-gray-800 to-transparent z-0" />
+        {/* 光束 */}
+        <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-cyan-500 rounded-full" />
 
-        {/* 1. Source */}
+        {/* 检偏器（可旋转） */}
         <div className="flex flex-col items-center">
-          <LightGenerator />
+          <div
+            className={cn(
+              "relative w-32 h-32 rounded-full border-4 cursor-grab active:cursor-grabbing transition-colors",
+              isComplete ? "border-emerald-500" : "border-cyan-500"
+            )}
+            style={{
+              background: `conic-gradient(from ${analyzerAngle}deg, rgba(34,211,238,0.3), transparent 90deg, rgba(34,211,238,0.3) 180deg, transparent 270deg)`,
+            }}
+            onPointerDown={handleDrag}
+            onPointerMove={(e) => e.buttons === 1 && handleDrag(e)}
+            onWheel={handleWheel}
+          >
+            {/* 栅格线 */}
+            <div
+              className="absolute inset-4 flex items-center justify-center"
+              style={{ transform: `rotate(${analyzerAngle}deg)` }}
+            >
+              {[-2, -1, 0, 1, 2].map(i => (
+                <div
+                  key={i}
+                  className={cn(
+                    "absolute w-full h-0.5 rounded-full",
+                    isComplete ? "bg-emerald-400" : "bg-cyan-400"
+                  )}
+                  style={{
+                    transform: `translateY(${i * 6}px)`,
+                    opacity: i === 0 ? 1 : 0.4,
+                  }}
+                />
+              ))}
+            </div>
+            {/* 角度显示 */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className={cn(
+                "font-mono font-bold text-xl",
+                isComplete ? "text-emerald-400" : "text-cyan-400"
+              )}>
+                {Math.round(normalize(analyzerAngle))}°
+              </span>
+            </div>
+          </div>
+          <span className="text-xs text-gray-500 mt-2">{isZh ? '检偏器' : 'Analyzer'}</span>
         </div>
 
-        {/* Beam 1: Unpolarized */}
-        <BeamSegment type="unpolarized" color="yellow" label="Noise" />
+        {/* 光束 */}
+        <div className="w-8 h-1 bg-gradient-to-r from-cyan-500 to-transparent rounded-full" />
 
-        {/* 2. Polarizer (Filter P1) */}
-        <OpticalDisc angle={p1Angle} label="P1 Filter" color="cyan" fixed />
-
-        {/* Beam 2: Linear Polarized (Vertical) */}
-        <BeamSegment type="polarized" color="cyan" rotate={90} intensity={1} label="Polarized" />
-
-        {/* 3. Data Crystal */}
-        <DataCrystal active={isSolved} />
-
-        {/* Beam 3: Mixed (Glare + Signal) */}
-        {/* Visual trick: Show how the ribbon twists if we solve it */}
-        <BeamSegment
-          type="polarized"
-          color={contrast > 0.5 ? "purple" : "cyan"}
-          rotate={contrast > 0.5 ? ribbon3SignalAngle : p1Angle} // Visual twist
-          intensity={0.8}
-          label="Modulated"
-        />
-
-        {/* 4. Analyzer (User Control) */}
-        <OpticalDisc
-          angle={p2Angle}
-          setAngle={setP2Angle}
-          label={isZh ? "检偏控制 (Analyzer)" : "Analyzer Control"}
-          color="purple"
-          fixed={isUnlocked}
-        />
-
-        {/* 5. Result: The Console Screen */}
-        <div className="relative ml-6 perspective-1000 group">
-          <div className="w-64 h-48 bg-black border-4 border-gray-800 rounded-lg shadow-2xl relative overflow-hidden transform rotate-y-[-10deg] transition-transform group-hover:rotate-y-0">
-            {/* Internal Screen Display */}
-            <div className="absolute inset-0 p-4 font-mono flex flex-col justify-between">
-
-              {/* Glare Layer (Overlays everything) */}
-              <div
-                className="absolute inset-0 bg-white transition-opacity duration-100 pointer-events-none mix-blend-screen"
-                style={{ opacity: glare * 0.95 }} // Max glare washes out everything
-              />
-
-              {/* Signal Layer (The Data) */}
-              <div
-                className="flex-1 flex items-center justify-center transition-all duration-300"
-                style={{
-                  opacity: signal,
-                  filter: `blur(${(1 - contrast) * 10}px)`,
-                  transform: `scale(${0.8 + contrast * 0.2})`
-                }}
-              >
-                <div className="text-center">
-                  <div className="text-purple-400 text-sm mb-2 opacity-70">CRYSTAL_DATA_01</div>
-                  <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">
-                    POLAR
-                  </div>
-                  <div className="text-[10px] text-emerald-500 mt-2 tracking-[0.5em]">DECRYPTED</div>
+        {/* 显示屏 */}
+        <div className="w-48 h-32 bg-black/80 border-2 border-gray-700 rounded-lg p-3 flex flex-col">
+          <div className="text-xs text-gray-600 mb-2">{isZh ? '解密通道' : 'CHANNELS'}</div>
+          <div className="flex-1 grid grid-cols-4 gap-1">
+            {channelVisibilities.map(ch => {
+              const isDecoded = decodedChannels.has(ch.id)
+              return (
+                <div
+                  key={ch.id}
+                  className="flex flex-col items-center justify-center rounded"
+                  style={{
+                    background: isDecoded ? `${ch.color}20` : 'transparent',
+                  }}
+                >
+                  <span
+                    className="text-2xl font-black transition-all duration-200"
+                    style={{
+                      color: ch.color,
+                      opacity: isDecoded ? 1 : ch.visibility,
+                      filter: `blur(${isDecoded ? 0 : (1 - ch.visibility) * 8}px)`,
+                    }}
+                  >
+                    {ch.symbol}
+                  </span>
+                  <span className="text-[10px] text-gray-600">{ch.targetAngle}°</span>
                 </div>
-              </div>
-
-              {/* HUD Overlay */}
-              <div className="flex justify-between text-[9px] text-gray-500 relative z-20">
-                <div>GLARE: {Math.round(glare * 100)}%</div>
-                <div>SNR: {Math.round(contrast * 10)}dB</div>
-              </div>
-            </div>
-
-            {/* Screen Scanline */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent h-4 w-full animate-[scan_2s_linear_infinite] pointer-events-none" />
+              )
+            })}
           </div>
         </div>
       </div>
 
-      {/* Narrative Controls */}
-      <div className="relative z-10 w-full max-w-lg mt-12 flex flex-col items-center">
-        <AnimatePresence mode="wait">
-          {isUnlocked ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center gap-4 bg-emerald-900/10 border border-emerald-500/30 p-8 rounded-xl backdrop-blur-md"
-            >
-              <CheckCircle2 className="w-12 h-12 text-emerald-500" />
-              <div className="text-center">
-                <h3 className="text-xl font-bold text-white mb-1">{isZh ? '数据恢复完成' : 'RECOVERY COMPLETE'}</h3>
-                <p className="text-sm text-gray-400 font-mono">
-                  {isZh ? '正在载入主系统...' : 'Loading Main System...'}
-                </p>
-              </div>
-              {/* Educational Summary */}
-              <div className="text-[10px] text-emerald-400/60 font-mono mt-2 bg-black/40 px-3 py-1 rounded">
-                TECHNIQUE: CROSS-POLARIZATION FILTRATION
-              </div>
-            </motion.div>
-          ) : (
-            <div className="flex flex-col items-center gap-6">
-              {/* Narrative Hint */}
-              <div className="flex gap-4 items-start max-w-md bg-gray-900/50 p-4 rounded-lg border-l-2 border-amber-500">
-                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                <div className="text-xs text-gray-300 leading-relaxed font-mono">
-                  {isZh
-                    ? `警告：强烈背景眩光掩盖了数据信号。请调整 <检偏器> 至 "正交位置" (90°) 以过滤眩光。`
-                    : `ALERT: Intense background glare is masking the data signal. Adjust <Analyzer> to "Crossed Position" (90°) to filter glare.`}
-                </div>
-              </div>
+      {/* 马吕斯定律显示 */}
+      <div className="relative z-10 mt-6 text-center">
+        <div className="inline-flex items-center gap-4 px-4 py-2 rounded-lg bg-gray-900/50 border border-gray-800">
+          <span className="text-xs text-gray-500">{isZh ? '马吕斯定律' : "Malus's Law"}:</span>
+          <span className="font-mono text-cyan-400">I = I₀ × cos²(θ)</span>
+        </div>
+      </div>
 
-              {/* Unlock Button */}
-              <button
-                onClick={handleUnlock}
-                disabled={!isSolved}
+      {/* 收集进度 */}
+      <div className="relative z-10 mt-8">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-600">{isZh ? '已收集' : 'Collected'}:</span>
+          <div className="flex gap-1">
+            {CHANNELS.map((ch) => (
+              <div
+                key={ch.id}
                 className={cn(
-                  "px-10 py-3 rounded uppercase font-bold tracking-[0.2em] transition-all duration-300",
-                  isSolved
-                    ? "bg-purple-600 hover:bg-purple-500 text-white shadow-[0_0_30px_rgba(147,51,234,0.5)] scale-105"
-                    : "bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700"
+                  "w-10 h-10 rounded border-2 flex items-center justify-center font-mono font-bold text-lg transition-all",
+                  decodedChannels.has(ch.id)
+                    ? "border-emerald-500 bg-emerald-500/20 text-emerald-400"
+                    : "border-gray-700 bg-gray-900 text-gray-600"
                 )}
               >
-                {isZh ? '提取数据' : 'EXTRACT DATA'}
-              </button>
-            </div>
-          )}
-        </AnimatePresence>
+                {decodedChannels.has(ch.id) ? ch.symbol : '?'}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
+      {/* 帮助提示 */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="relative z-10 mt-6 max-w-md p-4 rounded-xl bg-indigo-900/30 border border-indigo-500/30"
+          >
+            <p className="text-sm text-gray-300 leading-relaxed">
+              {isZh
+                ? '每个字符用不同的偏振方向编码（0°、45°、90°、135°）。当检偏器角度与字符的偏振方向一致时，该字符会清晰显现。慢慢旋转检偏器，收集所有4个字符即可解锁。'
+                : 'Each symbol is encoded with a different polarization angle (0°, 45°, 90°, 135°). When the analyzer angle matches the symbol\'s polarization, it becomes visible. Slowly rotate the analyzer to collect all 4 symbols.'}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 控制按钮 */}
+      <div className="relative z-10 mt-6 flex items-center gap-4">
+        <button
+          onClick={() => setShowHelp(!showHelp)}
+          className={cn(
+            "p-2 rounded-lg transition-colors",
+            showHelp ? "bg-indigo-500/20 text-indigo-400" : "hover:bg-gray-800 text-gray-500"
+          )}
+        >
+          <HelpCircle className="w-5 h-5" />
+        </button>
+        <button
+          onClick={handleReset}
+          className="p-2 rounded-lg hover:bg-gray-800 text-gray-500 transition-colors"
+        >
+          <RotateCcw className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* 完成动画 */}
+      <AnimatePresence>
+        {isComplete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 z-20 flex items-center justify-center bg-black/80"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-center"
+            >
+              <motion.div
+                className="w-20 h-20 mx-auto mb-4 rounded-full bg-emerald-500/20 border-4 border-emerald-500 flex items-center justify-center"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <Unlock className="w-10 h-10 text-emerald-400" />
+              </motion.div>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {isZh ? '解锁成功！' : 'UNLOCKED!'}
+              </h2>
+              <p className="text-emerald-400 font-mono text-lg tracking-widest mb-4">
+                {collectedSymbols}
+              </p>
+              <p className="text-sm text-gray-500">
+                {isZh ? '正在进入...' : 'Entering...'}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

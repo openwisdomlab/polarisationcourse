@@ -45,6 +45,36 @@ export const CLASSIC_EXPERIMENTS: ClassicExperiment[] = [
     linkedDemo: 'malus-law',
   },
   {
+    id: 'two-polarizer-system',
+    nameEn: 'Two-Polarizer Optical System',
+    nameZh: '双偏振片光学系统',
+    descriptionEn: 'A general-purpose two-polarizer setup demonstrating polarization encoding and decoding principles, commonly used in security applications and optical communications.',
+    descriptionZh: '通用的双偏振片系统，演示偏振编码和解码原理，广泛应用于安防和光通信领域。',
+    difficulty: 'easy',
+    components: [
+      { id: 'e1', type: 'emitter', x: 80, y: 200, rotation: 0, properties: { polarization: -1 } },
+      { id: 'p1', type: 'polarizer', x: 200, y: 200, rotation: 0, properties: { angle: 0 } },
+      { id: 'target', type: 'splitter', x: 350, y: 200, rotation: 0, properties: { splitType: 'pbs' } },
+      { id: 'p2', type: 'polarizer', x: 500, y: 200, rotation: 0, properties: { angle: 0 } },
+      { id: 's1', type: 'sensor', x: 620, y: 200, rotation: 0, properties: {} },
+    ],
+    learningPoints: {
+      en: [
+        'P₁ (Polarizer): Converts unpolarized light to linearly polarized light',
+        'P₂ (Analyzer): Decodes polarization angle using Malus\'s Law',
+        'I = I₀ × cos²(θ) determines transmitted intensity',
+        'Applications: Anti-counterfeiting, 3D cinema, LCD displays, polarized sunglasses',
+      ],
+      zh: [
+        'P₁（起偏器）：将非偏振光转换为线偏振光',
+        'P₂（检偏器）：根据马吕斯定律解码偏振角度',
+        'I = I₀ × cos²(θ) 决定透射强度',
+        '应用：防伪标签、3D电影、LCD显示器、偏振太阳镜',
+      ],
+    },
+    linkedDemo: 'malus-law',
+  },
+  {
     id: 'three-polarizer-paradox',
     nameEn: 'Three Polarizer Paradox',
     nameZh: '三偏振片悖论',
