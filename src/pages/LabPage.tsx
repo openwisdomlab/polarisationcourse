@@ -113,7 +113,7 @@ const RESEARCH_TASKS: ResearchTask[] = [
     difficulty: 'advanced',
     category: 'experiment',
     estimatedHours: 10,
-    status: 'coming-soon',
+    status: 'available',
     prerequisites: ['stokes-measurement'],
     skills: ['Mueller matrix', 'Polarimetric imaging', 'Advanced optics']
   },
@@ -126,7 +126,7 @@ const RESEARCH_TASKS: ResearchTask[] = [
     difficulty: 'advanced',
     category: 'simulation',
     estimatedHours: 8,
-    status: 'coming-soon',
+    status: 'available',
     skills: ['Jones calculus', 'Liquid crystals', 'Numerical simulation']
   },
   {
@@ -138,7 +138,7 @@ const RESEARCH_TASKS: ResearchTask[] = [
     difficulty: 'advanced',
     category: 'literature',
     estimatedHours: 12,
-    status: 'coming-soon',
+    status: 'available',
     skills: ['Literature search', 'Scientific writing', 'Remote sensing']
   },
 ]
