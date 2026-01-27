@@ -29,7 +29,9 @@ import {
   Play,
   Eye,
   Award,
-  TrendingUp
+  TrendingUp,
+  Library,
+  ExternalLink
 } from 'lucide-react'
 
 // Learning path types
@@ -195,6 +197,216 @@ const LEARNING_PATHS = [
   }
 ]
 
+// ============================================================================
+// Classic Books & Recommended Reading
+// ============================================================================
+
+interface BookRecommendation {
+  id: string
+  titleZh: string
+  titleEn: string
+  author: string
+  authorEn?: string
+  descriptionZh: string
+  descriptionEn: string
+  category: 'polarization' | 'surface-wetting' | 'biomimetics' | 'optics-general' | 'interdisciplinary'
+  coverColor: string // 用于无封面时的颜色标识
+  isbn?: string
+  year?: number
+  publisher?: string
+  keywords: string[]
+  level: 'introductory' | 'intermediate' | 'advanced'
+}
+
+const BOOK_CATEGORY_INFO: Record<string, { labelZh: string; labelEn: string; color: string }> = {
+  'polarization': { labelZh: '偏振光学', labelEn: 'Polarization Optics', color: '#8B5CF6' },
+  'surface-wetting': { labelZh: '表面与浸润', labelEn: 'Surface & Wetting', color: '#0891B2' },
+  'biomimetics': { labelZh: '仿生学', labelEn: 'Biomimetics', color: '#10B981' },
+  'optics-general': { labelZh: '光学基础', labelEn: 'General Optics', color: '#F59E0B' },
+  'interdisciplinary': { labelZh: '交叉学科', labelEn: 'Interdisciplinary', color: '#EC4899' },
+}
+
+const RECOMMENDED_BOOKS: BookRecommendation[] = [
+  // 表面与浸润
+  {
+    id: 'mighty-microforces',
+    titleZh: '微力无边：神奇的毛细和浸润现象',
+    titleEn: 'Mighty Microforces: Wonderful Capillary and Wetting Phenomena',
+    author: '袁泉子',
+    authorEn: 'Yuan Quanzi',
+    descriptionZh: '从咖啡环到荷叶效应，以生动的笔触揭示毛细力和浸润现象背后的物理之美。带你领略液滴在微纳表面的奇妙行为，是理解表面微结构与疏水浸润的绝佳入门读物。',
+    descriptionEn: 'From coffee rings to the lotus effect, this book reveals the physics behind capillary forces and wetting phenomena. An excellent introduction to surface microstructures and hydrophobic wetting.',
+    category: 'surface-wetting',
+    coverColor: '#0891B2',
+    year: 2020,
+    publisher: '科学出版社',
+    keywords: ['毛细力', '浸润', '接触角', '表面张力', '疏水', '亲水', '咖啡环效应'],
+    level: 'introductory',
+  },
+  {
+    id: 'capillarity-wetting',
+    titleZh: '毛细力与浸润',
+    titleEn: 'Capillarity and Wetting Phenomena',
+    author: 'P.-G. de Gennes, F. Brochard-Wyart, D. Quéré',
+    descriptionZh: '诺贝尔奖得主de Gennes等人的经典著作。系统介绍液滴、气泡、薄膜等界面现象的物理学，深入探讨浸润、铺展、毛细上升等基本过程。',
+    descriptionEn: 'Classic text by Nobel laureate de Gennes. Systematically covers the physics of drops, bubbles, pearls, and waves — the fundamentals of wetting, spreading, and capillary rise.',
+    category: 'surface-wetting',
+    coverColor: '#0E7490',
+    year: 2004,
+    publisher: 'Springer',
+    isbn: '978-0387005928',
+    keywords: ['浸润', '毛细力', '接触角', '铺展', '薄膜', '界面现象'],
+    level: 'intermediate',
+  },
+  {
+    id: 'superhydrophobic-surfaces',
+    titleZh: '超疏水表面：理论基础与工程应用',
+    titleEn: 'Superhydrophobic Surfaces',
+    author: 'Bharat Bhushan (编)',
+    descriptionZh: '全面介绍超疏水表面的制备原理、微纳结构设计和实际应用。从荷叶效应出发，探讨仿生超疏水材料在自清洁、防冰、减阻等领域的前沿进展。',
+    descriptionEn: 'Comprehensive coverage of superhydrophobic surface preparation, micro/nano structure design, and applications. From lotus effect to self-cleaning, anti-icing, and drag reduction.',
+    category: 'surface-wetting',
+    coverColor: '#0369A1',
+    year: 2009,
+    publisher: 'Springer',
+    isbn: '978-3642015939',
+    keywords: ['超疏水', '自清洁', '微纳结构', '接触角', '荷叶效应', '仿生'],
+    level: 'advanced',
+  },
+
+  // 仿生学
+  {
+    id: 'biomimetics-design',
+    titleZh: '生物启发设计：从自然到工程',
+    titleEn: 'Bio-Inspired Design: From Nature to Engineering',
+    author: '刘克勤 等',
+    authorEn: 'Liu Keqin et al.',
+    descriptionZh: '系统介绍自然界中的微纳米结构及其功能，包括蝴蝶翅膀的结构色、壁虎脚的黏附机制、鲨鱼皮的减阻效果等。揭示生物如何通过表面微结构实现超疏水、抗反射、结构色等功能。',
+    descriptionEn: 'Introduces natural micro/nanostructures and their functions: butterfly wing structural colors, gecko adhesion, shark skin drag reduction. Reveals how biology achieves superhydrophobicity, anti-reflection, and structural coloration.',
+    category: 'biomimetics',
+    coverColor: '#059669',
+    keywords: ['仿生', '微纳结构', '结构色', '黏附', '超疏水', '抗反射'],
+    level: 'intermediate',
+  },
+  {
+    id: 'structural-colors-nature',
+    titleZh: '自然界的结构色',
+    titleEn: 'Structural Colors in the Realm of Nature',
+    author: 'Shuichi Kinoshita',
+    descriptionZh: '深入探讨蝴蝶、甲虫、孔雀等生物产生绚丽色彩的物理机制。不同于色素颜色，结构色通过微纳尺度的周期结构实现光的干涉和衍射，与偏振光学密切相关。',
+    descriptionEn: 'Explores how butterflies, beetles, and peacocks create stunning colors through physical mechanisms. Structural colors arise from nanoscale periodic structures via interference and diffraction.',
+    category: 'biomimetics',
+    coverColor: '#4F46E5',
+    year: 2008,
+    publisher: 'World Scientific',
+    isbn: '978-9812707833',
+    keywords: ['结构色', '薄膜干涉', '光子晶体', '蝴蝶翅膀', '纳米光学', '偏振'],
+    level: 'intermediate',
+  },
+  {
+    id: 'nanostructure-biomimetics',
+    titleZh: '纳米仿生材料',
+    titleEn: 'Nanomaterials: A Guide to Fabrication and Applications',
+    author: '江雷 等',
+    authorEn: 'Jiang Lei et al.',
+    descriptionZh: '中国科学院江雷院士团队的重要著作。聚焦微纳尺度仿生界面材料，包括超疏水、超亲水、各向异性浸润等特殊浸润性表面的构建与应用，是理解微纳仿生的必读之书。',
+    descriptionEn: 'Important work by Academician Jiang Lei\'s team. Focuses on bio-inspired interfacial materials at micro/nano scale, including superhydrophobic, superhydrophilic, and anisotropic wetting surfaces.',
+    category: 'biomimetics',
+    coverColor: '#047857',
+    keywords: ['纳米仿生', '特殊浸润性', '界面材料', '超疏水', '超亲水', '各向异性'],
+    level: 'advanced',
+  },
+
+  // 偏振光学
+  {
+    id: 'polarized-light',
+    titleZh: '偏振光学（第三版）',
+    titleEn: 'Polarized Light (3rd Edition)',
+    author: 'Dennis Goldstein',
+    descriptionZh: '偏振光学的权威教材。从基本原理到高级应用，涵盖Jones矩阵、Mueller矩阵、Stokes参数等完整数学体系，以及偏振在光学仪器和测量中的应用。',
+    descriptionEn: 'The definitive textbook on polarized light. Covers Jones matrices, Mueller matrices, Stokes parameters, and applications in optical instrumentation and measurement.',
+    category: 'polarization',
+    coverColor: '#7C3AED',
+    year: 2010,
+    publisher: 'CRC Press',
+    isbn: '978-1439830406',
+    keywords: ['偏振', 'Jones矩阵', 'Mueller矩阵', 'Stokes参数', '偏振测量'],
+    level: 'intermediate',
+  },
+  {
+    id: 'polarimetric-detection',
+    titleZh: '偏振光散射与探测',
+    titleEn: 'Polarized Light Scattering and Detection',
+    author: '马辉 等',
+    authorEn: 'Ma Hui et al.',
+    descriptionZh: '系统介绍偏振光在生物组织中的散射特性和检测方法。涵盖Mueller矩阵成像、组织偏振特性表征等前沿内容，对本课题组的细胞凋亡和微藻研究有直接参考价值。',
+    descriptionEn: 'Systematically covers polarized light scattering in biological tissues and detection methods. Includes Mueller matrix imaging and tissue polarimetric characterization.',
+    category: 'polarization',
+    coverColor: '#6D28D9',
+    keywords: ['偏振散射', 'Mueller矩阵成像', '生物组织', '偏振检测', '组织表征'],
+    level: 'advanced',
+  },
+
+  // 光学基础
+  {
+    id: 'optics-hecht',
+    titleZh: '光学（第5版）',
+    titleEn: 'Optics (5th Edition)',
+    author: 'Eugene Hecht',
+    descriptionZh: '经典光学教材，被全球高校广泛采用。从几何光学到物理光学，系统介绍光的传播、干涉、衍射和偏振，图文并茂，例题丰富。',
+    descriptionEn: 'Classic optics textbook used worldwide. Covers geometric optics to physical optics: propagation, interference, diffraction, and polarization with rich illustrations.',
+    category: 'optics-general',
+    coverColor: '#D97706',
+    year: 2016,
+    publisher: 'Pearson',
+    isbn: '978-0133977226',
+    keywords: ['几何光学', '物理光学', '干涉', '衍射', '偏振', '光的传播'],
+    level: 'introductory',
+  },
+  {
+    id: 'principles-of-optics',
+    titleZh: '光学原理',
+    titleEn: 'Principles of Optics (7th Edition)',
+    author: 'Max Born, Emil Wolf',
+    descriptionZh: 'Born和Wolf的不朽名著，光学领域的"圣经"。涵盖电磁理论、光的传播、干涉衍射、偏振等几乎所有光学分支，数学严谨，是研究级参考书。',
+    descriptionEn: 'The immortal masterpiece by Born and Wolf, the "bible" of optics. Covers electromagnetic theory, propagation, interference, diffraction, and polarization with mathematical rigor.',
+    category: 'optics-general',
+    coverColor: '#B45309',
+    year: 2019,
+    publisher: 'Cambridge University Press',
+    isbn: '978-1108477437',
+    keywords: ['电磁理论', '光的传播', '干涉', '衍射', '偏振', '相干理论'],
+    level: 'advanced',
+  },
+
+  // 交叉学科
+  {
+    id: 'wetting-surfaces-optics',
+    titleZh: '润湿与微纳光学',
+    titleEn: 'Wettability and Micro/Nano Optics',
+    author: '陈成猛 等',
+    authorEn: 'Chen Chengmeng et al.',
+    descriptionZh: '探讨表面浸润性与光学性质的交叉领域。超疏水表面的减反射效应、薄膜干涉与浸润的耦合行为、微纳结构的光调控等前沿课题，连接了浸润物理与偏振光学。',
+    descriptionEn: 'Explores the intersection of surface wettability and optical properties: anti-reflection on superhydrophobic surfaces, thin-film interference with wetting, and micro/nano optical modulation.',
+    category: 'interdisciplinary',
+    coverColor: '#DB2777',
+    keywords: ['浸润', '减反射', '薄膜干涉', '微纳光学', '表面微结构', '偏振'],
+    level: 'advanced',
+  },
+  {
+    id: 'soft-matter-physics',
+    titleZh: '软物质物理学导论',
+    titleEn: 'Introduction to Soft Matter Physics',
+    author: '阎守胜 / de Gennes, P.-G.',
+    descriptionZh: '介绍高分子、胶体、液晶、表面活性剂等软物质的物理学基础。液晶章节直接关联偏振显示技术，表面活性剂与浸润行为密切相关。',
+    descriptionEn: 'Covers physics of polymers, colloids, liquid crystals, and surfactants. Liquid crystal chapter directly connects to polarization displays; surfactants relate to wetting behavior.',
+    category: 'interdisciplinary',
+    coverColor: '#BE185D',
+    keywords: ['软物质', '液晶', '高分子', '胶体', '表面活性剂', '偏振显示'],
+    level: 'intermediate',
+  },
+]
+
 // Discovery milestones for gamification
 const DISCOVERY_MILESTONES = [
   { id: 'first-demo', titleEn: 'First Light', titleZh: '初见光芒', icon: '💡' },
@@ -204,6 +416,154 @@ const DISCOVERY_MILESTONES = [
   { id: 'lab-rat', titleEn: 'Lab Enthusiast', titleZh: '实验达人', icon: '🔬' },
   { id: 'math-wizard', titleEn: 'Math Wizard', titleZh: '数学巫师', icon: '🧮' }
 ]
+
+// Book section sub-component
+function BookCategoryFilter({ isDark, isZh }: { isDark: boolean; isZh: boolean }) {
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+
+  const filteredBooks = selectedCategory
+    ? RECOMMENDED_BOOKS.filter(b => b.category === selectedCategory)
+    : RECOMMENDED_BOOKS
+
+  const levelLabels = {
+    introductory: { zh: '入门', en: 'Intro', color: '#10B981' },
+    intermediate: { zh: '进阶', en: 'Intermediate', color: '#F59E0B' },
+    advanced: { zh: '高级', en: 'Advanced', color: '#EF4444' },
+  }
+
+  return (
+    <div>
+      {/* Category pills */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button
+          onClick={() => setSelectedCategory('')}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            !selectedCategory
+              ? 'bg-amber-500 text-white'
+              : isDark
+                ? 'text-slate-400 hover:text-white hover:bg-slate-700'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+          }`}
+        >
+          {isZh ? '全部' : 'All'}
+        </button>
+        {Object.entries(BOOK_CATEGORY_INFO).map(([key, info]) => (
+          <button
+            key={key}
+            onClick={() => setSelectedCategory(key)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selectedCategory === key
+                ? 'text-white'
+                : isDark
+                  ? 'text-slate-400 hover:text-white hover:bg-slate-700'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+            }`}
+            style={selectedCategory === key ? { backgroundColor: info.color } : undefined}
+          >
+            {isZh ? info.labelZh : info.labelEn}
+          </button>
+        ))}
+      </div>
+
+      {/* Book grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {filteredBooks.map(book => {
+          const catInfo = BOOK_CATEGORY_INFO[book.category]
+          const lvl = levelLabels[book.level]
+          return (
+            <motion.div
+              key={book.id}
+              layout
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`p-4 rounded-xl border transition-all hover:-translate-y-0.5 ${
+                isDark
+                  ? 'bg-slate-700/50 border-slate-600 hover:border-slate-500'
+                  : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:shadow-sm'
+              }`}
+            >
+              <div className="flex gap-4">
+                {/* Book spine / color indicator */}
+                <div
+                  className="w-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: book.coverColor }}
+                />
+                <div className="flex-1 min-w-0">
+                  {/* Category & Level badges */}
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span
+                      className="text-xs px-2 py-0.5 rounded-full font-medium text-white"
+                      style={{ backgroundColor: catInfo.color }}
+                    >
+                      {isZh ? catInfo.labelZh : catInfo.labelEn}
+                    </span>
+                    <span
+                      className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ backgroundColor: `${lvl.color}20`, color: lvl.color }}
+                    >
+                      {isZh ? lvl.zh : lvl.en}
+                    </span>
+                    {book.year && (
+                      <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                        {book.year}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <h4 className={`font-semibold mb-0.5 ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                    {isZh ? book.titleZh : book.titleEn}
+                  </h4>
+
+                  {/* Author */}
+                  <p className={`text-xs mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                    {book.authorEn && !isZh ? book.authorEn : book.author}
+                    {book.publisher && ` · ${book.publisher}`}
+                  </p>
+
+                  {/* Description */}
+                  <p className={`text-sm mb-3 line-clamp-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    {isZh ? book.descriptionZh : book.descriptionEn}
+                  </p>
+
+                  {/* Keywords */}
+                  <div className="flex flex-wrap gap-1">
+                    {book.keywords.slice(0, 5).map(kw => (
+                      <span
+                        key={kw}
+                        className={`text-xs px-1.5 py-0.5 rounded ${
+                          isDark ? 'bg-slate-600 text-slate-300' : 'bg-slate-200 text-slate-600'
+                        }`}
+                      >
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* ISBN link */}
+                  {book.isbn && (
+                    <a
+                      href={`https://www.worldcat.org/isbn/${book.isbn.replace(/-/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1 text-xs mt-2 ${
+                        isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'
+                      }`}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      ISBN: {book.isbn}
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 export default function LearningHubPage() {
   const { i18n } = useTranslation()
@@ -512,6 +872,28 @@ export default function LearningHubPage() {
                 </div>
               )
             })}
+          </div>
+        </section>
+
+        {/* Classic Books & Recommended Reading */}
+        <section className="max-w-6xl mx-auto px-4 py-8">
+          <div className={`rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Library className={`w-6 h-6 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
+                <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                  {isZh ? '经典书籍推荐' : 'Classic Books & Recommended Reading'}
+                </h2>
+              </div>
+              <p className={`text-sm mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                {isZh
+                  ? '涵盖偏振光学、表面微结构、疏水浸润、微纳仿生等多个方向，从入门到前沿的精选书单。'
+                  : 'Curated reading list spanning polarization optics, surface microstructures, hydrophobic wetting, and micro/nano biomimetics.'}
+              </p>
+
+              {/* Category filter */}
+              <BookCategoryFilter isDark={isDark} isZh={isZh} />
+            </div>
           </div>
         </section>
 
