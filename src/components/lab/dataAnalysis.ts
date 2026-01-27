@@ -263,30 +263,6 @@ export const DEFAULT_NOISE_PARAMS: NoiseParams = {
 }
 
 /**
- * Add realistic noise to data (for simulation mode)
- * 添加真实噪声到数据（用于模拟模式）
- *
- * Uses physically accurate noise model:
- * - Shot noise: σ_shot = k × √I (Poisson statistics)
- * - Read noise: σ_read = constant (Gaussian, detector electronics)
- * - Total: σ_total = √(σ_shot² + σ_read²)
- *
- * @deprecated Use addRealisticNoise for more accurate simulation
- */
-export function addNoise(data: DataPoint[], noiseLevel: number = 5): DataPoint[] {
-  // Legacy function now uses Gaussian noise instead of uniform
-  return data.map(point => {
-    const noise = gaussianRandom(0, noiseLevel)
-    const newIntensity = Math.max(0, point.intensity + noise)
-    return {
-      ...point,
-      intensity: newIntensity,
-      uncertainty: noiseLevel,
-    }
-  })
-}
-
-/**
  * Add realistic experimental noise with proper physics model
  * 添加具有正确物理模型的真实实验噪声
  *
