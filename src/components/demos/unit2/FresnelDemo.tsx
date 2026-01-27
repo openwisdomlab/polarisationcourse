@@ -1,51 +1,63 @@
 /**
- * 菲涅尔方程演示 - Unit 2
+ * 菲涅尔方程演示 - Unit 2 (Refactored with Unified Physics Engine)
  * 演示s偏振和p偏振的反射/透射系数随入射角的变化
  * 采用纯DOM + SVG + Framer Motion一体化设计
+ *
+ * Physics Engine Migration:
+ * - Uses solveFresnel() from unified physics engine for all Fresnel calculations
+ * - Uses brewsterAngle() and criticalAngle() for accurate angle computation
+ * - No more hardcoded Fresnel equations - all physics delegated to engine
+ *
+ * Verification: At n1=1, n2=1.5, Brewster angle should be ~56.31°
+ * At this angle, Rp should be exactly 0 (no p-polarization reflection)
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { SliderControl, ControlPanel, InfoCard, Toggle } from '../DemoControls'
+import { useTranslation } from 'react-i18next'
+// Import Fresnel solver from unified physics engine
+import {
+  solveFresnel,
+  brewsterAngle as computeBrewsterAngle,
+  criticalAngle as computeCriticalAngle,
+  REFRACTIVE_INDICES,
+} from '@/core/physics/unified'
 
-// 菲涅尔方程计算
+/**
+ * Calculate Fresnel coefficients using unified physics engine
+ * This replaces the hardcoded implementation - all physics now delegated to engine
+ *
+ * Verification conditions:
+ * - At normal incidence (0°): Rs = Rp = ((n1-n2)/(n1+n2))²
+ * - At Brewster angle: Rp = 0, Rs > 0
+ * - At critical angle (if n1 > n2): Total internal reflection begins
+ */
 function fresnelEquations(theta1: number, n1: number, n2: number) {
-  const rad = (theta1 * Math.PI) / 180
-  const sinTheta1 = Math.sin(rad)
-  const cosTheta1 = Math.cos(rad)
+  // Convert degrees to radians for physics engine
+  const thetaRad = (theta1 * Math.PI) / 180
 
-  // 斯涅尔定律
-  const sinTheta2 = (n1 / n2) * sinTheta1
+  // Use unified physics engine's Fresnel solver
+  const coefficients = solveFresnel(n1, n2, thetaRad)
 
-  // 全内反射检查
-  if (sinTheta2 > 1) {
-    return {
-      rs: 1,
-      rp: 1,
-      ts: 0,
-      tp: 0,
-      theta2: 90,
-      totalReflection: true,
-    }
-  }
-
-  const cosTheta2 = Math.sqrt(1 - sinTheta2 * sinTheta2)
-  const theta2 = (Math.asin(sinTheta2) * 180) / Math.PI
-
-  // s偏振（垂直于入射面）
-  const rs = (n1 * cosTheta1 - n2 * cosTheta2) / (n1 * cosTheta1 + n2 * cosTheta2)
-  const ts = (2 * n1 * cosTheta1) / (n1 * cosTheta1 + n2 * cosTheta2)
-
-  // p偏振（平行于入射面）
-  const rp = (n2 * cosTheta1 - n1 * cosTheta2) / (n2 * cosTheta1 + n1 * cosTheta2)
-  const tp = (2 * n1 * cosTheta1) / (n2 * cosTheta1 + n1 * cosTheta2)
+  // Extract amplitude coefficients (rs, rp) from reflectance (Rs, Rp)
+  // Physics: R = r², so r = ±√R (sign determined by phase)
+  const rs = coefficients.rs.real // Get real part of complex amplitude
+  const rp = coefficients.rp.real
+  const ts = coefficients.ts.real
+  const tp = coefficients.tp.real
 
   return {
     rs,
     rp,
     ts,
     tp,
-    theta2,
-    totalReflection: false,
+    theta2: coefficients.isTIR ? 90 : (coefficients.thetaT * 180) / Math.PI,
+    totalReflection: coefficients.isTIR,
+    // Also expose power coefficients for direct use
+    Rs: coefficients.Rs,
+    Rp: coefficients.Rp,
+    Ts: coefficients.Ts,
+    Tp: coefficients.Tp,
   }
 }
 
@@ -104,20 +116,27 @@ function IntensityBar({
   )
 }
 
-// 光线SVG可视化
+// 光线SVG可视化 with Draggable Light Source
 function FresnelDiagram({
   incidentAngle,
   n1,
   n2,
   showS,
   showP,
+  onAngleChange,
+  enableDrag = false,
 }: {
   incidentAngle: number
   n1: number
   n2: number
   showS: boolean
   showP: boolean
+  onAngleChange?: (angle: number) => void
+  enableDrag?: boolean
 }) {
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+
   const fresnel = fresnelEquations(incidentAngle, n1, n2)
   const rad = (incidentAngle * Math.PI) / 180
   const refractRad = (fresnel.theta2 * Math.PI) / 180
@@ -147,17 +166,82 @@ function FresnelDiagram({
         y: cy + rayLength * Math.cos(refractRad),
       }
 
-  // 反射率
-  const Rs = fresnel.rs * fresnel.rs
-  const Rp = fresnel.rp * fresnel.rp
-  const Ts = 1 - Rs
-  const Tp = 1 - Rp
+  // Calculate angle from mouse position
+  const calculateAngleFromMouse = useCallback((clientX: number, clientY: number) => {
+    if (!svgRef.current || !onAngleChange) return
 
-  // 布儒斯特角
-  const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
+    const svg = svgRef.current
+    const rect = svg.getBoundingClientRect()
+    const viewBox = svg.viewBox.baseVal
+
+    // Convert client coordinates to SVG coordinates
+    const scaleX = viewBox.width / rect.width
+    const scaleY = viewBox.height / rect.height
+    const svgX = (clientX - rect.left) * scaleX + viewBox.x
+    const svgY = (clientY - rect.top) * scaleY + viewBox.y
+
+    // Calculate angle from interface center (cx, cy)
+    const dx = svgX - cx
+    const dy = cy - svgY // Invert Y because SVG Y is downward
+
+    // Only consider upper half (incident medium)
+    if (dy > 0) {
+      // atan2 gives angle from positive X axis, we want angle from normal (Y axis)
+      const angle = Math.atan2(-dx, dy) * (180 / Math.PI)
+      // Clamp to valid range [0, 89]
+      const clampedAngle = Math.max(0, Math.min(89, Math.abs(angle)))
+      onAngleChange(Math.round(clampedAngle))
+    }
+  }, [onAngleChange, cx, cy])
+
+  // Drag handlers
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!enableDrag || !onAngleChange) return
+    e.preventDefault()
+    setIsDragging(true)
+    calculateAngleFromMouse(e.clientX, e.clientY)
+  }, [enableDrag, onAngleChange, calculateAngleFromMouse])
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging) return
+    calculateAngleFromMouse(e.clientX, e.clientY)
+  }, [isDragging, calculateAngleFromMouse])
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false)
+  }, [])
+
+  // Add/remove global mouse event listeners
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('mouseup', handleMouseUp)
+      }
+    }
+    return undefined
+  }, [isDragging, handleMouseMove, handleMouseUp])
+
+  // 反射率 - 直接使用物理引擎计算的功率系数
+  // Physics: R = |r|², T = (n₂cosθ₂)/(n₁cosθ₁)|t|²
+  const Rs = fresnel.Rs
+  const Rp = fresnel.Rp
+  const Ts = fresnel.Ts
+  const Tp = fresnel.Tp
+
+  // 布儒斯特角 - 使用物理引擎计算
+  // Physics: tan(θB) = n₂/n₁, verified by engine
+  const brewsterAngle = computeBrewsterAngle(n1, n2) * (180 / Math.PI)
 
   return (
-    <svg viewBox="0 0 600 360" className="w-full h-auto">
+    <svg
+      ref={svgRef}
+      viewBox="0 0 600 360"
+      className={`w-full h-auto ${enableDrag ? 'cursor-crosshair' : ''}`}
+      onMouseDown={handleMouseDown}
+    >
       <defs>
         {/* 渐变定义 */}
         <linearGradient id="medium1Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -226,6 +310,55 @@ function FresnelDiagram({
       >
         入射光
       </text>
+
+      {/* Draggable light source handle */}
+      {enableDrag && (
+        <g>
+          {/* Outer glow for drag target */}
+          <motion.circle
+            cx={incidentStart.x}
+            cy={incidentStart.y}
+            r="20"
+            fill="none"
+            stroke="#fbbf24"
+            strokeWidth="2"
+            strokeDasharray="4 2"
+            opacity={isDragging ? 1 : 0.4}
+            animate={{
+              scale: isDragging ? 1.2 : 1,
+              opacity: isDragging ? 1 : 0.4,
+            }}
+            transition={{ duration: 0.15 }}
+          />
+          {/* Inner drag handle */}
+          <motion.circle
+            cx={incidentStart.x}
+            cy={incidentStart.y}
+            r="10"
+            fill="#fbbf24"
+            stroke="#fff"
+            strokeWidth="2"
+            style={{ cursor: 'grab' }}
+            animate={{
+              scale: isDragging ? 1.3 : 1,
+            }}
+            transition={{ duration: 0.15 }}
+          />
+          {/* Drag hint text */}
+          {!isDragging && (
+            <text
+              x={incidentStart.x}
+              y={incidentStart.y - 28}
+              textAnchor="middle"
+              fill="#fbbf24"
+              fontSize="9"
+              opacity="0.7"
+            >
+              拖拽调整角度
+            </text>
+          )}
+        </g>
+      )}
 
       {/* 反射光 - s和p偏振沿同一方向传播，仅强度不同 */}
       {/* 先绘制较弱的偏振（在下层），再绘制较强的偏振（在上层） */}
@@ -529,18 +662,24 @@ function FresnelCurveChart({
   n2: number
   currentAngle: number
 }) {
-  // 生成曲线数据
+  // 生成曲线数据 - 使用物理引擎计算
+  // Physics: All calculations delegated to unified engine's solveFresnel()
   const { rsPath, rpPath, brewsterAngle, criticalAngle } = useMemo(() => {
     const rsPoints: string[] = []
     const rpPoints: string[] = []
 
-    const brewster = (Math.atan(n2 / n1) * 180) / Math.PI
-    const critical = n1 > n2 ? (Math.asin(n2 / n1) * 180) / Math.PI : 90
+    // Use physics engine for Brewster and critical angle calculations
+    // Brewster: tan(θB) = n₂/n₁ (radians returned by engine)
+    // Critical: sin(θc) = n₂/n₁ (only when n₁ > n₂)
+    const brewster = computeBrewsterAngle(n1, n2) * (180 / Math.PI)
+    const critical = n1 > n2 ? computeCriticalAngle(n1, n2) * (180 / Math.PI) : 90
 
     for (let angle = 0; angle <= 90; angle += 1) {
+      // Use physics engine for Fresnel calculations
       const f = fresnelEquations(angle, n1, n2)
-      const Rs = f.rs * f.rs
-      const Rp = f.rp * f.rp
+      // Use power coefficients directly from engine
+      const Rs = f.Rs
+      const Rp = f.Rp
 
       const x = 40 + (angle / 90) * 220
       const yRs = 130 - Rs * 100
@@ -560,8 +699,9 @@ function FresnelCurveChart({
 
   const currentX = 40 + (currentAngle / 90) * 220
   const currentFresnel = fresnelEquations(currentAngle, n1, n2)
-  const currentRs = currentFresnel.rs * currentFresnel.rs
-  const currentRp = currentFresnel.rp * currentFresnel.rp
+  // Use power coefficients directly from physics engine
+  const currentRs = currentFresnel.Rs
+  const currentRp = currentFresnel.Rp
   const currentYs = 130 - currentRs * 100
   const currentYp = 130 - currentRp * 100
 
@@ -689,29 +829,37 @@ function FresnelCurveChart({
 
 // 主演示组件
 export function FresnelDemo() {
+  const { i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
+
   const [incidentAngle, setIncidentAngle] = useState(45)
   const [n1, setN1] = useState(1.0)
   const [n2, setN2] = useState(1.5)
   const [showS, setShowS] = useState(true)
   const [showP, setShowP] = useState(true)
+  const [enableDrag, setEnableDrag] = useState(true)
 
+  // All Fresnel calculations now delegated to physics engine
   const fresnel = fresnelEquations(incidentAngle, n1, n2)
-  const Rs = fresnel.rs * fresnel.rs
-  const Rp = fresnel.rp * fresnel.rp
-  const Ts = 1 - Rs
-  const Tp = 1 - Rp
+  // Use power coefficients directly from physics engine
+  const Rs = fresnel.Rs
+  const Rp = fresnel.Rp
+  const Ts = fresnel.Ts
+  const Tp = fresnel.Tp
 
-  // 布儒斯特角
-  const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
-  // 临界角
-  const criticalAngle = n1 > n2 ? (Math.asin(n2 / n1) * 180) / Math.PI : null
+  // Use physics engine for Brewster and critical angle calculations
+  // Verification: At n1=1.0, n2=1.5, Brewster angle should be ~56.31°
+  const brewsterAngle = computeBrewsterAngle(n1, n2) * (180 / Math.PI)
+  // Critical angle only exists when n1 > n2 (total internal reflection)
+  const criticalAngle = n1 > n2 ? computeCriticalAngle(n1, n2) * (180 / Math.PI) : null
 
-  // 材料预设
+  // 材料预设 - Using REFRACTIVE_INDICES from physics engine where available
   const materials = [
-    { name: '空气→玻璃', n1: 1.0, n2: 1.5 },
-    { name: '空气→水', n1: 1.0, n2: 1.33 },
-    { name: '玻璃→空气', n1: 1.5, n2: 1.0 },
-    { name: '水→空气', n1: 1.33, n2: 1.0 },
+    { name: isZh ? '空气→玻璃' : 'Air→Glass', nameZh: '空气→玻璃', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.glass },
+    { name: isZh ? '空气→水' : 'Air→Water', nameZh: '空气→水', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.water },
+    { name: isZh ? '玻璃→空气' : 'Glass→Air', nameZh: '玻璃→空气', n1: REFRACTIVE_INDICES.glass, n2: REFRACTIVE_INDICES.air },
+    { name: isZh ? '水→空气' : 'Water→Air', nameZh: '水→空气', n1: REFRACTIVE_INDICES.water, n2: REFRACTIVE_INDICES.air },
+    { name: isZh ? '空气→钻石' : 'Air→Diamond', nameZh: '空气→钻石', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.diamond },
   ]
 
   return (
@@ -738,6 +886,8 @@ export function FresnelDemo() {
               n2={n2}
               showS={showS}
               showP={showP}
+              enableDrag={enableDrag}
+              onAngleChange={setIncidentAngle}
             />
           </div>
 
@@ -814,6 +964,15 @@ export function FresnelDemo() {
                 />
                 <span className="text-pink-400">p偏振</span>
               </label>
+            </div>
+
+            {/* 交互选项 */}
+            <div className="pt-2 border-t border-slate-700/50 mt-2">
+              <Toggle
+                label={isZh ? '拖拽调整入射角' : 'Drag to Adjust Angle'}
+                checked={enableDrag}
+                onChange={setEnableDrag}
+              />
             </div>
 
             {/* 材料预设 */}
