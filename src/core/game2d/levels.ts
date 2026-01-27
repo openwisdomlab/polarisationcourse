@@ -79,11 +79,6 @@ const jonesV = STANDARD_JONES_VECTORS.vertical
 const jonesRCP = STANDARD_JONES_VECTORS.rightCircular
 const jonesLCP = STANDARD_JONES_VECTORS.leftCircular
 
-// Reserved for future levels using diagonal polarization
-const _jones45 = STANDARD_JONES_VECTORS.plus45
-const _jones135 = STANDARD_JONES_VECTORS.minus45
-void _jones45
-void _jones135
 
 // ============================================
 // CAMPAIGN 1: THE VECTOR

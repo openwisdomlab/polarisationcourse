@@ -17,14 +17,14 @@ import {
   Clock, MapPin,
   FlaskConical, BookOpen,
   Sun, Sparkles, Camera, Film,
-  Beaker, Users, Share2, Compass,
+  Beaker,
   RefreshCw
 } from 'lucide-react'
 
 // Data imports
 import { TIMELINE_EVENTS } from '@/data/timeline-events'
 import { CATEGORY_LABELS } from '@/data/chronicles-constants'
-import { PSRT_CURRICULUM, getSectionsForEvent } from '@/data/psrt-curriculum'
+import { PSRT_CURRICULUM } from '@/data/psrt-curriculum'
 
 // Component imports
 import {
@@ -44,16 +44,6 @@ const TABS = [
   { id: 'psrt', label: 'Course Outline', labelZh: '课程大纲', icon: <BookOpen className="w-4 h-4" /> },
 ]
 
-// Hidden tabs - content preserved for future use
-const HIDDEN_TABS = [
-  { id: 'scientists', label: 'Scientists', labelZh: '科学家网络', icon: <Users className="w-4 h-4" /> },
-  { id: 'concepts', label: 'Knowledge Map', labelZh: '知识图谱', icon: <Share2 className="w-4 h-4" /> },
-  { id: 'exploration', label: 'Exploration', labelZh: '探索模式', icon: <Compass className="w-4 h-4" /> },
-  { id: 'experiments', label: 'Key Experiments', labelZh: '关键实验', icon: <FlaskConical className="w-4 h-4" /> },
-]
-
-// Suppress unused warning - HIDDEN_TABS preserved for future use
-void HIDDEN_TABS
 
 // ============================================================
 // Cool Facts Section - 偏振光知识和历史事件随机展示
@@ -397,11 +387,7 @@ export function ChroniclesPage() {
   const [trackFilter, setTrackFilter] = useState<'all' | 'optics' | 'polarization'>('all')
   const [storyModalEvent, setStoryModalEvent] = useState<number | null>(null)
   const [selectedSections, setSelectedSections] = useState<string[]>([]) // P-SRT章节筛选状态
-  const [highlightedSections, setHighlightedSections] = useState<Set<string>>(new Set()) // 事件点击高亮的课程章节 (reserved for future use)
   const [selectedDemos, setSelectedDemos] = useState<string[]>([]) // 演示筛选状态
-
-  // Suppress unused variable warning (highlightedSections is set but not yet used after removing CourseNavigator)
-  void highlightedSections
 
   // Use single-track layout on mobile/tablet
   const useSingleTrack = isMobile || isTablet
@@ -515,21 +501,6 @@ export function ChroniclesPage() {
     }
   }, [])
 
-  // 处理点击时间线事件，高亮相关P-SRT章节
-  const handleEventClickForHighlight = useCallback((year: number, track: 'optics' | 'polarization') => {
-    // Get related sections for this event using getSectionsForEvent
-    const mappings = getSectionsForEvent(year, track)
-    const relatedSections = new Set(mappings.map(m => m.sectionId))
-    setHighlightedSections(relatedSections)
-
-    // Clear after 5 seconds
-    setTimeout(() => {
-      setHighlightedSections(new Set())
-    }, 5000)
-  }, [])
-
-
-  
   // Story modal navigation
   const handleOpenStory = (index: number) => {
     setStoryModalEvent(index)
@@ -854,7 +825,7 @@ export function ChroniclesPage() {
                         onToggle={() => setExpandedEvent(expandedEvent === idx ? null : idx)}
                         onReadStory={() => handleOpenStory(idx)}
                         onLinkTo={handleLinkTo}
-                        onHighlightCourses={handleEventClickForHighlight}
+
                         side={event.track === 'optics' ? 'left' : 'right'}
                       />
                     </div>
@@ -939,7 +910,7 @@ export function ChroniclesPage() {
                                       onToggle={() => setExpandedEvent(expandedEvent === opticsIndex ? null : opticsIndex)}
                                       onReadStory={() => handleOpenStory(opticsIndex)}
                                       onLinkTo={handleLinkTo}
-                                      onHighlightCourses={handleEventClickForHighlight}
+              
                                       side="left"
                                     />
                                   )
@@ -996,7 +967,7 @@ export function ChroniclesPage() {
                                       onToggle={() => setExpandedEvent(expandedEvent === polarizationIndex ? null : polarizationIndex)}
                                       onReadStory={() => handleOpenStory(polarizationIndex)}
                                       onLinkTo={handleLinkTo}
-                                      onHighlightCourses={handleEventClickForHighlight}
+              
                                       side="right"
                                     />
                                   )
