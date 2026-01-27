@@ -9,6 +9,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 电场矢量组件 - 用于偏振光
@@ -186,19 +188,30 @@ function PolarizedPanel({
   animationSpeed: number
   propagationText: string
 }) {
+  const { theme } = useTheme()
   return (
-    <div className="flex-1 rounded-xl bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-800 border border-slate-700/50 p-4">
+    <div className={cn(
+      "flex-1 rounded-xl border p-4",
+      theme === 'dark'
+        ? "bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-800 border-slate-700/50"
+        : "bg-gradient-to-br from-white via-gray-50 to-slate-100 border-gray-200 shadow-sm"
+    )}>
       <div className="text-center mb-4">
-        <h3 className={`text-lg font-semibold ${isUnpolarized ? 'text-yellow-400' : 'text-cyan-400'}`}>
+        <h3 className={cn("text-lg font-semibold", isUnpolarized ? (theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600') : (theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'))}>
           {title}
         </h3>
-        <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
+        <p className={cn("text-xs mt-1", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>{subtitle}</p>
       </div>
 
       {/* 电场矢量可视化 */}
       <div className="relative w-full aspect-square max-w-[200px] mx-auto mb-4">
         {/* 背景圆 */}
-        <div className="absolute inset-0 rounded-full border border-slate-600/50 bg-slate-900/50" />
+        <div className={cn(
+          "absolute inset-0 rounded-full border",
+          theme === 'dark'
+            ? "border-slate-600/50 bg-slate-900/50"
+            : "border-gray-300 bg-gray-100/50"
+        )} />
 
         {/* 中心光源点 */}
         <motion.div
@@ -242,7 +255,7 @@ function PolarizedPanel({
       </div>
 
       {/* 传播方向指示 */}
-      <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+      <div className={cn("flex items-center justify-center gap-2 text-sm", theme === 'dark' ? "text-gray-500" : "text-gray-600")}>
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="3" fill="currentColor" />
           <circle cx="12" cy="12" r="8" />
@@ -253,7 +266,7 @@ function PolarizedPanel({
       {/* 偏振角显示 */}
       {!isUnpolarized && (
         <motion.div
-          className="mt-3 text-center text-cyan-400 font-mono text-sm"
+          className={cn("mt-3 text-center font-mono text-sm", theme === 'dark' ? "text-cyan-400" : "text-cyan-600")}
           key={polarizationAngle}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -267,6 +280,7 @@ function PolarizedPanel({
 
 export function PolarizationIntroDemo() {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [polarizationAngle, setPolarizationAngle] = useState(0)
   const [animationSpeed, setAnimationSpeed] = useState(0.5)
   const [showComparison, setShowComparison] = useState(true)
@@ -330,16 +344,21 @@ export function PolarizationIntroDemo() {
 
           {/* 预设角度按钮 */}
           <div className="space-y-2">
-            <span className="text-xs text-gray-400">{t('demoUi.common.quickSelect')}</span>
+            <span className={cn("text-xs", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>{t('demoUi.common.quickSelect')}</span>
             <div className="grid grid-cols-4 gap-1">
               {[0, 45, 90, 135].map((angle) => (
                 <motion.button
                   key={angle}
-                  className={`py-1.5 rounded text-xs font-medium transition-all ${
+                  className={cn(
+                    "py-1.5 rounded text-xs font-medium transition-all border",
                     polarizationAngle === angle
-                      ? 'bg-cyan-400/30 text-cyan-400 border border-cyan-400/50'
-                      : 'bg-slate-700/50 text-gray-400 border border-slate-600/50 hover:border-cyan-400/30'
-                  }`}
+                      ? theme === 'dark'
+                        ? 'bg-cyan-400/30 text-cyan-400 border-cyan-400/50'
+                        : 'bg-cyan-100 text-cyan-700 border-cyan-300'
+                      : theme === 'dark'
+                        ? 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-cyan-400/30'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-cyan-300'
+                  )}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setPolarizationAngle(angle)}
@@ -355,22 +374,27 @@ export function PolarizationIntroDemo() {
               type="checkbox"
               checked={showComparison}
               onChange={(e) => setShowComparison(e.target.checked)}
-              className="rounded border-gray-600 bg-slate-700 text-cyan-400"
+              className={cn(
+                "rounded",
+                theme === 'dark'
+                  ? "border-gray-600 bg-slate-700 text-cyan-400"
+                  : "border-gray-300 bg-white text-cyan-500"
+              )}
             />
-            <span className="text-sm text-gray-300">{t('demoUi.common.showComparison')}</span>
+            <span className={cn("text-sm", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.showComparison')}</span>
           </label>
 
           {/* 关键概念 */}
-          <div className="mt-4 pt-4 border-t border-slate-700 space-y-2">
-            <h4 className="text-sm font-semibold text-gray-300">{t('demoUi.common.keyConcepts')}</h4>
-            <div className="text-xs text-gray-400 space-y-1.5">
+          <div className={cn("mt-4 pt-4 border-t space-y-2", theme === 'dark' ? "border-slate-700" : "border-gray-200")}>
+            <h4 className={cn("text-sm font-semibold", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.keyConcepts')}</h4>
+            <div className={cn("text-xs space-y-1.5", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>
               <p className="flex items-start gap-2">
                 <span className="w-2 h-2 rounded-full bg-yellow-400 mt-1 flex-shrink-0" />
-                <span><strong className="text-yellow-400">{t('demoUi.polarizationIntro.unpolarizedLight')}:</strong> {t('demoUi.polarizationIntro.unpolarizedDesc')}</span>
+                <span><strong className={theme === 'dark' ? "text-yellow-400" : "text-yellow-600"}>{t('demoUi.polarizationIntro.unpolarizedLight')}:</strong> {t('demoUi.polarizationIntro.unpolarizedDesc')}</span>
               </p>
               <p className="flex items-start gap-2">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 mt-1 flex-shrink-0" />
-                <span><strong className="text-cyan-400">{t('demoUi.polarizationIntro.polarizedLight')}:</strong> {t('demoUi.polarizationIntro.polarizedDesc')}</span>
+                <span><strong className={theme === 'dark' ? "text-cyan-400" : "text-cyan-600"}>{t('demoUi.polarizationIntro.polarizedLight')}:</strong> {t('demoUi.polarizationIntro.polarizedDesc')}</span>
               </p>
             </div>
           </div>
@@ -396,8 +420,13 @@ export function PolarizationIntroDemo() {
       </div>
 
       {/* 偏振方向颜色编码 */}
-      <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-        <h4 className="text-sm font-semibold text-gray-300 mb-3">{t('demoUi.polarizationIntro.colorCode')}</h4>
+      <div className={cn(
+        "p-4 rounded-lg border",
+        theme === 'dark'
+          ? "bg-slate-800/50 border-slate-700/50"
+          : "bg-gray-50 border-gray-200"
+      )}>
+        <h4 className={cn("text-sm font-semibold mb-3", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.polarizationIntro.colorCode')}</h4>
         <div className="flex gap-4 justify-center flex-wrap">
           {[
             { angle: 0, color: '#ef4444', labelKey: 'demoUi.polarizationIntro.horizontal' },
@@ -407,11 +436,16 @@ export function PolarizationIntroDemo() {
           ].map(({ angle, color, labelKey }) => (
             <motion.button
               key={angle}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-lg border transition-all",
                 polarizationAngle === angle
-                  ? 'border-white/50 bg-slate-700/50'
-                  : 'border-slate-600/50 hover:border-slate-500/50'
-              }`}
+                  ? theme === 'dark'
+                    ? 'border-white/50 bg-slate-700/50'
+                    : 'border-gray-400 bg-white shadow-sm'
+                  : theme === 'dark'
+                    ? 'border-slate-600/50 hover:border-slate-500/50'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+              )}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setPolarizationAngle(angle)}
@@ -420,7 +454,7 @@ export function PolarizationIntroDemo() {
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
               />
-              <span className="text-sm text-gray-300">{t(labelKey)}</span>
+              <span className={cn("text-sm", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t(labelKey)}</span>
             </motion.button>
           ))}
         </div>

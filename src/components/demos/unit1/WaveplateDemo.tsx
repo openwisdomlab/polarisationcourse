@@ -14,6 +14,8 @@
  */
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import {
   SliderControl,
   ControlPanel,
@@ -541,6 +543,7 @@ function PoincareSphere({
   showTrajectory = false,
   trajectoryPoints = [],
 }: PoincareSphereProps) {
+  const { theme } = useTheme()
   const centerX = size / 2
   const centerY = size / 2
   const radius = size / 2 - 15
@@ -578,10 +581,15 @@ function PoincareSphere({
   }
 
   return (
-    <div className="bg-slate-900/50 rounded-lg border border-slate-700/50 p-3">
+    <div className={cn(
+      "rounded-lg border p-3",
+      theme === 'dark'
+        ? "bg-slate-900/50 border-slate-700/50"
+        : "bg-white border-gray-200 shadow-sm"
+    )}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-gray-300">Poincaré Sphere</span>
-        <span className="text-[10px] text-cyan-400">{getPolarizationLabel()}</span>
+        <span className={cn("text-xs font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>Poincaré Sphere</span>
+        <span className={cn("text-[10px]", theme === 'dark' ? "text-cyan-400" : "text-cyan-600")}>{getPolarizationLabel()}</span>
       </div>
 
       <svg width={size} height={size} className="mx-auto">
@@ -879,6 +887,7 @@ function calculateNonIdealOutput(
 
 // 主演示组件
 export function WaveplateDemo() {
+  const { theme } = useTheme()
   const [waveplateType, setWaveplateType] = useState<WaveplateType>('quarter')
   const [inputAngle, setInputAngle] = useState(45)
   const [fastAxisAngle, setFastAxisAngle] = useState(0)
@@ -1030,7 +1039,12 @@ export function WaveplateDemo() {
       </div>
 
       {/* 可视化面板 */}
-      <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden">
+      <div className={cn(
+        "rounded-xl border overflow-hidden",
+        theme === 'dark'
+          ? "bg-slate-900/50 border-cyan-400/20"
+          : "bg-white border-cyan-200 shadow-sm"
+      )}>
         <div className="px-4 py-3 border-b border-cyan-400/10 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-white">光路演示</h3>
           <div className="flex items-center gap-2">

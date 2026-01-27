@@ -16,6 +16,8 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import {
   SliderControl,
   ControlPanel,
@@ -201,6 +203,7 @@ function OpticalSetupDiagram({
   showAnalyzer: boolean
   animate: boolean
 }) {
+  const { theme } = useTheme()
   const timeRef = useRef(0)
 
   useEffect(() => {
@@ -234,7 +237,7 @@ function OpticalSetupDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="600" height="200" fill="#0f172a" rx="8" />
+      <rect x="0" y="0" width="600" height="200" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
 
       {/* 光源 */}
       <motion.circle
@@ -474,6 +477,7 @@ function PolarizationVectorDiagram({
 // 主演示组件
 export function AragoFresnelDemo() {
   const { t } = useTranslation()
+  const { theme } = useTheme()
 
   // 状态
   const [pol1, setPol1] = useState(0)      // 光束1偏振角
@@ -556,9 +560,14 @@ export function AragoFresnelDemo() {
           </div>
 
           {/* 干涉图样 */}
-          <div className="rounded-xl bg-slate-900/80 border border-slate-600/30 p-4">
+          <div className={cn(
+            "rounded-xl border p-4",
+            theme === 'dark'
+              ? "bg-slate-900/80 border-slate-600/30"
+              : "bg-white border-gray-200 shadow-sm"
+          )}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white">干涉图样</h3>
+              <h3 className={cn("text-sm font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>干涉图样</h3>
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 visibility > 0.5 ? 'bg-green-500/20 text-green-400' :
                 visibility > 0.1 ? 'bg-yellow-500/20 text-yellow-400' :
@@ -717,8 +726,13 @@ export function AragoFresnelDemo() {
       </div>
 
       {/* 公式说明 */}
-      <div className="bg-slate-900/50 rounded-xl border border-slate-700/50 p-4">
-        <h3 className="text-sm font-semibold text-white mb-3">干涉公式</h3>
+      <div className={cn(
+        "rounded-xl border p-4",
+        theme === 'dark'
+          ? "bg-slate-900/50 border-slate-700/50"
+          : "bg-white border-gray-200 shadow-sm"
+      )}>
+        <h3 className={cn("text-sm font-semibold mb-3", theme === 'dark' ? "text-white" : "text-gray-800")}>干涉公式</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div className="p-3 bg-slate-800/50 rounded-lg">
             <div className="font-mono text-cyan-400 mb-1">无检偏器时:</div>

@@ -17,6 +17,8 @@ import { useTranslation } from 'react-i18next'
 import { Volume2, VolumeX, TrendingUp } from 'lucide-react'
 import { useHapticAudio } from '@/hooks/useHapticAudio'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import {
   ControlPanel,
   SliderControl,
@@ -123,6 +125,7 @@ function MalusCurve({
   currentMiddleAngle,
   isZh,
 }: MalusCurveProps) {
+  const { theme } = useTheme()
   // Generate curve data using physics engine
   const curveData = useMemo(() => {
     const points: { angle: number; transmission: number }[] = []
@@ -175,10 +178,15 @@ function MalusCurve({
   const maxPoint = curveData.reduce((max, p) => (p.transmission > max.transmission ? p : max), curveData[0])
 
   return (
-    <div className="bg-slate-900/50 rounded-lg border border-slate-700/50 p-3">
+    <div className={cn(
+      "rounded-lg border p-3",
+      theme === 'dark'
+        ? "bg-slate-900/50 border-slate-700/50"
+        : "bg-white border-gray-200 shadow-sm"
+    )}>
       <div className="flex items-center gap-2 mb-2">
-        <TrendingUp className="w-4 h-4 text-cyan-400" />
-        <span className="text-xs font-medium text-gray-300">
+        <TrendingUp className={cn("w-4 h-4", theme === 'dark' ? "text-cyan-400" : "text-cyan-600")} />
+        <span className={cn("text-xs font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>
           {isZh ? '透射率 vs 中间偏振片角度' : 'Transmission vs Middle Polarizer Angle'}
         </span>
       </div>
@@ -344,12 +352,12 @@ function MalusCurve({
       </svg>
 
       {/* Legend */}
-      <div className="flex justify-between mt-2 text-[10px] text-gray-400">
+      <div className={cn("flex justify-between mt-2 text-[10px]", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>
         <span>
           {isZh ? '最大透射' : 'Max'}: {maxPoint.transmission.toFixed(1)}% @ {maxPoint.angle}°
         </span>
         {showMiddlePolarizer && currentPoint && (
-          <span className="text-cyan-400">
+          <span className={theme === 'dark' ? "text-cyan-400" : "text-cyan-600"}>
             {isZh ? '当前' : 'Current'}: {currentPoint.transmission.toFixed(1)}%
           </span>
         )}
@@ -535,6 +543,7 @@ const PRESETS = [
 export function ThreePolarizersDemo() {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
+  const { theme } = useTheme()
 
   // Haptic audio for precision feedback
   const {
@@ -660,7 +669,12 @@ export function ThreePolarizersDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+          <div className={cn(
+            "rounded-xl border p-4 overflow-hidden",
+            theme === 'dark'
+              ? "bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20"
+              : "bg-gradient-to-br from-slate-50 via-white to-blue-50 border-blue-200 shadow-sm"
+          )}>
             <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
               <defs>
                 <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -1035,14 +1049,19 @@ export function ThreePolarizersDemo() {
             />
 
             {/* Audio Feedback Toggle */}
-            <div className="pt-2 border-t border-slate-700/50 mt-2">
+            <div className={cn("pt-2 border-t mt-2", theme === 'dark' ? "border-slate-700/50" : "border-gray-200")}>
               <button
                 onClick={toggleAudio}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full transition-colors ${
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full transition-colors",
                   isAudioEnabled
-                    ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
-                    : 'bg-slate-700/50 text-gray-400 hover:bg-slate-700'
-                }`}
+                    ? theme === 'dark'
+                      ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                      : 'bg-cyan-100 text-cyan-600 hover:bg-cyan-200'
+                    : theme === 'dark'
+                      ? 'bg-slate-700/50 text-gray-400 hover:bg-slate-700'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                )}
                 title={isZh ? '切换精密角度音效反馈' : 'Toggle precision angle audio feedback'}
               >
                 {isAudioEnabled ? (

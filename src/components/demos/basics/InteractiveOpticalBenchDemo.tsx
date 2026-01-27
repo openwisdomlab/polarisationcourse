@@ -6,6 +6,8 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import { ControlPanel, SliderControl, Toggle, InfoCard, PresetButtons, Formula } from '../DemoControls'
 
 // 导入共享模块
@@ -33,6 +35,7 @@ const PRESETS = [
 export function InteractiveOpticalBenchDemo() {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
+  const { theme } = useTheme()
 
   // 交互状态
   const [emitterPolarization, setEmitterPolarization] = useState(0)
@@ -97,8 +100,13 @@ export function InteractiveOpticalBenchDemo() {
     <div className="flex flex-col lg:flex-row gap-6 w-full">
       {/* 可视化区域 */}
       <div className="flex-1 min-w-0">
-        <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/50">
-          <svg viewBox="0 0 100 70" className="w-full h-auto max-h-[280px]" style={{ background: '#0a0a1a' }}>
+        <div className={cn(
+          "rounded-xl p-4 border",
+          theme === 'dark'
+            ? "bg-slate-900/50 border-slate-700/50"
+            : "bg-white border-gray-200 shadow-sm"
+        )}>
+          <svg viewBox="0 0 100 70" className="w-full h-auto max-h-[280px]" style={{ background: theme === 'dark' ? '#0a0a1a' : '#f8fafc' }}>
             <defs>
               <LightBeamDefs />
               <pattern id="demo-grid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -193,17 +201,17 @@ export function InteractiveOpticalBenchDemo() {
 
         {/* 物理量显示 */}
         <div className="mt-4 grid grid-cols-3 gap-3">
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-            <div className="text-xs text-slate-400 mb-1">{isZh ? '角度差' : 'Angle Diff'}</div>
-            <div className="text-xl font-mono text-cyan-400">{angleDiff}°</div>
+          <div className={cn("rounded-lg p-3 text-center", theme === 'dark' ? "bg-slate-800/50" : "bg-gray-50 border border-gray-200")}>
+            <div className={cn("text-xs mb-1", theme === 'dark' ? "text-slate-400" : "text-gray-600")}>{isZh ? '角度差' : 'Angle Diff'}</div>
+            <div className={cn("text-xl font-mono", theme === 'dark' ? "text-cyan-400" : "text-cyan-600")}>{angleDiff}°</div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-            <div className="text-xs text-slate-400 mb-1">{isZh ? '透射率' : 'Transmission'}</div>
-            <div className="text-xl font-mono text-green-400">{(transmission * 100).toFixed(1)}%</div>
+          <div className={cn("rounded-lg p-3 text-center", theme === 'dark' ? "bg-slate-800/50" : "bg-gray-50 border border-gray-200")}>
+            <div className={cn("text-xs mb-1", theme === 'dark' ? "text-slate-400" : "text-gray-600")}>{isZh ? '透射率' : 'Transmission'}</div>
+            <div className={cn("text-xl font-mono", theme === 'dark' ? "text-green-400" : "text-green-600")}>{(transmission * 100).toFixed(1)}%</div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-            <div className="text-xs text-slate-400 mb-1">{isZh ? '输出光强' : 'Output I'}</div>
-            <div className="text-xl font-mono text-yellow-400">{outputIntensity.toFixed(1)}%</div>
+          <div className={cn("rounded-lg p-3 text-center", theme === 'dark' ? "bg-slate-800/50" : "bg-gray-50 border border-gray-200")}>
+            <div className={cn("text-xs mb-1", theme === 'dark' ? "text-slate-400" : "text-gray-600")}>{isZh ? '输出光强' : 'Output I'}</div>
+            <div className={cn("text-xl font-mono", theme === 'dark' ? "text-yellow-400" : "text-yellow-600")}>{outputIntensity.toFixed(1)}%</div>
           </div>
         </div>
 
@@ -283,7 +291,7 @@ export function InteractiveOpticalBenchDemo() {
           </p>
         </InfoCard>
 
-        <div className="text-xs text-slate-500 text-center">
+        <div className={cn("text-xs text-center", theme === 'dark' ? "text-slate-500" : "text-gray-500")}>
           {isZh
             ? '此Demo使用共享的光学组件库构建'
             : 'Built with shared optical component library'}

@@ -5,6 +5,8 @@
  */
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import {
   SliderControl,
   ControlPanel,
@@ -404,6 +406,7 @@ function PresetButton({
 
 // 主演示组件
 export function PolarizationStateDemo() {
+  const { theme } = useTheme()
   const [phaseDiff, setPhaseDiff] = useState(0)
   const [ampX, setAmpX] = useState(1)
   const [ampY, setAmpY] = useState(1)
@@ -457,10 +460,18 @@ export function PolarizationStateDemo() {
       {/* 上方：两个可视化面板 */}
       <div className="flex flex-col lg:flex-row gap-6">
         {/* 3D 波动传播视图 */}
-        <div className="flex-1 bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden">
-          <div className="px-4 py-3 border-b border-cyan-400/10 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white">3D 空间传播视图</h3>
-            <div className="text-xs text-gray-500">伪等轴测投影</div>
+        <div className={cn(
+          "flex-1 rounded-xl border overflow-hidden",
+          theme === 'dark'
+            ? "bg-slate-900/50 border-cyan-400/20"
+            : "bg-white border-cyan-200 shadow-sm"
+        )}>
+          <div className={cn(
+            "px-4 py-3 border-b flex items-center justify-between",
+            theme === 'dark' ? "border-cyan-400/10" : "border-cyan-100"
+          )}>
+            <h3 className={cn("text-sm font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>3D 空间传播视图</h3>
+            <div className={cn("text-xs", theme === 'dark' ? "text-gray-500" : "text-gray-600")}>伪等轴测投影</div>
           </div>
           <div className="p-4 flex justify-center">
             <WavePropagation3DCanvas
@@ -473,9 +484,17 @@ export function PolarizationStateDemo() {
         </div>
 
         {/* 2D 偏振态投影 */}
-        <div className="lg:w-[360px] bg-slate-900/50 rounded-xl border border-cyan-400/20 overflow-hidden">
-          <div className="px-4 py-3 border-b border-cyan-400/10">
-            <h3 className="text-sm font-semibold text-white">偏振态投影</h3>
+        <div className={cn(
+          "lg:w-[360px] rounded-xl border overflow-hidden",
+          theme === 'dark'
+            ? "bg-slate-900/50 border-cyan-400/20"
+            : "bg-white border-cyan-200 shadow-sm"
+        )}>
+          <div className={cn(
+            "px-4 py-3 border-b",
+            theme === 'dark' ? "border-cyan-400/10" : "border-cyan-100"
+          )}>
+            <h3 className={cn("text-sm font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>偏振态投影</h3>
           </div>
           <div className="p-4 flex flex-col items-center gap-3">
             <PolarizationStateCanvas
@@ -498,7 +517,12 @@ export function PolarizationStateDemo() {
       </div>
 
       {/* 快速预设 */}
-      <div className="bg-slate-900/50 rounded-xl border border-cyan-400/20 p-4">
+      <div className={cn(
+        "rounded-xl border p-4",
+        theme === 'dark'
+          ? "bg-slate-900/50 border-cyan-400/20"
+          : "bg-white border-cyan-200 shadow-sm"
+      )}>
         <div className="flex flex-wrap gap-2 justify-center">
           {presets.map((preset, index) => (
             <PresetButton

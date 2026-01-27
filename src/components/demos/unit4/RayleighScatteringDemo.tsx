@@ -6,6 +6,8 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from '@/contexts/ThemeContext'
+import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard, ValueDisplay, Toggle } from '../DemoControls'
 
 // 瑞利散射强度 (与λ^-4成正比)
@@ -362,6 +364,7 @@ function RayleighDiagram({
 
 // 波长依赖性曲线图
 function WavelengthDependenceChart() {
+  const { theme } = useTheme()
   const width = 280
   const height = 150
   const margin = { left: 45, right: 15, top: 20, bottom: 35 }
@@ -399,7 +402,7 @@ function WavelengthDependenceChart() {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full">
       {/* 背景 */}
-      <rect x={0} y={0} width={width} height={height} fill="#0f172a" rx={8} />
+      <rect x={0} y={0} width={width} height={height} fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx={8} />
 
       {/* 网格线 */}
       {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => (
@@ -488,6 +491,7 @@ function WavelengthDependenceChart() {
 
 // 偏振度vs散射角图表
 function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
+  const { theme } = useTheme()
   const width = 280
   const height = 150
   const margin = { left: 45, right: 15, top: 20, bottom: 35 }
@@ -525,7 +529,7 @@ function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full">
       {/* 背景 */}
-      <rect x={0} y={0} width={width} height={height} fill="#0f172a" rx={8} />
+      <rect x={0} y={0} width={width} height={height} fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx={8} />
 
       {/* 坐标轴 */}
       <line
@@ -649,6 +653,7 @@ function ScatteringIntensityBars() {
 // 主演示组件
 export function RayleighScatteringDemo() {
   const { t: _t } = useTranslation() // Reserved for future i18n
+  const { theme } = useTheme()
   const [sunAngle, setSunAngle] = useState(60)
   const [observerAngle, setObserverAngle] = useState(45)
   const [showPolarization, setShowPolarization] = useState(true)
