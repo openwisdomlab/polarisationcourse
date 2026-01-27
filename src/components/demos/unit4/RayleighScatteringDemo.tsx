@@ -5,9 +5,7 @@
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
-import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard, ValueDisplay, Toggle } from '../DemoControls'
 
 // 瑞利散射强度 (与λ^-4成正比)
@@ -652,8 +650,6 @@ function ScatteringIntensityBars() {
 
 // 主演示组件
 export function RayleighScatteringDemo() {
-  const { t: _t } = useTranslation() // Reserved for future i18n
-  const { theme } = useTheme()
   const [sunAngle, setSunAngle] = useState(60)
   const [observerAngle, setObserverAngle] = useState(45)
   const [showPolarization, setShowPolarization] = useState(true)
