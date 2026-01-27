@@ -2269,124 +2269,26 @@ export function DemosPage() {
               </p>
             </div>
 
-            {/* Thinking Questions Section - Before Demo */}
-            {demoInfo?.questions && (demoInfo.questions.leading || demoInfo.questions.guided.length > 0 || demoInfo.questions.openEnded.length > 0) && (
+            {/* Leading Question - compact prompt before demo */}
+            {demoInfo?.questions?.leading && (
               <div
                 className={cn(
-                  'mb-5 rounded-xl border p-4',
+                  'mb-4 flex items-start gap-3 px-4 py-3 rounded-lg border',
                   theme === 'dark'
-                    ? 'bg-gradient-to-r from-amber-400/5 to-orange-400/5 border-amber-400/20'
-                    : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+                    ? 'bg-amber-400/5 border-amber-400/20'
+                    : 'bg-amber-50 border-amber-200'
                 )}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <Lightbulb className={cn(
-                    'w-5 h-5',
-                    theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                  )} />
-                  <h3 className={cn(
-                    'text-lg font-bold',
-                    theme === 'dark' ? 'text-amber-400' : 'text-amber-700'
-                  )}>
-                    {t('gallery.questions.title')}
-                  </h3>
-                </div>
-                {/* Leading Question - Main engaging question */}
-                {demoInfo.questions.leading && (
-                  <div
-                    className={cn(
-                      'mb-4 p-4 rounded-lg border-2 border-dashed transition-all duration-300',
-                      'hover:scale-[1.01] hover:shadow-lg cursor-default',
-                      theme === 'dark'
-                        ? 'bg-gradient-to-r from-amber-400/10 to-orange-400/10 border-amber-400/40 hover:border-amber-400/60'
-                        : 'bg-gradient-to-r from-amber-100/80 to-orange-100/80 border-amber-400 hover:border-amber-500'
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className={cn(
-                        'text-2xl flex-shrink-0 animate-pulse',
-                        theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
-                      )}>?</span>
-                      <p className={cn(
-                        'text-base font-medium leading-relaxed',
-                        theme === 'dark' ? 'text-amber-200' : 'text-amber-900'
-                      )}>
-                        {demoInfo.questions.leading}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                <div className={cn(
-                  'grid gap-4',
-                  isCompact ? 'grid-cols-1' : 'grid-cols-2'
+                <Lightbulb className={cn(
+                  'w-5 h-5 flex-shrink-0 mt-0.5',
+                  theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                )} />
+                <p className={cn(
+                  'text-sm leading-relaxed',
+                  theme === 'dark' ? 'text-amber-200' : 'text-amber-900'
                 )}>
-                  {/* Guided Questions */}
-                  {demoInfo.questions.guided.length > 0 && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <HelpCircle className={cn(
-                          'w-4 h-4',
-                          theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                        )} />
-                        <span className={cn(
-                          'text-sm font-semibold',
-                          theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'
-                        )}>
-                          {t('gallery.questions.guided')}
-                        </span>
-                      </div>
-                      <ul className="space-y-2">
-                        {demoInfo.questions.guided.map((q, i) => (
-                          <li
-                            key={i}
-                            className={cn(
-                              'text-sm pl-3 border-l-2 py-1 transition-all duration-200',
-                              'hover:pl-4 hover:border-l-4 cursor-default',
-                              theme === 'dark'
-                                ? 'text-gray-300 border-cyan-400/40 hover:border-cyan-400 hover:text-cyan-100'
-                                : 'text-gray-800 border-cyan-500 hover:border-cyan-600 hover:bg-cyan-50/50'
-                            )}
-                          >
-                            {q}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {/* Open-ended Questions */}
-                  {demoInfo.questions.openEnded.length > 0 && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Lightbulb className={cn(
-                          'w-4 h-4',
-                          theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
-                        )} />
-                        <span className={cn(
-                          'text-sm font-semibold',
-                          theme === 'dark' ? 'text-purple-400' : 'text-purple-700'
-                        )}>
-                          {t('gallery.questions.openEnded')}
-                        </span>
-                      </div>
-                      <ul className="space-y-2">
-                        {demoInfo.questions.openEnded.map((q, i) => (
-                          <li
-                            key={i}
-                            className={cn(
-                              'text-sm pl-3 border-l-2 py-1 transition-all duration-200',
-                              'hover:pl-4 hover:border-l-4 cursor-default',
-                              theme === 'dark'
-                                ? 'text-gray-300 border-purple-400/40 hover:border-purple-400 hover:text-purple-100'
-                                : 'text-gray-800 border-purple-500 hover:border-purple-600 hover:bg-purple-50/50'
-                            )}
-                          >
-                            {q}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
+                  {demoInfo.questions.leading}
+                </p>
               </div>
             )}
 
@@ -2408,10 +2310,93 @@ export function DemosPage() {
               </div>
             </div>
 
-            {/* Collapsible Info cards - responsive grid layout */}
+            {/* Theory summary + collapsible cards */}
             {demoInfo && (
               <div className="mt-5 space-y-4">
-                {/* DIY card - full width, at bottom */}
+                {/* Concise theory summary - always visible */}
+                {(demoInfo.physics.formula || demoInfo.physics.principle) && (
+                  <div className={cn(
+                    'rounded-xl border p-4',
+                    theme === 'dark' ? 'bg-slate-800/30 border-slate-700/50' : 'bg-gray-50 border-gray-200'
+                  )}>
+                    {/* Formula */}
+                    {demoInfo.physics.formula && (
+                      <div className={cn(
+                        'text-base font-mono mb-2',
+                        theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'
+                      )}>
+                        {MathText({ text: demoInfo.physics.formula })}
+                      </div>
+                    )}
+                    {/* Principle - brief */}
+                    <p className={cn(
+                      'text-sm leading-relaxed',
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    )}>
+                      {MathText({ text: demoInfo.physics.principle })}
+                    </p>
+                    {/* Key details - limited to first 2 */}
+                    {demoInfo.physics.details.filter(d => d && !d.includes('.physics.')).length > 0 && (
+                      <ul className="mt-2 space-y-1">
+                        {demoInfo.physics.details
+                          .filter(d => d && !d.includes('.physics.'))
+                          .slice(0, 2)
+                          .map((detail, i) => (
+                            <li key={i} className={cn(
+                              'text-xs flex items-start gap-2',
+                              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                            )}>
+                              <span className={cn(
+                                'mt-1 w-1 h-1 rounded-full flex-shrink-0',
+                                theme === 'dark' ? 'bg-cyan-400/50' : 'bg-cyan-500/50'
+                              )} />
+                              {MathText({ text: detail })}
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {/* Guided questions - collapsed by default */}
+                {demoInfo.questions && (demoInfo.questions.guided.length > 0 || demoInfo.questions.openEnded.length > 0) && (
+                  <CollapsibleCard
+                    title={t('gallery.questions.title')}
+                    icon={<HelpCircle className="w-5 h-5" />}
+                    color="orange"
+                    isExpanded={expandedCards.questions || false}
+                    onToggle={() => toggleCard('questions')}
+                  >
+                    <div className="space-y-3">
+                      {demoInfo.questions.guided.length > 0 && (
+                        <ul className="space-y-1.5">
+                          {demoInfo.questions.guided.map((q, i) => (
+                            <li key={i} className={cn(
+                              'text-sm pl-3 border-l-2',
+                              theme === 'dark' ? 'text-gray-300 border-cyan-400/40' : 'text-gray-700 border-cyan-500'
+                            )}>
+                              {q}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {demoInfo.questions.openEnded.length > 0 && (
+                        <ul className="space-y-1.5">
+                          {demoInfo.questions.openEnded.map((q, i) => (
+                            <li key={i} className={cn(
+                              'text-sm pl-3 border-l-2',
+                              theme === 'dark' ? 'text-gray-300 border-purple-400/40' : 'text-gray-700 border-purple-500'
+                            )}>
+                              {q}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </CollapsibleCard>
+                )}
+
+                {/* DIY card - collapsed by default */}
                 {demoInfo.diy && (
                   <CollapsibleCard
                     title={t('gallery.cards.diy')}
@@ -2420,99 +2405,50 @@ export function DemosPage() {
                     isExpanded={expandedCards.diy}
                     onToggle={() => toggleCard('diy')}
                   >
-                    <div className="space-y-4">
-                      {/* Materials list */}
-                      <div
-                        className={cn(
-                          'rounded-lg px-4 py-3 border',
-                          theme === 'dark'
-                            ? 'bg-yellow-400/5 border-yellow-400/20'
-                            : 'bg-yellow-50 border-yellow-200'
-                        )}
-                      >
-                        <h5
-                          className={cn(
-                            'font-semibold text-sm mb-2 flex items-center gap-2',
-                            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'
-                          )}
-                        >
-                          📦 Materials
-                        </h5>
+                    <div className="space-y-3">
+                      {/* Materials */}
+                      <div className={cn(
+                        'rounded-lg px-4 py-3 border',
+                        theme === 'dark' ? 'bg-yellow-400/5 border-yellow-400/20' : 'bg-yellow-50 border-yellow-200'
+                      )}>
                         <ul className="space-y-1">
                           {demoInfo.diy.materials.map((material, i) => (
-                            <li
-                              key={i}
-                              className={cn(
-                                'text-sm flex items-center gap-2',
-                                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                              )}
-                            >
+                            <li key={i} className={cn(
+                              'text-sm flex items-center gap-2',
+                              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                            )}>
                               <span className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>•</span>
                               {material}
                             </li>
                           ))}
                         </ul>
                       </div>
-
                       {/* Steps */}
-                      <div>
-                        <h5
-                          className={cn(
-                            'font-semibold text-sm mb-2 flex items-center gap-2',
-                            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'
-                          )}
-                        >
-                          📝 Steps
-                        </h5>
-                        <ol className="space-y-2">
-                          {demoInfo.diy.steps.map((step, i) => (
-                            <li
-                              key={i}
-                              className={cn(
-                                'text-sm flex items-start gap-3',
-                                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                              )}
-                            >
-                              <span
-                                className={cn(
-                                  'flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold',
-                                  theme === 'dark'
-                                    ? 'bg-yellow-400/20 text-yellow-400'
-                                    : 'bg-yellow-200 text-yellow-800'
-                                )}
-                              >
-                                {i + 1}
-                              </span>
-                              {step}
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-
+                      <ol className="space-y-2">
+                        {demoInfo.diy.steps.map((step, i) => (
+                          <li key={i} className={cn(
+                            'text-sm flex items-start gap-3',
+                            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                          )}>
+                            <span className={cn(
+                              'flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold',
+                              theme === 'dark' ? 'bg-yellow-400/20 text-yellow-400' : 'bg-yellow-200 text-yellow-800'
+                            )}>
+                              {i + 1}
+                            </span>
+                            {step}
+                          </li>
+                        ))}
+                      </ol>
                       {/* Observation */}
-                      <div
-                        className={cn(
-                          'rounded-lg px-4 py-3 border-2 border-dashed',
-                          theme === 'dark'
-                            ? 'bg-yellow-400/5 border-yellow-400/40'
-                            : 'bg-yellow-100/50 border-yellow-400'
-                        )}
-                      >
-                        <h5
-                          className={cn(
-                            'font-semibold text-sm mb-1 flex items-center gap-2',
-                            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'
-                          )}
-                        >
-                          💡 What you'll observe
-                        </h5>
-                        <p className={cn(
-                          'text-sm',
-                          theme === 'dark' ? 'text-yellow-200' : 'text-yellow-900'
+                      {demoInfo.diy.observation && (
+                        <div className={cn(
+                          'rounded-lg px-4 py-2 border-l-2',
+                          theme === 'dark' ? 'border-yellow-400/40 text-yellow-200' : 'border-yellow-400 text-yellow-900'
                         )}>
-                          {demoInfo.diy.observation}
-                        </p>
-                      </div>
+                          <p className="text-sm">{demoInfo.diy.observation}</p>
+                        </div>
+                      )}
                     </div>
                   </CollapsibleCard>
                 )}

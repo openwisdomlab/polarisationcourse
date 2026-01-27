@@ -638,6 +638,108 @@
     "achievements": "Achievements",
     "bookmarks": "Bookmarks"
   },
+  "theory": {
+    "badge": "Theory & Computation",
+    "title": "Theory & Simulation",
+    "subtitle": "From fundamental principles to computational tools — master polarization optics through theory, interactive demos, and matrix calculations.",
+    "foundationsTitle": "Theoretical Foundations",
+    "toolsTitle": "Explore & Calculate",
+    "keyFormula": "Key Formula",
+    "keyConcepts": "Core Concepts",
+    "openCalc": "Calculators",
+    "enter": "Enter",
+    "fourAxioms": {
+      "title": "Four Physical Axioms of Polarization",
+      "axiom1": {
+        "name": "Orthogonality",
+        "desc": "Light polarized at 90° difference coexists without interference."
+      },
+      "axiom2": {
+        "name": "Malus's Law",
+        "desc": "Transmitted intensity: I = I₀ cos²(θ), where θ is the angle between polarization and filter axis."
+      },
+      "axiom3": {
+        "name": "Birefringence",
+        "desc": "Anisotropic crystals split light into ordinary (o) and extraordinary (e) rays with orthogonal polarizations."
+      },
+      "axiom4": {
+        "name": "Interference",
+        "desc": "Same-phase light adds constructively; opposite-phase light cancels destructively."
+      }
+    },
+    "foundations": {
+      "basics": {
+        "title": "Electromagnetic Waves & Polarization Basics",
+        "summary": "Light is a transverse electromagnetic wave — the electric field oscillates perpendicular to the propagation direction. Polarization describes the orientation and pattern of this oscillation.",
+        "formula": "c = λf, E(z,t) = E₀ sin(kz − ωt)",
+        "concepts": [
+          "Light is a transverse wave: E and B fields oscillate perpendicular to propagation direction k",
+          "Polarization states: linear, circular, and elliptical describe the electric field trajectory",
+          "Visible light spans 380–700 nm; polarization is wavelength-independent in vacuum"
+        ]
+      },
+      "unit1": {
+        "title": "Polarization States, Modulation & Measurement",
+        "summary": "Polarizers filter light by transmission axis angle. Wave plates introduce phase retardation between orthogonal components, converting between polarization states. Malus's Law quantifies transmitted intensity.",
+        "formula": "I = I₀ cos²(θ)",
+        "concepts": [
+          "Malus's Law: transmitted intensity through a polarizer follows cos²(θ) dependence",
+          "Birefringent crystals (e.g. calcite) produce two refracted rays with orthogonal polarizations",
+          "Wave plates (λ/4, λ/2) modify polarization by introducing controlled phase retardation between fast and slow axes"
+        ]
+      },
+      "unit2": {
+        "title": "Polarization in Interface Reflection",
+        "summary": "The Fresnel equations describe how s- and p-polarized components reflect and transmit differently at an interface. At Brewster's angle, the reflected light is fully s-polarized.",
+        "formula": "tan(θ_B) = n₂/n₁",
+        "concepts": [
+          "Fresnel equations: rₛ and rₚ reflectances depend on incident angle and refractive index ratio",
+          "Brewster's angle: p-polarized reflection vanishes when reflected and refracted rays are perpendicular",
+          "Total internal reflection occurs above the critical angle, with phase shift between s and p components"
+        ]
+      },
+      "unit3": {
+        "title": "Polarization in Transparent Media",
+        "summary": "Birefringent materials create wavelength-dependent phase retardation, producing chromatic polarization colors. Optically active media rotate the polarization plane proportionally to path length and concentration.",
+        "formula": "α = [α]₀ · l · c",
+        "concepts": [
+          "Chromatic polarization: different wavelengths experience different retardation, yielding interference colors",
+          "Photoelastic effect: mechanical stress induces birefringence in otherwise isotropic materials",
+          "Optical rotation: chiral molecules rotate the polarization plane; used to measure sugar concentration"
+        ]
+      },
+      "unit4": {
+        "title": "Polarization in Turbid Media",
+        "summary": "Particle scattering polarizes light depending on particle size relative to wavelength. Rayleigh scattering (small particles) produces strong polarization; Mie theory handles arbitrary sizes.",
+        "formula": "I_Rayleigh ∝ 1/λ⁴",
+        "concepts": [
+          "Rayleigh scattering: intensity ∝ 1/λ⁴ explains blue sky and red sunset; scattered light is partially polarized",
+          "Mie scattering: for particles comparable to wavelength, forward scattering dominates with complex polarization patterns",
+          "Monte Carlo methods simulate multiple scattering and depolarization in turbid media"
+        ]
+      },
+      "unit5": {
+        "title": "Full Polarimetry: Stokes, Mueller & Jones",
+        "summary": "Three mathematical formalisms describe polarization: Jones vectors/matrices for fully polarized coherent light, Stokes vectors for partial polarization, and Mueller matrices for general optical elements including depolarizers.",
+        "formula": "S' = M · S, E' = J · E",
+        "concepts": [
+          "Jones calculus: 2×2 complex matrices for coherent, fully polarized light — E' = J · E",
+          "Stokes parameters (S₀,S₁,S₂,S₃): measurable quantities characterizing any polarization state including partial",
+          "Mueller matrices: 4×4 real matrices that can represent depolarizing and scattering elements — S' = M · S"
+        ]
+      }
+    },
+    "tools": {
+      "demos": {
+        "title": "Interactive Demos",
+        "desc": "20+ interactive visualizations across 6 units. Adjust parameters in real time to build physical intuition."
+      },
+      "calc": {
+        "title": "Calculation Workshop",
+        "desc": "Jones, Stokes, and Mueller calculators plus Poincaré sphere visualization for polarization state analysis."
+      }
+    }
+  },
   "calc": {
     "title": "Calculation Workshop",
     "subtitle": "Polarization Optics Calculators",
