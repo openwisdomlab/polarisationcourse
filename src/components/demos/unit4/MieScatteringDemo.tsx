@@ -6,7 +6,6 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
-import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 波长到RGB颜色转换
@@ -427,7 +426,6 @@ function SizeParameterChart({
 
 // 主演示组件
 export function MieScatteringDemo() {
-  const { theme } = useTheme()
   const [particleSize, setParticleSize] = useState(0.5) // μm
   const [wavelength, setWavelength] = useState(550) // nm
 

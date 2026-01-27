@@ -16,7 +16,7 @@ import {
   Camera, Film, Play, Pause, ChevronLeft, ChevronRight,
   X, Maximize2, Grid, List, Eye,
   Flame, Layers, Hexagon, Glasses, Beaker, Sun, RotateCcw,
-  Sparkles, Shuffle, Search, ArrowRight, HelpCircle, Lightbulb, Map, Star
+  Shuffle, Search, ArrowRight, HelpCircle, Lightbulb, Map, Star
 } from 'lucide-react'
 import {
   POLARIZATION_RESOURCES,
