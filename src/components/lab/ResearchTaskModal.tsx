@@ -864,7 +864,7 @@ function ExperimentWorkspace({
 
 // Simulation Workspace - Interactive LCD pixel simulation
 // 仿真工作台 - 交互式LCD像素仿真
-function SimulationWorkspace({ taskId }: { taskId: string }) {
+function SimulationWorkspace({ taskId: _taskId }: { taskId: string }) {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
@@ -881,7 +881,6 @@ function SimulationWorkspace({ taskId }: { taskId: string }) {
   // where u = Γ/(2φ), Γ = 2π·Δn·d/λ
   const simulation = useMemo(() => {
     const phi = twistAngle * Math.PI / 180
-    const d = cellThickness * 1e-3 // μm to mm (for nm-based formula)
     const gamma = 2 * Math.PI * birefringence * cellThickness * 1000 / wavelength
 
     // Effective twist decreases with voltage (simplified model)
