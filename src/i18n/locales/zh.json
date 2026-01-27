@@ -36,6 +36,9 @@
         "badge3": "开放科学"
       }
     },
+    "badges": {
+      "inDevelopment": "开发中"
+    },
     "modules": {
       "history": {
         "title": "Trace",

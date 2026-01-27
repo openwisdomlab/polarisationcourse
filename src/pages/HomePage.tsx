@@ -37,6 +37,7 @@ interface ModuleConfig {
   path: string
   IconComponent: AnimatedIconComponent
   quickLinks: QuickLink[]
+  inDevelopment?: boolean  // Mark module as "开发中" (In Development)
   colorTheme: {
     bg: string
     bgHover: string
@@ -82,6 +83,7 @@ const MODULES: ModuleConfig[] = [
     i18nNamespace: 'home.modules.arsenal',
     path: '/studio',
     IconComponent: ArsenalModuleIcon,
+    inDevelopment: true,
     quickLinks: [
       { labelKey: 'home.opticalDesignStudio.link1', path: '/studio' },
       { labelKey: 'home.opticalDesignStudio.link2', path: '/studio' },
@@ -130,6 +132,7 @@ const MODULES: ModuleConfig[] = [
     i18nNamespace: 'home.modules.games',
     path: '/games',
     IconComponent: GamesModuleIcon,
+    inDevelopment: true,
     quickLinks: [
       { labelKey: 'home.polarquest.link1', path: '/games/2d' },
       { labelKey: 'home.polarquest.link2', path: '/games/3d' },
@@ -261,6 +264,22 @@ function ModuleCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* "In Development" Badge */}
+      {module.inDevelopment && (
+        <div
+          className={`
+            absolute top-2 right-2 sm:top-3 sm:right-3 z-10
+            px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-full
+            ${theme === 'dark'
+              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+              : 'bg-amber-100 text-amber-700 border border-amber-300'
+            }
+          `}
+        >
+          {t('home.badges.inDevelopment')}
+        </div>
+      )}
+
       {/* Background glow effect on hover */}
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"

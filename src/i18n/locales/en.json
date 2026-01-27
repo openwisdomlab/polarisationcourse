@@ -36,6 +36,9 @@
         "badge3": "Open Science"
       }
     },
+    "badges": {
+      "inDevelopment": "In Development"
+    },
     "modules": {
       "history": {
         "title": "Trace",
