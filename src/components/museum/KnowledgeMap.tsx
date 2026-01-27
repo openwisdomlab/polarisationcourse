@@ -612,11 +612,6 @@ function MapVisualization({
 
         const unit = UNITS[node.unit]
         const size = getNodeSize(node.importance)
-        // Note: isSelected and isInPath are intentionally not used here
-        // as the hovered node always gets the "active" styling
-        void selectedNode
-        void isNodeInPath
-
         return (
           <g
             key={`hovered-${node.id}`}

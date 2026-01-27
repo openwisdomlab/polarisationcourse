@@ -474,7 +474,6 @@ type GameMode = 'classic' | 'advanced'
 
 export function Game2DPage() {
   const { t, i18n } = useTranslation()
-  void t
   const { theme } = useTheme()
   const { isMobile, isTablet } = useIsMobile()
   const isZh = i18n.language === 'zh'

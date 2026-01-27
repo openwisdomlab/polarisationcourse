@@ -391,10 +391,6 @@ function PolarizationVectorDiagram({
   analyzerAngle: number
   showAnalyzer: boolean
 }) {
-  // effectiveAnalyzer used for projection visualization logic
-  const _ = showAnalyzer ? analyzerAngle : null
-  void _ // suppress unused warning, used for understanding the projection concept
-
   return (
     <svg viewBox="0 0 200 200" className="w-full h-auto">
       <defs>

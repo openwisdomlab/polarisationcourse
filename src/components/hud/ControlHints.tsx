@@ -100,8 +100,7 @@ const TOUCH_HINTS: Record<CameraMode, { en: ControlHint[]; zh: ControlHint[] }> 
 }
 
 export function ControlHints() {
-  const { t, i18n } = useTranslation()
-  void t
+  const { i18n } = useTranslation()
   const { cameraMode } = useGameStore()
   const { isMobile, isTablet, isTouchDevice } = useIsMobile()
   const [isVisible, setIsVisible] = useState(true)

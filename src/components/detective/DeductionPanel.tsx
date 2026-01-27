@@ -124,8 +124,6 @@ export function DeductionPanel({
   isOpen,
   onClose,
   onSubmitGuess,
-  hiddenType: _hiddenType,
-  hiddenAngle: _hiddenAngle,
   hiddenRetardation,
   observations,
   mysteryBoxId,
@@ -133,9 +131,6 @@ export function DeductionPanel({
   maxAttempts = 3,
   attempts = 0,
 }: DeductionPanelProps) {
-  // Note: _hiddenType and _hiddenAngle are passed to onSubmitGuess callback for validation
-  void _hiddenType
-  void _hiddenAngle
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
 
