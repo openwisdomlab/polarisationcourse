@@ -16,7 +16,7 @@ import {
   Camera, Film, Play, Pause, ChevronLeft, ChevronRight,
   X, Maximize2, Grid, List, Eye,
   Flame, Layers, Hexagon, Glasses, Beaker, Sun, RotateCcw,
-  Compass, Sparkles, Shuffle, Search, ArrowRight, HelpCircle, Lightbulb, Map, Star
+  Sparkles, Shuffle, Search, ArrowRight, HelpCircle, Lightbulb, Map, Star
 } from 'lucide-react'
 import {
   POLARIZATION_RESOURCES,
@@ -123,47 +123,67 @@ const CATEGORY_CONFIG: Record<ResourceCategory, {
   }
 }
 
-// 探索路径配置
-const EXPLORATION_PATHS = [
+// 实验专题配置 - 按光学研究领域组织
+const EXPERIMENT_TOPICS = [
   {
-    id: 'hidden-forces',
-    titleEn: 'Hidden Forces',
-    titleZh: '隐形力量',
-    descriptionEn: 'Discover how polarized light reveals invisible stress patterns',
-    descriptionZh: '探索偏振光如何揭示看不见的应力图案',
+    id: 'photoelasticity',
+    titleEn: 'Photoelasticity & Stress Analysis',
+    titleZh: '光弹法与应力分析',
+    subtitleEn: 'Stress birefringence visualization',
+    subtitleZh: '应力双折射可视化方法',
+    descriptionEn: 'Experimental methods using polarized light to reveal internal stress distribution in materials through birefringence and interference effects',
+    descriptionZh: '利用偏振光通过双折射和干涉效应揭示材料内部应力分布的实验方法',
     categories: ['stress', 'interference'] as ResourceCategory[],
-    icon: <Compass className="w-6 h-6" />,
-    color: 'orange'
+    icon: <Flame className="w-6 h-6" />,
+    color: 'orange',
+    courseUnit: 'Unit 3',
+    courseUnitZh: '第三单元',
+    relatedDemos: ['/demos/chromatic', '/demos/anisotropy'],
   },
   {
-    id: 'crystal-magic',
-    titleEn: 'Crystal Magic',
-    titleZh: '晶体魔法',
-    descriptionEn: 'Explore how crystals split and twist light',
-    descriptionZh: '探索晶体如何分离和扭转光',
+    id: 'crystal-optics',
+    titleEn: 'Crystal Optics & Optical Activity',
+    titleZh: '晶体光学与旋光效应',
+    subtitleEn: 'Birefringence & optical rotation',
+    subtitleZh: '双折射与旋光性',
+    descriptionEn: 'Fundamental phenomena of crystal birefringence (e.g., calcite double image) and optical activity (e.g., sugar solution rotation), the basis of polarization manipulation',
+    descriptionZh: '探索晶体双折射（如方解石双像）和旋光性（如糖溶液旋光）等基本现象与原理，理解偏振态调控的物理基础',
     categories: ['birefringence', 'rotation'] as ResourceCategory[],
-    icon: <Sparkles className="w-6 h-6" />,
-    color: 'purple'
+    icon: <Hexagon className="w-6 h-6" />,
+    color: 'purple',
+    courseUnit: 'Unit 1 & 3',
+    courseUnitZh: '第一、三单元',
+    relatedDemos: ['/demos/birefringence', '/demos/optical-rotation'],
   },
   {
-    id: 'everyday-polarization',
-    titleEn: 'Polarization Around Us',
-    titleZh: '身边的偏振',
-    descriptionEn: 'Find polarization in daily life',
-    descriptionZh: '发现日常生活中的偏振',
+    id: 'natural-polarization',
+    titleEn: 'Natural Polarization & Applications',
+    titleZh: '自然偏振与日常应用',
+    subtitleEn: 'Brewster angle, scattering & everyday optics',
+    subtitleZh: '布儒斯特角、散射与日常光学',
+    descriptionEn: 'From Brewster angle reflection to Rayleigh scattering, understand polarization phenomena in nature and their applications in daily life such as polarized sunglasses and LCD displays',
+    descriptionZh: '从布儒斯特角反射到瑞利散射，认识自然界和日常生活中的偏振现象及其在偏振太阳镜、液晶显示等领域的应用',
     categories: ['daily', 'brewster', 'scattering'] as ResourceCategory[],
-    icon: <Glasses className="w-6 h-6" />,
-    color: 'green'
+    icon: <Sun className="w-6 h-6" />,
+    color: 'green',
+    courseUnit: 'Unit 2 & 4',
+    courseUnitZh: '第二、四单元',
+    relatedDemos: ['/demos/brewster', '/demos/rayleigh'],
   },
   {
-    id: 'light-art',
-    titleEn: 'Art of Light',
-    titleZh: '光的艺术',
-    descriptionEn: 'Create beauty with polarized light',
-    descriptionZh: '用偏振光创造美',
+    id: 'polarization-art',
+    titleEn: 'Polarization Art & Creative Experiments',
+    titleZh: '偏振光创意实验',
+    subtitleEn: 'Interference color art & creative optics',
+    subtitleZh: '干涉色彩艺术与创意光学',
+    descriptionEn: 'Utilizing interference and birefringence effects of polarized light to create unique optical art, including tape art, stress pattern photography, and color interference experiments',
+    descriptionZh: '运用偏振光干涉和双折射效应创造独特的光学艺术效果，包括胶带艺术、应力图案摄影和干涉色彩实验',
     categories: ['art', 'interference'] as ResourceCategory[],
     icon: <Camera className="w-6 h-6" />,
-    color: 'rose'
+    color: 'rose',
+    courseUnit: 'Unit 3',
+    courseUnitZh: '第三单元',
+    relatedDemos: ['/demos/chromatic'],
   }
 ]
 
@@ -641,27 +661,27 @@ function ResourceModal({
   )
 }
 
-// 探索路径卡片
-function ExplorationPathCard({
-  path,
+// 实验专题卡片
+function ExperimentTopicCard({
+  topic,
   theme,
   isZh,
   resourceCount,
   onClick
 }: {
-  path: typeof EXPLORATION_PATHS[0]
+  topic: typeof EXPERIMENT_TOPICS[0]
   theme: 'dark' | 'light'
   isZh: boolean
   resourceCount: number
   onClick: () => void
 }) {
-  const colorClasses = getColorClasses(path.color, theme, false)
+  const colorClasses = getColorClasses(topic.color, theme, false)
 
   return (
     <motion.button
       onClick={onClick}
       className={cn(
-        'relative group rounded-xl border p-4 text-left w-full transition-all',
+        'relative group rounded-xl border p-5 text-left w-full transition-all',
         colorClasses.bg,
         colorClasses.border,
         theme === 'dark' ? 'hover:border-white/30' : 'hover:border-gray-400'
@@ -671,33 +691,45 @@ function ExplorationPathCard({
     >
       <div className="flex items-start gap-3">
         <div className={cn(
-          'p-2.5 rounded-lg',
+          'p-2.5 rounded-lg flex-shrink-0',
           theme === 'dark' ? 'bg-white/10' : 'bg-white'
         )}>
-          {path.icon}
+          {topic.icon}
         </div>
         <div className="flex-1 min-w-0">
           <h4 className={cn(
-            'font-semibold mb-1',
+            'font-semibold mb-0.5',
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           )}>
-            {isZh ? path.titleZh : path.titleEn}
+            {isZh ? topic.titleZh : topic.titleEn}
           </h4>
           <p className={cn(
-            'text-sm line-clamp-2',
+            'text-xs mb-2',
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          )}>
+            {isZh ? topic.subtitleZh : topic.subtitleEn}
+          </p>
+          <p className={cn(
+            'text-sm line-clamp-2 mb-3',
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           )}>
-            {isZh ? path.descriptionZh : path.descriptionEn}
+            {isZh ? topic.descriptionZh : topic.descriptionEn}
           </p>
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className={cn(
-              'text-xs',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              'text-xs px-2 py-0.5 rounded-full',
+              theme === 'dark' ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'
             )}>
               {resourceCount} {isZh ? '个资源' : 'resources'}
             </span>
+            <span className={cn(
+              'text-xs px-2 py-0.5 rounded-full',
+              theme === 'dark' ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-50 text-blue-600'
+            )}>
+              {isZh ? topic.courseUnitZh : topic.courseUnit}
+            </span>
             <ArrowRight className={cn(
-              'w-4 h-4 transition-transform group-hover:translate-x-1',
+              'w-4 h-4 ml-auto transition-transform group-hover:translate-x-1',
               theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
             )} />
           </div>
@@ -833,18 +865,18 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
     setSelectedResource(POLARIZATION_RESOURCES[randomIndex])
   }
 
-  // 选择探索路径
-  const handleSelectPath = (path: typeof EXPLORATION_PATHS[0]) => {
+  // 选择实验专题
+  const handleSelectTopic = (topic: typeof EXPERIMENT_TOPICS[0]) => {
     // 选择第一个类别
-    if (path.categories.length > 0) {
-      setSelectedCategory(path.categories[0])
+    if (topic.categories.length > 0) {
+      setSelectedCategory(topic.categories[0])
       setViewMode('grid')
     }
   }
 
-  // 计算探索路径的资源数量
-  const getPathResourceCount = (path: typeof EXPLORATION_PATHS[0]) => {
-    return path.categories.reduce((count, cat) => count + getResourcesByCategory(cat).length, 0)
+  // 计算实验专题的资源数量
+  const getTopicResourceCount = (topic: typeof EXPERIMENT_TOPICS[0]) => {
+    return topic.categories.reduce((count, cat) => count + getResourcesByCategory(cat).length, 0)
   }
 
   return (
@@ -859,7 +891,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
             'p-3 rounded-xl',
             theme === 'dark' ? 'bg-amber-500/20' : 'bg-amber-100'
           )}>
-            <Compass className={cn(
+            <Beaker className={cn(
               'w-10 h-10',
               theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
             )} />
@@ -869,15 +901,15 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
               'text-xl font-bold mb-2',
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             )}>
-              {isZh ? '探索偏振世界' : 'Explore the World of Polarization'}
+              {isZh ? '偏振实验资源库' : 'Polarization Experiment Resources'}
             </h3>
             <p className={cn(
               'text-sm mb-4',
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             )}>
               {isZh
-                ? '这里收集了丰富的偏振实验资源。你可以按主题探索、随机发现，或者直接浏览全部内容。每个资源都带有思考问题，帮助你深入理解偏振光的奥秘。'
-                : 'This gallery contains rich polarization experiment resources. Explore by theme, discover randomly, or browse all content. Each resource includes exploration questions to deepen your understanding of polarized light.'}
+                ? '本资源库收录了偏振光学实验的图片、视频和实验序列，涵盖光弹法、晶体光学、自然偏振和创意实验四大专题。可按实验专题或资源类别进行浏览，每项资源均附有相关思考问题。'
+                : 'This resource library contains images, videos, and experiment sequences covering photoelasticity, crystal optics, natural polarization, and creative experiments. Browse by experiment topic or resource category, with exploration questions for each resource.'}
             </p>
             <div className="flex flex-wrap gap-3">
               <button
@@ -911,7 +943,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
         </div>
       </div>
 
-      {/* 探索路径 */}
+      {/* 实验专题 */}
       {viewMode === 'explore' && (
         <>
           <div>
@@ -921,24 +953,30 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
                 'text-lg font-semibold',
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               )}>
-                {isZh ? '探索路径' : 'Exploration Paths'}
+                {isZh ? '实验专题' : 'Experiment Topics'}
               </h3>
+              <span className={cn(
+                'text-xs px-2 py-0.5 rounded-full',
+                theme === 'dark' ? 'bg-amber-500/15 text-amber-400' : 'bg-amber-100 text-amber-700'
+              )}>
+                {isZh ? '按研究领域分类' : 'By research area'}
+              </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {EXPLORATION_PATHS.map(path => (
-                <ExplorationPathCard
-                  key={path.id}
-                  path={path}
+              {EXPERIMENT_TOPICS.map(topic => (
+                <ExperimentTopicCard
+                  key={topic.id}
+                  topic={topic}
                   theme={theme}
                   isZh={isZh}
-                  resourceCount={getPathResourceCount(path)}
-                  onClick={() => handleSelectPath(path)}
+                  resourceCount={getTopicResourceCount(topic)}
+                  onClick={() => handleSelectTopic(topic)}
                 />
               ))}
             </div>
           </div>
 
-          {/* 精选发现 */}
+          {/* 精选资源 */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Star className={cn('w-5 h-5', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')} />
@@ -946,7 +984,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
                 'text-lg font-semibold',
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               )}>
-                {isZh ? '精选发现' : 'Featured Discoveries'}
+                {isZh ? '精选资源' : 'Featured Resources'}
               </h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -963,7 +1001,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
             </div>
           </div>
 
-          {/* 按类别探索 */}
+          {/* 资源分类 */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Beaker className={cn('w-5 h-5', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
@@ -971,7 +1009,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
                 'text-lg font-semibold',
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               )}>
-                {isZh ? '按类别探索' : 'Explore by Category'}
+                {isZh ? '资源分类浏览' : 'Browse by Category'}
               </h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

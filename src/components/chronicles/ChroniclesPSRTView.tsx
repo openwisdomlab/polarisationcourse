@@ -729,6 +729,144 @@ function UnitCard({
   )
 }
 
+// 课程总览组件 - 结构化展示课程架构
+function CourseOverview({
+  theme,
+  isZh,
+  onSelectUnit
+}: {
+  theme: 'dark' | 'light'
+  isZh: boolean
+  onSelectUnit: (unitId: string) => void
+}) {
+  // 课程总览数据
+  const overviewData = PSRT_CURRICULUM.map(unit => ({
+    id: unit.id,
+    number: unit.unitNumber,
+    titleZh: unit.titleZh,
+    titleEn: unit.titleEn,
+    subtitleZh: unit.subtitleZh,
+    subtitleEn: unit.subtitleEn,
+    color: unit.color,
+    sections: unit.sections.length,
+    demos: getDemosForUnit(unit.id).length,
+    events: PSRT_EVENT_MAPPINGS.filter(m => m.unitId === unit.id).length,
+    hasHomeExperiments: !!unit.homeExperiments && unit.homeExperiments.length > 0,
+  }))
+
+  // 课程总体统计
+  const totalSections = overviewData.reduce((sum, u) => sum + u.sections, 0)
+  const totalDemos = overviewData.reduce((sum, u) => sum + u.demos, 0)
+  const totalEvents = overviewData.reduce((sum, u) => sum + u.events, 0)
+
+  return (
+    <div className={`rounded-xl border overflow-hidden ${
+      theme === 'dark' ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'
+    }`}>
+      {/* 总览标题 */}
+      <div className={`px-5 py-4 border-b ${
+        theme === 'dark' ? 'border-slate-700 bg-slate-800/80' : 'border-gray-100 bg-gray-50'
+      }`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <BookOpen className={`w-5 h-5 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
+            <h3 className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {isZh ? '课程结构总览' : 'Course Structure Overview'}
+            </h3>
+          </div>
+          <div className="flex items-center gap-4 text-xs">
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
+              {totalSections} {isZh ? '章节' : 'sections'}
+            </span>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
+              {totalDemos} {isZh ? '演示' : 'demos'}
+            </span>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
+              {totalEvents} {isZh ? '历史事件' : 'events'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 单元总览表格 */}
+      <div className="divide-y divide-gray-100 dark:divide-slate-700">
+        {overviewData.map((unit) => (
+          <button
+            key={unit.id}
+            onClick={() => onSelectUnit(unit.id)}
+            className={`w-full px-5 py-3.5 flex items-center gap-4 text-left transition-colors ${
+              theme === 'dark' ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'
+            }`}
+          >
+            {/* 单元编号 */}
+            <div
+              className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold text-white"
+              style={{ backgroundColor: unit.color }}
+            >
+              {unit.number}
+            </div>
+
+            {/* 单元标题 */}
+            <div className="flex-1 min-w-0">
+              <h4 className={`text-sm font-medium truncate ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {isZh ? unit.titleZh : unit.titleEn}
+              </h4>
+              <p className={`text-xs truncate ${
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              }`}>
+                {isZh ? unit.subtitleZh : unit.subtitleEn}
+              </p>
+            </div>
+
+            {/* 统计指标 */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <span className={`text-xs flex items-center gap-1 ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                <BookOpen className="w-3 h-3" />
+                {unit.sections}
+              </span>
+              <span className={`text-xs flex items-center gap-1 ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                <FlaskConical className="w-3 h-3" />
+                {unit.demos}
+              </span>
+              <span className={`text-xs flex items-center gap-1 ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                <History className="w-3 h-3" />
+                {unit.events}
+              </span>
+              {unit.hasHomeExperiments && (
+                <span className={`text-xs px-1.5 py-0.5 rounded ${
+                  theme === 'dark' ? 'bg-pink-500/15 text-pink-400' : 'bg-pink-50 text-pink-600'
+                }`}>
+                  {isZh ? '含家庭实验' : 'Home Lab'}
+                </span>
+              )}
+              <ChevronRight className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* 学习路径说明 */}
+      <div className={`px-5 py-3 border-t ${
+        theme === 'dark' ? 'border-slate-700 bg-slate-800/30' : 'border-gray-100 bg-gray-50/50'
+      }`}>
+        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+          {isZh
+            ? '课程内容由浅入深：第1单元建立基础概念，第2-4单元分别探讨界面反射、透明介质和浑浊介质的偏振特征，第5单元综合运用偏振测量技术。各单元均可独立探索。'
+            : 'Course progression: Unit 1 establishes fundamentals, Units 2-4 explore polarization in reflection, transparent, and turbid media respectively, Unit 5 integrates quantitative polarimetry. Each unit can be explored independently.'}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 // 主组件
 export function ChroniclesPSRTView({ theme, onNavigateToEvent }: ChroniclesPSRTViewProps) {
   const { i18n } = useTranslation()
@@ -746,6 +884,18 @@ export function ChroniclesPSRTView({ theme, onNavigateToEvent }: ChroniclesPSRTV
     setExpandedSectionId(expandedSectionId === sectionId ? null : sectionId)
   }
 
+  const handleSelectUnitFromOverview = (unitId: string) => {
+    setExpandedUnitId(unitId)
+    setExpandedSectionId(null)
+    // Scroll to the unit card
+    setTimeout(() => {
+      const element = document.querySelector(`[data-unit-id="${unitId}"]`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
+  }
+
   return (
     <div className="space-y-6">
       {/* 课程头部介绍 */}
@@ -761,72 +911,94 @@ export function ChroniclesPSRTView({ theme, onNavigateToEvent }: ChroniclesPSRTV
           }`}>
             P-SRT
           </span>
+          <span className={`text-xs px-2 py-0.5 rounded-full ${
+            theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-200 text-gray-600'
+          }`}>
+            {isZh ? '深圳零一学院 · 颠覆创新挑战营' : 'Shenzhen 01 Academy · Innovation Challenge'}
+          </span>
         </div>
         <h1 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           {isZh ? '偏振光下新世界' : 'A New World Under Polarized Light'}
         </h1>
         <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
           {isZh
-            ? '从冰洲石实验（1669年）到现代偏振成像，探索400年偏振光学发展历程。每个课程章节左侧展示历史发现，右侧连接光学展示馆的交互演示。'
-            : 'From the Iceland spar experiment (1669) to modern polarimetric imaging, explore 400 years of polarization optics. Each section shows historical discoveries on the left and links to interactive demos in the Optical Exhibition on the right.'
+            ? '本课程系统介绍偏振光学的基本原理与应用，涵盖偏振态调制与测量、界面反射、透明和浑浊介质的偏振特性，以及偏振测量技术。课程以研究型学习(P-SRT)为导向，每个章节将历史发现与交互演示紧密结合。'
+            : 'This course systematically covers polarization optics fundamentals and applications, including polarization modulation/measurement, interface reflection, transparent/turbid media polarization, and polarimetric techniques. Following Problem-Solving Research Training (P-SRT) methodology, each section integrates historical discoveries with interactive demonstrations.'
           }
         </p>
-        <div className="flex items-center gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
-              📚 5 {isZh ? '单元' : 'Units'}
+
+        {/* 课程特色标签 */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {[
+            { labelZh: '5个教学单元', labelEn: '5 Teaching Units', color: '#6366f1' },
+            { labelZh: '13个课程章节', labelEn: '13 Course Sections', color: '#0891b2' },
+            { labelZh: '20+交互演示', labelEn: '20+ Interactive Demos', color: '#16a34a' },
+            { labelZh: '三级难度体系', labelEn: '3-Tier Difficulty', color: '#f59e0b' },
+            { labelZh: '历史事件关联', labelEn: 'Historical Context', color: '#ec4899' },
+          ].map(({ labelZh, labelEn, color }) => (
+            <span
+              key={labelZh}
+              className="text-xs px-2.5 py-1 rounded-full font-medium"
+              style={{ backgroundColor: `${color}15`, color }}
+            >
+              {isZh ? labelZh : labelEn}
             </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
-              📅 {PSRT_EVENT_MAPPINGS.length} {isZh ? '历史事件' : 'Events'}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
-              🔬 20+ {isZh ? '交互演示' : 'Demos'}
-            </span>
-          </div>
+          ))}
         </div>
       </div>
 
+      {/* 课程结构总览 */}
+      <CourseOverview
+        theme={theme}
+        isZh={isZh}
+        onSelectUnit={handleSelectUnitFromOverview}
+      />
+
       {/* 难度图例 */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-          {isZh ? '难度级别：' : 'Difficulty: '}
+      <div className={`flex items-center gap-4 flex-wrap p-4 rounded-lg ${
+        theme === 'dark' ? 'bg-slate-800/30' : 'bg-gray-50'
+      }`}>
+        <span className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+          {isZh ? '难度级别：' : 'Difficulty Levels: '}
         </span>
         {[
-          { level: 'foundation', label: isZh ? '🌱 基础层 (PSRT入门)' : '🌱 Foundation (PSRT)' },
-          { level: 'application', label: isZh ? '🔬 应用层 (ESRT轮转)' : '🔬 Application (ESRT)' },
-          { level: 'research', label: isZh ? '🚀 研究层 (ORIC/SURF)' : '🚀 Research (ORIC/SURF)' }
-        ].map(({ level, label }) => (
+          { level: 'foundation', labelZh: '基础层 — 发现现象，建立直觉 (PSRT入门)', labelEn: 'Foundation — Discover phenomena (PSRT)' },
+          { level: 'application', labelZh: '应用层 — 定量实验，设计方案 (ESRT轮转)', labelEn: 'Application — Quantitative experiments (ESRT)' },
+          { level: 'research', labelZh: '研究层 — 前沿方法，独立探索 (ORIC/SURF)', labelEn: 'Research — Frontier methods (ORIC/SURF)' }
+        ].map(({ level, labelZh, labelEn }) => (
           <span
             key={level}
-            className="text-xs px-2 py-1 rounded-full"
+            className="text-xs px-2.5 py-1 rounded-full"
             style={{
-              backgroundColor: `${getDifficultyColor(level as 'foundation' | 'application' | 'research')}20`,
+              backgroundColor: `${getDifficultyColor(level as 'foundation' | 'application' | 'research')}15`,
               color: getDifficultyColor(level as 'foundation' | 'application' | 'research')
             }}
           >
-            {label}
+            {getDifficultyIcon(level as 'foundation' | 'application' | 'research')} {isZh ? labelZh : labelEn}
           </span>
         ))}
       </div>
 
-      {/* 单元列表 */}
-      <div className="space-y-4">
-        {PSRT_CURRICULUM.map(unit => (
-          <UnitCard
-            key={unit.id}
-            unit={unit}
-            theme={theme}
-            isExpanded={expandedUnitId === unit.id}
-            onToggle={() => handleUnitToggle(unit.id)}
-            expandedSectionId={expandedSectionId}
-            onSectionToggle={handleSectionToggle}
-            onNavigateToEvent={onNavigateToEvent}
-          />
-        ))}
+      {/* 单元详细列表 */}
+      <div>
+        <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          {isZh ? '课程单元详情' : 'Unit Details'}
+        </h3>
+        <div className="space-y-4">
+          {PSRT_CURRICULUM.map(unit => (
+            <div key={unit.id} data-unit-id={unit.id}>
+              <UnitCard
+                unit={unit}
+                theme={theme}
+                isExpanded={expandedUnitId === unit.id}
+                onToggle={() => handleUnitToggle(unit.id)}
+                expandedSectionId={expandedSectionId}
+                onSectionToggle={handleSectionToggle}
+                onNavigateToEvent={onNavigateToEvent}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
