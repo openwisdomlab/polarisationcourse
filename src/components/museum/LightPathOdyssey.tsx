@@ -13,7 +13,7 @@
  * - Three suggested learning paths visualized as different light frequencies
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -407,10 +407,9 @@ function TopicPill({
       style={{
         backgroundColor: `${unit.color}20`,
         color: unit.color,
-        // @ts-expect-error - CSS custom property
         '--tw-ring-color': isInPath ? unit.color : 'transparent',
         '--tw-ring-offset-color': theme === 'dark' ? '#0f172a' : '#ffffff'
-      }}
+      } as CSSProperties}
     >
       <span className={cn(
         "w-2 h-2 rounded-full",

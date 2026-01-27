@@ -6,7 +6,7 @@
  * and guiding learners through the knowledge landscape.
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -882,9 +882,8 @@ function PathSelector({
             style={{
               backgroundColor: isSelected ? `${path.color}30` : theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
               color: isSelected ? path.color : theme === 'dark' ? '#e2e8f0' : '#334155',
-              // @ts-expect-error - CSS custom property for Tailwind ring color
               '--tw-ring-color': isSelected ? path.color : 'transparent'
-            }}
+            } as CSSProperties}
           >
             <Icon className="w-4 h-4" />
             {t(path.nameKey)}
