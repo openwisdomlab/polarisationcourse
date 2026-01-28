@@ -3,6 +3,7 @@
  */
 
 // 基础组件
+export * from './demoThemeColors'
 export * from './DemoCanvas'
 export * from './Demo2DCanvas'
 export * from './DemoControls'

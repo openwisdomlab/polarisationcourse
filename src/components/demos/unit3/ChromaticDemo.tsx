@@ -474,13 +474,13 @@ function ColorDisplayPanel({
       />
       <div className="flex justify-between items-center text-xs">
         <div className="space-y-1">
-          <div className="text-gray-500">RGB</div>
+          <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>RGB</div>
           <div className={cn("font-mono", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>
             ({Math.round(color.r * 255)}, {Math.round(color.g * 255)}, {Math.round(color.b * 255)})
           </div>
         </div>
         <div className="space-y-1 text-right">
-          <div className="text-gray-500">HEX</div>
+          <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>HEX</div>
           <div className={cn("font-mono uppercase", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>{color.hex}</div>
         </div>
       </div>
@@ -986,7 +986,7 @@ export function ChromaticDemo() {
 
             {/* 材料预设 */}
             <div className="pt-2">
-              <div className="text-xs text-gray-500 mb-2">预设材料</div>
+              <div className={cn("text-xs mb-2", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>预设材料</div>
               <div className="grid grid-cols-2 gap-2">
                 {materials.map((m) => (
                   <button

@@ -8,7 +8,7 @@ import { OrbitControls, Line, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import {
   SliderControl,
@@ -446,12 +446,13 @@ function PresetButton({
   isActive: boolean
   onClick: () => void
 }) {
+  const dt = useDemoTheme()
   return (
     <motion.button
       className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
         isActive
           ? 'bg-cyan-400/20 text-cyan-400 border-cyan-400/50'
-          : 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+          : `${dt.inactiveButtonClass} hover:border-slate-500`
       }`}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
@@ -476,13 +477,14 @@ function TabButton({
   children: React.ReactNode
   icon: typeof FlaskConical
 }) {
+  const dt = useDemoTheme()
   return (
     <motion.button
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
         active
-          ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
-          : 'bg-slate-700/50 text-gray-400 border border-slate-600/50 hover:border-slate-500'
+          ? 'bg-cyan-400/20 text-cyan-400 border-cyan-400/50'
+          : `${dt.inactiveButtonClass} hover:border-slate-500`
       }`}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
@@ -504,7 +506,7 @@ const ENV_PRESETS = [
 // 主演示组件
 export function BirefringenceDemo() {
   const { i18n } = useTranslation()
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
   const isZh = i18n.language === 'zh'
 
   const [activeTab, setActiveTab] = useState<DemoTab>('theory')
@@ -543,10 +545,10 @@ export function BirefringenceDemo() {
     <div className="flex flex-col gap-6 h-full">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-cyan-100 to-white' : 'from-cyan-800 via-cyan-600 to-cyan-800'} bg-clip-text text-transparent`}>
           {isZh ? '双折射效应 - 3D交互' : 'Birefringence - 3D Interactive'}
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${dt.mutedTextClass} mt-1`}>
           {isZh
             ? '方解石晶体将一束光分裂为偏振方向垂直的o光和e光 · 拖动旋转视角'
             : 'Calcite crystal splits light into o-ray and e-ray with perpendicular polarizations'}
@@ -584,7 +586,7 @@ export function BirefringenceDemo() {
             {/* 3D可视化面板 */}
             <div className={cn(
               "rounded-xl border overflow-hidden",
-              theme === 'dark'
+              dt.isDark
                 ? "bg-slate-900/50 border-cyan-400/20"
                 : "bg-white border-cyan-200 shadow-sm"
             )} style={{ height: 400 }}>
@@ -633,7 +635,7 @@ export function BirefringenceDemo() {
                   className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     animate
                       ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
-                      : 'bg-slate-700/50 text-gray-400 border border-slate-600'
+                      : `border ${dt.inactiveButtonClass}`
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -664,7 +666,7 @@ export function BirefringenceDemo() {
                   onChange={setOpticalAxisAngle}
                   color="orange"
                 />
-                <div className="text-xs text-gray-400 mt-1">
+                <div className={`text-xs ${dt.mutedTextClass} mt-1`}>
                   <span>{isZh ? '有效偏振角 (θ): ' : 'Effective θ: '}</span>
                   <span className="text-yellow-400 font-mono">
                     {((inputPolarization - opticalAxisAngle + 180) % 180).toFixed(0)}°
@@ -694,7 +696,7 @@ export function BirefringenceDemo() {
                     />
                   ))}
                 </div>
-                <div className="text-xs text-gray-400 mt-2 space-y-1">
+                <div className={`text-xs ${dt.mutedTextClass} mt-2 space-y-1`}>
                   <div className="flex justify-between">
                     <span>{isZh ? '光束分离因子:' : 'Separation:'}</span>
                     <span className="text-purple-400 font-mono">{separationFactor.toFixed(3)}</span>
@@ -710,7 +712,7 @@ export function BirefringenceDemo() {
                   unit="%"
                   color="red"
                 />
-                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-2 ${dt.barTrackClass} rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-red-500"
                     animate={{ width: `${oIntensity * 100}%` }}
@@ -723,7 +725,7 @@ export function BirefringenceDemo() {
                   unit="%"
                   color="green"
                 />
-                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-2 ${dt.barTrackClass} rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-green-500"
                     animate={{ width: `${eIntensity * 100}%` }}
@@ -737,7 +739,7 @@ export function BirefringenceDemo() {
             {/* 晶体参数信息 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ControlPanel title={isZh ? "方解石参数" : "Calcite Properties"}>
-                <div className="grid grid-cols-2 gap-4 text-xs text-gray-400">
+                <div className={`grid grid-cols-2 gap-4 text-xs ${dt.mutedTextClass}`}>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>{isZh ? 'o光折射率' : 'o-ray index'} (no):</span>
@@ -767,7 +769,7 @@ export function BirefringenceDemo() {
                     </div>
                   </div>
                 </div>
-                <div className="pt-2 mt-2 border-t border-slate-700 text-xs text-gray-500">
+                <div className={`pt-2 mt-2 border-t ${dt.borderClass} text-xs ${dt.subtleTextClass}`}>
                   {isZh
                     ? '方解石是典型的负单轴晶体 (ne < no)，具有显著的双折射效应。调整光轴方向可观察光束分离的变化。'
                     : 'Calcite is a typical negative uniaxial crystal (ne < no) with significant birefringence. Adjust the optical axis to observe beam separation changes.'}
@@ -775,7 +777,7 @@ export function BirefringenceDemo() {
               </ControlPanel>
 
               <ControlPanel title={isZh ? "物理说明" : "Physics Notes"}>
-                <div className="text-xs text-gray-400 space-y-2">
+                <div className={`text-xs ${dt.mutedTextClass} space-y-2`}>
                   <p>
                     {isZh
                       ? '• o光（寻常光）：偏振方向垂直于主截面，遵循普通折射定律'
@@ -803,21 +805,21 @@ export function BirefringenceDemo() {
             {/* 现实应用场景 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InfoCard title={isZh ? "偏光显微镜" : "Polarization Microscopy"} color="cyan">
-                <p className="text-xs text-gray-300">
+                <p className="text-xs ${dt.bodyClass}">
                   {isZh
                     ? '利用双折射原理观察矿物和生物样本的微观结构，不同晶体取向显示不同干涉色。'
                     : 'Uses birefringence to observe minerals and biological samples, showing interference colors based on crystal orientation.'}
                 </p>
               </InfoCard>
               <InfoCard title={isZh ? "应力分析" : "Stress Analysis"} color="purple">
-                <p className="text-xs text-gray-300">
+                <p className="text-xs ${dt.bodyClass}">
                   {isZh
                     ? '透明材料受力时产生应力双折射，用于检测玻璃、塑料中的内应力分布。'
                     : 'Stressed transparent materials become birefringent, used to detect internal stress in glass and plastics.'}
                 </p>
               </InfoCard>
               <InfoCard title={isZh ? "宝石鉴定" : "Gem Identification"} color="orange">
-                <p className="text-xs text-gray-300">
+                <p className="text-xs ${dt.bodyClass}">
                   {isZh
                     ? '通过方解石观察宝石的双像效应，可以鉴别天然宝石与仿制品。'
                     : 'Observe double image effect through calcite to distinguish natural gems from imitations.'}
@@ -837,17 +839,17 @@ export function BirefringenceDemo() {
             {/* Real World Lab content */}
             <div className={cn(
               "rounded-xl border p-4",
-              theme === 'dark'
+              dt.isDark
                 ? "bg-slate-900/50 border-emerald-400/20"
                 : "bg-white border-emerald-200 shadow-sm"
             )}>
               <div className="flex items-center gap-2 mb-4">
-                <Beaker className={cn("w-5 h-5", theme === 'dark' ? "text-emerald-400" : "text-emerald-600")} />
-                <h3 className={cn("text-lg font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>
+                <Beaker className={cn("w-5 h-5", dt.isDark ? "text-emerald-400" : "text-emerald-600")} />
+                <h3 className={cn("text-lg font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>
                   {isZh ? '厚度与干涉色实验' : 'Thickness & Interference Color Experiment'}
                 </h3>
               </div>
-              <p className="text-gray-400 text-sm mb-4">
+              <p className={`${dt.mutedTextClass} text-sm mb-4`}>
                 {isZh
                   ? '在正交偏振系统中，双折射材料的厚度直接影响观察到的干涉色。增加保鲜膜层数，观察颜色如何变化！'
                   : 'In crossed polarizers, the thickness of birefringent materials directly affects the observed interference colors. Add layers of plastic wrap and observe the color changes!'}
@@ -858,17 +860,17 @@ export function BirefringenceDemo() {
             {/* Stress comparison */}
             <div className={cn(
               "rounded-xl border p-4",
-              theme === 'dark'
+              dt.isDark
                 ? "bg-slate-900/50 border-purple-400/20"
                 : "bg-white border-purple-200 shadow-sm"
             )}>
               <div className="flex items-center gap-2 mb-4">
-                <FlaskConical className={cn("w-5 h-5", theme === 'dark' ? "text-purple-400" : "text-purple-600")} />
-                <h3 className={cn("text-lg font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>
+                <FlaskConical className={cn("w-5 h-5", dt.isDark ? "text-purple-400" : "text-purple-600")} />
+                <h3 className={cn("text-lg font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>
                   {isZh ? '玻璃应力对比' : 'Glass Stress Comparison'}
                 </h3>
               </div>
-              <p className="text-gray-400 text-sm mb-4">
+              <p className={`${dt.mutedTextClass} text-sm mb-4`}>
                 {isZh
                   ? '钢化玻璃经过热处理产生预应力，在正交偏振下显示特征图案。拖动滑块对比钢化玻璃和普通玻璃的差异！'
                   : 'Tempered glass has pre-stress from heat treatment, showing characteristic patterns under crossed polarizers. Drag the slider to compare tempered and ordinary glass!'}
@@ -878,7 +880,7 @@ export function BirefringenceDemo() {
 
             {/* Tips card */}
             <InfoCard title={isZh ? "实验提示" : "Experiment Tips"} color="green">
-              <ul className="text-xs text-gray-300 space-y-1 list-disc pl-4">
+              <ul className="text-xs ${dt.bodyClass} space-y-1 list-disc pl-4">
                 <li>{isZh ? '保鲜膜、透明胶带等塑料薄膜都具有双折射性' : 'Plastic wrap, clear tape and other thin films are birefringent'}</li>
                 <li>{isZh ? '颜色随厚度周期变化，形成Michel-Lévy色阶' : 'Colors change periodically with thickness, forming the Michel-Lévy scale'}</li>
                 <li>{isZh ? '旋转样品或偏振片可以看到颜色变化' : 'Rotate the sample or polarizer to see color changes'}</li>

@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import {
   ChevronDown,
@@ -107,6 +108,7 @@ function MediaThumbnail({
   isVideo?: boolean
   size?: 'sm' | 'md' | 'lg' | 'xl'
 }) {
+  const dt = useDemoTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
   const sizeClasses = {
@@ -118,7 +120,7 @@ function MediaThumbnail({
 
   return (
     <motion.button
-      className={`${sizeClasses[size]} relative rounded-lg overflow-hidden border border-slate-600/50
+      className={`${sizeClasses[size]} relative rounded-lg overflow-hidden border ${dt.isDark ? 'border-slate-600/50' : 'border-slate-300/50'}
         hover:border-purple-500/50 transition-all group cursor-pointer`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
@@ -318,7 +320,7 @@ function MediaModal({
                     ? (isZh ? '艺术创作' : 'Art')
                     : (isZh ? '实验记录' : 'Experiment')}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-400">
                   {item.type === 'video' ? (isZh ? '视频' : 'Video') : (isZh ? '图片' : 'Image')}
                 </span>
               </div>
@@ -383,13 +385,14 @@ function CategoryTab({
   onClick: () => void
   count: number
 }) {
+  const dt = useDemoTheme()
   return (
     <button
       onClick={onClick}
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
         active
           ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-          : 'bg-slate-700/50 text-gray-400 hover:text-gray-300 hover:bg-slate-600/50'
+          : `${dt.isDark ? 'bg-slate-700/50 text-gray-400 hover:text-gray-300 hover:bg-slate-600/50' : 'bg-slate-100 text-gray-500 hover:text-gray-700 hover:bg-slate-200/50'}`
       }`}
     >
       <Icon className="w-3.5 h-3.5" />
@@ -407,13 +410,14 @@ function SeriesLinkCard({
   series: CulturalSeries
   isZh: boolean
 }) {
+  const dt = useDemoTheme()
   return (
     <Link
       to={`/experiments/showcase`}
-      className="group flex items-center gap-3 p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50
-        hover:border-pink-500/50 hover:bg-slate-800 transition-all"
+      className={`group flex items-center gap-3 p-2.5 rounded-lg ${dt.panelClass} border
+        hover:border-pink-500/50 transition-all ${dt.isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}
     >
-      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-slate-900">
+      <div className={`w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 ${dt.isDark ? 'bg-slate-900' : 'bg-slate-100'}`}>
         <img
           src={series.thumbnail}
           alt={isZh ? series.nameZh : series.name}
@@ -422,14 +426,14 @@ function SeriesLinkCard({
         />
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="text-xs font-medium text-white truncate group-hover:text-pink-300 transition-colors">
+        <h4 className={`text-xs font-medium truncate group-hover:text-pink-300 transition-colors ${dt.isDark ? 'text-white' : 'text-gray-800'}`}>
           {isZh ? series.nameZh : series.name}
         </h4>
-        <p className="text-[10px] text-gray-500 truncate">
+        <p className={`text-[10px] ${dt.mutedTextClass} truncate`}>
           {series.mediaCount} {isZh ? '个媒体' : 'items'}
         </p>
       </div>
-      <ExternalLink className="w-3.5 h-3.5 text-gray-600 group-hover:text-pink-400 transition-colors flex-shrink-0" />
+      <ExternalLink className={`w-3.5 h-3.5 group-hover:text-pink-400 transition-colors flex-shrink-0 ${dt.isDark ? 'text-gray-600' : 'text-gray-400'}`} />
     </Link>
   )
 }
@@ -516,7 +520,7 @@ export function MediaGalleryPanel() {
           <h3 className={cn("text-sm font-semibold", theme === 'dark' ? 'text-white' : 'text-gray-800')}>
             {isZh ? '真实实验场景' : 'Real Experiment Scenes'}
           </h3>
-          <span className="text-xs text-gray-500">
+          <span className={cn("text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
             ({allMedia.all.length} {isZh ? '个' : 'items'})
           </span>
         </div>
@@ -524,7 +528,7 @@ export function MediaGalleryPanel() {
           animate={{ rotate: isExpanded ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-5 h-5 text-gray-400" />
+          <ChevronDown className={cn("w-5 h-5", theme === 'dark' ? 'text-gray-400' : 'text-gray-500')} />
         </motion.div>
       </button>
 
@@ -545,7 +549,7 @@ export function MediaGalleryPanel() {
                   ? '包含实验室拍摄的色偏振照片和视频：应力双折射、保鲜膜干涉、透明胶带效果等真实实验记录，以及偏振艺术文创作品展示。'
                   : 'Contains lab-captured chromatic polarization photos and videos: stress birefringence, plastic wrap interference, tape effects, and polarization art creations.'}
               </p>
-              <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-500">
+              <div className={cn("flex items-center gap-3 mt-2 text-[10px]", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
                 <span className="flex items-center gap-1">
                   <FlaskConical className="w-3 h-3" />
                   {allMedia.experiments.length} {isZh ? '实验记录' : 'experiments'}
@@ -560,7 +564,7 @@ export function MediaGalleryPanel() {
 
           {/* 缩略图预览 - 使用更大的网格布局 */}
           <div>
-            <p className="text-[10px] text-gray-500 mb-3 uppercase tracking-wider">
+            <p className={cn("text-[10px] mb-3 uppercase tracking-wider", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
               {isZh ? '精选预览' : 'Featured Preview'}
             </p>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
@@ -666,9 +670,9 @@ export function MediaGalleryPanel() {
               </div>
 
               {/* 文创作品系列链接 */}
-              <div className="mt-4 pt-4 border-t border-slate-700/50">
+              <div className={cn("mt-4 pt-4 border-t", theme === 'dark' ? 'border-slate-700/50' : 'border-slate-200')}>
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-medium text-gray-400 flex items-center gap-2">
+                  <h4 className={cn("text-xs font-medium flex items-center gap-2", theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
                     <Palette className="w-3.5 h-3.5" />
                     {isZh ? '相关文创作品系列' : 'Related Art Series'}
                   </h4>

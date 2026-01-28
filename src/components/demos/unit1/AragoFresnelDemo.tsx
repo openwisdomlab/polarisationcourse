@@ -16,7 +16,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import {
   SliderControl,
@@ -113,6 +113,7 @@ function InterferencePattern({
   showAnalyzer: boolean
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const dt = useDemoTheme()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -131,7 +132,7 @@ function InterferencePattern({
     ctx.scale(dpr, dpr)
 
     // 清除背景
-    ctx.fillStyle = '#0f172a'
+    ctx.fillStyle = dt.canvasBg
     ctx.fillRect(0, 0, width, height)
 
     // 计算干涉图样
@@ -178,7 +179,7 @@ function InterferencePattern({
     ctx.textAlign = 'right'
     ctx.fillText(`V = ${(visibility * 100).toFixed(1)}%`, width - 10, 20)
 
-  }, [pol1, pol2, analyzerAngle, wavelength, slitSeparation, screenDistance, showAnalyzer])
+  }, [pol1, pol2, analyzerAngle, wavelength, slitSeparation, screenDistance, showAnalyzer, dt.isDark])
 
   return (
     <canvas
@@ -203,7 +204,7 @@ function OpticalSetupDiagram({
   showAnalyzer: boolean
   animate: boolean
 }) {
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
   const timeRef = useRef(0)
 
   useEffect(() => {
@@ -237,7 +238,7 @@ function OpticalSetupDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="600" height="200" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
+      <rect x="0" y="0" width="600" height="200" fill={dt.canvasBg} rx="8" />
 
       {/* 光源 */}
       <motion.circle
@@ -249,14 +250,14 @@ function OpticalSetupDiagram({
         animate={animate ? { scale: [1, 1.1, 1] } : {}}
         transition={{ duration: 1.5, repeat: Infinity }}
       />
-      <text x="40" y="135" textAnchor="middle" fill="#94a3b8" fontSize="10">偏振光源</text>
+      <text x="40" y="135" textAnchor="middle" fill={dt.textSecondary} fontSize="10">偏振光源</text>
 
       {/* 双缝 */}
-      <rect x="140" y="20" width="10" height="60" fill="#475569" />
-      <rect x="140" y="120" width="10" height="60" fill="#475569" />
-      <rect x="142" y="80" width="6" height="15" fill="#1e293b" /> {/* 上缝 */}
-      <rect x="142" y="105" width="6" height="15" fill="#1e293b" /> {/* 下缝 */}
-      <text x="145" y="195" textAnchor="middle" fill="#94a3b8" fontSize="10">双缝</text>
+      <rect x="140" y="20" width="10" height="60" fill={dt.axisColor} />
+      <rect x="140" y="120" width="10" height="60" fill={dt.axisColor} />
+      <rect x="142" y="80" width="6" height="15" fill={dt.detectorFill} /> {/* 上缝 */}
+      <rect x="142" y="105" width="6" height="15" fill={dt.detectorFill} /> {/* 下缝 */}
+      <text x="145" y="195" textAnchor="middle" fill={dt.textSecondary} fontSize="10">双缝</text>
 
       {/* 偏振片1和2（在双缝后） */}
       <g>
@@ -363,13 +364,13 @@ function OpticalSetupDiagram({
       )}
 
       {/* 屏幕 */}
-      <rect x="550" y="40" width="10" height="120" fill="#1e293b" stroke="#475569" strokeWidth="1" rx="2" />
-      <text x="555" y="175" textAnchor="middle" fill="#94a3b8" fontSize="10">屏幕</text>
+      <rect x="550" y="40" width="10" height="120" fill={dt.detectorFill} stroke={dt.axisColor} strokeWidth="1" rx="2" />
+      <text x="555" y="175" textAnchor="middle" fill={dt.textSecondary} fontSize="10">屏幕</text>
 
       {/* 偏振状态说明 */}
       <g transform="translate(480, 15)">
-        <rect x="0" y="0" width="110" height="55" fill="rgba(30,41,59,0.9)" rx="4" stroke="#475569" />
-        <text x="10" y="15" fill="#94a3b8" fontSize="9">偏振状态:</text>
+        <rect x="0" y="0" width="110" height="55" fill={dt.infoPanelBg} rx="4" stroke={dt.infoPanelStroke} />
+        <text x="10" y="15" fill={dt.textSecondary} fontSize="9">偏振状态:</text>
         <line x1="10" y1="28" x2="30" y2="28" stroke="#ff6b6b" strokeWidth="2" />
         <text x="35" y="31" fill="#ff6b6b" fontSize="9">光束1 ({pol1}°)</text>
         <line x1="10" y1="43" x2="30" y2="43" stroke="#4ecdc4" strokeWidth="2" />
@@ -391,6 +392,7 @@ function PolarizationVectorDiagram({
   analyzerAngle: number
   showAnalyzer: boolean
 }) {
+  const dt = useDemoTheme()
   return (
     <svg viewBox="0 0 200 200" className="w-full h-auto">
       <defs>
@@ -406,9 +408,9 @@ function PolarizationVectorDiagram({
       </defs>
 
       {/* 背景和坐标轴 */}
-      <circle cx="100" cy="100" r="80" fill="#1e293b" stroke="#475569" strokeWidth="1" />
-      <line x1="20" y1="100" x2="180" y2="100" stroke="#475569" strokeWidth="1" />
-      <line x1="100" y1="20" x2="100" y2="180" stroke="#475569" strokeWidth="1" />
+      <circle cx="100" cy="100" r="80" fill={dt.detectorFill} stroke={dt.axisColor} strokeWidth="1" />
+      <line x1="20" y1="100" x2="180" y2="100" stroke={dt.axisColor} strokeWidth="1" />
+      <line x1="100" y1="20" x2="100" y2="180" stroke={dt.axisColor} strokeWidth="1" />
 
       {/* 偏振矢量1 */}
       <line
@@ -459,11 +461,11 @@ function PolarizationVectorDiagram({
       )}
 
       {/* 角度标注 */}
-      <text x="160" y="95" fill="#94a3b8" fontSize="10">0°</text>
-      <text x="95" y="18" fill="#94a3b8" fontSize="10">90°</text>
+      <text x="160" y="95" fill={dt.textSecondary} fontSize="10">0°</text>
+      <text x="95" y="18" fill={dt.textSecondary} fontSize="10">90°</text>
 
       {/* 夹角 */}
-      <text x="100" y="195" fill="#94a3b8" fontSize="11" textAnchor="middle">
+      <text x="100" y="195" fill={dt.textSecondary} fontSize="11" textAnchor="middle">
         Δθ = {Math.abs(pol1 - pol2)}° {Math.abs(pol1 - pol2) === 90 ? '(正交)' : ''}
       </text>
     </svg>
@@ -473,7 +475,7 @@ function PolarizationVectorDiagram({
 // 主演示组件
 export function AragoFresnelDemo() {
   const { t } = useTranslation()
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
 
   // 状态
   const [pol1, setPol1] = useState(0)      // 光束1偏振角
@@ -507,10 +509,10 @@ export function AragoFresnelDemo() {
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-pink-100 to-white' : 'from-pink-800 via-pink-600 to-pink-800'} bg-clip-text text-transparent`}>
           {t('demoUi.aragoFresnel.title') || '阿拉戈-菲涅尔定律'}
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${dt.mutedTextClass} mt-1`}>
           {t('demoUi.aragoFresnel.subtitle') || '正交偏振光的干涉与检偏器的作用'}
         </p>
       </div>
@@ -523,7 +525,7 @@ export function AragoFresnelDemo() {
             className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
               pol1 === preset.pol1 && pol2 === preset.pol2 && showAnalyzer === preset.analyzer
                 ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50'
-                : 'bg-slate-800/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+                : `${dt.inactiveButtonClass} hover:border-slate-500`
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -544,8 +546,13 @@ export function AragoFresnelDemo() {
         {/* 左侧：光路图和干涉图样 */}
         <div className="lg:col-span-2 space-y-4">
           {/* 光路示意图 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90 border border-pink-500/30 p-4">
-            <h3 className="text-sm font-semibold text-white mb-3">光路示意图</h3>
+          <div className={cn(
+            "rounded-xl border p-4",
+            dt.isDark
+              ? "bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90 border-pink-500/30"
+              : "bg-gradient-to-br from-slate-50 via-white to-pink-50/30 border-pink-200/40"
+          )}>
+            <h3 className={`text-sm font-semibold ${dt.isDark ? 'text-white' : 'text-gray-800'} mb-3`}>光路示意图</h3>
             <OpticalSetupDiagram
               pol1={pol1}
               pol2={pol2}
@@ -558,12 +565,12 @@ export function AragoFresnelDemo() {
           {/* 干涉图样 */}
           <div className={cn(
             "rounded-xl border p-4",
-            theme === 'dark'
+            dt.isDark
               ? "bg-slate-900/80 border-slate-600/30"
               : "bg-white border-gray-200 shadow-sm"
           )}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className={cn("text-sm font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>干涉图样</h3>
+              <h3 className={cn("text-sm font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>干涉图样</h3>
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 visibility > 0.5 ? 'bg-green-500/20 text-green-400' :
                 visibility > 0.1 ? 'bg-yellow-500/20 text-yellow-400' :
@@ -637,8 +644,8 @@ export function AragoFresnelDemo() {
             />
 
             {/* 检偏器开关 */}
-            <div className="flex items-center justify-between py-2 border-t border-slate-700/50">
-              <span className="text-xs text-gray-400">启用检偏器</span>
+            <div className={`flex items-center justify-between py-2 border-t ${dt.borderClass}`}>
+              <span className={`text-xs ${dt.mutedTextClass}`}>启用检偏器</span>
               <Toggle
                 label=""
                 checked={showAnalyzer}
@@ -665,7 +672,7 @@ export function AragoFresnelDemo() {
               className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 animate
                   ? 'bg-pink-400/20 text-pink-400 border border-pink-400/50'
-                  : 'bg-slate-700/50 text-gray-400 border border-slate-600'
+                  : `border ${dt.inactiveButtonClass}`
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -700,22 +707,22 @@ export function AragoFresnelDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <InfoCard title="阿拉戈-菲涅尔第一定律" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             两束来自同一偏振光源、偏振方向相同的相干光可以产生干涉。这是最基本的干涉条件。
           </p>
         </InfoCard>
         <InfoCard title="阿拉戈-菲涅尔第二定律" color="orange">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             两束正交偏振的光不能产生干涉条纹，因为它们在任何方向上的投影分量不相关。这是本演示的核心现象。
           </p>
         </InfoCard>
         <InfoCard title="检偏器的作用" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             检偏器将两束正交光投影到同一方向。虽然各自强度减半，但投影后的分量可以干涉，条纹重新出现。
           </p>
         </InfoCard>
         <InfoCard title="相干性要求" color="orange">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             阿拉戈-菲涅尔第三定律指出：从自然光分出的两束正交偏振光即使通过偏振片转为同向，也不能干涉，因为它们本身不相干。
           </p>
         </InfoCard>
@@ -724,27 +731,27 @@ export function AragoFresnelDemo() {
       {/* 公式说明 */}
       <div className={cn(
         "rounded-xl border p-4",
-        theme === 'dark'
+        dt.isDark
           ? "bg-slate-900/50 border-slate-700/50"
           : "bg-white border-gray-200 shadow-sm"
       )}>
-        <h3 className={cn("text-sm font-semibold mb-3", theme === 'dark' ? "text-white" : "text-gray-800")}>干涉公式</h3>
+        <h3 className={cn("text-sm font-semibold mb-3", dt.isDark ? "text-white" : "text-gray-800")}>干涉公式</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="p-3 bg-slate-800/50 rounded-lg">
+          <div className={`p-3 ${dt.isDark ? 'bg-slate-800/50' : 'bg-slate-100'} rounded-lg`}>
             <div className="font-mono text-cyan-400 mb-1">无检偏器时:</div>
-            <div className="text-gray-300">
+            <div className={dt.bodyClass}>
               I = I₁ + I₂ + 2√(I₁I₂)·cos(δ)·cos²(Δθ/2)
             </div>
-            <div className="text-gray-500 mt-1">
+            <div className={`${dt.subtleTextClass} mt-1`}>
               当 Δθ = 90° 时，cos²(45°) = 0.5，干涉项消失
             </div>
           </div>
-          <div className="p-3 bg-slate-800/50 rounded-lg">
+          <div className={`p-3 ${dt.isDark ? 'bg-slate-800/50' : 'bg-slate-100'} rounded-lg`}>
             <div className="font-mono text-purple-400 mb-1">有检偏器时:</div>
-            <div className="text-gray-300">
+            <div className={dt.bodyClass}>
               I = |E₁·cos(θ₁-α) + E₂·cos(θ₂-α)·e^(iδ)|²
             </div>
-            <div className="text-gray-500 mt-1">
+            <div className={`${dt.subtleTextClass} mt-1`}>
               检偏器角度 α 将两束光投影到同一方向
             </div>
           </div>

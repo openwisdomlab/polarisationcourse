@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { Waves, BarChart3 } from 'lucide-react'
 import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard, Formula } from '../DemoControls'
 import { DifficultyLevel, useDifficultyConfig, WhyButton, DifficultyGate } from '../DifficultyStrategy'
+import { useDemoTheme } from '../demoThemeColors'
 
 type ViewMode = 'wave' | 'spectrum'
 
@@ -199,6 +200,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
   const { t, i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
   const config = useDifficultyConfig(difficultyLevel)
+  const dt = useDemoTheme()
 
   // View mode state
   const [viewMode, setViewMode] = useState<ViewMode>('wave')
@@ -289,13 +291,13 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
   return (
     <div className="space-y-6">
       {/* View Mode Tabs */}
-      <div className="flex gap-2 p-1 bg-slate-800/50 rounded-lg w-fit">
+      <div className={`flex gap-2 p-1 ${dt.tabBgClass} rounded-lg w-fit`}>
         <button
           onClick={() => setViewMode('wave')}
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
             viewMode === 'wave'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50'
+              : dt.tabInactiveClass
           }`}
         >
           <Waves className="w-4 h-4" />
@@ -306,7 +308,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
             viewMode === 'spectrum'
               ? 'bg-purple-500/20 text-purple-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-300 hover:bg-slate-700/50'
+              : dt.tabInactiveClass
           }`}
         >
           <BarChart3 className="w-4 h-4" />
@@ -326,7 +328,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
             {/* Wave View Content */}
             <div className="flex gap-6 flex-col lg:flex-row">
               <div className="flex-1">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+                <div className={`${dt.svgContainerClassBlue} rounded-xl border p-4 overflow-hidden`}>
                   <svg
                     viewBox="0 0 700 300"
                     className="w-full h-auto"
@@ -334,7 +336,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                   >
                     <defs>
                       <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,150,255,0.08)" strokeWidth="1"/>
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1"/>
                       </pattern>
                       <filter id="glow">
                         <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -347,12 +349,12 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                     <rect width="700" height="300" fill="url(#grid)" />
 
                     {/* Axes */}
-                    <line x1="50" y1="150" x2="670" y2="150" stroke="#4b5563" strokeWidth="1.5" />
-                    <line x1="50" y1="50" x2="50" y2="250" stroke="#4b5563" strokeWidth="1.5" />
-                    <polygon points="670,150 660,145 660,155" fill="#4b5563" />
-                    <polygon points="50,50 45,60 55,60" fill="#4b5563" />
-                    <text x="680" y="155" fill="#9ca3af" fontSize="14">x</text>
-                    <text x="55" y="45" fill="#9ca3af" fontSize="14">E</text>
+                    <line x1="50" y1="150" x2="670" y2="150" stroke={dt.axisColor} strokeWidth="1.5" />
+                    <line x1="50" y1="50" x2="50" y2="250" stroke={dt.axisColor} strokeWidth="1.5" />
+                    <polygon points="670,150 660,145 660,155" fill={dt.axisColor} />
+                    <polygon points="50,50 45,60 55,60" fill={dt.axisColor} />
+                    <text x="680" y="155" fill={dt.textSecondary} fontSize="14">x</text>
+                    <text x="55" y="45" fill={dt.textSecondary} fontSize="14">E</text>
                     {showBField && (
                       <text x="55" y="265" fill="#60a5fa" fontSize="12">B</text>
                     )}
@@ -396,22 +398,22 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
 
                     {/* Wavelength marker */}
                     <g transform="translate(150, 220)">
-                      <line x1="0" y1="0" x2="0" y2="15" stroke="#6b7280" strokeWidth="1" />
-                      <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke="#6b7280" strokeWidth="1" />
-                      <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke="#6b7280" strokeWidth="1" />
-                      <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill="#9ca3af" fontSize="11" textAnchor="middle">
+                      <line x1="0" y1="0" x2="0" y2="15" stroke={dt.textMuted} strokeWidth="1" />
+                      <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke={dt.textMuted} strokeWidth="1" />
+                      <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke={dt.textMuted} strokeWidth="1" />
+                      <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill={dt.textSecondary} fontSize="11" textAnchor="middle">
                         λ = {wavelength} nm
                       </text>
                     </g>
 
-                    <text x="600" y="30" fill="#6b7280" fontSize="11">c ≈ 2.998×10⁸ m/s</text>
+                    <text x="600" y="30" fill={dt.textMuted} fontSize="11">c ≈ 2.998×10⁸ m/s</text>
                     <rect x="600" y="40" width="60" height="20" rx="4" fill={waveColor} opacity="0.8" />
                   </svg>
                 </div>
 
                 {/* Visible Spectrum Bar */}
-                <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                  <h4 className="text-sm font-semibold text-gray-300 mb-2">{t('demoUi.common.visibleSpectrum')}</h4>
+                <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
+                  <h4 className={`text-sm font-semibold ${dt.headingClass} mb-2`}>{t('demoUi.common.visibleSpectrum')}</h4>
                   <div
                     className="h-8 rounded cursor-pointer relative"
                     style={{
@@ -431,7 +433,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                       layoutId="wavelength-indicator"
                     />
                   </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <div className={`flex justify-between text-xs ${dt.mutedTextClass} mt-1`}>
                     <span>380 nm ({t('demoUi.common.violet')})</span>
                     <span>550 nm ({t('demoUi.common.green')})</span>
                     <span>700 nm ({t('demoUi.common.red')})</span>
@@ -488,7 +490,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                   {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
                 </motion.button>
 
-                <div className="pt-2 border-t border-slate-700">
+                <div className={`pt-2 border-t ${dt.borderClass}`}>
                   <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
                   {/* 使用精确光速值 c = 2.998×10^8 m/s 计算频率 f = c/λ */}
                   <ValueDisplay label={t('demoUi.common.frequency')} value={`${(2.998e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
@@ -519,7 +521,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
             <DifficultyGate level="application" currentLevel={difficultyLevel} showWhen="at-least">
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InfoCard title={isZh ? '电磁波特性' : 'EM Wave Properties'} color="cyan">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
                     <li>• {isZh ? 'E场和B场相互垂直' : 'E and B fields are perpendicular'}</li>
                     <li>• {isZh ? '横波：振动方向垂直于传播方向' : 'Transverse: oscillation ⊥ propagation'}</li>
                     <li>• {isZh ? '真空中速度恒定：c = 3×10⁸ m/s' : 'Constant speed in vacuum: c = 3×10⁸ m/s'}</li>
@@ -529,7 +531,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                   )}
                 </InfoCard>
                 <InfoCard title={isZh ? '与偏振的联系' : 'Connection to Polarization'} color="purple">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
                     <li>• {isZh ? '偏振描述电场振动方向' : 'Polarization describes E-field oscillation direction'}</li>
                     <li>• {isZh ? '自然光包含所有偏振方向' : 'Natural light contains all polarization directions'}</li>
                     <li>• {isZh ? '只有横波才能偏振' : 'Only transverse waves can be polarized'}</li>
@@ -549,11 +551,11 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
             {/* Spectrum View Content */}
             <div className="flex gap-6 flex-col lg:flex-row">
               <div className="flex-1">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 rounded-xl border border-indigo-500/20 p-4 overflow-hidden">
+                <div className={`${dt.svgContainerClass} rounded-xl border p-4 overflow-hidden`}>
                   <svg viewBox="0 0 800 380" className="w-full h-auto" style={{ minHeight: '360px' }}>
                     <defs>
                       <pattern id="spectrum-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,150,255,0.05)" strokeWidth="1" />
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1" />
                       </pattern>
                       <linearGradient id="visible-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stopColor="#ff0000" />
@@ -575,14 +577,14 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
 
                     <rect width="800" height="380" fill="url(#spectrum-grid)" />
 
-                    <text x="400" y="25" textAnchor="middle" fill="#e2e8f0" fontSize="16" fontWeight="bold">
+                    <text x="400" y="25" textAnchor="middle" fill={dt.textPrimary} fontSize="16" fontWeight="bold">
                       {isZh ? '电磁波谱' : 'Electromagnetic Spectrum'}
                     </text>
 
                     {/* Atmosphere penetration */}
                     {showAtmosphere && (
                       <g transform="translate(50, 40)">
-                        <text x="0" y="0" fill="#9ca3af" fontSize="10">
+                        <text x="0" y="0" fill={dt.textSecondary} fontSize="10">
                           {isZh ? '大气穿透性' : 'Atm. Penetration'}
                         </text>
                         <g transform="translate(0, 8)">
@@ -600,7 +602,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                                   opacity="0.3"
                                   rx="2"
                                 />
-                                <text x={x + width / 2} y="11" textAnchor="middle" fill="#fff" fontSize="8">
+                                <text x={x + width / 2} y="11" textAnchor="middle" fill={dt.svgWhiteText} fontSize="8">
                                   {region.canPenetrate ? (isZh ? '是' : 'Y') : (isZh ? '否' : 'N')}
                                 </text>
                               </g>
@@ -651,13 +653,13 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
 
                       {/* Wavelength scale */}
                       <g transform="translate(0, 70)">
-                        <text x="0" y="0" fill="#6b7280" fontSize="9">
+                        <text x="0" y="0" fill={dt.textMuted} fontSize="9">
                           {isZh ? '波长' : 'λ (m)'}
                         </text>
                         {SPECTRUM_REGIONS.map((region, index) => {
                           const x = index * 100 + 50
                           return (
-                            <text key={`wl-${region.id}`} x={x} y="15" textAnchor="middle" fill="#9ca3af" fontSize="9">
+                            <text key={`wl-${region.id}`} x={x} y="15" textAnchor="middle" fill={dt.textSecondary} fontSize="9">
                               {formatScientific(region.wavelengthRange[0])}
                             </text>
                           )
@@ -668,7 +670,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                     {/* Size comparison */}
                     {showSizeComparison && (
                       <g transform="translate(50, 200)">
-                        <text x="0" y="0" fill="#9ca3af" fontSize="10">
+                        <text x="0" y="0" fill={dt.textSecondary} fontSize="10">
                           {isZh ? '波长尺度' : 'Wavelength Scale'}
                         </text>
                         {SPECTRUM_REGIONS.map((region, index) => {
@@ -678,7 +680,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                               <text x={x} y="30" textAnchor="middle" fontSize="24">
                                 {region.sizeIcon}
                               </text>
-                              <text x={x} y="55" textAnchor="middle" fill="#9ca3af" fontSize="9">
+                              <text x={x} y="55" textAnchor="middle" fill={dt.textSecondary} fontSize="9">
                                 {isZh ? region.sizeComparisonZh : region.sizeComparison}
                               </text>
                             </g>
@@ -701,7 +703,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                             y="0"
                             width="700"
                             height="100"
-                            fill="rgba(30,41,59,0.9)"
+                            fill={dt.infoPanelBg}
                             rx="8"
                             stroke={selectedInfo.color}
                             strokeWidth="1"
@@ -710,25 +712,25 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                           <text x="20" y="22" fill={selectedInfo.color} fontSize="14" fontWeight="bold">
                             {isZh ? selectedInfo.nameZh : selectedInfo.name}
                           </text>
-                          <text x="20" y="42" fill="#9ca3af" fontSize="10">
+                          <text x="20" y="42" fill={dt.textSecondary} fontSize="10">
                             {isZh ? '波长：' : 'λ: '}
-                            <tspan fill="#e2e8f0">
+                            <tspan fill={dt.textPrimary}>
                               {formatWavelength(selectedInfo.wavelengthRange[0])} ~ {formatWavelength(selectedInfo.wavelengthRange[1])}
                             </tspan>
                           </text>
-                          <text x="20" y="58" fill="#9ca3af" fontSize="10">
+                          <text x="20" y="58" fill={dt.textSecondary} fontSize="10">
                             {isZh ? '频率：' : 'f: '}
-                            <tspan fill="#e2e8f0">
+                            <tspan fill={dt.textPrimary}>
                               {formatScientific(selectedInfo.frequencyRange[0])} ~ {formatScientific(selectedInfo.frequencyRange[1])} Hz
                             </tspan>
                           </text>
-                          <text x="20" y="74" fill="#9ca3af" fontSize="10">
+                          <text x="20" y="74" fill={dt.textSecondary} fontSize="10">
                             {isZh ? '应用：' : 'Uses: '}
-                            <tspan fill="#e2e8f0">
+                            <tspan fill={dt.textPrimary}>
                               {(isZh ? selectedInfo.applicationsZh : selectedInfo.applications).join(', ')}
                             </tspan>
                           </text>
-                          <text x="20" y="90" fill="#9ca3af" fontSize="10">
+                          <text x="20" y="90" fill={dt.textSecondary} fontSize="10">
                             {isZh ? '大气：' : 'Atm: '}
                             <tspan fill={selectedInfo.canPenetrate ? '#22c55e' : '#ef4444'}>
                               {isZh ? selectedInfo.penetrateInfoZh : selectedInfo.penetrateInfo}
@@ -753,8 +755,8 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                   onChange={setShowSizeComparison}
                 />
 
-                <div className="border-t border-slate-700 pt-4 mt-4">
-                  <h4 className="text-sm font-medium text-gray-300 mb-2">
+                <div className={`border-t ${dt.borderClass} pt-4 mt-4`}>
+                  <h4 className={`text-sm font-medium ${dt.headingClass} mb-2`}>
                     {isZh ? '选择波段' : 'Select Region'}
                   </h4>
                   <div className="grid grid-cols-2 gap-2">
@@ -765,12 +767,12 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                         className={`px-2 py-1.5 rounded text-xs transition-all ${
                           selectedRegion === region.id
                             ? 'bg-opacity-30 border'
-                            : 'bg-slate-800/50 border border-transparent hover:border-slate-600'
+                            : `${dt.buttonBgClass} border`
                         }`}
                         style={{
                           backgroundColor: selectedRegion === region.id ? `${region.color}30` : undefined,
                           borderColor: selectedRegion === region.id ? region.color : undefined,
-                          color: selectedRegion === region.id ? region.color : '#9ca3af',
+                          color: selectedRegion === region.id ? region.color : undefined,
                         }}
                       >
                         {isZh ? region.nameZh : region.name}
@@ -804,7 +806,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
             <DifficultyGate level="application" currentLevel={difficultyLevel} showWhen="at-least">
               <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <InfoCard title={isZh ? '光的本质' : 'Nature of Light'} color="cyan">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
                     <li>• {isZh ? '光是电磁波，不需要介质' : 'Light is EM wave, no medium needed'}</li>
                     <li>• {isZh ? '波长与频率成反比' : 'λ inversely proportional to f'}</li>
                     {config.showFormula && <li className="font-mono text-cyan-400">c = λf = 3×10⁸ m/s</li>}
@@ -812,7 +814,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                 </InfoCard>
 
                 <InfoCard title={isZh ? '能量与波长' : 'Energy & Wavelength'} color="purple">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
                     <li>• {isZh ? '波长越短，能量越高' : 'Shorter λ = higher energy'}</li>
                     <li>• {isZh ? '伽马射线能量最高' : 'Gamma rays have highest energy'}</li>
                     {config.showFormula && <li className="font-mono text-purple-400">E = hf = hc/λ</li>}
@@ -820,7 +822,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                 </InfoCard>
 
                 <InfoCard title={isZh ? '人眼视觉' : 'Human Vision'} color="green">
-                  <ul className="text-xs text-gray-300 space-y-1.5">
+                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
                     <li>• {isZh ? '人眼仅见380-700nm' : 'Eyes see only 380-700nm'}</li>
                     <li>• {isZh ? '对绿光最敏感(~555nm)' : 'Most sensitive to green (~555nm)'}</li>
                     <li>• {isZh ? '可见光只占极小部分' : 'Visible is tiny fraction of spectrum'}</li>

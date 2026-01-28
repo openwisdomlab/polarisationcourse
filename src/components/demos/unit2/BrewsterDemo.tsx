@@ -17,6 +17,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard, Toggle } from '../DemoControls'
+import { useDemoTheme } from '../demoThemeColors'
 import {
   sellmeierIndex,
   cauchyIndex,
@@ -98,6 +99,8 @@ function DispersionCurve({
   material: MaterialData
   currentWavelength: number
 }) {
+  const dt = useDemoTheme()
+
   const curveData = useMemo(() => {
     const points: { x: number; y: number; wavelength: number; n: number }[] = []
     let minN = Infinity, maxN = -Infinity
@@ -146,7 +149,7 @@ function DispersionCurve({
       </defs>
 
       {/* 背景 */}
-      <rect x="30" y="10" width="160" height="60" fill="#1e293b" rx="3" />
+      <rect x="30" y="10" width="160" height="60" fill={dt.canvasBgAlt} rx="3" />
 
       {/* 光谱背景条 */}
       <rect x="30" y="72" width="160" height="6" fill="url(#spectrumGradient)" rx="2" opacity="0.6" />
@@ -171,7 +174,7 @@ function DispersionCurve({
             cy={currentPoint.y}
             r="5"
             fill={currentColor}
-            stroke="#fff"
+            stroke={dt.svgWhiteText}
             strokeWidth="1.5"
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
@@ -180,10 +183,10 @@ function DispersionCurve({
       )}
 
       {/* 坐标轴标签 */}
-      <text x="15" y="45" fill="#94a3b8" fontSize="8" textAnchor="middle" transform="rotate(-90, 15, 45)">n(λ)</text>
-      <text x="30" y="80" fill="#94a3b8" fontSize="7">380</text>
-      <text x="185" y="80" fill="#94a3b8" fontSize="7">780nm</text>
-      <text x="110" y="8" fill="#94a3b8" fontSize="8" textAnchor="middle">n = {currentN.toFixed(4)}</text>
+      <text x="15" y="45" fill={dt.textSecondary} fontSize="8" textAnchor="middle" transform="rotate(-90, 15, 45)">n(λ)</text>
+      <text x="30" y="80" fill={dt.textSecondary} fontSize="7">380</text>
+      <text x="185" y="80" fill={dt.textSecondary} fontSize="7">780nm</text>
+      <text x="110" y="8" fill={dt.textSecondary} fontSize="8" textAnchor="middle">n = {currentN.toFixed(4)}</text>
     </svg>
   )
 }
@@ -196,6 +199,8 @@ function BrewsterWavelengthCurve({
   material: MaterialData
   currentWavelength: number
 }) {
+  const dt = useDemoTheme()
+
   const curveData = useMemo(() => {
     const points: { x: number; y: number; wavelength: number; brewster: number }[] = []
 
@@ -219,7 +224,7 @@ function BrewsterWavelengthCurve({
 
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      <rect x="30" y="10" width="160" height="60" fill="#1e293b" rx="3" />
+      <rect x="30" y="10" width="160" height="60" fill={dt.canvasBgAlt} rx="3" />
 
       {/* 曲线 */}
       <path d={pathD} fill="none" stroke="#f472b6" strokeWidth="2" />
@@ -241,7 +246,7 @@ function BrewsterWavelengthCurve({
             cy={currentPoint.y}
             r="5"
             fill={currentColor}
-            stroke="#fff"
+            stroke={dt.svgWhiteText}
             strokeWidth="1.5"
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
@@ -250,9 +255,9 @@ function BrewsterWavelengthCurve({
       )}
 
       {/* 坐标轴标签 */}
-      <text x="15" y="45" fill="#94a3b8" fontSize="8" textAnchor="middle" transform="rotate(-90, 15, 45)">θB</text>
-      <text x="30" y="80" fill="#94a3b8" fontSize="7">380</text>
-      <text x="185" y="80" fill="#94a3b8" fontSize="7">780nm</text>
+      <text x="15" y="45" fill={dt.textSecondary} fontSize="8" textAnchor="middle" transform="rotate(-90, 15, 45)">θB</text>
+      <text x="30" y="80" fill={dt.textSecondary} fontSize="7">380</text>
+      <text x="185" y="80" fill={dt.textSecondary} fontSize="7">780nm</text>
       <text x="110" y="8" fill="#f472b6" fontSize="8" textAnchor="middle">θB = {currentBrewster.toFixed(2)}°</text>
     </svg>
   )
@@ -340,6 +345,8 @@ function BrewsterDiagram({
   onAngleChange?: (angle: number) => void
   enableDrag?: boolean
 }) {
+  const dt = useDemoTheme()
+
   const result = calculateBrewster(incidentAngle, n1, n2)
   // Use unified engine's brewsterAngle function
   const brewsterAngle = computeBrewsterAngle(n1, n2) * (180 / Math.PI)
@@ -437,12 +444,12 @@ function BrewsterDiagram({
     <svg ref={svgRef} viewBox="0 0 600 400" className="w-full h-auto">
       <defs>
         <linearGradient id="airGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#0f172a" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#1e3a5f" stopOpacity="0.4" />
+          <stop offset="0%" stopColor={dt.isDark ? '#0f172a' : '#bfdbfe'} stopOpacity="0.8" />
+          <stop offset="100%" stopColor={dt.isDark ? '#1e3a5f' : '#93c5fd'} stopOpacity="0.4" />
         </linearGradient>
         <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#1e5f5f" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#0f4c4c" stopOpacity="0.6" />
+          <stop offset="0%" stopColor={dt.isDark ? '#1e5f5f' : '#99f6e4'} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={dt.isDark ? '#0f4c4c' : '#5eead4'} stopOpacity="0.6" />
         </linearGradient>
         <filter id="glowYellow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="4" result="coloredBlur" />
@@ -472,8 +479,8 @@ function BrewsterDiagram({
       <line x1="30" y1="200" x2="570" y2="200" stroke="#67e8f9" strokeWidth="2" />
 
       {/* 法线 */}
-      <line x1={cx} y1="30" x2={cx} y2="370" stroke="#94a3b8" strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
-      <text x={cx + 8} y="45" fill="#94a3b8" fontSize="11">{labels.normal}</text>
+      <line x1={cx} y1="30" x2={cx} y2="370" stroke={dt.textSecondary} strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
+      <text x={cx + 8} y="45" fill={dt.textSecondary} fontSize="11">{labels.normal}</text>
 
       {/* 光源 (Draggable) */}
       <motion.circle
@@ -672,8 +679,8 @@ function BrewsterDiagram({
 
       {/* 图例 */}
       <g transform="translate(450, 30)">
-        <rect x="0" y="0" width="110" height="90" fill="rgba(30,41,59,0.9)" rx="6" stroke="#475569" strokeWidth="1" />
-        <text x="10" y="18" fill="#94a3b8" fontSize="10">{labels.polarizationStates}</text>
+        <rect x="0" y="0" width="110" height="90" fill={dt.infoPanelBg} rx="6" stroke={dt.infoPanelStroke} strokeWidth="1" />
+        <text x="10" y="18" fill={dt.textSecondary} fontSize="10">{labels.polarizationStates}</text>
         <PolarizationIndicator type="unpolarized" x={25} y={35} size={16} color="#fbbf24" />
         <text x="45" y="39" fill="#fbbf24" fontSize="10">{labels.naturalLight}</text>
         <PolarizationIndicator type="s" x={25} y={55} size={16} color="#22d3ee" />
@@ -695,6 +702,7 @@ function PolarizationDegreeChart({
   n2: number
   currentAngle: number
 }) {
+  const dt = useDemoTheme()
   const brewsterAngle = (Math.atan(n2 / n1) * 180) / Math.PI
 
   const { pdPath, rsPath, rpPath } = useMemo(() => {
@@ -731,19 +739,19 @@ function PolarizationDegreeChart({
 
   return (
     <svg viewBox="0 0 300 160" className="w-full h-auto">
-      <rect x="40" y="30" width="220" height="100" fill="#1e293b" rx="4" />
+      <rect x="40" y="30" width="220" height="100" fill={dt.canvasBgAlt} rx="4" />
 
       {/* 坐标轴 */}
-      <line x1="40" y1="130" x2="270" y2="130" stroke="#475569" strokeWidth="1" />
-      <line x1="40" y1="30" x2="40" y2="130" stroke="#475569" strokeWidth="1" />
+      <line x1="40" y1="130" x2="270" y2="130" stroke={dt.axisColor} strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke={dt.axisColor} strokeWidth="1" />
 
       {/* X轴刻度 */}
       {[0, 45, 90].map((angle) => {
         const x = 40 + (angle / 90) * 220
         return (
           <g key={angle}>
-            <line x1={x} y1="130" x2={x} y2="135" stroke="#94a3b8" strokeWidth="1" />
-            <text x={x} y="147" textAnchor="middle" fill="#94a3b8" fontSize="10">{angle}°</text>
+            <line x1={x} y1="130" x2={x} y2="135" stroke={dt.textSecondary} strokeWidth="1" />
+            <text x={x} y="147" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{angle}°</text>
           </g>
         )
       })}
@@ -753,7 +761,7 @@ function PolarizationDegreeChart({
         const y = 130 - val * 100
         return (
           <g key={i}>
-            <text x="30" y={y + 4} textAnchor="end" fill="#94a3b8" fontSize="10">{(val * 100).toFixed(0)}%</text>
+            <text x="30" y={y + 4} textAnchor="end" fill={dt.textSecondary} fontSize="10">{(val * 100).toFixed(0)}%</text>
           </g>
         )
       })}
@@ -799,13 +807,14 @@ function PolarizationDegreeChart({
       />
 
       {/* 轴标签 */}
-      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="11">θ</text>
+      <text x="155" y="158" textAnchor="middle" fill={dt.textSecondary} fontSize="11">θ</text>
     </svg>
   )
 }
 
 // 主演示组件
 export function BrewsterDemo() {
+  const dt = useDemoTheme()
   const { t } = useTranslation()
   const [incidentAngle, setIncidentAngle] = useState(56)
   const [wavelength, setWavelength] = useState(550) // 绿光默认
@@ -857,10 +866,10 @@ export function BrewsterDemo() {
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-cyan-100 to-white' : 'from-slate-800 via-cyan-700 to-slate-800'} bg-clip-text text-transparent`}>
           {t('demoUi.brewster.title')}
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${dt.mutedTextClass} mt-1`}>
           {t('demoUi.brewster.subtitle')}
         </p>
       </div>
@@ -869,7 +878,7 @@ export function BrewsterDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl ${dt.svgContainerClass} border p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]`}>
             <BrewsterDiagram
               incidentAngle={incidentAngle}
               n1={n1}
@@ -879,30 +888,30 @@ export function BrewsterDemo() {
               enableDrag={enableDrag}
             />
             {enableDrag && (
-              <p className="text-xs text-gray-500 text-center mt-2">
+              <p className={`text-xs ${dt.subtleTextClass} text-center mt-2`}>
                 {t('demoUi.brewster.dragHint', '💡 Drag the light source to change incident angle')}
               </p>
             )}
           </div>
 
           {/* 状态指示 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+          <div className={`rounded-xl ${dt.panelClass} border p-4`}>
             <div className="flex items-center justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400">{t('demoUi.brewster.currentIncidentAngle')}</span>
+                  <span className={`text-sm ${dt.mutedTextClass}`}>{t('demoUi.brewster.currentIncidentAngle')}</span>
                   <span className="font-mono text-lg text-orange-400">{incidentAngle}°</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400">{t('demoUi.brewster.brewsterAngle')}</span>
+                  <span className={`text-sm ${dt.mutedTextClass}`}>{t('demoUi.brewster.brewsterAngle')}</span>
                   <span className="font-mono text-lg text-cyan-400">{brewsterAngle.toFixed(1)}°</span>
                 </div>
               </div>
               <div className="text-right">
-                <div className={`text-2xl font-bold ${isAtBrewster ? 'text-green-400' : 'text-gray-500'}`}>
+                <div className={`text-2xl font-bold ${isAtBrewster ? 'text-green-400' : dt.subtleTextClass}`}>
                   {isAtBrewster ? t('demoUi.brewster.match') : `${t('demoUi.brewster.difference')} ${Math.abs(incidentAngle - brewsterAngle).toFixed(1)}°`}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className={`text-sm ${dt.subtleTextClass}`}>
                   {t('demoUi.brewster.polarizationDegree')} <span className="text-purple-400 font-mono">{(polarizationDegree * 100).toFixed(0)}%</span>
                 </div>
               </div>
@@ -910,7 +919,7 @@ export function BrewsterDemo() {
 
             {/* 进度条 */}
             <div className="mt-4">
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div className={`h-2 ${dt.barTrackClass} rounded-full overflow-hidden`}>
                 <motion.div
                   className="h-full rounded-full"
                   style={{
@@ -942,8 +951,8 @@ export function BrewsterDemo() {
             />
 
             {/* Drag mode toggle */}
-            <div className="flex items-center justify-between py-2 border-t border-slate-700/50">
-              <span className="text-xs text-gray-400">{t('demoUi.brewster.dragMode', 'Drag Light Source')}</span>
+            <div className={`flex items-center justify-between py-2 border-t ${dt.borderClass}`}>
+              <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.brewster.dragMode', 'Drag Light Source')}</span>
               <Toggle
                 label=""
                 checked={enableDrag}
@@ -952,8 +961,8 @@ export function BrewsterDemo() {
             </div>
 
             {/* 色散模式开关 */}
-            <div className="flex items-center justify-between py-2 border-t border-slate-700/50">
-              <span className="text-xs text-gray-400">{t('demoUi.brewster.dispersionMode')}</span>
+            <div className={`flex items-center justify-between py-2 border-t ${dt.borderClass}`}>
+              <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.brewster.dispersionMode')}</span>
               <Toggle
                 label=""
                 checked={showDispersion}
@@ -986,8 +995,8 @@ export function BrewsterDemo() {
             )}
 
             {/* 材料选择器 */}
-            <div className="pt-2 border-t border-slate-700/50">
-              <div className="text-xs text-gray-500 mb-2">{t('demoUi.brewster.selectMaterial')}</div>
+            <div className={`pt-2 border-t ${dt.borderClass}`}>
+              <div className={`text-xs ${dt.subtleTextClass} mb-2`}>{t('demoUi.brewster.selectMaterial')}</div>
               <div className="grid grid-cols-2 gap-1.5">
                 {DISPERSIVE_MATERIALS.map((m, index) => {
                   const matN = getMaterialIndex(m, 550)
@@ -1003,7 +1012,7 @@ export function BrewsterDemo() {
                       className={`px-2 py-1.5 text-xs rounded transition-all ${
                         isSelected
                           ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/50'
-                          : 'bg-slate-700/50 text-gray-400 border border-transparent hover:bg-slate-600'
+                          : `${dt.inactiveButtonClass} border hover:opacity-80`
                       }`}
                     >
                       {t(m.nameKey).replace('demoUi.brewster.', '')}
@@ -1014,14 +1023,14 @@ export function BrewsterDemo() {
             </div>
 
             {/* 显示当前折射率 */}
-            <div className="mt-2 p-2 bg-slate-900/50 rounded-lg">
+            <div className={`mt-2 p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
               <div className="flex justify-between text-xs">
-                <span className="text-gray-500">n({wavelength}nm)</span>
+                <span className={dt.subtleTextClass}>n({wavelength}nm)</span>
                 <span className="text-cyan-400 font-mono">{n2.toFixed(4)}</span>
               </div>
               {showDispersion && (
                 <div className="flex justify-between text-xs mt-1">
-                  <span className="text-gray-500">{t('demoUi.brewster.dispersionRange')}</span>
+                  <span className={dt.subtleTextClass}>{t('demoUi.brewster.dispersionRange')}</span>
                   <span className="text-purple-400 font-mono">{dispersionRange.toFixed(2)}°</span>
                 </div>
               )}
@@ -1041,31 +1050,31 @@ export function BrewsterDemo() {
           {/* 计算结果 */}
           <ControlPanel title={t('demoUi.common.calculationResult')}>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="p-2 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs">{t('demoUi.brewster.sPolReflectance')}</div>
+              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+                <div className={`${dt.subtleTextClass} text-xs`}>{t('demoUi.brewster.sPolReflectance')}</div>
                 <div className="text-cyan-400 font-mono text-lg">{(result.Rs * 100).toFixed(1)}%</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs">{t('demoUi.brewster.pPolReflectance')}</div>
+              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+                <div className={`${dt.subtleTextClass} text-xs`}>{t('demoUi.brewster.pPolReflectance')}</div>
                 <div className={`font-mono text-lg ${result.Rp < 0.01 ? 'text-green-400' : 'text-pink-400'}`}>
                   {(result.Rp * 100).toFixed(1)}%
                 </div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs">{t('demoUi.brewster.refractionAngle')}</div>
+              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+                <div className={`${dt.subtleTextClass} text-xs`}>{t('demoUi.brewster.refractionAngle')}</div>
                 <div className="text-green-400 font-mono text-lg">{result.theta2.toFixed(1)}°</div>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
-                <div className="text-gray-500 text-xs">θ₁ + θ₂</div>
-                <div className={`font-mono text-lg ${Math.abs(incidentAngle + result.theta2 - 90) < 1.5 ? 'text-green-400' : 'text-gray-400'}`}>
+              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+                <div className={`${dt.subtleTextClass} text-xs`}>θ₁ + θ₂</div>
+                <div className={`font-mono text-lg ${Math.abs(incidentAngle + result.theta2 - 90) < 1.5 ? 'text-green-400' : dt.mutedTextClass}`}>
                   {(incidentAngle + result.theta2).toFixed(1)}°
                 </div>
               </div>
             </div>
 
             {/* 公式 */}
-            <div className="mt-3 p-3 bg-slate-900/50 rounded-lg text-center">
-              <span className="font-mono text-lg bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent">
+            <div className={`mt-3 p-3 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg text-center`}>
+              <span className={`font-mono text-lg bg-gradient-to-r ${dt.isDark ? 'from-cyan-400 to-white' : 'from-cyan-600 to-slate-800'} bg-clip-text text-transparent`}>
                 tan(θB) = n₂/n₁ = {n2.toFixed(2)}/{n1.toFixed(2)} = {(n2/n1).toFixed(3)}
               </span>
             </div>
@@ -1074,7 +1083,7 @@ export function BrewsterDemo() {
           {/* 偏振度曲线 */}
           <ControlPanel title={t('demoUi.brewster.reflectedPolDegree')}>
             <PolarizationDegreeChart n1={n1} n2={n2} currentAngle={incidentAngle} />
-            <p className="text-xs text-gray-400 mt-2">
+            <p className={`text-xs ${dt.mutedTextClass} mt-2`}>
               {t('demoUi.brewster.chartDesc')}
             </p>
           </ControlPanel>
@@ -1084,13 +1093,13 @@ export function BrewsterDemo() {
             <div className="grid grid-cols-2 gap-3">
               <ControlPanel title={t('demoUi.brewster.dispersionCurve')}>
                 <DispersionCurve material={currentMaterial} currentWavelength={wavelength} />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className={`text-xs ${dt.subtleTextClass} mt-1`}>
                   {currentMaterial.type === 'sellmeier' ? 'Sellmeier' : 'Cauchy'}
                 </p>
               </ControlPanel>
               <ControlPanel title={t('demoUi.brewster.brewsterDispersion')}>
                 <BrewsterWavelengthCurve material={currentMaterial} currentWavelength={wavelength} />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className={`text-xs ${dt.subtleTextClass} mt-1`}>
                   θB = arctan(n)
                 </p>
               </ControlPanel>
@@ -1102,22 +1111,22 @@ export function BrewsterDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <InfoCard title={t('demoUi.brewster.brewsterTitle')} color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             {t('demoUi.brewster.brewsterDesc')}
           </p>
         </InfoCard>
         <InfoCard title={t('demoUi.brewster.physicalExplanation')} color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             {t('demoUi.brewster.physicalDesc')}
           </p>
         </InfoCard>
         <InfoCard title={t('demoUi.brewster.dispersionTitle')} color="green">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             {t('demoUi.brewster.dispersionDesc')}
           </p>
         </InfoCard>
         <InfoCard title={t('demoUi.brewster.applicationsTitle')} color="orange">
-          <ul className="text-xs text-gray-300 space-y-1">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1`}>
             {(t('demoUi.brewster.applicationsList', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}

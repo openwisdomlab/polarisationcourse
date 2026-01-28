@@ -20,6 +20,7 @@ import {
   PresetButtons,
 } from '../DemoControls'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
+import { useDemoTheme } from '../demoThemeColors'
 
 /**
  * Generate Malus's Law curve path using the unified physics engine
@@ -71,6 +72,7 @@ const ANGLE_PRESETS = [
 export function MalusLawGraphDemo() {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
+  const dt = useDemoTheme()
 
   // 状态
   const [angle, setAngle] = useState(45)
@@ -132,11 +134,11 @@ export function MalusLawGraphDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 主可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+          <div className={`${dt.svgContainerClassBlue} rounded-xl border p-4 overflow-hidden`}>
             <svg viewBox="0 0 600 420" className="w-full h-auto" style={{ minHeight: '400px' }}>
               <defs>
                 <pattern id="malus-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,150,255,0.05)" strokeWidth="1" />
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1" />
                 </pattern>
 
                 {/* 曲线渐变 */}
@@ -168,7 +170,7 @@ export function MalusLawGraphDemo() {
               <rect width="600" height="420" fill="url(#malus-grid)" />
 
               {/* 标题 */}
-              <text x="300" y="30" textAnchor="middle" fill="#e2e8f0" fontSize="16" fontWeight="bold">
+              <text x="300" y="30" textAnchor="middle" fill={dt.textPrimary} fontSize="16" fontWeight="bold">
                 {isZh ? '马吕斯定律：I = I₀ × cos²(θ)' : "Malus's Law: I = I₀ × cos²(θ)"}
               </text>
 
@@ -180,16 +182,16 @@ export function MalusLawGraphDemo() {
                   y1={graphConfig.startY}
                   x2={graphConfig.startX}
                   y2={graphConfig.startY + graphConfig.height}
-                  stroke="#475569"
+                  stroke={dt.axisColor}
                   strokeWidth="2"
                 />
                 {/* Y轴箭头 */}
                 <polygon
                   points={`${graphConfig.startX},${graphConfig.startY - 5} ${graphConfig.startX - 5},${graphConfig.startY + 5} ${graphConfig.startX + 5},${graphConfig.startY + 5}`}
-                  fill="#475569"
+                  fill={dt.axisColor}
                 />
                 {/* Y轴标签 */}
-                <text x={graphConfig.startX - 10} y={graphConfig.startY - 15} textAnchor="middle" fill="#9ca3af" fontSize="12">
+                <text x={graphConfig.startX - 10} y={graphConfig.startY - 15} textAnchor="middle" fill={dt.textSecondary} fontSize="12">
                   I/I₀
                 </text>
 
@@ -198,8 +200,8 @@ export function MalusLawGraphDemo() {
                   const y = graphConfig.startY + graphConfig.height - v * graphConfig.height
                   return (
                     <g key={v}>
-                      <line x1={graphConfig.startX - 5} y1={y} x2={graphConfig.startX} y2={y} stroke="#475569" strokeWidth="1" />
-                      <text x={graphConfig.startX - 15} y={y + 4} textAnchor="end" fill="#6b7280" fontSize="10">
+                      <line x1={graphConfig.startX - 5} y1={y} x2={graphConfig.startX} y2={y} stroke={dt.axisColor} strokeWidth="1" />
+                      <text x={graphConfig.startX - 15} y={y + 4} textAnchor="end" fill={dt.textMuted} fontSize="10">
                         {(v * 100).toFixed(0)}%
                       </text>
                       {/* 网格线 */}
@@ -208,7 +210,7 @@ export function MalusLawGraphDemo() {
                         y1={y}
                         x2={graphConfig.startX + graphConfig.width}
                         y2={y}
-                        stroke="#334155"
+                        stroke={dt.gridLineColor}
                         strokeWidth="0.5"
                         strokeDasharray="4 4"
                       />
@@ -222,20 +224,20 @@ export function MalusLawGraphDemo() {
                   y1={graphConfig.startY + graphConfig.height}
                   x2={graphConfig.startX + graphConfig.width}
                   y2={graphConfig.startY + graphConfig.height}
-                  stroke="#475569"
+                  stroke={dt.axisColor}
                   strokeWidth="2"
                 />
                 {/* X轴箭头 */}
                 <polygon
                   points={`${graphConfig.startX + graphConfig.width + 5},${graphConfig.startY + graphConfig.height} ${graphConfig.startX + graphConfig.width - 5},${graphConfig.startY + graphConfig.height - 5} ${graphConfig.startX + graphConfig.width - 5},${graphConfig.startY + graphConfig.height + 5}`}
-                  fill="#475569"
+                  fill={dt.axisColor}
                 />
                 {/* X轴标签 */}
                 <text
                   x={graphConfig.startX + graphConfig.width + 20}
                   y={graphConfig.startY + graphConfig.height + 5}
                   textAnchor="start"
-                  fill="#9ca3af"
+                  fill={dt.textSecondary}
                   fontSize="12"
                 >
                   θ
@@ -252,14 +254,14 @@ export function MalusLawGraphDemo() {
                         y1={graphConfig.startY + graphConfig.height}
                         x2={x}
                         y2={graphConfig.startY + graphConfig.height + 5}
-                        stroke="#475569"
+                        stroke={dt.axisColor}
                         strokeWidth="1"
                       />
                       <text
                         x={x}
                         y={graphConfig.startY + graphConfig.height + 18}
                         textAnchor="middle"
-                        fill={isKey ? '#9ca3af' : '#4b5563'}
+                        fill={isKey ? dt.textSecondary : dt.textMuted}
                         fontSize="10"
                       >
                         {a}°
@@ -271,7 +273,7 @@ export function MalusLawGraphDemo() {
                           y1={graphConfig.startY}
                           x2={x}
                           y2={graphConfig.startY + graphConfig.height}
-                          stroke="#334155"
+                          stroke={dt.gridLineColor}
                           strokeWidth="0.5"
                           strokeDasharray="4 4"
                         />
@@ -631,8 +633,8 @@ export function MalusLawGraphDemo() {
                       width="36"
                       height="56"
                       rx="4"
-                      fill={transmission > 0.05 ? '#a855f720' : '#1e293b'}
-                      stroke={transmission > 0.05 ? '#a855f7' : '#475569'}
+                      fill={transmission > 0.05 ? '#a855f720' : dt.detectorFill}
+                      stroke={transmission > 0.05 ? '#a855f7' : dt.axisColor}
                       strokeWidth="2.5"
                     />
                     {/* Active indicator */}
@@ -654,9 +656,9 @@ export function MalusLawGraphDemo() {
 
                   {/* Info Panel - Angle and Intensity */}
                   <g transform="translate(500, 30)">
-                    <rect x="0" y="0" width="90" height="60" rx="8" fill="#1e293b" stroke="#475569" strokeWidth="1" />
+                    <rect x="0" y="0" width="90" height="60" rx="8" fill={dt.detectorFill} stroke={dt.axisColor} strokeWidth="1" />
                     {/* Angle display */}
-                    <text x="45" y="18" textAnchor="middle" fill="#9ca3af" fontSize="10">
+                    <text x="45" y="18" textAnchor="middle" fill={dt.textSecondary} fontSize="10">
                       {isZh ? '夹角' : 'Angle'} θ
                     </text>
                     <text x="45" y="34" textAnchor="middle" fill="#fbbf24" fontSize="14" fontWeight="bold">
@@ -674,10 +676,10 @@ export function MalusLawGraphDemo() {
 
           {/* 强度条 */}
           {showIntensityBar && (
-            <div className="mt-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+            <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-400 w-20">{isZh ? '输出光强' : 'Output I'}</span>
-                <div className="flex-1 h-6 bg-slate-700 rounded-full overflow-hidden">
+                <span className={`text-sm ${dt.mutedTextClass} w-20`}>{isZh ? '输出光强' : 'Output I'}</span>
+                <div className={`flex-1 h-6 ${dt.barTrackClass} rounded-full overflow-hidden`}>
                   <motion.div
                     className="h-full rounded-full"
                     style={{
@@ -767,7 +769,7 @@ export function MalusLawGraphDemo() {
 
           <InfoCard title={isZh ? '马吕斯定律' : "Malus's Law"} color="cyan">
             <Formula highlight>I = I₀ × cos²(θ)</Formula>
-            <div className="mt-3 text-xs text-slate-400 space-y-1">
+            <div className={`mt-3 text-xs ${dt.mutedTextClass} space-y-1`}>
               <p>
                 {isZh
                   ? '其中 θ 是入射偏振光与偏振片透光轴的夹角'
@@ -790,7 +792,7 @@ export function MalusLawGraphDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title={isZh ? '关键特点' : 'Key Features'} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             <li>• {isZh ? '曲线关于θ=90°对称' : 'Curve symmetric about θ=90°'}</li>
             <li>• {isZh ? '最大值在θ=0°和180°' : 'Maximum at θ=0° and 180°'}</li>
             <li>• {isZh ? '最小值在θ=90°（完全消光）' : 'Minimum at θ=90° (extinction)'}</li>
@@ -799,7 +801,7 @@ export function MalusLawGraphDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '物理意义' : 'Physical Meaning'} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             <li>• {isZh ? 'cos(θ)代表电场分量的投影' : 'cos(θ) = E-field component projection'}</li>
             <li>• {isZh ? '光强与电场幅度的平方成正比' : 'Intensity ∝ E-field amplitude²'}</li>
             <li>• {isZh ? '因此光强与cos²(θ)成正比' : 'Therefore intensity ∝ cos²(θ)'}</li>
@@ -807,7 +809,7 @@ export function MalusLawGraphDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '实际应用' : 'Applications'} color="green">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             <li>• {isZh ? '偏振眼镜减少眩光' : 'Polarized sunglasses reduce glare'}</li>
             <li>• {isZh ? 'LCD显示器亮度控制' : 'LCD brightness control'}</li>
             <li>• {isZh ? '光学仪器中的光强调节' : 'Light intensity modulation in optics'}</li>

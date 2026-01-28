@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
@@ -281,6 +282,7 @@ function PolarizedPanel({
 export function PolarizationIntroDemo() {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const dt = useDemoTheme()
   const [polarizationAngle, setPolarizationAngle] = useState(0)
   const [animationSpeed, setAnimationSpeed] = useState(0.5)
   const [showComparison, setShowComparison] = useState(true)
@@ -404,14 +406,14 @@ export function PolarizationIntroDemo() {
       {/* 信息卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InfoCard title={t('demoUi.polarizationIntro.unpolarizedLight')} color="orange">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={cn("text-xs space-y-1.5", dt.bodyClass)}>
             {(t('demoUi.polarizationIntro.unpolarizedDetails', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}
           </ul>
         </InfoCard>
         <InfoCard title={t('demoUi.polarizationIntro.polarizedLight')} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={cn("text-xs space-y-1.5", dt.bodyClass)}>
             {(t('demoUi.polarizationIntro.polarizedDetails', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}

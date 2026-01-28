@@ -5,7 +5,7 @@
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { Play, Pause, RotateCcw } from 'lucide-react'
 
@@ -145,7 +145,7 @@ function PhotonVisualization({
   mediumHeight: number
   showPolarization: boolean
 }) {
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
   const scale = 500 / mediumWidth
   const offsetX = 50
   const offsetY = 200
@@ -171,7 +171,7 @@ function PhotonVisualization({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="600" height="400" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
+      <rect x="0" y="0" width="600" height="400" fill={dt.canvasBg} rx="8" />
 
       {/* 介质区域 */}
       <rect
@@ -190,7 +190,7 @@ function PhotonVisualization({
         x={offsetX + mediumWidth * scale / 2}
         y={offsetY - mediumHeight * scale / 2 - 10}
         textAnchor="middle"
-        fill="#94a3b8"
+        fill={dt.textSecondary}
         fontSize="12"
       >
         浑浊介质
@@ -276,7 +276,7 @@ function PhotonVisualization({
       {/* 偏振色标 */}
       {showPolarization && (
         <g transform="translate(500, 320)">
-          <text x="0" y="-10" fill="#94a3b8" fontSize="10" textAnchor="middle">偏振角</text>
+          <text x="0" y="-10" fill={dt.textSecondary} fontSize="10" textAnchor="middle">偏振角</text>
           {[0, 45, 90, 135].map((angle, i) => (
             <g key={angle} transform={`translate(${(i - 1.5) * 25}, 0)`}>
               <rect
@@ -287,7 +287,7 @@ function PhotonVisualization({
                 fill={polarizationToColor(angle)}
                 rx="2"
               />
-              <text x="0" y="25" fill="#94a3b8" fontSize="8" textAnchor="middle">
+              <text x="0" y="25" fill={dt.textSecondary} fontSize="8" textAnchor="middle">
                 {angle}°
               </text>
             </g>
@@ -297,7 +297,7 @@ function PhotonVisualization({
 
       {/* 统计信息 */}
       <g transform="translate(50, 360)">
-        <text fill="#94a3b8" fontSize="11">
+        <text fill={dt.textSecondary} fontSize="11">
           活跃光子: {photons.filter(p => p.alive).length} |
           透射: {photons.filter(p => !p.alive && p.x > mediumWidth).length} |
           反射: {photons.filter(p => !p.alive && p.x < 0).length} |
@@ -316,6 +316,7 @@ function ScatteringStats({
   photons: Photon[]
   mediumWidth: number
 }) {
+  const dt = useDemoTheme()
   const stats = useMemo(() => {
     const transmitted = photons.filter(p => !p.alive && p.x >= mediumWidth)
     const reflected = photons.filter(p => !p.alive && p.x <= 0)
@@ -344,21 +345,21 @@ function ScatteringStats({
 
   return (
     <div className="grid grid-cols-2 gap-2 text-xs">
-      <div className="p-2 bg-slate-900/50 rounded-lg">
-        <div className="text-gray-500">透射率</div>
+      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+        <div className={dt.mutedTextClass}>透射率</div>
         <div className="text-emerald-400 font-mono text-lg">{stats.transmittance}%</div>
       </div>
-      <div className="p-2 bg-slate-900/50 rounded-lg">
-        <div className="text-gray-500">平均散射次数</div>
+      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+        <div className={dt.mutedTextClass}>平均散射次数</div>
         <div className="text-pink-400 font-mono text-lg">{stats.avgScattering}</div>
       </div>
-      <div className="p-2 bg-slate-900/50 rounded-lg">
-        <div className="text-gray-500">透射光偏振角</div>
+      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+        <div className={dt.mutedTextClass}>透射光偏振角</div>
         <div className="text-cyan-400 font-mono text-lg">{stats.avgPolarization}°</div>
       </div>
-      <div className="p-2 bg-slate-900/50 rounded-lg">
-        <div className="text-gray-500">状态分布</div>
-        <div className="text-gray-300 font-mono text-sm">
+      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+        <div className={dt.mutedTextClass}>状态分布</div>
+        <div className={`${dt.bodyClass} font-mono text-sm`}>
           T:{stats.transmitted} R:{stats.reflected} A:{stats.absorbed}
         </div>
       </div>
@@ -368,6 +369,7 @@ function ScatteringStats({
 
 // 主演示组件
 export function MonteCarloScatteringDemo() {
+  const dt = useDemoTheme()
   const [meanFreePath, setMeanFreePath] = useState(0.5) // 平均自由程
   const [anisotropy, setAnisotropy] = useState(0.8) // 各向异性因子 g
   const [albedo, setAlbedo] = useState(0.9) // 单次散射反照率
@@ -460,10 +462,10 @@ export function MonteCarloScatteringDemo() {
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">
           蒙特卡洛散射模拟
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${dt.mutedTextClass} mt-1`}>
           光子在浑浊介质中的随机行走与多次散射
         </p>
       </div>
@@ -472,7 +474,7 @@ export function MonteCarloScatteringDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border border-cyan-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl ${dt.isDark ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border-cyan-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'bg-gradient-to-br from-slate-50 via-white to-cyan-50/30 border-cyan-200/40 shadow-md'} border p-4`}>
             <PhotonVisualization
               photons={photons}
               mediumWidth={mediumWidth}
@@ -498,7 +500,7 @@ export function MonteCarloScatteringDemo() {
             </motion.button>
             <motion.button
               onClick={reset}
-              className="px-6 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white flex items-center gap-2 font-medium"
+              className={`px-6 py-2 rounded-lg flex items-center gap-2 font-medium ${dt.isDark ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-200 hover:bg-slate-300 text-gray-700'}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -508,8 +510,8 @@ export function MonteCarloScatteringDemo() {
           </div>
 
           {/* 统计信息 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
-            <h3 className="text-sm font-medium text-gray-300 mb-3">模拟统计</h3>
+          <div className={`rounded-xl ${dt.panelClass} border p-4`}>
+            <h3 className={`text-sm font-medium ${dt.headingClass} mb-3`}>模拟统计</h3>
             <ScatteringStats photons={photons} mediumWidth={mediumWidth} />
           </div>
         </div>
@@ -561,12 +563,12 @@ export function MonteCarloScatteringDemo() {
 
           {/* 显示选项 */}
           <ControlPanel title="显示选项">
-            <label className="flex items-center gap-2 text-sm text-gray-300">
+            <label className={`flex items-center gap-2 text-sm ${dt.bodyClass}`}>
               <input
                 type="checkbox"
                 checked={showPolarization}
                 onChange={(e) => setShowPolarization(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-600 bg-slate-800"
+                className={`w-4 h-4 rounded ${dt.isDark ? 'border-gray-600 bg-slate-800' : 'border-gray-300 bg-white'}`}
               />
               显示偏振状态（颜色编码）
             </label>
@@ -574,16 +576,16 @@ export function MonteCarloScatteringDemo() {
 
           {/* 参数说明 */}
           <ControlPanel title="参数说明">
-            <div className="space-y-3 text-xs text-gray-300">
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+            <div className={`space-y-3 text-xs ${dt.bodyClass}`}>
+              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
                 <span className="text-cyan-400 font-medium">平均自由程 (MFP):</span>
                 <p className="mt-1">光子两次散射事件之间的平均距离。值越小，散射越频繁，介质越浑浊。</p>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
                 <span className="text-pink-400 font-medium">各向异性因子 (g):</span>
                 <p className="mt-1">g=0 各向同性散射，g&gt;0 前向散射为主，g&lt;0 后向散射为主。云滴 g≈0.85。</p>
               </div>
-              <div className="p-2 bg-slate-900/50 rounded-lg">
+              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
                 <span className="text-emerald-400 font-medium">单次散射反照率 (ω):</span>
                 <p className="mt-1">散射/(散射+吸收)，ω=1 无吸收，ω&lt;1 部分吸收。</p>
               </div>
@@ -592,7 +594,7 @@ export function MonteCarloScatteringDemo() {
 
           {/* MC方法原理 */}
           <ControlPanel title="蒙特卡洛方法原理">
-            <ul className="text-xs text-gray-300 space-y-2">
+            <ul className={`text-xs ${dt.bodyClass} space-y-2`}>
               <li className="flex items-start gap-2">
                 <span className="text-cyan-400">1.</span>
                 <span>光子从入射面进入介质，初始方向沿入射方向</span>
@@ -621,17 +623,17 @@ export function MonteCarloScatteringDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="蒙特卡洛模拟" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             Monte Carlo方法通过随机采样模拟物理过程。在光传输中，每个光子独立追踪，大量光子的统计结果收敛于解析解。适用于复杂几何和多次散射。
           </p>
         </InfoCard>
         <InfoCard title="Henyey-Greenstein相函数" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             HG相函数 p(θ) = (1-g²)/(1+g²-2g·cosθ)^(3/2) 用单参数g描述散射的方向分布。生物组织典型值 g=0.8-0.95，云滴 g≈0.85。
           </p>
         </InfoCard>
         <InfoCard title="偏振退极化" color="orange">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             多次散射导致偏振态随机化（退极化）。入射偏振光经过多次散射后趋于非偏振。透射光的偏振度与散射次数、各向异性相关。
           </p>
         </InfoCard>

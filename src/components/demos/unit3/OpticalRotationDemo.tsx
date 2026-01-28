@@ -1053,7 +1053,7 @@ export function OpticalRotationDemo() {
               </div>
               <div className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
                 {lightMode === 'monochromatic' && wavelength !== 589 && (
-                  <p className="text-[10px] text-gray-500 mb-1">
+                  <p className={cn("text-[10px] mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
                     [α]<sub>{wavelength}</sub> = [α]<sub>D</sub> × (589/{wavelength})² = {specificRotationD.toFixed(1)} × {(Math.pow(589/wavelength, 2)).toFixed(3)} = <span style={{ color: lightColor }}>{specificRotation.toFixed(1)}°</span>
                   </p>
                 )}
@@ -1066,7 +1066,7 @@ export function OpticalRotationDemo() {
                 </p>
               </div>
             </div>
-            <div className={cn("mt-3 text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
+            <div className={cn("mt-3 text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
               <p>[α]<sub>λ</sub> = 波长λ时的比旋光度</p>
               <p>[α]<sub>D</sub> = {specificRotationD >= 0 ? '+' : ''}{specificRotationD.toFixed(1)}° (589nm钠光)</p>
               <p>c = 浓度 (g/mL)</p>
