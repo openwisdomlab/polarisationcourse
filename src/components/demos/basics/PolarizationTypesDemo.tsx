@@ -6,11 +6,13 @@ import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { useDemoTheme } from '../demoThemeColors'
 
 type PolarizationType = 'linear' | 'circular' | 'elliptical'
 
 export function PolarizationTypesDemo() {
   const { t } = useTranslation()
+  const dt = useDemoTheme()
   const [polarizationType, setPolarizationType] = useState<PolarizationType>('linear')
   const [linearAngle, setLinearAngle] = useState(45)
   const [ellipseRatio, setEllipseRatio] = useState(0.5)
@@ -112,7 +114,7 @@ export function PolarizationTypesDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* SVG 可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 rounded-xl border border-indigo-500/20 p-4">
+          <div className={`${dt.svgContainerClass} rounded-xl border p-4`}>
             <svg viewBox="0 0 400 400" className="w-full h-auto max-w-[400px] mx-auto">
               <defs>
                 {/* 发光滤镜 */}
@@ -131,22 +133,22 @@ export function PolarizationTypesDemo() {
               </defs>
 
               {/* 坐标轴 */}
-              <line x1="70" y1="200" x2="330" y2="200" stroke="#4b5563" strokeWidth="1.5" />
-              <line x1="200" y1="70" x2="200" y2="330" stroke="#4b5563" strokeWidth="1.5" />
+              <line x1="70" y1="200" x2="330" y2="200" stroke={dt.axisColor} strokeWidth="1.5" />
+              <line x1="200" y1="70" x2="200" y2="330" stroke={dt.axisColor} strokeWidth="1.5" />
 
               {/* 箭头 */}
-              <polygon points="330,200 320,195 320,205" fill="#4b5563" />
-              <polygon points="200,70 195,80 205,80" fill="#4b5563" />
+              <polygon points="330,200 320,195 320,205" fill={dt.axisColor} />
+              <polygon points="200,70 195,80 205,80" fill={dt.axisColor} />
 
               {/* 轴标签 */}
-              <text x="340" y="205" fill="#9ca3af" fontSize="14">Ex</text>
-              <text x="205" y="60" fill="#9ca3af" fontSize="14">Ey</text>
+              <text x="340" y="205" fill={dt.textSecondary} fontSize="14">Ex</text>
+              <text x="205" y="60" fill={dt.textSecondary} fontSize="14">Ey</text>
 
               {/* 参考形状（虚线） */}
               <path
                 d={referencePath}
                 fill="none"
-                stroke="#4b5563"
+                stroke={dt.axisColor}
                 strokeWidth="1"
                 strokeDasharray="5 5"
               />
@@ -193,21 +195,21 @@ export function PolarizationTypesDemo() {
               />
 
               {/* 中心点 */}
-              <circle cx="200" cy="200" r="4" fill="#9ca3af" />
+              <circle cx="200" cy="200" r="4" fill={dt.textSecondary} />
 
               {/* 类型标签 */}
-              <text x="20" y="30" fill="#9ca3af" fontSize="14">{getTypeLabel(polarizationType)}</text>
+              <text x="20" y="30" fill={dt.textSecondary} fontSize="14">{getTypeLabel(polarizationType)}</text>
 
               {/* 相位显示 */}
-              <text x="320" y="30" fill="#6b7280" fontSize="12">
+              <text x="320" y="30" fill={dt.textMuted} fontSize="12">
                 φ = {((time * 2 * 180 / Math.PI) % 360).toFixed(0)}°
               </text>
             </svg>
           </div>
 
           {/* 类型选择器 */}
-          <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-            <h4 className="text-sm font-semibold text-gray-300 mb-3">{t('demoUi.common.polarizationType')}</h4>
+          <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
+            <h4 className={`text-sm font-semibold ${dt.headingClass} mb-3`}>{t('demoUi.common.polarizationType')}</h4>
             <div className="grid grid-cols-3 gap-2">
               {(['linear', 'circular', 'elliptical'] as PolarizationType[]).map((type) => {
                 const colors = {
@@ -227,7 +229,7 @@ export function PolarizationTypesDemo() {
                     className={`py-2.5 px-3 rounded-lg text-sm font-medium border transition-all ${
                       polarizationType === type
                         ? colors[type].active
-                        : `bg-slate-700/50 text-gray-400 border-slate-600/50 ${colors[type].inactive}`
+                        : `${dt.inactiveButtonClass} ${colors[type].inactive}`
                     }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -259,13 +261,13 @@ export function PolarizationTypesDemo() {
 
           {(polarizationType === 'circular' || polarizationType === 'elliptical') && (
             <div className="space-y-2">
-              <span className="text-xs text-gray-400">{t('demoUi.common.rotationDirection')}</span>
+              <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.common.rotationDirection')}</span>
               <div className="grid grid-cols-2 gap-2">
                 <motion.button
                   className={`py-2 rounded-lg text-sm font-medium border transition-all ${
                     circularDirection === 'right'
                       ? 'bg-green-400/20 text-green-400 border-green-400/50'
-                      : 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-green-400/30'
+                      : '${dt.inactiveButtonClass} hover:border-green-400/30'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -277,7 +279,7 @@ export function PolarizationTypesDemo() {
                   className={`py-2 rounded-lg text-sm font-medium border transition-all ${
                     circularDirection === 'left'
                       ? 'bg-purple-400/20 text-purple-400 border-purple-400/50'
-                      : 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-purple-400/30'
+                      : '${dt.inactiveButtonClass} hover:border-purple-400/30'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -317,9 +319,9 @@ export function PolarizationTypesDemo() {
                 type="checkbox"
                 checked={showTrail}
                 onChange={(e) => setShowTrail(e.target.checked)}
-                className="rounded border-gray-600 bg-slate-700 text-cyan-400"
+                className={`rounded ${dt.isDark ? 'border-gray-600 bg-slate-700' : 'border-gray-300 bg-white'} text-cyan-400`}
               />
-              <span className="text-sm text-gray-300">{t('demoUi.common.showTrail')}</span>
+              <span className={`text-sm ${dt.headingClass}`}>{t('demoUi.common.showTrail')}</span>
             </label>
           </div>
 
@@ -337,9 +339,9 @@ export function PolarizationTypesDemo() {
           </motion.button>
 
           {/* 物理意义 */}
-          <div className="pt-4 border-t border-slate-700 space-y-2">
-            <h4 className="text-sm font-semibold text-gray-300">{t('demoUi.common.physicalMeaning')}</h4>
-            <div className="text-xs text-gray-400 space-y-1">
+          <div className={`pt-4 border-t ${dt.borderClass} space-y-2`}>
+            <h4 className={`text-sm font-semibold ${dt.headingClass}`}>{t('demoUi.common.physicalMeaning')}</h4>
+            <div className={`text-xs ${dt.mutedTextClass} space-y-1`}>
               {polarizationType === 'linear' && (
                 <p>{t('demoUi.polarizationTypes.linearPhysics')}</p>
               )}
@@ -360,7 +362,7 @@ export function PolarizationTypesDemo() {
           title={t('demoUi.common.linearPolarization')}
           color={polarizationType === 'linear' ? 'orange' : 'cyan'}
         >
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             {t('demoUi.polarizationTypes.linearDesc')}
           </p>
         </InfoCard>
@@ -368,7 +370,7 @@ export function PolarizationTypesDemo() {
           title={t('demoUi.common.circularPolarization')}
           color={polarizationType === 'circular' ? 'green' : 'cyan'}
         >
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             {t('demoUi.polarizationTypes.circularDesc')}
           </p>
         </InfoCard>
@@ -376,7 +378,7 @@ export function PolarizationTypesDemo() {
           title={t('demoUi.common.ellipticalPolarization')}
           color={polarizationType === 'elliptical' ? 'purple' : 'cyan'}
         >
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             {t('demoUi.polarizationTypes.ellipticalDesc')}
           </p>
         </InfoCard>

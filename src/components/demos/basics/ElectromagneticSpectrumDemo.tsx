@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { ControlPanel, Toggle, InfoCard } from '../DemoControls'
+import { useDemoTheme } from '../demoThemeColors'
 
 // 电磁波谱区域定义
 interface SpectrumRegion {
@@ -191,6 +192,7 @@ function formatWavelength(meters: number): string {
 export function ElectromagneticSpectrumDemo() {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
+  const dt = useDemoTheme()
 
   const [selectedRegion, setSelectedRegion] = useState<string | null>('visible')
   const [showAtmosphere, setShowAtmosphere] = useState(true)
@@ -208,12 +210,12 @@ export function ElectromagneticSpectrumDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 主可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 rounded-xl border border-indigo-500/20 p-4 overflow-hidden">
+          <div className={`${dt.svgContainerClass} rounded-xl border p-4 overflow-hidden`}>
             <svg viewBox="0 0 800 400" className="w-full h-auto" style={{ minHeight: '360px' }}>
               <defs>
                 {/* 背景网格 */}
                 <pattern id="spectrum-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,150,255,0.05)" strokeWidth="1" />
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1" />
                 </pattern>
 
                 {/* 可见光彩虹渐变 */}
@@ -263,14 +265,14 @@ export function ElectromagneticSpectrumDemo() {
               <rect width="800" height="400" fill="url(#spectrum-grid)" />
 
               {/* 标题 */}
-              <text x="400" y="25" textAnchor="middle" fill="#e2e8f0" fontSize="16" fontWeight="bold">
+              <text x="400" y="25" textAnchor="middle" fill={dt.textPrimary} fontSize="16" fontWeight="bold">
                 {isZh ? '电磁波谱 (Electromagnetic Spectrum)' : 'Electromagnetic Spectrum'}
               </text>
 
               {/* 大气穿透性指示器 */}
               {showAtmosphere && (
                 <g transform="translate(50, 45)">
-                  <text x="0" y="0" fill="#9ca3af" fontSize="10">
+                  <text x="0" y="0" fill={dt.textSecondary} fontSize="10">
                     {isZh ? '能否穿透地球大气层' : 'Atmospheric Penetration'}
                   </text>
                   <g transform="translate(0, 8)">
@@ -288,7 +290,7 @@ export function ElectromagneticSpectrumDemo() {
                             opacity="0.3"
                             rx="2"
                           />
-                          <text x={x + width / 2} y="11" textAnchor="middle" fill="#fff" fontSize="8">
+                          <text x={x + width / 2} y="11" textAnchor="middle" fill={dt.svgWhiteText} fontSize="8">
                             {region.canPenetrate ? (isZh ? '是' : 'Y') : (isZh ? '否' : 'N')}
                           </text>
                         </g>
@@ -371,13 +373,13 @@ export function ElectromagneticSpectrumDemo() {
 
                 {/* 波长刻度 */}
                 <g transform="translate(0, 70)">
-                  <text x="0" y="0" fill="#6b7280" fontSize="9">
+                  <text x="0" y="0" fill={dt.textMuted} fontSize="9">
                     {isZh ? '波长 (m)' : 'Wavelength (m)'}
                   </text>
                   {SPECTRUM_REGIONS.map((region, index) => {
                     const x = index * 100 + 50
                     return (
-                      <text key={`wl-${region.id}`} x={x} y="15" textAnchor="middle" fill="#9ca3af" fontSize="9">
+                      <text key={`wl-${region.id}`} x={x} y="15" textAnchor="middle" fill={dt.textSecondary} fontSize="9">
                         {formatScientific(region.wavelengthRange[0])}
                       </text>
                     )
@@ -386,13 +388,13 @@ export function ElectromagneticSpectrumDemo() {
 
                 {/* 频率刻度 */}
                 <g transform="translate(0, 100)">
-                  <text x="0" y="0" fill="#6b7280" fontSize="9">
+                  <text x="0" y="0" fill={dt.textMuted} fontSize="9">
                     {isZh ? '频率 (Hz)' : 'Frequency (Hz)'}
                   </text>
                   {SPECTRUM_REGIONS.map((region, index) => {
                     const x = index * 100 + 50
                     return (
-                      <text key={`freq-${region.id}`} x={x} y="15" textAnchor="middle" fill="#9ca3af" fontSize="9">
+                      <text key={`freq-${region.id}`} x={x} y="15" textAnchor="middle" fill={dt.textSecondary} fontSize="9">
                         {formatScientific(region.frequencyRange[0])}
                       </text>
                     )
@@ -403,7 +405,7 @@ export function ElectromagneticSpectrumDemo() {
               {/* 尺寸比较 */}
               {showSizeComparison && (
                 <g transform="translate(50, 210)">
-                  <text x="0" y="0" fill="#9ca3af" fontSize="10">
+                  <text x="0" y="0" fill={dt.textSecondary} fontSize="10">
                     {isZh ? '波长尺度比较' : 'Wavelength Size Comparison'}
                   </text>
                   {SPECTRUM_REGIONS.map((region, index) => {
@@ -413,7 +415,7 @@ export function ElectromagneticSpectrumDemo() {
                         <text x={x} y="30" textAnchor="middle" fontSize="24">
                           {region.sizeIcon}
                         </text>
-                        <text x={x} y="55" textAnchor="middle" fill="#9ca3af" fontSize="9">
+                        <text x={x} y="55" textAnchor="middle" fill={dt.textSecondary} fontSize="9">
                           {isZh ? region.sizeComparisonZh : region.sizeComparison}
                         </text>
                       </g>
@@ -425,7 +427,7 @@ export function ElectromagneticSpectrumDemo() {
               {/* 可见光展开视图 */}
               {showVisibleExpanded && (
                 <g transform="translate(50, 280)">
-                  <text x="350" y="0" textAnchor="middle" fill="#e2e8f0" fontSize="12" fontWeight="bold">
+                  <text x="350" y="0" textAnchor="middle" fill={dt.textPrimary} fontSize="12" fontWeight="bold">
                     {isZh ? '可见光谱展开 (380nm - 700nm)' : 'Visible Spectrum Expanded (380nm - 700nm)'}
                   </text>
 
@@ -450,7 +452,7 @@ export function ElectromagneticSpectrumDemo() {
                           stroke={c.color}
                           strokeWidth={highlightedWavelength === c.wavelength ? 3 : 1}
                         />
-                        <text x={x} y="82" textAnchor="middle" fill="#9ca3af" fontSize="9">
+                        <text x={x} y="82" textAnchor="middle" fill={dt.textSecondary} fontSize="9">
                           {c.wavelength}nm
                         </text>
                         <text x={x} y="95" textAnchor="middle" fill={c.color} fontSize="10" fontWeight="bold">
@@ -478,7 +480,7 @@ export function ElectromagneticSpectrumDemo() {
                           y="0"
                           width="700"
                           height="110"
-                          fill="rgba(30,41,59,0.9)"
+                          fill={dt.infoPanelBg}
                           rx="8"
                           stroke={selectedInfo.color}
                           strokeWidth="1"
@@ -489,30 +491,30 @@ export function ElectromagneticSpectrumDemo() {
                           {isZh ? selectedInfo.nameZh : selectedInfo.name}
                         </text>
 
-                        <text x="20" y="45" fill="#9ca3af" fontSize="10">
+                        <text x="20" y="45" fill={dt.textSecondary} fontSize="10">
                           {isZh ? '波长范围：' : 'Wavelength: '}
-                          <tspan fill="#e2e8f0">
+                          <tspan fill={dt.textPrimary}>
                             {formatWavelength(selectedInfo.wavelengthRange[0])} ~{' '}
                             {formatWavelength(selectedInfo.wavelengthRange[1])}
                           </tspan>
                         </text>
 
-                        <text x="20" y="62" fill="#9ca3af" fontSize="10">
+                        <text x="20" y="62" fill={dt.textSecondary} fontSize="10">
                           {isZh ? '频率范围：' : 'Frequency: '}
-                          <tspan fill="#e2e8f0">
+                          <tspan fill={dt.textPrimary}>
                             {formatScientific(selectedInfo.frequencyRange[0])} ~{' '}
                             {formatScientific(selectedInfo.frequencyRange[1])} Hz
                           </tspan>
                         </text>
 
-                        <text x="20" y="80" fill="#9ca3af" fontSize="10">
+                        <text x="20" y="80" fill={dt.textSecondary} fontSize="10">
                           {isZh ? '应用：' : 'Applications: '}
-                          <tspan fill="#e2e8f0">
+                          <tspan fill={dt.textPrimary}>
                             {(isZh ? selectedInfo.applicationsZh : selectedInfo.applications).join(', ')}
                           </tspan>
                         </text>
 
-                        <text x="20" y="98" fill="#9ca3af" fontSize="10">
+                        <text x="20" y="98" fill={dt.textSecondary} fontSize="10">
                           {isZh ? '大气穿透：' : 'Atmosphere: '}
                           <tspan fill={selectedInfo.canPenetrate ? '#22c55e' : '#ef4444'}>
                             {isZh ? selectedInfo.penetrateInfoZh : selectedInfo.penetrateInfo}
@@ -545,8 +547,8 @@ export function ElectromagneticSpectrumDemo() {
             onChange={setShowVisibleExpanded}
           />
 
-          <div className="border-t border-slate-700 pt-4 mt-4">
-            <h4 className="text-sm font-medium text-gray-300 mb-2">
+          <div className={`border-t ${dt.borderClass} pt-4 mt-4`}>
+            <h4 className={`text-sm font-medium ${dt.headingClass} mb-2`}>
               {isZh ? '选择波段' : 'Select Region'}
             </h4>
             <div className="grid grid-cols-2 gap-2">
@@ -557,12 +559,12 @@ export function ElectromagneticSpectrumDemo() {
                   className={`px-2 py-1.5 rounded text-xs transition-all ${
                     selectedRegion === region.id
                       ? 'bg-opacity-30 border'
-                      : 'bg-slate-800/50 border border-transparent hover:border-slate-600'
+                      : `${dt.buttonBgClass} border`
                   }`}
                   style={{
                     backgroundColor: selectedRegion === region.id ? `${region.color}30` : undefined,
                     borderColor: selectedRegion === region.id ? region.color : undefined,
-                    color: selectedRegion === region.id ? region.color : '#9ca3af',
+                    color: selectedRegion === region.id ? region.color : undefined,
                   }}
                 >
                   {isZh ? region.nameZh : region.name}
@@ -576,7 +578,7 @@ export function ElectromagneticSpectrumDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title={isZh ? '光的本质' : 'Nature of Light'} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             <li>
               • {isZh ? '光是电磁波，不需要介质传播' : 'Light is EM wave, no medium needed'}
             </li>
@@ -590,7 +592,7 @@ export function ElectromagneticSpectrumDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '能量与波长' : 'Energy & Wavelength'} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             <li>
               • {isZh ? '光子能量：E = hf = hc/λ' : 'Photon energy: E = hf = hc/λ'}
             </li>
@@ -604,7 +606,7 @@ export function ElectromagneticSpectrumDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '人眼视觉' : 'Human Vision'} color="green">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             <li>
               • {isZh ? '人眼仅能看见380-700nm范围' : 'Human eyes see only 380-700nm'}
             </li>

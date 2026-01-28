@@ -1453,7 +1453,7 @@ function AnalysisWorkspace({ taskId }: { taskId: string }) {
         theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
       )}>
         <svg viewBox={`0 0 ${patternSize * 2} ${patternSize}`} className="w-full" style={{ minHeight: patternSize }}>
-          <rect width={patternSize * 2} height={patternSize} fill={theme === 'dark' ? '#0f172a' : '#1e293b'} />
+          <rect width={patternSize * 2} height={patternSize} fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} />
 
           {/* Isochromatic fringe pattern (circular) */}
           <g transform={`translate(${patternSize / 2}, ${patternSize / 2})`}>
@@ -1494,9 +1494,9 @@ function AnalysisWorkspace({ taskId }: { taskId: string }) {
             <g transform="translate(0, 20)">
               {/* Axes */}
               <line x1={0} y1={patternSize - 55} x2={patternSize - 50} y2={patternSize - 55}
-                stroke="#475569" strokeWidth={1} />
+                stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth={1} />
               <line x1={0} y1={0} x2={0} y2={patternSize - 55}
-                stroke="#475569" strokeWidth={1} />
+                stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth={1} />
               {/* Profile curve */}
               <path
                 d={analysis.fringePoints.map((p, i) =>

@@ -43,12 +43,12 @@ export class DemoErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex flex-col items-center justify-center p-8 bg-slate-800/50 rounded-lg border border-red-500/30">
-          <AlertTriangle className="w-12 h-12 text-red-400 mb-4" />
-          <h3 className="text-lg font-medium text-red-400 mb-2">
+        <div className="flex flex-col items-center justify-center p-8 rounded-lg border border-red-500/30" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
+          <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
+          <h3 className="text-lg font-medium text-red-500 mb-2">
             {this.props.demoName ? `"${this.props.demoName}" failed to load` : 'Demo failed to load'}
           </h3>
-          <p className="text-sm text-slate-400 mb-4 text-center max-w-md">
+          <p className="text-sm mb-4 text-center max-w-md" style={{ color: 'var(--text-secondary)' }}>
             {this.state.error?.message || 'An unexpected error occurred while rendering this demo.'}
           </p>
           <button

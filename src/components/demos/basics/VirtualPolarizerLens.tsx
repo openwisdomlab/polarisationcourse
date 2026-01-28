@@ -19,6 +19,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import { SliderControl } from '../DemoControls'
 import { CheckCircle, ExternalLink, RotateCcw } from 'lucide-react'
@@ -134,6 +135,7 @@ export function VirtualPolarizerLens({
   onResearchLinkClick,
 }: VirtualPolarizerLensProps) {
   const { theme } = useTheme()
+  const dt = useDemoTheme()
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 状态
@@ -537,7 +539,7 @@ export function VirtualPolarizerLens({
           />
 
           {/* 马吕斯定律实时计算 */}
-          <div className="mt-3 pt-3 border-t border-slate-700/50">
+          <div className={cn("mt-3 pt-3 border-t", dt.borderClass)}>
             <div className="flex justify-between items-center text-sm">
               <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                 马吕斯定律: I/I₀ = cos²θ

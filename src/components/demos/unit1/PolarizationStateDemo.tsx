@@ -5,7 +5,7 @@
  */
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import {
   SliderControl,
@@ -30,6 +30,7 @@ function WavePropagation3DCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const timeRef = useRef(0)
   const animationRef = useRef<number | undefined>(undefined)
+  const dt = useDemoTheme()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -57,7 +58,7 @@ function WavePropagation3DCanvas({
 
     const draw = () => {
       // 清除画布
-      ctx.fillStyle = '#0f172a'
+      ctx.fillStyle = dt.canvasBg
       ctx.fillRect(0, 0, width, height)
 
       const t = timeRef.current * speed
@@ -65,7 +66,7 @@ function WavePropagation3DCanvas({
 
       // 绘制传播方向轴（灰色）
       ctx.beginPath()
-      ctx.strokeStyle = '#334155'
+      ctx.strokeStyle = dt.gridLineColor
       ctx.lineWidth = 1
       ctx.moveTo(20, axisY)
       ctx.lineTo(width - 20, axisY)
@@ -136,24 +137,24 @@ function WavePropagation3DCanvas({
       }
 
       // 轴标签
-      ctx.fillStyle = '#94a3b8'
+      ctx.fillStyle = dt.textSecondary
       ctx.font = '12px sans-serif'
       ctx.fillText('传播方向 Z', width - 80, axisY + 20)
 
       // 图例
       ctx.fillStyle = '#ff4444'
       ctx.fillRect(20, 20, 12, 12)
-      ctx.fillStyle = '#e0e0e0'
+      ctx.fillStyle = dt.textPrimary
       ctx.fillText('Ex (水平)', 38, 30)
 
       ctx.fillStyle = '#44ff44'
       ctx.fillRect(20, 38, 12, 12)
-      ctx.fillStyle = '#e0e0e0'
+      ctx.fillStyle = dt.textPrimary
       ctx.fillText('Ey (垂直)', 38, 48)
 
       ctx.fillStyle = '#ffff00'
       ctx.fillRect(20, 56, 12, 12)
-      ctx.fillStyle = '#e0e0e0'
+      ctx.fillStyle = dt.textPrimary
       ctx.fillText('E (合成)', 38, 66)
 
       if (animate) {
@@ -169,7 +170,7 @@ function WavePropagation3DCanvas({
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [phaseDiff, ampX, ampY, animate])
+  }, [phaseDiff, ampX, ampY, animate, dt.isDark])
 
   return (
     <canvas
@@ -195,6 +196,7 @@ function PolarizationStateCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const timeRef = useRef(0)
   const animationRef = useRef<number | undefined>(undefined)
+  const dt = useDemoTheme()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -219,11 +221,11 @@ function PolarizationStateCanvas({
 
     const draw = () => {
       // 清除画布
-      ctx.fillStyle = '#0f172a'
+      ctx.fillStyle = dt.canvasBg
       ctx.fillRect(0, 0, width, height)
 
       // 绘制坐标轴
-      ctx.strokeStyle = '#334155'
+      ctx.strokeStyle = dt.gridLineColor
       ctx.lineWidth = 1
       ctx.beginPath()
       ctx.moveTo(cx, 20)
@@ -233,7 +235,7 @@ function PolarizationStateCanvas({
       ctx.stroke()
 
       // 轴标签
-      ctx.fillStyle = '#64748b'
+      ctx.fillStyle = dt.textMuted
       ctx.font = '12px sans-serif'
       ctx.fillText('Ex', width - 30, cy - 10)
       ctx.fillText('Ey', cx + 10, 30)
@@ -295,7 +297,7 @@ function PolarizationStateCanvas({
       ctx.fill()
 
       // 图例
-      ctx.fillStyle = '#94a3b8'
+      ctx.fillStyle = dt.textSecondary
       ctx.font = '11px sans-serif'
       ctx.fillText('Ex分量', cx + 50, cy + 135)
       ctx.fillText('Ey分量', 15, cy - 100)
@@ -313,7 +315,7 @@ function PolarizationStateCanvas({
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [phaseDiff, ampX, ampY, animate])
+  }, [phaseDiff, ampX, ampY, animate, dt.isDark])
 
   return (
     <canvas
@@ -383,12 +385,13 @@ function PresetButton({
   onClick: () => void
   color: string
 }) {
+  const dt = useDemoTheme()
   return (
     <motion.button
       className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
         isActive
           ? `bg-opacity-20 border-opacity-50`
-          : 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-slate-500'
+          : `${dt.inactiveButtonClass} hover:border-slate-500`
       }`}
       style={{
         backgroundColor: isActive ? `${color}20` : undefined,
@@ -406,7 +409,7 @@ function PresetButton({
 
 // 主演示组件
 export function PolarizationStateDemo() {
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
   const [phaseDiff, setPhaseDiff] = useState(0)
   const [ampX, setAmpX] = useState(1)
   const [ampY, setAmpY] = useState(1)
@@ -449,10 +452,10 @@ export function PolarizationStateDemo() {
     <div className="flex flex-col gap-6 h-full">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-cyan-100 to-white' : 'from-cyan-800 via-cyan-600 to-cyan-800'} bg-clip-text text-transparent`}>
           偏振态与波合成
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${dt.mutedTextClass} mt-1`}>
           探索光的偏振状态：由两个垂直分量的振幅比和相位差决定
         </p>
       </div>
@@ -462,16 +465,16 @@ export function PolarizationStateDemo() {
         {/* 3D 波动传播视图 */}
         <div className={cn(
           "flex-1 rounded-xl border overflow-hidden",
-          theme === 'dark'
+          dt.isDark
             ? "bg-slate-900/50 border-cyan-400/20"
             : "bg-white border-cyan-200 shadow-sm"
         )}>
           <div className={cn(
             "px-4 py-3 border-b flex items-center justify-between",
-            theme === 'dark' ? "border-cyan-400/10" : "border-cyan-100"
+            dt.isDark ? "border-cyan-400/10" : "border-cyan-100"
           )}>
-            <h3 className={cn("text-sm font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>3D 空间传播视图</h3>
-            <div className={cn("text-xs", theme === 'dark' ? "text-gray-500" : "text-gray-600")}>伪等轴测投影</div>
+            <h3 className={cn("text-sm font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>3D 空间传播视图</h3>
+            <div className={cn("text-xs", dt.isDark ? "text-gray-500" : "text-gray-600")}>伪等轴测投影</div>
           </div>
           <div className="p-4 flex justify-center">
             <WavePropagation3DCanvas
@@ -486,15 +489,15 @@ export function PolarizationStateDemo() {
         {/* 2D 偏振态投影 */}
         <div className={cn(
           "lg:w-[360px] rounded-xl border overflow-hidden",
-          theme === 'dark'
+          dt.isDark
             ? "bg-slate-900/50 border-cyan-400/20"
             : "bg-white border-cyan-200 shadow-sm"
         )}>
           <div className={cn(
             "px-4 py-3 border-b",
-            theme === 'dark' ? "border-cyan-400/10" : "border-cyan-100"
+            dt.isDark ? "border-cyan-400/10" : "border-cyan-100"
           )}>
-            <h3 className={cn("text-sm font-semibold", theme === 'dark' ? "text-white" : "text-gray-800")}>偏振态投影</h3>
+            <h3 className={cn("text-sm font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>偏振态投影</h3>
           </div>
           <div className="p-4 flex flex-col items-center gap-3">
             <PolarizationStateCanvas
@@ -505,12 +508,12 @@ export function PolarizationStateDemo() {
             />
             <div className="text-center space-y-1">
               <div>
-                <span className="text-gray-400 text-sm">当前状态: </span>
+                <span className={`${dt.mutedTextClass} text-sm`}>当前状态: </span>
                 <span className="font-semibold" style={{ color: polarizationState.color }}>
                   {polarizationState.type}
                 </span>
               </div>
-              <p className="text-xs text-gray-500">{polarizationState.description}</p>
+              <p className={`text-xs ${dt.subtleTextClass}`}>{polarizationState.description}</p>
             </div>
           </div>
         </div>
@@ -519,7 +522,7 @@ export function PolarizationStateDemo() {
       {/* 快速预设 */}
       <div className={cn(
         "rounded-xl border p-4",
-        theme === 'dark'
+        dt.isDark
           ? "bg-slate-900/50 border-cyan-400/20"
           : "bg-white border-cyan-200 shadow-sm"
       )}>
@@ -535,10 +538,10 @@ export function PolarizationStateDemo() {
           ))}
           <motion.button
             onClick={() => setAnimate(!animate)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
               animate
-                ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
-                : 'bg-slate-700/50 text-gray-400 border border-slate-600'
+                ? 'bg-cyan-400/20 text-cyan-400 border-cyan-400/50'
+                : dt.inactiveButtonClass
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -604,7 +607,7 @@ export function PolarizationStateDemo() {
 
         {/* 物理原理 */}
         <ControlPanel title="物理原理">
-          <div className="text-xs text-gray-400 space-y-2">
+          <div className={`text-xs ${dt.mutedTextClass} space-y-2`}>
             <p>
               <strong className="text-cyan-400">偏振态</strong>
               由两个互相垂直的电场分量 (Ex, Ey) 的振幅比和相位差(δ)决定。
@@ -623,17 +626,17 @@ export function PolarizationStateDemo() {
       {/* 现实应用场景 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="🎬 3D电影技术" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             3D电影利用圆偏振光：左右眼分别接收左旋和右旋圆偏振图像，通过偏振眼镜分离产生立体效果。
           </p>
         </InfoCard>
         <InfoCard title="📡 卫星通信" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             卫星使用圆偏振天线：避免发射和接收天线方向对准问题，提高通信稳定性。
           </p>
         </InfoCard>
         <InfoCard title="🔬 生物检测" color="orange">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             椭圆偏振光谱用于检测蛋白质分子结构：不同分子会产生特定的偏振变化，用于医学诊断。
           </p>
         </InfoCard>

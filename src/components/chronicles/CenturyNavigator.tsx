@@ -157,7 +157,7 @@ export function CenturyNavigator({ events, isZh, className }: CenturyNavigatorPr
               'opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none',
               theme === 'dark'
                 ? 'bg-slate-900 text-gray-300'
-                : 'bg-gray-900 text-white'
+                : 'bg-white text-gray-700 shadow-md'
             )}>
               {getYearRange(century)}
             </div>

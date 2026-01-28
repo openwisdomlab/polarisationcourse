@@ -7,6 +7,7 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import { ControlPanel, SliderControl, Toggle, InfoCard, PresetButtons, Formula } from '../DemoControls'
 
@@ -36,6 +37,7 @@ export function InteractiveOpticalBenchDemo() {
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
   const { theme } = useTheme()
+  const dt = useDemoTheme()
 
   // 交互状态
   const [emitterPolarization, setEmitterPolarization] = useState(0)
@@ -106,17 +108,17 @@ export function InteractiveOpticalBenchDemo() {
             ? "bg-slate-900/50 border-slate-700/50"
             : "bg-white border-gray-200 shadow-sm"
         )}>
-          <svg viewBox="0 0 100 70" className="w-full h-auto max-h-[280px]" style={{ background: theme === 'dark' ? '#0a0a1a' : '#f8fafc' }}>
+          <svg viewBox="0 0 100 70" className="w-full h-auto max-h-[280px]" style={{ background: dt.canvasBg }}>
             <defs>
               <LightBeamDefs />
               <pattern id="demo-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#1e293b" strokeWidth="0.2" />
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke={dt.gridLineColor} strokeWidth="0.2" />
               </pattern>
             </defs>
             <rect width="100" height="70" fill="url(#demo-grid)" />
 
             {/* 标题 */}
-            <text x="50" y="8" textAnchor="middle" fill="#94a3b8" fontSize="3">
+            <text x="50" y="8" textAnchor="middle" fill={dt.textSecondary} fontSize="3">
               {isZh ? '马吕斯定律实验' : "Malus's Law Experiment"}
             </text>
 
@@ -163,7 +165,7 @@ export function InteractiveOpticalBenchDemo() {
               showPolarization={showPolarization}
               getPolarizationColor={getPolarizationColor}
             />
-            <text x="15" y="62" textAnchor="middle" fill="#94a3b8" fontSize="2">
+            <text x="15" y="62" textAnchor="middle" fill={dt.textSecondary} fontSize="2">
               {isZh ? '光源' : 'Source'}
             </text>
 
@@ -177,9 +179,9 @@ export function InteractiveOpticalBenchDemo() {
               onClick={() => {}}
               onRotate={() => {}}
               getPolarizationColor={getPolarizationColor}
-              isDark={true}
+              isDark={dt.isDark}
             />
-            <text x="50" y="62" textAnchor="middle" fill="#94a3b8" fontSize="2">
+            <text x="50" y="62" textAnchor="middle" fill={dt.textSecondary} fontSize="2">
               {isZh ? '偏振片' : 'Polarizer'}
             </text>
 
@@ -189,11 +191,11 @@ export function InteractiveOpticalBenchDemo() {
               y={50}
               sensorState={sensorState}
               requiredIntensity={1}
-              isDark={true}
+              isDark={dt.isDark}
               isAnimating={isAnimating}
               getPolarizationColor={getPolarizationColor}
             />
-            <text x="85" y="62" textAnchor="middle" fill="#94a3b8" fontSize="2">
+            <text x="85" y="62" textAnchor="middle" fill={dt.textSecondary} fontSize="2">
               {isZh ? '探测器' : 'Detector'}
             </text>
           </svg>
@@ -221,7 +223,7 @@ export function InteractiveOpticalBenchDemo() {
             {POLARIZATION_DISPLAY_CONFIG.map(({ angle, label, color }) => (
               <div key={angle} className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded" style={{ backgroundColor: color }} />
-                <span className="text-xs text-slate-400">{label}</span>
+                <span className={cn("text-xs", dt.mutedTextClass)}>{label}</span>
               </div>
             ))}
           </div>
@@ -284,7 +286,7 @@ export function InteractiveOpticalBenchDemo() {
 
         <InfoCard title={isZh ? '马吕斯定律' : "Malus's Law"} color="cyan">
           <Formula highlight>I = I₀ × cos²(θ)</Formula>
-          <p className="text-xs text-slate-400 mt-2">
+          <p className={cn("text-xs mt-2", dt.mutedTextClass)}>
             {isZh
               ? '其中 θ 是入射光偏振方向与偏振片透光轴之间的夹角。当 θ = 0° 时透射率最大，θ = 90° 时完全阻挡。'
               : 'Where θ is the angle between the incident polarization and the filter axis. Maximum transmission at θ = 0°, complete blocking at θ = 90°.'}

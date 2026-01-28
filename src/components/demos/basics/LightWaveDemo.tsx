@@ -6,9 +6,11 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard } from '../DemoControls'
+import { useDemoTheme } from '../demoThemeColors'
 
 export function LightWaveDemo() {
   const { t } = useTranslation()
+  const dt = useDemoTheme()
   const [wavelength, setWavelength] = useState(550) // nm
   const [amplitude, setAmplitude] = useState(50)
   const [speed, setSpeed] = useState(0.5)
@@ -85,7 +87,7 @@ export function LightWaveDemo() {
       <div className="flex gap-6 flex-col lg:flex-row">
         {/* 可视化区域 */}
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-xl border border-blue-500/20 p-4 overflow-hidden">
+          <div className={`${dt.svgContainerClassBlue} rounded-xl border p-4 overflow-hidden`}>
             <svg
               viewBox="0 0 700 300"
               className="w-full h-auto"
@@ -94,7 +96,7 @@ export function LightWaveDemo() {
               {/* 背景网格 */}
               <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,150,255,0.08)" strokeWidth="1"/>
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1"/>
                 </pattern>
                 {/* 发光效果 */}
                 <filter id="glow">
@@ -108,16 +110,16 @@ export function LightWaveDemo() {
               <rect width="700" height="300" fill="url(#grid)" />
 
               {/* 坐标轴 */}
-              <line x1="50" y1="150" x2="670" y2="150" stroke="#4b5563" strokeWidth="1.5" />
-              <line x1="50" y1="50" x2="50" y2="250" stroke="#4b5563" strokeWidth="1.5" />
+              <line x1="50" y1="150" x2="670" y2="150" stroke={dt.axisColor} strokeWidth="1.5" />
+              <line x1="50" y1="50" x2="50" y2="250" stroke={dt.axisColor} strokeWidth="1.5" />
 
               {/* 箭头 */}
-              <polygon points="670,150 660,145 660,155" fill="#4b5563" />
-              <polygon points="50,50 45,60 55,60" fill="#4b5563" />
+              <polygon points="670,150 660,145 660,155" fill={dt.axisColor} />
+              <polygon points="50,50 45,60 55,60" fill={dt.axisColor} />
 
               {/* 轴标签 */}
-              <text x="680" y="155" fill="#9ca3af" fontSize="14">x</text>
-              <text x="55" y="45" fill="#9ca3af" fontSize="14">E</text>
+              <text x="680" y="155" fill={dt.textSecondary} fontSize="14">x</text>
+              <text x="55" y="45" fill={dt.textSecondary} fontSize="14">E</text>
               {showBField && (
                 <text x="55" y="265" fill="#60a5fa" fontSize="12">B</text>
               )}
@@ -161,16 +163,16 @@ export function LightWaveDemo() {
 
               {/* 波长标记 */}
               <g transform="translate(150, 220)">
-                <line x1="0" y1="0" x2="0" y2="15" stroke="#6b7280" strokeWidth="1" />
-                <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke="#6b7280" strokeWidth="1" />
-                <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke="#6b7280" strokeWidth="1" />
-                <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill="#9ca3af" fontSize="11" textAnchor="middle">
+                <line x1="0" y1="0" x2="0" y2="15" stroke={dt.textMuted} strokeWidth="1" />
+                <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke={dt.textMuted} strokeWidth="1" />
+                <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke={dt.textMuted} strokeWidth="1" />
+                <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill={dt.textSecondary} fontSize="11" textAnchor="middle">
                   λ = {wavelength} nm
                 </text>
               </g>
 
               {/* 光速标注 */}
-              <text x="600" y="30" fill="#6b7280" fontSize="11">c = 3×10⁸ m/s</text>
+              <text x="600" y="30" fill={dt.textMuted} fontSize="11">c = 3×10⁸ m/s</text>
 
               {/* 颜色指示 */}
               <rect x="600" y="40" width="60" height="20" rx="4" fill={waveColor} opacity="0.8" />
@@ -178,8 +180,8 @@ export function LightWaveDemo() {
           </div>
 
           {/* 可见光谱 */}
-          <div className="mt-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">{t('demoUi.common.visibleSpectrum')}</h4>
+          <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
+            <h4 className={`text-sm font-semibold ${dt.headingClass} mb-2`}>{t('demoUi.common.visibleSpectrum')}</h4>
             <div
               className="h-8 rounded cursor-pointer relative"
               style={{
@@ -200,7 +202,7 @@ export function LightWaveDemo() {
                 layoutId="wavelength-indicator"
               />
             </div>
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
+            <div className={`flex justify-between text-xs ${dt.mutedTextClass} mt-1`}>
               <span>380 nm ({t('demoUi.common.violet')})</span>
               <span>550 nm ({t('demoUi.common.green')})</span>
               <span>700 nm ({t('demoUi.common.red')})</span>
@@ -260,7 +262,7 @@ export function LightWaveDemo() {
             {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
           </motion.button>
 
-          <div className="pt-2 border-t border-slate-700">
+          <div className={`pt-2 border-t ${dt.borderClass}`}>
             <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
             <ValueDisplay label={t('demoUi.common.frequency')} value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
           </div>
@@ -270,14 +272,14 @@ export function LightWaveDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InfoCard title={t('demoUi.lightWave.emWaveFeatures')} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             {(t('demoUi.lightWave.emWaveDetails', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}
           </ul>
         </InfoCard>
         <InfoCard title={t('demoUi.lightWave.transverseFeatures')} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             {(t('demoUi.lightWave.transverseDetails', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}

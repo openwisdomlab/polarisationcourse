@@ -5,7 +5,7 @@
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 
 // 波长到RGB颜色转换
@@ -122,7 +122,7 @@ function MieScatteringDiagram({
   particleSize: number
   wavelength: number
 }) {
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
   // 尺寸参数 x = 2πr/λ
   const sizeParameter = (2 * Math.PI * particleSize * 1000) / wavelength
   const lightColor = wavelengthToRGB(wavelength)
@@ -202,7 +202,7 @@ function MieScatteringDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="600" height="400" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
+      <rect x="0" y="0" width="600" height="400" fill={dt.canvasBg} rx="8" />
 
       {/* 坐标参考线 */}
       <line x1="50" y1="200" x2="550" y2="200" stroke="#374151" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
@@ -259,7 +259,7 @@ function MieScatteringDiagram({
       {/* 后向散射标注 */}
       <g transform="translate(150, 200)">
         <line x1="0" y1="0" x2="-60" y2="0" stroke={lightColor} strokeWidth="1" opacity="0.5" />
-        <text x="-30" y="-15" textAnchor="middle" fill="#94a3b8" fontSize="11">后向散射</text>
+        <text x="-30" y="-15" textAnchor="middle" fill={dt.textSecondary} fontSize="11">后向散射</text>
       </g>
 
       {/* 角度标注 */}
@@ -274,7 +274,7 @@ function MieScatteringDiagram({
             x={x}
             y={y}
             textAnchor="middle"
-            fill="#64748b"
+            fill={dt.textMuted}
             fontSize="10"
           >
             {angle}°
@@ -284,7 +284,7 @@ function MieScatteringDiagram({
 
       {/* 散射类型标识 */}
       <g transform="translate(300, 360)">
-        <rect x="-80" y="-15" width="160" height="30" fill="rgba(30,41,59,0.9)" rx="6" stroke={scatterType.color} strokeWidth="1" />
+        <rect x="-80" y="-15" width="160" height="30" fill={dt.infoPanelBg} rx="6" stroke={scatterType.color} strokeWidth="1" />
         <text x="0" y="5" textAnchor="middle" fill={scatterType.color} fontSize="14" fontWeight="500">
           {scatterType.type}
         </text>
@@ -292,19 +292,19 @@ function MieScatteringDiagram({
 
       {/* 尺寸参数显示 */}
       <g transform="translate(50, 360)">
-        <text x="0" y="0" fill="#94a3b8" fontSize="12">
+        <text x="0" y="0" fill={dt.textSecondary} fontSize="12">
           尺寸参数 x = 2πr/λ = {sizeParameter.toFixed(2)}
         </text>
       </g>
 
       {/* 粒子与波长比较 */}
       <g transform="translate(480, 70)">
-        <rect x="-40" y="-15" width="115" height="110" fill="rgba(30,41,59,0.9)" rx="6" stroke="#374151" strokeWidth="1" />
-        <text x="17" y="5" textAnchor="middle" fill="#94a3b8" fontSize="10">尺寸比较</text>
+        <rect x="-40" y="-15" width="115" height="110" fill={dt.infoPanelBg} rx="6" stroke={dt.axisColor} strokeWidth="1" />
+        <text x="17" y="5" textAnchor="middle" fill={dt.textSecondary} fontSize="10">尺寸比较</text>
 
         {/* 粒子 */}
-        <circle cx="17" cy="35" r={Math.max(3, Math.min(20, particleSize * 12))} fill="#94a3b8" opacity="0.8" />
-        <text x="17" y="62" textAnchor="middle" fill="#64748b" fontSize="9">r = {particleSize.toFixed(3)} μm</text>
+        <circle cx="17" cy="35" r={Math.max(3, Math.min(20, particleSize * 12))} fill={dt.textSecondary} opacity="0.8" />
+        <text x="17" y="62" textAnchor="middle" fill={dt.textMuted} fontSize="9">r = {particleSize.toFixed(3)} μm</text>
 
         {/* 波长指示（用正弦波表示） */}
         <g transform="translate(-25, 80)">
@@ -330,6 +330,7 @@ function SizeParameterChart({
   currentSize: number
   wavelength: number
 }) {
+  const dt = useDemoTheme()
   const currentX = (2 * Math.PI * currentSize * 1000) / wavelength
 
   const { pathData, regions } = useMemo(() => {
@@ -380,16 +381,16 @@ function SizeParameterChart({
       <rect x="40" y="30" width="220" height="100" fill="transparent" stroke="#374151" strokeWidth="1" rx="4" />
 
       {/* 坐标轴 */}
-      <line x1="40" y1="130" x2="270" y2="130" stroke="#475569" strokeWidth="1" />
-      <line x1="40" y1="30" x2="40" y2="130" stroke="#475569" strokeWidth="1" />
+      <line x1="40" y1="130" x2="270" y2="130" stroke={dt.axisColor} strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke={dt.axisColor} strokeWidth="1" />
 
       {/* X轴刻度（对数） */}
       {[0.01, 0.1, 1, 10].map((x) => {
         const chartX = 40 + (Math.log10(x) + 2) * 55
         return (
           <g key={x}>
-            <line x1={chartX} y1="130" x2={chartX} y2="135" stroke="#94a3b8" strokeWidth="1" />
-            <text x={chartX} y="147" textAnchor="middle" fill="#94a3b8" fontSize="9">{x}</text>
+            <line x1={chartX} y1="130" x2={chartX} y2="135" stroke={dt.textSecondary} strokeWidth="1" />
+            <text x={chartX} y="147" textAnchor="middle" fill={dt.textSecondary} fontSize="9">{x}</text>
           </g>
         )
       })}
@@ -405,7 +406,7 @@ function SizeParameterChart({
       })}
 
       {/* 效率曲线 */}
-      <path d={pathData} fill="none" stroke="#ffffff" strokeWidth="2" />
+      <path d={pathData} fill="none" stroke={dt.svgWhiteText} strokeWidth="2" />
 
       {/* 当前点 */}
       <motion.circle
@@ -418,14 +419,15 @@ function SizeParameterChart({
       />
 
       {/* 轴标签 */}
-      <text x="155" y="158" textAnchor="middle" fill="#94a3b8" fontSize="10">尺寸参数 x</text>
-      <text x="15" y="85" fill="#94a3b8" fontSize="9" transform="rotate(-90 15 85)">Q</text>
+      <text x="155" y="158" textAnchor="middle" fill={dt.textSecondary} fontSize="10">尺寸参数 x</text>
+      <text x="15" y="85" fill={dt.textSecondary} fontSize="9" transform="rotate(-90 15 85)">Q</text>
     </svg>
   )
 }
 
 // 主演示组件
 export function MieScatteringDemo() {
+  const dt = useDemoTheme()
   const [particleSize, setParticleSize] = useState(0.5) // μm
   const [wavelength, setWavelength] = useState(550) // nm
 
@@ -469,10 +471,10 @@ export function MieScatteringDemo() {
     <div className="space-y-6">
       {/* 标题 */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-400 via-pink-300 to-pink-400 bg-clip-text text-transparent">
           米氏散射交互演示
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className={`${dt.mutedTextClass} mt-1`}>
           探索粒径与波长可比时的散射特性
         </p>
       </div>
@@ -481,27 +483,27 @@ export function MieScatteringDemo() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 左侧：可视化 */}
         <div className="space-y-4">
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90 border border-pink-500/30 p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+          <div className={`rounded-xl ${dt.isDark ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-pink-950/90 border-pink-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'bg-gradient-to-br from-slate-50 via-white to-pink-50/30 border-pink-200/40 shadow-md'} border p-4`}>
             <MieScatteringDiagram particleSize={particleSize} wavelength={wavelength} />
           </div>
 
           {/* 散射特征摘要 */}
-          <div className="rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-slate-600/30 p-4">
+          <div className={`rounded-xl ${dt.panelClass} border p-4`}>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-slate-900/50 rounded-lg text-center">
-                <div className="text-gray-500 text-xs mb-1">尺寸参数 x</div>
+              <div className={`p-3 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg text-center`}>
+                <div className={`${dt.mutedTextClass} text-xs mb-1`}>尺寸参数 x</div>
                 <div className={`font-mono text-xl text-${scatterInfo.color}-400`}>
                   {sizeParameter.toFixed(3)}
                 </div>
               </div>
-              <div className="p-3 bg-slate-900/50 rounded-lg text-center">
-                <div className="text-gray-500 text-xs mb-1">散射区域</div>
+              <div className={`p-3 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg text-center`}>
+                <div className={`${dt.mutedTextClass} text-xs mb-1`}>散射区域</div>
                 <div className={`font-bold text-lg text-${scatterInfo.color}-400`}>
                   {scatterInfo.type}
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-3 text-center">
+            <p className={`text-xs ${dt.mutedTextClass} mt-3 text-center`}>
               {scatterInfo.description}
             </p>
           </div>
@@ -535,13 +537,13 @@ export function MieScatteringDemo() {
 
             {/* 粒子预设 */}
             <div className="pt-2">
-              <div className="text-xs text-gray-500 mb-2">典型粒子</div>
+              <div className={`text-xs ${dt.mutedTextClass} mb-2`}>典型粒子</div>
               <div className="grid grid-cols-2 gap-2">
                 {presets.map((p) => (
                   <button
                     key={p.name}
                     onClick={() => { setParticleSize(p.size); setWavelength(p.λ) }}
-                    className="px-2 py-1.5 text-xs bg-slate-700/50 text-gray-300 rounded hover:bg-slate-600 transition-colors"
+                    className={`px-2 py-1.5 text-xs rounded transition-colors ${dt.isDark ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`}
                   >
                     {p.name}
                   </button>
@@ -553,9 +555,9 @@ export function MieScatteringDemo() {
           {/* 计算结果 */}
           <ControlPanel title="物理参数">
             <div className="space-y-3">
-              <div className="p-3 bg-slate-900/50 rounded-lg">
-                <div className="text-xs text-gray-500 mb-1">尺寸参数公式</div>
-                <div className="font-mono text-sm text-white">
+              <div className={`p-3 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+                <div className={`text-xs ${dt.mutedTextClass} mb-1`}>尺寸参数公式</div>
+                <div className={`font-mono text-sm ${dt.isDark ? 'text-white' : 'text-gray-800'}`}>
                   x = 2πr/λ = 2π × {particleSize.toFixed(3)} × 1000 / {wavelength}
                 </div>
                 <div className={`font-mono text-lg text-${scatterInfo.color}-400 mt-1`}>
@@ -564,12 +566,12 @@ export function MieScatteringDemo() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2 bg-slate-900/50 rounded-lg">
-                  <div className="text-gray-500">粒径/波长</div>
+                <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+                  <div className={dt.mutedTextClass}>粒径/波长</div>
                   <div className="text-cyan-400 font-mono">{((particleSize * 1000) / wavelength).toFixed(3)}</div>
                 </div>
-                <div className="p-2 bg-slate-900/50 rounded-lg">
-                  <div className="text-gray-500">散射效率</div>
+                <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
+                  <div className={dt.mutedTextClass}>散射效率</div>
                   <div className="text-pink-400 font-mono">{mieIntensity(sizeParameter).toFixed(2)}</div>
                 </div>
               </div>
@@ -588,7 +590,7 @@ export function MieScatteringDemo() {
 
           {/* 散射特征 */}
           <ControlPanel title="米氏散射特征">
-            <ul className="text-xs text-gray-300 space-y-2">
+            <ul className={`text-xs ${dt.bodyClass} space-y-2`}>
               <li className="flex items-start gap-2">
                 <span className="text-pink-400">•</span>
                 <span>前向散射增强：大粒子的散射光主要集中在前进方向</span>
@@ -609,17 +611,17 @@ export function MieScatteringDemo() {
       {/* 知识卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="米氏散射理论" color="purple">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             由Gustav Mie在1908年发展，完整描述球形粒子对电磁波的散射。适用于粒径与波长可比的情况(x≈1-10)。
           </p>
         </InfoCard>
         <InfoCard title="前向散射" color="cyan">
-          <p className="text-xs text-gray-300">
+          <p className={`text-xs ${dt.bodyClass}`}>
             米氏散射的显著特征是前向散射增强。粒子越大，散射越集中在前进方向，形成尖锐的前向散射峰。
           </p>
         </InfoCard>
         <InfoCard title="自然现象" color="orange">
-          <ul className="text-xs text-gray-300 space-y-1">
+          <ul className={`text-xs ${dt.bodyClass} space-y-1`}>
             <li>• 云和雾的白色</li>
             <li>• 牛奶的乳白色</li>
             <li>• 日晕和虹</li>
