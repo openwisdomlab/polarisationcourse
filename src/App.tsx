@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'   // R
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'   // 错误边界组件
 import { PasswordLock } from '@/components/ui/PasswordLock'   // 密码锁组件
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget'   // 反馈组件
+import { PWAUpdatePrompt } from '@/components/ui/PWAUpdatePrompt'   // PWA更新提示组件
 
 // ============================================================
 // Lazy load all pages for code splitting
@@ -111,6 +112,8 @@ export function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        {/* PWA update prompt - 检测新版本并提示更新 */}
+        <PWAUpdatePrompt />
         {/* Feedback widget - always visible */}
         <FeedbackWidget />
 
