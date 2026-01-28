@@ -24,10 +24,17 @@ import {
   SliderControl,
   Toggle,
   InfoCard,
-  Formula,
   PresetButtons,
   AnimatedValue,
 } from '../DemoControls'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  FormulaHighlight,
+  TipBanner,
+} from '../DemoLayout'
 
 // 光束组件
 interface LightBeamProps {
@@ -179,7 +186,7 @@ function MalusCurve({
 
   return (
     <div className={cn(
-      "rounded-lg border p-3",
+      "rounded-2xl border p-3",
       theme === 'dark'
         ? "bg-slate-900/50 border-slate-700/50"
         : "bg-white border-gray-200 shadow-sm"
@@ -665,281 +672,282 @@ export function ThreePolarizersDemo() {
   }, [])
 
   return (
-    <div className="space-y-6">
-      <div className="flex gap-6 flex-col lg:flex-row">
-        {/* 可视化区域 */}
-        <div className="flex-1">
-          <div className={cn(
-            "rounded-xl border p-4 overflow-hidden",
-            theme === 'dark'
-              ? "bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 border-blue-500/20"
-              : "bg-gradient-to-br from-slate-50 via-white to-blue-50 border-blue-200 shadow-sm"
-          )}>
-            <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
-              <defs>
-                <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path
-                    d="M 40 0 L 0 0 0 40"
-                    fill="none"
-                    stroke="rgba(100,150,255,0.05)"
-                    strokeWidth="1"
-                  />
-                </pattern>
-                <filter id="beam-glow">
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
+    <div className="space-y-5">
+      <DemoHeader
+        title={isZh ? '三偏振片悖论' : 'Three Polarizer Paradox'}
+        subtitle={isZh ? '在两个正交偏振片之间插入45°偏振片竟然可以让光通过' : 'Adding a 45° polarizer between two crossed polarizers allows light through'}
+        gradient="purple"
+      />
 
-              <rect width="700" height="320" fill="url(#three-pol-grid)" />
-
-              {/* 标题 */}
-              <text x="350" y="25" textAnchor="middle" fill="#e2e8f0" fontSize="14" fontWeight="bold">
-                {isZh ? '三偏振片实验' : 'Three Polarizer Experiment'}
-              </text>
-
-              {/* 光源 */}
-              <g transform="translate(50, 150)">
-                <motion.circle
-                  cx="0"
-                  cy="0"
-                  r="20"
-                  fill="#ffd700"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <circle cx="0" cy="0" r="15" fill="#fff" opacity="0.5" />
-                <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
-                  {isZh ? '非偏振光' : 'Unpolarized'}
-                </text>
-                <text x="0" y="60" textAnchor="middle" fill="#ffd700" fontSize="11">
-                  I₀ = 100%
-                </text>
-              </g>
-
-              {/* 光束段 */}
-              {/* 光源到P1 */}
-              <LightBeam
-                x1={70}
-                x2={130}
-                intensity={calculations.I0}
-                polarization={0}
-                showPolarization={false}
-              />
-
-              {/* P1到P2或P3 */}
-              <LightBeam
-                x1={200}
-                x2={showMiddlePolarizer ? 280 : 430}
-                intensity={calculations.I1}
-                polarization={calculations.pol1}
-                showPolarization={showPolarization}
-              />
-
-              {/* P2到P3（如果有中间偏振片） */}
-              {showMiddlePolarizer && calculations.I2 !== null && (
-                <LightBeam
-                  x1={350}
-                  x2={430}
-                  intensity={calculations.I2}
-                  polarization={calculations.pol2 || 0}
-                  showPolarization={showPolarization}
-                />
-              )}
-
-              {/* P3后 */}
-              <LightBeam
-                x1={500}
-                x2={650}
-                intensity={calculations.I3}
-                polarization={calculations.pol3}
-                showPolarization={showPolarization}
-              />
-
-              {/* 偏振片1（起偏器） - Draggable */}
-              <DraggablePolarizerVisualizer
-                x={165}
-                angle={polarizer1Angle}
-                label={isZh ? '起偏器 P₁' : 'Polarizer P₁'}
-                color="#22d3ee"
-                isActive={true}
-                draggable={enableDrag}
-                onAngleChange={(angle) => {
-                  setPolarizer1Angle(angle)
-                  checkAngle(angle)
-                  setSelectedPreset(null)
-                }}
-              />
-
-              {/* 偏振片2（中间）- Draggable */}
-              <AnimatePresence>
-                {showMiddlePolarizer && polarizer2Angle !== null && (
-                  <motion.g
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <DraggablePolarizerVisualizer
-                      x={315}
-                      angle={polarizer2Angle}
-                      label={isZh ? '中间片 P₂' : 'Middle P₂'}
-                      color="#fbbf24"
-                      isActive={true}
-                      draggable={enableDrag}
-                      onAngleChange={(angle) => {
-                        setPolarizer2Angle(angle)
-                        checkAngle(angle)
-                        setSelectedPreset(null)
-                      }}
+      <DemoMainLayout
+        visualization={
+          <div className="space-y-5">
+            {/* 可视化区域 */}
+            <VisualizationPanel variant="blue">
+              <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
+                <defs>
+                  <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path
+                      d="M 40 0 L 0 0 0 40"
+                      fill="none"
+                      stroke="rgba(100,150,255,0.05)"
+                      strokeWidth="1"
                     />
-                  </motion.g>
-                )}
-              </AnimatePresence>
+                  </pattern>
+                  <filter id="beam-glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
 
-              {/* 偏振片3（检偏器）- Draggable */}
-              <DraggablePolarizerVisualizer
-                x={465}
-                angle={polarizer3Angle}
-                label={isZh ? '检偏器 P₃' : 'Analyzer P₃'}
-                color="#4ade80"
-                isActive={true}
-                draggable={enableDrag}
-                onAngleChange={(angle) => {
-                  setPolarizer3Angle(angle)
-                  checkAngle(angle)
-                  setSelectedPreset(null)
-                }}
-              />
+                <rect width="700" height="320" fill="url(#three-pol-grid)" />
 
-              {/* 探测器 */}
-              <g transform="translate(610, 150)">
-                <rect
-                  x="-20"
-                  y="-25"
-                  width="40"
-                  height="50"
-                  rx="4"
-                  fill={calculations.I3 > 0.01 ? '#22c55e20' : '#1e293b'}
-                  stroke={calculations.I3 > 0.01 ? '#22c55e' : '#475569'}
-                  strokeWidth="2"
-                />
-                <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
-                  {isZh ? '探测器' : 'Detector'}
-                </text>
-                <text x="0" y="60" textAnchor="middle" fill="#22c55e" fontSize="11" fontWeight="bold">
-                  {(calculations.transmission * 100).toFixed(1)}%
-                </text>
-              </g>
-
-              {/* 光强标注 */}
-              <g>
-                <text x="165" y="90" textAnchor="middle" fill="#22d3ee" fontSize="10">
-                  I₁ = 50%
+                {/* 标题 */}
+                <text x="350" y="25" textAnchor="middle" fill="#e2e8f0" fontSize="14" fontWeight="bold">
+                  {isZh ? '三偏振片实验' : 'Three Polarizer Experiment'}
                 </text>
 
-                {showMiddlePolarizer && calculations.I2 !== null && (
-                  <text x="315" y="90" textAnchor="middle" fill="#fbbf24" fontSize="10">
-                    I₂ = {(calculations.I2 * 100).toFixed(1)}%
-                  </text>
-                )}
-
-                <text x="465" y="90" textAnchor="middle" fill="#4ade80" fontSize="10">
-                  I₃ = {(calculations.I3 * 100).toFixed(1)}%
-                </text>
-              </g>
-
-              {/* 角度差标注 */}
-              {showFormulas && (
-                <g>
-                  {showMiddlePolarizer && calculations.theta1 !== null && (
-                    <>
-                      <path
-                        d="M 200 240 Q 240 260 280 240"
-                        fill="none"
-                        stroke="#fbbf24"
-                        strokeWidth="1"
-                        strokeDasharray="4 2"
-                      />
-                      <text x="240" y="275" textAnchor="middle" fill="#fbbf24" fontSize="10">
-                        θ₁ = {calculations.theta1}°
-                      </text>
-                    </>
-                  )}
-
-                  <path
-                    d={
-                      showMiddlePolarizer
-                        ? 'M 350 240 Q 390 260 430 240'
-                        : 'M 200 240 Q 315 280 430 240'
-                    }
-                    fill="none"
-                    stroke="#4ade80"
-                    strokeWidth="1"
-                    strokeDasharray="4 2"
+                {/* 光源 */}
+                <g transform="translate(50, 150)">
+                  <motion.circle
+                    cx="0"
+                    cy="0"
+                    r="20"
+                    fill="#ffd700"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
                   />
-                  <text
-                    x={showMiddlePolarizer ? 390 : 315}
-                    y={showMiddlePolarizer ? 275 : 295}
-                    textAnchor="middle"
-                    fill="#4ade80"
-                    fontSize="10"
-                  >
-                    θ₂ = {calculations.theta2}°
+                  <circle cx="0" cy="0" r="15" fill="#fff" opacity="0.5" />
+                  <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
+                    {isZh ? '非偏振光' : 'Unpolarized'}
+                  </text>
+                  <text x="0" y="60" textAnchor="middle" fill="#ffd700" fontSize="11">
+                    I₀ = 100%
                   </text>
                 </g>
-              )}
-            </svg>
-          </div>
 
-          {/* 数值面板 */}
-          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <AnimatedValue
-              label={isZh ? '初始光强 I₀' : 'Initial I₀'}
-              value={100}
-              unit="%"
-              decimals={0}
-              color="orange"
-              showBar
-              max={100}
-            />
-            <AnimatedValue
-              label={isZh ? 'P₁后光强 I₁' : 'After P₁ I₁'}
-              value={calculations.I1 * 100}
-              unit="%"
-              decimals={1}
-              color="cyan"
-              showBar
-              max={100}
-            />
-            {showMiddlePolarizer && calculations.I2 !== null && (
+                {/* 光束段 */}
+                {/* 光源到P1 */}
+                <LightBeam
+                  x1={70}
+                  x2={130}
+                  intensity={calculations.I0}
+                  polarization={0}
+                  showPolarization={false}
+                />
+
+                {/* P1到P2或P3 */}
+                <LightBeam
+                  x1={200}
+                  x2={showMiddlePolarizer ? 280 : 430}
+                  intensity={calculations.I1}
+                  polarization={calculations.pol1}
+                  showPolarization={showPolarization}
+                />
+
+                {/* P2到P3（如果有中间偏振片） */}
+                {showMiddlePolarizer && calculations.I2 !== null && (
+                  <LightBeam
+                    x1={350}
+                    x2={430}
+                    intensity={calculations.I2}
+                    polarization={calculations.pol2 || 0}
+                    showPolarization={showPolarization}
+                  />
+                )}
+
+                {/* P3后 */}
+                <LightBeam
+                  x1={500}
+                  x2={650}
+                  intensity={calculations.I3}
+                  polarization={calculations.pol3}
+                  showPolarization={showPolarization}
+                />
+
+                {/* 偏振片1（起偏器） - Draggable */}
+                <DraggablePolarizerVisualizer
+                  x={165}
+                  angle={polarizer1Angle}
+                  label={isZh ? '起偏器 P₁' : 'Polarizer P₁'}
+                  color="#22d3ee"
+                  isActive={true}
+                  draggable={enableDrag}
+                  onAngleChange={(angle) => {
+                    setPolarizer1Angle(angle)
+                    checkAngle(angle)
+                    setSelectedPreset(null)
+                  }}
+                />
+
+                {/* 偏振片2（中间）- Draggable */}
+                <AnimatePresence>
+                  {showMiddlePolarizer && polarizer2Angle !== null && (
+                    <motion.g
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <DraggablePolarizerVisualizer
+                        x={315}
+                        angle={polarizer2Angle}
+                        label={isZh ? '中间片 P₂' : 'Middle P₂'}
+                        color="#fbbf24"
+                        isActive={true}
+                        draggable={enableDrag}
+                        onAngleChange={(angle) => {
+                          setPolarizer2Angle(angle)
+                          checkAngle(angle)
+                          setSelectedPreset(null)
+                        }}
+                      />
+                    </motion.g>
+                  )}
+                </AnimatePresence>
+
+                {/* 偏振片3（检偏器）- Draggable */}
+                <DraggablePolarizerVisualizer
+                  x={465}
+                  angle={polarizer3Angle}
+                  label={isZh ? '检偏器 P₃' : 'Analyzer P₃'}
+                  color="#4ade80"
+                  isActive={true}
+                  draggable={enableDrag}
+                  onAngleChange={(angle) => {
+                    setPolarizer3Angle(angle)
+                    checkAngle(angle)
+                    setSelectedPreset(null)
+                  }}
+                />
+
+                {/* 探测器 */}
+                <g transform="translate(610, 150)">
+                  <rect
+                    x="-20"
+                    y="-25"
+                    width="40"
+                    height="50"
+                    rx="4"
+                    fill={calculations.I3 > 0.01 ? '#22c55e20' : '#1e293b'}
+                    stroke={calculations.I3 > 0.01 ? '#22c55e' : '#475569'}
+                    strokeWidth="2"
+                  />
+                  <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
+                    {isZh ? '探测器' : 'Detector'}
+                  </text>
+                  <text x="0" y="60" textAnchor="middle" fill="#22c55e" fontSize="11" fontWeight="bold">
+                    {(calculations.transmission * 100).toFixed(1)}%
+                  </text>
+                </g>
+
+                {/* 光强标注 */}
+                <g>
+                  <text x="165" y="90" textAnchor="middle" fill="#22d3ee" fontSize="10">
+                    I₁ = 50%
+                  </text>
+
+                  {showMiddlePolarizer && calculations.I2 !== null && (
+                    <text x="315" y="90" textAnchor="middle" fill="#fbbf24" fontSize="10">
+                      I₂ = {(calculations.I2 * 100).toFixed(1)}%
+                    </text>
+                  )}
+
+                  <text x="465" y="90" textAnchor="middle" fill="#4ade80" fontSize="10">
+                    I₃ = {(calculations.I3 * 100).toFixed(1)}%
+                  </text>
+                </g>
+
+                {/* 角度差标注 */}
+                {showFormulas && (
+                  <g>
+                    {showMiddlePolarizer && calculations.theta1 !== null && (
+                      <>
+                        <path
+                          d="M 200 240 Q 240 260 280 240"
+                          fill="none"
+                          stroke="#fbbf24"
+                          strokeWidth="1"
+                          strokeDasharray="4 2"
+                        />
+                        <text x="240" y="275" textAnchor="middle" fill="#fbbf24" fontSize="10">
+                          θ₁ = {calculations.theta1}°
+                        </text>
+                      </>
+                    )}
+
+                    <path
+                      d={
+                        showMiddlePolarizer
+                          ? 'M 350 240 Q 390 260 430 240'
+                          : 'M 200 240 Q 315 280 430 240'
+                      }
+                      fill="none"
+                      stroke="#4ade80"
+                      strokeWidth="1"
+                      strokeDasharray="4 2"
+                    />
+                    <text
+                      x={showMiddlePolarizer ? 390 : 315}
+                      y={showMiddlePolarizer ? 275 : 295}
+                      textAnchor="middle"
+                      fill="#4ade80"
+                      fontSize="10"
+                    >
+                      θ₂ = {calculations.theta2}°
+                    </text>
+                  </g>
+                )}
+              </svg>
+            </VisualizationPanel>
+
+            {/* 数值面板 */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <AnimatedValue
-                label={isZh ? 'P₂后光强 I₂' : 'After P₂ I₂'}
-                value={calculations.I2 * 100}
+                label={isZh ? '初始光强 I₀' : 'Initial I₀'}
+                value={100}
                 unit="%"
-                decimals={1}
+                decimals={0}
                 color="orange"
                 showBar
                 max={100}
               />
-            )}
-            <AnimatedValue
-              label={isZh ? '最终透射率' : 'Final Transmission'}
-              value={calculations.transmission * 100}
-              unit="%"
-              decimals={1}
-              color="green"
-              showBar
-              max={100}
-            />
-          </div>
+              <AnimatedValue
+                label={isZh ? 'P₁后光强 I₁' : 'After P₁ I₁'}
+                value={calculations.I1 * 100}
+                unit="%"
+                decimals={1}
+                color="cyan"
+                showBar
+                max={100}
+              />
+              {showMiddlePolarizer && calculations.I2 !== null && (
+                <AnimatedValue
+                  label={isZh ? 'P₂后光强 I₂' : 'After P₂ I₂'}
+                  value={calculations.I2 * 100}
+                  unit="%"
+                  decimals={1}
+                  color="orange"
+                  showBar
+                  max={100}
+                />
+              )}
+              <AnimatedValue
+                label={isZh ? '最终透射率' : 'Final Transmission'}
+                value={calculations.transmission * 100}
+                unit="%"
+                decimals={1}
+                color="green"
+                showBar
+                max={100}
+              />
+            </div>
 
-          {/* Real-time I-θ Curve */}
-          {showCurve && (
-            <div className="mt-4">
+            {/* Real-time I-θ Curve */}
+            {showCurve && (
               <MalusCurve
                 polarizer1Angle={polarizer1Angle}
                 polarizer2Angle={polarizer2Angle}
@@ -948,174 +956,185 @@ export function ThreePolarizersDemo() {
                 currentMiddleAngle={polarizer2Angle ?? 45}
                 isZh={isZh}
               />
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        }
+        controls={
+          <div className="space-y-5">
+            <ControlPanel title={isZh ? '预设实验' : 'Preset Experiments'}>
+              <PresetButtons
+                options={PRESETS.map((p, i) => ({
+                  value: i,
+                  label: isZh ? p.nameZh : p.name,
+                }))}
+                value={selectedPreset ?? -1}
+                onChange={(v) => handlePresetSelect(v as number)}
+                columns={2}
+              />
+            </ControlPanel>
 
-        {/* 控制面板 */}
-        <div className="w-full lg:w-80 space-y-4">
-          <ControlPanel title={isZh ? '预设实验' : 'Preset Experiments'}>
-            <PresetButtons
-              options={PRESETS.map((p, i) => ({
-                value: i,
-                label: isZh ? p.nameZh : p.name,
-              }))}
-              value={selectedPreset ?? -1}
-              onChange={(v) => handlePresetSelect(v as number)}
-              columns={2}
-            />
-          </ControlPanel>
-
-          <ControlPanel title={isZh ? '偏振片角度' : 'Polarizer Angles'}>
-            <SliderControl
-              label={isZh ? '起偏器 P₁' : 'Polarizer P₁'}
-              value={polarizer1Angle}
-              min={0}
-              max={180}
-              step={5}
-              unit="°"
-              onChange={(v) => {
-                handleAngleChange(setPolarizer1Angle, v)
-                setSelectedPreset(null)
-              }}
-              color="cyan"
-            />
-
-            <div className="space-y-2">
-              <Toggle
-                label={isZh ? '启用中间偏振片 P₂' : 'Enable Middle Polarizer P₂'}
-                checked={showMiddlePolarizer}
+            <ControlPanel title={isZh ? '偏振片角度' : 'Polarizer Angles'}>
+              <SliderControl
+                label={isZh ? '起偏器 P₁' : 'Polarizer P₁'}
+                value={polarizer1Angle}
+                min={0}
+                max={180}
+                step={5}
+                unit="°"
                 onChange={(v) => {
-                  setShowMiddlePolarizer(v)
-                  if (v && polarizer2Angle === null) {
-                    setPolarizer2Angle(45)
-                  }
+                  handleAngleChange(setPolarizer1Angle, v)
                   setSelectedPreset(null)
                 }}
+                color="cyan"
               />
 
-              {showMiddlePolarizer && polarizer2Angle !== null && (
-                <SliderControl
-                  label={isZh ? '中间片 P₂' : 'Middle P₂'}
-                  value={polarizer2Angle}
-                  min={0}
-                  max={180}
-                  step={5}
-                  unit="°"
+              <div className="space-y-2">
+                <Toggle
+                  label={isZh ? '启用中间偏振片 P₂' : 'Enable Middle Polarizer P₂'}
+                  checked={showMiddlePolarizer}
                   onChange={(v) => {
-                    handleAngleChange((val) => setPolarizer2Angle(val), v)
+                    setShowMiddlePolarizer(v)
+                    if (v && polarizer2Angle === null) {
+                      setPolarizer2Angle(45)
+                    }
                     setSelectedPreset(null)
                   }}
-                  color="orange"
                 />
-              )}
-            </div>
 
-            <SliderControl
-              label={isZh ? '检偏器 P₃' : 'Analyzer P₃'}
-              value={polarizer3Angle}
-              min={0}
-              max={180}
-              step={5}
-              unit="°"
-              onChange={(v) => {
-                handleAngleChange(setPolarizer3Angle, v)
-                setSelectedPreset(null)
-              }}
-              color="green"
-            />
-          </ControlPanel>
-
-          <ControlPanel title={isZh ? '显示选项' : 'Display Options'}>
-            <Toggle
-              label={isZh ? '显示偏振颜色' : 'Show Polarization Colors'}
-              checked={showPolarization}
-              onChange={setShowPolarization}
-            />
-            <Toggle
-              label={isZh ? '显示公式标注' : 'Show Formula Annotations'}
-              checked={showFormulas}
-              onChange={setShowFormulas}
-            />
-            <Toggle
-              label={isZh ? '显示透射率曲线' : 'Show I-θ Curve'}
-              checked={showCurve}
-              onChange={setShowCurve}
-            />
-            <Toggle
-              label={isZh ? '拖拽旋转偏振片' : 'Drag to Rotate Polarizers'}
-              checked={enableDrag}
-              onChange={setEnableDrag}
-            />
-
-            {/* Audio Feedback Toggle */}
-            <div className={cn("pt-2 border-t mt-2", theme === 'dark' ? "border-slate-700/50" : "border-gray-200")}>
-              <button
-                onClick={toggleAudio}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full transition-colors",
-                  isAudioEnabled
-                    ? theme === 'dark'
-                      ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
-                      : 'bg-cyan-100 text-cyan-600 hover:bg-cyan-200'
-                    : theme === 'dark'
-                      ? 'bg-slate-700/50 text-gray-400 hover:bg-slate-700'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                )}
-                title={isZh ? '切换精密角度音效反馈' : 'Toggle precision angle audio feedback'}
-              >
-                {isAudioEnabled ? (
-                  <Volume2 className="w-4 h-4" />
-                ) : (
-                  <VolumeX className="w-4 h-4" />
-                )}
-                <span>{isZh ? '角度咔哒声' : 'Angle Clicks'}</span>
-              </button>
-            </div>
-          </ControlPanel>
-
-          {showFormulas && (
-            <InfoCard title={isZh ? '马吕斯定律' : "Malus's Law"} color="cyan">
-              <Formula highlight>I = I₀ × cos²(θ)</Formula>
-              <div className="mt-3 space-y-2 text-xs text-slate-400">
-                {showMiddlePolarizer ? (
-                  <>
-                    <p>
-                      {isZh ? '三偏振片计算：' : 'Three polarizers:'}
-                    </p>
-                    <p className="font-mono text-cyan-400">
-                      I₁ = I₀ × 0.5 = 50%
-                    </p>
-                    <p className="font-mono text-orange-400">
-                      I₂ = I₁ × cos²({calculations.theta1}°) = {((calculations.I2 || 0) * 100).toFixed(1)}%
-                    </p>
-                    <p className="font-mono text-green-400">
-                      I₃ = I₂ × cos²({calculations.theta2}°) = {(calculations.I3 * 100).toFixed(1)}%
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p>
-                      {isZh ? '两偏振片计算：' : 'Two polarizers:'}
-                    </p>
-                    <p className="font-mono text-cyan-400">
-                      I₁ = I₀ × 0.5 = 50%
-                    </p>
-                    <p className="font-mono text-green-400">
-                      I₃ = I₁ × cos²({calculations.theta2}°) = {(calculations.I3 * 100).toFixed(1)}%
-                    </p>
-                  </>
+                {showMiddlePolarizer && polarizer2Angle !== null && (
+                  <SliderControl
+                    label={isZh ? '中间片 P₂' : 'Middle P₂'}
+                    value={polarizer2Angle}
+                    min={0}
+                    max={180}
+                    step={5}
+                    unit="°"
+                    onChange={(v) => {
+                      handleAngleChange((val) => setPolarizer2Angle(val), v)
+                      setSelectedPreset(null)
+                    }}
+                    color="orange"
+                  />
                 )}
               </div>
-            </InfoCard>
-          )}
-        </div>
-      </div>
+
+              <SliderControl
+                label={isZh ? '检偏器 P₃' : 'Analyzer P₃'}
+                value={polarizer3Angle}
+                min={0}
+                max={180}
+                step={5}
+                unit="°"
+                onChange={(v) => {
+                  handleAngleChange(setPolarizer3Angle, v)
+                  setSelectedPreset(null)
+                }}
+                color="green"
+              />
+            </ControlPanel>
+
+            <ControlPanel title={isZh ? '显示选项' : 'Display Options'}>
+              <Toggle
+                label={isZh ? '显示偏振颜色' : 'Show Polarization Colors'}
+                checked={showPolarization}
+                onChange={setShowPolarization}
+              />
+              <Toggle
+                label={isZh ? '显示公式标注' : 'Show Formula Annotations'}
+                checked={showFormulas}
+                onChange={setShowFormulas}
+              />
+              <Toggle
+                label={isZh ? '显示透射率曲线' : 'Show I-θ Curve'}
+                checked={showCurve}
+                onChange={setShowCurve}
+              />
+              <Toggle
+                label={isZh ? '拖拽旋转偏振片' : 'Drag to Rotate Polarizers'}
+                checked={enableDrag}
+                onChange={setEnableDrag}
+              />
+
+              {/* Audio Feedback Toggle */}
+              <div className={cn("pt-2 border-t mt-2", theme === 'dark' ? "border-slate-700/50" : "border-gray-200")}>
+                <button
+                  onClick={toggleAudio}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-2xl text-sm w-full transition-colors",
+                    isAudioEnabled
+                      ? theme === 'dark'
+                        ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                        : 'bg-cyan-100 text-cyan-600 hover:bg-cyan-200'
+                      : theme === 'dark'
+                        ? 'bg-slate-700/50 text-gray-400 hover:bg-slate-700'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  )}
+                  title={isZh ? '切换精密角度音效反馈' : 'Toggle precision angle audio feedback'}
+                >
+                  {isAudioEnabled ? (
+                    <Volume2 className="w-4 h-4" />
+                  ) : (
+                    <VolumeX className="w-4 h-4" />
+                  )}
+                  <span>{isZh ? '角度咔哒声' : 'Angle Clicks'}</span>
+                </button>
+              </div>
+            </ControlPanel>
+
+            {showFormulas && (
+              <div className="space-y-3">
+                <FormulaHighlight
+                  formula="I = I₀ × cos²(θ)"
+                  description={isZh ? '马吕斯定律 - 偏振光通过偏振片的透射强度' : "Malus's Law - transmission intensity of polarized light through a polarizer"}
+                />
+                <InfoCard title={isZh ? '实时计算' : 'Live Calculations'} color="cyan">
+                  <div className="mt-1 space-y-2 text-xs text-slate-400">
+                    {showMiddlePolarizer ? (
+                      <>
+                        <p>
+                          {isZh ? '三偏振片计算：' : 'Three polarizers:'}
+                        </p>
+                        <p className="font-mono text-cyan-400">
+                          I₁ = I₀ × 0.5 = 50%
+                        </p>
+                        <p className="font-mono text-orange-400">
+                          I₂ = I₁ × cos²({calculations.theta1}°) = {((calculations.I2 || 0) * 100).toFixed(1)}%
+                        </p>
+                        <p className="font-mono text-green-400">
+                          I₃ = I₂ × cos²({calculations.theta2}°) = {(calculations.I3 * 100).toFixed(1)}%
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p>
+                          {isZh ? '两偏振片计算：' : 'Two polarizers:'}
+                        </p>
+                        <p className="font-mono text-cyan-400">
+                          I₁ = I₀ × 0.5 = 50%
+                        </p>
+                        <p className="font-mono text-green-400">
+                          I₃ = I₁ × cos²({calculations.theta2}°) = {(calculations.I3 * 100).toFixed(1)}%
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </InfoCard>
+              </div>
+            )}
+          </div>
+        }
+      />
+
+      <TipBanner color="purple">
+        {isZh
+          ? '拖拽偏振片外圈可以直接旋转角度，也可以使用滑块精确控制。开启角度咔哒声获得精密反馈。'
+          : 'Drag the outer ring of polarizers to rotate directly, or use sliders for precise control. Enable angle clicks for precision feedback.'}
+      </TipBanner>
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <InfoGrid columns={2}>
         <InfoCard title={isZh ? '三偏振片悖论' : 'Three Polarizer Paradox'} color="purple">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={cn("text-xs space-y-1.5", theme === 'dark' ? "text-gray-300" : "text-gray-600")}>
             <li>
               •{' '}
               {isZh
@@ -1144,7 +1163,7 @@ export function ThreePolarizersDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '物理解释' : 'Physical Explanation'} color="cyan">
-          <ul className="text-xs text-gray-300 space-y-1.5">
+          <ul className={cn("text-xs space-y-1.5", theme === 'dark' ? "text-gray-300" : "text-gray-600")}>
             <li>
               •{' '}
               {isZh
@@ -1171,7 +1190,7 @@ export function ThreePolarizersDemo() {
             </li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

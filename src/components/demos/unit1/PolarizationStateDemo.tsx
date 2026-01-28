@@ -1,7 +1,7 @@
 /**
  * 偏振态演示 - Unit 1
  * 展示光波合成与不同偏振态（线偏振、圆偏振、椭圆偏振）
- * 重构版本：使用清晰的伪3D Canvas替代R3F 3D视图
+ * 重构版本：使用DemoLayout统一布局组件
  */
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
@@ -10,10 +10,15 @@ import { cn } from '@/lib/utils'
 import {
   SliderControl,
   ControlPanel,
-  ValueDisplay,
-  Formula,
   InfoCard,
 } from '../DemoControls'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  InfoGrid,
+  StatCard,
+  FormulaHighlight,
+} from '../DemoLayout'
 
 // 3D波动传播视图 - 伪3D等轴测投影Canvas
 function WavePropagation3DCanvas({
@@ -175,7 +180,7 @@ function WavePropagation3DCanvas({
   return (
     <canvas
       ref={canvasRef}
-      className="rounded-lg border border-cyan-400/20 w-full"
+      className="rounded-lg w-full"
       style={{ maxWidth: 500, height: 300 }}
     />
   )
@@ -320,7 +325,7 @@ function PolarizationStateCanvas({
   return (
     <canvas
       ref={canvasRef}
-      className="rounded-lg border border-cyan-400/20"
+      className="rounded-lg"
       style={{ width: 300, height: 300 }}
     />
   )
@@ -423,7 +428,7 @@ export function PolarizationStateDemo() {
   // 预设选项
   const presets = [
     { label: '水平线偏振', params: { phase: 0, ax: 1, ay: 0 }, color: '#ff4444' },
-    { label: '45°线偏振', params: { phase: 0, ax: 1, ay: 1 }, color: '#ffaa00' },
+    { label: '45度线偏振', params: { phase: 0, ax: 1, ay: 1 }, color: '#ffaa00' },
     { label: '右旋圆偏振', params: { phase: 90, ax: 1, ay: 1 }, color: '#44ff44' },
     { label: '左旋圆偏振', params: { phase: 270, ax: 1, ay: 1 }, color: '#22d3ee' },
     { label: '椭圆偏振', params: { phase: 45, ax: 1, ay: 0.6 }, color: '#a78bfa' },
@@ -449,34 +454,62 @@ export function PolarizationStateDemo() {
   }, [phaseDiff, ampX, ampY])
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-5 h-full">
       {/* 标题 */}
-      <div className="text-center">
-        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-cyan-100 to-white' : 'from-cyan-800 via-cyan-600 to-cyan-800'} bg-clip-text text-transparent`}>
-          偏振态与波合成
-        </h2>
-        <p className={`${dt.mutedTextClass} mt-1`}>
-          探索光的偏振状态：由两个垂直分量的振幅比和相位差决定
-        </p>
+      <DemoHeader
+        title="偏振态与波合成"
+        subtitle="探索光的偏振状态：由两个垂直分量的振幅比和相位差决定"
+        gradient="blue"
+      />
+
+      {/* 核心公式 */}
+      <FormulaHighlight
+        formula="E = Ex cos(wt) x + Ey cos(wt + d) y"
+        description="偏振态由 Ex、Ey 的振幅比和相位差 d 唯一确定"
+      />
+
+      {/* 统计卡片 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          label="相位差 d"
+          value={`${phaseDiff}`}
+          unit="deg"
+          color="purple"
+        />
+        <StatCard
+          label="振幅比 Ey/Ex"
+          value={ampX > 0 ? (ampY / ampX).toFixed(2) : '--'}
+          color="cyan"
+        />
+        <StatCard
+          label="偏振态"
+          value={polarizationState.type}
+          color={
+            polarizationState.type.includes('圆')
+              ? 'green'
+              : polarizationState.type.includes('线')
+                ? 'orange'
+                : 'purple'
+          }
+        />
+        <StatCard
+          label="Ex / Ey"
+          value={`${ampX.toFixed(1)} / ${ampY.toFixed(1)}`}
+          color="blue"
+        />
       </div>
 
       {/* 上方：两个可视化面板 */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-5">
         {/* 3D 波动传播视图 */}
-        <div className={cn(
-          "flex-1 rounded-xl border overflow-hidden",
-          dt.isDark
-            ? "bg-slate-900/50 border-cyan-400/20"
-            : "bg-white border-cyan-200 shadow-sm"
-        )}>
+        <VisualizationPanel variant="blue" className="flex-1">
           <div className={cn(
-            "px-4 py-3 border-b flex items-center justify-between",
-            dt.isDark ? "border-cyan-400/10" : "border-cyan-100"
+            "px-1 pb-3 flex items-center justify-between",
           )}>
             <h3 className={cn("text-sm font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>3D 空间传播视图</h3>
-            <div className={cn("text-xs", dt.isDark ? "text-gray-500" : "text-gray-600")}>伪等轴测投影</div>
+            <div className={cn("text-xs", dt.mutedTextClass)}>伪等轴测投影</div>
           </div>
-          <div className="p-4 flex justify-center">
+          <div className="flex justify-center">
             <WavePropagation3DCanvas
               phaseDiff={phaseDiff}
               ampX={ampX}
@@ -484,22 +517,14 @@ export function PolarizationStateDemo() {
               animate={animate}
             />
           </div>
-        </div>
+        </VisualizationPanel>
 
         {/* 2D 偏振态投影 */}
-        <div className={cn(
-          "lg:w-[360px] rounded-xl border overflow-hidden",
-          dt.isDark
-            ? "bg-slate-900/50 border-cyan-400/20"
-            : "bg-white border-cyan-200 shadow-sm"
-        )}>
-          <div className={cn(
-            "px-4 py-3 border-b",
-            dt.isDark ? "border-cyan-400/10" : "border-cyan-100"
-          )}>
+        <VisualizationPanel variant="indigo" className="lg:w-[360px]">
+          <div className="px-1 pb-3">
             <h3 className={cn("text-sm font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>偏振态投影</h3>
           </div>
-          <div className="p-4 flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3">
             <PolarizationStateCanvas
               phaseDiff={phaseDiff}
               ampX={ampX}
@@ -516,15 +541,15 @@ export function PolarizationStateDemo() {
               <p className={`text-xs ${dt.subtleTextClass}`}>{polarizationState.description}</p>
             </div>
           </div>
-        </div>
+        </VisualizationPanel>
       </div>
 
       {/* 快速预设 */}
       <div className={cn(
-        "rounded-xl border p-4",
+        "rounded-2xl border p-4",
         dt.isDark
-          ? "bg-slate-900/50 border-cyan-400/20"
-          : "bg-white border-cyan-200 shadow-sm"
+          ? "bg-slate-800/30 border-slate-700/30"
+          : "bg-white/60 border-slate-200/60"
       )}>
         <div className="flex flex-wrap gap-2 justify-center">
           {presets.map((preset, index) => (
@@ -546,22 +571,22 @@ export function PolarizationStateDemo() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {animate ? '⏸ 暂停' : '▶ 播放'}
+            {animate ? '暂停' : '播放'}
           </motion.button>
         </div>
       </div>
 
       {/* 下方：控制面板 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* 参数控制 */}
         <ControlPanel title="参数调节">
           <SliderControl
-            label="相位差 (δ)"
+            label="相位差 (d)"
             value={phaseDiff}
             min={0}
             max={360}
             step={5}
-            unit="°"
+            unit="deg"
             onChange={setPhaseDiff}
             color="purple"
           />
@@ -587,60 +612,66 @@ export function PolarizationStateDemo() {
           />
         </ControlPanel>
 
-        {/* 计算结果 */}
+        {/* 偏振参数 */}
         <ControlPanel title="偏振参数">
-          <ValueDisplay label="相位差 δ" value={`${phaseDiff}°`} />
-          <ValueDisplay label="振幅比 Ey/Ex" value={ampX > 0 ? (ampY / ampX).toFixed(2) : '∞'} />
-          <ValueDisplay
-            label="偏振态"
-            value={polarizationState.type}
-            color={
-              polarizationState.type.includes('圆')
-                ? 'green'
-                : polarizationState.type.includes('线')
-                  ? 'orange'
-                  : 'purple'
-            }
-          />
-          <Formula>E = Ex·cos(ωt) x̂ + Ey·cos(ωt+δ) ŷ</Formula>
+          <div className={cn("space-y-2 text-xs", dt.bodyClass)}>
+            <div className="flex justify-between">
+              <span>相位差 d</span>
+              <span className="font-mono font-semibold text-purple-400">{phaseDiff}deg</span>
+            </div>
+            <div className="flex justify-between">
+              <span>振幅比 Ey/Ex</span>
+              <span className="font-mono font-semibold text-cyan-400">{ampX > 0 ? (ampY / ampX).toFixed(2) : '--'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>偏振态</span>
+              <span className="font-semibold" style={{ color: polarizationState.color }}>{polarizationState.type}</span>
+            </div>
+          </div>
+          <div className={cn(
+            "mt-3 p-2.5 rounded-lg text-xs font-mono text-center",
+            dt.isDark ? "bg-slate-800/50 text-cyan-300" : "bg-slate-100 text-cyan-700"
+          )}>
+            E = Ex cos(wt) x + Ey cos(wt+d) y
+          </div>
         </ControlPanel>
 
         {/* 物理原理 */}
         <ControlPanel title="物理原理">
           <div className={`text-xs ${dt.mutedTextClass} space-y-2`}>
             <p>
-              <strong className="text-cyan-400">偏振态</strong>
-              由两个互相垂直的电场分量 (Ex, Ey) 的振幅比和相位差(δ)决定。
+              <strong className={dt.isDark ? "text-cyan-400" : "text-cyan-600"}>偏振态</strong>
+              由两个互相垂直的电场分量 (Ex, Ey) 的振幅比和相位差(d)决定。
             </p>
             <p>
-              当 <span className="text-purple-400">δ = 90°</span> 且{' '}
-              <span className="text-cyan-400">Ex = Ey</span> 时，合成矢量画出圆（圆偏振）。
+              当 <span className={dt.isDark ? "text-purple-400" : "text-purple-600"}>d = 90deg</span> 且{' '}
+              <span className={dt.isDark ? "text-cyan-400" : "text-cyan-600"}>Ex = Ey</span> 时，合成矢量画出圆（圆偏振）。
             </p>
             <p>
-              当 <span className="text-orange-400">δ = 0° 或 180°</span> 时，合成矢量画出直线（线偏振）。
+              当 <span className={dt.isDark ? "text-orange-400" : "text-orange-600"}>d = 0deg 或 180deg</span> 时，合成矢量画出直线（线偏振）。
             </p>
           </div>
         </ControlPanel>
       </div>
 
       {/* 现实应用场景 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="🎬 3D电影技术" color="cyan">
+      <InfoGrid columns={3}>
+        <InfoCard title="3D电影技术" color="cyan">
           <p className={`text-xs ${dt.bodyClass}`}>
             3D电影利用圆偏振光：左右眼分别接收左旋和右旋圆偏振图像，通过偏振眼镜分离产生立体效果。
           </p>
         </InfoCard>
-        <InfoCard title="📡 卫星通信" color="purple">
+        <InfoCard title="卫星通信" color="purple">
           <p className={`text-xs ${dt.bodyClass}`}>
             卫星使用圆偏振天线：避免发射和接收天线方向对准问题，提高通信稳定性。
           </p>
         </InfoCard>
-        <InfoCard title="🔬 生物检测" color="orange">
+        <InfoCard title="生物检测" color="orange">
           <p className={`text-xs ${dt.bodyClass}`}>
             椭圆偏振光谱用于检测蛋白质分子结构：不同分子会产生特定的偏振变化，用于医学诊断。
           </p>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

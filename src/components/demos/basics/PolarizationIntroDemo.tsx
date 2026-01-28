@@ -13,6 +13,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { DemoHeader, DemoMainLayout, InfoGrid, TipBanner } from '../DemoLayout'
 
 // 电场矢量组件 - 用于偏振光
 function EFieldVector({
@@ -192,7 +193,7 @@ function PolarizedPanel({
   const { theme } = useTheme()
   return (
     <div className={cn(
-      "flex-1 rounded-xl border p-4",
+      "flex-1 rounded-2xl border p-4",
       theme === 'dark'
         ? "bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-800 border-slate-700/50"
         : "bg-gradient-to-br from-white via-gray-50 to-slate-100 border-gray-200 shadow-sm"
@@ -288,123 +289,134 @@ export function PolarizationIntroDemo() {
   const [showComparison, setShowComparison] = useState(true)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      <DemoHeader
+        title={t('demoUi.polarizationIntro.polarizedLight')}
+        subtitle={t('demoUi.polarizationIntro.propagationDirection')}
+        gradient="cyan"
+      />
+
       {/* 主可视化区域 */}
-      <div className="flex gap-6 flex-col lg:flex-row">
-        <div className="flex-1 flex gap-4">
-          <AnimatePresence>
-            {showComparison && (
-              <motion.div
-                className="flex-1"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-              >
-                <PolarizedPanel
-                  title={t('demoUi.polarizationIntro.unpolarizedLight')}
-                  subtitle="Unpolarized Light"
-                  isUnpolarized={true}
-                  polarizationAngle={0}
-                  animationSpeed={animationSpeed}
-                  propagationText={t('demoUi.polarizationIntro.propagationDirection')}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <PolarizedPanel
-            title={t('demoUi.polarizationIntro.polarizedLight')}
-            subtitle="Polarized Light"
-            isUnpolarized={false}
-            polarizationAngle={polarizationAngle}
-            animationSpeed={animationSpeed}
-            propagationText={t('demoUi.polarizationIntro.propagationDirection')}
-          />
-        </div>
-
-        {/* 控制面板 */}
-        <ControlPanel title={t('demoUi.common.controlPanel')} className="w-full lg:w-64">
-          <SliderControl
-            label={t('demoUi.common.polarizationAngle')}
-            value={polarizationAngle}
-            min={0}
-            max={180}
-            step={15}
-            unit="°"
-            onChange={setPolarizationAngle}
-            color="cyan"
-          />
-          <SliderControl
-            label={t('demoUi.common.animationSpeed')}
-            value={animationSpeed}
-            min={0}
-            max={2}
-            step={0.25}
-            onChange={setAnimationSpeed}
-            color="orange"
-          />
-
-          {/* 预设角度按钮 */}
-          <div className="space-y-2">
-            <span className={cn("text-xs", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>{t('demoUi.common.quickSelect')}</span>
-            <div className="grid grid-cols-4 gap-1">
-              {[0, 45, 90, 135].map((angle) => (
-                <motion.button
-                  key={angle}
-                  className={cn(
-                    "py-1.5 rounded text-xs font-medium transition-all border",
-                    polarizationAngle === angle
-                      ? theme === 'dark'
-                        ? 'bg-cyan-400/30 text-cyan-400 border-cyan-400/50'
-                        : 'bg-cyan-100 text-cyan-700 border-cyan-300'
-                      : theme === 'dark'
-                        ? 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-cyan-400/30'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-cyan-300'
-                  )}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setPolarizationAngle(angle)}
+      <DemoMainLayout
+        controlsWidth="narrow"
+        visualization={
+          <div className="flex gap-4">
+            <AnimatePresence>
+              {showComparison && (
+                <motion.div
+                  className="flex-1"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
                 >
-                  {angle}°
-                </motion.button>
-              ))}
-            </div>
-          </div>
-
-          <label className="flex items-center gap-2 cursor-pointer pt-2">
-            <input
-              type="checkbox"
-              checked={showComparison}
-              onChange={(e) => setShowComparison(e.target.checked)}
-              className={cn(
-                "rounded",
-                theme === 'dark'
-                  ? "border-gray-600 bg-slate-700 text-cyan-400"
-                  : "border-gray-300 bg-white text-cyan-500"
+                  <PolarizedPanel
+                    title={t('demoUi.polarizationIntro.unpolarizedLight')}
+                    subtitle="Unpolarized Light"
+                    isUnpolarized={true}
+                    polarizationAngle={0}
+                    animationSpeed={animationSpeed}
+                    propagationText={t('demoUi.polarizationIntro.propagationDirection')}
+                  />
+                </motion.div>
               )}
-            />
-            <span className={cn("text-sm", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.showComparison')}</span>
-          </label>
+            </AnimatePresence>
 
-          {/* 关键概念 */}
-          <div className={cn("mt-4 pt-4 border-t space-y-2", theme === 'dark' ? "border-slate-700" : "border-gray-200")}>
-            <h4 className={cn("text-sm font-semibold", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.keyConcepts')}</h4>
-            <div className={cn("text-xs space-y-1.5", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>
-              <p className="flex items-start gap-2">
-                <span className="w-2 h-2 rounded-full bg-yellow-400 mt-1 flex-shrink-0" />
-                <span><strong className={theme === 'dark' ? "text-yellow-400" : "text-yellow-600"}>{t('demoUi.polarizationIntro.unpolarizedLight')}:</strong> {t('demoUi.polarizationIntro.unpolarizedDesc')}</span>
-              </p>
-              <p className="flex items-start gap-2">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 mt-1 flex-shrink-0" />
-                <span><strong className={theme === 'dark' ? "text-cyan-400" : "text-cyan-600"}>{t('demoUi.polarizationIntro.polarizedLight')}:</strong> {t('demoUi.polarizationIntro.polarizedDesc')}</span>
-              </p>
-            </div>
+            <PolarizedPanel
+              title={t('demoUi.polarizationIntro.polarizedLight')}
+              subtitle="Polarized Light"
+              isUnpolarized={false}
+              polarizationAngle={polarizationAngle}
+              animationSpeed={animationSpeed}
+              propagationText={t('demoUi.polarizationIntro.propagationDirection')}
+            />
           </div>
-        </ControlPanel>
-      </div>
+        }
+        controls={
+          <div className="space-y-5">
+            <ControlPanel title={t('demoUi.common.controlPanel')}>
+              <SliderControl
+                label={t('demoUi.common.polarizationAngle')}
+                value={polarizationAngle}
+                min={0}
+                max={180}
+                step={15}
+                unit="°"
+                onChange={setPolarizationAngle}
+                color="cyan"
+              />
+              <SliderControl
+                label={t('demoUi.common.animationSpeed')}
+                value={animationSpeed}
+                min={0}
+                max={2}
+                step={0.25}
+                onChange={setAnimationSpeed}
+                color="orange"
+              />
+
+              {/* 预设角度按钮 */}
+              <div className="space-y-2">
+                <span className={cn("text-xs", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>{t('demoUi.common.quickSelect')}</span>
+                <div className="grid grid-cols-4 gap-1">
+                  {[0, 45, 90, 135].map((angle) => (
+                    <motion.button
+                      key={angle}
+                      className={cn(
+                        "py-1.5 rounded-lg text-xs font-medium transition-all border",
+                        polarizationAngle === angle
+                          ? theme === 'dark'
+                            ? 'bg-cyan-400/30 text-cyan-400 border-cyan-400/50'
+                            : 'bg-cyan-100 text-cyan-700 border-cyan-300'
+                          : theme === 'dark'
+                            ? 'bg-slate-700/50 text-gray-400 border-slate-600/50 hover:border-cyan-400/30'
+                            : 'bg-white text-gray-600 border-gray-200 hover:border-cyan-300'
+                      )}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setPolarizationAngle(angle)}
+                    >
+                      {angle}°
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              <label className="flex items-center gap-2 cursor-pointer pt-2">
+                <input
+                  type="checkbox"
+                  checked={showComparison}
+                  onChange={(e) => setShowComparison(e.target.checked)}
+                  className={cn(
+                    "rounded",
+                    theme === 'dark'
+                      ? "border-gray-600 bg-slate-700 text-cyan-400"
+                      : "border-gray-300 bg-white text-cyan-500"
+                  )}
+                />
+                <span className={cn("text-sm", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.showComparison')}</span>
+              </label>
+
+              {/* 关键概念 */}
+              <div className={cn("mt-4 pt-4 border-t space-y-2", theme === 'dark' ? "border-slate-700" : "border-gray-200")}>
+                <h4 className={cn("text-sm font-semibold", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.keyConcepts')}</h4>
+                <div className={cn("text-xs space-y-1.5", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>
+                  <p className="flex items-start gap-2">
+                    <span className="w-2 h-2 rounded-full bg-yellow-400 mt-1 flex-shrink-0" />
+                    <span><strong className={theme === 'dark' ? "text-yellow-400" : "text-yellow-600"}>{t('demoUi.polarizationIntro.unpolarizedLight')}:</strong> {t('demoUi.polarizationIntro.unpolarizedDesc')}</span>
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 mt-1 flex-shrink-0" />
+                    <span><strong className={theme === 'dark' ? "text-cyan-400" : "text-cyan-600"}>{t('demoUi.polarizationIntro.polarizedLight')}:</strong> {t('demoUi.polarizationIntro.polarizedDesc')}</span>
+                  </p>
+                </div>
+              </div>
+            </ControlPanel>
+          </div>
+        }
+      />
 
       {/* 信息卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <InfoGrid columns={2}>
         <InfoCard title={t('demoUi.polarizationIntro.unpolarizedLight')} color="orange">
           <ul className={cn("text-xs space-y-1.5", dt.bodyClass)}>
             {(t('demoUi.polarizationIntro.unpolarizedDetails', { returnObjects: true }) as string[]).map((item, i) => (
@@ -419,16 +431,11 @@ export function PolarizationIntroDemo() {
             ))}
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
 
       {/* 偏振方向颜色编码 */}
-      <div className={cn(
-        "p-4 rounded-lg border",
-        theme === 'dark'
-          ? "bg-slate-800/50 border-slate-700/50"
-          : "bg-gray-50 border-gray-200"
-      )}>
-        <h4 className={cn("text-sm font-semibold mb-3", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.polarizationIntro.colorCode')}</h4>
+      <TipBanner color="cyan">
+        <h4 className="text-sm font-semibold mb-3">{t('demoUi.polarizationIntro.colorCode')}</h4>
         <div className="flex gap-4 justify-center flex-wrap">
           {[
             { angle: 0, color: '#ef4444', labelKey: 'demoUi.polarizationIntro.horizontal' },
@@ -460,7 +467,7 @@ export function PolarizationIntroDemo() {
             </motion.button>
           ))}
         </div>
-      </div>
+      </TipBanner>
     </div>
   )
 }

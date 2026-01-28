@@ -25,9 +25,15 @@ import {
   useDifficultyConfig,
   type DifficultyLevel,
 } from '../DifficultyStrategy'
-import { ControlPanel, InfoCard, Formula } from '../DemoControls'
+import { ControlPanel, InfoCard } from '../DemoControls'
 import { Camera, Droplets, Car, GalleryHorizontalEnd, ChevronDown } from 'lucide-react'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  FormulaHighlight,
+  TipBanner,
+} from '../DemoLayout'
 
 interface PolarizerScenarioDemoProps {
   difficultyLevel?: DifficultyLevel
@@ -78,15 +84,18 @@ export function PolarizerScenarioDemo({
   const scenarioExplanation = isZh ? selectedScenario.explanationZh : selectedScenario.explanation
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      <DemoHeader
+        title={isZh ? '偏振滤镜应用场景' : 'Polarizer Filter Scenarios'}
+        subtitle={isZh ? '使用虚拟偏振镜头消除反射眩光' : 'Use a virtual polarizer lens to eliminate reflective glare'}
+        gradient="orange"
+      />
+
       {/* === FOUNDATION MODE: Sandbox with Why Button === */}
       <DifficultyGate level="foundation" currentLevel={difficultyLevel}>
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* Large Interactive Visual */}
-          <div className={cn(
-            'rounded-xl overflow-hidden',
-            theme === 'dark' ? 'border border-slate-700' : 'border border-gray-200'
-          )}>
+          <VisualizationPanel variant="default" noPadding>
             <VirtualPolarizerLens
               imageBase={selectedScenario.imageGlare}
               imageFiltered={selectedScenario.imageClear}
@@ -96,7 +105,7 @@ export function PolarizerScenarioDemo({
               showPolarizationAxis={true}
               enableGamification={false}
             />
-          </div>
+          </VisualizationPanel>
 
           {/* "Why?" Button with Simplified Explanation */}
           <WhyButton>
@@ -112,7 +121,7 @@ export function PolarizerScenarioDemo({
                   : 'A polarizing filter is like a gate that only lets light vibrating in a specific direction pass through. Turn it to the right angle, and the glare is blocked!'}
               </p>
               <div className={cn(
-                'flex items-center gap-3 p-3 rounded-lg mt-4',
+                'flex items-center gap-3 p-3 rounded-2xl mt-4',
                 theme === 'dark' ? 'bg-cyan-900/30' : 'bg-cyan-50'
               )}>
                 <Camera className={cn('w-6 h-6', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')} />
@@ -124,6 +133,12 @@ export function PolarizerScenarioDemo({
               </div>
             </div>
           </WhyButton>
+
+          <TipBanner color="orange">
+            {isZh
+              ? '将鼠标移入图片区域，用滚轮旋转偏振片角度，观察眩光消除效果。'
+              : 'Move your mouse into the image area and use the scroll wheel to rotate the polarizer angle.'}
+          </TipBanner>
         </div>
       </DifficultyGate>
 
@@ -141,7 +156,7 @@ export function PolarizerScenarioDemo({
             <button
               onClick={() => setShowScenarioDropdown(!showScenarioDropdown)}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-lg w-full transition-colors',
+                'flex items-center gap-3 px-4 py-3 rounded-2xl w-full transition-colors',
                 theme === 'dark'
                   ? 'bg-slate-800 hover:bg-slate-700 border border-slate-600'
                   : 'bg-white hover:bg-gray-50 border border-gray-200 shadow-sm'
@@ -169,7 +184,7 @@ export function PolarizerScenarioDemo({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   className={cn(
-                    'absolute top-full left-0 right-0 mt-2 z-20 rounded-lg overflow-hidden shadow-xl',
+                    'absolute top-full left-0 right-0 mt-2 z-20 rounded-2xl overflow-hidden shadow-xl',
                     theme === 'dark' ? 'bg-slate-800 border border-slate-600' : 'bg-white border border-gray-200'
                   )}
                 >
@@ -205,10 +220,7 @@ export function PolarizerScenarioDemo({
           </div>
 
           {/* Virtual Polarizer Lens with Gamification */}
-          <div className={cn(
-            'rounded-xl overflow-hidden',
-            theme === 'dark' ? 'border border-slate-700' : 'border border-gray-200'
-          )}>
+          <VisualizationPanel variant="default" noPadding>
             <VirtualPolarizerLens
               key={selectedScenario.id}
               imageBase={selectedScenario.imageGlare}
@@ -223,24 +235,27 @@ export function PolarizerScenarioDemo({
               onTaskComplete={handleTaskComplete}
               onResearchLinkClick={handleResearchLinkClick}
             />
-          </div>
+          </VisualizationPanel>
 
           {/* Formula Display (Application Mode shows formulas) */}
           {config.showFormula && (
-            <InfoCard
-              title={isZh ? '马吕斯定律' : "Malus's Law"}
-              color="cyan"
-              icon="📐"
-            >
-              <Formula highlight>
-                I = I₀ × cos²(θ)
-              </Formula>
-              <p className={cn('text-sm mt-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
-                {isZh
-                  ? '当 θ = 90° 时，cos²(90°) = 0，反射眩光被完全阻挡。'
-                  : 'When θ = 90°, cos²(90°) = 0, and reflected glare is completely blocked.'}
-              </p>
-            </InfoCard>
+            <div className="space-y-3">
+              <FormulaHighlight
+                formula="I = I₀ × cos²(θ)"
+                description={isZh ? '马吕斯定律 - 偏振滤镜的物理原理' : "Malus's Law - the physics behind polarizer filters"}
+              />
+              <InfoCard
+                title={isZh ? '马吕斯定律' : "Malus's Law"}
+                color="cyan"
+                icon="📐"
+              >
+                <p className={cn('text-sm mt-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+                  {isZh
+                    ? '当 θ = 90° 时，cos²(90°) = 0，反射眩光被完全阻挡。'
+                    : 'When θ = 90°, cos²(90°) = 0, and reflected glare is completely blocked.'}
+                </p>
+              </InfoCard>
+            </div>
           )}
 
           {/* Research Panel (appears after task completion) */}
@@ -251,13 +266,13 @@ export function PolarizerScenarioDemo({
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className={cn(
-                  'rounded-xl overflow-hidden',
+                  'rounded-2xl overflow-hidden',
                   theme === 'dark' ? 'bg-purple-900/20 border border-purple-500/30' : 'bg-purple-50 border border-purple-200'
                 )}
               >
                 <div className="p-4 space-y-4">
                   <h4 className={cn('font-semibold', theme === 'dark' ? 'text-purple-400' : 'text-purple-700')}>
-                    🔬 {isZh ? '深入了解' : 'Deep Dive'}
+                    {isZh ? '深入了解' : 'Deep Dive'}
                   </h4>
 
                   <div className={cn('text-sm', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>
@@ -270,7 +285,7 @@ export function PolarizerScenarioDemo({
                   </div>
 
                   <div className={cn(
-                    'p-3 rounded-lg font-mono text-sm',
+                    'p-3 rounded-2xl font-mono text-sm',
                     theme === 'dark' ? 'bg-slate-800 text-cyan-300' : 'bg-white text-cyan-700'
                   )}>
                     <div>I_transmitted = I_reflected × cos²({finalAngle}°)</div>
@@ -307,10 +322,7 @@ export function PolarizerScenarioDemo({
           }}
         >
           {/* Full Interactive + All Controls */}
-          <div className={cn(
-            'rounded-xl overflow-hidden',
-            theme === 'dark' ? 'border border-slate-700' : 'border border-gray-200'
-          )}>
+          <VisualizationPanel variant="default" noPadding>
             <VirtualPolarizerLens
               imageBase={selectedScenario.imageGlare}
               imageFiltered={selectedScenario.imageClear}
@@ -320,17 +332,22 @@ export function PolarizerScenarioDemo({
               showPolarizationAxis={true}
               enableGamification={false}
             />
-          </div>
+          </VisualizationPanel>
 
           {/* Advanced Formula with Derivation */}
+          <FormulaHighlight
+            formula="I = I₀ × cos²(θ)"
+            description={isZh ? '马吕斯定律推导基础' : "Malus's Law derivation basis"}
+          />
+
           <InfoCard
             title={isZh ? '马吕斯定律推导' : "Malus's Law Derivation"}
             color="purple"
             icon="📜"
           >
             <div className={cn('space-y-2 font-mono text-sm', theme === 'dark' ? 'text-purple-300' : 'text-purple-700')}>
-              <div>E⃗_transmitted = E⃗_incident · cos(θ)</div>
-              <div>I ∝ |E⃗|²</div>
+              <div>E_transmitted = E_incident · cos(θ)</div>
+              <div>I ∝ |E|²</div>
               <div>∴ I_transmitted = I_incident × cos²(θ)</div>
             </div>
             <div className={cn('mt-4 text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
@@ -343,7 +360,7 @@ export function PolarizerScenarioDemo({
           {/* Raw Data Table */}
           <ControlPanel title={isZh ? '原始数据表' : 'Raw Data Table'}>
             <div className={cn(
-              'max-h-48 overflow-y-auto rounded-lg',
+              'max-h-48 overflow-y-auto rounded-2xl',
               theme === 'dark' ? 'bg-slate-900' : 'bg-gray-50'
             )}>
               <table className="w-full text-xs font-mono">

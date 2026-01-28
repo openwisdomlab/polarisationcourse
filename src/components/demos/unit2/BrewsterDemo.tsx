@@ -1,5 +1,5 @@
 /**
- * 布儒斯特角演示 - Unit 2 (Refactored with Unified Physics Engine)
+ * 布儒斯特角演示 - Unit 2 (Redesigned with DemoLayout)
  * tan(θB) = n2/n1，反射光为完全s偏振
  * 采用纯DOM + SVG + Framer Motion一体化设计
  *
@@ -16,8 +16,19 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { SliderControl, ControlPanel, InfoCard, Toggle } from '../DemoControls'
+import { SliderControl, ControlPanel, Toggle } from '../DemoControls'
 import { useDemoTheme } from '../demoThemeColors'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  ChartPanel,
+  StatCard,
+  FormulaHighlight,
+  TipBanner,
+} from '../DemoLayout'
+import { InfoCard } from '../DemoControls'
 import {
   sellmeierIndex,
   cauchyIndex,
@@ -137,7 +148,7 @@ function DispersionCurve({
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
       <defs>
-        <linearGradient id="spectrumGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="brewster-spectrumGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#8B00FF" />
           <stop offset="20%" stopColor="#0000FF" />
           <stop offset="35%" stopColor="#00FFFF" />
@@ -146,16 +157,23 @@ function DispersionCurve({
           <stop offset="80%" stopColor="#FF7F00" />
           <stop offset="100%" stopColor="#FF0000" />
         </linearGradient>
+        <linearGradient id="brewster-dispCurveFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
+        </linearGradient>
       </defs>
 
       {/* 背景 */}
-      <rect x="30" y="10" width="160" height="60" fill={dt.canvasBgAlt} rx="3" />
+      <rect x="30" y="10" width="160" height="60" fill={dt.canvasBgAlt} rx="4" />
 
       {/* 光谱背景条 */}
-      <rect x="30" y="72" width="160" height="6" fill="url(#spectrumGradient)" rx="2" opacity="0.6" />
+      <rect x="30" y="72" width="160" height="6" fill="url(#brewster-spectrumGrad)" rx="3" opacity="0.7" />
+
+      {/* 曲线填充 */}
+      <path d={pathD + ` L 190,70 L 30,70 Z`} fill="url(#brewster-dispCurveFill)" />
 
       {/* 曲线 */}
-      <path d={pathD} fill="none" stroke="#22d3ee" strokeWidth="2" />
+      <path d={pathD} fill="none" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
 
       {/* 当前波长标记 */}
       {currentPoint && (
@@ -208,7 +226,7 @@ function BrewsterWavelengthCurve({
       const n = getMaterialIndex(material, wl)
       const brewster = Math.atan(n) * 180 / Math.PI
       const x = 30 + ((wl - 380) / 400) * 160
-      const y = 65 - ((brewster - 50) / 25) * 50 // 假设布儒斯特角在50°-75°范围
+      const y = 65 - ((brewster - 50) / 25) * 50 // 假设布儒斯特角在50-75 range
       points.push({ wavelength: wl, brewster, x, y })
     }
     return points
@@ -224,10 +242,20 @@ function BrewsterWavelengthCurve({
 
   return (
     <svg viewBox="0 0 200 80" className="w-full h-auto">
-      <rect x="30" y="10" width="160" height="60" fill={dt.canvasBgAlt} rx="3" />
+      <defs>
+        <linearGradient id="brewster-brewCurveFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#f472b6" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#f472b6" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <rect x="30" y="10" width="160" height="60" fill={dt.canvasBgAlt} rx="4" />
+
+      {/* 曲线填充 */}
+      <path d={pathD + ` L 190,70 L 30,70 Z`} fill="url(#brewster-brewCurveFill)" />
 
       {/* 曲线 */}
-      <path d={pathD} fill="none" stroke="#f472b6" strokeWidth="2" />
+      <path d={pathD} fill="none" stroke="#f472b6" strokeWidth="2" strokeLinecap="round" />
 
       {/* 当前波长标记 */}
       {currentPoint && (
@@ -258,7 +286,7 @@ function BrewsterWavelengthCurve({
       <text x="15" y="45" fill={dt.textSecondary} fontSize="8" textAnchor="middle" transform="rotate(-90, 15, 45)">θB</text>
       <text x="30" y="80" fill={dt.textSecondary} fontSize="7">380</text>
       <text x="185" y="80" fill={dt.textSecondary} fontSize="7">780nm</text>
-      <text x="110" y="8" fill="#f472b6" fontSize="8" textAnchor="middle">θB = {currentBrewster.toFixed(2)}°</text>
+      <text x="110" y="8" fill="#f472b6" fontSize="8" textAnchor="middle">θB = {currentBrewster.toFixed(2)}</text>
     </svg>
   )
 }
@@ -385,7 +413,7 @@ function BrewsterDiagram({
     if (dy <= 0) return // Only allow angles above interface
 
     let angle = Math.atan2(Math.abs(dx), dy) * (180 / Math.PI)
-    angle = Math.max(0, Math.min(89, angle)) // Clamp to 0-89°
+    angle = Math.max(0, Math.min(89, angle)) // Clamp to 0-89
 
     // Snap to 1-degree increments
     onAngleChange(Math.round(angle))
@@ -443,22 +471,40 @@ function BrewsterDiagram({
   return (
     <svg ref={svgRef} viewBox="0 0 600 400" className="w-full h-auto">
       <defs>
-        <linearGradient id="airGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={dt.isDark ? '#0f172a' : '#bfdbfe'} stopOpacity="0.8" />
-          <stop offset="100%" stopColor={dt.isDark ? '#1e3a5f' : '#93c5fd'} stopOpacity="0.4" />
+        <linearGradient id="brewster-airGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={dt.isDark ? '#0c1526' : '#dbeafe'} stopOpacity="0.9" />
+          <stop offset="100%" stopColor={dt.isDark ? '#1e3a5f' : '#93c5fd'} stopOpacity="0.35" />
         </linearGradient>
-        <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={dt.isDark ? '#1e5f5f' : '#99f6e4'} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={dt.isDark ? '#0f4c4c' : '#5eead4'} stopOpacity="0.6" />
+        <linearGradient id="brewster-glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={dt.isDark ? '#134e4a' : '#99f6e4'} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={dt.isDark ? '#0f4c4c' : '#5eead4'} stopOpacity="0.55" />
         </linearGradient>
-        <filter id="glowYellow" x="-50%" y="-50%" width="200%" height="200%">
+        <linearGradient id="brewster-interfaceGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#67e8f9" stopOpacity="0" />
+          <stop offset="20%" stopColor="#67e8f9" stopOpacity="0.8" />
+          <stop offset="80%" stopColor="#67e8f9" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#67e8f9" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="brewster-lightSourceGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.6" />
+          <stop offset="70%" stopColor="#fbbf24" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+        </radialGradient>
+        <filter id="brewster-glowYellow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="4" result="coloredBlur" />
           <feMerge>
             <feMergeNode in="coloredBlur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id="glowCyan" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id="brewster-glowCyan" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="brewster-glowGreen" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="coloredBlur" />
           <feMerge>
             <feMergeNode in="coloredBlur" />
@@ -468,19 +514,27 @@ function BrewsterDiagram({
       </defs>
 
       {/* 空气层 */}
-      <rect x="30" y="20" width="540" height="180" fill="url(#airGradient)" rx="8" />
-      <text x="60" y="50" fill="#60a5fa" fontSize="13">{labels.air} n₁ = {n1.toFixed(2)}</text>
+      <rect x="30" y="20" width="540" height="180" fill="url(#brewster-airGrad)" rx="10" />
+      <text x="60" y="50" fill="#60a5fa" fontSize="13" fontWeight="500">{labels.air} n₁ = {n1.toFixed(2)}</text>
 
       {/* 玻璃/介质层 */}
-      <rect x="30" y="200" width="540" height="180" fill="url(#glassGradient)" rx="8" />
-      <text x="60" y="360" fill="#2dd4bf" fontSize="13">{labels.medium} n₂ = {n2.toFixed(2)}</text>
+      <rect x="30" y="200" width="540" height="180" fill="url(#brewster-glassGrad)" rx="10" />
+      <text x="60" y="360" fill="#2dd4bf" fontSize="13" fontWeight="500">{labels.medium} n₂ = {n2.toFixed(2)}</text>
 
-      {/* 界面 */}
-      <line x1="30" y1="200" x2="570" y2="200" stroke="#67e8f9" strokeWidth="2" />
+      {/* 界面 - polished gradient line */}
+      <line x1="30" y1="200" x2="570" y2="200" stroke="url(#brewster-interfaceGrad)" strokeWidth="2.5" />
 
       {/* 法线 */}
-      <line x1={cx} y1="30" x2={cx} y2="370" stroke={dt.textSecondary} strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
+      <line x1={cx} y1="30" x2={cx} y2="370" stroke={dt.textSecondary} strokeWidth="1" strokeDasharray="6 4" opacity="0.5" />
       <text x={cx + 8} y="45" fill={dt.textSecondary} fontSize="11">{labels.normal}</text>
+
+      {/* 光源辉光 */}
+      <circle
+        cx={incidentStart.x}
+        cy={incidentStart.y}
+        r="30"
+        fill="url(#brewster-lightSourceGlow)"
+      />
 
       {/* 光源 (Draggable) */}
       <motion.circle
@@ -488,7 +542,7 @@ function BrewsterDiagram({
         cy={incidentStart.y}
         r="12"
         fill="#fbbf24"
-        filter="url(#glowYellow)"
+        filter="url(#brewster-glowYellow)"
         animate={{ scale: isDragging ? 1.3 : [1, 1.1, 1] }}
         transition={{ duration: isDragging ? 0.1 : 2, repeat: isDragging ? 0 : Infinity }}
         style={{ cursor: enableDrag ? 'grab' : 'default' }}
@@ -516,7 +570,7 @@ function BrewsterDiagram({
         y2={cy}
         stroke="#fbbf24"
         strokeWidth="4"
-        filter="url(#glowYellow)"
+        filter="url(#brewster-glowYellow)"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 0.4 }}
@@ -541,7 +595,7 @@ function BrewsterDiagram({
         stroke={isAtBrewster ? '#22d3ee' : '#94a3b8'}
         strokeWidth={Math.max(2, 4 * result.Rs)}
         strokeOpacity={Math.max(0.5, result.Rs)}
-        filter={isAtBrewster ? 'url(#glowCyan)' : undefined}
+        filter={isAtBrewster ? 'url(#brewster-glowCyan)' : undefined}
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 0.3, delay: 0.2 }}
@@ -597,6 +651,7 @@ function BrewsterDiagram({
             y2={refractEnd.y}
             stroke="#4ade80"
             strokeWidth="4"
+            filter="url(#brewster-glowGreen)"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 0.3, delay: 0.3 }}
@@ -629,7 +684,7 @@ function BrewsterDiagram({
         strokeDasharray="4 2"
       />
       <text x={cx - 70} y={cy - 55} fill="#fbbf24" fontSize="13" fontWeight="500">
-        θ = {incidentAngle}°
+        θ = {incidentAngle}
       </text>
 
       {/* 折射角弧线 */}
@@ -643,7 +698,7 @@ function BrewsterDiagram({
             strokeDasharray="4 2"
           />
           <text x={cx + 50} y={cy + 60} fill="#4ade80" fontSize="12">
-            θ₂ = {result.theta2.toFixed(1)}°
+            θ₂ = {result.theta2.toFixed(1)}
           </text>
         </>
       )}
@@ -655,9 +710,9 @@ function BrewsterDiagram({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <rect x={cx - 80} y="8" width="160" height="30" rx="6" fill="rgba(34,211,238,0.2)" stroke="#22d3ee" strokeWidth="1" />
-          <text x={cx} y="28" textAnchor="middle" fill="#22d3ee" fontSize="14" fontWeight="bold">
-            {labels.brewsterAngle} θB = {brewsterAngle.toFixed(1)}°
+          <rect x={cx - 85} y="6" width="170" height="32" rx="8" fill={dt.isDark ? 'rgba(34,211,238,0.12)' : 'rgba(34,211,238,0.15)'} stroke="#22d3ee" strokeWidth="1" />
+          <text x={cx} y="27" textAnchor="middle" fill="#22d3ee" fontSize="14" fontWeight="bold">
+            {labels.brewsterAngle} θB = {brewsterAngle.toFixed(1)}
           </text>
         </motion.g>
       )}
@@ -673,14 +728,14 @@ function BrewsterDiagram({
             stroke="#fbbf24"
             strokeWidth="1.5"
           />
-          <text x={cx + 35} y={cy + 10} fill="#fbbf24" fontSize="11">90°</text>
+          <text x={cx + 35} y={cy + 10} fill="#fbbf24" fontSize="11">90</text>
         </g>
       )}
 
       {/* 图例 */}
-      <g transform="translate(450, 30)">
-        <rect x="0" y="0" width="110" height="90" fill={dt.infoPanelBg} rx="6" stroke={dt.infoPanelStroke} strokeWidth="1" />
-        <text x="10" y="18" fill={dt.textSecondary} fontSize="10">{labels.polarizationStates}</text>
+      <g transform="translate(450, 28)">
+        <rect x="0" y="0" width="112" height="94" fill={dt.infoPanelBg} rx="8" stroke={dt.infoPanelStroke} strokeWidth="1" />
+        <text x="10" y="18" fill={dt.textSecondary} fontSize="10" fontWeight="600">{labels.polarizationStates}</text>
         <PolarizationIndicator type="unpolarized" x={25} y={35} size={16} color="#fbbf24" />
         <text x="45" y="39" fill="#fbbf24" fontSize="10">{labels.naturalLight}</text>
         <PolarizationIndicator type="s" x={25} y={55} size={16} color="#22d3ee" />
@@ -739,7 +794,14 @@ function PolarizationDegreeChart({
 
   return (
     <svg viewBox="0 0 300 160" className="w-full h-auto">
-      <rect x="40" y="30" width="220" height="100" fill={dt.canvasBgAlt} rx="4" />
+      <defs>
+        <linearGradient id="brewster-pdFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <rect x="40" y="30" width="220" height="100" fill={dt.canvasBgAlt} rx="6" />
 
       {/* 坐标轴 */}
       <line x1="40" y1="130" x2="270" y2="130" stroke={dt.axisColor} strokeWidth="1" />
@@ -751,7 +813,7 @@ function PolarizationDegreeChart({
         return (
           <g key={angle}>
             <line x1={x} y1="130" x2={x} y2="135" stroke={dt.textSecondary} strokeWidth="1" />
-            <text x={x} y="147" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{angle}°</text>
+            <text x={x} y="147" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{angle}</text>
           </g>
         )
       })}
@@ -788,13 +850,13 @@ function PolarizationDegreeChart({
       </text>
 
       {/* Rs曲线 */}
-      <path d={rsPath} fill="none" stroke="#22d3ee" strokeWidth="1.5" opacity="0.5" />
+      <path d={rsPath} fill="none" stroke="#22d3ee" strokeWidth="1.5" opacity="0.4" />
 
       {/* Rp曲线 */}
-      <path d={rpPath} fill="none" stroke="#f472b6" strokeWidth="1.5" opacity="0.5" />
+      <path d={rpPath} fill="none" stroke="#f472b6" strokeWidth="1.5" opacity="0.4" />
 
       {/* 偏振度曲线 */}
-      <path d={pdPath} fill="none" stroke="#a78bfa" strokeWidth="2.5" />
+      <path d={pdPath} fill="none" stroke="#a78bfa" strokeWidth="2.5" strokeLinecap="round" />
 
       {/* 当前点 */}
       <motion.circle
@@ -802,12 +864,24 @@ function PolarizationDegreeChart({
         cy={currentY}
         r="6"
         fill="#a78bfa"
+        stroke={dt.svgWhiteText}
+        strokeWidth="1.5"
         animate={{ cx: currentX, cy: currentY }}
         transition={{ duration: 0.2 }}
       />
 
       {/* 轴标签 */}
       <text x="155" y="158" textAnchor="middle" fill={dt.textSecondary} fontSize="11">θ</text>
+
+      {/* 图例 */}
+      <g transform="translate(200, 38)">
+        <line x1="0" y1="0" x2="16" y2="0" stroke="#a78bfa" strokeWidth="2.5" />
+        <text x="20" y="4" fill="#a78bfa" fontSize="9">PD</text>
+        <line x1="0" y1="14" x2="16" y2="14" stroke="#22d3ee" strokeWidth="1.5" opacity="0.6" />
+        <text x="20" y="18" fill="#22d3ee" fontSize="9" opacity="0.6">Rs</text>
+        <line x1="0" y1="28" x2="16" y2="28" stroke="#f472b6" strokeWidth="1.5" opacity="0.6" />
+        <text x="20" y="32" fill="#f472b6" fontSize="9" opacity="0.6">Rp</text>
+      </g>
     </svg>
   )
 }
@@ -862,254 +936,278 @@ export function BrewsterDemo() {
     brewsterAngle: t('demoUi.brewster.brewsterTitle'),
   }
 
-  return (
-    <div className="space-y-6">
-      {/* 标题 */}
-      <div className="text-center">
-        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-cyan-100 to-white' : 'from-slate-800 via-cyan-700 to-slate-800'} bg-clip-text text-transparent`}>
-          {t('demoUi.brewster.title')}
-        </h2>
-        <p className={`${dt.mutedTextClass} mt-1`}>
-          {t('demoUi.brewster.subtitle')}
-        </p>
+  // ── Visualization panel content ──
+  const visualizationContent = (
+    <div className="space-y-5">
+      {/* Main diagram */}
+      <VisualizationPanel>
+        <BrewsterDiagram
+          incidentAngle={incidentAngle}
+          n1={n1}
+          n2={n2}
+          labels={diagramLabels}
+          onAngleChange={setIncidentAngle}
+          enableDrag={enableDrag}
+        />
+        {enableDrag && (
+          <p className={`text-xs ${dt.subtleTextClass} text-center mt-2`}>
+            {t('demoUi.brewster.dragHint', 'Drag the light source to change incident angle')}
+          </p>
+        )}
+      </VisualizationPanel>
+
+      {/* Stat cards row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <StatCard
+          label={t('demoUi.brewster.currentIncidentAngle')}
+          value={`${incidentAngle}`}
+          unit="\u00B0"
+          color="orange"
+        />
+        <StatCard
+          label={t('demoUi.brewster.brewsterAngle')}
+          value={brewsterAngle.toFixed(1)}
+          unit="\u00B0"
+          color="cyan"
+        />
+        <StatCard
+          label={t('demoUi.brewster.sPolReflectance')}
+          value={(result.Rs * 100).toFixed(1)}
+          unit="%"
+          color="cyan"
+        />
+        <StatCard
+          label={t('demoUi.brewster.pPolReflectance')}
+          value={(result.Rp * 100).toFixed(1)}
+          unit="%"
+          color={result.Rp < 0.01 ? 'green' : 'pink'}
+        />
       </div>
 
-      {/* 主体内容 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左侧：可视化 */}
-        <div className="space-y-4">
-          <div className={`rounded-xl ${dt.svgContainerClass} border p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]`}>
-            <BrewsterDiagram
-              incidentAngle={incidentAngle}
-              n1={n1}
-              n2={n2}
-              labels={diagramLabels}
-              onAngleChange={setIncidentAngle}
-              enableDrag={enableDrag}
-            />
-            {enableDrag && (
-              <p className={`text-xs ${dt.subtleTextClass} text-center mt-2`}>
-                {t('demoUi.brewster.dragHint', '💡 Drag the light source to change incident angle')}
-              </p>
-            )}
+      {/* Polarization progress bar */}
+      <div className={`rounded-2xl ${dt.panelClass} border p-4`}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <span className={`text-sm font-medium ${dt.mutedTextClass}`}>
+              {t('demoUi.brewster.polarizationDegree')}
+            </span>
+            <span className="font-mono text-lg text-purple-400 font-bold">
+              {(polarizationDegree * 100).toFixed(0)}%
+            </span>
           </div>
+          <div className={`text-sm font-semibold ${isAtBrewster ? 'text-green-400' : dt.subtleTextClass}`}>
+            {isAtBrewster ? t('demoUi.brewster.match') : `${t('demoUi.brewster.difference')} ${Math.abs(incidentAngle - brewsterAngle).toFixed(1)}\u00B0`}
+          </div>
+        </div>
+        <div className={`h-2.5 ${dt.barTrackClass} rounded-full overflow-hidden`}>
+          <motion.div
+            className="h-full rounded-full"
+            style={{
+              background: isAtBrewster
+                ? 'linear-gradient(90deg, #22d3ee, #4ade80)'
+                : 'linear-gradient(90deg, #94a3b8, #64748b)',
+            }}
+            animate={{ width: `${polarizationDegree * 100}%` }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
+      </div>
 
-          {/* 状态指示 */}
-          <div className={`rounded-xl ${dt.panelClass} border p-4`}>
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <span className={`text-sm ${dt.mutedTextClass}`}>{t('demoUi.brewster.currentIncidentAngle')}</span>
-                  <span className="font-mono text-lg text-orange-400">{incidentAngle}°</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-sm ${dt.mutedTextClass}`}>{t('demoUi.brewster.brewsterAngle')}</span>
-                  <span className="font-mono text-lg text-cyan-400">{brewsterAngle.toFixed(1)}°</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className={`text-2xl font-bold ${isAtBrewster ? 'text-green-400' : dt.subtleTextClass}`}>
-                  {isAtBrewster ? t('demoUi.brewster.match') : `${t('demoUi.brewster.difference')} ${Math.abs(incidentAngle - brewsterAngle).toFixed(1)}°`}
-                </div>
-                <div className={`text-sm ${dt.subtleTextClass}`}>
-                  {t('demoUi.brewster.polarizationDegree')} <span className="text-purple-400 font-mono">{(polarizationDegree * 100).toFixed(0)}%</span>
-                </div>
-              </div>
-            </div>
+      {/* Polarization degree chart */}
+      <ChartPanel
+        title={t('demoUi.brewster.reflectedPolDegree')}
+        subtitle={`θB = ${brewsterAngle.toFixed(1)}\u00B0`}
+      >
+        <PolarizationDegreeChart n1={n1} n2={n2} currentAngle={incidentAngle} />
+        <p className={`text-xs ${dt.mutedTextClass} mt-2`}>
+          {t('demoUi.brewster.chartDesc')}
+        </p>
+      </ChartPanel>
+    </div>
+  )
 
-            {/* 进度条 */}
-            <div className="mt-4">
-              <div className={`h-2 ${dt.barTrackClass} rounded-full overflow-hidden`}>
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{
-                    background: isAtBrewster
-                      ? 'linear-gradient(90deg, #22d3ee, #4ade80)'
-                      : 'linear-gradient(90deg, #94a3b8, #64748b)',
+  // ── Controls panel content ──
+  const controlsContent = (
+    <div className="space-y-5">
+      {/* Parameter controls */}
+      <ControlPanel title={t('demoUi.common.controlPanel')}>
+        <SliderControl
+          label={t('demoUi.brewster.incidentAngle')}
+          value={incidentAngle}
+          min={0}
+          max={89}
+          step={1}
+          unit="\u00B0"
+          onChange={setIncidentAngle}
+          color="orange"
+        />
+
+        {/* Drag mode toggle */}
+        <div className={`flex items-center justify-between py-2 border-t ${dt.borderClass}`}>
+          <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.brewster.dragMode', 'Drag Light Source')}</span>
+          <Toggle
+            label=""
+            checked={enableDrag}
+            onChange={setEnableDrag}
+          />
+        </div>
+
+        {/* 色散模式开关 */}
+        <div className={`flex items-center justify-between py-2 border-t ${dt.borderClass}`}>
+          <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.brewster.dispersionMode')}</span>
+          <Toggle
+            label=""
+            checked={showDispersion}
+            onChange={setShowDispersion}
+          />
+        </div>
+
+        {/* 波长滑块 - 仅在色散模式下显示 */}
+        {showDispersion && (
+          <div className="space-y-2">
+            <SliderControl
+              label={t('demoUi.brewster.wavelength')}
+              value={wavelength}
+              min={380}
+              max={780}
+              step={5}
+              unit=" nm"
+              onChange={setWavelength}
+              color="purple"
+              formatValue={(v) => `${v} nm`}
+            />
+            {/* 光谱色带 */}
+            <div
+              className="h-3 rounded-full"
+              style={{
+                background: 'linear-gradient(to right, #8B00FF, #0000FF, #00FFFF, #00FF00, #FFFF00, #FF7F00, #FF0000)'
+              }}
+            />
+          </div>
+        )}
+
+        {/* 材料选择器 */}
+        <div className={`pt-2 border-t ${dt.borderClass}`}>
+          <div className={`text-xs ${dt.subtleTextClass} mb-2 font-medium`}>{t('demoUi.brewster.selectMaterial')}</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {DISPERSIVE_MATERIALS.map((m, index) => {
+              const matN = getMaterialIndex(m, 550)
+              const matBrewster = Math.atan(matN) * 180 / Math.PI
+              const isSelected = index === selectedMaterialIndex
+              return (
+                <button
+                  key={m.nameKey}
+                  onClick={() => {
+                    setSelectedMaterialIndex(index)
+                    setIncidentAngle(Math.round(matBrewster))
                   }}
-                  animate={{ width: `${polarizationDegree * 100}%` }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </div>
+                  className={`px-2 py-1.5 text-xs rounded-lg transition-all ${
+                    isSelected
+                      ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/50'
+                      : `${dt.inactiveButtonClass} border hover:opacity-80`
+                  }`}
+                >
+                  {t(m.nameKey).replace('demoUi.brewster.', '')}
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* 右侧：控制与学习 */}
-        <div className="space-y-4">
-          {/* 参数控制 */}
-          <ControlPanel title={t('demoUi.common.controlPanel')}>
-            <SliderControl
-              label={t('demoUi.brewster.incidentAngle')}
-              value={incidentAngle}
-              min={0}
-              max={89}
-              step={1}
-              unit="°"
-              onChange={setIncidentAngle}
-              color="orange"
-            />
-
-            {/* Drag mode toggle */}
-            <div className={`flex items-center justify-between py-2 border-t ${dt.borderClass}`}>
-              <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.brewster.dragMode', 'Drag Light Source')}</span>
-              <Toggle
-                label=""
-                checked={enableDrag}
-                onChange={setEnableDrag}
-              />
-            </div>
-
-            {/* 色散模式开关 */}
-            <div className={`flex items-center justify-between py-2 border-t ${dt.borderClass}`}>
-              <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.brewster.dispersionMode')}</span>
-              <Toggle
-                label=""
-                checked={showDispersion}
-                onChange={setShowDispersion}
-              />
-            </div>
-
-            {/* 波长滑块 - 仅在色散模式下显示 */}
-            {showDispersion && (
-              <div className="space-y-2">
-                <SliderControl
-                  label={t('demoUi.brewster.wavelength')}
-                  value={wavelength}
-                  min={380}
-                  max={780}
-                  step={5}
-                  unit=" nm"
-                  onChange={setWavelength}
-                  color="purple"
-                  formatValue={(v) => `${v} nm`}
-                />
-                {/* 光谱色带 */}
-                <div
-                  className="h-3 rounded-full"
-                  style={{
-                    background: 'linear-gradient(to right, #8B00FF, #0000FF, #00FFFF, #00FF00, #FFFF00, #FF7F00, #FF0000)'
-                  }}
-                />
-              </div>
-            )}
-
-            {/* 材料选择器 */}
-            <div className={`pt-2 border-t ${dt.borderClass}`}>
-              <div className={`text-xs ${dt.subtleTextClass} mb-2`}>{t('demoUi.brewster.selectMaterial')}</div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {DISPERSIVE_MATERIALS.map((m, index) => {
-                  const matN = getMaterialIndex(m, 550)
-                  const matBrewster = Math.atan(matN) * 180 / Math.PI
-                  const isSelected = index === selectedMaterialIndex
-                  return (
-                    <button
-                      key={m.nameKey}
-                      onClick={() => {
-                        setSelectedMaterialIndex(index)
-                        setIncidentAngle(Math.round(matBrewster))
-                      }}
-                      className={`px-2 py-1.5 text-xs rounded transition-all ${
-                        isSelected
-                          ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/50'
-                          : `${dt.inactiveButtonClass} border hover:opacity-80`
-                      }`}
-                    >
-                      {t(m.nameKey).replace('demoUi.brewster.', '')}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* 显示当前折射率 */}
-            <div className={`mt-2 p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-              <div className="flex justify-between text-xs">
-                <span className={dt.subtleTextClass}>n({wavelength}nm)</span>
-                <span className="text-cyan-400 font-mono">{n2.toFixed(4)}</span>
-              </div>
-              {showDispersion && (
-                <div className="flex justify-between text-xs mt-1">
-                  <span className={dt.subtleTextClass}>{t('demoUi.brewster.dispersionRange')}</span>
-                  <span className="text-purple-400 font-mono">{dispersionRange.toFixed(2)}°</span>
-                </div>
-              )}
-            </div>
-
-            {/* 跳转按钮 */}
-            <motion.button
-              className="w-full py-2.5 mt-3 bg-gradient-to-r from-cyan-500/20 to-cyan-400/20 text-cyan-400 rounded-lg border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors font-medium"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setIncidentAngle(Math.round(brewsterAngle))}
-            >
-              {t('demoUi.brewster.jumpToBrewster')}
-            </motion.button>
-          </ControlPanel>
-
-          {/* 计算结果 */}
-          <ControlPanel title={t('demoUi.common.calculationResult')}>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <div className={`${dt.subtleTextClass} text-xs`}>{t('demoUi.brewster.sPolReflectance')}</div>
-                <div className="text-cyan-400 font-mono text-lg">{(result.Rs * 100).toFixed(1)}%</div>
-              </div>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <div className={`${dt.subtleTextClass} text-xs`}>{t('demoUi.brewster.pPolReflectance')}</div>
-                <div className={`font-mono text-lg ${result.Rp < 0.01 ? 'text-green-400' : 'text-pink-400'}`}>
-                  {(result.Rp * 100).toFixed(1)}%
-                </div>
-              </div>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <div className={`${dt.subtleTextClass} text-xs`}>{t('demoUi.brewster.refractionAngle')}</div>
-                <div className="text-green-400 font-mono text-lg">{result.theta2.toFixed(1)}°</div>
-              </div>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <div className={`${dt.subtleTextClass} text-xs`}>θ₁ + θ₂</div>
-                <div className={`font-mono text-lg ${Math.abs(incidentAngle + result.theta2 - 90) < 1.5 ? 'text-green-400' : dt.mutedTextClass}`}>
-                  {(incidentAngle + result.theta2).toFixed(1)}°
-                </div>
-              </div>
-            </div>
-
-            {/* 公式 */}
-            <div className={`mt-3 p-3 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg text-center`}>
-              <span className={`font-mono text-lg bg-gradient-to-r ${dt.isDark ? 'from-cyan-400 to-white' : 'from-cyan-600 to-slate-800'} bg-clip-text text-transparent`}>
-                tan(θB) = n₂/n₁ = {n2.toFixed(2)}/{n1.toFixed(2)} = {(n2/n1).toFixed(3)}
-              </span>
-            </div>
-          </ControlPanel>
-
-          {/* 偏振度曲线 */}
-          <ControlPanel title={t('demoUi.brewster.reflectedPolDegree')}>
-            <PolarizationDegreeChart n1={n1} n2={n2} currentAngle={incidentAngle} />
-            <p className={`text-xs ${dt.mutedTextClass} mt-2`}>
-              {t('demoUi.brewster.chartDesc')}
-            </p>
-          </ControlPanel>
-
-          {/* 色散曲线 - 仅在色散模式下显示 */}
+        {/* 显示当前折射率 */}
+        <div className={`mt-2 p-2.5 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-xl`}>
+          <div className="flex justify-between text-xs">
+            <span className={dt.subtleTextClass}>n({wavelength}nm)</span>
+            <span className="text-cyan-400 font-mono font-semibold">{n2.toFixed(4)}</span>
+          </div>
           {showDispersion && (
-            <div className="grid grid-cols-2 gap-3">
-              <ControlPanel title={t('demoUi.brewster.dispersionCurve')}>
-                <DispersionCurve material={currentMaterial} currentWavelength={wavelength} />
-                <p className={`text-xs ${dt.subtleTextClass} mt-1`}>
-                  {currentMaterial.type === 'sellmeier' ? 'Sellmeier' : 'Cauchy'}
-                </p>
-              </ControlPanel>
-              <ControlPanel title={t('demoUi.brewster.brewsterDispersion')}>
-                <BrewsterWavelengthCurve material={currentMaterial} currentWavelength={wavelength} />
-                <p className={`text-xs ${dt.subtleTextClass} mt-1`}>
-                  θB = arctan(n)
-                </p>
-              </ControlPanel>
+            <div className="flex justify-between text-xs mt-1">
+              <span className={dt.subtleTextClass}>{t('demoUi.brewster.dispersionRange')}</span>
+              <span className="text-purple-400 font-mono font-semibold">{dispersionRange.toFixed(2)}\u00B0</span>
             </div>
           )}
         </div>
-      </div>
 
-      {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 跳转按钮 */}
+        <motion.button
+          className="w-full py-2.5 mt-3 bg-gradient-to-r from-cyan-500/20 to-cyan-400/20 text-cyan-400 rounded-xl border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors font-medium text-sm"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setIncidentAngle(Math.round(brewsterAngle))}
+        >
+          {t('demoUi.brewster.jumpToBrewster')}
+        </motion.button>
+      </ControlPanel>
+
+      {/* Calculation results with StatCards */}
+      <ControlPanel title={t('demoUi.common.calculationResult')}>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard
+            label={t('demoUi.brewster.refractionAngle')}
+            value={result.theta2.toFixed(1)}
+            unit="\u00B0"
+            color="green"
+          />
+          <StatCard
+            label="θ₁ + θ₂"
+            value={(incidentAngle + result.theta2).toFixed(1)}
+            unit="\u00B0"
+            color={Math.abs(incidentAngle + result.theta2 - 90) < 1.5 ? 'green' : 'orange'}
+          />
+        </div>
+
+        {/* Key formula */}
+        <FormulaHighlight
+          formula={`tan(θB) = n₂/n₁ = ${n2.toFixed(2)}/${n1.toFixed(2)} = ${(n2/n1).toFixed(3)}`}
+          description={t('demoUi.brewster.brewsterTitle')}
+        />
+      </ControlPanel>
+
+      {/* 色散曲线 - 仅在色散模式下显示 */}
+      {showDispersion && (
+        <div className="grid grid-cols-1 gap-3">
+          <ChartPanel
+            title={t('demoUi.brewster.dispersionCurve')}
+            subtitle={currentMaterial.type === 'sellmeier' ? 'Sellmeier' : 'Cauchy'}
+          >
+            <DispersionCurve material={currentMaterial} currentWavelength={wavelength} />
+          </ChartPanel>
+          <ChartPanel
+            title={t('demoUi.brewster.brewsterDispersion')}
+            subtitle="θB = arctan(n)"
+          >
+            <BrewsterWavelengthCurve material={currentMaterial} currentWavelength={wavelength} />
+          </ChartPanel>
+        </div>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <DemoHeader
+        title={t('demoUi.brewster.title')}
+        subtitle={t('demoUi.brewster.subtitle')}
+        gradient="cyan"
+      />
+
+      {/* Tip banner */}
+      {isAtBrewster && (
+        <TipBanner color="cyan">
+          {t('demoUi.brewster.brewsterTitle')}: θ₁ + θ₂ = 90, {t('demoUi.brewster.fullSPol')}. Rp = 0, Rs = {(result.Rs * 100).toFixed(1)}%.
+        </TipBanner>
+      )}
+
+      {/* Main two-column layout */}
+      <DemoMainLayout
+        visualization={visualizationContent}
+        controls={controlsContent}
+        controlsWidth="wide"
+      />
+
+      {/* Knowledge cards grid */}
+      <InfoGrid columns={2}>
         <InfoCard title={t('demoUi.brewster.brewsterTitle')} color="cyan">
           <p className={`text-xs ${dt.bodyClass}`}>
             {t('demoUi.brewster.brewsterDesc')}
@@ -1128,11 +1226,11 @@ export function BrewsterDemo() {
         <InfoCard title={t('demoUi.brewster.applicationsTitle')} color="orange">
           <ul className={`text-xs ${dt.bodyClass} space-y-1`}>
             {(t('demoUi.brewster.applicationsList', { returnObjects: true }) as string[]).map((item, i) => (
-              <li key={i}>• {item}</li>
+              <li key={i}>- {item}</li>
             ))}
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

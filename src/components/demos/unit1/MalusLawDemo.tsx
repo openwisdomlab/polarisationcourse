@@ -18,6 +18,16 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { useDemoTheme } from '../demoThemeColors'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  TipBanner,
+  FormulaHighlight,
+  StatCard,
+  ChartPanel,
+} from '../DemoLayout'
 import { cn } from '@/lib/utils'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
@@ -46,39 +56,55 @@ function LightBar({
   const dt = useDemoTheme()
   const colors = {
     blue: {
-      gradient: 'linear-gradient(90deg, rgba(132,194,255,0.1), rgba(104,171,255,0.8), rgba(42,118,255,0.95))',
-      glow: 'rgba(76,142,255,0.6)',
+      gradient: 'linear-gradient(90deg, rgba(56,189,248,0.08), rgba(59,130,246,0.5), rgba(37,99,235,0.85))',
+      glow: 'rgba(59,130,246,0.5)',
+      accent: dt.isDark ? 'text-blue-300' : 'text-blue-600',
     },
     orange: {
-      gradient: 'linear-gradient(90deg, rgba(255,195,156,0.08), rgba(255,153,102,0.82), rgba(255,96,96,0.9))',
-      glow: 'rgba(255,145,108,0.7)',
+      gradient: 'linear-gradient(90deg, rgba(251,191,36,0.08), rgba(249,115,22,0.6), rgba(234,88,12,0.9))',
+      glow: 'rgba(249,115,22,0.5)',
+      accent: dt.isDark ? 'text-orange-300' : 'text-orange-600',
     },
   }
 
   const colorSet = colors[color]
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <div className="flex items-center gap-3">
-        <span className={`w-8 font-mono text-sm ${dt.isDark ? 'text-blue-200' : 'text-blue-700'}`}>{label}</span>
-        <div className={`flex-1 h-5 rounded-full border overflow-hidden relative shadow-inner ${dt.isDark ? 'bg-gradient-to-b from-slate-800 to-slate-900 border-blue-500/30' : 'bg-gradient-to-b from-slate-200 to-slate-300 border-blue-300/50'}`}>
+        <span className={cn('w-10 font-mono text-sm font-semibold', colorSet.accent)}>{label}</span>
+        <div className={cn(
+          'flex-1 h-6 rounded-full border overflow-hidden relative',
+          dt.isDark
+            ? 'bg-gradient-to-b from-slate-800/80 to-slate-900 border-slate-600/30 shadow-inner shadow-black/30'
+            : 'bg-gradient-to-b from-slate-100 to-slate-200 border-slate-300/50 shadow-inner shadow-slate-300/40'
+        )}>
           <motion.div
             className="absolute inset-[2px] rounded-full"
             style={{
               background: colorSet.gradient,
-              boxShadow: `0 0 14px ${colorSet.glow}`,
+              boxShadow: `0 0 16px ${colorSet.glow}, inset 0 1px 0 rgba(255,255,255,0.15)`,
             }}
             initial={{ scaleX: 0 }}
             animate={{
-              scaleX: Math.max(0.05, intensity),
-              opacity: Math.max(0.2, intensity),
+              scaleX: Math.max(0.03, intensity),
+              opacity: Math.max(0.15, intensity),
             }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          />
+          {/* Highlight stripe on top of bar for polish */}
+          <motion.div
+            className="absolute inset-x-[3px] top-[3px] h-[5px] rounded-full opacity-30"
+            style={{
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+            }}
+            animate={{ scaleX: Math.max(0.03, intensity) }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
           />
         </div>
       </div>
       {showValue && valueText && (
-        <div className={`text-xs ${dt.mutedTextClass} ml-11`}>
+        <div className={cn('text-xs ml-[52px]', dt.mutedTextClass)}>
           {valueText}
         </div>
       )}
@@ -189,21 +215,35 @@ function PolarizerCircle({
     }
   }, [isDragging, handleDragMove, handleDragEnd])
 
+  const ringBaseColor = isBase
+    ? dt.isDark ? 'border-blue-500/50' : 'border-blue-400/60'
+    : dt.isDark ? 'border-purple-500/50' : 'border-purple-400/60'
+
+  const ringInteractiveColor = interactive
+    ? isDragging
+      ? dt.isDark ? 'border-purple-400 shadow-[0_0_24px_rgba(147,51,234,0.5)]' : 'border-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)]'
+      : cn(
+          'cursor-grab active:cursor-grabbing',
+          dt.isDark
+            ? 'hover:border-purple-400/80 hover:shadow-[0_0_20px_rgba(147,51,234,0.4)]'
+            : 'hover:border-purple-500/70 hover:shadow-[0_0_16px_rgba(147,51,234,0.2)]'
+        )
+    : ''
+
   return (
     <div className="flex flex-col items-center">
-      <span className={`text-xs ${dt.mutedTextClass} mb-2`}>{label}</span>
-      <span className={`text-[10px] ${dt.subtleTextClass} mb-2`}>{sublabel}</span>
+      <span className={cn('text-xs font-medium mb-1.5', dt.isDark ? 'text-gray-300' : 'text-gray-600')}>{label}</span>
+      <span className={cn('text-[10px] mb-2', dt.subtleTextClass)}>{sublabel}</span>
       <div
         ref={containerRef}
-        className={`relative w-16 h-16 rounded-full border flex items-center justify-center ${
+        className={cn(
+          'relative w-[72px] h-[72px] rounded-full border-2 flex items-center justify-center transition-shadow duration-200',
           dt.isDark
-            ? 'bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-[0_0_15px_rgba(60,105,240,0.3),inset_0_0_15px_rgba(0,0,0,0.7)]'
-            : 'bg-gradient-to-br from-slate-100 to-slate-200 shadow-[0_0_15px_rgba(60,105,240,0.15),inset_0_0_10px_rgba(0,0,0,0.08)]'
-        } ${
-          interactive
-            ? 'cursor-grab active:cursor-grabbing border-purple-500/60 hover:border-purple-400/80 hover:shadow-[0_0_20px_rgba(147,51,234,0.5)]'
-            : 'border-blue-500/40'
-        } ${isDragging ? 'cursor-grabbing border-purple-400 shadow-[0_0_25px_rgba(147,51,234,0.6)]' : ''}`}
+            ? 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 shadow-[inset_0_0_16px_rgba(0,0,0,0.6)]'
+            : 'bg-gradient-to-br from-white to-slate-100 shadow-[inset_0_0_12px_rgba(0,0,0,0.06)]',
+          ringBaseColor,
+          ringInteractiveColor,
+        )}
         onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
         onTouchStart={(e) => {
           if (e.touches.length > 0) {
@@ -213,16 +253,25 @@ function PolarizerCircle({
         onMouseEnter={() => interactive && setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
+        {/* 外圈装饰 */}
+        <div className={cn(
+          'absolute inset-0 rounded-full',
+          dt.isDark ? 'ring-1 ring-inset ring-white/5' : 'ring-1 ring-inset ring-black/5'
+        )} />
         {/* 透光轴 */}
         <motion.div
-          className="absolute w-[2px] h-[46px] rounded-full"
+          className="absolute w-[2px] h-[48px] rounded-full"
           style={{
             background: isBase
-              ? 'linear-gradient(180deg, rgba(200,211,255,0.9), rgba(84,144,255,0.9))'
-              : 'linear-gradient(180deg, rgba(192,132,252,0.9), rgba(139,92,246,0.9))',
+              ? dt.isDark
+                ? 'linear-gradient(180deg, rgba(147,197,253,0.9), rgba(59,130,246,0.9))'
+                : 'linear-gradient(180deg, rgba(96,165,250,0.8), rgba(37,99,235,0.9))'
+              : dt.isDark
+                ? 'linear-gradient(180deg, rgba(192,132,252,0.9), rgba(139,92,246,0.9))'
+                : 'linear-gradient(180deg, rgba(168,85,247,0.8), rgba(124,58,237,0.9))',
             boxShadow: isBase
-              ? '0 0 8px rgba(111,153,255,0.85)'
-              : '0 0 8px rgba(167,139,250,0.85)',
+              ? '0 0 10px rgba(96,165,250,0.7)'
+              : '0 0 10px rgba(167,139,250,0.7)',
           }}
           animate={{ rotate: angle }}
           transition={{ duration: isDragging ? 0 : 0.2, ease: 'easeOut' }}
@@ -231,25 +280,33 @@ function PolarizerCircle({
         {interactive && (
           <>
             <motion.div
-              className="absolute w-3 h-3 rounded-full bg-purple-400/80"
-              style={{
-                transformOrigin: 'center',
-              }}
+              className={cn(
+                'absolute w-3.5 h-3.5 rounded-full border',
+                dt.isDark
+                  ? 'bg-purple-400/80 border-purple-300/50'
+                  : 'bg-purple-500/80 border-purple-400/50'
+              )}
+              style={{ transformOrigin: 'center' }}
               animate={{
                 rotate: angle,
-                x: 23 * Math.sin(angle * Math.PI / 180),
-                y: -23 * Math.cos(angle * Math.PI / 180),
-                scale: isHovering || isDragging ? 1.2 : 1,
+                x: 24 * Math.sin(angle * Math.PI / 180),
+                y: -24 * Math.cos(angle * Math.PI / 180),
+                scale: isHovering || isDragging ? 1.25 : 1,
               }}
               transition={{ duration: isDragging ? 0 : 0.2 }}
             />
             <motion.div
-              className="absolute w-3 h-3 rounded-full bg-purple-400/80"
+              className={cn(
+                'absolute w-3.5 h-3.5 rounded-full border',
+                dt.isDark
+                  ? 'bg-purple-400/80 border-purple-300/50'
+                  : 'bg-purple-500/80 border-purple-400/50'
+              )}
               animate={{
                 rotate: angle + 180,
-                x: -23 * Math.sin(angle * Math.PI / 180),
-                y: 23 * Math.cos(angle * Math.PI / 180),
-                scale: isHovering || isDragging ? 1.2 : 1,
+                x: -24 * Math.sin(angle * Math.PI / 180),
+                y: 24 * Math.cos(angle * Math.PI / 180),
+                scale: isHovering || isDragging ? 1.25 : 1,
               }}
               transition={{ duration: isDragging ? 0 : 0.2 }}
             />
@@ -257,18 +314,21 @@ function PolarizerCircle({
         )}
         {/* 角度显示 */}
         <motion.div
-          className={`absolute bottom-2 text-[10px] font-mono ${dt.isDark ? 'text-blue-100' : 'text-blue-700'}`}
+          className={cn(
+            'absolute -bottom-0.5 text-[10px] font-mono font-medium',
+            dt.isDark ? 'text-blue-200' : 'text-blue-700'
+          )}
           key={Math.round(angle)}
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          θ = {angle.toFixed(1)}°
+          {angle.toFixed(1)}°
         </motion.div>
       </div>
       {/* 拖拽提示 */}
       {interactive && isHovering && !isDragging && (
         <motion.span
-          className="text-[9px] text-purple-400 mt-1"
+          className={cn('text-[9px] mt-1.5', dt.isDark ? 'text-purple-400' : 'text-purple-500')}
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
@@ -444,306 +504,360 @@ export function MalusLawDemo({ difficultyLevel = 'application' }: MalusLawDemoPr
     return () => clearInterval(interval)
   }, [autoPlay, speed])
 
+  // ── Visualization (left) ──
+  const visualization = (
+    <VisualizationPanel variant="blue">
+      <h3 className={cn(
+        'text-base font-semibold mb-4',
+        dt.isDark ? 'text-white' : 'text-gray-800'
+      )}>
+        {t('demoUi.malus.visualization')}
+      </h3>
+
+      {/* 光学装置 */}
+      <div className={cn(
+        'rounded-xl border p-4 space-y-5',
+        dt.isDark
+          ? 'bg-slate-800/40 border-slate-700/40'
+          : 'bg-white/60 border-slate-200/60'
+      )}>
+        {/* 入射光 */}
+        <LightBar label="I₀" intensity={incidentIntensity} color="blue" />
+
+        {/* 偏振片 */}
+        <div className="flex justify-around items-center py-3">
+          <PolarizerCircle
+            angle={0}
+            label={t('demoUi.malus.firstPolarizer')}
+            sublabel={t('demoUi.malus.polarizerBase')}
+            isBase
+          />
+          <div className={cn('flex flex-col items-center', dt.mutedTextClass)}>
+            <motion.div
+              className={cn(
+                'w-16 h-[2px] rounded-full',
+                dt.isDark
+                  ? 'bg-gradient-to-r from-blue-400/80 to-purple-400/80'
+                  : 'bg-gradient-to-r from-blue-500/60 to-purple-500/60'
+              )}
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            <span className="text-[10px] mt-1.5">{t('demoUi.malus.polarizedBeam')}</span>
+          </div>
+          <PolarizerCircle
+            angle={angle}
+            label={t('demoUi.malus.secondPolarizer')}
+            sublabel={isFoundation ? t('demoUi.malus.analyzerRotate') : t('demoUi.malus.analyzerRotate')}
+            interactive
+            onAngleChange={setAngle}
+          />
+        </div>
+
+        {/* 透射光 */}
+        <LightBar
+          label="I"
+          intensity={transmittedIntensity}
+          color="orange"
+          showValue
+          valueText={`${t('demoUi.malus.transmittedIntensity')} ${transmittedIntensity.toFixed(3)} ${t('demoUi.malus.relativeValue')}`}
+        />
+      </div>
+
+      {/* 关键数值统计卡片 */}
+      <div className="grid grid-cols-3 gap-3 mt-4">
+        <StatCard
+          label="θ"
+          value={`${angle.toFixed(1)}°`}
+          color="purple"
+        />
+        <StatCard
+          label="I / I₀"
+          value={(transmittedIntensity / incidentIntensity).toFixed(3)}
+          color="orange"
+        />
+        <StatCard
+          label={isFoundation ? '通过率' : 'cos²θ'}
+          value={isFoundation
+            ? `${(transmittedIntensity * 100).toFixed(0)}%`
+            : cos2Theta.toFixed(4)
+          }
+          color="cyan"
+        />
+      </div>
+
+      {/* 解释框 */}
+      <div className={cn(
+        'mt-4 p-4 rounded-xl border',
+        dt.isDark
+          ? 'bg-slate-800/30 border-slate-700/30'
+          : 'bg-slate-50/80 border-slate-200/60'
+      )}>
+        <h4 className={cn(
+          'text-sm font-semibold mb-2',
+          dt.isDark ? 'text-white' : 'text-gray-800'
+        )}>
+          {t('demoUi.malus.currentMeaning')}
+        </h4>
+        <motion.p
+          className={cn('text-sm leading-relaxed', dt.bodyClass)}
+          key={Math.floor(angle / 10)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {getExplanation(angle)}
+        </motion.p>
+        <p className={cn('text-xs mt-2', dt.subtleTextClass)}>
+          {t('demoUi.malus.assumption')}
+        </p>
+      </div>
+    </VisualizationPanel>
+  )
+
+  // ── Controls (right) ──
+  const controls = (
+    <div className="space-y-4">
+      {/* 控件 */}
+      <ControlPanel title={t('demoUi.common.interactiveControl')}>
+        <SliderControl
+          label={t('demoUi.malus.angleLabel')}
+          value={angle}
+          min={0}
+          max={180}
+          step={0.5}
+          unit="°"
+          onChange={setAngle}
+          color="purple"
+        />
+
+        {!isFoundation && (
+          <SliderControl
+            label={t('demoUi.malus.incidentIntensityLabel')}
+            value={incidentIntensity}
+            min={0.1}
+            max={1}
+            step={0.01}
+            onChange={setIncidentIntensity}
+            color="blue"
+          />
+        )}
+
+        {/* 研究级别: 消光比参数 */}
+        {isResearch && (
+          <div className={cn('pt-2 border-t', dt.borderClass)}>
+            <SliderControl
+              label="消光比 (ER)"
+              value={Math.log10(extinctionRatio)}
+              min={1}
+              max={5}
+              step={0.1}
+              onChange={(v) => setExtinctionRatio(Math.pow(10, v))}
+              color="cyan"
+            />
+            <p className={cn('text-[10px] mt-1', dt.subtleTextClass)}>
+              ER = 10^{Math.log10(extinctionRatio).toFixed(1)} ≈ {extinctionRatio.toFixed(0)}
+              {extinctionRatio >= 10000 ? ' (高品质)' : extinctionRatio >= 100 ? ' (普通)' : ' (低品质)'}
+            </p>
+          </div>
+        )}
+
+        <div className="flex items-center gap-4 pt-2">
+          <motion.button
+            className={cn(
+              'px-4 py-2 rounded-full text-sm font-medium transition-all',
+              autoPlay
+                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_8px_20px_rgba(239,87,74,0.5)]'
+                : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-[0_8px_20px_rgba(25,96,230,0.5)]'
+            )}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setAutoPlay(!autoPlay)}
+          >
+            {autoPlay ? t('demoUi.malus.stopAutoRotate') : t('demoUi.malus.startAutoRotate')}
+          </motion.button>
+
+          <div className="flex-1">
+            <SliderControl
+              label={t('demoUi.malus.rotationSpeed')}
+              value={speed}
+              min={0.1}
+              max={2}
+              step={0.1}
+              unit={t('demoUi.malus.perFrame')}
+              onChange={setSpeed}
+              color="orange"
+            />
+          </div>
+        </div>
+
+        {/* 直接操作提示 */}
+        <TipBanner color="purple" className="mt-3 !py-2 !px-3 !text-[11px]">
+          {t('demoUi.common.learningTip')}: 可以直接拖拽第二个偏振片来旋转它
+        </TipBanner>
+      </ControlPanel>
+
+      {/* 公式与实时计算 - 基础难度隐藏 */}
+      {!isFoundation && (
+        <ControlPanel title={t('demoUi.malus.formulaTitle')}>
+          <FormulaHighlight
+            formula={isResearch ? 'I = I₀ · [cos²θ + sin²θ/ER]' : 'I = I₀ · cos²θ'}
+            description={isResearch ? '含消光比修正的马吕斯定律' : undefined}
+          />
+
+          <div className={cn(
+            'grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm mt-3',
+            dt.mutedTextClass
+          )}>
+            <div>
+              I₀ = <span className={cn('font-mono', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>{incidentIntensity.toFixed(3)}</span>
+            </div>
+            <div>
+              θ = <span className={cn('font-mono', dt.isDark ? 'text-purple-400' : 'text-purple-600')}>{angle.toFixed(2)}°</span>
+            </div>
+            <div>
+              cos θ ≈ <span className={cn('font-mono', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>{cosTheta.toFixed(4)}</span>
+            </div>
+            <div>
+              cos²θ ≈ <span className={cn('font-mono', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>{cos2Theta.toFixed(4)}</span>
+            </div>
+            {isResearch && (
+              <>
+                <div>
+                  sin²θ ≈ <span className={cn('font-mono', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>{sin2Theta.toFixed(4)}</span>
+                </div>
+                <div>
+                  sin²θ/ER ≈ <span className={cn('font-mono', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>{(sin2Theta / extinctionRatio).toFixed(6)}</span>
+                </div>
+              </>
+            )}
+            <div className={cn('col-span-2 pt-1.5 border-t mt-1', dt.borderClass)}>
+              {isResearch ? (
+                <>
+                  I = I₀ · [cos²θ + sin²θ/ER] ≈{' '}
+                  <span className={cn('font-mono font-semibold', dt.isDark ? 'text-orange-400' : 'text-orange-600')}>
+                    {transmittedIntensity.toFixed(4)}
+                  </span>
+                </>
+              ) : (
+                <>
+                  I = I₀ · cos²θ ≈{' '}
+                  <span className={cn('font-mono font-semibold', dt.isDark ? 'text-orange-400' : 'text-orange-600')}>
+                    {incidentIntensity.toFixed(3)} × {cos2Theta.toFixed(4)} = {transmittedIntensity.toFixed(4)}
+                  </span>
+                </>
+              )}
+            </div>
+            <div className="col-span-2">
+              I/I₀ ≈{' '}
+              <span className={cn('font-mono font-semibold', dt.isDark ? 'text-orange-400' : 'text-orange-600')}>
+                {(transmittedIntensity / incidentIntensity).toFixed(4)}
+              </span>
+              {isResearch && Math.abs(angle - 90) < 5 && (
+                <span className={cn('ml-2 text-xs', dt.isDark ? 'text-yellow-400' : 'text-yellow-600')}>
+                  (泄漏: {((1 / extinctionRatio) * 100).toFixed(2)}%)
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* 研究级别: 消光比说明 */}
+          {isResearch && (
+            <TipBanner color="cyan" className="mt-3 !text-[11px]">
+              消光比(ER)表示偏振片阻挡垂直偏振光的能力。理想偏振片ER=无穷大，实际偏振片在θ=90°时仍有微小透射。
+            </TipBanner>
+          )}
+        </ControlPanel>
+      )}
+
+      {/* 基础难度: 简化说明 */}
+      {isFoundation && (
+        <ControlPanel title="简单理解">
+          <div className="space-y-3">
+            <div className={cn('p-3 rounded-lg', dt.panelClass)}>
+              <p className={cn('text-sm', dt.bodyClass)}>
+                当两个偏振片的角度<strong className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>相同</strong>时，光可以<strong className={dt.isDark ? 'text-green-400' : 'text-green-600'}>完全通过</strong>。
+              </p>
+            </div>
+            <div className={cn('p-3 rounded-lg', dt.panelClass)}>
+              <p className={cn('text-sm', dt.bodyClass)}>
+                当两个偏振片的角度<strong className={dt.isDark ? 'text-purple-400' : 'text-purple-600'}>相差90°</strong>时，光会被<strong className={dt.isDark ? 'text-red-400' : 'text-red-600'}>完全阻挡</strong>。
+              </p>
+            </div>
+            <div className={cn('p-3 rounded-lg', dt.panelClass)}>
+              <p className={cn('text-sm', dt.bodyClass)}>
+                其他角度时，通过的光量在0%到100%之间变化。
+              </p>
+            </div>
+            <div className="mt-2 text-center">
+              <span className={cn('text-2xl font-bold', dt.isDark ? 'text-orange-400' : 'text-orange-600')}>
+                {(transmittedIntensity * 100).toFixed(0)}%
+              </span>
+              <span className={cn('text-sm ml-2', dt.mutedTextClass)}>的光通过</span>
+            </div>
+          </div>
+        </ControlPanel>
+      )}
+
+      {/* 曲线图 - 基础难度隐藏 */}
+      {!isFoundation && (
+        <ChartPanel
+          title={t('demoUi.malus.curveTitle')}
+          subtitle={`θ = ${angle.toFixed(0)}°`}
+        >
+          <MalusCurveChart currentAngle={angle} intensity={isResearch ? transmittedIntensity / incidentIntensity : cos2Theta} />
+          <p className={cn('text-xs mt-2', dt.mutedTextClass)}>
+            {t('demoUi.malus.curveDesc')}
+            {isResearch && ' 注意: 非理想偏振片在90°处仍有微小透射。'}
+          </p>
+        </ChartPanel>
+      )}
+    </div>
+  )
+
   return (
     <div className="space-y-6">
       {/* 头部标题 */}
-      <div className="text-center">
-        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-blue-100 to-white' : 'from-blue-800 via-blue-600 to-blue-800'} bg-clip-text text-transparent`}>
-          {t('demoUi.malus.title')}
-        </h2>
-        <p className={`${dt.mutedTextClass} mt-1`}>
-          {t('demoUi.malus.subtitle')}
-        </p>
-      </div>
+      <DemoHeader
+        title={t('demoUi.malus.title')}
+        subtitle={t('demoUi.malus.subtitle')}
+        gradient="blue"
+      />
 
-      {/* 主体内容 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左侧：可视化 */}
-        <div className={`rounded-xl border p-5 shadow-lg ${dt.svgContainerClassBlue}`}>
-          <h3 className={`text-lg font-semibold mb-4 ${dt.isDark ? 'text-white' : 'text-gray-800'}`}>{t('demoUi.malus.visualization')}</h3>
-
-          {/* 光学装置 */}
-          <div className={`rounded-lg border p-4 space-y-4 ${dt.panelClass}`}>
-            {/* 入射光 */}
-            <LightBar label="I₀" intensity={incidentIntensity} color="blue" />
-
-            {/* 偏振片 */}
-            <div className="flex justify-around items-center py-4">
-              <PolarizerCircle
-                angle={0}
-                label={t('demoUi.malus.firstPolarizer')}
-                sublabel={t('demoUi.malus.polarizerBase')}
-                isBase
-              />
-              <div className={cn("flex flex-col items-center", dt.mutedTextClass)}>
-                <motion.div
-                  className="w-16 h-[2px] bg-gradient-to-r from-blue-400 to-purple-400"
-                  animate={{ opacity: [0.3, 1, 0.3] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                />
-                <span className="text-xs mt-1">{t('demoUi.malus.polarizedBeam')}</span>
-              </div>
-              <PolarizerCircle
-                angle={angle}
-                label={t('demoUi.malus.secondPolarizer')}
-                sublabel={isFoundation ? t('demoUi.malus.analyzerRotate') : t('demoUi.malus.analyzerRotate')}
-                interactive
-                onAngleChange={setAngle}
-              />
-            </div>
-
-            {/* 透射光 */}
-            <LightBar
-              label="I"
-              intensity={transmittedIntensity}
-              color="orange"
-              showValue
-              valueText={`${t('demoUi.malus.transmittedIntensity')} ${transmittedIntensity.toFixed(3)} ${t('demoUi.malus.relativeValue')}`}
-            />
-          </div>
-
-          {/* 解释框 */}
-          <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
-            <h4 className={`text-sm font-semibold mb-2 ${dt.isDark ? 'text-white' : 'text-gray-800'}`}>{t('demoUi.malus.currentMeaning')}</h4>
-            <motion.p
-              className={`text-sm ${dt.bodyClass}`}
-              key={Math.floor(angle / 10)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {getExplanation(angle)}
-            </motion.p>
-            <p className={`text-xs ${dt.subtleTextClass} mt-2`}>
-              {t('demoUi.malus.assumption')}
-            </p>
-          </div>
-        </div>
-
-        {/* 右侧：控制与学习 */}
-        <div className="space-y-4">
-          {/* 控件 */}
-          <ControlPanel title={t('demoUi.common.interactiveControl')}>
-            <SliderControl
-              label={t('demoUi.malus.angleLabel')}
-              value={angle}
-              min={0}
-              max={180}
-              step={0.5}
-              unit="°"
-              onChange={setAngle}
-              color="purple"
-            />
-
-            {!isFoundation && (
-              <SliderControl
-                label={t('demoUi.malus.incidentIntensityLabel')}
-                value={incidentIntensity}
-                min={0.1}
-                max={1}
-                step={0.01}
-                onChange={setIncidentIntensity}
-                color="blue"
-              />
-            )}
-
-            {/* 研究级别: 消光比参数 */}
-            {isResearch && (
-              <div className="pt-2 border-t ${dt.borderClass}">
-                <SliderControl
-                  label="消光比 (ER)"
-                  value={Math.log10(extinctionRatio)}
-                  min={1}
-                  max={5}
-                  step={0.1}
-                  onChange={(v) => setExtinctionRatio(Math.pow(10, v))}
-                  color="cyan"
-                />
-                <p className={`text-[10px] ${dt.subtleTextClass} mt-1`}>
-                  ER = 10^{Math.log10(extinctionRatio).toFixed(1)} ≈ {extinctionRatio.toFixed(0)}
-                  {extinctionRatio >= 10000 ? ' (高品质)' : extinctionRatio >= 100 ? ' (普通)' : ' (低品质)'}
-                </p>
-              </div>
-            )}
-
-            <div className="flex items-center gap-4 pt-2">
-              <motion.button
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  autoPlay
-                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_8px_20px_rgba(239,87,74,0.5)]'
-                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-[0_8px_20px_rgba(25,96,230,0.5)]'
-                }`}
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setAutoPlay(!autoPlay)}
-              >
-                {autoPlay ? t('demoUi.malus.stopAutoRotate') : t('demoUi.malus.startAutoRotate')}
-              </motion.button>
-
-              <div className="flex-1">
-                <SliderControl
-                  label={t('demoUi.malus.rotationSpeed')}
-                  value={speed}
-                  min={0.1}
-                  max={2}
-                  step={0.1}
-                  unit={t('demoUi.malus.perFrame')}
-                  onChange={setSpeed}
-                  color="orange"
-                />
-              </div>
-            </div>
-
-            {/* 直接操作提示 */}
-            <div className="mt-3 p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
-              <p className="text-[10px] text-purple-300">
-                💡 提示: 可以直接拖拽第二个偏振片来旋转它
-              </p>
-            </div>
-          </ControlPanel>
-
-          {/* 公式与实时计算 - 基础难度隐藏 */}
-          {!isFoundation && (
-            <ControlPanel title={t('demoUi.malus.formulaTitle')}>
-              <div className="text-center py-2">
-                <span className={`font-mono text-lg bg-gradient-to-r ${dt.isDark ? 'from-white to-blue-200' : 'from-blue-800 to-blue-600'} bg-clip-text text-transparent`}>
-                  {isResearch ? 'I = I₀ · [cos²θ + sin²θ/ER]' : 'I = I₀ · cos²θ'}
-                </span>
-              </div>
-
-              <div className={`grid grid-cols-2 gap-x-4 gap-y-1 text-sm ${dt.mutedTextClass}`}>
-                <div>
-                  I₀ = <span className="text-cyan-400 font-mono">{incidentIntensity.toFixed(3)}</span>
-                </div>
-                <div>
-                  θ = <span className="text-purple-400 font-mono">{angle.toFixed(2)}°</span>
-                </div>
-                <div>
-                  cos θ ≈ <span className="text-cyan-400 font-mono">{cosTheta.toFixed(4)}</span>
-                </div>
-                <div>
-                  cos²θ ≈ <span className="text-cyan-400 font-mono">{cos2Theta.toFixed(4)}</span>
-                </div>
-                {isResearch && (
-                  <>
-                    <div>
-                      sin²θ ≈ <span className="text-cyan-400 font-mono">{sin2Theta.toFixed(4)}</span>
-                    </div>
-                    <div>
-                      sin²θ/ER ≈ <span className="text-cyan-400 font-mono">{(sin2Theta / extinctionRatio).toFixed(6)}</span>
-                    </div>
-                  </>
-                )}
-                <div className={`col-span-2 pt-1 border-t ${dt.borderClass} mt-1`}>
-                  {isResearch ? (
-                    <>
-                      I = I₀ · [cos²θ + sin²θ/ER] ≈{' '}
-                      <span className="text-orange-400 font-mono font-semibold">
-                        {transmittedIntensity.toFixed(4)}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      I = I₀ · cos²θ ≈{' '}
-                      <span className="text-orange-400 font-mono font-semibold">
-                        {incidentIntensity.toFixed(3)} × {cos2Theta.toFixed(4)} = {transmittedIntensity.toFixed(4)}
-                      </span>
-                    </>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  I/I₀ ≈{' '}
-                  <span className="text-orange-400 font-mono font-semibold">{(transmittedIntensity / incidentIntensity).toFixed(4)}</span>
-                  {isResearch && Math.abs(angle - 90) < 5 && (
-                    <span className="text-yellow-400 ml-2 text-xs">
-                      (泄漏: {((1 / extinctionRatio) * 100).toFixed(2)}%)
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* 研究级别: 消光比说明 */}
-              {isResearch && (
-                <div className="mt-3 p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-                  <p className="text-[10px] text-cyan-300">
-                    📊 消光比(ER)表示偏振片阻挡垂直偏振光的能力。理想偏振片ER=∞，实际偏振片在θ=90°时仍有微小透射。
-                  </p>
-                </div>
-              )}
-            </ControlPanel>
-          )}
-
-          {/* 基础难度: 简化说明 */}
-          {isFoundation && (
-            <ControlPanel title="简单理解">
-              <div className="space-y-3">
-                <div className={`p-3 rounded-lg ${dt.panelClass}`}>
-                  <p className={`text-sm ${dt.bodyClass}`}>
-                    当两个偏振片的角度<strong className="text-cyan-400">相同</strong>时，光可以<strong className="text-green-400">完全通过</strong>。
-                  </p>
-                </div>
-                <div className={`p-3 rounded-lg ${dt.panelClass}`}>
-                  <p className={`text-sm ${dt.bodyClass}`}>
-                    当两个偏振片的角度<strong className="text-purple-400">相差90°</strong>时，光会被<strong className="text-red-400">完全阻挡</strong>。
-                  </p>
-                </div>
-                <div className={`p-3 rounded-lg ${dt.panelClass}`}>
-                  <p className={`text-sm ${dt.bodyClass}`}>
-                    其他角度时，通过的光量在0%到100%之间变化。
-                  </p>
-                </div>
-                <div className="mt-2 text-center">
-                  <span className="text-2xl font-bold text-orange-400">
-                    {(transmittedIntensity * 100).toFixed(0)}%
-                  </span>
-                  <span className={`text-sm ml-2 ${dt.mutedTextClass}`}>的光通过</span>
-                </div>
-              </div>
-            </ControlPanel>
-          )}
-
-          {/* 曲线图 - 基础难度隐藏 */}
-          {!isFoundation && (
-            <ControlPanel title={t('demoUi.malus.curveTitle')}>
-              <MalusCurveChart currentAngle={angle} intensity={isResearch ? transmittedIntensity / incidentIntensity : cos2Theta} />
-              <p className={`text-xs ${dt.mutedTextClass} mt-2`}>
-                {t('demoUi.malus.curveDesc')}
-                {isResearch && ' 注意: 非理想偏振片在90°处仍有微小透射。'}
-              </p>
-            </ControlPanel>
-          )}
-        </div>
-      </div>
+      {/* 主体内容 - 两栏布局 */}
+      <DemoMainLayout
+        visualization={visualization}
+        controls={controls}
+        controlsWidth="wide"
+      />
 
       {/* 底部提示 */}
-      <div className={`p-4 rounded-lg border ${dt.panelClass}`}>
-        <p className={`text-sm ${dt.mutedTextClass}`}>
-          <strong className="text-cyan-400">{t('demoUi.common.learningTip')}：</strong>
-          {t('demoUi.malus.tip')}
-        </p>
-      </div>
+      <TipBanner color="cyan">
+        <strong>{t('demoUi.common.learningTip')}:</strong>{' '}
+        {t('demoUi.malus.tip')}
+      </TipBanner>
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <InfoGrid columns={3}>
         <InfoCard title={t('demoUi.malus.malusLaw')} color="cyan">
-          <p className={`text-xs ${dt.bodyClass}`}>
+          <p className={cn('text-xs', dt.bodyClass)}>
             {t('demoUi.malus.malusDesc')}
           </p>
         </InfoCard>
         <InfoCard title={t('demoUi.malus.applications')} color="purple">
-          <ul className={`text-xs ${dt.bodyClass} space-y-1`}>
+          <ul className={cn('text-xs space-y-1', dt.bodyClass)}>
             {(t('demoUi.malus.appList', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}
           </ul>
         </InfoCard>
         <InfoCard title={t('demoUi.malus.specialAngles')} color="orange">
-          <ul className={`text-xs ${dt.bodyClass} space-y-1`}>
+          <ul className={cn('text-xs space-y-1', dt.bodyClass)}>
             {(t('demoUi.malus.angleList', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i}>• {item}</li>
             ))}
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

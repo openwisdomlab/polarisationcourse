@@ -1,11 +1,15 @@
 /**
  * Light Wave Demo - 电磁波交互演示（SVG + Framer Motion 版本）
  * 展示光作为横波的特性，E场和B场振荡
+ *
+ * Redesigned with DemoLayout components for consistent framing,
+ * enhanced SVG rendering, and refined visual polish.
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard } from '../DemoControls'
+import { DemoHeader, VisualizationPanel, DemoMainLayout, InfoGrid } from '../DemoLayout'
 import { useDemoTheme } from '../demoThemeColors'
 
 export function LightWaveDemo() {
@@ -82,57 +86,124 @@ export function LightWaveDemo() {
     return { paths, generatePath }
   }, [wavelength, amplitude])
 
-  return (
-    <div className="space-y-6">
-      <div className="flex gap-6 flex-col lg:flex-row">
-        {/* 可视化区域 */}
-        <div className="flex-1">
-          <div className={`${dt.svgContainerClassBlue} rounded-xl border p-4 overflow-hidden`}>
-            <svg
-              viewBox="0 0 700 300"
-              className="w-full h-auto"
-              style={{ minHeight: '280px' }}
-            >
-              {/* 背景网格 */}
-              <defs>
-                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1"/>
-                </pattern>
-                {/* 发光效果 */}
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
-              <rect width="700" height="300" fill="url(#grid)" />
-
-              {/* 坐标轴 */}
-              <line x1="50" y1="150" x2="670" y2="150" stroke={dt.axisColor} strokeWidth="1.5" />
-              <line x1="50" y1="50" x2="50" y2="250" stroke={dt.axisColor} strokeWidth="1.5" />
-
-              {/* 箭头 */}
-              <polygon points="670,150 660,145 660,155" fill={dt.axisColor} />
-              <polygon points="50,50 45,60 55,60" fill={dt.axisColor} />
-
-              {/* 轴标签 */}
-              <text x="680" y="155" fill={dt.textSecondary} fontSize="14">x</text>
-              <text x="55" y="45" fill={dt.textSecondary} fontSize="14">E</text>
-              {showBField && (
-                <text x="55" y="265" fill="#60a5fa" fontSize="12">B</text>
-              )}
-
-              {/* E场波形 - 动画 */}
-              <motion.path
-                d={wavePaths.generatePath(0, 1)}
+  // SVG可视化内容
+  const visualization = (
+    <div className="space-y-4">
+      <VisualizationPanel variant="blue">
+        <svg
+          viewBox="0 0 700 300"
+          className="w-full h-auto"
+          style={{ minHeight: '280px' }}
+        >
+          {/* 增强滤镜与渐变定义 */}
+          <defs>
+            {/* 柔和网格 */}
+            <pattern id="lw-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path
+                d="M 40 0 L 0 0 0 40"
                 fill="none"
-                stroke={waveColor}
-                strokeWidth="3"
-                filter="url(#glow)"
+                stroke={dt.isDark ? 'rgba(100,150,255,0.04)' : 'rgba(100,150,255,0.06)'}
+                strokeWidth="0.5"
+              />
+            </pattern>
+            {/* 精细子网格 */}
+            <pattern id="lw-subgrid" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path
+                d="M 10 0 L 0 0 0 10"
+                fill="none"
+                stroke={dt.isDark ? 'rgba(100,150,255,0.015)' : 'rgba(100,150,255,0.03)'}
+                strokeWidth="0.5"
+              />
+            </pattern>
+            {/* E场发光效果 */}
+            <filter id="lw-glow" x="-20%" y="-40%" width="140%" height="180%">
+              <feGaussianBlur stdDeviation="4" result="blur1" />
+              <feGaussianBlur stdDeviation="1.5" result="blur2" />
+              <feMerge>
+                <feMergeNode in="blur1" />
+                <feMergeNode in="blur2" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            {/* B场柔和发光 */}
+            <filter id="lw-glow-soft" x="-20%" y="-40%" width="140%" height="180%">
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            {/* 波形渐变遮罩 - 左右淡出 */}
+            <linearGradient id="lw-fade-mask" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="white" stopOpacity="0" />
+              <stop offset="6%" stopColor="white" stopOpacity="1" />
+              <stop offset="94%" stopColor="white" stopOpacity="1" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+            <mask id="lw-wave-mask">
+              <rect x="50" y="0" width="620" height="300" fill="url(#lw-fade-mask)" />
+            </mask>
+            {/* 背景渐变 */}
+            <radialGradient id="lw-bg-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={dt.isDark ? 'rgba(34,211,238,0.03)' : 'rgba(34,211,238,0.02)'} />
+              <stop offset="100%" stopColor="transparent" />
+            </radialGradient>
+          </defs>
+
+          {/* 背景层 */}
+          <rect width="700" height="300" fill="url(#lw-subgrid)" />
+          <rect width="700" height="300" fill="url(#lw-grid)" />
+          <rect width="700" height="300" fill="url(#lw-bg-glow)" />
+
+          {/* 坐标轴 */}
+          <line x1="50" y1="150" x2="670" y2="150" stroke={dt.axisColor} strokeWidth="1" opacity="0.6" />
+          <line x1="50" y1="50" x2="50" y2="250" stroke={dt.axisColor} strokeWidth="1" opacity="0.6" />
+
+          {/* 箭头 - 更精致 */}
+          <polygon points="670,150 658,146 658,154" fill={dt.axisColor} opacity="0.7" />
+          <polygon points="50,50 46,62 54,62" fill={dt.axisColor} opacity="0.7" />
+
+          {/* 轴标签 */}
+          <text x="680" y="155" fill={dt.textSecondary} fontSize="13" fontFamily="serif" fontStyle="italic">x</text>
+          <text x="57" y="46" fill={dt.textSecondary} fontSize="13" fontFamily="serif" fontWeight="bold" fontStyle="italic">E</text>
+          {showBField && (
+            <text x="57" y="268" fill="#60a5fa" fontSize="11" fontFamily="serif" fontWeight="bold" fontStyle="italic" opacity="0.8">B</text>
+          )}
+
+          {/* 波形组（带遮罩淡出边缘） */}
+          <g mask="url(#lw-wave-mask)">
+            {/* E场波形 - 动画 */}
+            <motion.path
+              d={wavePaths.generatePath(0, 1)}
+              fill="none"
+              stroke={waveColor}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#lw-glow)"
+              animate={isPlaying && wavePaths.paths.length > 0 ? {
+                d: wavePaths.paths.map(p => p.ePath),
+              } : {}}
+              transition={{
+                duration: animationDuration,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+
+            {/* B场波形 - 虚线动画 (与E场同相，峰值对齐) */}
+            {showBField && (
+              <motion.path
+                d={wavePaths.generatePath(0, 0.3)}
+                fill="none"
+                stroke="#60a5fa"
+                strokeWidth="1.5"
+                strokeDasharray="6 4"
+                strokeLinecap="round"
+                opacity="0.7"
+                filter="url(#lw-glow-soft)"
                 animate={isPlaying && wavePaths.paths.length > 0 ? {
-                  d: wavePaths.paths.map(p => p.ePath),
+                  d: wavePaths.paths.map(p => p.bPath),
                 } : {}}
                 transition={{
                   duration: animationDuration,
@@ -140,137 +211,164 @@ export function LightWaveDemo() {
                   ease: "linear",
                 }}
               />
+            )}
+          </g>
 
-              {/* B场波形 - 虚线动画 (与E场同相，峰值对齐) */}
-              {showBField && (
-                <motion.path
-                  d={wavePaths.generatePath(0, 0.3)}
-                  fill="none"
-                  stroke="#60a5fa"
-                  strokeWidth="2"
-                  strokeDasharray="8 4"
-                  opacity="0.8"
-                  animate={isPlaying && wavePaths.paths.length > 0 ? {
-                    d: wavePaths.paths.map(p => p.bPath),
-                  } : {}}
-                  transition={{
-                    duration: animationDuration,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                />
-              )}
+          {/* 波长标记 - 更精致的样式 */}
+          <g transform="translate(150, 220)">
+            <line x1="0" y1="0" x2="0" y2="12" stroke={dt.textMuted} strokeWidth="0.8" opacity="0.6" />
+            <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="12" stroke={dt.textMuted} strokeWidth="0.8" opacity="0.6" />
+            <line x1="0" y1="6" x2={80 + (wavelength - 400) / 4} y2="6" stroke={dt.textMuted} strokeWidth="0.8" opacity="0.6" />
+            {/* 箭头端点 */}
+            <polygon points="2,6 6,4 6,8" fill={dt.textMuted} opacity="0.5" />
+            <polygon points={`${78 + (wavelength - 400) / 4},6 ${74 + (wavelength - 400) / 4},4 ${74 + (wavelength - 400) / 4},8`} fill={dt.textMuted} opacity="0.5" />
+            <text x={(80 + (wavelength - 400) / 4) / 2} y="26" fill={dt.textSecondary} fontSize="10.5" textAnchor="middle" fontFamily="system-ui">
+              λ = {wavelength} nm
+            </text>
+          </g>
 
-              {/* 波长标记 */}
-              <g transform="translate(150, 220)">
-                <line x1="0" y1="0" x2="0" y2="15" stroke={dt.textMuted} strokeWidth="1" />
-                <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke={dt.textMuted} strokeWidth="1" />
-                <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke={dt.textMuted} strokeWidth="1" />
-                <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill={dt.textSecondary} fontSize="11" textAnchor="middle">
-                  λ = {wavelength} nm
-                </text>
-              </g>
+          {/* 光速标注 - 精致徽章风格 */}
+          <g transform="translate(580, 16)">
+            <rect x="0" y="0" width="82" height="22" rx="6" fill={dt.isDark ? 'rgba(30,41,59,0.7)' : 'rgba(241,245,249,0.9)'} stroke={dt.isDark ? 'rgba(71,85,105,0.4)' : 'rgba(203,213,225,0.6)'} strokeWidth="0.5" />
+            <text x="41" y="15" fill={dt.textSecondary} fontSize="10" textAnchor="middle" fontFamily="system-ui">c = 3×10⁸ m/s</text>
+          </g>
 
-              {/* 光速标注 */}
-              <text x="600" y="30" fill={dt.textMuted} fontSize="11">c = 3×10⁸ m/s</text>
+          {/* 颜色指示 - 圆角胶囊 + 发光 */}
+          <rect x="588" y="44" width="72" height="18" rx="9" fill={waveColor} opacity="0.75" />
+          <rect x="588" y="44" width="72" height="18" rx="9" fill="none" stroke={waveColor} strokeWidth="0.5" opacity="0.3" />
+        </svg>
+      </VisualizationPanel>
 
-              {/* 颜色指示 */}
-              <rect x="600" y="40" width="60" height="20" rx="4" fill={waveColor} opacity="0.8" />
-            </svg>
-          </div>
-
-          {/* 可见光谱 */}
-          <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
-            <h4 className={`text-sm font-semibold ${dt.headingClass} mb-2`}>{t('demoUi.common.visibleSpectrum')}</h4>
-            <div
-              className="h-8 rounded cursor-pointer relative"
-              style={{
-                background: 'linear-gradient(to right, violet, blue, cyan, green, yellow, orange, red)',
-              }}
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect()
-                const x = e.clientX - rect.left
-                const percent = x / rect.width
-                const newWavelength = Math.round(380 + percent * 320)
-                setWavelength(Math.max(380, Math.min(700, newWavelength)))
-              }}
+      {/* 可见光谱 */}
+      <motion.div
+        className={`p-4 rounded-2xl border ${dt.panelClass}`}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <h4 className={`text-sm font-semibold ${dt.headingClass} mb-2.5`}>
+          {t('demoUi.common.visibleSpectrum')}
+        </h4>
+        <div className="relative">
+          <div
+            className="h-10 rounded-xl cursor-pointer overflow-hidden relative"
+            style={{
+              background: 'linear-gradient(to right, #8b00ff, #4400ff, #0044ff, #00ccff, #00ff44, #aaff00, #ffff00, #ffaa00, #ff4400, #ff0000)',
+            }}
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              const x = e.clientX - rect.left
+              const percent = x / rect.width
+              const newWavelength = Math.round(380 + percent * 320)
+              setWavelength(Math.max(380, Math.min(700, newWavelength)))
+            }}
+          >
+            {/* 柔和的顶部高光 */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
+            {/* 底部阴影 */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-xl pointer-events-none" />
+            {/* 当前波长指示器 */}
+            <motion.div
+              className="absolute top-0 h-full flex items-center justify-center pointer-events-none"
+              style={{ left: `${((wavelength - 380) / 320) * 100}%` }}
+              layoutId="wavelength-indicator"
             >
-              {/* 当前波长指示器 */}
-              <motion.div
-                className="absolute top-0 w-1 h-full bg-white/80 rounded"
-                style={{ left: `${((wavelength - 380) / 320) * 100}%` }}
-                layoutId="wavelength-indicator"
-              />
-            </div>
-            <div className={`flex justify-between text-xs ${dt.mutedTextClass} mt-1`}>
-              <span>380 nm ({t('demoUi.common.violet')})</span>
-              <span>550 nm ({t('demoUi.common.green')})</span>
-              <span>700 nm ({t('demoUi.common.red')})</span>
-            </div>
+              <div className="w-1 h-full bg-white/90 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            </motion.div>
+          </div>
+          {/* 标签 */}
+          <div className={`flex justify-between text-xs ${dt.mutedTextClass} mt-2 px-0.5`}>
+            <span>380 nm ({t('demoUi.common.violet')})</span>
+            <span>550 nm ({t('demoUi.common.green')})</span>
+            <span>700 nm ({t('demoUi.common.red')})</span>
           </div>
         </div>
+      </motion.div>
+    </div>
+  )
 
-        {/* 控制面板 */}
-        <ControlPanel title={t('demoUi.lightWave.waveParameters')} className="w-full lg:w-72">
-          <SliderControl
-            label={t('demoUi.common.wavelength')}
-            value={wavelength}
-            min={380}
-            max={700}
-            step={5}
-            unit=" nm"
-            onChange={setWavelength}
-            color="cyan"
-          />
-          <SliderControl
-            label={t('demoUi.common.amplitude')}
-            value={amplitude}
-            min={20}
-            max={80}
-            step={5}
-            onChange={setAmplitude}
-            color="green"
-          />
-          <SliderControl
-            label={t('demoUi.common.animationSpeed')}
-            value={speed}
-            min={0}
-            max={2}
-            step={0.1}
-            onChange={setSpeed}
-            color="orange"
-          />
+  // 控制面板
+  const controls = (
+    <ControlPanel title={t('demoUi.lightWave.waveParameters')} className="w-full">
+      <SliderControl
+        label={t('demoUi.common.wavelength')}
+        value={wavelength}
+        min={380}
+        max={700}
+        step={5}
+        unit=" nm"
+        onChange={setWavelength}
+        color="cyan"
+      />
+      <SliderControl
+        label={t('demoUi.common.amplitude')}
+        value={amplitude}
+        min={20}
+        max={80}
+        step={5}
+        onChange={setAmplitude}
+        color="green"
+      />
+      <SliderControl
+        label={t('demoUi.common.animationSpeed')}
+        value={speed}
+        min={0}
+        max={2}
+        step={0.1}
+        onChange={setSpeed}
+        color="orange"
+      />
 
-          <div className="flex items-center gap-4 pt-2">
-            <Toggle
-              label={t('demoUi.common.showBField')}
-              checked={showBField}
-              onChange={setShowBField}
-            />
-          </div>
-
-          <motion.button
-            className={`w-full py-2.5 rounded-lg font-medium transition-all ${
-              isPlaying
-                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-            }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setIsPlaying(!isPlaying)}
-          >
-            {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
-          </motion.button>
-
-          <div className={`pt-2 border-t ${dt.borderClass}`}>
-            <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
-            <ValueDisplay label={t('demoUi.common.frequency')} value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
-          </div>
-        </ControlPanel>
+      <div className="flex items-center gap-4 pt-2">
+        <Toggle
+          label={t('demoUi.common.showBField')}
+          checked={showBField}
+          onChange={setShowBField}
+        />
       </div>
 
-      {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <motion.button
+        className={`w-full py-2.5 rounded-xl font-medium transition-all ${
+          isPlaying
+            ? dt.isDark
+              ? 'bg-orange-500/15 text-orange-400 border border-orange-500/25 hover:bg-orange-500/20'
+              : 'bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100'
+            : dt.isDark
+              ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/25 hover:bg-cyan-500/20'
+              : 'bg-cyan-50 text-cyan-600 border border-cyan-200 hover:bg-cyan-100'
+        }`}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => setIsPlaying(!isPlaying)}
+      >
+        {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
+      </motion.button>
+
+      <div className={`pt-3 mt-1 border-t ${dt.borderClass}`}>
+        <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
+        <ValueDisplay label={t('demoUi.common.frequency')} value={`${(3e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
+      </div>
+    </ControlPanel>
+  )
+
+  return (
+    <div className="space-y-5">
+      {/* 渐变标题 */}
+      <DemoHeader
+        title={t('demoUi.lightWave.title', 'Light Wave Visualization')}
+        subtitle={t('demoUi.lightWave.subtitle', 'Explore how light propagates as an electromagnetic transverse wave')}
+        gradient="cyan"
+      />
+
+      {/* 两栏布局：可视化 + 控制面板 */}
+      <DemoMainLayout
+        visualization={visualization}
+        controls={controls}
+        controlsWidth="narrow"
+      />
+
+      {/* 知识卡片网格 */}
+      <InfoGrid columns={2}>
         <InfoCard title={t('demoUi.lightWave.emWaveFeatures')} color="cyan">
           <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             {(t('demoUi.lightWave.emWaveDetails', { returnObjects: true }) as string[]).map((item, i) => (
@@ -285,7 +383,7 @@ export function LightWaveDemo() {
             ))}
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

@@ -6,13 +6,24 @@
  * 增强:
  * - 溶液波动动画效果
  * - 暗色模式文字对比度优化
+ *
+ * Redesigned with DemoLayout components for consistent UI.
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  ChartPanel,
+  StatCard,
+  FormulaHighlight,
+} from '../DemoLayout'
 
 // 旋光率数据 (deg/(dm·g/mL)) - 以钠黄光 (589nm) 为标准
 const SPECIFIC_ROTATIONS: Record<string, { value: number; direction: 'd' | 'l' }> = {
@@ -71,7 +82,6 @@ function OpticalRotationDiagram({
   lightMode,
   wavelength,
   lightColor,
-  theme,
 }: {
   substance: string
   concentration: number
@@ -80,8 +90,8 @@ function OpticalRotationDiagram({
   lightMode: LightMode
   wavelength: number
   lightColor: string
-  theme: 'dark' | 'light'
 }) {
+  const dt = useDemoTheme()
   const specificRotationD = SPECIFIC_ROTATIONS[substance]?.value || 66.5
 
   // 根据波长计算实际比旋光度
@@ -155,7 +165,7 @@ function OpticalRotationDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="700" height="300" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
+      <rect x="0" y="0" width="700" height="300" fill={dt.canvasBg} rx="8" />
 
       {/* 光源 */}
       <g transform="translate(50, 150)">
@@ -187,7 +197,7 @@ function OpticalRotationDiagram({
             />
           </>
         )}
-        <text x="0" y="45" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">
+        <text x="0" y="45" textAnchor="middle" fill={dt.textSecondary} fontSize="11">
           {lightMode === 'monochromatic' ? '单色光源' : '多色光源'}
         </text>
       </g>
@@ -227,10 +237,10 @@ function OpticalRotationDiagram({
 
       {/* 起偏器 */}
       <g transform="translate(130, 150)">
-        <rect x="-8" y="-40" width="16" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-40" width="16" height="80" fill={dt.isDark ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
         <line x1="0" y1="-30" x2="0" y2="30" stroke="#22d3ee" strokeWidth="3" />
         <text x="0" y="55" textAnchor="middle" fill="#22d3ee" fontSize="11">起偏器</text>
-        <text x="0" y="68" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">0°</text>
+        <text x="0" y="68" textAnchor="middle" fill={dt.textSecondary} fontSize="10">0°</text>
       </g>
 
       {/* 偏振光 (水平偏振) */}
@@ -335,7 +345,7 @@ function OpticalRotationDiagram({
         <text x={(pathLength * 60) / 2} y="50" textAnchor="middle" fill="#67e8f9" fontSize="11">
           样品管 (L={pathLength.toFixed(1)} dm)
         </text>
-        <text x={(pathLength * 60) / 2} y="65" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
+        <text x={(pathLength * 60) / 2} y="65" textAnchor="middle" fill={dt.textSecondary} fontSize="10">
           c={concentration.toFixed(2)} g/mL
         </text>
       </g>
@@ -474,7 +484,7 @@ function OpticalRotationDiagram({
                 opacity="0.7"
               />
             ))}
-            <text x="0" y="-25" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="8">
+            <text x="0" y="-25" textAnchor="middle" fill={dt.textSecondary} fontSize="8">
               色散
             </text>
           </>
@@ -483,7 +493,7 @@ function OpticalRotationDiagram({
 
       {/* 检偏器 */}
       <g transform={`translate(${500 + pathLength * 60}, 150)`}>
-        <rect x="-8" y="-40" width="16" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-40" width="16" height="80" fill={dt.isDark ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
         <motion.line
           x1="0"
           y1="-30"
@@ -494,7 +504,7 @@ function OpticalRotationDiagram({
           transform={`rotate(${analyzerAngle})`}
         />
         <text x="0" y="55" textAnchor="middle" fill="#a78bfa" fontSize="11">检偏器</text>
-        <text x="0" y="68" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{analyzerAngle.toFixed(0)}°</text>
+        <text x="0" y="68" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{analyzerAngle.toFixed(0)}°</text>
       </g>
 
       {/* 到屏幕的光束 */}
@@ -540,13 +550,13 @@ function OpticalRotationDiagram({
               height="70"
               fill={lightColor}
               opacity={intensity * 0.8}
-              stroke="#475569"
+              stroke={dt.isDark ? '#475569' : '#94a3b8'}
               strokeWidth="2"
               rx="6"
               animate={{ opacity: [intensity * 0.7, intensity * 0.9, intensity * 0.7] }}
               transition={{ duration: 1, repeat: Infinity }}
             />
-            <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">
+            <text x="0" y="55" textAnchor="middle" fill={dt.textSecondary} fontSize="11">
               {(intensity * 100).toFixed(0)}%
             </text>
           </>
@@ -558,8 +568,8 @@ function OpticalRotationDiagram({
               y="-35"
               width="50"
               height="70"
-              fill={theme === 'dark' ? '#1e293b' : '#f1f5f9'}
-              stroke={theme === 'dark' ? '#475569' : '#cbd5e1'}
+              fill={dt.detectorFill}
+              stroke={dt.infoPanelStroke}
               strokeWidth="2"
               rx="6"
             />
@@ -577,14 +587,14 @@ function OpticalRotationDiagram({
                 <text
                   x="22"
                   y={-19 + i * 12}
-                  fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
+                  fill={dt.textSecondary}
                   fontSize="7"
                 >
                   {(comp.intensity * 100).toFixed(0)}%
                 </text>
               </g>
             ))}
-            <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="9">
+            <text x="0" y="55" textAnchor="middle" fill={dt.textSecondary} fontSize="9">
               色散强度
             </text>
           </>
@@ -594,15 +604,15 @@ function OpticalRotationDiagram({
       {/* 旋转方向标注 */}
       {lightMode === 'monochromatic' ? (
         <g transform="translate(350, 230)">
-          <rect x="-80" y="-15" width="160" height="30" fill={theme === 'dark' ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)'} rx="6" />
+          <rect x="-80" y="-15" width="160" height="30" fill={dt.infoPanelBg} rx="6" />
           <text x="0" y="5" textAnchor="middle" fill={lightColor} fontSize="13" fontWeight="500">
             {isRightRotation ? '右旋 (d/+)' : '左旋 (l/-)'}: α = {rotationAngle.toFixed(1)}°
           </text>
         </g>
       ) : (
         <g transform="translate(350, 230)">
-          <rect x="-100" y="-15" width="200" height="30" fill={theme === 'dark' ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)'} rx="6" />
-          <text x="0" y="5" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#475569'} fontSize="12" fontWeight="500">
+          <rect x="-100" y="-15" width="200" height="30" fill={dt.infoPanelBg} rx="6" />
+          <text x="0" y="5" textAnchor="middle" fill={dt.textSecondary} fontSize="12" fontWeight="500">
             旋光色散: 短波长旋转角更大 (Drude方程)
           </text>
         </g>
@@ -634,13 +644,12 @@ function RotationChart({
   substance,
   pathLength,
   currentConcentration,
-  theme,
 }: {
   substance: string
   pathLength: number
   currentConcentration: number
-  theme: 'dark' | 'light'
 }) {
+  const dt = useDemoTheme()
   const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
   const isPositive = specificRotation >= 0
   const maxRotation = Math.abs(specificRotation * 1.0 * pathLength)
@@ -665,26 +674,26 @@ function RotationChart({
 
   return (
     <svg viewBox="0 0 300 160" className="w-full h-auto">
-      <rect x="40" y="30" width="220" height="100" fill={theme === 'dark' ? '#1e293b' : '#f1f5f9'} rx="4" />
+      <rect x="40" y="30" width="220" height="100" fill={dt.canvasBgAlt} rx="4" />
 
       {/* 坐标轴 */}
-      <line x1="40" y1="100" x2="270" y2="100" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
-      <line x1="40" y1="30" x2="40" y2="130" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
+      <line x1="40" y1="100" x2="270" y2="100" stroke={dt.axisColor} strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke={dt.axisColor} strokeWidth="1" />
 
       {/* X轴刻度 */}
       {[0, 0.5, 1].map((c) => {
         const x = 40 + c * 220
         return (
           <g key={c}>
-            <line x1={x} y1="130" x2={x} y2="135" stroke={theme === 'dark' ? '#94a3b8' : '#64748b'} strokeWidth="1" />
-            <text x={x} y="147" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{c}</text>
+            <line x1={x} y1="130" x2={x} y2="135" stroke={dt.textSecondary} strokeWidth="1" />
+            <text x={x} y="147" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{c}</text>
           </g>
         )
       })}
 
       {/* Y轴刻度 */}
-      <text x="30" y="104" textAnchor="end" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">0°</text>
-      <text x="30" y="44" textAnchor="end" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
+      <text x="30" y="104" textAnchor="end" fill={dt.textSecondary} fontSize="10">0°</text>
+      <text x="30" y="44" textAnchor="end" fill={dt.textSecondary} fontSize="10">
         {isPositive ? '+' : ''}{maxRotation.toFixed(0)}°
       </text>
 
@@ -707,15 +716,15 @@ function RotationChart({
       />
 
       {/* 轴标签 */}
-      <text x="155" y="158" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">浓度 c (g/mL)</text>
-      <text x="15" y="70" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10" transform="rotate(-90 15 70)">α</text>
+      <text x="155" y="158" textAnchor="middle" fill={dt.textSecondary} fontSize="11">浓度 c (g/mL)</text>
+      <text x="15" y="70" fill={dt.textSecondary} fontSize="10" transform="rotate(-90 15 70)">α</text>
     </svg>
   )
 }
 
 // 主演示组件
 export function OpticalRotationDemo() {
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
   const [substance, setSubstance] = useState('sucrose')
   const [concentration, setConcentration] = useState(0.3)
   const [pathLength, setPathLength] = useState(1.0)
@@ -749,368 +758,350 @@ export function OpticalRotationDemo() {
     { value: 'tartaric', label: '酒石酸', rotation: '+12.0°' },
   ]
 
-  // 主题相关样式
-  const textMuted = theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* 标题 */}
-      <div className="text-center">
-        <h2 className={cn(
-          "text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent",
-          theme === 'dark'
-            ? 'from-white via-cyan-100 to-white'
-            : 'from-gray-800 via-cyan-600 to-gray-800'
-        )}>
-          旋光性交互演示
-        </h2>
-        <p className={textMuted}>
-          α = [α] × c × L —— 探索手性物质对偏振面的旋转效应
-        </p>
-      </div>
+      <DemoHeader
+        title="旋光性交互演示"
+        subtitle="α = [α] × c × L -- 探索手性物质对偏振面的旋转效应"
+        gradient="green"
+      />
+
+      {/* 核心公式 */}
+      <FormulaHighlight
+        formula="α = [α]_λ × c × L"
+        description="旋光角 = 比旋光度 × 浓度 × 光程长度"
+      />
 
       {/* 主体内容 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左侧：可视化 */}
-        <div className="space-y-4">
-          <div className={cn(
-            "rounded-xl border p-4",
-            theme === 'dark'
-              ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border-cyan-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]'
-              : 'bg-gradient-to-br from-slate-50 via-white to-cyan-50 border-cyan-200 shadow-lg'
-          )}>
-            <OpticalRotationDiagram
-              substance={substance}
-              concentration={concentration}
-              pathLength={pathLength}
-              analyzerAngle={analyzerAngle}
-              lightMode={lightMode}
-              wavelength={wavelength}
-              lightColor={lightColor}
-              theme={theme}
-            />
-          </div>
-
-          {/* 测量结果摘要 */}
-          <div className={cn(
-            "rounded-xl border p-4",
-            theme === 'dark'
-              ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30'
-              : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 shadow-sm'
-          )}>
-            {/* 光源信息 */}
-            <div className={cn("flex items-center justify-center gap-2 mb-3 pb-2 border-b", theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200')}>
-              <span
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: lightMode === 'monochromatic' ? lightColor : '#a855f7' }}
+      <DemoMainLayout
+        controlsWidth="wide"
+        visualization={
+          <div className="space-y-5">
+            {/* 光路图 */}
+            <VisualizationPanel variant="blue">
+              <OpticalRotationDiagram
+                substance={substance}
+                concentration={concentration}
+                pathLength={pathLength}
+                analyzerAngle={analyzerAngle}
+                lightMode={lightMode}
+                wavelength={wavelength}
+                lightColor={lightColor}
               />
-              <span className={cn("text-sm", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
-                {lightMode === 'monochromatic'
-                  ? `${selectedSpectralLine.name} (λ = ${wavelength} nm)`
-                  : '多色光 (旋光色散)'}
-              </span>
+            </VisualizationPanel>
+
+            {/* 测量结果 Stat Cards */}
+            <div className="grid grid-cols-3 gap-3">
+              <StatCard
+                label="旋光角 α"
+                value={`${rotationAngle >= 0 ? '+' : ''}${rotationAngle.toFixed(1)}`}
+                unit="°"
+                color={rotationAngle >= 0 ? 'cyan' : 'pink'}
+              />
+              <StatCard
+                label="旋光方向"
+                value={rotationAngle >= 0 ? '右旋 (d)' : '左旋 (l)'}
+                color={rotationAngle >= 0 ? 'green' : 'pink'}
+              />
+              <StatCard
+                label="透过强度"
+                value={`${(intensity * 100).toFixed(0)}`}
+                unit="%"
+                color="purple"
+              />
             </div>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
-                <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>旋光角 α</div>
-                <div
-                  className="font-mono text-xl"
-                  style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
-                >
-                  {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
-                </div>
-              </div>
-              <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
-                <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>旋光方向</div>
-                <div
-                  className="font-bold text-lg"
-                  style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
-                >
-                  {rotationAngle >= 0 ? '右旋 (d)' : '左旋 (l)'}
-                </div>
-              </div>
-              <div className={cn("p-3 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
-                <div className={cn("text-xs mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>透过强度</div>
-                <div
-                  className="font-mono text-xl"
-                  style={{ color: lightMode === 'monochromatic' ? lightColor : '#a78bfa' }}
-                >
-                  {(intensity * 100).toFixed(0)}%
-                </div>
+
+            {/* 光源信息面板 */}
+            <div className={cn(
+              "rounded-2xl border p-4",
+              dt.isDark
+                ? 'bg-slate-800/30 border-slate-700/40'
+                : 'bg-white/60 border-slate-200/60'
+            )}>
+              <div className={cn("flex items-center justify-center gap-2", dt.mutedTextClass)}>
+                <span
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: lightMode === 'monochromatic' ? lightColor : '#a855f7' }}
+                />
+                <span className="text-sm">
+                  {lightMode === 'monochromatic'
+                    ? `${selectedSpectralLine.name} (λ = ${wavelength} nm)`
+                    : '多色光 (旋光色散)'}
+                </span>
               </div>
             </div>
           </div>
-        </div>
+        }
+        controls={
+          <div className="space-y-5">
+            {/* 光源设置 */}
+            <ControlPanel title="光源设置">
+              {/* 光源模式切换 */}
+              <div className="flex gap-2 mb-3">
+                <motion.button
+                  className={cn(
+                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
+                    lightMode === 'monochromatic'
+                      ? dt.isDark
+                        ? 'bg-amber-500/20 border border-amber-500/50 text-amber-300'
+                        : 'bg-amber-100 border border-amber-300 text-amber-700'
+                      : dt.isDark
+                        ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                        : 'bg-gray-100 border border-gray-200 text-gray-500 hover:bg-gray-200'
+                  )}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setLightMode('monochromatic')}
+                >
+                  单色光
+                </motion.button>
+                <motion.button
+                  className={cn(
+                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
+                    lightMode === 'polychromatic'
+                      ? dt.isDark
+                        ? 'bg-gradient-to-r from-red-500/20 via-green-500/20 to-violet-500/20 border border-purple-500/50 text-purple-300'
+                        : 'bg-gradient-to-r from-red-100 via-green-100 to-violet-100 border border-purple-300 text-purple-700'
+                      : dt.isDark
+                        ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                        : 'bg-gray-100 border border-gray-200 text-gray-500 hover:bg-gray-200'
+                  )}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setLightMode('polychromatic')}
+                >
+                  多色光
+                </motion.button>
+              </div>
 
-        {/* 右侧：控制与学习 */}
-        <div className="space-y-4">
-          {/* 光源设置 */}
-          <ControlPanel title="光源设置">
-            {/* 光源模式切换 */}
-            <div className="flex gap-2 mb-3">
-              <motion.button
-                className={cn(
-                  "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                  lightMode === 'monochromatic'
-                    ? theme === 'dark'
-                      ? 'bg-amber-500/20 border border-amber-500/50 text-amber-300'
-                      : 'bg-amber-100 border border-amber-300 text-amber-700'
-                    : theme === 'dark'
-                      ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                      : 'bg-gray-100 border border-gray-200 text-gray-500 hover:bg-gray-200'
-                )}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => setLightMode('monochromatic')}
-              >
-                单色光
-              </motion.button>
-              <motion.button
-                className={cn(
-                  "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                  lightMode === 'polychromatic'
-                    ? theme === 'dark'
-                      ? 'bg-gradient-to-r from-red-500/20 via-green-500/20 to-violet-500/20 border border-purple-500/50 text-purple-300'
-                      : 'bg-gradient-to-r from-red-100 via-green-100 to-violet-100 border border-purple-300 text-purple-700'
-                    : theme === 'dark'
-                      ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                      : 'bg-gray-100 border border-gray-200 text-gray-500 hover:bg-gray-200'
-                )}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => setLightMode('polychromatic')}
-              >
-                多色光
-              </motion.button>
-            </div>
+              {/* 单色光波长选择 */}
+              {lightMode === 'monochromatic' && (
+                <div className="space-y-2">
+                  <div className={cn("text-xs mb-2", dt.mutedTextClass)}>选择光谱线</div>
+                  {SPECTRAL_LINES.map((line) => (
+                    <motion.button
+                      key={line.id}
+                      className={cn(
+                        "w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors",
+                        selectedWavelengthId === line.id
+                          ? 'border-2'
+                          : dt.isDark
+                            ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                            : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
+                      )}
+                      style={selectedWavelengthId === line.id ? {
+                        backgroundColor: dt.isDark ? `${line.color}20` : `${line.color}15`,
+                        borderColor: `${line.color}80`,
+                        color: line.color,
+                      } : {}}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => setSelectedWavelengthId(line.id)}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: line.color }}
+                        />
+                        <span className="font-medium">{line.name}</span>
+                      </span>
+                      <span className="font-mono text-sm opacity-80">
+                        {line.wavelength} nm
+                      </span>
+                    </motion.button>
+                  ))}
+                </div>
+              )}
 
-            {/* 单色光波长选择 */}
-            {lightMode === 'monochromatic' && (
+              {/* 多色光说明 */}
+              {lightMode === 'polychromatic' && (
+                <div className={cn("p-3 rounded-xl border", dt.isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-purple-50 border-purple-200')}>
+                  <div className={cn("text-xs space-y-2", dt.bodyClass)}>
+                    <p className={cn("font-medium", dt.isDark ? 'text-purple-400' : 'text-purple-600')}>旋光色散效应</p>
+                    <p>不同波长的光具有不同的比旋光度，导致各色光旋转角度不同。</p>
+                    <p className={cn("font-mono text-[10px]", dt.mutedTextClass)}>
+                      Drude方程: [α]<sub>λ</sub> ≈ [α]<sub>D</sub> × (589/λ)²
+                    </p>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {POLYCHROMATIC_COMPONENTS.map(comp => (
+                        <span
+                          key={comp.wavelength}
+                          className="px-2 py-0.5 rounded text-[10px] font-mono"
+                          style={{ backgroundColor: dt.isDark ? `${comp.color}30` : `${comp.color}20`, color: comp.color }}
+                        >
+                          {comp.name} {comp.wavelength}nm
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </ControlPanel>
+
+            {/* 物质选择 */}
+            <ControlPanel title="物质选择">
               <div className="space-y-2">
-                <div className={cn("text-xs mb-2", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>选择光谱线</div>
-                {SPECTRAL_LINES.map((line) => (
+                {substances.map((s) => (
                   <motion.button
-                    key={line.id}
+                    key={s.value}
                     className={cn(
                       "w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors",
-                      selectedWavelengthId === line.id
-                        ? 'border-2'
-                        : theme === 'dark'
+                      substance === s.value
+                        ? dt.isDark
+                          ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
+                          : 'bg-cyan-100 border border-cyan-300 text-cyan-700'
+                        : dt.isDark
                           ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
                           : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
                     )}
-                    style={selectedWavelengthId === line.id ? {
-                      backgroundColor: theme === 'dark' ? `${line.color}20` : `${line.color}15`,
-                      borderColor: `${line.color}80`,
-                      color: line.color,
-                    } : {}}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    onClick={() => setSelectedWavelengthId(line.id)}
+                    onClick={() => setSubstance(s.value)}
                   >
-                    <span className="flex items-center gap-2">
-                      <span
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: line.color }}
-                      />
-                      <span className="font-medium">{line.name}</span>
-                    </span>
-                    <span className="font-mono text-sm opacity-80">
-                      {line.wavelength} nm
+                    <span className="font-medium">{s.label}</span>
+                    <span className={cn("font-mono text-sm", s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400')}>
+                      [α] = {s.rotation}
                     </span>
                   </motion.button>
                 ))}
               </div>
-            )}
+            </ControlPanel>
 
-            {/* 多色光说明 */}
-            {lightMode === 'polychromatic' && (
-              <div className={cn("p-3 rounded-lg border", theme === 'dark' ? 'bg-slate-900/50 border-slate-700' : 'bg-purple-50 border-purple-200')}>
-                <div className={cn("text-xs space-y-2", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
-                  <p className={cn("font-medium", theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>旋光色散效应</p>
-                  <p>不同波长的光具有不同的比旋光度，导致各色光旋转角度不同。</p>
-                  <p className={cn("font-mono text-[10px]", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
-                    Drude方程: [α]<sub>λ</sub> ≈ [α]<sub>D</sub> × (589/λ)²
+            {/* 实验参数 */}
+            <ControlPanel title="实验参数">
+              <SliderControl
+                label="溶液浓度 c"
+                value={concentration}
+                min={0.05}
+                max={1.0}
+                step={0.05}
+                unit=" g/mL"
+                onChange={setConcentration}
+                color="orange"
+              />
+              <SliderControl
+                label="光程长度 L"
+                value={pathLength}
+                min={0.5}
+                max={2.0}
+                step={0.1}
+                unit=" dm"
+                onChange={setPathLength}
+                color="cyan"
+              />
+              <SliderControl
+                label="检偏器角度"
+                value={analyzerAngle}
+                min={-90}
+                max={90}
+                step={1}
+                unit="°"
+                onChange={setAnalyzerAngle}
+                color="purple"
+              />
+
+              <div className="flex gap-2 mt-2">
+                <motion.button
+                  className={cn(
+                    "flex-1 py-2 rounded-lg border transition-colors text-sm",
+                    dt.isDark
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/30'
+                      : 'bg-gradient-to-r from-cyan-100 to-purple-100 text-cyan-700 border-cyan-300 hover:bg-cyan-200'
+                  )}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setAnalyzerAngle(Math.round(rotationAngle))}
+                >
+                  最亮位置 (平行)
+                </motion.button>
+                <motion.button
+                  className={cn(
+                    "flex-1 py-2 rounded-lg border transition-colors text-sm",
+                    dt.isDark
+                      ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30'
+                      : 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-purple-300 hover:bg-purple-200'
+                  )}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    // 消光位置：检偏器与偏振方向垂直（差90°）
+                    const extinctionAngle = rotationAngle - 90
+                    // 保持在 -90 到 90 范围内
+                    setAnalyzerAngle(Math.round(extinctionAngle > 90 ? extinctionAngle - 180 : extinctionAngle < -90 ? extinctionAngle + 180 : extinctionAngle))
+                  }}
+                >
+                  消光位置 (正交)
+                </motion.button>
+              </div>
+            </ControlPanel>
+
+            {/* 计算公式 */}
+            <ChartPanel title="计算公式">
+              <div className={cn("p-3 rounded-xl text-center", dt.isDark ? 'bg-slate-900/50' : 'bg-gray-50')}>
+                <div className={cn("font-mono text-lg mb-2", dt.isDark ? 'text-white' : 'text-gray-800')}>
+                  α = [α]<sub>λ</sub> × c × L
+                </div>
+                <div className={cn("text-xs space-y-1", dt.mutedTextClass)}>
+                  {lightMode === 'monochromatic' && wavelength !== 589 && (
+                    <p className={cn("text-[10px] mb-1", dt.mutedTextClass)}>
+                      [α]<sub>{wavelength}</sub> = [α]<sub>D</sub> × (589/{wavelength})² = {specificRotationD.toFixed(1)} × {(Math.pow(589/wavelength, 2)).toFixed(3)} = <span style={{ color: lightColor }}>{specificRotation.toFixed(1)}°</span>
+                    </p>
+                  )}
+                  <p>α = {specificRotation.toFixed(1)} × {concentration.toFixed(2)} × {pathLength.toFixed(1)}</p>
+                  <p
+                    className="font-mono"
+                    style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
+                  >
+                    α = {rotationAngle.toFixed(2)}°
                   </p>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {POLYCHROMATIC_COMPONENTS.map(comp => (
-                      <span
-                        key={comp.wavelength}
-                        className="px-2 py-0.5 rounded text-[10px] font-mono"
-                        style={{ backgroundColor: theme === 'dark' ? `${comp.color}30` : `${comp.color}20`, color: comp.color }}
-                      >
-                        {comp.name} {comp.wavelength}nm
-                      </span>
-                    ))}
-                  </div>
                 </div>
               </div>
-            )}
-          </ControlPanel>
-
-          {/* 物质选择 */}
-          <ControlPanel title="物质选择">
-            <div className="space-y-2">
-              {substances.map((s) => (
-                <motion.button
-                  key={s.value}
-                  className={cn(
-                    "w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors",
-                    substance === s.value
-                      ? theme === 'dark'
-                        ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
-                        : 'bg-cyan-100 border border-cyan-300 text-cyan-700'
-                      : theme === 'dark'
-                        ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                        : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
-                  )}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={() => setSubstance(s.value)}
-                >
-                  <span className="font-medium">{s.label}</span>
-                  <span className={cn("font-mono text-sm", s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400')}>
-                    [α] = {s.rotation}
-                  </span>
-                </motion.button>
-              ))}
-            </div>
-          </ControlPanel>
-
-          {/* 实验参数 */}
-          <ControlPanel title="实验参数">
-            <SliderControl
-              label="溶液浓度 c"
-              value={concentration}
-              min={0.05}
-              max={1.0}
-              step={0.05}
-              unit=" g/mL"
-              onChange={setConcentration}
-              color="orange"
-            />
-            <SliderControl
-              label="光程长度 L"
-              value={pathLength}
-              min={0.5}
-              max={2.0}
-              step={0.1}
-              unit=" dm"
-              onChange={setPathLength}
-              color="cyan"
-            />
-            <SliderControl
-              label="检偏器角度"
-              value={analyzerAngle}
-              min={-90}
-              max={90}
-              step={1}
-              unit="°"
-              onChange={setAnalyzerAngle}
-              color="purple"
-            />
-
-            <div className="flex gap-2 mt-2">
-              <motion.button
-                className={cn(
-                  "flex-1 py-2 rounded-lg border transition-colors text-sm",
-                  theme === 'dark'
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/30'
-                    : 'bg-gradient-to-r from-cyan-100 to-purple-100 text-cyan-700 border-cyan-300 hover:bg-cyan-200'
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setAnalyzerAngle(Math.round(rotationAngle))}
-              >
-                最亮位置 (平行)
-              </motion.button>
-              <motion.button
-                className={cn(
-                  "flex-1 py-2 rounded-lg border transition-colors text-sm",
-                  theme === 'dark'
-                    ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30'
-                    : 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-purple-300 hover:bg-purple-200'
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  // 消光位置：检偏器与偏振方向垂直（差90°）
-                  const extinctionAngle = rotationAngle - 90
-                  // 保持在 -90 到 90 范围内
-                  setAnalyzerAngle(Math.round(extinctionAngle > 90 ? extinctionAngle - 180 : extinctionAngle < -90 ? extinctionAngle + 180 : extinctionAngle))
-                }}
-              >
-                消光位置 (正交)
-              </motion.button>
-            </div>
-          </ControlPanel>
-
-          {/* 公式与参数 */}
-          <ControlPanel title="计算公式">
-            <div className={cn("p-3 rounded-lg text-center", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
-              <div className={cn("font-mono text-lg mb-2", theme === 'dark' ? 'text-white' : 'text-gray-800')}>
-                α = [α]<sub>λ</sub> × c × L
-              </div>
-              <div className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
-                {lightMode === 'monochromatic' && wavelength !== 589 && (
-                  <p className={cn("text-[10px] mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                    [α]<sub>{wavelength}</sub> = [α]<sub>D</sub> × (589/{wavelength})² = {specificRotationD.toFixed(1)} × {(Math.pow(589/wavelength, 2)).toFixed(3)} = <span style={{ color: lightColor }}>{specificRotation.toFixed(1)}°</span>
+              <div className={cn("mt-3 text-xs", dt.mutedTextClass)}>
+                <p>[α]<sub>λ</sub> = 波长λ时的比旋光度</p>
+                <p>[α]<sub>D</sub> = {specificRotationD >= 0 ? '+' : ''}{specificRotationD.toFixed(1)}° (589nm钠光)</p>
+                <p>c = 浓度 (g/mL)</p>
+                <p>L = 光程 (dm)</p>
+                {lightMode === 'monochromatic' && (
+                  <p className={cn("mt-1 pt-1 border-t", dt.isDark ? 'border-slate-700/50' : 'border-gray-200')} style={{ color: lightColor }}>
+                    当前: λ = {wavelength} nm
                   </p>
                 )}
-                <p>α = {specificRotation.toFixed(1)} × {concentration.toFixed(2)} × {pathLength.toFixed(1)}</p>
-                <p
-                  className="font-mono"
-                  style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
-                >
-                  α = {rotationAngle.toFixed(2)}°
-                </p>
               </div>
-            </div>
-            <div className={cn("mt-3 text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-              <p>[α]<sub>λ</sub> = 波长λ时的比旋光度</p>
-              <p>[α]<sub>D</sub> = {specificRotationD >= 0 ? '+' : ''}{specificRotationD.toFixed(1)}° (589nm钠光)</p>
-              <p>c = 浓度 (g/mL)</p>
-              <p>L = 光程 (dm)</p>
-              {lightMode === 'monochromatic' && (
-                <p className={cn("mt-1 pt-1 border-t", theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200')} style={{ color: lightColor }}>
-                  当前: λ = {wavelength} nm
-                </p>
-              )}
-            </div>
-          </ControlPanel>
+            </ChartPanel>
 
-          {/* 浓度-旋光角曲线 */}
-          <ControlPanel title="浓度-旋光角关系">
-            <RotationChart
-              substance={substance}
-              pathLength={pathLength}
-              currentConcentration={concentration}
-              theme={theme}
-            />
-          </ControlPanel>
-        </div>
-      </div>
+            {/* 浓度-旋光角曲线 */}
+            <ChartPanel title="浓度-旋光角关系" subtitle="α vs c">
+              <RotationChart
+                substance={substance}
+                pathLength={pathLength}
+                currentConcentration={concentration}
+              />
+            </ChartPanel>
+          </div>
+        }
+      />
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <InfoGrid columns={3}>
         <InfoCard title="旋光性原理" color="cyan">
-          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
+          <p className={cn("text-xs", dt.bodyClass)}>
             手性分子具有不重合的镜像结构，可使线偏振光的偏振面发生旋转。右旋(d/+)为顺时针，左旋(l/-)为逆时针。
           </p>
         </InfoCard>
         <InfoCard title="比旋光度" color="purple">
-          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
+          <p className={cn("text-xs", dt.bodyClass)}>
             [α]是物质的特征常数，定义为单位浓度(1 g/mL)和单位光程(1 dm)时的旋光角。依赖于波长和温度。
           </p>
         </InfoCard>
         <InfoCard title="应用场景" color="orange">
-          <ul className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
+          <ul className={cn("text-xs space-y-1", dt.bodyClass)}>
             <li>• 糖度计测量糖浓度</li>
             <li>• 手性药物对映体鉴定</li>
             <li>• 食品工业质量控制</li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

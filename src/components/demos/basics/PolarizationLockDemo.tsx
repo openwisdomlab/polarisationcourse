@@ -28,7 +28,16 @@ import {
   ChevronRight,
   Lightbulb,
 } from 'lucide-react'
-import { InfoCard, Formula, SliderControl } from '../DemoControls'
+import { InfoCard, SliderControl } from '../DemoControls'
+import { useDemoTheme } from '../demoThemeColors'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  FormulaHighlight,
+  InfoGrid,
+  TipBanner,
+  StatCard,
+} from '../DemoLayout'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 
 // ============ 物理常量 ============
@@ -511,6 +520,7 @@ function PhysicsPanel({
   onToggleDetails,
 }: PhysicsPanelProps) {
   const { theme } = useTheme()
+  const dt = useDemoTheme()
 
   // 两个偏振片之间的夹角
   const angleBetween = Math.abs(polarizer2Angle - polarizer1Angle)
@@ -520,8 +530,8 @@ function PhysicsPanel({
   return (
     <div
       className={cn(
-        'p-4 rounded-xl border',
-        theme === 'dark' ? 'bg-slate-800/50 border-slate-700' : 'bg-gray-50 border-gray-200'
+        'p-4 rounded-2xl border',
+        dt.sectionCardClass
       )}
     >
       {/* 标题 */}
@@ -545,21 +555,15 @@ function PhysicsPanel({
       </button>
 
       {/* 核心公式 */}
-      <div
-        className={cn(
-          'p-3 rounded-lg mb-4 text-center',
-          theme === 'dark' ? 'bg-slate-900/50' : 'bg-white'
-        )}
-      >
-        <div className={cn('text-xs mb-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-          {isZh ? '马吕斯定律' : "Malus's Law"}
-        </div>
-        <Formula highlight>I = I₀ × cos²(θ)</Formula>
-      </div>
+      <FormulaHighlight
+        formula="I = I₀ × cos²(θ)"
+        description={isZh ? '马吕斯定律' : "Malus's Law"}
+        className="mb-4"
+      />
 
       {/* 实时计算 */}
       <div className="grid grid-cols-2 gap-3 text-sm">
-        <div className={cn('p-3 rounded-lg', theme === 'dark' ? 'bg-blue-900/20' : 'bg-blue-50')}>
+        <div className={cn('p-3 rounded-2xl', theme === 'dark' ? 'bg-blue-900/20' : 'bg-blue-50')}>
           <div className={cn('text-xs mb-1', theme === 'dark' ? 'text-blue-400' : 'text-blue-600')}>
             {isZh ? '经过起偏器' : 'After Polarizer 1'}
           </div>
@@ -571,7 +575,7 @@ function PhysicsPanel({
           </div>
         </div>
 
-        <div className={cn('p-3 rounded-lg', theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50')}>
+        <div className={cn('p-3 rounded-2xl', theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50')}>
           <div className={cn('text-xs mb-1', theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>
             {isZh ? '经过检偏器' : 'After Polarizer 2'}
           </div>
@@ -587,7 +591,7 @@ function PhysicsPanel({
       {/* 密码可见度 */}
       <div className="mt-4">
         <div className="flex justify-between items-center mb-2">
-          <span className={cn('text-sm', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+          <span className={cn('text-sm', dt.bodyClass)}>
             {isZh ? '密码可见度' : 'Password Visibility'}
           </span>
           <span
@@ -599,7 +603,7 @@ function PhysicsPanel({
             {(passwordVisibility * 100).toFixed(0)}%
           </span>
         </div>
-        <div className={cn('h-3 rounded-full overflow-hidden', theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200')}>
+        <div className={cn('h-3 rounded-full overflow-hidden', dt.barTrackClass)}>
           <motion.div
             className={cn(
               'h-full rounded-full',
@@ -609,7 +613,7 @@ function PhysicsPanel({
             transition={{ duration: 0.3 }}
           />
         </div>
-        <div className={cn('text-xs mt-1 text-center', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+        <div className={cn('text-xs mt-1 text-center', dt.mutedTextClass)}>
           {isZh
             ? `检偏器与密码偏振的夹角: ${angleToPassword}°`
             : `Angle to password polarization: ${angleToPassword}°`}
@@ -627,14 +631,14 @@ function PhysicsPanel({
           >
             <div
               className={cn(
-                'p-3 rounded-lg text-sm',
+                'p-3 rounded-2xl text-sm',
                 theme === 'dark' ? 'bg-amber-900/20 border border-amber-500/20' : 'bg-amber-50'
               )}
             >
               <h5 className={cn('font-semibold mb-2', theme === 'dark' ? 'text-amber-400' : 'text-amber-600')}>
                 {isZh ? '① 起偏器的作用' : '① Role of Polarizer 1'}
               </h5>
-              <p className={cn('text-xs leading-relaxed', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+              <p className={cn('text-xs leading-relaxed', dt.bodyClass)}>
                 {isZh
                   ? '自然光包含所有振动方向。起偏器只允许一个方向的光通过，将非偏振光变为线偏振光。强度减半（50%）。'
                   : 'Natural light vibrates in all directions. The polarizer only allows one direction to pass, converting unpolarized to linearly polarized light. Intensity drops to 50%.'}
@@ -643,14 +647,14 @@ function PhysicsPanel({
 
             <div
               className={cn(
-                'p-3 rounded-lg text-sm',
+                'p-3 rounded-2xl text-sm',
                 theme === 'dark' ? 'bg-purple-900/20 border border-purple-500/20' : 'bg-purple-50'
               )}
             >
               <h5 className={cn('font-semibold mb-2', theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>
                 {isZh ? '② 检偏器的作用' : '② Role of Polarizer 2'}
               </h5>
-              <p className={cn('text-xs leading-relaxed', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+              <p className={cn('text-xs leading-relaxed', dt.bodyClass)}>
                 {isZh
                   ? '检偏器根据马吕斯定律过滤偏振光。当两个偏振片平行（θ=0°）时透过100%；垂直（θ=90°）时透过0%。'
                   : "The analyzer filters polarized light per Malus's Law. When parallel (θ=0°), 100% passes; when perpendicular (θ=90°), 0% passes."}
@@ -659,14 +663,14 @@ function PhysicsPanel({
 
             <div
               className={cn(
-                'p-3 rounded-lg text-sm',
+                'p-3 rounded-2xl text-sm',
                 theme === 'dark' ? 'bg-green-900/20 border border-green-500/20' : 'bg-green-50'
               )}
             >
               <h5 className={cn('font-semibold mb-2', theme === 'dark' ? 'text-green-400' : 'text-green-600')}>
                 {isZh ? '③ 如何看到密码' : '③ How to Reveal Password'}
               </h5>
-              <p className={cn('text-xs leading-relaxed', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+              <p className={cn('text-xs leading-relaxed', dt.bodyClass)}>
                 {isZh
                   ? `密码用 ${PASSWORD_POLARIZATION}° 偏振材料书写。当检偏器也调到 ${PASSWORD_POLARIZATION}° 时，密码区最亮，背景最暗，对比度最大，密码清晰可见！`
                   : `The password is written with ${PASSWORD_POLARIZATION}° polarized material. When the analyzer is also at ${PASSWORD_POLARIZATION}°, the password area is brightest while background is darkest - maximum contrast reveals the password!`}
@@ -684,6 +688,7 @@ function PhysicsPanel({
 export function PolarizationLockDemo() {
   const { i18n } = useTranslation()
   const { theme } = useTheme()
+  const dt = useDemoTheme()
   const isZh = i18n.language.startsWith('zh')
 
   // 状态
@@ -741,64 +746,58 @@ export function PolarizationLockDemo() {
   }, [])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      <DemoHeader
+        title={isZh ? '双偏振片密码锁' : 'Polarization Lock'}
+        subtitle={isZh ? '旋转偏振片揭示隐藏的密码' : 'Rotate polarizers to reveal hidden password'}
+        gradient="purple"
+      />
+
       {/* 顶部提示 */}
-      <div
-        className={cn(
-          'flex items-center gap-3 p-4 rounded-xl',
-          theme === 'dark'
-            ? 'bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-500/20'
-            : 'bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200'
-        )}
-      >
-        {isUnlocked ? (
-          <Unlock className="w-6 h-6 text-green-500 flex-shrink-0" />
-        ) : canSeePassword ? (
-          <Eye className="w-6 h-6 text-cyan-500 flex-shrink-0" />
-        ) : (
-          <Lock className="w-6 h-6 text-gray-500 flex-shrink-0" />
-        )}
-        <div className="flex-1">
-          <p className={cn('font-medium', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
-            {isUnlocked
-              ? isZh
-                ? '🎉 密码已解锁！'
-                : '🎉 Password Unlocked!'
-              : canSeePassword
-                ? isZh
-                  ? '密码可见！点击输入看到的密码'
-                  : 'Password visible! Click to enter what you see'
-                : isZh
-                  ? '旋转两个偏振片，找到能看清密码的角度组合'
-                  : 'Rotate both polarizers to find the angle that reveals the password'}
-          </p>
-          <p className={cn('text-xs mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
-            {isZh
-              ? '提示：密码用90°偏振材料书写，调整检偏器到相同角度'
-              : 'Hint: Password is written with 90° polarized material, align analyzer to match'}
-          </p>
-        </div>
-        <button
-          onClick={handleReset}
-          className={cn(
-            'p-2 rounded-lg transition-colors flex-shrink-0',
-            theme === 'dark' ? 'hover:bg-slate-700 text-gray-400' : 'hover:bg-gray-200 text-gray-600'
+      <TipBanner color={isUnlocked ? 'green' : canSeePassword ? 'cyan' : 'purple'}>
+        <div className="flex items-center gap-3">
+          {isUnlocked ? (
+            <Unlock className="w-5 h-5 text-green-500 flex-shrink-0" />
+          ) : canSeePassword ? (
+            <Eye className="w-5 h-5 text-cyan-500 flex-shrink-0" />
+          ) : (
+            <Lock className="w-5 h-5 flex-shrink-0 opacity-70" />
           )}
-        >
-          <RotateCcw className="w-5 h-5" />
-        </button>
-      </div>
+          <div className="flex-1">
+            <p className="font-medium">
+              {isUnlocked
+                ? isZh
+                  ? '密码已解锁！'
+                  : 'Password Unlocked!'
+                : canSeePassword
+                  ? isZh
+                    ? '密码可见！点击输入看到的密码'
+                    : 'Password visible! Click to enter what you see'
+                  : isZh
+                    ? '旋转两个偏振片，找到能看清密码的角度组合'
+                    : 'Rotate both polarizers to find the angle that reveals the password'}
+            </p>
+            <p className={cn('text-xs mt-0.5 opacity-70')}>
+              {isZh
+                ? '提示：密码用90°偏振材料书写，调整检偏器到相同角度'
+                : 'Hint: Password is written with 90° polarized material, align analyzer to match'}
+            </p>
+          </div>
+          <button
+            onClick={handleReset}
+            className={cn(
+              'p-2 rounded-2xl transition-colors flex-shrink-0',
+              theme === 'dark' ? 'hover:bg-slate-700 text-gray-400' : 'hover:bg-gray-200 text-gray-600'
+            )}
+          >
+            <RotateCcw className="w-5 h-5" />
+          </button>
+        </div>
+      </TipBanner>
 
       {/* 主可视化区域 */}
       <div className="relative">
-        <div
-          className={cn(
-            'rounded-xl border overflow-hidden',
-            theme === 'dark'
-              ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 border-slate-700'
-              : 'bg-gradient-to-br from-gray-50 via-white to-blue-50 border-gray-200'
-          )}
-        >
+        <VisualizationPanel variant="indigo" noPadding>
           <svg viewBox="0 0 900 420" className="w-full h-auto" style={{ minHeight: '380px' }}>
             <defs>
               {/* 灯泡发光渐变 */}
@@ -834,7 +833,7 @@ export function PolarizationLockDemo() {
               x="450"
               y="30"
               textAnchor="middle"
-              fill={theme === 'dark' ? '#e2e8f0' : '#1e293b'}
+              fill={dt.textPrimary}
               fontSize="18"
               fontWeight="bold"
             >
@@ -842,7 +841,7 @@ export function PolarizationLockDemo() {
             </text>
 
             {/* 流程步骤标签 */}
-            <g fill={theme === 'dark' ? '#64748b' : '#94a3b8'} fontSize="11">
+            <g fill={dt.textMuted} fontSize="11">
               <text x="100" y="55" textAnchor="middle">①</text>
               <text x="290" y="55" textAnchor="middle">②</text>
               <text x="470" y="55" textAnchor="middle">③</text>
@@ -940,7 +939,7 @@ export function PolarizationLockDemo() {
                 x="0"
                 y="45"
                 textAnchor="middle"
-                fill={canSeePassword ? '#22c55e' : theme === 'dark' ? '#64748b' : '#94a3b8'}
+                fill={canSeePassword ? '#22c55e' : dt.textMuted}
                 fontSize="11"
                 fontWeight="600"
               >
@@ -954,7 +953,7 @@ export function PolarizationLockDemo() {
                 x="0"
                 y="0"
                 textAnchor="middle"
-                fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
+                fill={dt.textSecondary}
                 fontSize="13"
               >
                 {isZh ? '马吕斯定律: ' : "Malus's Law: "}
@@ -1002,13 +1001,13 @@ export function PolarizationLockDemo() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.5 }}
                   >
-                    🎉 {isZh ? '解密成功！' : 'DECRYPTED!'}
+                    {isZh ? '解密成功！' : 'DECRYPTED!'}
                   </motion.text>
                 </motion.g>
               )}
             </AnimatePresence>
           </svg>
-        </div>
+        </VisualizationPanel>
 
         {/* 密码输入浮层 */}
         <AnimatePresence>
@@ -1019,7 +1018,7 @@ export function PolarizationLockDemo() {
               exit={{ opacity: 0, y: -20 }}
               className={cn(
                 'absolute bottom-4 left-1/2 -translate-x-1/2',
-                'flex gap-3 p-4 rounded-xl shadow-xl',
+                'flex gap-3 p-4 rounded-2xl shadow-xl',
                 theme === 'dark'
                   ? 'bg-slate-800/95 border border-green-500/30 backdrop-blur-md'
                   : 'bg-white/95 border border-green-300 backdrop-blur-md',
@@ -1033,7 +1032,7 @@ export function PolarizationLockDemo() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                 placeholder={isZh ? '输入密码' : 'Password'}
                 className={cn(
-                  'px-4 py-2 rounded-lg font-mono text-lg uppercase tracking-wider w-32',
+                  'px-4 py-2 rounded-2xl font-mono text-lg uppercase tracking-wider w-32',
                   'focus:outline-none focus:ring-2 focus:ring-green-500/50',
                   theme === 'dark'
                     ? 'bg-slate-700 text-white placeholder:text-gray-500 border border-slate-600'
@@ -1045,7 +1044,7 @@ export function PolarizationLockDemo() {
               />
               <button
                 onClick={handleSubmit}
-                className="px-5 py-2 rounded-lg font-medium bg-green-500 hover:bg-green-600 text-white transition-colors"
+                className="px-5 py-2 rounded-2xl font-medium bg-green-500 hover:bg-green-600 text-white transition-colors"
               >
                 {isZh ? '确认' : 'OK'}
               </button>
@@ -1061,18 +1060,46 @@ export function PolarizationLockDemo() {
             onClick={() => setShowInput(true)}
             className={cn(
               'absolute bottom-4 left-1/2 -translate-x-1/2',
-              'px-6 py-3 rounded-xl font-medium shadow-lg',
+              'px-6 py-3 rounded-2xl font-medium shadow-lg',
               'bg-green-500 hover:bg-green-600 text-white transition-colors'
             )}
           >
-            {isZh ? '🔓 输入密码' : '🔓 Enter Password'}
+            {isZh ? '输入密码' : 'Enter Password'}
           </motion.button>
         )}
       </div>
 
+      {/* 实时统计卡片 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <StatCard
+          label={isZh ? '起偏器角度' : 'Polarizer P₁'}
+          value={`${polarizer1Angle}`}
+          unit="°"
+          color="blue"
+        />
+        <StatCard
+          label={isZh ? '检偏器角度' : 'Analyzer P₂'}
+          value={`${polarizer2Angle}`}
+          unit="°"
+          color="purple"
+        />
+        <StatCard
+          label={isZh ? '透过率' : 'Transmission'}
+          value={`${(intensity2 * 100).toFixed(0)}`}
+          unit="%"
+          color="green"
+        />
+        <StatCard
+          label={isZh ? '密码可见度' : 'Visibility'}
+          value={`${(passwordVisibility * 100).toFixed(0)}`}
+          unit="%"
+          color={passwordVisibility > 0.6 ? 'green' : passwordVisibility > 0.3 ? 'orange' : 'red'}
+        />
+      </div>
+
       {/* 控制滑块 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className={cn('p-4 rounded-xl', theme === 'dark' ? 'bg-blue-900/20' : 'bg-blue-50')}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className={cn('p-4 rounded-2xl', theme === 'dark' ? 'bg-blue-900/20' : 'bg-blue-50')}>
           <SliderControl
             label={isZh ? '起偏器 P₁ 角度' : 'Polarizer P₁ Angle'}
             value={polarizer1Angle}
@@ -1084,7 +1111,7 @@ export function PolarizationLockDemo() {
             color="blue"
           />
         </div>
-        <div className={cn('p-4 rounded-xl', theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50')}>
+        <div className={cn('p-4 rounded-2xl', theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50')}>
           <SliderControl
             label={isZh ? '检偏器 P₂ 角度' : 'Analyzer P₂ Angle'}
             value={polarizer2Angle}
@@ -1096,7 +1123,7 @@ export function PolarizationLockDemo() {
             color="purple"
           />
           <div className={cn('text-xs mt-2 text-center', theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>
-            {isZh ? `💡 提示: 密码偏振角度是 ${PASSWORD_POLARIZATION}°` : `💡 Hint: Password polarization is ${PASSWORD_POLARIZATION}°`}
+            {isZh ? `提示: 密码偏振角度是 ${PASSWORD_POLARIZATION}°` : `Hint: Password polarization is ${PASSWORD_POLARIZATION}°`}
           </div>
         </div>
       </div>
@@ -1113,9 +1140,9 @@ export function PolarizationLockDemo() {
       />
 
       {/* 知识总结 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <InfoGrid columns={2}>
         <InfoCard title={isZh ? '双偏振片系统' : 'Two-Polarizer System'} color="cyan">
-          <ul className={cn('text-xs space-y-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+          <ul className={cn('text-xs space-y-2', dt.bodyClass)}>
             <li className="flex items-start gap-2">
               <span className="text-blue-500 font-bold">P₁</span>
               <span>
@@ -1144,25 +1171,25 @@ export function PolarizationLockDemo() {
         </InfoCard>
 
         <InfoCard title={isZh ? '密码解密原理' : 'Password Decryption'} color="green">
-          <ul className={cn('text-xs space-y-2', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+          <ul className={cn('text-xs space-y-2', dt.bodyClass)}>
             <li>
               {isZh
-                ? `🔐 密码用 ${PASSWORD_POLARIZATION}° 偏振材料书写`
-                : `🔐 Password written with ${PASSWORD_POLARIZATION}° polarized material`}
+                ? `密码用 ${PASSWORD_POLARIZATION}° 偏振材料书写`
+                : `Password written with ${PASSWORD_POLARIZATION}° polarized material`}
             </li>
             <li>
               {isZh
-                ? `👀 检偏器调到 ${PASSWORD_POLARIZATION}° 时，密码区最亮`
-                : `👀 At ${PASSWORD_POLARIZATION}° analyzer, password area is brightest`}
+                ? `检偏器调到 ${PASSWORD_POLARIZATION}° 时，密码区最亮`
+                : `At ${PASSWORD_POLARIZATION}° analyzer, password area is brightest`}
             </li>
             <li>
               {isZh
-                ? '✨ 背景与密码偏振方向不同 → 产生对比度 → 可见'
-                : '✨ Background has different polarization → contrast → visible'}
+                ? '背景与密码偏振方向不同 → 产生对比度 → 可见'
+                : 'Background has different polarization → contrast → visible'}
             </li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
 
       {/* 应用场景 */}
       <InfoCard title={isZh ? '真实世界应用' : 'Real-World Applications'} color="purple">
@@ -1176,15 +1203,15 @@ export function PolarizationLockDemo() {
             <div
               key={i}
               className={cn(
-                'p-3 rounded-lg text-center',
+                'p-3 rounded-2xl text-center',
                 theme === 'dark' ? 'bg-slate-800/50' : 'bg-white'
               )}
             >
               <div className="text-2xl mb-1">{app.icon}</div>
-              <div className={cn('text-sm font-medium', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
+              <div className={cn('text-sm font-medium', dt.headingClass)}>
                 {app.title}
               </div>
-              <div className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
+              <div className={cn('text-xs', dt.mutedTextClass)}>
                 {app.desc}
               </div>
             </div>

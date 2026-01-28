@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { DemoHeader, StatCard, InfoGrid, FormulaHighlight, ChartPanel } from '../DemoLayout'
 import { Copy, Check, Code, Plus, Trash2, ChevronDown, ChevronUp, Download, RotateCcw, Calculator } from 'lucide-react'
 
 // ==================== 类型定义 ====================
@@ -268,7 +269,7 @@ const ELEMENT_INFO: Record<ElementType, { nameEn: string; nameZh: string; color:
   'half-wave': { nameEn: 'HWP', nameZh: '半波片', color: '#f472b6', symbol: 'H' },
   'quarter-wave': { nameEn: 'QWP', nameZh: '四分之一波片', color: '#a78bfa', symbol: 'Q' },
   rotator: { nameEn: 'Rotator', nameZh: '旋光器', color: '#4ade80', symbol: 'R' },
-  retarder: { nameEn: 'Retarder', nameZh: '延迟器', color: '#f59e0b', symbol: 'δ' },
+  retarder: { nameEn: 'Retarder', nameZh: '延迟器', color: '#f59e0b', symbol: '\u03B4' },
 }
 
 // 输入偏振态
@@ -296,15 +297,15 @@ const INPUT_STATES: Record<InputStateType, {
     color: '#22c55e',
   },
   '45deg': {
-    nameEn: '+45°',
-    nameZh: '+45°',
+    nameEn: '+45\u00B0',
+    nameZh: '+45\u00B0',
     stokes: [1, 0, 1, 0],
     jones: [complex.create(1 / Math.sqrt(2)), complex.create(1 / Math.sqrt(2))],
     color: '#f59e0b',
   },
   '-45deg': {
-    nameEn: '-45°',
-    nameZh: '-45°',
+    nameEn: '-45\u00B0',
+    nameZh: '-45\u00B0',
     stokes: [1, 0, -1, 0],
     jones: [complex.create(1 / Math.sqrt(2)), complex.create(-1 / Math.sqrt(2))],
     color: '#8b5cf6',
@@ -406,9 +407,9 @@ function generatePythonCode(elements: OpticalElement[], inputState: InputStateTy
     const funcName = el.type === 'half-wave' ? 'hwp' : el.type === 'quarter-wave' ? 'qwp' : el.type
     const angleRad = `np.radians(${el.angle})`
     if (el.type === 'retarder') {
-      lines.push(`M${i + 1} = mueller_retarder(${angleRad}, np.radians(${el.retardance || 90}))  # ${ELEMENT_INFO[el.type].nameEn} @ ${el.angle}°, δ=${el.retardance || 90}°`)
+      lines.push(`M${i + 1} = mueller_retarder(${angleRad}, np.radians(${el.retardance || 90}))  # ${ELEMENT_INFO[el.type].nameEn} @ ${el.angle}\u00B0, \u03B4=${el.retardance || 90}\u00B0`)
     } else {
-      lines.push(`M${i + 1} = mueller_${funcName}(${angleRad})  # ${ELEMENT_INFO[el.type].nameEn} @ ${el.angle}°`)
+      lines.push(`M${i + 1} = mueller_${funcName}(${angleRad})  # ${ELEMENT_INFO[el.type].nameEn} @ ${el.angle}\u00B0`)
     }
   })
 
@@ -473,7 +474,7 @@ function generateMatlabCode(elements: OpticalElement[], inputState: InputStateTy
   elements.forEach((el, i) => {
     const funcName = el.type === 'half-wave' ? 'hwp' : el.type === 'quarter-wave' ? 'qwp' : el.type
     const angleRad = `deg2rad(${el.angle})`
-    lines.push(`M${i + 1} = mueller_${funcName}(${angleRad});  % ${ELEMENT_INFO[el.type].nameEn} @ ${el.angle}°`)
+    lines.push(`M${i + 1} = mueller_${funcName}(${angleRad});  % ${ELEMENT_INFO[el.type].nameEn} @ ${el.angle}\u00B0`)
   })
 
   lines.push('')
@@ -526,22 +527,22 @@ function ElementCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       className={cn(
-        'rounded-lg border overflow-hidden',
+        'rounded-2xl border overflow-hidden',
         theme === 'dark'
-          ? 'bg-slate-800/50 border-slate-600'
+          ? 'bg-slate-800/50 border-slate-600/50'
           : 'bg-white border-gray-200 shadow-sm'
       )}
     >
       <div
         className={cn(
-          'flex items-center justify-between px-3 py-2 cursor-pointer',
+          'flex items-center justify-between px-3 py-2.5 cursor-pointer',
           theme === 'dark' ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'
         )}
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-2">
           <span
-            className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
             style={{ backgroundColor: `${info.color}30`, color: info.color }}
           >
             {info.symbol}
@@ -553,17 +554,17 @@ function ElementCard({
             {index + 1}. {isZh ? info.nameZh : info.nameEn}
           </span>
           <span className={cn(
-            'text-xs',
+            'text-xs font-mono',
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           )}>
-            @ {element.angle}°
+            @ {element.angle}{'\u00B0'}
           </span>
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={(e) => { e.stopPropagation(); onRemove() }}
             className={cn(
-              'p-1 rounded',
+              'p-1 rounded-lg',
               theme === 'dark' ? 'hover:bg-red-500/20 text-red-400' : 'hover:bg-red-100 text-red-500'
             )}
           >
@@ -587,7 +588,7 @@ function ElementCard({
               min={0}
               max={180}
               step={5}
-              unit="°"
+              unit={'\u00B0'}
               onChange={(angle) => onUpdate({ ...element, angle })}
               color="cyan"
             />
@@ -599,7 +600,7 @@ function ElementCard({
                   min={0}
                   max={360}
                   step={5}
-                  unit="°"
+                  unit={'\u00B0'}
                   onChange={(retardance) => onUpdate({ ...element, retardance })}
                   color="orange"
                 />
@@ -632,18 +633,7 @@ function MatrixDisplay({
     : (matrix as JonesMatrix).flat()
 
   return (
-    <div className={cn(
-      'rounded-lg border p-3',
-      theme === 'dark'
-        ? 'bg-slate-900/50 border-cyan-400/20'
-        : 'bg-white border-cyan-200'
-    )}>
-      <h4 className={cn(
-        'text-sm font-medium mb-2',
-        theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-      )}>
-        {type === 'mueller' ? t('demos.calculator.muellerSystem') : t('demos.calculator.jonesSystem')}
-      </h4>
+    <ChartPanel title={type === 'mueller' ? t('demos.calculator.muellerSystem') : t('demos.calculator.jonesSystem')}>
       <div className="flex items-center justify-center">
         <span className={cn('text-lg', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>[</span>
         <div className={cn('grid gap-0.5', isMueller ? 'grid-cols-4' : 'grid-cols-2')}>
@@ -658,8 +648,8 @@ function MatrixDisplay({
               <div
                 key={i}
                 className={cn(
-                  'flex items-center justify-center text-[9px] font-mono rounded',
-                  isMueller ? 'w-12 h-5' : 'w-20 h-6',
+                  'flex items-center justify-center text-[9px] font-mono rounded-lg',
+                  isMueller ? 'w-14 h-6' : 'w-24 h-7',
                   absVal > 0.001
                     ? theme === 'dark' ? 'text-cyan-400 bg-cyan-400/10' : 'text-cyan-700 bg-cyan-50'
                     : theme === 'dark' ? 'text-gray-600 bg-slate-800/50' : 'text-gray-400 bg-gray-50'
@@ -672,7 +662,7 @@ function MatrixDisplay({
         </div>
         <span className={cn('text-lg', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>]</span>
       </div>
-    </div>
+    </ChartPanel>
   )
 }
 
@@ -686,24 +676,17 @@ function StokesDisplay({
   label: string
   theme: string
 }) {
-  const labels = ['S₀', 'S₁', 'S₂', 'S₃']
+  const labels = ['S\u2080', 'S\u2081', 'S\u2082', 'S\u2083']
   const colors = ['#94a3b8', '#ef4444', '#22c55e', '#3b82f6']
 
   return (
-    <div className={cn(
-      'rounded-lg border p-2',
-      theme === 'dark' ? 'bg-slate-800/50 border-slate-600' : 'bg-gray-50 border-gray-200'
-    )}>
-      <div className={cn(
-        'text-[10px] mb-1.5',
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-      )}>{label}</div>
-      <div className="space-y-1">
+    <ChartPanel title={label}>
+      <div className="space-y-1.5">
         {stokes.map((val, i) => (
           <div key={i} className="flex items-center gap-2">
-            <span className="w-5 text-[10px] font-mono" style={{ color: colors[i] }}>{labels[i]}</span>
+            <span className="w-6 text-[11px] font-mono font-medium" style={{ color: colors[i] }}>{labels[i]}</span>
             <div className={cn(
-              'flex-1 h-1.5 rounded-full overflow-hidden',
+              'flex-1 h-2 rounded-full overflow-hidden',
               theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
             )}>
               <div
@@ -715,13 +698,13 @@ function StokesDisplay({
                 }}
               />
             </div>
-            <span className="w-12 text-[10px] font-mono text-right" style={{ color: colors[i] }}>
+            <span className="w-14 text-[11px] font-mono text-right" style={{ color: colors[i] }}>
               {val >= 0 ? '+' : ''}{val.toFixed(3)}
             </span>
           </div>
         ))}
       </div>
-    </div>
+    </ChartPanel>
   )
 }
 
@@ -835,30 +818,47 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {/* 标题 */}
-      <div className="text-center">
-        <h2 className={cn(
-          'text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent flex items-center justify-center gap-2',
-          theme === 'dark'
-            ? 'from-cyan-400 via-purple-400 to-pink-500'
-            : 'from-cyan-600 via-purple-600 to-pink-600'
-        )}>
-          <Calculator className="w-5 h-5" />
-          {t('demos.calculator.title')}
-        </h2>
-        <p className={cn(
-          'text-xs mt-0.5',
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-        )}>{t('demos.calculator.subtitle')}</p>
+      <DemoHeader
+        title={t('demos.calculator.title')}
+        subtitle={t('demos.calculator.subtitle')}
+        badge="Calculator"
+        gradient="cyan"
+      />
+
+      {/* 核心公式 */}
+      <FormulaHighlight
+        formula="S_out = M_sys \u00D7 S_in = (M_n \u00D7 \u2026 \u00D7 M_1) \u00D7 S_in"
+        description={isZh ? '级联光学系统的 Mueller 矩阵乘法规则' : 'Cascaded Mueller matrix multiplication rule'}
+      />
+
+      {/* 计算结果统计卡片 */}
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard
+          label={t('demos.calculator.transmittance')}
+          value={`${(transmittance * 100).toFixed(1)}%`}
+          color="cyan"
+          icon={<Calculator className="w-3.5 h-3.5" />}
+        />
+        <StatCard
+          label={t('demos.calculator.dop')}
+          value={`${(dop * 100).toFixed(1)}%`}
+          color={dop > 0.99 ? 'green' : dop > 0.5 ? 'orange' : 'red'}
+        />
+        <StatCard
+          label={t('demos.calculator.elements')}
+          value={elements.length}
+          color="purple"
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* 左侧：元件配置 */}
-        <div className="lg:col-span-1 space-y-3">
+        <div className="lg:col-span-1 space-y-5">
           <ControlPanel title={t('demos.calculator.opticalSystem')}>
             {/* 添加元件按钮 */}
-            <div className="flex flex-wrap gap-1 mb-3">
+            <div className="flex flex-wrap gap-1.5 mb-3">
               {(Object.keys(ELEMENT_INFO) as ElementType[]).map((type) => {
                 const info = ELEMENT_INFO[type]
                 return (
@@ -866,15 +866,15 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
                     key={type}
                     onClick={() => addElement(type)}
                     className={cn(
-                      'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                      'flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors',
                       theme === 'dark'
-                        ? 'bg-slate-700 hover:bg-slate-600 text-gray-300'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                        ? 'bg-slate-700/50 hover:bg-slate-600 text-gray-300 border border-slate-600/30'
+                        : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
                     )}
                   >
                     <Plus className="w-3 h-3" />
                     <span
-                      className="w-4 h-4 rounded flex items-center justify-center text-[10px] font-bold"
+                      className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold"
                       style={{ backgroundColor: `${info.color}30`, color: info.color }}
                     >
                       {info.symbol}
@@ -903,8 +903,8 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
 
             {elements.length === 0 && (
               <div className={cn(
-                'text-center py-4 text-sm',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                'text-center py-6 text-sm rounded-2xl border border-dashed',
+                theme === 'dark' ? 'text-gray-500 border-slate-700' : 'text-gray-400 border-gray-300'
               )}>
                 {t('demos.calculator.noElements')}
               </div>
@@ -913,10 +913,10 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
             <button
               onClick={reset}
               className={cn(
-                'w-full mt-2 py-2 rounded flex items-center justify-center gap-2 text-sm',
+                'w-full mt-3 py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-colors',
                 theme === 'dark'
-                  ? 'bg-slate-700 hover:bg-slate-600 text-gray-300'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                  ? 'bg-slate-700/50 hover:bg-slate-600 text-gray-300 border border-slate-600/30'
+                  : 'bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200'
               )}
             >
               <RotateCcw className="w-4 h-4" />
@@ -926,7 +926,7 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
 
           {/* 输入偏振态 */}
           <ControlPanel title={t('demos.calculator.inputState')}>
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-4 gap-1.5">
               {(Object.keys(INPUT_STATES) as InputStateType[]).map((type) => {
                 const info = INPUT_STATES[type]
                 return (
@@ -934,11 +934,11 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
                     key={type}
                     onClick={() => setInputState(type)}
                     className={cn(
-                      'px-1.5 py-1 rounded text-[10px] transition-colors',
+                      'px-2 py-1.5 rounded-xl text-[10px] font-medium transition-colors',
                       inputState === type
-                        ? 'text-white'
+                        ? 'text-white shadow-md'
                         : theme === 'dark'
-                          ? 'bg-slate-700 text-gray-400 hover:bg-slate-600'
+                          ? 'bg-slate-700/50 text-gray-400 hover:bg-slate-600'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     )}
                     style={{
@@ -954,71 +954,35 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
         </div>
 
         {/* 右侧：结果显示 */}
-        <div className="lg:col-span-2 space-y-3">
+        <div className="lg:col-span-2 space-y-5">
           {/* 系统矩阵 - 基础模式下隐藏 */}
           {!isFoundation && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <MatrixDisplay matrix={systemMueller} type="mueller" theme={theme} t={t} />
               <MatrixDisplay matrix={systemJones as unknown as MuellerMatrix} type="jones" theme={theme} t={t} />
             </div>
           )}
 
           {/* Stokes 矢量变换 */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-5">
             <StokesDisplay stokes={inputStokes} label={t('demos.calculator.inputStokes')} theme={theme} />
             <StokesDisplay stokes={outputStokes} label={t('demos.calculator.outputStokes')} theme={theme} />
-          </div>
-
-          {/* 计算结果 */}
-          <div className={cn(
-            'rounded-lg border p-3',
-            theme === 'dark' ? 'bg-slate-800/50 border-slate-600' : 'bg-gray-50 border-gray-200'
-          )}>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                  {t('demos.calculator.transmittance')}
-                </div>
-                <div className={cn('text-xl font-bold', theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')}>
-                  {(transmittance * 100).toFixed(1)}%
-                </div>
-              </div>
-              <div>
-                <div className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                  {t('demos.calculator.dop')}
-                </div>
-                <div className={cn(
-                  'text-xl font-bold',
-                  dop > 0.99 ? 'text-green-500' : dop > 0.5 ? 'text-yellow-500' : 'text-red-500'
-                )}>
-                  {(dop * 100).toFixed(1)}%
-                </div>
-              </div>
-              <div>
-                <div className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                  {t('demos.calculator.elements')}
-                </div>
-                <div className={cn('text-xl font-bold', theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>
-                  {elements.length}
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* 代码导出 - 基础模式下隐藏 */}
           {!isFoundation && (
             <div className={cn(
-              'rounded-lg border overflow-hidden',
-              theme === 'dark' ? 'bg-slate-800/50 border-slate-600' : 'bg-white border-gray-200'
+              'rounded-2xl border overflow-hidden',
+              theme === 'dark' ? 'bg-slate-800/30 border-slate-700/40' : 'bg-white border-gray-200'
             )}>
               <div className={cn(
-                'flex items-center justify-between px-3 py-2 border-b',
-                theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+                'flex items-center justify-between px-4 py-3 border-b',
+                theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'
               )}>
                 <button
                   onClick={() => setShowCode(!showCode)}
                   className={cn(
-                    'flex items-center gap-2 text-sm font-medium',
+                    'flex items-center gap-2 text-sm font-semibold',
                     theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
                   )}
                 >
@@ -1029,16 +993,16 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
 
                 {showCode && (
                   <div className="flex items-center gap-2">
-                    <div className="flex rounded overflow-hidden">
+                    <div className="flex rounded-lg overflow-hidden border border-slate-600/30">
                       {(['python', 'matlab'] as const).map((type) => (
                         <button
                           key={type}
                           onClick={() => setCodeType(type)}
                           className={cn(
-                            'px-2 py-1 text-xs',
+                            'px-3 py-1 text-xs font-medium transition-colors',
                             codeType === type
                               ? theme === 'dark' ? 'bg-purple-500/30 text-purple-300' : 'bg-purple-100 text-purple-700'
-                              : theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-gray-100 text-gray-600'
+                              : theme === 'dark' ? 'bg-slate-700/50 text-gray-400' : 'bg-gray-50 text-gray-600'
                           )}
                         >
                           {type === 'python' ? 'Python' : 'MATLAB'}
@@ -1048,7 +1012,7 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
                     <button
                       onClick={handleCopy}
                       className={cn(
-                        'p-1.5 rounded',
+                        'p-1.5 rounded-lg transition-colors',
                         theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
                       )}
                       title="Copy"
@@ -1058,7 +1022,7 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
                     <button
                       onClick={handleDownload}
                       className={cn(
-                        'p-1.5 rounded',
+                        'p-1.5 rounded-lg transition-colors',
                         theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
                       )}
                       title="Download"
@@ -1077,7 +1041,7 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
                     exit={{ height: 0, opacity: 0 }}
                   >
                     <pre className={cn(
-                      'p-3 text-[10px] leading-relaxed overflow-x-auto max-h-64',
+                      'p-4 text-[11px] leading-relaxed overflow-x-auto max-h-64',
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                     )}>
                       <code>
@@ -1095,35 +1059,35 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
       </div>
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <InfoGrid columns={3}>
         <InfoCard title={t('demos.calculator.cascadeRule')} color="cyan">
           <p className={cn('text-xs', theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
             {t('demos.calculator.cascadeDesc')}
           </p>
           <code className={cn(
-            'block mt-2 text-[10px] p-2 rounded',
+            'block mt-2 text-[11px] p-2.5 rounded-lg font-mono',
             theme === 'dark' ? 'bg-slate-800 text-cyan-400' : 'bg-gray-100 text-cyan-700'
           )}>
-            M_sys = M_n × ... × M_2 × M_1
+            M_sys = M_n {'\u00D7'} ... {'\u00D7'} M_2 {'\u00D7'} M_1
           </code>
         </InfoCard>
 
         <InfoCard title={t('demos.calculator.muellerJones')} color="purple">
           <ul className={cn('text-xs space-y-1', theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
-            <li>• Mueller: 4×4 {isZh ? '实数矩阵' : 'real matrix'}</li>
-            <li>• Jones: 2×2 {isZh ? '复数矩阵' : 'complex matrix'}</li>
-            <li>• Mueller {isZh ? '可处理非偏振光' : 'handles unpolarized'}</li>
+            <li>* Mueller: 4{'\u00D7'}4 {isZh ? '实数矩阵' : 'real matrix'}</li>
+            <li>* Jones: 2{'\u00D7'}2 {isZh ? '复数矩阵' : 'complex matrix'}</li>
+            <li>* Mueller {isZh ? '可处理非偏振光' : 'handles unpolarized'}</li>
           </ul>
         </InfoCard>
 
         <InfoCard title={t('demos.calculator.tips')} color="orange">
           <ul className={cn('text-xs space-y-1', theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
-            <li>• {isZh ? '拖拽调整元件顺序' : 'Drag to reorder'}</li>
-            <li>• {isZh ? '点击展开编辑参数' : 'Click to expand'}</li>
-            <li>• {isZh ? '导出代码进行进一步分析' : 'Export code for analysis'}</li>
+            <li>* {isZh ? '拖拽调整元件顺序' : 'Drag to reorder'}</li>
+            <li>* {isZh ? '点击展开编辑参数' : 'Click to expand'}</li>
+            <li>* {isZh ? '导出代码进行进一步分析' : 'Export code for analysis'}</li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

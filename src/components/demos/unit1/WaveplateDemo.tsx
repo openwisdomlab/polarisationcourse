@@ -8,7 +8,7 @@
  * - Proper Stokes parameter visualization
  *
  * Enhanced Features:
- * - Poincaré Sphere visualization showing polarization state trajectory
+ * - Poincare Sphere visualization showing polarization state trajectory
  * - Real-time state mapping on the sphere
  * - Non-ideal waveplate parameter simulation
  */
@@ -19,11 +19,17 @@ import { cn } from '@/lib/utils'
 import {
   SliderControl,
   ControlPanel,
-  ValueDisplay,
   InfoCard,
-  Formula,
   Toggle,
 } from '../DemoControls'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  InfoGrid,
+  ChartPanel,
+  StatCard,
+  FormulaHighlight,
+} from '../DemoLayout'
 import {
   JonesMatrix,
   JonesVector,
@@ -208,7 +214,7 @@ function WaveplateCanvas({
   return (
     <canvas
       ref={canvasRef}
-      className="rounded-lg border border-cyan-400/20 w-full"
+      className="w-full"
       style={{ maxWidth: 700, height: 300 }}
     />
   )
@@ -527,7 +533,7 @@ function PhaseRetardationDiagram({
 }
 
 // ========================================
-// Poincaré Sphere Visualization
+// Poincare Sphere Visualization
 // ========================================
 
 interface PoincareSphereProps {
@@ -584,13 +590,13 @@ function PoincareSphere({
 
   return (
     <div className={cn(
-      "rounded-lg border p-3",
+      "rounded-2xl border p-3",
       dt.isDark
         ? "bg-slate-900/50 border-slate-700/50"
         : "bg-white border-gray-200 shadow-sm"
     )}>
       <div className="flex items-center justify-between mb-2">
-        <span className={cn("text-xs font-medium", dt.isDark ? "text-gray-300" : "text-gray-700")}>Poincaré Sphere</span>
+        <span className={cn("text-xs font-medium", dt.isDark ? "text-gray-300" : "text-gray-700")}>Poincare Sphere</span>
         <span className={cn("text-[10px]", dt.isDark ? "text-cyan-400" : "text-cyan-600")}>{getPolarizationLabel()}</span>
       </div>
 
@@ -714,19 +720,19 @@ function PoincareSphere({
       {/* Stokes parameter display */}
       <div className="grid grid-cols-4 gap-1 mt-2 text-[9px] font-mono">
         <div className="text-center">
-          <div className={`${dt.subtleTextClass}`}>S₀</div>
+          <div className={dt.subtleTextClass}>S₀</div>
           <div className={dt.isDark ? "text-white" : "text-gray-800"}>{stokesParams[0].toFixed(2)}</div>
         </div>
         <div className="text-center">
-          <div className={`${dt.subtleTextClass}`}>S₁</div>
+          <div className={dt.subtleTextClass}>S₁</div>
           <div className="text-red-400">{stokesParams[1].toFixed(2)}</div>
         </div>
         <div className="text-center">
-          <div className={`${dt.subtleTextClass}`}>S₂</div>
+          <div className={dt.subtleTextClass}>S₂</div>
           <div className="text-green-400">{stokesParams[2].toFixed(2)}</div>
         </div>
         <div className="text-center">
-          <div className={`${dt.subtleTextClass}`}>S₃</div>
+          <div className={dt.subtleTextClass}>S₃</div>
           <div className="text-purple-400">{stokesParams[3].toFixed(2)}</div>
         </div>
       </div>
@@ -749,11 +755,12 @@ function PresetButton({
   const dt = useDemoTheme()
   return (
     <motion.button
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+      className={cn(
+        'px-3 py-1.5 rounded-lg text-xs font-medium border transition-all',
         isActive
           ? 'bg-opacity-20 border-opacity-50'
           : `${dt.inactiveButtonClass} hover:border-slate-500`
-      }`}
+      )}
       style={{
         backgroundColor: isActive ? `${color}20` : undefined,
         borderColor: isActive ? `${color}80` : undefined,
@@ -912,7 +919,7 @@ export function WaveplateDemo() {
     return calculateWithUnifiedEngine(waveplateType, inputAngle, fastAxisAngle)
   }, [waveplateType, inputAngle, fastAxisAngle])
 
-  // Generate trajectory for Poincaré sphere (sweep fast axis angle)
+  // Generate trajectory for Poincare sphere (sweep fast axis angle)
   const trajectoryPoints = useMemo(() => {
     const points: Array<[number, number, number, number]> = []
     for (let fa = 0; fa <= 180; fa += 10) {
@@ -974,53 +981,53 @@ export function WaveplateDemo() {
       ]
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-5 h-full">
       {/* 标题 */}
-      <div className="text-center">
-        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-cyan-100 to-white' : 'from-cyan-800 via-cyan-600 to-cyan-800'} bg-clip-text text-transparent`}>
-          波片原理
-        </h2>
-        <p className={`${dt.mutedTextClass} mt-1`}>
-          λ/4和λ/2波片如何改变光的偏振态
-        </p>
-      </div>
+      <DemoHeader
+        title="波片原理"
+        subtitle="λ/4和λ/2波片如何改变光的偏振态"
+        gradient="purple"
+      />
 
       {/* 难度级别选择 */}
       <div className="flex justify-center gap-2">
         <motion.button
-          className={`px-4 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+          className={cn(
+            'px-4 py-1.5 rounded-lg text-xs font-medium border transition-all',
             difficultyLevel === 'basic'
               ? 'bg-green-500/20 text-green-400 border-green-500/50'
               : `${dt.inactiveButtonClass} hover:border-slate-500`
-          }`}
+          )}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setDifficultyLevel('basic')}
         >
-          🌱 基础模式
+          基础模式
         </motion.button>
         <motion.button
-          className={`px-4 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+          className={cn(
+            'px-4 py-1.5 rounded-lg text-xs font-medium border transition-all',
             difficultyLevel === 'research'
               ? 'bg-purple-500/20 text-purple-400 border-purple-500/50'
               : `${dt.inactiveButtonClass} hover:border-slate-500`
-          }`}
+          )}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setDifficultyLevel('research')}
         >
-          🔬 研究模式
+          研究模式
         </motion.button>
       </div>
 
       {/* 波片类型选择 */}
       <div className="flex justify-center gap-4">
         <motion.button
-          className={`px-6 py-3 rounded-xl text-sm font-medium border-2 transition-all ${
+          className={cn(
+            'px-6 py-3 rounded-2xl text-sm font-medium border-2 transition-all',
             waveplateType === 'quarter'
               ? 'bg-purple-500/20 text-purple-400 border-purple-400/50'
               : `${dt.inactiveButtonClass} hover:border-slate-500`
-          }`}
+          )}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setWaveplateType('quarter')}
@@ -1028,11 +1035,12 @@ export function WaveplateDemo() {
           λ/4 四分之一波片
         </motion.button>
         <motion.button
-          className={`px-6 py-3 rounded-xl text-sm font-medium border-2 transition-all ${
+          className={cn(
+            'px-6 py-3 rounded-2xl text-sm font-medium border-2 transition-all',
             waveplateType === 'half'
               ? 'bg-pink-500/20 text-pink-400 border-pink-400/50'
               : `${dt.inactiveButtonClass} hover:border-slate-500`
-          }`}
+          )}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setWaveplateType('half')}
@@ -1042,16 +1050,11 @@ export function WaveplateDemo() {
       </div>
 
       {/* 可视化面板 */}
-      <div className={cn(
-        "rounded-xl border overflow-hidden",
-        dt.isDark
-          ? "bg-slate-900/50 border-cyan-400/20"
-          : "bg-white border-cyan-200 shadow-sm"
-      )}>
-        <div className="px-4 py-3 border-b border-cyan-400/10 flex items-center justify-between">
-          <h3 className={`text-sm font-semibold ${dt.isDark ? 'text-white' : 'text-gray-800'}`}>光路演示</h3>
+      <VisualizationPanel variant="indigo">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className={cn('text-sm font-semibold', dt.isDark ? 'text-white' : 'text-gray-800')}>光路演示</h3>
           <div className="flex items-center gap-2">
-            <span className={`text-xs ${dt.subtleTextClass}`}>快速预设:</span>
+            <span className={cn('text-xs', dt.subtleTextClass)}>快速预设:</span>
             {presets.map((preset) => (
               <PresetButton
                 key={preset.label}
@@ -1066,7 +1069,7 @@ export function WaveplateDemo() {
             ))}
           </div>
         </div>
-        <div className="p-4 flex justify-center">
+        <div className="flex justify-center">
           <WaveplateCanvas
             waveplateType={waveplateType}
             inputAngle={inputAngle}
@@ -1074,10 +1077,47 @@ export function WaveplateDemo() {
             animate={animate}
           />
         </div>
+      </VisualizationPanel>
+
+      {/* 核心公式 */}
+      <FormulaHighlight
+        formula={waveplateType === 'half'
+          ? 'θ_out = 2θ_fast - θ_in'
+          : 'Δφ = π/2 (90°)  |  45° linear → circular'}
+        description={waveplateType === 'half'
+          ? '半波片将线偏振方向旋转 2(θ_fast - θ_in)'
+          : '当相对角度为45°时，四分之一波片产生圆偏振'}
+      />
+
+      {/* 计算结果统计卡片 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <StatCard
+          label="相对角度"
+          value={`${relativeAngle.toFixed(0)}`}
+          unit="°"
+          color="orange"
+        />
+        <StatCard
+          label="输出偏振态"
+          value={outputDesc.text}
+          color={outputDesc.color === '#22d3ee' ? 'cyan' : outputDesc.color === '#a78bfa' ? 'purple' : 'green'}
+        />
+        <StatCard
+          label="方位角 ψ"
+          value={`${unifiedResult.orientationAngle.toFixed(1)}`}
+          unit="°"
+          color="blue"
+        />
+        <StatCard
+          label="椭率角 χ"
+          value={`${unifiedResult.ellipticityAngle.toFixed(1)}`}
+          unit="°"
+          color="purple"
+        />
       </div>
 
       {/* 控制和信息面板 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* 参数控制 */}
         <ControlPanel title="参数控制">
           <SliderControl
@@ -1102,20 +1142,21 @@ export function WaveplateDemo() {
           />
           <motion.button
             onClick={() => setAnimate(!animate)}
-            className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={cn(
+              'w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
               animate
                 ? 'bg-cyan-400/20 text-cyan-400 border border-cyan-400/50'
                 : `border ${dt.inactiveButtonClass}`
-            }`}
+            )}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             {animate ? '⏸ 暂停动画' : '▶ 播放动画'}
           </motion.button>
 
-          {/* Poincaré sphere toggle */}
-          <div className={`flex items-center justify-between pt-2 border-t ${dt.borderClass} mt-2`}>
-            <span className={`text-xs ${dt.mutedTextClass}`}>Poincaré 球可视化</span>
+          {/* Poincare sphere toggle */}
+          <div className={cn('flex items-center justify-between pt-2 border-t mt-2', dt.borderClass)}>
+            <span className={cn('text-xs', dt.mutedTextClass)}>Poincare 球可视化</span>
             <Toggle
               label=""
               checked={showPoincare}
@@ -1124,33 +1165,17 @@ export function WaveplateDemo() {
           </div>
         </ControlPanel>
 
-        {/* 计算结果 */}
-        <ControlPanel title="计算结果">
-          <ValueDisplay label="相对角度" value={relativeAngle.toFixed(0)} unit="°" />
-          <ValueDisplay label="输出偏振态" value={outputDesc.text} color={outputDesc.color === '#22d3ee' ? 'cyan' : outputDesc.color === '#a78bfa' ? 'purple' : 'green'} />
-          {waveplateType === 'half' && (
-            <div className={`pt-2 border-t ${dt.borderClass}`}>
-              <Formula>θ_out = 2θ_fast - θ_in</Formula>
-            </div>
-          )}
-          {waveplateType === 'quarter' && (
-            <div className={`pt-2 border-t ${dt.borderClass} text-xs ${dt.subtleTextClass}`}>
-              当相对角度为45°时产生圆偏振
-            </div>
-          )}
-        </ControlPanel>
-
         {/* 相位延迟图 */}
-        <ControlPanel title="相位延迟示意">
+        <ChartPanel title="相位延迟示意" subtitle={waveplateType === 'quarter' ? 'π/2 (90°)' : 'π (180°)'}>
           <PhaseRetardationDiagram waveplateType={waveplateType} />
-          <div className={`text-xs ${dt.subtleTextClass} mt-2`}>
+          <div className={cn('text-xs mt-2', dt.subtleTextClass)}>
             {waveplateType === 'quarter'
               ? '快轴与慢轴相位差为 π/2 (90°)'
               : '快轴与慢轴相位差为 π (180°)'}
           </div>
-        </ControlPanel>
+        </ChartPanel>
 
-        {/* Poincaré Sphere Visualization (from unified engine) */}
+        {/* Poincare Sphere Visualization (from unified engine) */}
         {showPoincare && (
           <PoincareSphere
             stokesParams={unifiedResult.stokes}
@@ -1162,10 +1187,10 @@ export function WaveplateDemo() {
 
         {/* 研究模式：非理想参数控制 */}
         {difficultyLevel === 'research' && (
-          <ControlPanel title="🔬 非理想波片参数">
+          <ControlPanel title="非理想波片参数">
             {/* 启用非理想模式 */}
-            <div className={`flex items-center justify-between py-2 border-b ${dt.borderClass}`}>
-              <span className={`text-xs ${dt.mutedTextClass}`}>启用非理想模拟</span>
+            <div className={cn('flex items-center justify-between py-2 border-b', dt.borderClass)}>
+              <span className={cn('text-xs', dt.mutedTextClass)}>启用非理想模拟</span>
               <Toggle
                 label=""
                 checked={nonIdealParams.useNonIdeal}
@@ -1244,9 +1269,9 @@ export function WaveplateDemo() {
                 />
 
                 {/* 预设按钮 */}
-                <div className={`flex gap-2 pt-2 border-t ${dt.borderClass}`}>
+                <div className={cn('flex gap-2 pt-2 border-t', dt.borderClass)}>
                   <motion.button
-                    className={`flex-1 px-2 py-1.5 text-xs ${dt.isDark ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'} rounded`}
+                    className={cn('flex-1 px-2 py-1.5 text-xs rounded-lg', dt.isDark ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-slate-100 text-gray-600 hover:bg-slate-200')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setNonIdealParams({ ...IDEAL_WAVEPLATE, useNonIdeal: true })}
@@ -1254,7 +1279,7 @@ export function WaveplateDemo() {
                     理想波片
                   </motion.button>
                   <motion.button
-                    className={`flex-1 px-2 py-1.5 text-xs ${dt.isDark ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'} rounded`}
+                    className={cn('flex-1 px-2 py-1.5 text-xs rounded-lg', dt.isDark ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600' : 'bg-slate-100 text-gray-600 hover:bg-slate-200')}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setNonIdealParams({ ...TYPICAL_WAVEPLATE, useNonIdeal: true })}
@@ -1267,30 +1292,30 @@ export function WaveplateDemo() {
 
             {/* 非理想计算结果 */}
             {nonIdealParams.useNonIdeal && nonIdealResult && (
-              <div className={`mt-3 pt-3 border-t ${dt.borderClass} space-y-2`}>
-                <div className={`text-xs ${dt.subtleTextClass} font-medium`}>非理想计算结果</div>
+              <div className={cn('mt-3 pt-3 border-t space-y-2', dt.borderClass)}>
+                <div className={cn('text-xs font-medium', dt.subtleTextClass)}>非理想计算结果</div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100'} rounded`}>
-                    <div className={`${dt.subtleTextClass}`}>实际相位延迟</div>
-                    <div className="text-purple-400 font-mono">
+                  <div className={cn('p-2 rounded-lg', dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100')}>
+                    <div className={dt.subtleTextClass}>实际相位延迟</div>
+                    <div className={cn('font-mono', dt.isDark ? 'text-purple-400' : 'text-purple-600')}>
                       {(nonIdealResult.actualRetardation * 180 / Math.PI).toFixed(2)}°
                     </div>
                   </div>
-                  <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100'} rounded`}>
-                    <div className={`${dt.subtleTextClass}`}>输出强度</div>
-                    <div className="text-green-400 font-mono">
+                  <div className={cn('p-2 rounded-lg', dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100')}>
+                    <div className={dt.subtleTextClass}>输出强度</div>
+                    <div className={cn('font-mono', dt.isDark ? 'text-green-400' : 'text-green-600')}>
                       {(nonIdealResult.outputIntensity * 100).toFixed(1)}%
                     </div>
                   </div>
-                  <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100'} rounded`}>
-                    <div className={`${dt.subtleTextClass}`}>椭圆度</div>
-                    <div className="text-cyan-400 font-mono">
+                  <div className={cn('p-2 rounded-lg', dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100')}>
+                    <div className={dt.subtleTextClass}>椭圆度</div>
+                    <div className={cn('font-mono', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>
                       {(nonIdealResult.ellipticity * 100).toFixed(1)}%
                     </div>
                   </div>
-                  <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100'} rounded`}>
-                    <div className={`${dt.subtleTextClass}`}>偏振度(DOP)</div>
-                    <div className="text-orange-400 font-mono">
+                  <div className={cn('p-2 rounded-lg', dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100')}>
+                    <div className={dt.subtleTextClass}>偏振度(DOP)</div>
+                    <div className={cn('font-mono', dt.isDark ? 'text-orange-400' : 'text-orange-600')}>
                       {(nonIdealResult.outputStokes.degreeOfPolarization * 100).toFixed(1)}%
                     </div>
                   </div>
@@ -1298,8 +1323,13 @@ export function WaveplateDemo() {
 
                 {/* 偏差提示 */}
                 {Math.abs(nonIdealResult.actualRetardation - (waveplateType === 'quarter' ? Math.PI / 2 : Math.PI)) > 0.05 && (
-                  <div className="p-2 bg-orange-500/10 border border-orange-500/30 rounded text-xs text-orange-300">
-                    ⚠️ 相位偏差显著：输出偏振态与理想情况有明显差异。
+                  <div className={cn(
+                    'p-2 rounded-lg text-xs border',
+                    dt.isDark
+                      ? 'bg-orange-500/10 border-orange-500/30 text-orange-300'
+                      : 'bg-orange-50 border-orange-200 text-orange-700'
+                  )}>
+                    相位偏差显著：输出偏振态与理想情况有明显差异。
                     {waveplateType === 'quarter' && nonIdealResult.ellipticity < 0.9 && (
                       <span> 原本应产生圆偏振光，现在产生椭圆偏振光。</span>
                     )}
@@ -1312,45 +1342,55 @@ export function WaveplateDemo() {
       </div>
 
       {/* 波片功能说明 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className={`p-4 rounded-xl border ${waveplateType === 'quarter' ? 'bg-purple-500/10 border-purple-400/30' : `${dt.panelClass}`}`}>
-          <h4 className="font-semibold text-purple-400 mb-2">λ/4 四分之一波片</h4>
-          <ul className={`text-xs ${dt.bodyClass} space-y-1`}>
-            <li>• 相位延迟: π/2 (90°)</li>
-            <li>• 45°线偏振 → 圆偏振</li>
-            <li>• 0°/90°线偏振 → 保持不变</li>
-            <li>• 其他角度 → 椭圆偏振</li>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className={cn(
+          'p-4 rounded-2xl border',
+          waveplateType === 'quarter'
+            ? dt.isDark ? 'bg-purple-500/10 border-purple-400/30' : 'bg-purple-50 border-purple-200'
+            : dt.panelClass
+        )}>
+          <h4 className={cn('font-semibold mb-2', dt.isDark ? 'text-purple-400' : 'text-purple-600')}>λ/4 四分之一波片</h4>
+          <ul className={cn('text-xs space-y-1', dt.bodyClass)}>
+            <li>* 相位延迟: π/2 (90°)</li>
+            <li>* 45°线偏振 → 圆偏振</li>
+            <li>* 0°/90°线偏振 → 保持不变</li>
+            <li>* 其他角度 → 椭圆偏振</li>
           </ul>
         </div>
-        <div className={`p-4 rounded-xl border ${waveplateType === 'half' ? 'bg-pink-500/10 border-pink-400/30' : `${dt.panelClass}`}`}>
-          <h4 className="font-semibold text-pink-400 mb-2">λ/2 二分之一波片</h4>
-          <ul className={`text-xs ${dt.bodyClass} space-y-1`}>
-            <li>• 相位延迟: π (180°)</li>
-            <li>• 线偏振方向旋转</li>
-            <li>• 旋转角度 = 2 × 快轴角度</li>
-            <li>• 可实现任意线偏振角度转换</li>
+        <div className={cn(
+          'p-4 rounded-2xl border',
+          waveplateType === 'half'
+            ? dt.isDark ? 'bg-pink-500/10 border-pink-400/30' : 'bg-pink-50 border-pink-200'
+            : dt.panelClass
+        )}>
+          <h4 className={cn('font-semibold mb-2', dt.isDark ? 'text-pink-400' : 'text-pink-600')}>λ/2 二分之一波片</h4>
+          <ul className={cn('text-xs space-y-1', dt.bodyClass)}>
+            <li>* 相位延迟: π (180°)</li>
+            <li>* 线偏振方向旋转</li>
+            <li>* 旋转角度 = 2 × 快轴角度</li>
+            <li>* 可实现任意线偏振角度转换</li>
           </ul>
         </div>
       </div>
 
       {/* 现实应用场景 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="📸 相机滤镜" color="cyan">
-          <p className={`text-xs ${dt.bodyClass}`}>
+      <InfoGrid columns={3}>
+        <InfoCard title="相机滤镜" color="cyan">
+          <p className={cn('text-xs', dt.bodyClass)}>
             摄影中的圆偏振滤镜(CPL)使用λ/4波片，消除玻璃反射和水面眩光，增强蓝天对比度。
           </p>
         </InfoCard>
-        <InfoCard title="🔒 光学隔离器" color="purple">
-          <p className={`text-xs ${dt.bodyClass}`}>
+        <InfoCard title="光学隔离器" color="purple">
+          <p className={cn('text-xs', dt.bodyClass)}>
             激光系统中使用波片组合防止反射光返回，保护激光器稳定工作。
           </p>
         </InfoCard>
-        <InfoCard title="📱 3D显示" color="orange">
-          <p className={`text-xs ${dt.bodyClass}`}>
+        <InfoCard title="3D显示" color="orange">
+          <p className={cn('text-xs', dt.bodyClass)}>
             主动式3D眼镜使用快速切换的波片，交替显示左右眼图像实现立体显示。
           </p>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }
