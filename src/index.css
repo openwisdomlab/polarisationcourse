@@ -444,8 +444,8 @@ body {
   header,
   footer,
   nav,
-  .print\\:hidden,
-  button:not(.print\\:block),
+  .print\:hidden,
+  button:not(.print\:block),
   .fixed,
   .sticky,
   .animate-beam-move,
@@ -454,16 +454,16 @@ body {
   }
 
   /* Show print-only elements */
-  .print\\:block {
+  .print\:block {
     display: block !important;
   }
 
   /* Ensure content is visible */
-  .print\\:text-black {
+  .print\:text-black {
     color: black !important;
   }
 
-  .print\\:bg-white {
+  .print\:bg-white {
     background: white !important;
   }
 

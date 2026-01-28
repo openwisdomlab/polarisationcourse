@@ -987,6 +987,18 @@ The `DemoControls.tsx` file provides shared UI components for all demos:
 - Use `cn()` utility for conditional classnames (Tailwind)
 - All angles in degrees (converted to radians when needed)
 
+### CSS Pitfalls
+
+- **Tailwind variant class escaping**: When writing raw CSS that targets Tailwind variant classes (e.g., `print:block`, `hover:text-white`), use a **single backslash** to escape the colon: `.print\:block`. Do NOT use double backslash `\\:` — in CSS `\\` is a literal backslash character, so `\\:` makes the colon act as a pseudo-class separator, causing lightningcss build errors like `'block' is not recognized as a valid pseudo-class`.
+  ```css
+  /* Correct */
+  .print\:block { display: block !important; }
+
+  /* Wrong — causes lightningcss parse error */
+  .print\\:block { display: block !important; }
+  ```
+- **pnpm strict resolution**: When adding Vite plugins that import peer/transitive dependencies at build time (e.g., `vite-plugin-pwa` needs `workbox-window`), add those dependencies directly to `devDependencies` in `package.json`. pnpm's strict `node_modules` structure prevents virtual modules from accessing packages nested inside plugin directories.
+
 ### Adding a New Hub Page
 
 Hub pages serve as module entry points. Follow this pattern:
