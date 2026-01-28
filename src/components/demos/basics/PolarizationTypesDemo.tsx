@@ -7,6 +7,14 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
 import { useDemoTheme } from '../demoThemeColors'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  StatCard,
+  TipBanner,
+} from '../DemoLayout'
 
 type PolarizationType = 'linear' | 'circular' | 'elliptical'
 
@@ -109,255 +117,284 @@ export function PolarizationTypesDemo() {
     }
   }
 
+  const phaseDisplay = ((time * 2 * 180 / Math.PI) % 360).toFixed(0)
+
   return (
-    <div className="space-y-6">
-      <div className="flex gap-6 flex-col lg:flex-row">
-        {/* SVG 可视化区域 */}
-        <div className="flex-1">
-          <div className={`${dt.svgContainerClass} rounded-xl border p-4`}>
-            <svg viewBox="0 0 400 400" className="w-full h-auto max-w-[400px] mx-auto">
-              <defs>
-                {/* 发光滤镜 */}
-                <filter id="glow-cyan">
-                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-                {/* 渐变 */}
-                <linearGradient id="trail-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#22d3ee" stopOpacity="0" />
-                  <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.5" />
-                </linearGradient>
-              </defs>
+    <div className="space-y-5">
+      <DemoHeader
+        title={t('demoUi.common.polarizationType')}
+        subtitle={t('demoUi.polarizationTypes.linearDesc')}
+        gradient="orange"
+      />
 
-              {/* 坐标轴 */}
-              <line x1="70" y1="200" x2="330" y2="200" stroke={dt.axisColor} strokeWidth="1.5" />
-              <line x1="200" y1="70" x2="200" y2="330" stroke={dt.axisColor} strokeWidth="1.5" />
+      <DemoMainLayout
+        controlsWidth="narrow"
+        visualization={
+          <div className="space-y-4">
+            <VisualizationPanel>
+              <svg viewBox="0 0 400 400" className="w-full h-auto max-w-[400px] mx-auto">
+                <defs>
+                  {/* 发光滤镜 */}
+                  <filter id="glow-cyan">
+                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                    <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                  {/* 渐变 */}
+                  <linearGradient id="trail-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#22d3ee" stopOpacity="0" />
+                    <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.5" />
+                  </linearGradient>
+                </defs>
 
-              {/* 箭头 */}
-              <polygon points="330,200 320,195 320,205" fill={dt.axisColor} />
-              <polygon points="200,70 195,80 205,80" fill={dt.axisColor} />
+                {/* 坐标轴 */}
+                <line x1="70" y1="200" x2="330" y2="200" stroke={dt.axisColor} strokeWidth="1.5" />
+                <line x1="200" y1="70" x2="200" y2="330" stroke={dt.axisColor} strokeWidth="1.5" />
 
-              {/* 轴标签 */}
-              <text x="340" y="205" fill={dt.textSecondary} fontSize="14">Ex</text>
-              <text x="205" y="60" fill={dt.textSecondary} fontSize="14">Ey</text>
+                {/* 箭头 */}
+                <polygon points="330,200 320,195 320,205" fill={dt.axisColor} />
+                <polygon points="200,70 195,80 205,80" fill={dt.axisColor} />
 
-              {/* 参考形状（虚线） */}
-              <path
-                d={referencePath}
-                fill="none"
-                stroke={dt.axisColor}
-                strokeWidth="1"
-                strokeDasharray="5 5"
-              />
+                {/* 轴标签 */}
+                <text x="340" y="205" fill={dt.textSecondary} fontSize="14">Ex</text>
+                <text x="205" y="60" fill={dt.textSecondary} fontSize="14">Ey</text>
 
-              {/* 轨迹 */}
-              {showTrail && (
-                <motion.path
-                  d={trailPath}
+                {/* 参考形状（虚线） */}
+                <path
+                  d={referencePath}
                   fill="none"
-                  stroke="url(#trail-gradient)"
-                  strokeWidth="2"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
+                  stroke={dt.axisColor}
+                  strokeWidth="1"
+                  strokeDasharray="5 5"
                 />
-              )}
 
-              {/* 电场矢量 */}
-              <motion.line
-                x1="200"
-                y1="200"
-                x2={ex}
-                y2={ey}
-                stroke="#22d3ee"
-                strokeWidth="3"
-                filter="url(#glow-cyan)"
+                {/* 轨迹 */}
+                {showTrail && (
+                  <motion.path
+                    d={trailPath}
+                    fill="none"
+                    stroke="url(#trail-gradient)"
+                    strokeWidth="2"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                  />
+                )}
+
+                {/* 电场矢量 */}
+                <motion.line
+                  x1="200"
+                  y1="200"
+                  x2={ex}
+                  y2={ey}
+                  stroke="#22d3ee"
+                  strokeWidth="3"
+                  filter="url(#glow-cyan)"
+                />
+
+                {/* 箭头 */}
+                <motion.g
+                  style={{
+                    transformOrigin: `${ex}px ${ey}px`,
+                  }}
+                >
+                  <circle cx={ex} cy={ey} r="6" fill="#22d3ee" filter="url(#glow-cyan)" />
+                </motion.g>
+
+                {/* 当前点 */}
+                <motion.circle
+                  cx={ex}
+                  cy={ey}
+                  r="4"
+                  fill="#fbbf24"
+                  filter="url(#glow-cyan)"
+                />
+
+                {/* 中心点 */}
+                <circle cx="200" cy="200" r="4" fill={dt.textSecondary} />
+
+                {/* 类型标签 */}
+                <text x="20" y="30" fill={dt.textSecondary} fontSize="14">{getTypeLabel(polarizationType)}</text>
+
+                {/* 相位显示 */}
+                <text x="320" y="30" fill={dt.textMuted} fontSize="12">
+                  {'\u03C6'} = {phaseDisplay}{'\u00B0'}
+                </text>
+              </svg>
+            </VisualizationPanel>
+
+            {/* 类型选择器 */}
+            <div className={`p-4 rounded-2xl border ${dt.panelClass}`}>
+              <h4 className={`text-sm font-semibold ${dt.headingClass} mb-3`}>{t('demoUi.common.polarizationType')}</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {(['linear', 'circular', 'elliptical'] as PolarizationType[]).map((type) => {
+                  const colors = {
+                    linear: { active: 'bg-orange-400/20 border-orange-400/50 text-orange-400', inactive: 'hover:border-orange-400/30' },
+                    circular: { active: 'bg-green-400/20 border-green-400/50 text-green-400', inactive: 'hover:border-green-400/30' },
+                    elliptical: { active: 'bg-purple-400/20 border-purple-400/50 text-purple-400', inactive: 'hover:border-purple-400/30' },
+                  }
+                  const labels = {
+                    linear: t('demoUi.common.linearPolarization'),
+                    circular: t('demoUi.common.circularPolarization'),
+                    elliptical: t('demoUi.common.ellipticalPolarization')
+                  }
+
+                  return (
+                    <motion.button
+                      key={type}
+                      className={`py-2.5 px-3 rounded-2xl text-sm font-medium border transition-all ${
+                        polarizationType === type
+                          ? colors[type].active
+                          : `${dt.inactiveButtonClass} ${colors[type].inactive}`
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setPolarizationType(type)}
+                    >
+                      {labels[type]}
+                    </motion.button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Stat cards row */}
+            <div className="grid grid-cols-2 gap-3">
+              <StatCard
+                label={t('demoUi.common.polarizationType')}
+                value={getTypeLabel(polarizationType)}
+                color={polarizationType === 'linear' ? 'orange' : polarizationType === 'circular' ? 'green' : 'purple'}
               />
-
-              {/* 箭头 */}
-              <motion.g
-                style={{
-                  transformOrigin: `${ex}px ${ey}px`,
-                }}
-              >
-                <circle cx={ex} cy={ey} r="6" fill="#22d3ee" filter="url(#glow-cyan)" />
-              </motion.g>
-
-              {/* 当前点 */}
-              <motion.circle
-                cx={ex}
-                cy={ey}
-                r="4"
-                fill="#fbbf24"
-                filter="url(#glow-cyan)"
+              <StatCard
+                label={t('demoUi.common.phase') || 'Phase'}
+                value={`${phaseDisplay}`}
+                unit="\u00B0"
+                color="cyan"
               />
-
-              {/* 中心点 */}
-              <circle cx="200" cy="200" r="4" fill={dt.textSecondary} />
-
-              {/* 类型标签 */}
-              <text x="20" y="30" fill={dt.textSecondary} fontSize="14">{getTypeLabel(polarizationType)}</text>
-
-              {/* 相位显示 */}
-              <text x="320" y="30" fill={dt.textMuted} fontSize="12">
-                φ = {((time * 2 * 180 / Math.PI) % 360).toFixed(0)}°
-              </text>
-            </svg>
+            </div>
           </div>
+        }
+        controls={
+          <ControlPanel title={t('demoUi.common.parameters')} className="w-full">
+            {/* 条件控件 */}
+            {polarizationType === 'linear' && (
+              <SliderControl
+                label={t('demoUi.common.polarizationAngle')}
+                value={linearAngle}
+                min={0}
+                max={180}
+                step={15}
+                unit="°"
+                onChange={setLinearAngle}
+                color="orange"
+              />
+            )}
 
-          {/* 类型选择器 */}
-          <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
-            <h4 className={`text-sm font-semibold ${dt.headingClass} mb-3`}>{t('demoUi.common.polarizationType')}</h4>
-            <div className="grid grid-cols-3 gap-2">
-              {(['linear', 'circular', 'elliptical'] as PolarizationType[]).map((type) => {
-                const colors = {
-                  linear: { active: 'bg-orange-400/20 border-orange-400/50 text-orange-400', inactive: 'hover:border-orange-400/30' },
-                  circular: { active: 'bg-green-400/20 border-green-400/50 text-green-400', inactive: 'hover:border-green-400/30' },
-                  elliptical: { active: 'bg-purple-400/20 border-purple-400/50 text-purple-400', inactive: 'hover:border-purple-400/30' },
-                }
-                const labels = {
-                  linear: t('demoUi.common.linearPolarization'),
-                  circular: t('demoUi.common.circularPolarization'),
-                  elliptical: t('demoUi.common.ellipticalPolarization')
-                }
-
-                return (
+            {(polarizationType === 'circular' || polarizationType === 'elliptical') && (
+              <div className="space-y-2">
+                <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.common.rotationDirection')}</span>
+                <div className="grid grid-cols-2 gap-2">
                   <motion.button
-                    key={type}
-                    className={`py-2.5 px-3 rounded-lg text-sm font-medium border transition-all ${
-                      polarizationType === type
-                        ? colors[type].active
-                        : `${dt.inactiveButtonClass} ${colors[type].inactive}`
+                    className={`py-2 rounded-2xl text-sm font-medium border transition-all ${
+                      circularDirection === 'right'
+                        ? 'bg-green-400/20 text-green-400 border-green-400/50'
+                        : `${dt.inactiveButtonClass} hover:border-green-400/30`
                     }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setPolarizationType(type)}
+                    onClick={() => setCircularDirection('right')}
                   >
-                    {labels[type]}
+                    {t('demoUi.common.rightRotation')}
                   </motion.button>
-                )
-              })}
-            </div>
-          </div>
-        </div>
+                  <motion.button
+                    className={`py-2 rounded-2xl text-sm font-medium border transition-all ${
+                      circularDirection === 'left'
+                        ? 'bg-purple-400/20 text-purple-400 border-purple-400/50'
+                        : `${dt.inactiveButtonClass} hover:border-purple-400/30`
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setCircularDirection('left')}
+                  >
+                    {t('demoUi.common.leftRotation')}
+                  </motion.button>
+                </div>
+              </div>
+            )}
 
-        {/* 控制面板 */}
-        <ControlPanel title={t('demoUi.common.parameters')} className="w-full lg:w-72">
-          {/* 条件控件 */}
-          {polarizationType === 'linear' && (
+            {polarizationType === 'elliptical' && (
+              <SliderControl
+                label={t('demoUi.common.ellipseRatio')}
+                value={ellipseRatio}
+                min={0.1}
+                max={0.9}
+                step={0.1}
+                onChange={setEllipseRatio}
+                color="purple"
+              />
+            )}
+
             <SliderControl
-              label={t('demoUi.common.polarizationAngle')}
-              value={linearAngle}
+              label={t('demoUi.common.animationSpeed')}
+              value={animationSpeed}
               min={0}
-              max={180}
-              step={15}
-              unit="°"
-              onChange={setLinearAngle}
-              color="orange"
+              max={2}
+              step={0.25}
+              onChange={setAnimationSpeed}
+              color="cyan"
             />
-          )}
 
-          {(polarizationType === 'circular' || polarizationType === 'elliptical') && (
-            <div className="space-y-2">
-              <span className={`text-xs ${dt.mutedTextClass}`}>{t('demoUi.common.rotationDirection')}</span>
-              <div className="grid grid-cols-2 gap-2">
-                <motion.button
-                  className={`py-2 rounded-lg text-sm font-medium border transition-all ${
-                    circularDirection === 'right'
-                      ? 'bg-green-400/20 text-green-400 border-green-400/50'
-                      : '${dt.inactiveButtonClass} hover:border-green-400/30'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setCircularDirection('right')}
-                >
-                  {t('demoUi.common.rightRotation')}
-                </motion.button>
-                <motion.button
-                  className={`py-2 rounded-lg text-sm font-medium border transition-all ${
-                    circularDirection === 'left'
-                      ? 'bg-purple-400/20 text-purple-400 border-purple-400/50'
-                      : '${dt.inactiveButtonClass} hover:border-purple-400/30'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setCircularDirection('left')}
-                >
-                  {t('demoUi.common.leftRotation')}
-                </motion.button>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showTrail}
+                  onChange={(e) => setShowTrail(e.target.checked)}
+                  className={`rounded ${dt.isDark ? 'border-gray-600 bg-slate-700' : 'border-gray-300 bg-white'} text-cyan-400`}
+                />
+                <span className={`text-sm ${dt.headingClass}`}>{t('demoUi.common.showTrail')}</span>
+              </label>
+            </div>
+
+            <motion.button
+              className={`w-full py-2.5 rounded-2xl font-medium transition-all ${
+                isPlaying
+                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                  : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
+            </motion.button>
+
+            {/* 物理意义 */}
+            <div className={`pt-4 border-t ${dt.borderClass} space-y-2`}>
+              <h4 className={`text-sm font-semibold ${dt.headingClass}`}>{t('demoUi.common.physicalMeaning')}</h4>
+              <div className={`text-xs ${dt.mutedTextClass} space-y-1`}>
+                {polarizationType === 'linear' && (
+                  <p>{t('demoUi.polarizationTypes.linearPhysics')}</p>
+                )}
+                {polarizationType === 'circular' && (
+                  <p>{t('demoUi.polarizationTypes.circularPhysics')}</p>
+                )}
+                {polarizationType === 'elliptical' && (
+                  <p>{t('demoUi.polarizationTypes.ellipticalPhysics')}</p>
+                )}
               </div>
             </div>
-          )}
 
-          {polarizationType === 'elliptical' && (
-            <SliderControl
-              label={t('demoUi.common.ellipseRatio')}
-              value={ellipseRatio}
-              min={0.1}
-              max={0.9}
-              step={0.1}
-              onChange={setEllipseRatio}
-              color="purple"
-            />
-          )}
-
-          <SliderControl
-            label={t('demoUi.common.animationSpeed')}
-            value={animationSpeed}
-            min={0}
-            max={2}
-            step={0.25}
-            onChange={setAnimationSpeed}
-            color="cyan"
-          />
-
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showTrail}
-                onChange={(e) => setShowTrail(e.target.checked)}
-                className={`rounded ${dt.isDark ? 'border-gray-600 bg-slate-700' : 'border-gray-300 bg-white'} text-cyan-400`}
-              />
-              <span className={`text-sm ${dt.headingClass}`}>{t('demoUi.common.showTrail')}</span>
-            </label>
-          </div>
-
-          <motion.button
-            className={`w-full py-2.5 rounded-lg font-medium transition-all ${
-              isPlaying
-                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-            }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setIsPlaying(!isPlaying)}
-          >
-            {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
-          </motion.button>
-
-          {/* 物理意义 */}
-          <div className={`pt-4 border-t ${dt.borderClass} space-y-2`}>
-            <h4 className={`text-sm font-semibold ${dt.headingClass}`}>{t('demoUi.common.physicalMeaning')}</h4>
-            <div className={`text-xs ${dt.mutedTextClass} space-y-1`}>
-              {polarizationType === 'linear' && (
-                <p>{t('demoUi.polarizationTypes.linearPhysics')}</p>
-              )}
-              {polarizationType === 'circular' && (
-                <p>{t('demoUi.polarizationTypes.circularPhysics')}</p>
-              )}
-              {polarizationType === 'elliptical' && (
-                <p>{t('demoUi.polarizationTypes.ellipticalPhysics')}</p>
-              )}
-            </div>
-          </div>
-        </ControlPanel>
-      </div>
+            <TipBanner color="orange">
+              {t('demoUi.polarizationTypes.linearPhysics')}
+            </TipBanner>
+          </ControlPanel>
+        }
+      />
 
       {/* 信息卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <InfoGrid columns={3}>
         <InfoCard
           title={t('demoUi.common.linearPolarization')}
           color={polarizationType === 'linear' ? 'orange' : 'cyan'}
@@ -382,7 +419,7 @@ export function PolarizationTypesDemo() {
             {t('demoUi.polarizationTypes.ellipticalDesc')}
           </p>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

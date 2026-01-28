@@ -1,7 +1,7 @@
 /**
  * 斯托克斯矢量演示 - Unit 5
  * 用四个参数 [S₀, S₁, S₂, S₃] 完整描述光的偏振状态
- * 重新设计：纯 DOM + SVG + Framer Motion，支持 i18n 和亮色/暗色主题
+ * 重新设计：使用 DemoLayout 统一布局组件，改进 SVG 可视化
  *
  * 支持难度分层:
  * - foundation: 简化显示，隐藏复杂公式，聚焦直观理解
@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard, ValueDisplay } from '../DemoControls'
+import { DemoHeader, VisualizationPanel, InfoGrid, ChartPanel, StatCard } from '../DemoLayout'
+import { useDemoTheme } from '../demoThemeColors'
 
 // 难度级别类型
 type DifficultyLevel = 'foundation' | 'application' | 'research'
@@ -76,7 +78,8 @@ function stokesToParams(stokes: StokesVector, t: (key: string) => string): {
 }
 
 // 庞加莱球可视化（2D投影）
-function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme: string; t: (key: string) => string }) {
+function PoincareSphereView({ stokes, t }: { stokes: StokesVector; t: (key: string) => string }) {
+  const dt = useDemoTheme()
   const { S0, S1, S2, S3 } = stokes
   const dop = Math.sqrt(S1 * S1 + S2 * S2 + S3 * S3) / (S0 + 0.001)
 
@@ -85,23 +88,24 @@ function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme:
   const y = dop > 0.01 ? S2 / (S0 * dop + 0.001) : 0
   const z = dop > 0.01 ? S3 / (S0 * dop + 0.001) : 0
 
-  const width = 260
-  const height = 260
+  const width = 300
+  const height = 300
   const centerX = width / 2
   const centerY = height / 2
-  const radius = 90
+  const radius = 105
 
-  const bgColor = theme === 'dark' ? '#0f172a' : '#f1f5f9'
-  const textColor = theme === 'dark' ? '#94a3b8' : '#64748b'
-  const gridColor = theme === 'dark' ? '#1f2937' : '#e2e8f0'
-  const axisGridColor = theme === 'dark' ? '#374151' : '#cbd5e1'
+  const textColor = dt.textSecondary
+  const gridColor = dt.isDark ? '#1e293b' : '#e2e8f0'
+  const axisGridColor = dt.isDark ? '#334155' : '#cbd5e1'
+  const bgGrad1 = dt.isDark ? '#0c1425' : '#f0f4f8'
+  const bgGrad2 = dt.isDark ? '#111d35' : '#e8eef4'
 
   // 关键点位置
   const keyPoints = [
     { label: 'H', x: radius, y: 0, color: '#ef4444' },
     { label: 'V', x: -radius, y: 0, color: '#ef4444' },
-    { label: '+45°', x: 0, y: -radius, color: '#22c55e' },
-    { label: '-45°', x: 0, y: radius, color: '#22c55e' },
+    { label: '+45', x: 0, y: -radius, color: '#22c55e' },
+    { label: '-45', x: 0, y: radius, color: '#22c55e' },
   ]
 
   // 当前点位置（俯视图：S1-S2平面）
@@ -109,23 +113,57 @@ function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme:
   const pointY = centerY - y * radius // SVG y轴向下
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full">
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
+      <defs>
+        {/* 背景渐变 */}
+        <radialGradient id="sphere-bg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={bgGrad2} />
+          <stop offset="100%" stopColor={bgGrad1} />
+        </radialGradient>
+        {/* 球面渐变 */}
+        <radialGradient id="sphere-fill" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor={dt.isDark ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)'} />
+          <stop offset="100%" stopColor={dt.isDark ? 'rgba(30,41,59,0.02)' : 'rgba(241,245,249,0.02)'} />
+        </radialGradient>
+        {/* 点光晕 */}
+        <radialGradient id="point-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(251,191,36,0.6)" />
+          <stop offset="50%" stopColor="rgba(251,191,36,0.15)" />
+          <stop offset="100%" stopColor="rgba(251,191,36,0)" />
+        </radialGradient>
+        {/* 柔光滤镜 */}
+        <filter id="stokes-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="stokes-glow-soft" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
       {/* 背景 */}
-      <rect x={0} y={0} width={width} height={height} fill={bgColor} rx={10} />
+      <rect x={0} y={0} width={width} height={height} fill="url(#sphere-bg)" rx={12} />
 
       {/* 标题 */}
-      <text x={centerX} y={22} textAnchor="middle" fill={textColor} fontSize={10}>
+      <text x={centerX} y={24} textAnchor="middle" fill={textColor} fontSize={11} fontWeight="500" letterSpacing="0.05em">
         {t('demos.stokes.ui.poincareSphere')}
       </text>
 
-      {/* 球的投影 - 赤道圆 */}
+      {/* 球的投影 - 赤道圆（带渐变填充） */}
       <circle
         cx={centerX}
         cy={centerY}
         r={radius}
-        fill="none"
+        fill="url(#sphere-fill)"
         stroke={axisGridColor}
-        strokeWidth={2}
+        strokeWidth={1.5}
       />
 
       {/* 内部同心圆 */}
@@ -137,35 +175,60 @@ function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme:
           r={radius * r}
           fill="none"
           stroke={gridColor}
-          strokeWidth={1}
-          strokeDasharray="4,4"
+          strokeWidth={0.8}
+          strokeDasharray="3,5"
+          opacity={0.7}
         />
       ))}
 
+      {/* 对角线参考线 */}
+      <line
+        x1={centerX - radius * 0.707}
+        y1={centerY - radius * 0.707}
+        x2={centerX + radius * 0.707}
+        y2={centerY + radius * 0.707}
+        stroke={gridColor}
+        strokeWidth={0.5}
+        strokeDasharray="2,4"
+        opacity={0.5}
+      />
+      <line
+        x1={centerX + radius * 0.707}
+        y1={centerY - radius * 0.707}
+        x2={centerX - radius * 0.707}
+        y2={centerY + radius * 0.707}
+        stroke={gridColor}
+        strokeWidth={0.5}
+        strokeDasharray="2,4"
+        opacity={0.5}
+      />
+
       {/* 坐标轴 */}
       <line
-        x1={centerX - radius - 15}
+        x1={centerX - radius - 18}
         y1={centerY}
-        x2={centerX + radius + 15}
+        x2={centerX + radius + 18}
         y2={centerY}
         stroke="#ef4444"
-        strokeWidth={1.5}
+        strokeWidth={1.2}
+        opacity={0.8}
       />
       <line
         x1={centerX}
-        y1={centerY - radius - 15}
+        y1={centerY - radius - 18}
         x2={centerX}
-        y2={centerY + radius + 15}
+        y2={centerY + radius + 18}
         stroke="#22c55e"
-        strokeWidth={1.5}
+        strokeWidth={1.2}
+        opacity={0.8}
       />
 
       {/* 轴标签 */}
-      <text x={centerX + radius + 20} y={centerY + 4} fill="#ef4444" fontSize={12} fontWeight="bold">
-        S₁
+      <text x={centerX + radius + 24} y={centerY + 4} fill="#ef4444" fontSize={13} fontWeight="bold" fontFamily="monospace">
+        S&#x2081;
       </text>
-      <text x={centerX + 4} y={centerY - radius - 20} fill="#22c55e" fontSize={12} fontWeight="bold">
-        S₂
+      <text x={centerX + 5} y={centerY - radius - 22} fill="#22c55e" fontSize={13} fontWeight="bold" fontFamily="monospace">
+        S&#x2082;
       </text>
 
       {/* 关键点 */}
@@ -174,15 +237,26 @@ function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme:
           <circle
             cx={centerX + point.x}
             cy={centerY - point.y}
-            r={5}
+            r={4}
             fill={point.color}
+            opacity={0.9}
+          />
+          <circle
+            cx={centerX + point.x}
+            cy={centerY - point.y}
+            r={7}
+            fill="none"
+            stroke={point.color}
+            strokeWidth={1}
+            opacity={0.3}
           />
           <text
-            x={centerX + point.x + (point.x > 0 ? 10 : -10)}
-            y={centerY - point.y + 4}
-            textAnchor={point.x > 0 ? 'start' : 'end'}
+            x={centerX + point.x + (point.x > 0 ? 14 : point.x < 0 ? -14 : 0)}
+            y={centerY - point.y + (point.y > 0 ? -10 : point.y < 0 ? 14 : 4)}
+            textAnchor={point.x > 0 ? 'start' : point.x < 0 ? 'end' : 'middle'}
             fill={textColor}
             fontSize={10}
+            fontWeight="500"
           >
             {point.label}
           </text>
@@ -192,6 +266,16 @@ function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme:
       {/* 当前偏振状态点 */}
       {dop > 0.01 && (
         <>
+          {/* 光晕 */}
+          <motion.circle
+            cx={pointX}
+            cy={pointY}
+            r={22}
+            fill="url(#point-glow)"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          />
           {/* 从原点到点的连线 */}
           <motion.line
             x1={centerX}
@@ -200,48 +284,61 @@ function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme:
             y2={pointY}
             stroke="#fbbf24"
             strokeWidth={2}
+            strokeLinecap="round"
+            opacity={0.8}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 0.5 }}
           />
-          {/* 点 */}
-          <motion.circle
-            cx={pointX}
-            cy={pointY}
-            r={8}
-            fill="#fbbf24"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 300 }}
-          />
+          {/* 外圈脉冲 */}
           <motion.circle
             cx={pointX}
             cy={pointY}
             r={12}
             fill="none"
             stroke="#fbbf24"
-            strokeWidth={2}
-            initial={{ scale: 0, opacity: 0.8 }}
-            animate={{ scale: [1, 1.5, 1], opacity: [0.8, 0, 0.8] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            strokeWidth={1.5}
+            initial={{ scale: 0.8, opacity: 0.6 }}
+            animate={{ scale: [1, 1.6, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          {/* 点 */}
+          <motion.circle
+            cx={pointX}
+            cy={pointY}
+            r={6}
+            fill="#fbbf24"
+            stroke="#fef3c7"
+            strokeWidth={1.5}
+            filter="url(#stokes-glow-soft)"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 15 }}
           />
         </>
       )}
 
-      {/* S3指示（高度） */}
-      <g transform={`translate(${width - 30}, ${centerY})`}>
-        <line x1={0} y1={-50} x2={0} y2={50} stroke="#3b82f6" strokeWidth={2} />
-        <text x={4} y={-55} fill="#3b82f6" fontSize={10} fontWeight="bold">S₃</text>
-        <text x={8} y={-38} fill={textColor} fontSize={8}>RCP</text>
-        <text x={8} y={45} fill={textColor} fontSize={8}>LCP</text>
+      {/* S3指示（高度）- 右侧竖直轴 */}
+      <g transform={`translate(${width - 32}, ${centerY})`}>
+        <line x1={0} y1={-55} x2={0} y2={55} stroke="#3b82f6" strokeWidth={1.5} opacity={0.7} />
+        {/* 刻度线 */}
+        {[-1, -0.5, 0, 0.5, 1].map(v => (
+          <line key={v} x1={-3} y1={-v * 45} x2={3} y2={-v * 45} stroke="#3b82f6" strokeWidth={1} opacity={0.5} />
+        ))}
+        <text x={5} y={-58} fill="#3b82f6" fontSize={13} fontWeight="bold" fontFamily="monospace">S&#x2083;</text>
+        <text x={8} y={-42} fill={textColor} fontSize={8} opacity={0.8}>RCP</text>
+        <text x={8} y={50} fill={textColor} fontSize={8} opacity={0.8}>LCP</text>
         {/* S3值指示 */}
         <motion.circle
           cx={0}
-          cy={-z * 40}
+          cy={-z * 45}
           r={5}
           fill="#3b82f6"
-          animate={{ cy: -z * 40 }}
-          transition={{ duration: 0.3 }}
+          stroke="#93c5fd"
+          strokeWidth={1}
+          filter="url(#stokes-glow-soft)"
+          animate={{ cy: -z * 45 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
         />
       </g>
     </svg>
@@ -249,18 +346,24 @@ function PoincareSphereView({ stokes, theme, t }: { stokes: StokesVector; theme:
 }
 
 // 偏振椭圆可视化
-function PolarizationEllipseView({ stokes, theme, t }: { stokes: StokesVector; theme: string; t: (key: string) => string }) {
+function PolarizationEllipseView({ stokes, t }: { stokes: StokesVector; t: (key: string) => string }) {
+  const dt = useDemoTheme()
   const params = stokesToParams(stokes, t)
-  const width = 180
-  const height = 180
+  const width = 300
+  const height = 300
   const centerX = width / 2
   const centerY = height / 2
-  const maxRadius = 60
+  const maxRadius = 80
 
-  const bgColor = theme === 'dark' ? '#0f172a' : '#f1f5f9'
-  const textColor = theme === 'dark' ? '#94a3b8' : '#64748b'
-  const gridColor = theme === 'dark' ? '#1f2937' : '#e2e8f0'
-  const axisColor = theme === 'dark' ? '#374151' : '#cbd5e1'
+  const textColor = dt.textSecondary
+  const gridColor = dt.isDark ? '#1e293b' : '#e2e8f0'
+  const axisColor = dt.isDark ? '#334155' : '#cbd5e1'
+  const bgGrad1 = dt.isDark ? '#0c1425' : '#f0f4f8'
+  const bgGrad2 = dt.isDark ? '#111d35' : '#e8eef4'
+
+  const isRightHanded = stokes.S3 > 0
+  const ellipseColor = isRightHanded ? '#22d3ee' : '#f472b6'
+  const ellipseFill = isRightHanded ? 'rgba(34,211,238,0.08)' : 'rgba(244,114,182,0.08)'
 
   // 生成椭圆路径
   const ellipsePath = useMemo(() => {
@@ -289,15 +392,40 @@ function PolarizationEllipseView({ stokes, theme, t }: { stokes: StokesVector; t
 
   // 长轴端点
   const axisAngle = (params.angle * Math.PI) / 180
-  const axisEndX = centerX + maxRadius * 1.1 * Math.cos(axisAngle)
-  const axisEndY = centerY - maxRadius * 1.1 * Math.sin(axisAngle)
-
-  const isRightHanded = stokes.S3 > 0
+  const axisEndX = centerX + maxRadius * 1.15 * Math.cos(axisAngle)
+  const axisEndY = centerY - maxRadius * 1.15 * Math.sin(axisAngle)
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full">
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
+      <defs>
+        <radialGradient id="ellipse-bg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={bgGrad2} />
+          <stop offset="100%" stopColor={bgGrad1} />
+        </radialGradient>
+        <radialGradient id="ellipse-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={isRightHanded ? 'rgba(34,211,238,0.12)' : 'rgba(244,114,182,0.12)'} />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <marker
+          id="stokes-arrowhead"
+          markerWidth="8"
+          markerHeight="6"
+          refX="7"
+          refY="3"
+          orient="auto"
+        >
+          <polygon
+            points="0 0, 8 3, 0 6"
+            fill={ellipseColor}
+          />
+        </marker>
+      </defs>
+
       {/* 背景 */}
-      <rect x={0} y={0} width={width} height={height} fill={bgColor} rx={10} />
+      <rect x={0} y={0} width={width} height={height} fill="url(#ellipse-bg)" rx={12} />
+
+      {/* 背景光晕 */}
+      <circle cx={centerX} cy={centerY} r={maxRadius * 1.2} fill="url(#ellipse-glow)" />
 
       {/* 参考圆 */}
       <circle
@@ -306,23 +434,39 @@ function PolarizationEllipseView({ stokes, theme, t }: { stokes: StokesVector; t
         r={maxRadius}
         fill="none"
         stroke={gridColor}
-        strokeWidth={1}
-        strokeDasharray="4,4"
+        strokeWidth={0.8}
+        strokeDasharray="4,6"
+        opacity={0.6}
+      />
+      <circle
+        cx={centerX}
+        cy={centerY}
+        r={maxRadius * 0.5}
+        fill="none"
+        stroke={gridColor}
+        strokeWidth={0.5}
+        strokeDasharray="3,5"
+        opacity={0.4}
       />
 
       {/* 参考轴 */}
-      <line x1={15} y1={centerY} x2={width - 15} y2={centerY} stroke={axisColor} strokeWidth={1} />
-      <line x1={centerX} y1={15} x2={centerX} y2={height - 15} stroke={axisColor} strokeWidth={1} />
+      <line x1={20} y1={centerY} x2={width - 20} y2={centerY} stroke={axisColor} strokeWidth={0.8} opacity={0.6} />
+      <line x1={centerX} y1={20} x2={centerX} y2={height - 20} stroke={axisColor} strokeWidth={0.8} opacity={0.6} />
+
+      {/* 轴端标签 */}
+      <text x={width - 16} y={centerY - 6} fill={textColor} fontSize={9} textAnchor="end" opacity={0.6}>x</text>
+      <text x={centerX + 8} y={26} fill={textColor} fontSize={9} opacity={0.6}>y</text>
 
       {/* 偏振椭圆 */}
       <motion.path
         d={ellipsePath}
-        fill={isRightHanded ? 'rgba(34, 211, 238, 0.1)' : 'rgba(244, 114, 182, 0.1)'}
-        stroke={isRightHanded ? '#22d3ee' : '#f472b6'}
+        fill={ellipseFill}
+        stroke={ellipseColor}
         strokeWidth={2.5}
+        strokeLinejoin="round"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
       />
 
       {/* 长轴方向 */}
@@ -333,45 +477,49 @@ function PolarizationEllipseView({ stokes, theme, t }: { stokes: StokesVector; t
         y2={axisEndY}
         stroke="#fbbf24"
         strokeWidth={1.5}
-        strokeDasharray="5,3"
+        strokeDasharray="5,4"
+        opacity={0.7}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        animate={{ opacity: 0.7 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
       />
 
-      {/* 角度标注 */}
-      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+      {/* 角度标注弧 */}
+      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }}>
         <path
-          d={`M ${centerX + 20} ${centerY} A 20 20 0 0 ${params.angle >= 0 ? 0 : 1} ${
-            centerX + 20 * Math.cos(axisAngle)
-          } ${centerY - 20 * Math.sin(axisAngle)}`}
+          d={`M ${centerX + 24} ${centerY} A 24 24 0 0 ${params.angle >= 0 ? 0 : 1} ${
+            centerX + 24 * Math.cos(axisAngle)
+          } ${centerY - 24 * Math.sin(axisAngle)}`}
           fill="none"
           stroke="#fbbf24"
           strokeWidth={1.5}
+          opacity={0.8}
         />
         <text
-          x={centerX + 28 * Math.cos(axisAngle / 2)}
-          y={centerY - 28 * Math.sin(axisAngle / 2)}
+          x={centerX + 34 * Math.cos(axisAngle / 2)}
+          y={centerY - 34 * Math.sin(axisAngle / 2)}
           fill="#fbbf24"
-          fontSize={10}
+          fontSize={11}
+          fontWeight="600"
           textAnchor="middle"
         >
-          {params.angle.toFixed(0)}°
+          {params.angle.toFixed(0)}
         </text>
       </motion.g>
 
-      {/* 旋转方向指示 */}
+      {/* 旋转方向指示箭头 */}
       {Math.abs(params.ellipticity) > 0.05 && (
         <g transform={`translate(${centerX}, ${centerY})`}>
           <motion.path
             d={isRightHanded
-              ? 'M 25 0 A 25 25 0 0 1 0 -25'
-              : 'M 25 0 A 25 25 0 0 0 0 25'
+              ? 'M 30 0 A 30 30 0 0 1 0 -30'
+              : 'M 30 0 A 30 30 0 0 0 0 30'
             }
             fill="none"
-            stroke={isRightHanded ? '#22d3ee' : '#f472b6'}
+            stroke={ellipseColor}
             strokeWidth={1.5}
-            markerEnd="url(#arrowhead)"
+            markerEnd="url(#stokes-arrowhead)"
+            opacity={0.8}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
@@ -379,73 +527,49 @@ function PolarizationEllipseView({ stokes, theme, t }: { stokes: StokesVector; t
         </g>
       )}
 
-      {/* 箭头定义 */}
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="8"
-          markerHeight="6"
-          refX="7"
-          refY="3"
-          orient="auto"
-        >
-          <polygon
-            points="0 0, 8 3, 0 6"
-            fill={isRightHanded ? '#22d3ee' : '#f472b6'}
-          />
-        </marker>
-      </defs>
-
-      {/* 标签 */}
-      <text x={centerX} y={height - 8} textAnchor="middle" fill={textColor} fontSize={9}>
+      {/* 底部标签 */}
+      <text x={centerX} y={height - 10} textAnchor="middle" fill={textColor} fontSize={10} fontWeight="500">
         {t('demos.stokes.ui.polarizationEllipse')} {Math.abs(params.ellipticity) > 0.05 ? (isRightHanded ? t('demos.stokes.ui.rightHanded') : t('demos.stokes.ui.leftHanded')) : t('demos.stokes.ui.linearPol')}
       </text>
     </svg>
   )
 }
 
-// 斯托克斯矢量显示
-function StokesVectorDisplay({ stokes, theme, t }: { stokes: StokesVector; theme: string; t: (key: string) => string }) {
+// 斯托克斯矢量柱状图可视化
+function StokesBarChart({ stokes, t }: { stokes: StokesVector; t: (key: string) => string }) {
+  const dt = useDemoTheme()
   const { S0, S1, S2, S3 } = stokes
 
   const components = [
-    { label: 'S₀', value: S0, color: theme === 'dark' ? '#ffffff' : '#333333', desc: t('demos.stokes.ui.totalIntensity') },
-    { label: 'S₁', value: S1, color: '#ef4444', desc: t('demos.stokes.ui.hvDiff') },
-    { label: 'S₂', value: S2, color: '#22c55e', desc: t('demos.stokes.ui.pm45Diff') },
-    { label: 'S₃', value: S3, color: '#3b82f6', desc: t('demos.stokes.ui.rlDiff') },
+    { label: 'S\u2080', value: S0, color: dt.isDark ? '#e2e8f0' : '#334155', desc: t('demos.stokes.ui.totalIntensity') },
+    { label: 'S\u2081', value: S1, color: '#ef4444', desc: t('demos.stokes.ui.hvDiff') },
+    { label: 'S\u2082', value: S2, color: '#22c55e', desc: t('demos.stokes.ui.pm45Diff') },
+    { label: 'S\u2083', value: S3, color: '#3b82f6', desc: t('demos.stokes.ui.rlDiff') },
   ]
 
   return (
-    <div className={cn(
-      'rounded-xl border p-3',
-      theme === 'dark'
-        ? 'bg-slate-900/50 border-cyan-400/20'
-        : 'bg-white border-cyan-200 shadow-sm'
-    )}>
-      <h4 className={cn(
-        'text-sm font-medium mb-2',
-        theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-      )}>{t('demos.stokes.ui.stokesVector')}</h4>
-      <div className="flex items-center justify-center gap-1">
+    <div className="space-y-2.5">
+      {/* 矢量括号表示 */}
+      <div className="flex items-center justify-center gap-2">
         <span className={cn(
-          'text-xl font-light',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          'text-2xl font-extralight select-none',
+          dt.isDark ? 'text-slate-600' : 'text-slate-300'
         )}>[</span>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {components.map((comp, i) => (
             <motion.div
               key={i}
-              className="flex items-center gap-2"
-              initial={{ x: -20, opacity: 0 }}
+              className="flex items-center gap-2.5"
+              initial={{ x: -15, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.08, duration: 0.3 }}
             >
-              <span className="w-6 font-mono text-xs" style={{ color: comp.color }}>
+              <span className="w-6 font-mono text-xs font-semibold" style={{ color: comp.color }}>
                 {comp.label}
               </span>
               <div className={cn(
-                'w-16 h-1.5 rounded-full overflow-hidden',
-                theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200'
+                'w-20 h-2 rounded-full overflow-hidden',
+                dt.isDark ? 'bg-slate-700/60' : 'bg-gray-200/80'
               )}>
                 <motion.div
                   className="h-full rounded-full"
@@ -454,25 +578,25 @@ function StokesVectorDisplay({ stokes, theme, t }: { stokes: StokesVector; theme
                   animate={{
                     width: `${Math.min(Math.abs(comp.value) / (Math.abs(S0) + 0.001) * 100, 100)}%`,
                   }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  transition={{ duration: 0.5, delay: i * 0.08 }}
                 />
               </div>
               <span className={cn(
-                'w-12 text-right font-mono text-xs',
-                theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
+                'w-14 text-right font-mono text-xs font-semibold tabular-nums',
+                dt.isDark ? 'text-cyan-400' : 'text-cyan-600'
               )}>
                 {comp.value >= 0 ? '+' : ''}{comp.value.toFixed(2)}
               </span>
               <span className={cn(
-                'text-[10px]',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                'text-[10px] hidden sm:inline',
+                dt.mutedTextClass
               )}>{comp.desc}</span>
             </motion.div>
           ))}
         </div>
         <span className={cn(
-          'text-xl font-light',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          'text-2xl font-extralight select-none',
+          dt.isDark ? 'text-slate-600' : 'text-slate-300'
         )}>]</span>
       </div>
     </div>
@@ -492,7 +616,8 @@ const PRESET_KEYS = [
 ]
 
 // Mueller矩阵显示组件 (研究级别)
-function MuellerMatrixDisplay({ stokes, theme }: { stokes: StokesVector; theme: string }) {
+function MuellerMatrixDisplay({ stokes }: { stokes: StokesVector }) {
+  const dt = useDemoTheme()
   const { S0, S1, S2, S3 } = stokes
   const dop = Math.sqrt(S1 * S1 + S2 * S2 + S3 * S3) / (S0 + 0.001)
 
@@ -514,32 +639,22 @@ function MuellerMatrixDisplay({ stokes, theme }: { stokes: StokesVector; theme: 
   ]
 
   return (
-    <div className={cn(
-      'rounded-xl border p-3',
-      theme === 'dark'
-        ? 'bg-slate-900/50 border-purple-400/20'
-        : 'bg-white border-purple-200 shadow-sm'
-    )}>
-      <h4 className={cn(
-        'text-sm font-medium mb-2',
-        theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
-      )}>Mueller矩阵计算示例</h4>
-
-      <div className="text-xs space-y-2">
+    <ChartPanel title="Mueller Matrix Calculation">
+      <div className="space-y-2.5">
         {/* 输入矢量 */}
-        <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
-          <span className="text-gray-400">输入 S = </span>
-          <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
+        <div className={cn('px-3 py-2 rounded-lg text-xs', dt.isDark ? 'bg-slate-800/60' : 'bg-gray-50')}>
+          <span className={dt.mutedTextClass}>Input S = </span>
+          <span className={cn('font-mono font-semibold', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>
             [{S0.toFixed(2)}, {S1.toFixed(2)}, {S2.toFixed(2)}, {S3.toFixed(2)}]
           </span>
         </div>
 
         {/* Mueller矩阵 */}
-        <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
-          <div className="text-gray-400 mb-1">水平偏振片 M_H:</div>
-          <div className="font-mono text-[10px] leading-relaxed">
+        <div className={cn('px-3 py-2 rounded-lg text-xs', dt.isDark ? 'bg-slate-800/60' : 'bg-gray-50')}>
+          <div className={cn('mb-1.5 font-medium', dt.mutedTextClass)}>Horizontal Polarizer M_H:</div>
+          <div className="font-mono text-[11px] leading-relaxed tracking-tight">
             {M_H.map((row, i) => (
-              <div key={i} className={theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}>
+              <div key={i} className={dt.isDark ? 'text-purple-300' : 'text-purple-600'}>
                 [{row.map(v => v.toFixed(1)).join(', ')}]
               </div>
             ))}
@@ -547,24 +662,27 @@ function MuellerMatrixDisplay({ stokes, theme }: { stokes: StokesVector; theme: 
         </div>
 
         {/* 输出矢量 */}
-        <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
-          <span className="text-gray-400">输出 S' = M·S = </span>
-          <span className={theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}>
+        <div className={cn('px-3 py-2 rounded-lg text-xs', dt.isDark ? 'bg-slate-800/60' : 'bg-gray-50')}>
+          <span className={dt.mutedTextClass}>Output S' = M S = </span>
+          <span className={cn('font-mono font-semibold', dt.isDark ? 'text-orange-400' : 'text-orange-600')}>
             [{S_out.map(v => v.toFixed(2)).join(', ')}]
           </span>
         </div>
 
         {/* 透射率 */}
-        <div className="text-gray-400">
-          透射率: <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>
+        <div className={cn('text-xs px-1 flex items-center gap-2', dt.mutedTextClass)}>
+          <span>Transmittance:</span>
+          <span className={cn('font-mono font-bold', dt.isDark ? 'text-emerald-400' : 'text-emerald-600')}>
             {((S_out[0] / S0) * 100).toFixed(1)}%
           </span>
           {dop > 0.99 && Math.abs(S1 / S0) > 0.5 && (
-            <span className="text-green-400 ml-2">(偏振方向匹配)</span>
+            <span className={cn('text-[10px]', dt.isDark ? 'text-emerald-400/70' : 'text-emerald-600/70')}>
+              (polarization aligned)
+            </span>
           )}
         </div>
       </div>
-    </div>
+    </ChartPanel>
   )
 }
 
@@ -572,6 +690,7 @@ function MuellerMatrixDisplay({ stokes, theme }: { stokes: StokesVector; theme: 
 export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVectorDemoProps) {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  const dt = useDemoTheme()
   const [intensity, setIntensity] = useState(1)
   const [polarizationAngle, setPolarizationAngle] = useState(0)
   const [ellipticity, setEllipticity] = useState(0)
@@ -593,94 +712,71 @@ export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVect
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* 标题 */}
-      <div className="text-center">
-        <h2 className={cn(
-          'text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent',
-          theme === 'dark'
-            ? 'from-cyan-400 to-purple-500'
-            : 'from-cyan-600 to-purple-600'
-        )}>
-          {t('demos.stokes.demoTitle')}
-        </h2>
-        <p className={cn(
-          'text-xs mt-0.5',
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-        )}>{t('demos.stokes.demoSubtitle')}</p>
-      </div>
+    <div className="flex flex-col gap-5">
+      {/* 标题区 */}
+      <DemoHeader
+        title={t('demos.stokes.demoTitle')}
+        subtitle={t('demos.stokes.demoSubtitle')}
+        gradient="cyan"
+        badge="Stokes"
+      />
 
-      {/* 主要内容区 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* 主内容区：两列布局 */}
+      <div className="flex flex-col lg:flex-row gap-5">
         {/* 左侧：可视化 */}
-        <div className="space-y-3">
-          {/* 庞加莱球和偏振椭圆 */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className={cn(
-              'rounded-xl border p-2',
-              theme === 'dark'
-                ? 'bg-slate-900/50 border-cyan-400/20'
-                : 'bg-white border-cyan-200 shadow-sm'
-            )}>
-              <PoincareSphereView stokes={stokes} theme={theme} t={t} />
-            </div>
-            <div className={cn(
-              'rounded-xl border p-2',
-              theme === 'dark'
-                ? 'bg-slate-900/50 border-cyan-400/20'
-                : 'bg-white border-cyan-200 shadow-sm'
-            )}>
-              <PolarizationEllipseView stokes={stokes} theme={theme} t={t} />
-            </div>
+        <div className="flex-1 min-w-0 space-y-4">
+          {/* 庞加莱球和偏振椭圆 - 双面板 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <VisualizationPanel variant="indigo" noPadding className="overflow-hidden">
+              <PoincareSphereView stokes={stokes} t={t} />
+            </VisualizationPanel>
+            <VisualizationPanel variant="indigo" noPadding className="overflow-hidden">
+              <PolarizationEllipseView stokes={stokes} t={t} />
+            </VisualizationPanel>
           </div>
 
-          {/* 斯托克斯矢量显示 */}
-          <StokesVectorDisplay stokes={stokes} theme={theme} t={t} />
+          {/* 斯托克斯矢量柱状图 */}
+          <ChartPanel title={t('demos.stokes.ui.stokesVector')}>
+            <StokesBarChart stokes={stokes} t={t} />
+          </ChartPanel>
 
-          {/* 偏振状态 */}
-          <div className={cn(
-            'rounded-xl border p-3',
-            theme === 'dark'
-              ? 'bg-slate-900/50 border-cyan-400/20'
-              : 'bg-white border-cyan-200 shadow-sm'
-          )}>
-            <h4 className={cn(
-              'text-sm font-medium mb-2',
-              theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-            )}>{t('demos.stokes.ui.currentState')}</h4>
-            <div className="grid grid-cols-2 gap-3">
-              <div className={cn(
-                'text-center p-2 rounded-lg',
-                theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-              )}>
-                <div className={cn(
-                  'text-lg font-bold',
-                  theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-                )}>{params.type}</div>
-                <div className={cn(
-                  'text-[10px] mt-0.5',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                )}>{t('demos.stokes.ui.polarizationType')}</div>
-              </div>
-              <div className={cn(
-                'text-center p-2 rounded-lg',
-                theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-              )}>
-                <div className={cn(
-                  'text-lg font-bold',
-                  theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
-                )}>{(params.dop * 100).toFixed(0)}%</div>
-                <div className={cn(
-                  'text-[10px] mt-0.5',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                )}>{t('demos.stokes.ui.dop')}</div>
-              </div>
-            </div>
+          {/* 关键数值统计卡片 */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatCard
+              label={t('demos.stokes.ui.polarizationType')}
+              value={params.type}
+              color="cyan"
+            />
+            <StatCard
+              label={t('demos.stokes.ui.dop')}
+              value={`${(params.dop * 100).toFixed(0)}%`}
+              color="yellow"
+            />
+            {!isFoundation && (
+              <>
+                <StatCard
+                  label={t('demos.stokes.ui.azimuth')}
+                  value={params.angle.toFixed(1)}
+                  unit="\u00B0"
+                  color="orange"
+                />
+                <StatCard
+                  label={t('demos.stokes.ui.handedness')}
+                  value={
+                    Math.abs(params.ellipticity) > 0.01
+                      ? (params.ellipticity > 0 ? t('demos.stokes.ui.rightHandedR') : t('demos.stokes.ui.leftHandedL'))
+                      : t('demos.stokes.types.linear')
+                  }
+                  color={params.ellipticity > 0 ? 'cyan' : params.ellipticity < 0 ? 'pink' : 'orange'}
+                />
+              </>
+            )}
           </div>
         </div>
 
         {/* 右侧：控制面板 */}
-        <div className="space-y-3">
+        <div className="w-full lg:w-80 space-y-4">
+          {/* 参数控件 */}
           <ControlPanel title={t('demos.stokes.ui.polarizationParams')}>
             {/* 基础级别简化控件 */}
             {isFoundation ? (
@@ -748,6 +844,7 @@ export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVect
             )}
           </ControlPanel>
 
+          {/* 预设状态 */}
           <ControlPanel title={t('demos.stokes.ui.presetStates')}>
             <div className="grid grid-cols-2 gap-1.5">
               {PRESET_KEYS.map((preset) => (
@@ -755,17 +852,18 @@ export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVect
                   key={preset.i18nKey}
                   onClick={() => applyPreset(preset)}
                   className={cn(
-                    'px-2 py-1.5 text-[10px] rounded flex items-center gap-1.5 transition-colors',
+                    'px-2.5 py-2 text-[11px] rounded-lg flex items-center gap-2 transition-all duration-200',
+                    'border',
                     theme === 'dark'
-                      ? 'bg-slate-700/50 hover:bg-slate-600'
-                      : 'bg-gray-100 hover:bg-gray-200'
+                      ? 'bg-slate-800/40 hover:bg-slate-700/60 border-slate-700/40 hover:border-slate-600/60'
+                      : 'bg-gray-50 hover:bg-gray-100 border-gray-200/60 hover:border-gray-300',
                   )}
                 >
                   <span
-                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0 ring-1 ring-white/10"
                     style={{ backgroundColor: preset.color }}
                   />
-                  <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>{t(preset.i18nKey)}</span>
+                  <span className={dt.isDark ? 'text-gray-300' : 'text-gray-600'}>{t(preset.i18nKey)}</span>
                 </button>
               ))}
             </div>
@@ -775,17 +873,17 @@ export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVect
           {isFoundation && (
             <ControlPanel title="简单理解">
               <div className="space-y-2 text-sm">
-                <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
-                  <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                    <strong className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>偏振类型:</strong> {params.type}
+                <div className={cn('p-2.5 rounded-lg', dt.isDark ? 'bg-slate-800/50' : 'bg-gray-50')}>
+                  <p className={dt.bodyClass}>
+                    <strong className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>偏振类型:</strong> {params.type}
                   </p>
                 </div>
-                <div className={cn('p-2 rounded', theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50')}>
-                  <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                    椭圆度=0 → <strong className="text-orange-400">线偏振</strong>
+                <div className={cn('p-2.5 rounded-lg', dt.isDark ? 'bg-slate-800/50' : 'bg-gray-50')}>
+                  <p className={dt.bodyClass}>
+                    椭圆度=0 <strong className="text-orange-400">线偏振</strong>
                   </p>
-                  <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                    椭圆度=±1 → <strong className="text-cyan-400">圆偏振</strong>
+                  <p className={dt.bodyClass}>
+                    椭圆度=&#xB1;1 <strong className="text-cyan-400">圆偏振</strong>
                   </p>
                 </div>
               </div>
@@ -815,30 +913,30 @@ export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVect
 
           {/* 研究级别: Mueller矩阵 */}
           {isResearch && (
-            <MuellerMatrixDisplay stokes={stokes} theme={theme} />
+            <MuellerMatrixDisplay stokes={stokes} />
           )}
         </div>
       </div>
 
       {/* 底部知识卡片 */}
-      <div className={cn('grid gap-3', isResearch ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2')}>
+      <InfoGrid columns={isResearch ? 3 : 2}>
         {/* 基础级别: 简化知识卡片 */}
         {isFoundation ? (
           <>
             <InfoCard title="偏振光类型" color="cyan">
               <ul className={cn(
-                'text-xs space-y-1',
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                'text-xs space-y-1.5',
+                dt.bodyClass
               )}>
-                <li>• <strong className="text-orange-400">线偏振</strong>: 电场只在一个方向振动</li>
-                <li>• <strong className="text-cyan-400">圆偏振</strong>: 电场旋转，描绘圆形</li>
-                <li>• <strong className="text-purple-400">椭圆偏振</strong>: 介于两者之间</li>
+                <li>&#8226; <strong className="text-orange-400">线偏振</strong>: 电场只在一个方向振动</li>
+                <li>&#8226; <strong className="text-cyan-400">圆偏振</strong>: 电场旋转，描绘圆形</li>
+                <li>&#8226; <strong className="text-purple-400">椭圆偏振</strong>: 介于两者之间</li>
               </ul>
             </InfoCard>
             <InfoCard title="庞加莱球" color="purple">
               <p className={cn(
-                'text-xs',
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                'text-xs leading-relaxed',
+                dt.bodyClass
               )}>
                 球面上每个点代表一种偏振状态。赤道是线偏振，两极是圆偏振。球心是自然光。
               </p>
@@ -848,45 +946,45 @@ export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVect
           <>
             <InfoCard title={t('demos.stokes.ui.stokesParams')} color="cyan">
               <ul className={cn(
-                'text-xs space-y-0.5',
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                'text-xs space-y-1',
+                dt.bodyClass
               )}>
-                <li>• <strong className={theme === 'dark' ? 'text-white' : 'text-gray-800'}>S₀</strong>: {t('demos.stokes.ui.totalIntensity')}</li>
-                <li>• <strong className="text-red-400">S₁</strong>: {t('demos.stokes.ui.hvDiff')}</li>
-                <li>• <strong className="text-green-400">S₂</strong>: {t('demos.stokes.ui.pm45Diff')}</li>
-                <li>• <strong className="text-blue-400">S₃</strong>: {t('demos.stokes.ui.rlDiff')}</li>
+                <li>&#8226; <strong className={dt.isDark ? 'text-white' : 'text-gray-800'}>S&#x2080;</strong>: {t('demos.stokes.ui.totalIntensity')}</li>
+                <li>&#8226; <strong className="text-red-400">S&#x2081;</strong>: {t('demos.stokes.ui.hvDiff')}</li>
+                <li>&#8226; <strong className="text-green-400">S&#x2082;</strong>: {t('demos.stokes.ui.pm45Diff')}</li>
+                <li>&#8226; <strong className="text-blue-400">S&#x2083;</strong>: {t('demos.stokes.ui.rlDiff')}</li>
               </ul>
             </InfoCard>
 
             <InfoCard title={t('demos.stokes.ui.poincareSphereInfo')} color="purple">
               <ul className={cn(
-                'text-xs space-y-0.5',
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                'text-xs space-y-1',
+                dt.bodyClass
               )}>
-                <li>• <strong>{t('demos.stokes.ui.equator')}:</strong> {t('demos.stokes.ui.linearStates')}</li>
-                <li>• <strong>{t('demos.stokes.ui.northPole')}:</strong> {t('demos.stokes.ui.rcp')}</li>
-                <li>• <strong>{t('demos.stokes.ui.southPole')}:</strong> {t('demos.stokes.ui.lcp')}</li>
-                <li>• <strong>{t('demos.stokes.ui.center')}:</strong> {t('demos.stokes.ui.unpolarized')}</li>
+                <li>&#8226; <strong>{t('demos.stokes.ui.equator')}:</strong> {t('demos.stokes.ui.linearStates')}</li>
+                <li>&#8226; <strong>{t('demos.stokes.ui.northPole')}:</strong> {t('demos.stokes.ui.rcp')}</li>
+                <li>&#8226; <strong>{t('demos.stokes.ui.southPole')}:</strong> {t('demos.stokes.ui.lcp')}</li>
+                <li>&#8226; <strong>{t('demos.stokes.ui.center')}:</strong> {t('demos.stokes.ui.unpolarized')}</li>
               </ul>
             </InfoCard>
 
             {/* 研究级别: Mueller矩阵知识卡片 */}
             {isResearch && (
-              <InfoCard title="Mueller矩阵" color="orange">
+              <InfoCard title="Mueller Matrix" color="orange">
                 <ul className={cn(
-                  'text-xs space-y-0.5',
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  'text-xs space-y-1',
+                  dt.bodyClass
                 )}>
-                  <li>• 4×4矩阵描述光学元件</li>
-                  <li>• S' = M·S (矩阵乘法)</li>
-                  <li>• 可级联: M_total = Mₙ·...·M₁</li>
-                  <li>• 包含去偏振效应</li>
+                  <li>&#8226; 4x4 matrix describes optical elements</li>
+                  <li>&#8226; S' = M S (matrix multiplication)</li>
+                  <li>&#8226; Cascading: M_total = M_n ... M_1</li>
+                  <li>&#8226; Includes depolarization effects</li>
                 </ul>
               </InfoCard>
             )}
           </>
         )}
-      </div>
+      </InfoGrid>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useDemoTheme } from '../demoThemeColors'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { DemoHeader, VisualizationPanel, DemoMainLayout, StatCard, InfoGrid, ChartPanel } from '../DemoLayout'
 import { Microscope, Grid3X3, Layers } from 'lucide-react'
 
 // Sample types for demonstration
@@ -78,10 +79,10 @@ const SAMPLES: Record<SampleType, SampleConfig> = {
 
 // Mueller matrix element names
 const MUELLER_NAMES = [
-  ['M₀₀', 'M₀₁', 'M₀₂', 'M₀₃'],
-  ['M₁₀', 'M₁₁', 'M₁₂', 'M₁₃'],
-  ['M₂₀', 'M₂₁', 'M₂₂', 'M₂₃'],
-  ['M₃₀', 'M₃₁', 'M₃₂', 'M₃₃'],
+  ['M\u2080\u2080', 'M\u2080\u2081', 'M\u2080\u2082', 'M\u2080\u2083'],
+  ['M\u2081\u2080', 'M\u2081\u2081', 'M\u2081\u2082', 'M\u2081\u2083'],
+  ['M\u2082\u2080', 'M\u2082\u2081', 'M\u2082\u2082', 'M\u2082\u2083'],
+  ['M\u2083\u2080', 'M\u2083\u2081', 'M\u2083\u2082', 'M\u2083\u2083'],
 ]
 
 // Polarization parameter calculation
@@ -178,7 +179,7 @@ function MicroscopyImage({
   return (
     <svg viewBox="0 0 220 220" className="w-full h-auto">
       {/* Background */}
-      <rect x="0" y="0" width="220" height="220" fill={dt.canvasBg} rx="8" />
+      <rect x="0" y="0" width="220" height="220" fill={dt.canvasBg} rx="12" />
 
       {/* Microscopy field border */}
       <circle
@@ -216,7 +217,7 @@ function MicroscopyImage({
 
       {/* Field of view indicator */}
       <text x="110" y="215" textAnchor="middle" fill={dt.textMuted} fontSize="10">
-        视场: 100 μm
+        {'\u89C6\u573A'}: 100 {'\u03BC'}m
       </text>
     </svg>
   )
@@ -232,12 +233,12 @@ function MuellerMatrixDisplay({
 }) {
   const dt = useDemoTheme()
   return (
-    <div className="grid grid-cols-4 gap-1">
+    <div className="grid grid-cols-4 gap-1.5">
       {matrix.map((row, i) =>
         row.map((val, j) => (
           <motion.div
             key={`${i}-${j}`}
-            className={`p-1.5 rounded text-center font-mono text-xs ${highlight && highlight[0] === i && highlight[1] === j
+            className={`p-1.5 rounded-xl text-center font-mono text-xs ${highlight && highlight[0] === i && highlight[1] === j
                 ? 'bg-cyan-600 text-white'
                 : i === 0 || j === 0
                   ? `${dt.isDark ? 'bg-slate-700' : 'bg-slate-200'} text-cyan-400`
@@ -306,179 +307,186 @@ export function PolarimetricMicroscopyDemo() {
   const params = useMemo(() => calculatePolarizationParams(sample.muellerMatrix), [sample])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-violet-400 via-violet-300 to-violet-400 bg-clip-text text-transparent">
-          全偏振显微成像
-        </h2>
-        <p className={`${dt.mutedTextClass} mt-1`}>
-          Mueller矩阵显微镜的工作原理与应用
-        </p>
+      <DemoHeader
+        title={'\u5168\u504F\u632F\u663E\u5FAE\u6210\u50CF'}
+        subtitle={'Mueller\u77E9\u9635\u663E\u5FAE\u955C\u7684\u5DE5\u4F5C\u539F\u7406\u4E0E\u5E94\u7528'}
+        gradient="purple"
+      />
+
+      {/* 统计数值卡片 */}
+      <div className="grid grid-cols-4 gap-4">
+        <StatCard label={'\u7EBF\u6027\u5EF6\u8FDF R'} value={isNaN(params.R) ? 'N/A' : `${params.R.toFixed(1)}\u00B0`} color="cyan" />
+        <StatCard label={'\u9000\u504F\u632F\u6307\u6570'} value={params.depol.toFixed(3)} color="green" />
+        <StatCard label={'\u4E8C\u5411\u8870\u51CF D'} value={params.D.toFixed(3)} color="orange" />
+        <StatCard label={'\u504F\u632F\u5EA6 DOP'} value={params.dop.toFixed(3)} color="pink" />
       </div>
 
       {/* Main content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left: Microscopy view */}
-        <div className="space-y-4">
-          <div className={`rounded-xl ${dt.isDark ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-violet-950/90 border-violet-500/30' : 'bg-gradient-to-br from-slate-50 via-white to-violet-50/30 border-violet-200/40'} border p-4`}>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Microscope className="w-5 h-5 text-violet-400" />
-                <span className={`text-sm font-medium ${dt.headingClass}`}>Mueller显微成像</span>
+      <DemoMainLayout
+        controlsWidth="wide"
+        visualization={
+          <div className="space-y-5">
+            <VisualizationPanel variant="indigo">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Microscope className="w-5 h-5 text-violet-400" />
+                  <span className={`text-sm font-semibold ${dt.headingClass}`}>Mueller{'\u663E\u5FAE\u6210\u50CF'}</span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowOverlay(!showOverlay)}
+                    className={`px-3 py-1.5 text-xs rounded-xl flex items-center gap-1.5 font-medium transition-colors ${showOverlay ? 'bg-violet-600 text-white shadow-md' : `${dt.isDark ? 'bg-slate-700 text-gray-400' : 'bg-slate-200 text-gray-500'}`
+                      }`}
+                  >
+                    <Layers size={12} />
+                    {'\u53E0\u52A0\u663E\u793A'}
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowOverlay(!showOverlay)}
-                  className={`px-2 py-1 text-xs rounded flex items-center gap-1 transition-colors ${showOverlay ? 'bg-violet-600 text-white' : `${dt.isDark ? 'bg-slate-700 text-gray-400' : 'bg-slate-200 text-gray-500'}`
-                    }`}
-                >
-                  <Layers size={12} />
-                  叠加显示
-                </button>
+              <MicroscopyImage
+                sample={sampleType}
+                showOverlay={showOverlay}
+                overlayType={overlayType}
+                pixelSize={pixelSize}
+              />
+            </VisualizationPanel>
+
+            {/* Overlay type selector */}
+            {showOverlay && (
+              <div className="flex gap-2 justify-center">
+                {[
+                  { type: 'retardance' as const, label: '\u5EF6\u8FDF', color: 'cyan' },
+                  { type: 'depol' as const, label: '\u9000\u504F\u632F', color: 'green' },
+                  { type: 'diattenuation' as const, label: '\u4E8C\u5411\u8870\u51CF', color: 'orange' },
+                ].map(({ type, label, color }) => (
+                  <button
+                    key={type}
+                    onClick={() => setOverlayType(type)}
+                    className={`px-4 py-2 text-xs rounded-2xl font-medium transition-colors ${overlayType === type
+                        ? `bg-${color}-600 text-white shadow-md`
+                        : `${dt.isDark ? 'bg-slate-700/50 text-gray-400 hover:bg-slate-600' : 'bg-slate-100 text-gray-500 hover:bg-slate-200'}`
+                      }`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
-            </div>
-            <MicroscopyImage
-              sample={sampleType}
-              showOverlay={showOverlay}
-              overlayType={overlayType}
-              pixelSize={pixelSize}
-            />
+            )}
+
+            {/* Polarization parameters chart */}
+            <ChartPanel title={'\u504F\u632F\u53C2\u6570\u63D0\u53D6'} subtitle={sample.nameZh}>
+              <div className="flex items-center gap-2 mb-3">
+                <Grid3X3 size={14} className="text-violet-400" />
+                <span className={`text-[11px] ${dt.mutedTextClass}`}>{sample.descriptionZh}</span>
+              </div>
+              <div className="space-y-3">
+                <ParamBar label={'\u7EBF\u6027\u5EF6\u8FDF R'} value={params.R} max={180} color="cyan" unit={'\u00B0'} />
+                <ParamBar label={'\u9000\u504F\u632F\u6307\u6570'} value={params.depol} max={1} color="green" />
+                <ParamBar label={'\u4E8C\u5411\u8870\u51CF D'} value={params.D} max={1} color="orange" />
+                <ParamBar label={'\u504F\u632F\u5EA6 DOP'} value={params.dop} max={1} color="pink" />
+              </div>
+            </ChartPanel>
           </div>
+        }
+        controls={
+          <div className="space-y-5">
+            {/* Sample selector */}
+            <ControlPanel title={'\u6837\u54C1\u9009\u62E9'}>
+              <div className="grid grid-cols-2 gap-2">
+                {(Object.keys(SAMPLES) as SampleType[]).map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setSampleType(type)}
+                    className={`p-3 rounded-2xl text-left transition-all ${sampleType === type
+                        ? 'bg-violet-600/30 border-2 border-violet-500 shadow-md'
+                        : `${dt.panelClass} border-2 border-transparent hover:border-slate-500/30`
+                      }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-3.5 h-3.5 rounded-full shadow-inner"
+                        style={{ backgroundColor: SAMPLES[type].color }}
+                      />
+                      <span className={`text-sm font-semibold ${dt.isDark ? 'text-white' : 'text-gray-800'}`}>
+                        {SAMPLES[type].nameZh}
+                      </span>
+                    </div>
+                    <p className={`text-[11px] ${dt.mutedTextClass} mt-1 leading-relaxed`}>
+                      {SAMPLES[type].descriptionZh}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </ControlPanel>
 
-          {/* Overlay type selector */}
-          {showOverlay && (
-            <div className="flex gap-2 justify-center">
-              {[
-                { type: 'retardance' as const, label: '延迟', color: 'cyan' },
-                { type: 'depol' as const, label: '退偏振', color: 'green' },
-                { type: 'diattenuation' as const, label: '二向衰减', color: 'orange' },
-              ].map(({ type, label, color }) => (
-                <button
-                  key={type}
-                  onClick={() => setOverlayType(type)}
-                  className={`px-3 py-1.5 text-xs rounded-full transition-colors ${overlayType === type
-                      ? `bg-${color}-600 text-white`
-                      : `${dt.isDark ? 'bg-slate-700 text-gray-400 hover:bg-slate-600' : 'bg-slate-200 text-gray-500 hover:bg-slate-300'}`
-                    }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+            {/* Mueller Matrix */}
+            <ChartPanel title={'Mueller\u77E9\u9635'}>
+              <MuellerMatrixDisplay
+                matrix={sample.muellerMatrix}
+                highlight={highlightElement}
+              />
+              <div className={`mt-3 space-y-1 text-xs ${dt.mutedTextClass}`}>
+                <p>* M{'\u2080\u2080'}: {'\u603B\u5F3A\u5EA6\u900F\u8FC7\u7387'}</p>
+                <p>* {'\u5BF9\u89D2\u5143\u7D20'}: {'\u504F\u632F\u4FDD\u6301\u7279\u6027'}</p>
+                <p>* {'\u975E\u5BF9\u89D2\u5143\u7D20'}: {'\u504F\u632F\u8F6C\u6362\u7279\u6027'}</p>
+              </div>
+            </ChartPanel>
 
-          {/* Polarization parameters */}
-          <div className={`rounded-xl ${dt.panelClass} border p-4`}>
-            <h3 className={`text-sm font-medium ${dt.headingClass} mb-3 flex items-center gap-2`}>
-              <Grid3X3 size={16} className="text-violet-400" />
-              偏振参数提取
-            </h3>
-            <div className="space-y-3">
-              <ParamBar label="线性延迟 R" value={params.R} max={180} color="cyan" unit="°" />
-              <ParamBar label="退偏振指数" value={params.depol} max={1} color="green" />
-              <ParamBar label="二向衰减 D" value={params.D} max={1} color="orange" />
-              <ParamBar label="偏振度 DOP" value={params.dop} max={1} color="pink" />
-            </div>
+            {/* Display settings */}
+            <ControlPanel title={'\u663E\u793A\u8BBE\u7F6E'}>
+              <SliderControl
+                label={'\u50CF\u7D20\u5C3A\u5BF8'}
+                value={pixelSize}
+                min={4}
+                max={16}
+                step={2}
+                unit=" px"
+                onChange={setPixelSize}
+                color="purple"
+              />
+            </ControlPanel>
+
+            {/* Microscope setup */}
+            <ControlPanel title={'\u663E\u5FAE\u955C\u539F\u7406'}>
+              <div className={`space-y-2.5 text-xs ${dt.bodyClass}`}>
+                <div className={`p-3 ${dt.isDark ? 'bg-slate-900/50 border border-slate-700/30' : 'bg-slate-50 border border-slate-200'} rounded-xl`}>
+                  <span className="text-violet-400 font-semibold">{'\u7167\u660E\u81C2'}:</span>
+                  <p className="mt-1 leading-relaxed">{'\u504F\u632F\u6001\u53D1\u751F\u5668'}(PSG){'\u4EA7\u751F'}4{'\u79CD\u5DF2\u77E5\u504F\u632F\u6001\u7167\u660E\u6837\u54C1'}</p>
+                </div>
+                <div className={`p-3 ${dt.isDark ? 'bg-slate-900/50 border border-slate-700/30' : 'bg-slate-50 border border-slate-200'} rounded-xl`}>
+                  <span className="text-violet-400 font-semibold">{'\u63A2\u6D4B\u81C2'}:</span>
+                  <p className="mt-1 leading-relaxed">{'\u504F\u632F\u6001\u5206\u6790\u5668'}(PSA){'\u5206\u6790\u51FA\u5C04\u5149\u7684\u504F\u632F\u6001'}</p>
+                </div>
+                <div className={`p-3 ${dt.isDark ? 'bg-slate-900/50 border border-slate-700/30' : 'bg-slate-50 border border-slate-200'} rounded-xl`}>
+                  <span className="text-violet-400 font-semibold">{'\u6570\u636E\u5904\u7406'}:</span>
+                  <p className="mt-1 leading-relaxed">16{'\u6B21\u6D4B\u91CF\u91CD\u5EFA\u5B8C\u6574'}4{'\u00D7'}4 Mueller{'\u77E9\u9635'}</p>
+                </div>
+              </div>
+            </ControlPanel>
           </div>
-        </div>
-
-        {/* Right: Controls and Matrix */}
-        <div className="space-y-4">
-          {/* Sample selector */}
-          <ControlPanel title="样品选择">
-            <div className="grid grid-cols-2 gap-2">
-              {(Object.keys(SAMPLES) as SampleType[]).map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setSampleType(type)}
-                  className={`p-3 rounded-lg text-left transition-all ${sampleType === type
-                      ? 'bg-violet-600/30 border border-violet-500'
-                      : `${dt.panelClass} border hover:border-slate-500`
-                    }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: SAMPLES[type].color }}
-                    />
-                    <span className={`text-sm font-medium ${dt.isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {SAMPLES[type].nameZh}
-                    </span>
-                  </div>
-                  <p className={`text-xs ${dt.mutedTextClass} mt-1`}>
-                    {SAMPLES[type].descriptionZh}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </ControlPanel>
-
-          {/* Mueller Matrix */}
-          <ControlPanel title="Mueller矩阵">
-            <MuellerMatrixDisplay
-              matrix={sample.muellerMatrix}
-              highlight={highlightElement}
-            />
-            <div className={`mt-3 text-xs ${dt.mutedTextClass}`}>
-              <p>• M₀₀: 总强度透过率</p>
-              <p>• 对角元素: 偏振保持特性</p>
-              <p>• 非对角元素: 偏振转换特性</p>
-            </div>
-          </ControlPanel>
-
-          {/* Display settings */}
-          <ControlPanel title="显示设置">
-            <SliderControl
-              label="像素尺寸"
-              value={pixelSize}
-              min={4}
-              max={16}
-              step={2}
-              unit=" px"
-              onChange={setPixelSize}
-              color="purple"
-            />
-          </ControlPanel>
-
-          {/* Microscope setup */}
-          <ControlPanel title="显微镜原理">
-            <div className={`space-y-2 text-xs ${dt.bodyClass}`}>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <span className="text-violet-400 font-medium">照明臂:</span>
-                <p className="mt-1">偏振态发生器(PSG)产生4种已知偏振态照明样品</p>
-              </div>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <span className="text-violet-400 font-medium">探测臂:</span>
-                <p className="mt-1">偏振态分析器(PSA)分析出射光的偏振态</p>
-              </div>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <span className="text-violet-400 font-medium">数据处理:</span>
-                <p className="mt-1">16次测量重建完整4×4 Mueller矩阵</p>
-              </div>
-            </div>
-          </ControlPanel>
-        </div>
-      </div>
+        }
+      />
 
       {/* Knowledge cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="Mueller矩阵显微镜" color="purple">
+      <InfoGrid columns={3}>
+        <InfoCard title={'Mueller\u77E9\u9635\u663E\u5FAE\u955C'} color="purple">
           <p className={`text-xs ${dt.bodyClass}`}>
-            通过测量样品的完整4×4 Mueller矩阵，可以获得样品的所有偏振特性信息，包括双折射、二向衰减、退偏振等，是最完备的偏振成像技术。
+            {'\u901A\u8FC7\u6D4B\u91CF\u6837\u54C1\u7684\u5B8C\u6574'}4{'\u00D7'}4 Mueller{'\u77E9\u9635\uFF0C\u53EF\u4EE5\u83B7\u5F97\u6837\u54C1\u7684\u6240\u6709\u504F\u632F\u7279\u6027\u4FE1\u606F\uFF0C\u5305\u62EC\u53CC\u6298\u5C04\u3001\u4E8C\u5411\u8870\u51CF\u3001\u9000\u504F\u632F\u7B49\uFF0C\u662F\u6700\u5B8C\u5907\u7684\u504F\u632F\u6210\u50CF\u6280\u672F\u3002'}
           </p>
         </InfoCard>
-        <InfoCard title="生物医学应用" color="orange">
+        <InfoCard title={'\u751F\u7269\u533B\u5B66\u5E94\u7528'} color="orange">
           <p className={`text-xs ${dt.bodyClass}`}>
-            用于肿瘤边界识别、胶原纤维取向分析、眼科角膜检测等。偏振参数可提供组织微结构的定量信息，辅助临床诊断。
+            {'\u7528\u4E8E\u80BF\u7624\u8FB9\u754C\u8BC6\u522B\u3001\u80F6\u539F\u7EA4\u7EF4\u53D6\u5411\u5206\u6790\u3001\u773C\u79D1\u89D2\u819C\u68C0\u6D4B\u7B49\u3002\u504F\u632F\u53C2\u6570\u53EF\u63D0\u4F9B\u7EC4\u7EC7\u5FAE\u7ED3\u6784\u7684\u5B9A\u91CF\u4FE1\u606F\uFF0C\u8F85\u52A9\u4E34\u5E8A\u8BCA\u65AD\u3002'}
           </p>
         </InfoCard>
-        <InfoCard title="材料表征" color="cyan">
+        <InfoCard title={'\u6750\u6599\u8868\u5F81'} color="cyan">
           <p className={`text-xs ${dt.bodyClass}`}>
-            分析材料内部应力分布、液晶取向、薄膜厚度等。Mueller矩阵分解可提取双折射、旋光、退偏振等独立参数。
+            {'\u5206\u6790\u6750\u6599\u5185\u90E8\u5E94\u529B\u5206\u5E03\u3001\u6DB2\u6676\u53D6\u5411\u3001\u8584\u819C\u539A\u5EA6\u7B49\u3002'}Mueller{'\u77E9\u9635\u5206\u89E3\u53EF\u63D0\u53D6\u53CC\u6298\u5C04\u3001\u65CB\u5149\u3001\u9000\u504F\u632F\u7B49\u72EC\u7ACB\u53C2\u6570\u3002'}
           </p>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

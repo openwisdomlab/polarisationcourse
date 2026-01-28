@@ -1,5 +1,5 @@
 /**
- * 菲涅尔方程演示 - Unit 2 (Refactored with Unified Physics Engine)
+ * 菲涅尔方程演示 - Unit 2 (Redesigned with DemoLayout)
  * 演示s偏振和p偏振的反射/透射系数随入射角的变化
  * 采用纯DOM + SVG + Framer Motion一体化设计
  *
@@ -15,7 +15,9 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard, Toggle } from '../DemoControls'
 import { useDemoTheme } from '../demoThemeColors'
+import { DemoHeader, VisualizationPanel, DemoMainLayout, InfoGrid, ChartPanel, StatCard } from '../DemoLayout'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 // Import Fresnel solver from unified physics engine
 import {
   solveFresnel,
@@ -62,7 +64,7 @@ function fresnelEquations(theta1: number, n1: number, n2: number) {
   }
 }
 
-// 光强条组件
+// 光强条组件 - Enhanced with refined gradients
 function IntensityBar({
   label,
   value,
@@ -76,19 +78,28 @@ function IntensityBar({
 }) {
   const colors = {
     cyan: {
-      gradient: 'linear-gradient(90deg, rgba(34,211,238,0.1), rgba(34,211,238,0.8), rgba(6,182,212,0.95))',
-      glow: 'rgba(34,211,238,0.6)',
+      gradient: 'linear-gradient(90deg, rgba(34,211,238,0.05), rgba(34,211,238,0.4), rgba(34,211,238,0.7), rgba(6,182,212,0.95))',
+      glow: 'rgba(34,211,238,0.5)',
       text: 'text-cyan-400',
+      textLight: 'text-cyan-600',
+      trackDark: 'from-slate-800/80 to-slate-900/80 border-cyan-500/10',
+      trackLight: 'from-slate-100 to-slate-200 border-cyan-200/30',
     },
     pink: {
-      gradient: 'linear-gradient(90deg, rgba(244,114,182,0.1), rgba(244,114,182,0.8), rgba(236,72,153,0.95))',
-      glow: 'rgba(244,114,182,0.6)',
+      gradient: 'linear-gradient(90deg, rgba(244,114,182,0.05), rgba(244,114,182,0.4), rgba(244,114,182,0.7), rgba(236,72,153,0.95))',
+      glow: 'rgba(244,114,182,0.5)',
       text: 'text-pink-400',
+      textLight: 'text-pink-600',
+      trackDark: 'from-slate-800/80 to-slate-900/80 border-pink-500/10',
+      trackLight: 'from-slate-100 to-slate-200 border-pink-200/30',
     },
     green: {
-      gradient: 'linear-gradient(90deg, rgba(74,222,128,0.1), rgba(74,222,128,0.8), rgba(34,197,94,0.95))',
-      glow: 'rgba(74,222,128,0.6)',
-      text: 'text-green-400',
+      gradient: 'linear-gradient(90deg, rgba(74,222,128,0.05), rgba(74,222,128,0.4), rgba(74,222,128,0.7), rgba(34,197,94,0.95))',
+      glow: 'rgba(74,222,128,0.5)',
+      text: 'text-emerald-400',
+      textLight: 'text-emerald-600',
+      trackDark: 'from-slate-800/80 to-slate-900/80 border-emerald-500/10',
+      trackLight: 'from-slate-100 to-slate-200 border-emerald-200/30',
     },
   }
 
@@ -99,15 +110,21 @@ function IntensityBar({
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className={`text-sm font-medium ${colorSet.text}`}>{label}</span>
-        <span className={`font-mono text-sm ${colorSet.text}`}>{(value * 100).toFixed(1)}%</span>
+        <span className={cn('text-xs font-medium', dt.isDark ? colorSet.text : colorSet.textLight)}>{label}</span>
+        <span className={cn('font-mono text-xs tabular-nums font-semibold', dt.isDark ? colorSet.text : colorSet.textLight)}>
+          {(value * 100).toFixed(1)}%
+        </span>
       </div>
-      <div className={`h-4 rounded-full ${dt.isDark ? 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-600/50' : 'bg-gradient-to-b from-slate-200 to-slate-300 border-slate-300/50'} border overflow-hidden relative shadow-inner`}>
+      <div className={cn(
+        'h-3.5 rounded-full border overflow-hidden relative',
+        'bg-gradient-to-b shadow-inner',
+        dt.isDark ? colorSet.trackDark : colorSet.trackLight,
+      )}>
         <motion.div
-          className="absolute inset-[2px] rounded-full origin-left"
+          className="absolute inset-[1.5px] rounded-full origin-left"
           style={{
             background: colorSet.gradient,
-            boxShadow: `0 0 12px ${colorSet.glow}`,
+            boxShadow: `0 0 10px ${colorSet.glow}, inset 0 1px 0 rgba(255,255,255,0.15)`,
           }}
           initial={{ scaleX: 0 }}
           animate={{ scaleX: Math.max(0.02, percentage) }}
@@ -127,6 +144,7 @@ function FresnelDiagram({
   showP,
   onAngleChange,
   enableDrag = false,
+  isZh,
 }: {
   incidentAngle: number
   n1: number
@@ -135,6 +153,7 @@ function FresnelDiagram({
   showP: boolean
   onAngleChange?: (angle: number) => void
   enableDrag?: boolean
+  isZh: boolean
 }) {
   const dt = useDemoTheme()
   const svgRef = useRef<SVGSVGElement>(null)
@@ -146,8 +165,8 @@ function FresnelDiagram({
 
   // SVG坐标系中心点
   const cx = 300
-  const cy = 180
-  const rayLength = 140
+  const cy = 190
+  const rayLength = 150
 
   // 入射光起点和方向
   const incidentStart = {
@@ -238,26 +257,56 @@ function FresnelDiagram({
   // Physics: tan(θB) = n₂/n₁, verified by engine
   const brewsterAngle = computeBrewsterAngle(n1, n2) * (180 / Math.PI)
 
+  // Medium labels
+  const medium1Label = isZh ? `介质1: n\u2081 = ${n1.toFixed(2)}` : `Medium 1: n\u2081 = ${n1.toFixed(2)}`
+  const medium2Label = isZh ? `介质2: n\u2082 = ${n2.toFixed(2)}` : `Medium 2: n\u2082 = ${n2.toFixed(2)}`
+  const normalLabel = isZh ? '法线' : 'Normal'
+  const incidentLabel = isZh ? '入射光' : 'Incident'
+  const reflectedLabel = isZh ? '反射光' : 'Reflected'
+  const refractedLabel = isZh ? '折射光' : 'Refracted'
+  const tirLabel = isZh ? '全内反射' : 'Total Internal Reflection'
+  const dragHint = isZh ? '拖拽调整角度' : 'Drag to adjust'
+  const brewsterHintLabel = isZh
+    ? `接近布儒斯特角 \u03B8B = ${brewsterAngle.toFixed(1)}\u00B0`
+    : `Near Brewster angle \u03B8B = ${brewsterAngle.toFixed(1)}\u00B0`
+  const sLabel = isZh ? 's偏振' : 's-pol'
+  const pLabel = isZh ? 'p偏振' : 'p-pol'
+
   return (
     <svg
       ref={svgRef}
-      viewBox="0 0 600 360"
-      className={`w-full h-auto ${enableDrag ? 'cursor-crosshair' : ''}`}
+      viewBox="0 0 600 380"
+      className={cn('w-full h-auto', enableDrag ? 'cursor-crosshair' : '')}
       onMouseDown={handleMouseDown}
     >
       <defs>
-        {/* 渐变定义 */}
-        <linearGradient id="medium1Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={dt.isDark ? '#1e3a5f' : '#93c5fd'} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={dt.isDark ? '#1e3a5f' : '#bfdbfe'} stopOpacity="0.1" />
+        {/* 渐变定义 - improved medium backgrounds */}
+        <linearGradient id="fresnel-medium1Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={dt.isDark ? '#1a3152' : '#bfdbfe'} stopOpacity={dt.isDark ? 0.6 : 0.5} />
+          <stop offset="100%" stopColor={dt.isDark ? '#1e3a5f' : '#dbeafe'} stopOpacity={dt.isDark ? 0.25 : 0.3} />
         </linearGradient>
-        <linearGradient id="medium2Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={dt.isDark ? '#1e5f3a' : '#86efac'} stopOpacity="0.15" />
-          <stop offset="100%" stopColor={dt.isDark ? '#1e5f3a' : '#bbf7d0'} stopOpacity="0.4" />
+        <linearGradient id="fresnel-medium2Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={dt.isDark ? '#1a4033' : '#bbf7d0'} stopOpacity={dt.isDark ? 0.25 : 0.3} />
+          <stop offset="100%" stopColor={dt.isDark ? '#164e3a' : '#a7f3d0'} stopOpacity={dt.isDark ? 0.55 : 0.45} />
+        </linearGradient>
+        {/* Interface gradient line */}
+        <linearGradient id="fresnel-interfaceGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor={dt.isDark ? '#475569' : '#94a3b8'} stopOpacity="0.1" />
+          <stop offset="20%" stopColor={dt.isDark ? '#94a3b8' : '#64748b'} stopOpacity="0.8" />
+          <stop offset="50%" stopColor={dt.isDark ? '#e2e8f0' : '#475569'} stopOpacity="1" />
+          <stop offset="80%" stopColor={dt.isDark ? '#94a3b8' : '#64748b'} stopOpacity="0.8" />
+          <stop offset="100%" stopColor={dt.isDark ? '#475569' : '#94a3b8'} stopOpacity="0.1" />
         </linearGradient>
         {/* 发光效果 */}
-        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id="fresnel-glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="fresnel-glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="5" result="coloredBlur" />
           <feMerge>
             <feMergeNode in="coloredBlur" />
             <feMergeNode in="SourceGraphic" />
@@ -266,52 +315,63 @@ function FresnelDiagram({
       </defs>
 
       {/* 介质1（上方 - 空气/低折射率） */}
-      <rect x="40" y="20" width="520" height="160" fill="url(#medium1Gradient)" rx="8" />
-      <text x="80" y="50" fill="#60a5fa" fontSize="14" fontWeight="500">
-        介质1: n₁ = {n1.toFixed(2)}
+      <rect x="30" y="10" width="540" height="180" fill="url(#fresnel-medium1Gradient)" rx="12" ry="12" />
+      {/* Subtle pattern for medium 1 */}
+      <rect x="30" y="10" width="540" height="180" fill={dt.isDark ? 'rgba(96,165,250,0.02)' : 'rgba(59,130,246,0.03)'} rx="12" ry="12" />
+      <text x="70" y="40" fill={dt.isDark ? '#60a5fa' : '#2563eb'} fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">
+        {medium1Label}
       </text>
 
       {/* 介质2（下方 - 玻璃/高折射率） */}
-      <rect x="40" y="180" width="520" height="160" fill="url(#medium2Gradient)" rx="8" />
-      <text x="80" y="320" fill="#4ade80" fontSize="14" fontWeight="500">
-        介质2: n₂ = {n2.toFixed(2)}
+      <rect x="30" y="190" width="540" height="180" fill="url(#fresnel-medium2Gradient)" rx="12" ry="12" />
+      {/* Subtle pattern for medium 2 */}
+      <rect x="30" y="190" width="540" height="180" fill={dt.isDark ? 'rgba(74,222,128,0.02)' : 'rgba(34,197,94,0.03)'} rx="12" ry="12" />
+      <text x="70" y="350" fill={dt.isDark ? '#4ade80' : '#16a34a'} fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">
+        {medium2Label}
       </text>
 
-      {/* 界面 */}
-      <line x1="40" y1="180" x2="560" y2="180" stroke={dt.axisColor} strokeWidth="2" strokeDasharray="8 4" />
+      {/* 界面 - enhanced with gradient line */}
+      <line x1="30" y1={cy} x2="570" y2={cy} stroke="url(#fresnel-interfaceGrad)" strokeWidth="2.5" />
+      {/* Subtle interface dashes */}
+      <line x1="30" y1={cy} x2="570" y2={cy} stroke={dt.isDark ? 'rgba(148,163,184,0.2)' : 'rgba(71,85,105,0.15)'} strokeWidth="1" strokeDasharray="6 4" />
 
       {/* 法线 */}
-      <line x1={cx} y1="40" x2={cx} y2="320" stroke={dt.textSecondary} strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
-      <text x={cx + 10} y="55" fill={dt.textSecondary} fontSize="11">法线</text>
+      <line x1={cx} y1="30" x2={cx} y2="355" stroke={dt.textSecondary} strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+      <text x={cx + 8} y="45" fill={dt.textMuted} fontSize="10" fontFamily="system-ui, sans-serif">
+        {normalLabel}
+      </text>
 
-      {/* 入射光（黄色） */}
+      {/* 入射光（黄色/amber） */}
       <motion.line
         x1={incidentStart.x}
         y1={incidentStart.y}
         x2={cx}
         y2={cy}
         stroke="#fbbf24"
-        strokeWidth="4"
-        filter="url(#glow)"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        filter="url(#fresnel-glow)"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 0.5 }}
       />
       {/* 入射光箭头 */}
       <motion.polygon
-        points={`${cx - 8},${cy - 5} ${cx},${cy} ${cx - 8},${cy + 5}`}
+        points={`${cx - 7},${cy - 4} ${cx},${cy} ${cx - 7},${cy + 4}`}
         fill="#fbbf24"
         transform={`rotate(${incidentAngle + 180}, ${cx}, ${cy})`}
         animate={{ opacity: 1 }}
       />
       <text
-        x={incidentStart.x - 30}
-        y={incidentStart.y - 10}
+        x={incidentStart.x - 10}
+        y={incidentStart.y - 12}
         fill="#fbbf24"
-        fontSize="12"
-        fontWeight="500"
+        fontSize="11"
+        fontWeight="600"
+        textAnchor="middle"
+        fontFamily="system-ui, sans-serif"
       >
-        入射光
+        {incidentLabel}
       </text>
 
       {/* Draggable light source handle */}
@@ -321,10 +381,10 @@ function FresnelDiagram({
           <motion.circle
             cx={incidentStart.x}
             cy={incidentStart.y}
-            r="20"
+            r="18"
             fill="none"
             stroke="#fbbf24"
-            strokeWidth="2"
+            strokeWidth="1.5"
             strokeDasharray="4 2"
             opacity={isDragging ? 1 : 0.4}
             animate={{
@@ -337,10 +397,10 @@ function FresnelDiagram({
           <motion.circle
             cx={incidentStart.x}
             cy={incidentStart.y}
-            r="10"
+            r="8"
             fill="#fbbf24"
-            stroke="#fff"
-            strokeWidth="2"
+            stroke="rgba(255,255,255,0.8)"
+            strokeWidth="1.5"
             style={{ cursor: 'grab' }}
             animate={{
               scale: isDragging ? 1.3 : 1,
@@ -351,13 +411,14 @@ function FresnelDiagram({
           {!isDragging && (
             <text
               x={incidentStart.x}
-              y={incidentStart.y - 28}
+              y={incidentStart.y - 26}
               textAnchor="middle"
               fill="#fbbf24"
-              fontSize="9"
-              opacity="0.7"
+              fontSize="8"
+              opacity="0.6"
+              fontFamily="system-ui, sans-serif"
             >
-              拖拽调整角度
+              {dragHint}
             </text>
           )}
         </g>
@@ -377,7 +438,8 @@ function FresnelDiagram({
               stroke="#f472b6"
               strokeWidth={Math.max(1.5, 5 * Rp)}
               strokeOpacity={Math.max(0.4, Rp)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
@@ -390,7 +452,8 @@ function FresnelDiagram({
               stroke="#22d3ee"
               strokeWidth={Math.max(1.5, 5 * Rs)}
               strokeOpacity={Math.max(0.4, Rs)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
@@ -406,7 +469,8 @@ function FresnelDiagram({
               stroke="#22d3ee"
               strokeWidth={Math.max(1.5, 5 * Rs)}
               strokeOpacity={Math.max(0.4, Rs)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
@@ -419,7 +483,8 @@ function FresnelDiagram({
               stroke="#f472b6"
               strokeWidth={Math.max(1.5, 5 * Rp)}
               strokeOpacity={Math.max(0.4, Rp)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
@@ -438,7 +503,8 @@ function FresnelDiagram({
           stroke="#22d3ee"
           strokeWidth={Math.max(1.5, 5 * Rs)}
           strokeOpacity={Math.max(0.4, Rs)}
-          filter="url(#glow)"
+          strokeLinecap="round"
+          filter="url(#fresnel-glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.3, delay: 0.2 }}
@@ -455,7 +521,8 @@ function FresnelDiagram({
           stroke="#f472b6"
           strokeWidth={Math.max(1.5, 5 * Rp)}
           strokeOpacity={Math.max(0.4, Rp)}
-          filter="url(#glow)"
+          strokeLinecap="round"
+          filter="url(#fresnel-glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.3, delay: 0.2 }}
@@ -463,8 +530,8 @@ function FresnelDiagram({
       )}
 
       {/* 反射光标签 */}
-      <text x={reflectEnd.x + 20} y={reflectEnd.y - 10} fill={dt.textSecondary} fontSize="12">
-        反射光
+      <text x={reflectEnd.x + 15} y={reflectEnd.y - 12} fill={dt.textSecondary} fontSize="11" fontFamily="system-ui, sans-serif" fontWeight="500">
+        {reflectedLabel}
       </text>
 
       {/* 折射光 - s和p偏振沿同一方向传播（斯涅尔定律），仅强度不同 */}
@@ -480,7 +547,8 @@ function FresnelDiagram({
               stroke="#f472b6"
               strokeWidth={Math.max(1.5, 5 * Tp)}
               strokeOpacity={Math.max(0.4, Tp)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.3 }}
@@ -493,7 +561,8 @@ function FresnelDiagram({
               stroke="#22d3ee"
               strokeWidth={Math.max(1.5, 5 * Ts)}
               strokeOpacity={Math.max(0.4, Ts)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.3 }}
@@ -509,7 +578,8 @@ function FresnelDiagram({
               stroke="#22d3ee"
               strokeWidth={Math.max(1.5, 5 * Ts)}
               strokeOpacity={Math.max(0.4, Ts)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.3 }}
@@ -522,7 +592,8 @@ function FresnelDiagram({
               stroke="#f472b6"
               strokeWidth={Math.max(1.5, 5 * Tp)}
               strokeOpacity={Math.max(0.4, Tp)}
-              filter="url(#glow)"
+              strokeLinecap="round"
+              filter="url(#fresnel-glow)"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.3, delay: 0.3 }}
@@ -541,7 +612,8 @@ function FresnelDiagram({
           stroke="#22d3ee"
           strokeWidth={Math.max(1.5, 5 * Ts)}
           strokeOpacity={Math.max(0.4, Ts)}
-          filter="url(#glow)"
+          strokeLinecap="round"
+          filter="url(#fresnel-glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.3, delay: 0.3 }}
@@ -558,7 +630,8 @@ function FresnelDiagram({
           stroke="#f472b6"
           strokeWidth={Math.max(1.5, 5 * Tp)}
           strokeOpacity={Math.max(0.4, Tp)}
-          filter="url(#glow)"
+          strokeLinecap="round"
+          filter="url(#fresnel-glow)"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.3, delay: 0.3 }}
@@ -567,37 +640,42 @@ function FresnelDiagram({
 
       {/* 折射光标签 */}
       {!fresnel.totalReflection && (
-        <text x={refractEnd.x + 20} y={refractEnd.y + 20} fill={dt.textSecondary} fontSize="12">
-          折射光
+        <text x={refractEnd.x + 15} y={refractEnd.y + 18} fill={dt.textSecondary} fontSize="11" fontFamily="system-ui, sans-serif" fontWeight="500">
+          {refractedLabel}
         </text>
       )}
 
       {/* 全内反射标注 */}
       {fresnel.totalReflection && (
-        <text x={cx + 20} y={cy + 60} fill="#ef4444" fontSize="14" fontWeight="bold">
-          全内反射
-        </text>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <rect x={cx - 5} y={cy + 30} width={isZh ? 80 : 175} height="24" rx="6" fill={dt.isDark ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)'} stroke="rgba(239,68,68,0.3)" strokeWidth="1" />
+          <text x={cx + (isZh ? 35 : 82)} y={cy + 47} fill="#ef4444" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="system-ui, sans-serif">
+            {tirLabel}
+          </text>
+        </motion.g>
       )}
 
-      {/* 角度标注 - 入射角 */}
+      {/* 角度标注 - 入射角 (refined arc) */}
       <path
         d={`M ${cx} ${cy - 40} A 40 40 0 0 0 ${cx - 40 * Math.sin(rad)} ${cy - 40 * Math.cos(rad)}`}
         fill="none"
         stroke="#fbbf24"
         strokeWidth="1.5"
         strokeDasharray="3 2"
+        opacity="0.8"
       />
       <text
         x={cx - 25 - 15 * Math.sin(rad / 2)}
         y={cy - 50}
         fill="#fbbf24"
-        fontSize="13"
-        fontWeight="500"
+        fontSize="12"
+        fontWeight="600"
+        fontFamily="system-ui, sans-serif"
       >
-        θ₁ = {incidentAngle}°
+        {'\u03B8\u2081'} = {incidentAngle}{'\u00B0'}
       </text>
 
-      {/* 角度标注 - 折射角 */}
+      {/* 角度标注 - 折射角 (refined arc) */}
       {!fresnel.totalReflection && (
         <>
           <path
@@ -606,72 +684,84 @@ function FresnelDiagram({
             stroke="#4ade80"
             strokeWidth="1.5"
             strokeDasharray="3 2"
+            opacity="0.8"
           />
           <text
             x={cx + 15 + 15 * Math.sin(refractRad / 2)}
             y={cy + 60}
             fill="#4ade80"
-            fontSize="13"
-            fontWeight="500"
+            fontSize="12"
+            fontWeight="600"
+            fontFamily="system-ui, sans-serif"
           >
-            θ₂ = {fresnel.theta2.toFixed(1)}°
+            {'\u03B8\u2082'} = {fresnel.theta2.toFixed(1)}{'\u00B0'}
           </text>
         </>
       )}
 
-      {/* 图例 */}
-      <g transform="translate(450, 40)">
-        <rect x="0" y="0" width="100" height="70" fill={dt.infoPanelBg} rx="6" />
+      {/* 图例 - refined styling */}
+      <g transform="translate(450, 28)">
+        <rect x="0" y="0" width="110" height={showS && showP ? 58 : 35} fill={dt.infoPanelBg} rx="8" stroke={dt.infoPanelStroke} strokeWidth="0.5" />
         {showS && (
           <g>
-            <line x1="10" y1="20" x2="40" y2="20" stroke="#22d3ee" strokeWidth="3" />
-            <text x="48" y="24" fill="#22d3ee" fontSize="11">s偏振</text>
+            <line x1="12" y1="18" x2="38" y2="18" stroke="#22d3ee" strokeWidth="3" strokeLinecap="round" />
+            <text x="46" y="22" fill="#22d3ee" fontSize="11" fontWeight="500" fontFamily="system-ui, sans-serif">{sLabel}</text>
           </g>
         )}
         {showP && (
           <g>
-            <line x1="10" y1="45" x2="40" y2="45" stroke="#f472b6" strokeWidth="3" />
-            <text x="48" y="49" fill="#f472b6" fontSize="11">p偏振</text>
+            <line x1="12" y1={showS ? 40 : 18} x2="38" y2={showS ? 40 : 18} stroke="#f472b6" strokeWidth="3" strokeLinecap="round" />
+            <text x="46" y={showS ? 44 : 22} fill="#f472b6" fontSize="11" fontWeight="500" fontFamily="system-ui, sans-serif">{pLabel}</text>
           </g>
         )}
       </g>
 
+      {/* Incidence point glow */}
+      <circle cx={cx} cy={cy} r="4" fill={dt.isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.5)'} />
+      <circle cx={cx} cy={cy} r="8" fill="none" stroke={dt.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'} strokeWidth="1" />
+
       {/* 布儒斯特角提示 */}
       {Math.abs(incidentAngle - brewsterAngle) < 2 && (
-        <motion.text
-          x={cx}
-          y="15"
-          textAnchor="middle"
-          fill="#22d3ee"
-          fontSize="14"
-          fontWeight="bold"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          接近布儒斯特角 θB = {brewsterAngle.toFixed(1)}°
-        </motion.text>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <rect x={cx - (isZh ? 95 : 115)} y="2" width={isZh ? 190 : 230} height="22" rx="6" fill={dt.isDark ? 'rgba(34,211,238,0.1)' : 'rgba(34,211,238,0.08)'} stroke="rgba(34,211,238,0.3)" strokeWidth="1" />
+          <text
+            x={cx}
+            y="17"
+            textAnchor="middle"
+            fill="#22d3ee"
+            fontSize="12"
+            fontWeight="bold"
+            fontFamily="system-ui, sans-serif"
+          >
+            {brewsterHintLabel}
+          </text>
+        </motion.g>
       )}
     </svg>
   )
 }
 
-// 菲涅尔曲线图
+// 菲涅尔曲线图 - Enhanced with better styling
 function FresnelCurveChart({
   n1,
   n2,
   currentAngle,
+  isZh,
 }: {
   n1: number
   n2: number
   currentAngle: number
+  isZh: boolean
 }) {
   const dt = useDemoTheme()
 
   // 生成曲线数据 - 使用物理引擎计算
   // Physics: All calculations delegated to unified engine's solveFresnel()
-  const { rsPath, rpPath, brewsterAngle, criticalAngle } = useMemo(() => {
+  const { rsPath, rpPath, rsAreaPath, rpAreaPath, brewsterAngle, criticalAngle } = useMemo(() => {
     const rsPoints: string[] = []
     const rpPoints: string[] = []
+    const rsAreaPoints: string[] = []
+    const rpAreaPoints: string[] = []
 
     // Use physics engine for Brewster and critical angle calculations
     // Brewster: tan(θB) = n₂/n₁ (radians returned by engine)
@@ -686,61 +776,94 @@ function FresnelCurveChart({
       const Rs = f.Rs
       const Rp = f.Rp
 
-      const x = 40 + (angle / 90) * 220
-      const yRs = 130 - Rs * 100
-      const yRp = 130 - Rp * 100
+      const x = 50 + (angle / 90) * 230
+      const yRs = 140 - Rs * 110
+      const yRp = 140 - Rp * 110
 
       rsPoints.push(`${angle === 0 ? 'M' : 'L'} ${x},${yRs}`)
       rpPoints.push(`${angle === 0 ? 'M' : 'L'} ${x},${yRp}`)
+
+      rsAreaPoints.push(`${angle === 0 ? 'M' : 'L'} ${x},${yRs}`)
+      rpAreaPoints.push(`${angle === 0 ? 'M' : 'L'} ${x},${yRp}`)
     }
+
+    // Close area paths
+    rsAreaPoints.push(`L ${50 + 230},140 L 50,140 Z`)
+    rpAreaPoints.push(`L ${50 + 230},140 L 50,140 Z`)
 
     return {
       rsPath: rsPoints.join(' '),
       rpPath: rpPoints.join(' '),
+      rsAreaPath: rsAreaPoints.join(' '),
+      rpAreaPath: rpAreaPoints.join(' '),
       brewsterAngle: brewster,
       criticalAngle: critical,
     }
   }, [n1, n2])
 
-  const currentX = 40 + (currentAngle / 90) * 220
+  const currentX = 50 + (currentAngle / 90) * 230
   const currentFresnel = fresnelEquations(currentAngle, n1, n2)
   // Use power coefficients directly from physics engine
   const currentRs = currentFresnel.Rs
   const currentRp = currentFresnel.Rp
-  const currentYs = 130 - currentRs * 100
-  const currentYp = 130 - currentRp * 100
+  const currentYs = 140 - currentRs * 110
+  const currentYp = 140 - currentRp * 110
+
+  const angleLabel = isZh ? '\u03B8 (\u5EA6)' : '\u03B8 (deg)'
 
   return (
-    <svg viewBox="0 0 300 160" className="w-full h-auto">
+    <svg viewBox="0 0 320 175" className="w-full h-auto">
+      <defs>
+        {/* Area fill gradients */}
+        <linearGradient id="fresnel-rsAreaFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.02" />
+        </linearGradient>
+        <linearGradient id="fresnel-rpAreaFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#f472b6" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#f472b6" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+
       {/* 背景网格 */}
-      <rect x="40" y="30" width="220" height="100" fill={dt.canvasBgAlt} rx="4" />
+      <rect x="50" y="30" width="230" height="110" fill={dt.canvasBgAlt} rx="4" />
+
+      {/* Fine grid lines */}
+      {[0.25, 0.5, 0.75].map((val) => {
+        const y = 140 - val * 110
+        return (
+          <line key={val} x1="50" y1={y} x2="280" y2={y} stroke={dt.gridLineColor} strokeWidth="0.5" strokeDasharray="2 3" />
+        )
+      })}
+      {[15, 30, 45, 60, 75].map((angle) => {
+        const x = 50 + (angle / 90) * 230
+        return (
+          <line key={angle} x1={x} y1="30" x2={x} y2="140" stroke={dt.gridLineColor} strokeWidth="0.5" strokeDasharray="2 3" />
+        )
+      })}
 
       {/* 坐标轴 */}
-      <line x1="40" y1="130" x2="270" y2="130" stroke={dt.axisColor} strokeWidth="1" />
-      <line x1="40" y1="30" x2="40" y2="130" stroke={dt.axisColor} strokeWidth="1" />
-
-      {/* 网格线 */}
-      <line x1="40" y1="80" x2="270" y2="80" stroke={dt.gridLineColor} strokeWidth="0.5" strokeDasharray="3 3" />
-      <line x1="150" y1="30" x2="150" y2="130" stroke={dt.gridLineColor} strokeWidth="0.5" strokeDasharray="3 3" />
+      <line x1="50" y1="140" x2="285" y2="140" stroke={dt.axisColor} strokeWidth="1.5" />
+      <line x1="50" y1="28" x2="50" y2="140" stroke={dt.axisColor} strokeWidth="1.5" />
 
       {/* X轴刻度 */}
-      {[0, 45, 90].map((angle) => {
-        const x = 40 + (angle / 90) * 220
+      {[0, 30, 45, 60, 90].map((angle) => {
+        const x = 50 + (angle / 90) * 230
         return (
           <g key={angle}>
-            <line x1={x} y1="130" x2={x} y2="135" stroke={dt.textSecondary} strokeWidth="1" />
-            <text x={x} y="147" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{angle}°</text>
+            <line x1={x} y1="140" x2={x} y2="145" stroke={dt.textSecondary} strokeWidth="1" />
+            <text x={x} y="156" textAnchor="middle" fill={dt.textSecondary} fontSize="9" fontFamily="system-ui, sans-serif">{angle}{'\u00B0'}</text>
           </g>
         )
       })}
 
       {/* Y轴刻度 */}
-      {[0, 0.5, 1].map((val, i) => {
-        const y = 130 - val * 100
+      {[0, 0.25, 0.5, 0.75, 1].map((val) => {
+        const y = 140 - val * 110
         return (
-          <g key={i}>
-            <line x1="35" y1={y} x2="40" y2={y} stroke={dt.textSecondary} strokeWidth="1" />
-            <text x="30" y={y + 4} textAnchor="end" fill={dt.textSecondary} fontSize="10">{val}</text>
+          <g key={val}>
+            <line x1="45" y1={y} x2="50" y2={y} stroke={dt.textSecondary} strokeWidth="1" />
+            <text x="40" y={y + 3} textAnchor="end" fill={dt.textSecondary} fontSize="9" fontFamily="system-ui, sans-serif">{val}</text>
           </g>
         )
       })}
@@ -749,22 +872,25 @@ function FresnelCurveChart({
       {n1 < n2 && (
         <>
           <line
-            x1={40 + (brewsterAngle / 90) * 220}
+            x1={50 + (brewsterAngle / 90) * 230}
             y1="30"
-            x2={40 + (brewsterAngle / 90) * 220}
-            y2="130"
+            x2={50 + (brewsterAngle / 90) * 230}
+            y2="140"
             stroke="#fbbf24"
             strokeWidth="1"
             strokeDasharray="4 2"
+            opacity="0.7"
           />
           <text
-            x={40 + (brewsterAngle / 90) * 220}
+            x={50 + (brewsterAngle / 90) * 230}
             y="25"
             textAnchor="middle"
             fill="#fbbf24"
-            fontSize="9"
+            fontSize="10"
+            fontWeight="600"
+            fontFamily="system-ui, sans-serif"
           >
-            θB
+            {'\u03B8'}B
           </text>
         </>
       )}
@@ -772,32 +898,51 @@ function FresnelCurveChart({
       {/* 临界角标记 */}
       {n1 > n2 && criticalAngle < 90 && (
         <>
+          <rect
+            x={50 + (criticalAngle / 90) * 230}
+            y="30"
+            width={230 - (criticalAngle / 90) * 230}
+            height="110"
+            fill={dt.isDark ? 'rgba(239,68,68,0.06)' : 'rgba(239,68,68,0.04)'}
+          />
           <line
-            x1={40 + (criticalAngle / 90) * 220}
+            x1={50 + (criticalAngle / 90) * 230}
             y1="30"
-            x2={40 + (criticalAngle / 90) * 220}
-            y2="130"
+            x2={50 + (criticalAngle / 90) * 230}
+            y2="140"
             stroke="#ef4444"
             strokeWidth="1"
             strokeDasharray="4 2"
+            opacity="0.7"
           />
           <text
-            x={40 + (criticalAngle / 90) * 220}
+            x={50 + (criticalAngle / 90) * 230}
             y="25"
             textAnchor="middle"
             fill="#ef4444"
-            fontSize="9"
+            fontSize="10"
+            fontWeight="600"
+            fontFamily="system-ui, sans-serif"
           >
-            θc
+            {'\u03B8'}c
           </text>
         </>
       )}
 
+      {/* Rs area fill */}
+      <path d={rsAreaPath} fill="url(#fresnel-rsAreaFill)" />
+
+      {/* Rp area fill */}
+      <path d={rpAreaPath} fill="url(#fresnel-rpAreaFill)" />
+
       {/* Rs曲线 */}
-      <path d={rsPath} fill="none" stroke="#22d3ee" strokeWidth="2.5" />
+      <path d={rsPath} fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
       {/* Rp曲线 */}
-      <path d={rpPath} fill="none" stroke="#f472b6" strokeWidth="2.5" />
+      <path d={rpPath} fill="none" stroke="#f472b6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+
+      {/* 当前位置指示线 */}
+      <line x1={currentX} y1="30" x2={currentX} y2="140" stroke={dt.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'} strokeWidth="1" />
 
       {/* 当前点标记 */}
       <motion.circle
@@ -805,6 +950,8 @@ function FresnelCurveChart({
         cy={currentYs}
         r="5"
         fill="#22d3ee"
+        stroke={dt.isDark ? '#0f172a' : '#fff'}
+        strokeWidth="2"
         animate={{ cx: currentX, cy: currentYs }}
         transition={{ duration: 0.2 }}
       />
@@ -813,20 +960,23 @@ function FresnelCurveChart({
         cy={currentYp}
         r="5"
         fill="#f472b6"
+        stroke={dt.isDark ? '#0f172a' : '#fff'}
+        strokeWidth="2"
         animate={{ cx: currentX, cy: currentYp }}
         transition={{ duration: 0.2 }}
       />
 
       {/* 轴标签 */}
-      <text x="155" y="158" textAnchor="middle" fill={dt.textSecondary} fontSize="11">θ (度)</text>
-      <text x="15" y="85" fill={dt.textSecondary} fontSize="11" transform="rotate(-90 15 85)">R</text>
+      <text x="165" y="172" textAnchor="middle" fill={dt.textSecondary} fontSize="10" fontFamily="system-ui, sans-serif">{angleLabel}</text>
+      <text x="18" y="90" fill={dt.textSecondary} fontSize="10" fontFamily="system-ui, sans-serif" transform="rotate(-90 18 90)">R</text>
 
       {/* 图例 */}
-      <g transform="translate(200, 40)">
-        <line x1="0" y1="0" x2="20" y2="0" stroke="#22d3ee" strokeWidth="2" />
-        <text x="25" y="4" fill="#22d3ee" fontSize="10">Rs</text>
-        <line x1="0" y1="15" x2="20" y2="15" stroke="#f472b6" strokeWidth="2" />
-        <text x="25" y="19" fill="#f472b6" fontSize="10">Rp</text>
+      <g transform="translate(210, 38)">
+        <rect x="-4" y="-8" width="70" height="36" fill={dt.infoPanelBg} rx="4" stroke={dt.infoPanelStroke} strokeWidth="0.5" />
+        <line x1="2" y1="2" x2="22" y2="2" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" />
+        <text x="28" y="6" fill="#22d3ee" fontSize="10" fontWeight="500" fontFamily="system-ui, sans-serif">Rs</text>
+        <line x1="2" y1="18" x2="22" y2="18" stroke="#f472b6" strokeWidth="2.5" strokeLinecap="round" />
+        <text x="28" y="22" fill="#f472b6" fontSize="10" fontWeight="500" fontFamily="system-ui, sans-serif">Rp</text>
       </g>
     </svg>
   )
@@ -861,201 +1011,270 @@ export function FresnelDemo() {
 
   // 材料预设 - Using REFRACTIVE_INDICES from physics engine where available
   const materials = [
-    { name: isZh ? '空气→玻璃' : 'Air→Glass', nameZh: '空气→玻璃', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.glass },
-    { name: isZh ? '空气→水' : 'Air→Water', nameZh: '空气→水', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.water },
-    { name: isZh ? '玻璃→空气' : 'Glass→Air', nameZh: '玻璃→空气', n1: REFRACTIVE_INDICES.glass, n2: REFRACTIVE_INDICES.air },
-    { name: isZh ? '水→空气' : 'Water→Air', nameZh: '水→空气', n1: REFRACTIVE_INDICES.water, n2: REFRACTIVE_INDICES.air },
-    { name: isZh ? '空气→钻石' : 'Air→Diamond', nameZh: '空气→钻石', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.diamond },
+    { name: isZh ? '空气→玻璃' : 'Air\u2192Glass', nameZh: '空气→玻璃', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.glass },
+    { name: isZh ? '空气→水' : 'Air\u2192Water', nameZh: '空气→水', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.water },
+    { name: isZh ? '玻璃→空气' : 'Glass\u2192Air', nameZh: '玻璃→空气', n1: REFRACTIVE_INDICES.glass, n2: REFRACTIVE_INDICES.air },
+    { name: isZh ? '水→空气' : 'Water\u2192Air', nameZh: '水→空气', n1: REFRACTIVE_INDICES.water, n2: REFRACTIVE_INDICES.air },
+    { name: isZh ? '空气→钻石' : 'Air\u2192Diamond', nameZh: '空气→钻石', n1: REFRACTIVE_INDICES.air, n2: REFRACTIVE_INDICES.diamond },
   ]
+
+  // i18n labels
+  const titleLabel = isZh ? '菲涅尔方程交互演示' : 'Interactive Fresnel Equations'
+  const subtitleLabel = isZh ? '探索s偏振和p偏振光在界面反射/折射时的行为差异' : 'Explore s and p polarization behavior at material interfaces'
+  const paramLabel = isZh ? '参数控制' : 'Parameters'
+  const angleLabel = isZh ? '入射角 \u03B8\u2081' : 'Incident Angle \u03B8\u2081'
+  const n1Label = isZh ? '介质1折射率 n\u2081' : 'Medium 1 Index n\u2081'
+  const n2Label = isZh ? '介质2折射率 n\u2082' : 'Medium 2 Index n\u2082'
+  const sPolLabel = isZh ? 's偏振' : 's-polarization'
+  const pPolLabel = isZh ? 'p偏振' : 'p-polarization'
+  const dragLabel = isZh ? '拖拽调整入射角' : 'Drag to Adjust Angle'
+  const presetLabel = isZh ? '快速预设' : 'Quick Presets'
+  const reflTransLabel = isZh ? '反射率与透射率' : 'Reflectance & Transmittance'
+  const rsLabel = isZh ? 'Rs (s偏振反射率)' : 'Rs (s-pol reflectance)'
+  const tsLabel = isZh ? 'Ts (s偏振透射率)' : 'Ts (s-pol transmittance)'
+  const rpLabel = isZh ? 'Rp (p偏振反射率)' : 'Rp (p-pol reflectance)'
+  const tpLabel = isZh ? 'Tp (p偏振透射率)' : 'Tp (p-pol transmittance)'
+  const refAngleLabel = isZh ? '折射角 \u03B8\u2082' : 'Refraction Angle \u03B8\u2082'
+  const brewsterLabel = isZh ? '布儒斯特角' : 'Brewster Angle'
+  const criticalLabel = isZh ? '临界角' : 'Critical Angle'
+  const curveTitle = isZh ? '反射率曲线 R(\u03B8)' : 'Reflectance Curves R(\u03B8)'
+  const curveSubtitle = isZh ? '当前入射角标记' : 'Current angle marked'
+  const curveNote = isZh
+    ? '圆点表示当前入射角对应的反射率。在布儒斯特角处，p偏振反射率为零。'
+    : 'Dots mark current angle reflectance. At Brewster angle, p-pol reflectance is zero.'
+  const formulaTitle = isZh ? '菲涅尔方程' : 'Fresnel Equations'
+  const fresnelCardTitle = isZh ? '菲涅尔方程' : 'Fresnel Equations'
+  const fresnelCardDesc = isZh
+    ? '描述电磁波在两种介质界面反射和透射的振幅比。s偏振（垂直于入射面）和p偏振（平行于入射面）有不同的反射特性。'
+    : 'Describes amplitude ratios of reflected and transmitted EM waves at an interface. s-polarization (perpendicular to incidence plane) and p-polarization (parallel) have different reflection characteristics.'
+  const brewsterCardTitle = isZh ? '布儒斯特角' : "Brewster's Angle"
+  const brewsterCardDesc = isZh
+    ? '当 \u03B8\u2081 + \u03B8\u2082 = 90\u00B0 时，p偏振反射光消失。此时 tan(\u03B8B) = n\u2082/n\u2081。应用于偏振镜片和减反射涂层。'
+    : 'When \u03B8\u2081 + \u03B8\u2082 = 90\u00B0, p-polarized reflection vanishes. tan(\u03B8B) = n\u2082/n\u2081. Applied in polarizing lenses and anti-reflection coatings.'
+  const tirCardTitle = isZh ? '全内反射' : 'Total Internal Reflection'
+  const tirCardDesc = isZh
+    ? '当光从高折射率介质进入低折射率介质，且入射角大于临界角时发生。应用于光纤通信和全内反射棱镜。'
+    : 'Occurs when light travels from a denser to rarer medium with incidence angle exceeding the critical angle. Applied in fiber optics and TIR prisms.'
+  const tirValue = isZh ? '全反射' : 'TIR'
+  const noTIR = isZh ? '无 (n\u2081 < n\u2082)' : 'N/A (n\u2081 < n\u2082)'
+
+  // Build visualization section
+  const visualization = (
+    <div className="space-y-4">
+      {/* 光线图 */}
+      <VisualizationPanel variant="default">
+        <FresnelDiagram
+          incidentAngle={incidentAngle}
+          n1={n1}
+          n2={n2}
+          showS={showS}
+          showP={showP}
+          enableDrag={enableDrag}
+          onAngleChange={setIncidentAngle}
+          isZh={isZh}
+        />
+      </VisualizationPanel>
+
+      {/* Stat cards row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <StatCard
+          label={refAngleLabel}
+          value={fresnel.totalReflection ? tirValue : `${fresnel.theta2.toFixed(1)}\u00B0`}
+          color={fresnel.totalReflection ? 'red' : 'green'}
+        />
+        <StatCard
+          label={brewsterLabel}
+          value={`${brewsterAngle.toFixed(1)}\u00B0`}
+          color="yellow"
+        />
+        <StatCard
+          label={criticalLabel}
+          value={criticalAngle != null ? `${criticalAngle.toFixed(1)}\u00B0` : noTIR}
+          color={criticalAngle != null ? 'red' : 'blue'}
+        />
+        <StatCard
+          label="Rs + Ts"
+          value={(Rs + Ts).toFixed(4)}
+          color="cyan"
+        />
+      </div>
+
+      {/* 反射率/透射率条 */}
+      <div className={cn(
+        'rounded-xl border p-4 space-y-2.5',
+        dt.isDark ? 'bg-slate-800/30 border-slate-700/40' : 'bg-white/60 border-slate-200/60',
+      )}>
+        <h4 className={cn('text-xs font-semibold mb-3', dt.isDark ? 'text-gray-300' : 'text-gray-700')}>
+          {reflTransLabel}
+        </h4>
+        {showS && (
+          <>
+            <IntensityBar label={rsLabel} value={Rs} color="cyan" />
+            <IntensityBar label={tsLabel} value={Ts} color="green" />
+          </>
+        )}
+        {showS && showP && <div className={cn('h-px my-1', dt.isDark ? 'bg-slate-700/60' : 'bg-slate-200')} />}
+        {showP && (
+          <>
+            <IntensityBar label={rpLabel} value={Rp} color="pink" />
+            <IntensityBar label={tpLabel} value={Tp} color="green" />
+          </>
+        )}
+      </div>
+    </div>
+  )
+
+  // Build controls section
+  const controls = (
+    <div className="space-y-4">
+      {/* 参数控制 */}
+      <ControlPanel title={paramLabel}>
+        <SliderControl
+          label={angleLabel}
+          value={incidentAngle}
+          min={0}
+          max={89}
+          step={1}
+          unit={'\u00B0'}
+          onChange={setIncidentAngle}
+          color="orange"
+        />
+        <SliderControl
+          label={n1Label}
+          value={n1}
+          min={1.0}
+          max={2.5}
+          step={0.05}
+          onChange={setN1}
+          formatValue={(v) => v.toFixed(2)}
+          color="blue"
+        />
+        <SliderControl
+          label={n2Label}
+          value={n2}
+          min={1.0}
+          max={2.5}
+          step={0.05}
+          onChange={setN2}
+          formatValue={(v) => v.toFixed(2)}
+          color="green"
+        />
+
+        {/* 偏振选择 */}
+        <div className="flex gap-4 pt-2">
+          <label className={cn('flex items-center gap-2 text-sm cursor-pointer', dt.mutedTextClass)}>
+            <input
+              type="checkbox"
+              checked={showS}
+              onChange={(e) => setShowS(e.target.checked)}
+              className="rounded border-cyan-500 text-cyan-500 focus:ring-cyan-500"
+            />
+            <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>{sPolLabel}</span>
+          </label>
+          <label className={cn('flex items-center gap-2 text-sm cursor-pointer', dt.mutedTextClass)}>
+            <input
+              type="checkbox"
+              checked={showP}
+              onChange={(e) => setShowP(e.target.checked)}
+              className="rounded border-pink-500 text-pink-500 focus:ring-pink-500"
+            />
+            <span className={dt.isDark ? 'text-pink-400' : 'text-pink-600'}>{pPolLabel}</span>
+          </label>
+        </div>
+
+        {/* 交互选项 */}
+        <div className={cn('pt-2 border-t mt-2', dt.borderClass)}>
+          <Toggle
+            label={dragLabel}
+            checked={enableDrag}
+            onChange={setEnableDrag}
+          />
+        </div>
+
+        {/* 材料预设 */}
+        <div className="pt-2">
+          <div className={cn('text-xs mb-2', dt.subtleTextClass)}>{presetLabel}</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {materials.map((m) => (
+              <button
+                key={m.name}
+                onClick={() => { setN1(m.n1); setN2(m.n2) }}
+                className={cn(
+                  'px-2 py-1.5 text-xs border rounded-lg transition-all duration-150 active:scale-[0.97]',
+                  dt.isDark
+                    ? 'bg-slate-800/40 text-gray-400 border-slate-600/50 hover:border-cyan-400/25 hover:text-gray-300'
+                    : 'bg-white/80 text-gray-500 border-gray-200 hover:border-cyan-300 hover:text-gray-700',
+                )}
+              >
+                {m.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </ControlPanel>
+
+      {/* 公式显示 */}
+      <div className={cn(
+        'rounded-xl border p-3',
+        dt.isDark
+          ? 'bg-gradient-to-br from-cyan-900/10 via-slate-800/30 to-blue-900/10 border-cyan-500/15'
+          : 'bg-gradient-to-br from-cyan-50/60 via-white to-blue-50/60 border-cyan-200/50',
+      )}>
+        <div className={cn('text-[11px] font-medium mb-2', dt.mutedTextClass)}>{formulaTitle}</div>
+        <div className={cn('font-mono text-xs space-y-1.5', dt.bodyClass)}>
+          <p>rs = (n{'\u2081'}cos{'\u03B8\u2081'} - n{'\u2082'}cos{'\u03B8\u2082'}) / (n{'\u2081'}cos{'\u03B8\u2081'} + n{'\u2082'}cos{'\u03B8\u2082'})</p>
+          <p>rp = (n{'\u2082'}cos{'\u03B8\u2081'} - n{'\u2081'}cos{'\u03B8\u2082'}) / (n{'\u2082'}cos{'\u03B8\u2081'} + n{'\u2081'}cos{'\u03B8\u2082'})</p>
+          <p className={cn('pt-1.5 font-semibold', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>
+            Rs = rs{'\u00B2'}, Rp = rp{'\u00B2'}
+          </p>
+        </div>
+      </div>
+
+      {/* 反射率曲线 */}
+      <ChartPanel title={curveTitle} subtitle={curveSubtitle}>
+        <FresnelCurveChart n1={n1} n2={n2} currentAngle={incidentAngle} isZh={isZh} />
+        <p className={cn('text-[11px] mt-2 leading-relaxed', dt.mutedTextClass)}>
+          {curveNote}
+        </p>
+      </ChartPanel>
+    </div>
+  )
 
   return (
     <div className="space-y-6">
       {/* 标题 */}
-      <div className="text-center">
-        <h2 className={`text-2xl font-bold bg-gradient-to-r ${dt.isDark ? 'from-white via-cyan-100 to-white' : 'from-slate-800 via-cyan-700 to-slate-800'} bg-clip-text text-transparent`}>
-          菲涅尔方程交互演示
-        </h2>
-        <p className={`${dt.mutedTextClass} mt-1`}>
-          探索s偏振和p偏振光在界面反射/折射时的行为差异
-        </p>
-      </div>
+      <DemoHeader
+        title={titleLabel}
+        subtitle={subtitleLabel}
+        gradient="cyan"
+        badge="Unit 2"
+      />
 
-      {/* 主体内容 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左侧：可视化 */}
-        <div className="space-y-4">
-          {/* 光线图 */}
-          <div className={`rounded-xl ${dt.svgContainerClass} border p-4 shadow-[0_15px_40px_rgba(0,0,0,0.5)]`}>
-            <FresnelDiagram
-              incidentAngle={incidentAngle}
-              n1={n1}
-              n2={n2}
-              showS={showS}
-              showP={showP}
-              enableDrag={enableDrag}
-              onAngleChange={setIncidentAngle}
-            />
-          </div>
-
-          {/* 反射率/透射率条 */}
-          <div className={`rounded-xl ${dt.panelClass} border p-4 space-y-3`}>
-            <h4 className={`text-sm font-semibold ${dt.isDark ? 'text-white' : 'text-slate-800'} mb-3`}>反射率与透射率</h4>
-            {showS && (
-              <>
-                <IntensityBar label="Rs (s偏振反射率)" value={Rs} color="cyan" />
-                <IntensityBar label="Ts (s偏振透射率)" value={Ts} color="green" />
-              </>
-            )}
-            {showP && (
-              <>
-                <IntensityBar label="Rp (p偏振反射率)" value={Rp} color="pink" />
-                <IntensityBar label="Tp (p偏振透射率)" value={Tp} color="green" />
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* 右侧：控制与学习 */}
-        <div className="space-y-4">
-          {/* 参数控制 */}
-          <ControlPanel title="参数控制">
-            <SliderControl
-              label="入射角 θ₁"
-              value={incidentAngle}
-              min={0}
-              max={89}
-              step={1}
-              unit="°"
-              onChange={setIncidentAngle}
-              color="orange"
-            />
-            <SliderControl
-              label="介质1折射率 n₁"
-              value={n1}
-              min={1.0}
-              max={2.5}
-              step={0.05}
-              onChange={setN1}
-              formatValue={(v) => v.toFixed(2)}
-              color="blue"
-            />
-            <SliderControl
-              label="介质2折射率 n₂"
-              value={n2}
-              min={1.0}
-              max={2.5}
-              step={0.05}
-              onChange={setN2}
-              formatValue={(v) => v.toFixed(2)}
-              color="green"
-            />
-
-            {/* 偏振选择 */}
-            <div className="flex gap-4 pt-2">
-              <label className={`flex items-center gap-2 text-sm cursor-pointer ${dt.mutedTextClass}`}>
-                <input
-                  type="checkbox"
-                  checked={showS}
-                  onChange={(e) => setShowS(e.target.checked)}
-                  className="rounded border-cyan-500 text-cyan-500 focus:ring-cyan-500"
-                />
-                <span className="text-cyan-400">s偏振</span>
-              </label>
-              <label className={`flex items-center gap-2 text-sm cursor-pointer ${dt.mutedTextClass}`}>
-                <input
-                  type="checkbox"
-                  checked={showP}
-                  onChange={(e) => setShowP(e.target.checked)}
-                  className="rounded border-pink-500 text-pink-500 focus:ring-pink-500"
-                />
-                <span className="text-pink-400">p偏振</span>
-              </label>
-            </div>
-
-            {/* 交互选项 */}
-            <div className={`pt-2 border-t ${dt.borderClass} mt-2`}>
-              <Toggle
-                label={isZh ? '拖拽调整入射角' : 'Drag to Adjust Angle'}
-                checked={enableDrag}
-                onChange={setEnableDrag}
-              />
-            </div>
-
-            {/* 材料预设 */}
-            <div className="pt-2">
-              <div className={`text-xs ${dt.subtleTextClass} mb-2`}>快速预设</div>
-              <div className="grid grid-cols-2 gap-2">
-                {materials.map((m) => (
-                  <button
-                    key={m.name}
-                    onClick={() => { setN1(m.n1); setN2(m.n2) }}
-                    className={`px-2 py-1.5 text-xs ${dt.inactiveButtonClass} border rounded hover:opacity-80 transition-colors`}
-                  >
-                    {m.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </ControlPanel>
-
-          {/* 计算结果 */}
-          <ControlPanel title="计算结果">
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-              <div className={dt.mutedTextClass}>
-                折射角 θ₂ = <span className="text-green-400 font-mono">
-                  {fresnel.totalReflection ? '全反射' : `${fresnel.theta2.toFixed(1)}°`}
-                </span>
-              </div>
-              <div className={dt.mutedTextClass}>
-                布儒斯特角 = <span className="text-yellow-400 font-mono">{brewsterAngle.toFixed(1)}°</span>
-              </div>
-              {criticalAngle && (
-                <div className={`col-span-2 ${dt.mutedTextClass}`}>
-                  临界角 = <span className="text-red-400 font-mono">{criticalAngle.toFixed(1)}°</span>
-                  <span className={`${dt.subtleTextClass} text-xs ml-2`}>(全内反射)</span>
-                </div>
-              )}
-            </div>
-
-            {/* 公式显示 */}
-            <div className={`mt-3 p-3 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-              <div className={`text-xs ${dt.subtleTextClass} mb-2`}>菲涅尔方程</div>
-              <div className={`font-mono text-xs ${dt.bodyClass} space-y-1`}>
-                <p>rs = (n₁cosθ₁ - n₂cosθ₂) / (n₁cosθ₁ + n₂cosθ₂)</p>
-                <p>rp = (n₂cosθ₁ - n₁cosθ₂) / (n₂cosθ₁ + n₁cosθ₂)</p>
-                <p className="text-cyan-400 pt-1">Rs = rs², Rp = rp²</p>
-              </div>
-            </div>
-          </ControlPanel>
-
-          {/* 反射率曲线 */}
-          <ControlPanel title="反射率曲线 R(θ)">
-            <FresnelCurveChart n1={n1} n2={n2} currentAngle={incidentAngle} />
-            <p className={`text-xs ${dt.mutedTextClass} mt-2`}>
-              红点表示当前入射角对应的反射率。在布儒斯特角处，p偏振反射率为零。
-            </p>
-          </ControlPanel>
-        </div>
-      </div>
+      {/* 主体内容 - two column layout */}
+      <DemoMainLayout
+        visualization={visualization}
+        controls={controls}
+        controlsWidth="wide"
+      />
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard title="菲涅尔方程" color="cyan">
-          <p className={`text-xs ${dt.bodyClass}`}>
-            描述电磁波在两种介质界面反射和透射的振幅比。s偏振（垂直于入射面）和p偏振（平行于入射面）有不同的反射特性。
+      <InfoGrid columns={3}>
+        <InfoCard title={fresnelCardTitle} color="cyan">
+          <p className={cn('text-xs leading-relaxed', dt.bodyClass)}>
+            {fresnelCardDesc}
           </p>
         </InfoCard>
-        <InfoCard title="布儒斯特角" color="orange">
-          <p className={`text-xs ${dt.bodyClass}`}>
-            当 θ₁ + θ₂ = 90° 时，p偏振反射光消失。此时 tan(θB) = n₂/n₁。应用于偏振镜片和减反射涂层。
+        <InfoCard title={brewsterCardTitle} color="orange">
+          <p className={cn('text-xs leading-relaxed', dt.bodyClass)}>
+            {brewsterCardDesc}
           </p>
         </InfoCard>
-        <InfoCard title="全内反射" color="purple">
-          <p className={`text-xs ${dt.bodyClass}`}>
-            当光从高折射率介质进入低折射率介质，且入射角大于临界角时发生。应用于光纤通信和全内反射棱镜。
+        <InfoCard title={tirCardTitle} color="purple">
+          <p className={cn('text-xs leading-relaxed', dt.bodyClass)}>
+            {tirCardDesc}
           </p>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

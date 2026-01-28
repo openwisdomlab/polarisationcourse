@@ -20,12 +20,19 @@ import {
   SliderControl,
   Toggle,
   InfoCard,
-  Formula,
   PresetButtons,
   AnimatedValue,
 } from '../DemoControls'
 import { DifficultyLevel, useDifficultyConfig, WhyButton, DifficultyGate, TaskModeWrapper } from '../DifficultyStrategy'
 import { useDemoTheme } from '../demoThemeColors'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  FormulaHighlight,
+  TipBanner,
+} from '../DemoLayout'
 
 type ViewMode = 'types' | 'paradox'
 type PolarizationType = 'linear' | 'circular' | 'elliptical'
@@ -374,12 +381,18 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      <DemoHeader
+        title={isZh ? '偏振类型与三偏振片' : 'Polarization Types & Three Polarizers'}
+        subtitle={isZh ? '探索不同偏振态和三偏振片悖论' : 'Explore polarization states and the three-polarizer paradox'}
+        gradient="purple"
+      />
+
       {/* View Mode Tabs */}
-      <div className={`flex gap-2 p-1 ${dt.tabBgClass} rounded-lg w-fit`}>
+      <div className={`flex gap-2 p-1 ${dt.tabBgClass} rounded-2xl w-fit`}>
         <button
           onClick={() => setViewMode('types')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
             viewMode === 'types'
               ? 'bg-orange-500/20 text-orange-400 shadow-sm'
               : dt.tabInactiveClass
@@ -390,7 +403,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
         </button>
         <button
           onClick={() => setViewMode('paradox')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
             viewMode === 'paradox'
               ? 'bg-purple-500/20 text-purple-400 shadow-sm'
               : dt.tabInactiveClass
@@ -409,178 +422,183 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2 }}
+            className="space-y-5"
           >
             {/* Types View */}
-            <div className="flex gap-6 flex-col lg:flex-row">
-              <div className="flex-1">
-                <div className={`${dt.svgContainerClass} rounded-xl border p-4`}>
-                  <svg viewBox="0 0 400 400" className="w-full h-auto max-w-[400px] mx-auto">
-                    <defs>
-                      <filter id="glow-cyan">
-                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                        <feMerge>
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                      <linearGradient id="trail-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#22d3ee" stopOpacity="0" />
-                        <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.5" />
-                      </linearGradient>
-                    </defs>
+            <DemoMainLayout
+              controlsWidth="narrow"
+              visualization={
+                <div className="space-y-4">
+                  <VisualizationPanel>
+                    <svg viewBox="0 0 400 400" className="w-full h-auto max-w-[400px] mx-auto">
+                      <defs>
+                        <filter id="glow-cyan">
+                          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                        <linearGradient id="trail-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0" />
+                          <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.5" />
+                        </linearGradient>
+                      </defs>
 
-                    {/* Axes */}
-                    <line x1="70" y1="200" x2="330" y2="200" stroke={dt.axisColor} strokeWidth="1.5" />
-                    <line x1="200" y1="70" x2="200" y2="330" stroke={dt.axisColor} strokeWidth="1.5" />
-                    <polygon points="330,200 320,195 320,205" fill={dt.axisColor} />
-                    <polygon points="200,70 195,80 205,80" fill={dt.axisColor} />
-                    <text x="340" y="205" fill={dt.textSecondary} fontSize="14">Ex</text>
-                    <text x="205" y="60" fill={dt.textSecondary} fontSize="14">Ey</text>
+                      {/* Axes */}
+                      <line x1="70" y1="200" x2="330" y2="200" stroke={dt.axisColor} strokeWidth="1.5" />
+                      <line x1="200" y1="70" x2="200" y2="330" stroke={dt.axisColor} strokeWidth="1.5" />
+                      <polygon points="330,200 320,195 320,205" fill={dt.axisColor} />
+                      <polygon points="200,70 195,80 205,80" fill={dt.axisColor} />
+                      <text x="340" y="205" fill={dt.textSecondary} fontSize="14">Ex</text>
+                      <text x="205" y="60" fill={dt.textSecondary} fontSize="14">Ey</text>
 
-                    {/* Reference shape */}
-                    <path d={referencePath} fill="none" stroke={dt.axisColor} strokeWidth="1" strokeDasharray="5 5" />
+                      {/* Reference shape */}
+                      <path d={referencePath} fill="none" stroke={dt.axisColor} strokeWidth="1" strokeDasharray="5 5" />
 
-                    {/* Trail */}
-                    {showTrail && (
-                      <motion.path d={trailPath} fill="none" stroke="url(#trail-gradient)" strokeWidth="2" />
-                    )}
+                      {/* Trail */}
+                      {showTrail && (
+                        <motion.path d={trailPath} fill="none" stroke="url(#trail-gradient)" strokeWidth="2" />
+                      )}
 
-                    {/* E-field vector */}
-                    <motion.line x1="200" y1="200" x2={ex} y2={ey} stroke="#22d3ee" strokeWidth="3" filter="url(#glow-cyan)" />
-                    <circle cx={ex} cy={ey} r="6" fill="#22d3ee" filter="url(#glow-cyan)" />
-                    <motion.circle cx={ex} cy={ey} r="4" fill="#fbbf24" filter="url(#glow-cyan)" />
-                    <circle cx="200" cy="200" r="4" fill={dt.textSecondary} />
+                      {/* E-field vector */}
+                      <motion.line x1="200" y1="200" x2={ex} y2={ey} stroke="#22d3ee" strokeWidth="3" filter="url(#glow-cyan)" />
+                      <circle cx={ex} cy={ey} r="6" fill="#22d3ee" filter="url(#glow-cyan)" />
+                      <motion.circle cx={ex} cy={ey} r="4" fill="#fbbf24" filter="url(#glow-cyan)" />
+                      <circle cx="200" cy="200" r="4" fill={dt.textSecondary} />
 
-                    {/* Label */}
-                    <text x="20" y="30" fill={dt.textSecondary} fontSize="14">{getTypeLabel(polarizationType)}</text>
-                    <text x="320" y="30" fill={dt.textMuted} fontSize="12">
-                      φ = {((time * 2 * 180 / Math.PI) % 360).toFixed(0)}°
-                    </text>
-                  </svg>
-                </div>
+                      {/* Label */}
+                      <text x="20" y="30" fill={dt.textSecondary} fontSize="14">{getTypeLabel(polarizationType)}</text>
+                      <text x="320" y="30" fill={dt.textMuted} fontSize="12">
+                        {'\u03C6'} = {((time * 2 * 180 / Math.PI) % 360).toFixed(0)}{'\u00B0'}
+                      </text>
+                    </svg>
+                  </VisualizationPanel>
 
-                {/* Type selector */}
-                <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
-                  <h4 className={`text-sm font-semibold ${dt.headingClass} mb-3`}>{isZh ? '偏振类型' : 'Polarization Type'}</h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['linear', 'circular', 'elliptical'] as PolarizationType[]).map((type) => {
-                      const colors = {
-                        linear: { active: 'bg-orange-400/20 border-orange-400/50 text-orange-400', inactive: 'hover:border-orange-400/30' },
-                        circular: { active: 'bg-green-400/20 border-green-400/50 text-green-400', inactive: 'hover:border-green-400/30' },
-                        elliptical: { active: 'bg-purple-400/20 border-purple-400/50 text-purple-400', inactive: 'hover:border-purple-400/30' },
-                      }
-                      const labels = { linear: isZh ? '线偏振' : 'Linear', circular: isZh ? '圆偏振' : 'Circular', elliptical: isZh ? '椭圆偏振' : 'Elliptical' }
+                  {/* Type selector */}
+                  <div className={`p-4 rounded-2xl border ${dt.panelClass}`}>
+                    <h4 className={`text-sm font-semibold ${dt.headingClass} mb-3`}>{isZh ? '偏振类型' : 'Polarization Type'}</h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(['linear', 'circular', 'elliptical'] as PolarizationType[]).map((type) => {
+                        const colors = {
+                          linear: { active: 'bg-orange-400/20 border-orange-400/50 text-orange-400', inactive: 'hover:border-orange-400/30' },
+                          circular: { active: 'bg-green-400/20 border-green-400/50 text-green-400', inactive: 'hover:border-green-400/30' },
+                          elliptical: { active: 'bg-purple-400/20 border-purple-400/50 text-purple-400', inactive: 'hover:border-purple-400/30' },
+                        }
+                        const labels = { linear: isZh ? '线偏振' : 'Linear', circular: isZh ? '圆偏振' : 'Circular', elliptical: isZh ? '椭圆偏振' : 'Elliptical' }
 
-                      return (
-                        <motion.button
-                          key={type}
-                          className={`py-2.5 px-3 rounded-lg text-sm font-medium border transition-all ${
-                            polarizationType === type
-                              ? colors[type].active
-                              : `${dt.inactiveButtonClass} ${colors[type].inactive}`
-                          }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => setPolarizationType(type)}
-                        >
-                          {labels[type]}
-                        </motion.button>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              <ControlPanel title={isZh ? '参数' : 'Parameters'} className="w-full lg:w-72">
-                {polarizationType === 'linear' && (
-                  <SliderControl
-                    label={isZh ? '偏振角度' : 'Polarization Angle'}
-                    value={linearAngle}
-                    min={0}
-                    max={180}
-                    step={15}
-                    unit="°"
-                    onChange={(v) => handleAngleChange(setLinearAngle, v)}
-                    color="orange"
-                  />
-                )}
-
-                {(polarizationType === 'circular' || polarizationType === 'elliptical') && (
-                  <div className="space-y-2">
-                    <span className={`text-xs ${dt.mutedTextClass}`}>{isZh ? '旋转方向' : 'Rotation Direction'}</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <motion.button
-                        className={`py-2 rounded-lg text-sm font-medium border transition-all ${
-                          circularDirection === 'right'
-                            ? 'bg-green-400/20 text-green-400 border-green-400/50'
-                            : dt.inactiveButtonClass
-                        }`}
-                        whileHover={{ scale: 1.02 }}
-                        onClick={() => setCircularDirection('right')}
-                      >
-                        {isZh ? '右旋' : 'Right'}
-                      </motion.button>
-                      <motion.button
-                        className={`py-2 rounded-lg text-sm font-medium border transition-all ${
-                          circularDirection === 'left'
-                            ? 'bg-purple-400/20 text-purple-400 border-purple-400/50'
-                            : dt.inactiveButtonClass
-                        }`}
-                        whileHover={{ scale: 1.02 }}
-                        onClick={() => setCircularDirection('left')}
-                      >
-                        {isZh ? '左旋' : 'Left'}
-                      </motion.button>
+                        return (
+                          <motion.button
+                            key={type}
+                            className={`py-2.5 px-3 rounded-2xl text-sm font-medium border transition-all ${
+                              polarizationType === type
+                                ? colors[type].active
+                                : `${dt.inactiveButtonClass} ${colors[type].inactive}`
+                            }`}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setPolarizationType(type)}
+                          >
+                            {labels[type]}
+                          </motion.button>
+                        )
+                      })}
                     </div>
                   </div>
-                )}
+                </div>
+              }
+              controls={
+                <ControlPanel title={isZh ? '参数' : 'Parameters'} className="w-full">
+                  {polarizationType === 'linear' && (
+                    <SliderControl
+                      label={isZh ? '偏振角度' : 'Polarization Angle'}
+                      value={linearAngle}
+                      min={0}
+                      max={180}
+                      step={15}
+                      unit="°"
+                      onChange={(v) => handleAngleChange(setLinearAngle, v)}
+                      color="orange"
+                    />
+                  )}
 
-                {polarizationType === 'elliptical' && (
+                  {(polarizationType === 'circular' || polarizationType === 'elliptical') && (
+                    <div className="space-y-2">
+                      <span className={`text-xs ${dt.mutedTextClass}`}>{isZh ? '旋转方向' : 'Rotation Direction'}</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <motion.button
+                          className={`py-2 rounded-2xl text-sm font-medium border transition-all ${
+                            circularDirection === 'right'
+                              ? 'bg-green-400/20 text-green-400 border-green-400/50'
+                              : dt.inactiveButtonClass
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setCircularDirection('right')}
+                        >
+                          {isZh ? '右旋' : 'Right'}
+                        </motion.button>
+                        <motion.button
+                          className={`py-2 rounded-2xl text-sm font-medium border transition-all ${
+                            circularDirection === 'left'
+                              ? 'bg-purple-400/20 text-purple-400 border-purple-400/50'
+                              : dt.inactiveButtonClass
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setCircularDirection('left')}
+                        >
+                          {isZh ? '左旋' : 'Left'}
+                        </motion.button>
+                      </div>
+                    </div>
+                  )}
+
+                  {polarizationType === 'elliptical' && (
+                    <SliderControl
+                      label={isZh ? '椭圆率' : 'Ellipse Ratio'}
+                      value={ellipseRatio}
+                      min={0.1}
+                      max={0.9}
+                      step={0.1}
+                      onChange={setEllipseRatio}
+                      color="purple"
+                    />
+                  )}
+
                   <SliderControl
-                    label={isZh ? '椭圆率' : 'Ellipse Ratio'}
-                    value={ellipseRatio}
-                    min={0.1}
-                    max={0.9}
-                    step={0.1}
-                    onChange={setEllipseRatio}
-                    color="purple"
+                    label={isZh ? '动画速度' : 'Animation Speed'}
+                    value={animationSpeed}
+                    min={0}
+                    max={2}
+                    step={0.25}
+                    onChange={setAnimationSpeed}
+                    color="cyan"
                   />
-                )}
 
-                <SliderControl
-                  label={isZh ? '动画速度' : 'Animation Speed'}
-                  value={animationSpeed}
-                  min={0}
-                  max={2}
-                  step={0.25}
-                  onChange={setAnimationSpeed}
-                  color="cyan"
-                />
+                  <Toggle label={isZh ? '显示轨迹' : 'Show Trail'} checked={showTrail} onChange={setShowTrail} />
 
-                <Toggle label={isZh ? '显示轨迹' : 'Show Trail'} checked={showTrail} onChange={setShowTrail} />
+                  <motion.button
+                    className={`w-full py-2.5 rounded-2xl font-medium transition-all ${
+                      isPlaying
+                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                        : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? (isZh ? '暂停' : 'Pause') : (isZh ? '播放' : 'Play')}
+                  </motion.button>
 
-                <motion.button
-                  className={`w-full py-2.5 rounded-lg font-medium transition-all ${
-                    isPlaying
-                      ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                      : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setIsPlaying(!isPlaying)}
-                >
-                  {isPlaying ? (isZh ? '暂停' : 'Pause') : (isZh ? '播放' : 'Play')}
-                </motion.button>
-
-                <motion.button
-                  className="w-full py-2 rounded-lg text-sm text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all mt-2"
-                  whileHover={{ scale: 1.02 }}
-                  onClick={() => setViewMode('paradox')}
-                >
-                  {isZh ? '探索三偏振片悖论 →' : 'Explore Three-Polarizer Paradox →'}
-                </motion.button>
-              </ControlPanel>
-            </div>
+                  <motion.button
+                    className="w-full py-2 rounded-2xl text-sm text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all mt-2"
+                    whileHover={{ scale: 1.02 }}
+                    onClick={() => setViewMode('paradox')}
+                  >
+                    {isZh ? '探索三偏振片悖论 →' : 'Explore Three-Polarizer Paradox →'}
+                  </motion.button>
+                </ControlPanel>
+              }
+            />
 
             {/* Foundation: Why button */}
             <DifficultyGate level="foundation" currentLevel={difficultyLevel}>
@@ -593,7 +611,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
             </DifficultyGate>
 
             {/* Info cards */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <InfoGrid columns={3}>
               <InfoCard title={isZh ? '线偏振' : 'Linear Polarization'} color={polarizationType === 'linear' ? 'orange' : 'cyan'}>
                 <p className={`text-xs ${dt.bodyClass}`}>{isZh ? '电场在固定平面内振荡，如同钟摆运动。' : 'E-field oscillates in a fixed plane, like a pendulum.'}</p>
               </InfoCard>
@@ -603,7 +621,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
               <InfoCard title={isZh ? '椭圆偏振' : 'Elliptical Polarization'} color={polarizationType === 'elliptical' ? 'purple' : 'cyan'}>
                 <p className={`text-xs ${dt.bodyClass}`}>{isZh ? '最一般的偏振态，线偏振和圆偏振是特例。' : 'Most general state; linear and circular are special cases.'}</p>
               </InfoCard>
-            </div>
+            </InfoGrid>
           </motion.div>
         ) : (
           <motion.div
@@ -612,6 +630,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
+            className="space-y-5"
           >
             {/* Paradox View */}
             <DifficultyGate level="application" currentLevel={difficultyLevel}>
@@ -626,139 +645,148 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
               </TaskModeWrapper>
             </DifficultyGate>
 
-            <div className="flex gap-6 flex-col lg:flex-row">
-              <div className="flex-1">
-                <div className={`${dt.svgContainerClassBlue} rounded-xl border p-4 overflow-hidden`}>
-                  <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
-                    <defs>
-                      <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1" />
-                      </pattern>
-                    </defs>
+            <DemoMainLayout
+              controlsWidth="normal"
+              visualization={
+                <div className="space-y-4">
+                  <VisualizationPanel variant="blue">
+                    <svg viewBox="0 0 700 320" className="w-full h-auto" style={{ minHeight: '300px' }}>
+                      <defs>
+                        <pattern id="three-pol-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1" />
+                        </pattern>
+                      </defs>
 
-                    <rect width="700" height="320" fill="url(#three-pol-grid)" />
+                      <rect width="700" height="320" fill="url(#three-pol-grid)" />
 
-                    <text x="350" y="25" textAnchor="middle" fill={dt.textPrimary} fontSize="14" fontWeight="bold">
-                      {isZh ? '三偏振片实验' : 'Three Polarizer Experiment'}
-                    </text>
+                      <text x="350" y="25" textAnchor="middle" fill={dt.textPrimary} fontSize="14" fontWeight="bold">
+                        {isZh ? '三偏振片实验' : 'Three Polarizer Experiment'}
+                      </text>
 
-                    {/* Light source */}
-                    <g transform="translate(50, 150)">
-                      <motion.circle cx="0" cy="0" r="20" fill="#ffd700" animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} />
-                      <circle cx="0" cy="0" r="15" fill="#fff" opacity="0.5" />
-                      <text x="0" y="45" textAnchor="middle" fill={dt.textSecondary} fontSize="11">{isZh ? '非偏振光' : 'Unpolarized'}</text>
-                      <text x="0" y="60" textAnchor="middle" fill="#ffd700" fontSize="11">I₀ = 100%</text>
-                    </g>
+                      {/* Light source */}
+                      <g transform="translate(50, 150)">
+                        <motion.circle cx="0" cy="0" r="20" fill="#ffd700" animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} />
+                        <circle cx="0" cy="0" r="15" fill="#fff" opacity="0.5" />
+                        <text x="0" y="45" textAnchor="middle" fill={dt.textSecondary} fontSize="11">{isZh ? '非偏振光' : 'Unpolarized'}</text>
+                        <text x="0" y="60" textAnchor="middle" fill="#ffd700" fontSize="11">I{'\u2080'} = 100%</text>
+                      </g>
 
-                    {/* Light beams */}
-                    <LightBeam x1={70} x2={130} intensity={calculations.I0} polarization={0} showPolarization={false} />
-                    <LightBeam x1={200} x2={showMiddlePolarizer ? 280 : 430} intensity={calculations.I1} polarization={calculations.pol1} showPolarization={showPolarization} />
-                    {showMiddlePolarizer && calculations.I2 !== null && (
-                      <LightBeam x1={350} x2={430} intensity={calculations.I2} polarization={calculations.pol2 || 0} showPolarization={showPolarization} />
-                    )}
-                    <LightBeam x1={500} x2={650} intensity={calculations.I3} polarization={calculations.pol3} showPolarization={showPolarization} />
-
-                    {/* Polarizers */}
-                    <PolarizerVisualizer x={165} angle={polarizer1Angle} label={isZh ? '起偏器 P₁' : 'P₁'} color="#22d3ee" isActive={true} themeColors={dt} />
-                    <AnimatePresence>
-                      {showMiddlePolarizer && polarizer2Angle !== null && (
-                        <motion.g initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
-                          <PolarizerVisualizer x={315} angle={polarizer2Angle} label={isZh ? '中间片 P₂' : 'P₂'} color="#fbbf24" isActive={true} themeColors={dt} />
-                        </motion.g>
+                      {/* Light beams */}
+                      <LightBeam x1={70} x2={130} intensity={calculations.I0} polarization={0} showPolarization={false} />
+                      <LightBeam x1={200} x2={showMiddlePolarizer ? 280 : 430} intensity={calculations.I1} polarization={calculations.pol1} showPolarization={showPolarization} />
+                      {showMiddlePolarizer && calculations.I2 !== null && (
+                        <LightBeam x1={350} x2={430} intensity={calculations.I2} polarization={calculations.pol2 || 0} showPolarization={showPolarization} />
                       )}
-                    </AnimatePresence>
-                    <PolarizerVisualizer x={465} angle={polarizer3Angle} label={isZh ? '检偏器 P₃' : 'P₃'} color="#4ade80" isActive={true} themeColors={dt} />
+                      <LightBeam x1={500} x2={650} intensity={calculations.I3} polarization={calculations.pol3} showPolarization={showPolarization} />
 
-                    {/* Detector */}
-                    <g transform="translate(610, 150)">
-                      <rect x="-20" y="-25" width="40" height="50" rx="4" fill={calculations.I3 > 0.01 ? '#22c55e20' : dt.detectorFill} stroke={calculations.I3 > 0.01 ? '#22c55e' : dt.axisColor} strokeWidth="2" />
-                      <text x="0" y="45" textAnchor="middle" fill={dt.textSecondary} fontSize="11">{isZh ? '探测器' : 'Detector'}</text>
-                      <text x="0" y="60" textAnchor="middle" fill="#22c55e" fontSize="11" fontWeight="bold">{(calculations.transmission * 100).toFixed(1)}%</text>
-                    </g>
+                      {/* Polarizers */}
+                      <PolarizerVisualizer x={165} angle={polarizer1Angle} label={isZh ? '起偏器 P\u2081' : 'P\u2081'} color="#22d3ee" isActive={true} themeColors={dt} />
+                      <AnimatePresence>
+                        {showMiddlePolarizer && polarizer2Angle !== null && (
+                          <motion.g initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
+                            <PolarizerVisualizer x={315} angle={polarizer2Angle} label={isZh ? '中间片 P\u2082' : 'P\u2082'} color="#fbbf24" isActive={true} themeColors={dt} />
+                          </motion.g>
+                        )}
+                      </AnimatePresence>
+                      <PolarizerVisualizer x={465} angle={polarizer3Angle} label={isZh ? '检偏器 P\u2083' : 'P\u2083'} color="#4ade80" isActive={true} themeColors={dt} />
 
-                    {/* Intensity labels */}
-                    <text x="165" y="90" textAnchor="middle" fill="#22d3ee" fontSize="10">I₁ = 50%</text>
+                      {/* Detector */}
+                      <g transform="translate(610, 150)">
+                        <rect x="-20" y="-25" width="40" height="50" rx="4" fill={calculations.I3 > 0.01 ? '#22c55e20' : dt.detectorFill} stroke={calculations.I3 > 0.01 ? '#22c55e' : dt.axisColor} strokeWidth="2" />
+                        <text x="0" y="45" textAnchor="middle" fill={dt.textSecondary} fontSize="11">{isZh ? '探测器' : 'Detector'}</text>
+                        <text x="0" y="60" textAnchor="middle" fill="#22c55e" fontSize="11" fontWeight="bold">{(calculations.transmission * 100).toFixed(1)}%</text>
+                      </g>
+
+                      {/* Intensity labels */}
+                      <text x="165" y="90" textAnchor="middle" fill="#22d3ee" fontSize="10">I{'\u2081'} = 50%</text>
+                      {showMiddlePolarizer && calculations.I2 !== null && (
+                        <text x="315" y="90" textAnchor="middle" fill="#fbbf24" fontSize="10">I{'\u2082'} = {(calculations.I2 * 100).toFixed(1)}%</text>
+                      )}
+                      <text x="465" y="90" textAnchor="middle" fill="#4ade80" fontSize="10">I{'\u2083'} = {(calculations.I3 * 100).toFixed(1)}%</text>
+                    </svg>
+                  </VisualizationPanel>
+
+                  {/* Intensity bars */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <AnimatedValue label={isZh ? '初始光强' : 'Initial I\u2080'} value={100} unit="%" decimals={0} color="orange" showBar max={100} />
+                    <AnimatedValue label={isZh ? 'P\u2081后' : 'After P\u2081'} value={calculations.I1 * 100} unit="%" decimals={1} color="cyan" showBar max={100} />
                     {showMiddlePolarizer && calculations.I2 !== null && (
-                      <text x="315" y="90" textAnchor="middle" fill="#fbbf24" fontSize="10">I₂ = {(calculations.I2 * 100).toFixed(1)}%</text>
+                      <AnimatedValue label={isZh ? 'P\u2082后' : 'After P\u2082'} value={calculations.I2 * 100} unit="%" decimals={1} color="orange" showBar max={100} />
                     )}
-                    <text x="465" y="90" textAnchor="middle" fill="#4ade80" fontSize="10">I₃ = {(calculations.I3 * 100).toFixed(1)}%</text>
-                  </svg>
-                </div>
-
-                {/* Intensity bars */}
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <AnimatedValue label={isZh ? '初始光强' : 'Initial I₀'} value={100} unit="%" decimals={0} color="orange" showBar max={100} />
-                  <AnimatedValue label={isZh ? 'P₁后' : 'After P₁'} value={calculations.I1 * 100} unit="%" decimals={1} color="cyan" showBar max={100} />
-                  {showMiddlePolarizer && calculations.I2 !== null && (
-                    <AnimatedValue label={isZh ? 'P₂后' : 'After P₂'} value={calculations.I2 * 100} unit="%" decimals={1} color="orange" showBar max={100} />
-                  )}
-                  <AnimatedValue label={isZh ? '透射率' : 'Transmission'} value={calculations.transmission * 100} unit="%" decimals={1} color="green" showBar max={100} />
-                </div>
-              </div>
-
-              <div className="w-full lg:w-80 space-y-4">
-                <ControlPanel title={isZh ? '预设实验' : 'Presets'}>
-                  <PresetButtons
-                    options={POLARIZER_PRESETS.map((p, i) => ({ value: i, label: isZh ? p.nameZh : p.name }))}
-                    value={selectedPreset ?? -1}
-                    onChange={(v) => handlePresetSelect(v as number)}
-                    columns={2}
-                  />
-                </ControlPanel>
-
-                <ControlPanel title={isZh ? '偏振片角度' : 'Polarizer Angles'}>
-                  <SliderControl label="P₁" value={polarizer1Angle} min={0} max={180} step={5} unit="°"
-                    onChange={(v) => { handleAngleChange(setPolarizer1Angle, v); setSelectedPreset(null) }} color="cyan" />
-
-                  <Toggle label={isZh ? '启用中间片 P₂' : 'Enable Middle P₂'} checked={showMiddlePolarizer}
-                    onChange={(v) => { setShowMiddlePolarizer(v); if (v && polarizer2Angle === null) setPolarizer2Angle(45); setSelectedPreset(null) }} />
-
-                  {showMiddlePolarizer && polarizer2Angle !== null && (
-                    <SliderControl label="P₂" value={polarizer2Angle} min={0} max={180} step={5} unit="°"
-                      onChange={(v) => { handleAngleChange((val) => setPolarizer2Angle(val), v); setSelectedPreset(null) }} color="orange" />
-                  )}
-
-                  <SliderControl label="P₃" value={polarizer3Angle} min={0} max={180} step={5} unit="°"
-                    onChange={(v) => { handleAngleChange(setPolarizer3Angle, v); setSelectedPreset(null) }} color="green" />
-                </ControlPanel>
-
-                <ControlPanel title={isZh ? '显示选项' : 'Display Options'}>
-                  <Toggle label={isZh ? '偏振颜色' : 'Polarization Colors'} checked={showPolarization} onChange={setShowPolarization} />
-                  <Toggle label={isZh ? '公式标注' : 'Show Formulas'} checked={showFormulas} onChange={setShowFormulas} />
-
-                  <div className={`pt-2 border-t ${dt.borderClass} mt-2`}>
-                    <button onClick={toggleAudio}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm w-full transition-colors ${
-                        isAudioEnabled ? 'bg-cyan-500/20 text-cyan-400' : `${dt.buttonBgClass} ${dt.mutedTextClass}`
-                      }`}
-                    >
-                      {isAudioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                      <span>{isZh ? '角度咔哒声' : 'Angle Clicks'}</span>
-                    </button>
+                    <AnimatedValue label={isZh ? '透射率' : 'Transmission'} value={calculations.transmission * 100} unit="%" decimals={1} color="green" showBar max={100} />
                   </div>
-                </ControlPanel>
+                </div>
+              }
+              controls={
+                <div className="space-y-4">
+                  <ControlPanel title={isZh ? '预设实验' : 'Presets'}>
+                    <PresetButtons
+                      options={POLARIZER_PRESETS.map((p, i) => ({ value: i, label: isZh ? p.nameZh : p.name }))}
+                      value={selectedPreset ?? -1}
+                      onChange={(v) => handlePresetSelect(v as number)}
+                      columns={2}
+                    />
+                  </ControlPanel>
 
-                {showFormulas && config.showFormula && (
-                  <InfoCard title={isZh ? '马吕斯定律' : "Malus's Law"} color="cyan">
-                    <Formula highlight>I = I₀ × cos²(θ)</Formula>
-                    <div className="mt-3 space-y-2 text-xs text-slate-400">
-                      {showMiddlePolarizer ? (
-                        <>
-                          <p className="font-mono text-cyan-400">I₁ = I₀ × 0.5 = 50%</p>
-                          <p className="font-mono text-orange-400">I₂ = I₁ × cos²({calculations.theta1}°) = {((calculations.I2 || 0) * 100).toFixed(1)}%</p>
-                          <p className="font-mono text-green-400">I₃ = I₂ × cos²({calculations.theta2}°) = {(calculations.I3 * 100).toFixed(1)}%</p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="font-mono text-cyan-400">I₁ = I₀ × 0.5 = 50%</p>
-                          <p className="font-mono text-green-400">I₃ = I₁ × cos²({calculations.theta2}°) = {(calculations.I3 * 100).toFixed(1)}%</p>
-                        </>
-                      )}
+                  <ControlPanel title={isZh ? '偏振片角度' : 'Polarizer Angles'}>
+                    <SliderControl label="P\u2081" value={polarizer1Angle} min={0} max={180} step={5} unit="°"
+                      onChange={(v) => { handleAngleChange(setPolarizer1Angle, v); setSelectedPreset(null) }} color="cyan" />
+
+                    <Toggle label={isZh ? '启用中间片 P\u2082' : 'Enable Middle P\u2082'} checked={showMiddlePolarizer}
+                      onChange={(v) => { setShowMiddlePolarizer(v); if (v && polarizer2Angle === null) setPolarizer2Angle(45); setSelectedPreset(null) }} />
+
+                    {showMiddlePolarizer && polarizer2Angle !== null && (
+                      <SliderControl label="P\u2082" value={polarizer2Angle} min={0} max={180} step={5} unit="°"
+                        onChange={(v) => { handleAngleChange((val) => setPolarizer2Angle(val), v); setSelectedPreset(null) }} color="orange" />
+                    )}
+
+                    <SliderControl label="P\u2083" value={polarizer3Angle} min={0} max={180} step={5} unit="°"
+                      onChange={(v) => { handleAngleChange(setPolarizer3Angle, v); setSelectedPreset(null) }} color="green" />
+                  </ControlPanel>
+
+                  <ControlPanel title={isZh ? '显示选项' : 'Display Options'}>
+                    <Toggle label={isZh ? '偏振颜色' : 'Polarization Colors'} checked={showPolarization} onChange={setShowPolarization} />
+                    <Toggle label={isZh ? '公式标注' : 'Show Formulas'} checked={showFormulas} onChange={setShowFormulas} />
+
+                    <div className={`pt-2 border-t ${dt.borderClass} mt-2`}>
+                      <button onClick={toggleAudio}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-sm w-full transition-colors ${
+                          isAudioEnabled ? 'bg-cyan-500/20 text-cyan-400' : `${dt.buttonBgClass} ${dt.mutedTextClass}`
+                        }`}
+                      >
+                        {isAudioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                        <span>{isZh ? '角度咔哒声' : 'Angle Clicks'}</span>
+                      </button>
                     </div>
-                  </InfoCard>
-                )}
-              </div>
-            </div>
+                  </ControlPanel>
+
+                  {showFormulas && config.showFormula && (
+                    <div className="space-y-3">
+                      <FormulaHighlight
+                        formula="I = I\u2080 \u00D7 cos\u00B2(\u03B8)"
+                        description={isZh ? '马吕斯定律 - 偏振光通过偏振片的强度' : "Malus's Law - intensity through a polarizer"}
+                      />
+                      <InfoCard title={isZh ? '计算步骤' : 'Calculation Steps'} color="cyan">
+                        <div className="mt-2 space-y-2 text-xs text-slate-400">
+                          {showMiddlePolarizer ? (
+                            <>
+                              <p className="font-mono text-cyan-400">I{'\u2081'} = I{'\u2080'} {'\u00D7'} 0.5 = 50%</p>
+                              <p className="font-mono text-orange-400">I{'\u2082'} = I{'\u2081'} {'\u00D7'} cos{'\u00B2'}({calculations.theta1}{'\u00B0'}) = {((calculations.I2 || 0) * 100).toFixed(1)}%</p>
+                              <p className="font-mono text-green-400">I{'\u2083'} = I{'\u2082'} {'\u00D7'} cos{'\u00B2'}({calculations.theta2}{'\u00B0'}) = {(calculations.I3 * 100).toFixed(1)}%</p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="font-mono text-cyan-400">I{'\u2081'} = I{'\u2080'} {'\u00D7'} 0.5 = 50%</p>
+                              <p className="font-mono text-green-400">I{'\u2083'} = I{'\u2081'} {'\u00D7'} cos{'\u00B2'}({calculations.theta2}{'\u00B0'}) = {(calculations.I3 * 100).toFixed(1)}%</p>
+                            </>
+                          )}
+                        </div>
+                      </InfoCard>
+                    </div>
+                  )}
+                </div>
+              }
+            />
 
             {/* Foundation: Why button */}
             <DifficultyGate level="foundation" currentLevel={difficultyLevel}>
@@ -770,8 +798,15 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
               </WhyButton>
             </DifficultyGate>
 
+            {/* Tip Banner */}
+            <TipBanner color="purple">
+              {isZh
+                ? '尝试不同的预设实验，观察中间偏振片如何改变光的传播。当两个偏振片正交时，加入中间片反而让光通过了！'
+                : 'Try different presets and observe how the middle polarizer changes light propagation. When two polarizers are crossed, adding a middle one actually lets light through!'}
+            </TipBanner>
+
             {/* Knowledge cards */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InfoGrid columns={2}>
               <InfoCard title={isZh ? '三偏振片悖论' : 'The Paradox'} color="purple">
                 <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
                   <li>• {isZh ? '两个正交偏振片完全阻挡光' : 'Crossed polarizers block all light'}</li>
@@ -786,7 +821,7 @@ export function PolarizationTypesUnifiedDemo({ difficultyLevel = 'application' }
                   <li>• {isZh ? '45°偏振光可部分通过90°偏振片' : '45° light can partially pass 90° polarizer'}</li>
                 </ul>
               </InfoCard>
-            </div>
+            </InfoGrid>
           </motion.div>
         )}
       </AnimatePresence>

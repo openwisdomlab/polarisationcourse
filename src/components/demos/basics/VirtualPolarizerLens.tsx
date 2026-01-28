@@ -260,7 +260,7 @@ export function VirtualPolarizerLens({
       <div
         ref={containerRef}
         className={cn(
-          'relative overflow-hidden rounded-xl cursor-none select-none',
+          'relative overflow-hidden rounded-2xl cursor-none select-none',
           theme === 'dark'
             ? 'border border-slate-700/50'
             : 'border border-gray-200 shadow-lg'
@@ -416,7 +416,7 @@ export function VirtualPolarizerLens({
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
               className={cn(
-                'px-4 py-2 rounded-lg text-sm',
+                'px-4 py-2 rounded-2xl text-sm',
                 theme === 'dark'
                   ? 'bg-slate-800/80 text-gray-300 border border-slate-600/50'
                   : 'bg-white/80 text-gray-600 border border-gray-200'
@@ -434,7 +434,7 @@ export function VirtualPolarizerLens({
         {isLensActive && (
           <motion.div
             className={cn(
-              'absolute bottom-3 right-3 px-2 py-1 rounded text-xs',
+              'absolute bottom-3 right-3 px-2 py-1 rounded-2xl text-xs',
               theme === 'dark'
                 ? 'bg-slate-800/80 text-gray-400 border border-slate-600/50'
                 : 'bg-white/80 text-gray-500 border border-gray-200'
@@ -467,7 +467,7 @@ export function VirtualPolarizerLens({
               >
                 <CheckCircle className="w-16 h-16 text-green-500" />
                 <span className={cn('text-xl font-bold', theme === 'dark' ? 'text-green-300' : 'text-green-700')}>
-                  完美! 🎉
+                  完美!
                 </span>
                 <span className={cn('text-sm', theme === 'dark' ? 'text-green-400' : 'text-green-600')}>
                   在 {Math.round(angle)}° 时消除眩光
@@ -483,7 +483,7 @@ export function VirtualPolarizerLens({
             <button
               onClick={resetTask}
               className={cn(
-                'p-2 rounded-lg transition-colors',
+                'p-2 rounded-2xl transition-colors',
                 theme === 'dark'
                   ? 'bg-slate-800/80 hover:bg-slate-700 text-gray-400 hover:text-gray-200'
                   : 'bg-white/80 hover:bg-gray-100 text-gray-500 hover:text-gray-700'
@@ -504,7 +504,7 @@ export function VirtualPolarizerLens({
               exit={{ opacity: 0, y: 20 }}
               onClick={onResearchLinkClick}
               className={cn(
-                'absolute bottom-3 left-3 flex items-center gap-2 px-4 py-2 rounded-lg transition-all',
+                'absolute bottom-3 left-3 flex items-center gap-2 px-4 py-2 rounded-2xl transition-all',
                 theme === 'dark'
                   ? 'bg-purple-600 hover:bg-purple-500 text-white'
                   : 'bg-purple-500 hover:bg-purple-600 text-white'
@@ -521,7 +521,7 @@ export function VirtualPolarizerLens({
       {showSlider && (
         <div
           className={cn(
-            'p-4 rounded-xl',
+            'p-4 rounded-2xl',
             theme === 'dark'
               ? 'bg-slate-800/70 border border-cyan-400/20'
               : 'bg-white border border-gray-200 shadow-sm'
@@ -586,7 +586,7 @@ export function VirtualPolarizerLens({
 
           {/* 物理解释 */}
           <div className={cn(
-            'mt-3 p-2 rounded-lg text-xs',
+            'mt-3 p-2 rounded-2xl text-xs',
             theme === 'dark'
               ? 'bg-purple-500/10 border border-purple-500/20 text-purple-300'
               : 'bg-purple-50 border border-purple-100 text-purple-700'

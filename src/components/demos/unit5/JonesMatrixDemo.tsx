@@ -8,7 +8,8 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
-import { SliderControl, ControlPanel, InfoCard, ValueDisplay } from '../DemoControls'
+import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { DemoHeader, VisualizationPanel, StatCard, InfoGrid, FormulaHighlight, ChartPanel } from '../DemoLayout'
 import { Copy, Check, Code } from 'lucide-react'
 
 // Import Jones Calculus utilities from shared module
@@ -202,38 +203,21 @@ function JonesMatrixDisplay({ matrix, element, angle, theme, t }: {
   const elementInfo = ELEMENT_INFO[element]
 
   return (
-    <div className={cn(
-      'rounded-xl border p-3',
-      theme === 'dark'
-        ? 'bg-slate-900/50 border-cyan-400/20'
-        : 'bg-white border-cyan-200 shadow-sm'
-    )}>
-      <div className="flex items-center justify-between mb-2">
-        <h4 className={cn(
-          'text-sm font-medium',
-          theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-        )}>{t('demos.jones.ui.jonesMatrix')}</h4>
-        <span
-          className="text-xs px-2 py-0.5 rounded"
-          style={{ backgroundColor: `${elementInfo.color}20`, color: elementInfo.color }}
-        >
-          {t(`demos.jones.elements.${element}`)} @ {angle}°
-        </span>
-      </div>
-      <div className="flex items-center justify-center gap-1">
+    <ChartPanel title={t('demos.jones.ui.jonesMatrix')} subtitle={`${t(`demos.jones.elements.${element}`)} @ ${angle}°`}>
+      <div className="flex items-center justify-center gap-1 py-2">
         <span className={cn(
-          'text-xl font-light',
+          'text-2xl font-light',
           theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
         )}>[</span>
-        <div className="grid grid-cols-2 gap-1">
+        <div className="grid grid-cols-2 gap-1.5">
           {matrix.flat().map((val, i) => (
             <motion.div
               key={i}
               className={cn(
-                'w-24 h-7 flex items-center justify-center text-[10px] font-mono rounded',
+                'w-28 h-8 flex items-center justify-center text-[11px] font-mono rounded-lg',
                 complex.abs(val) > 0.01
-                  ? theme === 'dark' ? 'text-cyan-400 bg-cyan-400/10' : 'text-cyan-600 bg-cyan-100'
-                  : theme === 'dark' ? 'text-gray-600 bg-slate-800/50' : 'text-gray-400 bg-gray-100'
+                  ? theme === 'dark' ? 'text-cyan-400 bg-cyan-400/10 border border-cyan-400/20' : 'text-cyan-600 bg-cyan-50 border border-cyan-200'
+                  : theme === 'dark' ? 'text-gray-600 bg-slate-800/50 border border-slate-700/30' : 'text-gray-400 bg-gray-50 border border-gray-200'
               )}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -244,11 +228,19 @@ function JonesMatrixDisplay({ matrix, element, angle, theme, t }: {
           ))}
         </div>
         <span className={cn(
-          'text-xl font-light',
+          'text-2xl font-light',
           theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
         )}>]</span>
       </div>
-    </div>
+      <div className="flex items-center justify-center gap-2 mt-1">
+        <span
+          className="text-xs px-2.5 py-1 rounded-full"
+          style={{ backgroundColor: `${elementInfo.color}20`, color: elementInfo.color }}
+        >
+          {elementInfo.symbol} = {t(`demos.jones.elements.${element}`)}
+        </span>
+      </div>
+    </ChartPanel>
   )
 }
 
@@ -268,38 +260,29 @@ function JonesVectorCompare({
   const outputIntensity = jonesIntensity(outputJones)
 
   return (
-    <div className={cn(
-      'rounded-xl border p-3',
-      theme === 'dark'
-        ? 'bg-slate-900/50 border-cyan-400/20'
-        : 'bg-white border-cyan-200 shadow-sm'
-    )}>
-      <h4 className={cn(
-        'text-sm font-medium mb-2',
-        theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'
-      )}>{t('demos.jones.ui.jonesTransform')}</h4>
-      <div className="grid grid-cols-2 gap-3">
+    <ChartPanel title={t('demos.jones.ui.jonesTransform')}>
+      <div className="grid grid-cols-2 gap-4">
         {/* 输入 */}
         <div>
           <div className={cn(
-            'text-[10px] mb-1.5 text-center',
+            'text-[11px] mb-2 text-center font-medium',
             theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
           )}>{t('demos.jones.ui.inputJones')}</div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className={cn(
-              'px-2 py-1 rounded text-xs font-mono text-center',
-              theme === 'dark' ? 'bg-slate-800 text-orange-400' : 'bg-gray-100 text-orange-600'
+              'px-3 py-1.5 rounded-lg text-xs font-mono text-center',
+              theme === 'dark' ? 'bg-orange-400/10 text-orange-400 border border-orange-400/20' : 'bg-orange-50 text-orange-600 border border-orange-200'
             )}>
               Ex: {complex.format(inputJones[0])}
             </div>
             <div className={cn(
-              'px-2 py-1 rounded text-xs font-mono text-center',
-              theme === 'dark' ? 'bg-slate-800 text-orange-400' : 'bg-gray-100 text-orange-600'
+              'px-3 py-1.5 rounded-lg text-xs font-mono text-center',
+              theme === 'dark' ? 'bg-orange-400/10 text-orange-400 border border-orange-400/20' : 'bg-orange-50 text-orange-600 border border-orange-200'
             )}>
               Ey: {complex.format(inputJones[1])}
             </div>
             <div className={cn(
-              'text-[10px] text-center mt-1',
+              'text-[11px] text-center mt-2 font-mono',
               theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
             )}>
               I = {inputIntensity.toFixed(2)}
@@ -310,24 +293,24 @@ function JonesVectorCompare({
         {/* 输出 */}
         <div>
           <div className={cn(
-            'text-[10px] mb-1.5 text-center',
+            'text-[11px] mb-2 text-center font-medium',
             theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
           )}>{t('demos.jones.ui.outputJones')}</div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className={cn(
-              'px-2 py-1 rounded text-xs font-mono text-center',
-              theme === 'dark' ? 'bg-slate-800 text-cyan-400' : 'bg-gray-100 text-cyan-600'
+              'px-3 py-1.5 rounded-lg text-xs font-mono text-center',
+              theme === 'dark' ? 'bg-cyan-400/10 text-cyan-400 border border-cyan-400/20' : 'bg-cyan-50 text-cyan-600 border border-cyan-200'
             )}>
               Ex: {complex.format(outputJones[0])}
             </div>
             <div className={cn(
-              'px-2 py-1 rounded text-xs font-mono text-center',
-              theme === 'dark' ? 'bg-slate-800 text-cyan-400' : 'bg-gray-100 text-cyan-600'
+              'px-3 py-1.5 rounded-lg text-xs font-mono text-center',
+              theme === 'dark' ? 'bg-cyan-400/10 text-cyan-400 border border-cyan-400/20' : 'bg-cyan-50 text-cyan-600 border border-cyan-200'
             )}>
               Ey: {complex.format(outputJones[1])}
             </div>
             <div className={cn(
-              'text-[10px] text-center mt-1',
+              'text-[11px] text-center mt-2 font-mono',
               theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
             )}>
               I = {outputIntensity.toFixed(2)}
@@ -335,7 +318,7 @@ function JonesVectorCompare({
           </div>
         </div>
       </div>
-    </div>
+    </ChartPanel>
   )
 }
 
@@ -353,7 +336,7 @@ function PolarizationEllipse({
   if (intensity < 0.001) {
     return (
       <div className={cn(
-        'w-full h-32 rounded-lg flex items-center justify-center',
+        'w-full h-32 rounded-2xl flex items-center justify-center',
         theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100'
       )}>
         <span className={cn(
@@ -382,14 +365,14 @@ function PolarizationEllipse({
 
   return (
     <div className={cn(
-      'rounded-lg p-2',
-      theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-100'
+      'rounded-2xl p-3',
+      theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
     )}>
       <div className={cn(
-        'text-[10px] text-center mb-1',
+        'text-[11px] text-center mb-1 font-medium',
         theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
       )}>{label}</div>
-      <svg viewBox="0 0 100 100" className="w-full h-24">
+      <svg viewBox="0 0 100 100" className="w-full h-28">
         {/* 坐标轴 */}
         <line x1="10" y1="50" x2="90" y2="50" stroke={theme === 'dark' ? '#374151' : '#d1d5db'} strokeWidth="0.5" />
         <line x1="50" y1="10" x2="50" y2="90" stroke={theme === 'dark' ? '#374151' : '#d1d5db'} strokeWidth="0.5" />
@@ -422,7 +405,7 @@ function PolarizationEllipse({
         )}
       </svg>
       <div className={cn(
-        'text-[9px] text-center',
+        'text-[10px] text-center font-medium',
         theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
       )}>
         {handedness === 'Linear' ? '线偏振' : handedness === 'RCP' ? '右旋' : '左旋'}
@@ -462,37 +445,37 @@ function CodeExportPanel({
 
   return (
     <div className={cn(
-      'rounded-xl border overflow-hidden',
+      'rounded-2xl border overflow-hidden',
       theme === 'dark'
-        ? 'bg-slate-900/50 border-purple-400/20'
+        ? 'bg-slate-800/50 border-purple-400/20'
         : 'bg-white border-purple-200 shadow-sm'
     )}>
       <div className={cn(
-        'flex items-center justify-between px-3 py-2 border-b',
-        theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+        'flex items-center justify-between px-4 py-3 border-b',
+        theme === 'dark' ? 'border-slate-700/50' : 'border-gray-200'
       )}>
         <div className="flex items-center gap-2">
           <Code className={cn('w-4 h-4', theme === 'dark' ? 'text-purple-400' : 'text-purple-600')} />
           <span className={cn(
-            'text-sm font-medium',
+            'text-sm font-semibold',
             theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
           )}>{t('demos.jones.ui.codeExport')}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex rounded-md overflow-hidden">
+          <div className="flex rounded-lg overflow-hidden border border-slate-600/30">
             {(['python', 'matlab'] as const).map((type) => (
               <button
                 key={type}
                 onClick={() => setCodeType(type)}
                 className={cn(
-                  'px-2 py-1 text-xs',
+                  'px-3 py-1 text-xs font-medium transition-colors',
                   codeType === type
                     ? theme === 'dark'
                       ? 'bg-purple-400/30 text-purple-300'
                       : 'bg-purple-100 text-purple-700'
                     : theme === 'dark'
-                      ? 'bg-slate-700 text-gray-400 hover:bg-slate-600'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-slate-700/50 text-gray-400 hover:bg-slate-600/50'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                 )}
               >
                 {type === 'python' ? 'Python' : 'MATLAB'}
@@ -502,7 +485,7 @@ function CodeExportPanel({
           <button
             onClick={handleCopy}
             className={cn(
-              'p-1.5 rounded transition-colors',
+              'p-1.5 rounded-lg transition-colors',
               theme === 'dark'
                 ? 'hover:bg-slate-700 text-gray-400'
                 : 'hover:bg-gray-100 text-gray-600'
@@ -513,7 +496,7 @@ function CodeExportPanel({
         </div>
       </div>
       <pre className={cn(
-        'p-3 text-[10px] leading-relaxed overflow-x-auto max-h-48',
+        'p-4 text-[11px] leading-relaxed overflow-x-auto max-h-48',
         theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
       )}>
         <code>{code}</code>
@@ -552,70 +535,75 @@ export function JonesMatrixDemo() {
   const inputTypes: InputType[] = ['horizontal', 'vertical', '45deg', 'rcp', 'lcp']
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {/* 标题 */}
-      <div className="text-center">
-        <h2 className={cn(
-          'text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent',
-          theme === 'dark'
-            ? 'from-purple-400 to-pink-500'
-            : 'from-purple-600 to-pink-600'
-        )}>
-          {t('demos.jones.demoTitle')}
-        </h2>
-        <p className={cn(
-          'text-xs mt-0.5',
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-        )}>{t('demos.jones.demoSubtitle')}</p>
-      </div>
+      <DemoHeader
+        title={t('demos.jones.demoTitle')}
+        subtitle={t('demos.jones.demoSubtitle')}
+        gradient="purple"
+      />
+
+      {/* 核心公式 */}
+      <FormulaHighlight
+        formula="E_out = J * E_in"
+        description={isZh ? 'Jones 矩阵将输入偏振态变换为输出偏振态' : 'Jones matrix transforms input polarization to output'}
+      />
 
       {/* 偏振椭圆可视化 */}
-      <div className={cn(
-        'rounded-xl border p-3',
-        theme === 'dark'
-          ? 'bg-slate-900/50 border-purple-400/20'
-          : 'bg-white border-purple-200 shadow-sm'
-      )}>
-        <div className="grid grid-cols-3 gap-3">
+      <VisualizationPanel variant="indigo">
+        <div className="grid grid-cols-3 gap-4">
           <PolarizationEllipse jones={inputJones} theme={theme} label={t('demos.jones.ui.inputPolarization')} />
           <div className="flex flex-col items-center justify-center">
             <div
-              className="w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold"
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg"
               style={{ backgroundColor: `${ELEMENT_INFO[element].color}30`, color: ELEMENT_INFO[element].color }}
             >
               {ELEMENT_INFO[element].symbol}
             </div>
             <div className={cn(
-              'text-[10px] mt-1',
+              'text-[11px] mt-2 font-mono',
               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
             )}>
-              θ = {angle}°
+              {isZh ? ELEMENT_INFO[element].nameZh : ELEMENT_INFO[element].nameEn}
+            </div>
+            <div className={cn(
+              'text-[11px] font-mono',
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            )}>
+              {'\u03B8'} = {angle}{'\u00B0'}
             </div>
             <motion.div
-              className="mt-2 text-xs font-mono"
+              className="mt-2 text-lg font-mono"
               style={{ color: ELEMENT_INFO[element].color }}
-              animate={{ scale: [1, 1.1, 1] }}
+              animate={{ scale: [1, 1.15, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              →
+              {'\u2192'}
             </motion.div>
           </div>
           <PolarizationEllipse jones={outputJones} theme={theme} label={t('demos.jones.ui.outputPolarization')} />
         </div>
+      </VisualizationPanel>
+
+      {/* 计算结果统计 */}
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard label={t('demos.jones.ui.inputIntensity')} value={inputIntensity.toFixed(2)} color="orange" />
+        <StatCard label={t('demos.jones.ui.outputIntensity')} value={outputIntensity.toFixed(2)} color="cyan" />
+        <StatCard label={t('demos.jones.ui.transmittance')} value={`${(transmittance * 100).toFixed(1)}%`} color="purple" />
       </div>
 
       {/* 主要内容区 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* 左侧：矩阵和矢量 */}
-        <div className="space-y-3">
+        <div className="space-y-5">
           <JonesMatrixDisplay matrix={matrix} element={element} angle={angle} theme={theme} t={t} />
           <JonesVectorCompare inputJones={inputJones} outputJones={outputJones} theme={theme} t={t} />
         </div>
 
         {/* 右侧：控制面板 */}
-        <div className="space-y-3">
+        <div className="space-y-5">
           <ControlPanel title={t('demos.jones.ui.selectElement')}>
-            <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-5 gap-2">
               {elements.map((el) => {
                 const info = ELEMENT_INFO[el]
                 return (
@@ -623,7 +611,7 @@ export function JonesMatrixDemo() {
                     key={el}
                     onClick={() => setElement(el)}
                     className={cn(
-                      'p-1.5 rounded-lg text-center transition-all',
+                      'p-2 rounded-xl text-center transition-all',
                       element === el
                         ? 'ring-2 ring-offset-1'
                         : theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
@@ -635,7 +623,7 @@ export function JonesMatrixDemo() {
                     }}
                   >
                     <div
-                      className="w-6 h-6 mx-auto rounded-full flex items-center justify-center text-xs font-bold mb-0.5"
+                      className="w-7 h-7 mx-auto rounded-full flex items-center justify-center text-xs font-bold mb-1"
                       style={{ backgroundColor: `${info.color}40`, color: info.color }}
                     >
                       {info.symbol}
@@ -661,7 +649,7 @@ export function JonesMatrixDemo() {
           </ControlPanel>
 
           <ControlPanel title={t('demos.jones.ui.inputState')}>
-            <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-5 gap-2">
               {inputTypes.map((type) => {
                 const info = INPUT_INFO[type]
                 return (
@@ -669,9 +657,9 @@ export function JonesMatrixDemo() {
                     key={type}
                     onClick={() => setInputType(type)}
                     className={cn(
-                      'px-1 py-1.5 rounded text-[9px] transition-colors',
+                      'px-1.5 py-2 rounded-xl text-[10px] font-medium transition-colors',
                       inputType === type
-                        ? 'text-white'
+                        ? 'text-white shadow-md'
                         : theme === 'dark'
                           ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -688,32 +676,13 @@ export function JonesMatrixDemo() {
           </ControlPanel>
 
           <ControlPanel title={t('demos.jones.ui.result')}>
-            <div className="grid grid-cols-2 gap-2">
-              <ValueDisplay label={t('demos.jones.ui.inputIntensity')} value={inputIntensity.toFixed(2)} color="orange" />
-              <ValueDisplay label={t('demos.jones.ui.outputIntensity')} value={outputIntensity.toFixed(2)} color="purple" />
-            </div>
-            <div className={cn(
-              'mt-2 p-2 rounded-lg text-center',
-              theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
-            )}>
-              <div className={cn(
-                'text-[10px] mb-0.5',
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-              )}>{t('demos.jones.ui.transmittance')}</div>
-              <div className={cn(
-                'text-xl font-bold',
-                theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
-              )}>
-                {(transmittance * 100).toFixed(1)}%
-              </div>
-            </div>
             <button
               onClick={() => setShowCode(!showCode)}
               className={cn(
-                'w-full mt-2 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2',
+                'w-full py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2',
                 theme === 'dark'
-                  ? 'bg-purple-400/20 text-purple-300 hover:bg-purple-400/30'
-                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                  ? 'bg-purple-400/20 text-purple-300 hover:bg-purple-400/30 border border-purple-400/20'
+                  : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
               )}
             >
               <Code className="w-4 h-4" />
@@ -741,29 +710,29 @@ export function JonesMatrixDemo() {
       )}
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <InfoGrid columns={2}>
         <InfoCard title={t('demos.jones.ui.jonesVsMueller')} color="purple">
           <ul className={cn(
-            'text-xs space-y-0.5',
+            'text-xs space-y-1',
             theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
           )}>
-            <li>• <strong>Jones:</strong> {t('demos.jones.info.jonesDesc')}</li>
-            <li>• <strong>Mueller:</strong> {t('demos.jones.info.muellerDesc')}</li>
-            <li>• <strong>{t('demos.jones.info.relation')}:</strong> {t('demos.jones.info.relationDesc')}</li>
+            <li>* <strong>Jones:</strong> {t('demos.jones.info.jonesDesc')}</li>
+            <li>* <strong>Mueller:</strong> {t('demos.jones.info.muellerDesc')}</li>
+            <li>* <strong>{t('demos.jones.info.relation')}:</strong> {t('demos.jones.info.relationDesc')}</li>
           </ul>
         </InfoCard>
 
         <InfoCard title={t('demos.jones.ui.complexAmplitude')} color="cyan">
           <ul className={cn(
-            'text-xs space-y-0.5',
+            'text-xs space-y-1',
             theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
           )}>
-            <li>• {t('demos.jones.info.amplitude')}</li>
-            <li>• {t('demos.jones.info.phase')}</li>
-            <li>• {t('demos.jones.info.coherence')}</li>
+            <li>* {t('demos.jones.info.amplitude')}</li>
+            <li>* {t('demos.jones.info.phase')}</li>
+            <li>* {t('demos.jones.info.coherence')}</li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

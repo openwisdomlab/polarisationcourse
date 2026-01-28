@@ -1,12 +1,23 @@
 /**
  * 瑞利散射演示 - Unit 4
  * 演示粒径远小于波长时的散射特性（蓝天效应）
- * 重新设计：纯 DOM + SVG + Framer Motion
+ * 重新设计：纯 DOM + SVG + Framer Motion + DemoLayout 统一布局
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useDemoTheme } from '../demoThemeColors'
-import { SliderControl, ControlPanel, InfoCard, ValueDisplay, Toggle } from '../DemoControls'
+import { SliderControl, ControlPanel, InfoCard, Toggle } from '../DemoControls'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  ChartPanel,
+  StatCard,
+  FormulaHighlight,
+} from '../DemoLayout'
+
+// ── 物理计算函数 ──
 
 // 瑞利散射强度 (与λ^-4成正比)
 function rayleighIntensity(wavelength: number): number {
@@ -74,7 +85,7 @@ function getSkyColor(sunAngle: number): string {
   }
 }
 
-// 瑞利散射场景图
+// ── 瑞利散射场景图 ──
 function RayleighDiagram({
   sunAngle,
   observerAngle,
@@ -84,22 +95,22 @@ function RayleighDiagram({
   observerAngle: number
   showPolarization: boolean
 }) {
-  const width = 600
-  const height = 350
-  const centerX = 300
-  const groundY = 300
+  const width = 700
+  const height = 400
+  const centerX = 350
+  const groundY = 340
 
   // 太阳位置
-  const sunDistance = 180
+  const sunDistance = 200
   const sunX = centerX + sunDistance * Math.cos((180 - sunAngle) * Math.PI / 180)
   const sunY = groundY - sunDistance * Math.sin(sunAngle * Math.PI / 180)
 
   // 散射点（大气中）
   const scatterX = centerX
-  const scatterY = groundY - 120
+  const scatterY = groundY - 140
 
   // 观察者位置
-  const observerX = centerX + 100
+  const observerX = centerX + 120
   const observerY = groundY
 
   // 观察方向终点
@@ -115,14 +126,17 @@ function RayleighDiagram({
   // 天空颜色
   const skyColor = getSkyColor(sunAngle)
 
+  // 地平线附近颜色
+  const horizonColor = sunAngle < 30 ? '#ff9966' : '#b8d8f0'
+
   // 生成大气粒子
   const particles = useMemo(() => {
     const result = []
-    for (let i = 0; i < 30; i++) {
-      const x = 100 + Math.random() * 400
-      const y = 80 + Math.random() * 180
-      const size = 2 + Math.random() * 3
-      result.push({ x, y, size, delay: Math.random() * 2 })
+    for (let i = 0; i < 40; i++) {
+      const x = 60 + Math.random() * 580
+      const y = 40 + Math.random() * 260
+      const size = 1.5 + Math.random() * 2.5
+      result.push({ x, y, size, delay: Math.random() * 3 })
     }
     return result
   }, [])
@@ -155,7 +169,7 @@ function RayleighDiagram({
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
       <defs>
-        {/* 天空渐变 */}
+        {/* 多段天空渐变 */}
         <linearGradient id="skyGradientRayleigh" x1="0%" y1="0%" x2="0%" y2="100%">
           <motion.stop
             offset="0%"
@@ -163,17 +177,31 @@ function RayleighDiagram({
             transition={{ duration: 0.5 }}
           />
           <motion.stop
+            offset="60%"
+            animate={{ stopColor: sunAngle < 30 ? '#e8a87c' : '#a5d0f0' }}
+            transition={{ duration: 0.5 }}
+          />
+          <motion.stop
             offset="100%"
-            animate={{ stopColor: sunAngle < 30 ? '#ff9966' : '#87ceeb' }}
+            animate={{ stopColor: horizonColor }}
             transition={{ duration: 0.5 }}
           />
         </linearGradient>
 
-        {/* 太阳光晕 */}
-        <radialGradient id="sunGlowRayleigh">
-          <stop offset="0%" stopColor="#fff7e6" />
-          <stop offset="40%" stopColor="#fbbf24" />
+        {/* 太阳光晕 - 多层辉光 */}
+        <radialGradient id="sunGlowRayleighOuter" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fef9c3" stopOpacity="0.3" />
           <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="sunGlowRayleighMiddle" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fff7e6" stopOpacity="0.9" />
+          <stop offset="50%" stopColor="#fbbf24" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="sunCoreRayleigh" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="60%" stopColor="#fef3c7" />
+          <stop offset="100%" stopColor="#fcd34d" />
         </radialGradient>
 
         {/* 散射粒子光晕 */}
@@ -181,29 +209,53 @@ function RayleighDiagram({
           <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.8" />
           <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
         </radialGradient>
+
+        {/* 地面渐变 */}
+        <linearGradient id="groundGradientRayleigh" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#365314" />
+          <stop offset="100%" stopColor="#1a2e05" />
+        </linearGradient>
+
+        {/* 柔光滤镜 */}
+        <filter id="rayleighSoftGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="rayleighStrongGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
 
       {/* 天空背景 */}
       <rect x="0" y="0" width={width} height={groundY} fill="url(#skyGradientRayleigh)" />
 
       {/* 地面 */}
-      <rect x="0" y={groundY} width={width} height={height - groundY} fill="#2d5016" />
+      <rect x="0" y={groundY} width={width} height={height - groundY} fill="url(#groundGradientRayleigh)" />
+      {/* 地面高光线 */}
+      <line x1="0" y1={groundY} x2={width} y2={groundY} stroke="#4a7c23" strokeWidth="1.5" opacity="0.4" />
 
-      {/* 大气粒子 */}
+      {/* 大气粒子 - 带柔和闪烁 */}
       {particles.map((p, i) => (
         <motion.circle
           key={i}
           cx={p.x}
           cy={p.y}
           r={p.size}
-          fill="#60a5fa"
-          initial={{ opacity: 0.3 }}
+          fill="#93c5fd"
+          initial={{ opacity: 0.15 }}
           animate={{
-            opacity: [0.3, 0.7, 0.3],
-            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.45, 0.15],
+            r: [p.size, p.size * 1.3, p.size],
           }}
           transition={{
-            duration: 2,
+            duration: 2.5 + Math.random(),
             delay: p.delay,
             repeat: Infinity,
             ease: 'easeInOut',
@@ -211,23 +263,41 @@ function RayleighDiagram({
         />
       ))}
 
-      {/* 太阳 */}
+      {/* 太阳 - 多层渲染 */}
       <motion.g
-        animate={{ x: sunX - 300, y: sunY - 100 }}
-        transition={{ duration: 0.5 }}
+        animate={{ x: sunX - centerX, y: sunY - 120 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <circle cx={300} cy={100} r={40} fill="url(#sunGlowRayleigh)" />
-        <circle cx={300} cy={100} r={20} fill="#fef3c7" />
+        {/* 外层辉光 */}
+        <circle cx={centerX} cy={120} r={60} fill="url(#sunGlowRayleighOuter)" filter="url(#rayleighStrongGlow)" />
+        {/* 中层辉光 */}
+        <circle cx={centerX} cy={120} r={35} fill="url(#sunGlowRayleighMiddle)" filter="url(#rayleighSoftGlow)" />
+        {/* 核心 */}
+        <circle cx={centerX} cy={120} r={18} fill="url(#sunCoreRayleigh)" />
       </motion.g>
 
-      {/* 入射太阳光线 */}
+      {/* 入射太阳光线 - 带发光效果 */}
       <motion.line
         x1={sunX}
         y1={sunY}
         x2={scatterX}
         y2={scatterY}
         stroke="#fbbf24"
-        strokeWidth={4}
+        strokeWidth={2}
+        strokeOpacity={0.3}
+        strokeLinecap="round"
+        filter="url(#rayleighSoftGlow)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1 }}
+      />
+      <motion.line
+        x1={sunX}
+        y1={sunY}
+        x2={scatterX}
+        y2={scatterY}
+        stroke="#fde68a"
+        strokeWidth={3}
         strokeLinecap="round"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
@@ -258,16 +328,17 @@ function RayleighDiagram({
         />
       ))}
 
-      {/* 散射点 */}
+      {/* 散射点 - 带脉冲动画 */}
       <motion.circle
         cx={scatterX}
         cy={scatterY}
-        r={15}
+        r={18}
         fill="url(#particleGlow)"
-        animate={{ scale: [1, 1.3, 1] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
       />
       <circle cx={scatterX} cy={scatterY} r={5} fill="#60a5fa" />
+      <circle cx={scatterX} cy={scatterY} r={2.5} fill="#93c5fd" />
 
       {/* 到观察者的散射光 */}
       <motion.line
@@ -277,7 +348,7 @@ function RayleighDiagram({
         y2={observerY - 20}
         stroke={polarization > 0.5 ? '#22d3ee' : '#60a5fa'}
         strokeWidth={3}
-        strokeDasharray="5,3"
+        strokeDasharray="6,4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.8 }}
         transition={{ delay: 0.5 }}
@@ -306,7 +377,7 @@ function RayleighDiagram({
       {/* 偏振指示器 */}
       {showPolarization && (
         <g transform={`translate(${(scatterX + observerX) / 2}, ${(scatterY + observerY) / 2 - 30})`}>
-          <rect x={-25} y={-15} width={50} height={30} rx={5} fill="rgba(0,0,0,0.6)" />
+          <rect x={-30} y={-18} width={60} height={36} rx={8} fill="rgba(0,0,0,0.65)" stroke="rgba(34,211,238,0.3)" strokeWidth="1" />
           {/* 偏振方向指示 */}
           <motion.line
             x1={-15}
@@ -322,50 +393,50 @@ function RayleighDiagram({
             }}
             transition={{ duration: 1, repeat: Infinity }}
           />
-          <text x={0} y={20} textAnchor="middle" fill="#94a3b8" fontSize={10}>
-            {(polarization * 100).toFixed(0)}% 偏振
+          <text x={0} y={22} textAnchor="middle" fill="#94a3b8" fontSize={10}>
+            {(polarization * 100).toFixed(0)}%
           </text>
         </g>
       )}
 
       {/* 散射角标注 */}
-      <g transform={`translate(${scatterX + 40}, ${scatterY - 30})`}>
-        <rect x={-30} y={-12} width={60} height={24} rx={4} fill="rgba(0,0,0,0.6)" />
-        <text x={0} y={5} textAnchor="middle" fill="#f59e0b" fontSize={12} fontWeight="bold">
-          θ = {scatterAngle.toFixed(0)}°
+      <g transform={`translate(${scatterX + 50}, ${scatterY - 35})`}>
+        <rect x={-35} y={-14} width={70} height={28} rx={8} fill="rgba(0,0,0,0.65)" stroke="rgba(245,158,11,0.3)" strokeWidth="1" />
+        <text x={0} y={5} textAnchor="middle" fill="#f59e0b" fontSize={13} fontWeight="bold" fontFamily="monospace">
+          {'\u03B8'} = {scatterAngle.toFixed(0)}{'\u00B0'}
         </text>
       </g>
 
       {/* 标签 */}
       <motion.text
         x={sunX}
-        y={sunY - 50}
+        y={sunY - 55}
         textAnchor="middle"
         fill="#fbbf24"
-        fontSize={14}
+        fontSize={13}
         fontWeight="bold"
-        animate={{ x: sunX, y: sunY - 50 }}
+        animate={{ x: sunX, y: sunY - 55 }}
       >
-        太阳
+        {'\u2600'} Sun
       </motion.text>
 
-      <text x={scatterX} y={scatterY + 35} textAnchor="middle" fill="#60a5fa" fontSize={12}>
-        大气分子
+      <text x={scatterX} y={scatterY + 40} textAnchor="middle" fill="#93c5fd" fontSize={12} fontWeight="500">
+        Molecule
       </text>
 
-      <text x={observerX} y={observerY + 25} textAnchor="middle" fill="#94a3b8" fontSize={12}>
-        观察者
+      <text x={observerX} y={observerY + 28} textAnchor="middle" fill="#94a3b8" fontSize={12} fontWeight="500">
+        Observer
       </text>
     </svg>
   )
 }
 
-// 波长依赖性曲线图
+// ── 波长依赖性曲线图 ──
 function WavelengthDependenceChart() {
   const dt = useDemoTheme()
-  const width = 280
-  const height = 150
-  const margin = { left: 45, right: 15, top: 20, bottom: 35 }
+  const width = 320
+  const height = 170
+  const margin = { left: 45, right: 20, top: 22, bottom: 38 }
   const chartWidth = width - margin.left - margin.right
   const chartHeight = height - margin.top - margin.bottom
 
@@ -388,11 +459,35 @@ function WavelengthDependenceChart() {
     return d
   }, [chartWidth, chartHeight, margin])
 
+  // 曲线下方填充
+  const areaPath = useMemo(() => {
+    const maxIntensity = rayleighIntensity(400)
+    let d = ''
+
+    for (let wl = 400; wl <= 700; wl += 5) {
+      const intensity = rayleighIntensity(wl)
+      const x = margin.left + ((wl - 400) / 300) * chartWidth
+      const y = margin.top + (1 - intensity / maxIntensity) * chartHeight * 0.9
+
+      if (wl === 400) {
+        d += `M ${x} ${y}`
+      } else {
+        d += ` L ${x} ${y}`
+      }
+    }
+    // Close the area path
+    const xEnd = margin.left + chartWidth
+    const xStart = margin.left
+    const yBase = margin.top + chartHeight
+    d += ` L ${xEnd} ${yBase} L ${xStart} ${yBase} Z`
+    return d
+  }, [chartWidth, chartHeight, margin])
+
   // 关键波长点
   const keyPoints = [
-    { wl: 450, label: '蓝' },
-    { wl: 550, label: '绿' },
-    { wl: 650, label: '红' },
+    { wl: 450, label: 'Blue' },
+    { wl: 550, label: 'Green' },
+    { wl: 650, label: 'Red' },
   ]
 
   const maxIntensity = rayleighIntensity(400)
@@ -400,7 +495,7 @@ function WavelengthDependenceChart() {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full">
       {/* 背景 */}
-      <rect x={0} y={0} width={width} height={height} fill={dt.canvasBg} rx={8} />
+      <rect x={0} y={0} width={width} height={height} fill={dt.canvasBg} rx={10} />
 
       {/* 网格线 */}
       {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => (
@@ -434,28 +529,44 @@ function WavelengthDependenceChart() {
       />
 
       {/* Y轴标签 */}
-      <text x={8} y={margin.top + 5} fill={dt.textSecondary} fontSize={10}>I (强度)</text>
+      <text x={8} y={margin.top + 5} fill={dt.textSecondary} fontSize={10}>I</text>
 
       {/* X轴标签 */}
-      <text x={margin.left} y={height - 8} fill={dt.textSecondary} fontSize={10}>400</text>
-      <text x={margin.left + chartWidth / 2 - 10} y={height - 8} fill={dt.textSecondary} fontSize={10}>550</text>
-      <text x={width - margin.right - 25} y={height - 8} fill={dt.textSecondary} fontSize={10}>700 nm</text>
+      <text x={margin.left} y={height - 10} fill={dt.textSecondary} fontSize={10}>400</text>
+      <text x={margin.left + chartWidth / 2 - 10} y={height - 10} fill={dt.textSecondary} fontSize={10}>550</text>
+      <text x={width - margin.right - 30} y={height - 10} fill={dt.textSecondary} fontSize={10}>700 nm</text>
 
-      {/* 曲线 - 用渐变色 */}
+      {/* 曲线渐变色定义 */}
       <defs>
-        <linearGradient id="wavelengthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="wavelengthGradientRayleigh" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#8b5cf6" />
           <stop offset="25%" stopColor="#3b82f6" />
           <stop offset="50%" stopColor="#22c55e" />
           <stop offset="75%" stopColor="#eab308" />
           <stop offset="100%" stopColor="#ef4444" />
         </linearGradient>
+        <linearGradient id="wavelengthAreaGradientRayleigh" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.15" />
+          <stop offset="25%" stopColor="#3b82f6" stopOpacity="0.1" />
+          <stop offset="50%" stopColor="#22c55e" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="#ef4444" stopOpacity="0.02" />
+        </linearGradient>
       </defs>
 
+      {/* 面积填充 */}
+      <motion.path
+        d={areaPath}
+        fill="url(#wavelengthAreaGradientRayleigh)"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, ease: 'easeOut' }}
+      />
+
+      {/* 曲线 */}
       <motion.path
         d={curvePath}
         fill="none"
-        stroke="url(#wavelengthGradient)"
+        stroke="url(#wavelengthGradientRayleigh)"
         strokeWidth={3}
         strokeLinecap="round"
         initial={{ pathLength: 0 }}
@@ -471,28 +582,24 @@ function WavelengthDependenceChart() {
 
         return (
           <motion.g key={i} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1 + i * 0.2 }}>
-            <circle cx={x} cy={y} r={6} fill={wavelengthToRGB(point.wl)} />
-            <text x={x} y={y - 10} textAnchor="middle" fill={wavelengthToRGB(point.wl)} fontSize={10}>
+            <circle cx={x} cy={y} r={4} fill={wavelengthToRGB(point.wl)} stroke={dt.canvasBg} strokeWidth={2} />
+            <circle cx={x} cy={y} r={7} fill="none" stroke={wavelengthToRGB(point.wl)} strokeWidth={1} opacity={0.4} />
+            <text x={x} y={y - 12} textAnchor="middle" fill={wavelengthToRGB(point.wl)} fontSize={10} fontWeight="600">
               {point.label}
             </text>
           </motion.g>
         )
       })}
-
-      {/* 公式标注 */}
-      <text x={width - margin.right - 40} y={margin.top + 20} fill="#f59e0b" fontSize={12} fontWeight="bold">
-        I ∝ λ⁻⁴
-      </text>
     </svg>
   )
 }
 
-// 偏振度vs散射角图表
+// ── 偏振度vs散射角图表 ──
 function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
   const dt = useDemoTheme()
-  const width = 280
-  const height = 150
-  const margin = { left: 45, right: 15, top: 20, bottom: 35 }
+  const width = 320
+  const height = 170
+  const margin = { left: 45, right: 20, top: 22, bottom: 38 }
   const chartWidth = width - margin.left - margin.right
   const chartHeight = height - margin.top - margin.bottom
 
@@ -527,7 +634,7 @@ function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full">
       {/* 背景 */}
-      <rect x={0} y={0} width={width} height={height} fill={dt.canvasBg} rx={8} />
+      <rect x={0} y={0} width={width} height={height} fill={dt.canvasBg} rx={10} />
 
       {/* 坐标轴 */}
       <line
@@ -548,15 +655,14 @@ function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
       />
 
       {/* Y轴标签 */}
-      <text x={5} y={margin.top + 5} fill={dt.textSecondary} fontSize={9}>偏振度</text>
-      <text x={margin.left - 25} y={margin.top + 5} fill={dt.textSecondary} fontSize={10}>100%</text>
-      <text x={margin.left - 15} y={height - margin.bottom} fill={dt.textSecondary} fontSize={10}>0%</text>
+      <text x={margin.left - 28} y={margin.top + 5} fill={dt.textSecondary} fontSize={10}>100%</text>
+      <text x={margin.left - 18} y={height - margin.bottom} fill={dt.textSecondary} fontSize={10}>0%</text>
 
       {/* X轴标签 */}
-      <text x={margin.left - 5} y={height - 8} fill={dt.textSecondary} fontSize={10}>0°</text>
-      <text x={x90 - 10} y={height - 8} fill={dt.textSecondary} fontSize={10}>90°</text>
-      <text x={width - margin.right - 20} y={height - 8} fill={dt.textSecondary} fontSize={10}>180°</text>
-      <text x={width - margin.right - 5} y={height - 20} fill={dt.textSecondary} fontSize={10}>θ</text>
+      <text x={margin.left - 5} y={height - 10} fill={dt.textSecondary} fontSize={10}>0{'\u00B0'}</text>
+      <text x={x90 - 10} y={height - 10} fill={dt.textSecondary} fontSize={10}>90{'\u00B0'}</text>
+      <text x={width - margin.right - 22} y={height - 10} fill={dt.textSecondary} fontSize={10}>180{'\u00B0'}</text>
+      <text x={width - margin.right + 2} y={height - 22} fill={dt.textSecondary} fontSize={10}>{'\u03B8'}</text>
 
       {/* 90度垂直线 - 完全偏振 */}
       <line
@@ -568,8 +674,8 @@ function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
         strokeWidth={1}
         strokeDasharray="5,3"
       />
-      <text x={x90 - 25} y={margin.top - 5} fill="#4ade80" fontSize={10}>
-        完全偏振
+      <text x={x90 + 5} y={margin.top + 12} fill="#4ade80" fontSize={10} fontWeight="500">
+        max
       </text>
 
       {/* 曲线 */}
@@ -584,15 +690,7 @@ function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
         transition={{ duration: 1.5, ease: 'easeOut' }}
       />
 
-      {/* 当前角度点 */}
-      <motion.circle
-        cx={currentX}
-        cy={currentY}
-        r={8}
-        fill="#f59e0b"
-        animate={{ x: currentX - currentX, y: currentY - currentY }}
-        transition={{ duration: 0.3 }}
-      />
+      {/* 当前角度指示线 */}
       <motion.line
         x1={currentX}
         y1={currentY}
@@ -603,17 +701,36 @@ function PolarizationAngleChart({ currentAngle }: { currentAngle: number }) {
         strokeDasharray="3,2"
         animate={{ x1: currentX, y1: currentY }}
       />
+
+      {/* 当前角度点 - 外圈 + 内核 */}
+      <motion.circle
+        cx={currentX}
+        cy={currentY}
+        r={10}
+        fill="#f59e0b"
+        opacity={0.2}
+        animate={{ x: currentX - currentX, y: currentY - currentY }}
+        transition={{ duration: 0.3 }}
+      />
+      <motion.circle
+        cx={currentX}
+        cy={currentY}
+        r={6}
+        fill="#f59e0b"
+        animate={{ x: currentX - currentX, y: currentY - currentY }}
+        transition={{ duration: 0.3 }}
+      />
     </svg>
   )
 }
 
-// 散射强度对比柱状图
+// ── 散射强度对比柱状图 ──
 function ScatteringIntensityBars() {
   const dt = useDemoTheme()
   const wavelengths = [
-    { wl: 450, label: '蓝光', color: '#3b82f6' },
-    { wl: 550, label: '绿光', color: '#22c55e' },
-    { wl: 650, label: '红光', color: '#ef4444' },
+    { wl: 450, label: 'Blue (450nm)', color: '#3b82f6' },
+    { wl: 550, label: 'Green (550nm)', color: '#22c55e' },
+    { wl: 650, label: 'Red (650nm)', color: '#ef4444' },
   ]
 
   const maxIntensity = rayleighIntensity(450)
@@ -627,10 +744,10 @@ function ScatteringIntensityBars() {
         return (
           <div key={i} className="space-y-1">
             <div className="flex justify-between text-xs">
-              <span style={{ color: item.color }}>{item.label} ({item.wl}nm)</span>
+              <span style={{ color: item.color }} className="font-medium">{item.label}</span>
               <span className={dt.mutedTextClass}>{intensity.toFixed(2)}</span>
             </div>
-            <div className={`h-3 ${dt.barTrackClass} rounded-full overflow-hidden`}>
+            <div className={`h-2.5 ${dt.barTrackClass} rounded-full overflow-hidden`}>
               <motion.div
                 className="h-full rounded-full"
                 style={{ backgroundColor: item.color }}
@@ -643,13 +760,13 @@ function ScatteringIntensityBars() {
         )
       })}
       <p className={`text-xs mt-2 text-center ${dt.mutedTextClass}`}>
-        蓝光散射约为红光的 {(rayleighIntensity(450) / rayleighIntensity(650)).toFixed(1)} 倍
+        Blue scatters ~{(rayleighIntensity(450) / rayleighIntensity(650)).toFixed(1)}x more than red
       </p>
     </div>
   )
 }
 
-// 主演示组件
+// ── 主演示组件 ──
 export function RayleighScatteringDemo() {
   const dt = useDemoTheme()
   const [sunAngle, setSunAngle] = useState(60)
@@ -665,137 +782,157 @@ export function RayleighScatteringDemo() {
 
   // 快速设置太阳角度
   const presets = [
-    { label: '日出', angle: 15 },
-    { label: '上午', angle: 45 },
-    { label: '正午', angle: 90 },
+    { label: 'Sunrise', angle: 15 },
+    { label: 'Morning', angle: 45 },
+    { label: 'Noon', angle: 90 },
   ]
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {/* 标题 */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          瑞利散射演示
-        </h2>
-        <p className={`${dt.mutedTextClass} text-sm mt-1`}>Rayleigh Scattering - 蓝天与红日的秘密</p>
+      <DemoHeader
+        title="Rayleigh Scattering"
+        subtitle="Why is the sky blue and sunsets red? Explore the wavelength-dependent scattering of light by atmospheric molecules."
+        gradient="cyan"
+        badge="Unit 4"
+      />
+
+      {/* 统计卡片行 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <StatCard
+          label="Scatter Angle"
+          value={`${scatterAngle.toFixed(0)}`}
+          unit={'\u00B0'}
+          color="orange"
+        />
+        <StatCard
+          label="Polarization"
+          value={`${(polarization * 100).toFixed(0)}`}
+          unit="%"
+          color={polarization > 0.8 ? 'green' : 'cyan'}
+        />
+        <StatCard
+          label="Sun Elevation"
+          value={`${sunAngle}`}
+          unit={'\u00B0'}
+          color="yellow"
+        />
+        <StatCard
+          label="Blue/Red Ratio"
+          value={(rayleighIntensity(450) / rayleighIntensity(650)).toFixed(1)}
+          unit="x"
+          color="blue"
+        />
       </div>
 
-      {/* 主要内容区 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左侧：可视化 */}
-        <div className="space-y-4">
-          {/* 散射场景 */}
-          <div className={`${dt.panelClass} border rounded-xl p-4`}>
-            <h3 className="text-sm font-medium text-cyan-400 mb-3">大气散射场景</h3>
-            <div className="aspect-[16/10]">
-              <RayleighDiagram
-                sunAngle={sunAngle}
-                observerAngle={observerAngle}
-                showPolarization={showPolarization}
+      {/* 主要内容区 - 双栏布局 */}
+      <DemoMainLayout
+        controlsWidth="wide"
+        visualization={
+          <div className="space-y-4">
+            {/* 散射场景 */}
+            <VisualizationPanel variant="dark">
+              <div className="aspect-[16/9]">
+                <RayleighDiagram
+                  sunAngle={sunAngle}
+                  observerAngle={observerAngle}
+                  showPolarization={showPolarization}
+                />
+              </div>
+            </VisualizationPanel>
+
+            {/* 图表区 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <ChartPanel title="Wavelength Dependence" subtitle="I {'\u221D'} {'\u03BB'}{'\u207B'}{'\u2074'}">
+                <WavelengthDependenceChart />
+              </ChartPanel>
+              <ChartPanel title="Polarization vs Angle" subtitle="P({'\u03B8'})">
+                <PolarizationAngleChart currentAngle={scatterAngle} />
+              </ChartPanel>
+            </div>
+          </div>
+        }
+        controls={
+          <div className="space-y-4">
+            <ControlPanel title="Parameters">
+              <SliderControl
+                label="Sun Elevation"
+                value={sunAngle}
+                min={10}
+                max={90}
+                step={5}
+                unit={'\u00B0'}
+                onChange={setSunAngle}
+                color="orange"
               />
-            </div>
+              <SliderControl
+                label="Observer Direction"
+                value={observerAngle}
+                min={0}
+                max={90}
+                step={5}
+                unit={'\u00B0'}
+                onChange={setObserverAngle}
+                color="cyan"
+              />
+
+              {/* 预设按钮 */}
+              <div className="flex gap-2 mt-2">
+                {presets.map((preset) => (
+                  <button
+                    key={preset.label}
+                    onClick={() => setSunAngle(preset.angle)}
+                    className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      sunAngle === preset.angle
+                        ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
+                        : `${dt.isDark ? 'bg-slate-700/70 text-gray-300 hover:bg-slate-600/70' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+
+              <Toggle
+                label="Show Polarization"
+                checked={showPolarization}
+                onChange={setShowPolarization}
+              />
+            </ControlPanel>
+
+            {/* 公式高亮 */}
+            <FormulaHighlight
+              formula={`I \u221D \u03BB\u207B\u2074`}
+              description="Rayleigh scattering intensity is inversely proportional to the fourth power of wavelength"
+            />
+
+            <ControlPanel title="Relative Scattering Intensity">
+              <ScatteringIntensityBars />
+            </ControlPanel>
           </div>
-
-          {/* 图表区 */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className={`${dt.panelClass} border rounded-xl p-3`}>
-              <h4 className="text-xs font-medium text-cyan-400 mb-2">波长依赖性 (λ⁻⁴)</h4>
-              <WavelengthDependenceChart />
-            </div>
-            <div className={`${dt.panelClass} border rounded-xl p-3`}>
-              <h4 className="text-xs font-medium text-cyan-400 mb-2">偏振度 vs 散射角</h4>
-              <PolarizationAngleChart currentAngle={scatterAngle} />
-            </div>
-          </div>
-        </div>
-
-        {/* 右侧：控制面板 */}
-        <div className="space-y-4">
-          <ControlPanel title="参数控制">
-            <SliderControl
-              label="太阳仰角"
-              value={sunAngle}
-              min={10}
-              max={90}
-              step={5}
-              unit="°"
-              onChange={setSunAngle}
-              color="orange"
-            />
-            <SliderControl
-              label="观察方向"
-              value={observerAngle}
-              min={0}
-              max={90}
-              step={5}
-              unit="°"
-              onChange={setObserverAngle}
-              color="cyan"
-            />
-
-            {/* 预设按钮 */}
-            <div className="flex gap-2 mt-2">
-              {presets.map((preset) => (
-                <button
-                  key={preset.label}
-                  onClick={() => setSunAngle(preset.angle)}
-                  className={`flex-1 px-3 py-1.5 rounded text-xs transition-colors ${
-                    sunAngle === preset.angle
-                      ? 'bg-cyan-500 text-white'
-                      : `${dt.isDark ? 'bg-slate-700 text-gray-300 hover:bg-slate-600' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`
-                  }`}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-
-            <Toggle
-              label="显示偏振信息"
-              checked={showPolarization}
-              onChange={setShowPolarization}
-            />
-          </ControlPanel>
-
-          <ControlPanel title="散射参数">
-            <ValueDisplay label="散射角 θ" value={scatterAngle.toFixed(0)} unit="°" />
-            <ValueDisplay
-              label="偏振度"
-              value={(polarization * 100).toFixed(0)}
-              unit="%"
-              color={polarization > 0.8 ? 'green' : 'cyan'}
-            />
-            <div className={`mt-2 p-2 ${dt.isDark ? 'bg-slate-800/50' : 'bg-slate-100'} rounded text-center`}>
-              <span className="text-yellow-400 font-mono text-lg">I ∝ λ⁻⁴</span>
-            </div>
-          </ControlPanel>
-
-          <ControlPanel title="各波长相对散射强度">
-            <ScatteringIntensityBars />
-          </ControlPanel>
-        </div>
-      </div>
+        }
+      />
 
       {/* 底部知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InfoCard title="瑞利散射特性" color="cyan">
-          <ul className={`text-sm space-y-1 ${dt.bodyClass}`}>
-            <li>• <strong>适用条件：</strong>粒径 ≪ 波长（空气分子 ~0.3nm）</li>
-            <li>• <strong>波长依赖：</strong>I ∝ λ⁻⁴（短波散射更强）</li>
-            <li>• <strong>偏振特性：</strong>90°散射时完全线偏振</li>
-            <li>• <strong>对称性：</strong>前后散射对称（1 + cos²θ）</li>
+      <InfoGrid columns={2}>
+        <InfoCard title="Rayleigh Scattering Properties" color="cyan">
+          <ul className={`text-sm space-y-1.5 ${dt.bodyClass}`}>
+            <li>&#8226; <strong>Condition:</strong> Particle size much smaller than wavelength (~0.3nm for air molecules)</li>
+            <li>&#8226; <strong>Wavelength dependence:</strong> I proportional to lambda to the negative fourth (short waves scatter more)</li>
+            <li>&#8226; <strong>Polarization:</strong> Fully linearly polarized at 90 degree scattering</li>
+            <li>&#8226; <strong>Symmetry:</strong> Forward-backward symmetric phase function (1 + cos squared theta)</li>
           </ul>
         </InfoCard>
 
-        <InfoCard title="自然现象解释" color="blue">
-          <ul className={`text-sm space-y-1 ${dt.bodyClass}`}>
-            <li>• <strong>蓝天：</strong>蓝光散射是红光的~10倍，充满天空</li>
-            <li>• <strong>红日落：</strong>阳光穿过更多大气，蓝光散射殆尽</li>
-            <li>• <strong>天空偏振：</strong>与太阳成90°方向偏振最强</li>
-            <li>• <strong>应用：</strong>偏振太阳镜可减弱天空眩光</li>
+        <InfoCard title="Natural Phenomena Explained" color="blue">
+          <ul className={`text-sm space-y-1.5 ${dt.bodyClass}`}>
+            <li>&#8226; <strong>Blue sky:</strong> Blue light scatters ~10x more than red, filling the sky</li>
+            <li>&#8226; <strong>Red sunset:</strong> Sunlight traverses more atmosphere; blue is scattered away</li>
+            <li>&#8226; <strong>Sky polarization:</strong> Maximum polarization at 90 degrees from the sun</li>
+            <li>&#8226; <strong>Application:</strong> Polarized sunglasses reduce sky glare by blocking scattered light</li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

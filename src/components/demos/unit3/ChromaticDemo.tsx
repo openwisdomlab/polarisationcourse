@@ -5,12 +5,23 @@
  *
  * Enhanced with SpectralJonesSolver for physically accurate
  * wavelength-dependent chromatic polarization calculations.
+ *
+ * Redesigned with DemoLayout components for consistent UI.
  */
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
+import {
+  DemoHeader,
+  VisualizationPanel,
+  DemoMainLayout,
+  InfoGrid,
+  ChartPanel,
+  StatCard,
+  FormulaHighlight,
+} from '../DemoLayout'
 import {
   analyzeSpectrum,
   MATERIAL_BIREFRINGENCE,
@@ -75,17 +86,6 @@ function calculateTransmission(
   const thetaP = (polarizerAngle * Math.PI) / 180 // 起偏器角度
   const thetaA = (analyzerAngle * Math.PI) / 180 // 检偏器角度
 
-  // 假设样品光轴在0°方向（水平）
-  // 使用完整的琼斯矩阵计算或等效的透过率公式
-  // T = cos²(θP - θA) - sin(2θP) × sin(2θA) × sin²(δ/2)
-  // 但当样品光轴在45°时，公式变为：
-  // T = cos²(θP - θA) - sin(2(θP - 45°)) × sin(2(θA - 45°)) × sin²(δ/2)
-
-  // 更准确的公式：对于正交偏振片 (θA = θP + 90°)，样品光轴在45°
-  // T = sin²(2×45°) × sin²(δ/2) = sin²(δ/2)
-  // 对于平行偏振片 (θA = θP)
-  // T = 1 - sin²(2×45°) × sin²(δ/2) = cos²(δ/2)
-
   // 通用公式（样品光轴固定在45°方向）
   const beta = Math.PI / 4 // 样品光轴角度 (45°)
   const sinSquaredDeltaHalf = Math.pow(Math.sin(delta / 2), 2)
@@ -103,7 +103,6 @@ function calculateTransmission(
 }
 
 // 计算白光参考值（用于正确归一化颜色）
-// 预计算所有波长传输率为1时的RGB积分值
 function getWhiteReference(): { r: number; g: number; b: number } {
   let totalR = 0, totalG = 0, totalB = 0
 
@@ -129,8 +128,6 @@ function calculateMixedColor(
 ): { r: number; g: number; b: number; hex: string } {
   let totalR = 0, totalG = 0, totalB = 0
 
-  // 使用人眼光谱响应权重（近似CIE标准观察者）
-  // 对可见光谱积分，步长更细以提高精度
   for (let wavelength = 380; wavelength <= 780; wavelength += 2) {
     const transmission = calculateTransmission(
       wavelength,
@@ -141,39 +138,30 @@ function calculateMixedColor(
     )
     const [r, g, b] = wavelengthToRGB(wavelength)
 
-    // 假设白光源为等能光谱（可以改为D65标准光源）
     totalR += r * transmission
     totalG += g * transmission
     totalB += b * transmission
   }
 
-  // 计算总透过光能量（用于判断亮度）
   const totalEnergy = totalR + totalG + totalB
 
   if (totalEnergy < 0.001) {
     return { r: 0, g: 0, b: 0, hex: '#000000' }
   }
 
-  // 使用白光参考值进行正确归一化
-  // 将每个通道除以其白光参考值，使得全透过时为白色
   let r = totalR / WHITE_REFERENCE.r
   let g = totalG / WHITE_REFERENCE.g
   let b = totalB / WHITE_REFERENCE.b
 
-  // 计算亮度
   const luminance = 0.299 * r + 0.587 * g + 0.114 * b
 
-  // 对于低透过率情况，提升亮度同时保持色调比例
-  // 这样可以在保持干涉色正确的同时提高可见度
   if (luminance > 0.01 && luminance < 0.5) {
-    // 亮度提升因子，保持色调比例
     const boostFactor = Math.min(0.7 / luminance, 2.0)
     r *= boostFactor
     g *= boostFactor
     b *= boostFactor
   }
 
-  // 轻微增强饱和度，使颜色更鲜明
   const maxVal = Math.max(r, g, b)
   if (maxVal > 0.1 && maxVal < 1.5) {
     const avgBrightness = (r + g + b) / 3
@@ -183,7 +171,6 @@ function calculateMixedColor(
     b = avgBrightness + (b - avgBrightness) * saturationBoost
   }
 
-  // 限制在有效范围内
   r = Math.max(0, Math.min(1, r))
   g = Math.max(0, Math.min(1, g))
   b = Math.max(0, Math.min(1, b))
@@ -200,15 +187,15 @@ function OpticalPathDiagram({
   polarizerAngle,
   analyzerAngle,
   resultColor,
-  theme,
 }: {
   thickness: number
   birefringence: number
   polarizerAngle: number
   analyzerAngle: number
   resultColor: string
-  theme: 'dark' | 'light'
 }) {
+  const dt = useDemoTheme()
+
   return (
     <svg viewBox="0 0 700 280" className="w-full h-auto max-h-[320px]">
       <defs>
@@ -238,7 +225,7 @@ function OpticalPathDiagram({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="700" height="280" fill={theme === 'dark' ? '#0f172a' : '#f8fafc'} rx="8" />
+      <rect x="0" y="0" width="700" height="280" fill={dt.canvasBg} rx="8" />
 
       {/* 白光光源 */}
       <g transform="translate(50, 140)">
@@ -249,7 +236,7 @@ function OpticalPathDiagram({
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         />
-        <text x="0" y="50" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="12">白光源</text>
+        <text x="0" y="50" textAnchor="middle" fill={dt.textSecondary} fontSize="12">白光源</text>
       </g>
 
       {/* 入射光束（彩虹色） */}
@@ -257,7 +244,7 @@ function OpticalPathDiagram({
 
       {/* 起偏器 */}
       <g transform="translate(145, 140)">
-        <rect x="-8" y="-45" width="16" height="90" fill={theme === 'dark' ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-45" width="16" height="90" fill={dt.isDark ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
         <motion.line
           x1="0"
           y1="-35"
@@ -268,7 +255,7 @@ function OpticalPathDiagram({
           transform={`rotate(${polarizerAngle})`}
         />
         <text x="0" y="65" textAnchor="middle" fill="#22d3ee" fontSize="11">起偏器</text>
-        <text x="0" y="78" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{polarizerAngle}°</text>
+        <text x="0" y="78" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{polarizerAngle}°</text>
       </g>
 
       {/* 偏振光束（单色） */}
@@ -290,7 +277,7 @@ function OpticalPathDiagram({
         <line x1="-30" y1="-40" x2={40 + thickness * 80} y2="-40" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="4 3" />
         <text x={(thickness * 80) / 2} y="-25" textAnchor="middle" fill="#a78bfa" fontSize="9">快轴</text>
         <text x={(thickness * 80) / 2} y="70" textAnchor="middle" fill="#67e8f9" fontSize="11">双折射样品</text>
-        <text x={(thickness * 80) / 2} y="85" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
+        <text x={(thickness * 80) / 2} y="85" textAnchor="middle" fill={dt.textSecondary} fontSize="10">
           d={thickness.toFixed(2)}mm, Δn={birefringence.toFixed(3)}
         </text>
       </g>
@@ -308,7 +295,7 @@ function OpticalPathDiagram({
 
       {/* 检偏器 */}
       <g transform={`translate(${420 + thickness * 80}, 140)`}>
-        <rect x="-8" y="-45" width="16" height="90" fill={theme === 'dark' ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
+        <rect x="-8" y="-45" width="16" height="90" fill={dt.isDark ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
         <motion.line
           x1="0"
           y1="-35"
@@ -319,7 +306,7 @@ function OpticalPathDiagram({
           transform={`rotate(${analyzerAngle})`}
         />
         <text x="0" y="65" textAnchor="middle" fill="#a78bfa" fontSize="11">检偏器</text>
-        <text x="0" y="78" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{analyzerAngle}°</text>
+        <text x="0" y="78" textAnchor="middle" fill={dt.textSecondary} fontSize="10">{analyzerAngle}°</text>
       </g>
 
       {/* 最终光束 */}
@@ -333,26 +320,26 @@ function OpticalPathDiagram({
           width="60"
           height="100"
           fill={resultColor}
-          stroke={theme === 'dark' ? '#475569' : '#94a3b8'}
+          stroke={dt.isDark ? '#475569' : '#94a3b8'}
           strokeWidth="2"
           rx="6"
           filter="url(#glowResult)"
           animate={{ opacity: [0.8, 1, 0.8] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         />
-        <text x="0" y="70" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">观察屏</text>
+        <text x="0" y="70" textAnchor="middle" fill={dt.textSecondary} fontSize="11">观察屏</text>
       </g>
 
       {/* 标注线 */}
       <path
         d="M 50 200 L 50 230 L 650 230 L 650 200"
         fill="none"
-        stroke={theme === 'dark' ? '#475569' : '#94a3b8'}
+        stroke={dt.isDark ? '#475569' : '#94a3b8'}
         strokeWidth="1"
         strokeDasharray="4 4"
         opacity="0.5"
       />
-      <text x="350" y="250" textAnchor="middle" fill={theme === 'dark' ? '#64748b' : '#475569'} fontSize="11">
+      <text x="350" y="250" textAnchor="middle" fill={dt.textMuted} fontSize="11">
         光路传播方向 →
       </text>
     </svg>
@@ -365,14 +352,14 @@ function SpectrumChart({
   birefringence,
   polarizerAngle,
   analyzerAngle,
-  theme,
 }: {
   thickness: number
   birefringence: number
   polarizerAngle: number
   analyzerAngle: number
-  theme: 'dark' | 'light'
 }) {
+  const dt = useDemoTheme()
+
   const { pathData, spectrumGradient } = useMemo(() => {
     const points: string[] = []
 
@@ -418,8 +405,8 @@ function SpectrumChart({
       <rect x="40" y="30" width="250" height="100" fill="url(#spectrumBg)" rx="4" />
 
       {/* 坐标轴 */}
-      <line x1="40" y1="130" x2="300" y2="130" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
-      <line x1="40" y1="30" x2="40" y2="130" stroke={theme === 'dark' ? '#475569' : '#94a3b8'} strokeWidth="1" />
+      <line x1="40" y1="130" x2="300" y2="130" stroke={dt.axisColor} strokeWidth="1" />
+      <line x1="40" y1="30" x2="40" y2="130" stroke={dt.axisColor} strokeWidth="1" />
 
       {/* X轴刻度 */}
       {[400, 500, 600, 700].map((wl) => {
@@ -427,7 +414,7 @@ function SpectrumChart({
         const [r, g, b] = wavelengthToRGB(wl)
         return (
           <g key={wl}>
-            <line x1={x} y1="130" x2={x} y2="135" stroke={theme === 'dark' ? '#94a3b8' : '#64748b'} strokeWidth="1" />
+            <line x1={x} y1="130" x2={x} y2="135" stroke={dt.textSecondary} strokeWidth="1" />
             <text x={x} y="148" textAnchor="middle" fill={`rgb(${r * 255}, ${g * 255}, ${b * 255})`} fontSize="10">
               {wl}
             </text>
@@ -440,17 +427,17 @@ function SpectrumChart({
         const y = 130 - val * 100
         return (
           <g key={i}>
-            <text x="30" y={y + 4} textAnchor="end" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">{val}</text>
+            <text x="30" y={y + 4} textAnchor="end" fill={dt.textSecondary} fontSize="10">{val}</text>
           </g>
         )
       })}
 
       {/* 透过率曲线 */}
-      <path d={pathData} fill="none" stroke={theme === 'dark' ? '#ffffff' : '#1e293b'} strokeWidth="2.5" />
+      <path d={pathData} fill="none" stroke={dt.svgWhiteText} strokeWidth="2.5" />
 
       {/* 轴标签 */}
-      <text x="170" y="165" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="11">波长 (nm)</text>
-      <text x="15" y="85" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10" transform="rotate(-90 15 85)">T</text>
+      <text x="170" y="165" textAnchor="middle" fill={dt.textSecondary} fontSize="11">波长 (nm)</text>
+      <text x="15" y="85" fill={dt.textSecondary} fontSize="10" transform="rotate(-90 15 85)">T</text>
     </svg>
   )
 }
@@ -458,15 +445,15 @@ function SpectrumChart({
 // 颜色显示面板
 function ColorDisplayPanel({
   color,
-  theme,
 }: {
   color: { r: number; g: number; b: number; hex: string }
-  theme: 'dark' | 'light'
 }) {
+  const dt = useDemoTheme()
+
   return (
     <div className="space-y-3">
       <div
-        className={cn("w-full h-24 rounded-xl border-2 shadow-lg transition-colors duration-300", theme === 'dark' ? 'border-slate-600' : 'border-gray-300')}
+        className={cn("w-full h-24 rounded-xl border-2 shadow-lg transition-colors duration-300", dt.isDark ? 'border-slate-600' : 'border-gray-300')}
         style={{
           backgroundColor: color.hex,
           boxShadow: `0 0 30px ${color.hex}40`,
@@ -474,14 +461,14 @@ function ColorDisplayPanel({
       />
       <div className="flex justify-between items-center text-xs">
         <div className="space-y-1">
-          <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>RGB</div>
-          <div className={cn("font-mono", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>
+          <div className={dt.mutedTextClass}>RGB</div>
+          <div className={cn("font-mono", dt.bodyClass)}>
             ({Math.round(color.r * 255)}, {Math.round(color.g * 255)}, {Math.round(color.b * 255)})
           </div>
         </div>
         <div className="space-y-1 text-right">
-          <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>HEX</div>
-          <div className={cn("font-mono uppercase", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>{color.hex}</div>
+          <div className={dt.mutedTextClass}>HEX</div>
+          <div className={cn("font-mono uppercase", dt.bodyClass)}>{color.hex}</div>
         </div>
       </div>
     </div>
@@ -492,9 +479,6 @@ function ColorDisplayPanel({
 // Virtual Tape Experiment - 虚拟胶带实验
 // ============================================
 
-/**
- * Tape material options with realistic properties
- */
 const TAPE_MATERIALS = [
   {
     id: 'scotch',
@@ -522,33 +506,20 @@ const TAPE_MATERIALS = [
   },
 ] as const
 
-/**
- * Virtual Tape Experiment Component
- *
- * Allows users to stack tape layers and observe interference colors
- * using physically accurate SpectralJonesSolver calculations.
- *
- * Scientific validation:
- * - 1 layer: Low order grey/white (OPD ≈ 450nm)
- * - 3-4 layers: Vivid first-order colors (pink, green)
- * - 6+ layers: Higher order, more pastel colors
- */
-function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
+function VirtualTapeExperiment() {
+  const dt = useDemoTheme()
   const [layers, setLayers] = useState(1)
   const [materialId, setMaterialId] = useState<string>('scotch')
   const [crossedPolarizers, setCrossedPolarizers] = useState(true)
   const [showAnalysis, setShowAnalysis] = useState(false)
 
-  // Get current material properties
   const material = TAPE_MATERIALS.find(m => m.id === materialId) ?? TAPE_MATERIALS[0]
 
-  // Calculate color using SpectralJonesSolver
   const { color, analysis } = useMemo(() => {
     const totalThickness = layers * material.thickness
     const polarizerAngle = 0
     const analyzerAngle = crossedPolarizers ? 90 : 0
 
-    // Use the SpectralJonesSolver for accurate calculation
     const result = analyzeSpectrum({
       thickness: totalThickness,
       birefringence: material.birefringence,
@@ -563,7 +534,6 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
     }
   }, [layers, material, crossedPolarizers])
 
-  // Generate tape stack visualization
   const tapeStackElements = useMemo(() => {
     const elements = []
     const maxVisibleLayers = Math.min(layers, 8)
@@ -593,24 +563,24 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
 
   return (
     <div className={cn(
-      "rounded-xl border p-5 shadow-lg",
-      theme === 'dark'
+      "rounded-2xl border p-5 shadow-lg",
+      dt.isDark
         ? 'bg-gradient-to-br from-slate-900/90 via-indigo-950/90 to-slate-900/90 border-indigo-500/30'
         : 'bg-gradient-to-br from-slate-50 via-indigo-50 to-white border-indigo-200'
     )}>
       <div className="flex items-center gap-2 mb-4">
-        <svg className={cn("w-5 h-5", theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={cn("w-5 h-5", dt.isDark ? 'text-indigo-400' : 'text-indigo-600')} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
         </svg>
-        <h3 className={cn("text-lg font-semibold", theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700')}>虚拟胶带实验</h3>
-        <span className={cn("text-xs ml-2", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>Virtual Tape Experiment</span>
+        <h3 className={cn("text-lg font-semibold", dt.isDark ? 'text-indigo-300' : 'text-indigo-700')}>虚拟胶带实验</h3>
+        <span className={cn("text-xs ml-2", dt.mutedTextClass)}>Virtual Tape Experiment</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Left: Visualization */}
         <div className="space-y-4">
           {/* Tape stack SVG */}
-          <svg viewBox="0 0 400 220" className={cn("w-full h-auto rounded-lg", theme === 'dark' ? 'bg-slate-950/50' : 'bg-gray-100')}>
+          <svg viewBox="0 0 400 220" className={cn("w-full h-auto rounded-xl", dt.isDark ? 'bg-slate-950/50' : 'bg-gray-100')}>
             <defs>
               <filter id="tapeGlow" x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur stdDeviation="4" result="coloredBlur" />
@@ -623,9 +593,9 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
 
             {/* Polarizer */}
             <g transform="translate(30, 110)">
-              <rect x="-10" y="-40" width="20" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
+              <rect x="-10" y="-40" width="20" height="80" fill={dt.isDark ? '#1e3a5f' : '#e0f2fe'} stroke="#22d3ee" strokeWidth="2" rx="3" />
               <line x1="0" y1="-30" x2="0" y2="30" stroke="#22d3ee" strokeWidth="2" />
-              <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">起偏器</text>
+              <text x="0" y="55" textAnchor="middle" fill={dt.textSecondary} fontSize="10">起偏器</text>
             </g>
 
             {/* Light beam to tape */}
@@ -634,7 +604,7 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
             {/* Tape layers */}
             <g transform="translate(0, 10)">
               {tapeStackElements}
-              <text x="200" y={135 + Math.min(layers, 8) * 6} textAnchor="middle" fill={theme === 'dark' ? '#a5b4fc' : '#6366f1'} fontSize="11">
+              <text x="200" y={135 + Math.min(layers, 8) * 6} textAnchor="middle" fill={dt.isDark ? '#a5b4fc' : '#6366f1'} fontSize="11">
                 {layers} 层 ({(layers * material.thickness).toFixed(0)} μm)
               </text>
             </g>
@@ -644,13 +614,13 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
 
             {/* Analyzer */}
             <g transform="translate(370, 110)">
-              <rect x="-10" y="-40" width="20" height="80" fill={theme === 'dark' ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
+              <rect x="-10" y="-40" width="20" height="80" fill={dt.isDark ? '#1e3a5f' : '#ede9fe'} stroke="#a78bfa" strokeWidth="2" rx="3" />
               <line
                 x1="0" y1="-30" x2="0" y2="30"
                 stroke="#a78bfa" strokeWidth="2"
                 transform={`rotate(${crossedPolarizers ? 90 : 0})`}
               />
-              <text x="0" y="55" textAnchor="middle" fill={theme === 'dark' ? '#94a3b8' : '#64748b'} fontSize="10">
+              <text x="0" y="55" textAnchor="middle" fill={dt.textSecondary} fontSize="10">
                 检偏器 {crossedPolarizers ? '⊥' : '∥'}
               </text>
             </g>
@@ -659,7 +629,7 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
           {/* Result color display */}
           <div className="flex items-center gap-4">
             <motion.div
-              className={cn("w-20 h-20 rounded-xl border-2 shadow-lg", theme === 'dark' ? 'border-slate-600' : 'border-gray-300')}
+              className={cn("w-20 h-20 rounded-xl border-2 shadow-lg", dt.isDark ? 'border-slate-600' : 'border-gray-300')}
               style={{
                 backgroundColor: color.hex,
                 boxShadow: `0 0 25px ${color.hex}50`,
@@ -668,10 +638,10 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
               transition={{ duration: 2, repeat: Infinity }}
             />
             <div className="flex-1 space-y-1">
-              <div className={cn("text-sm font-medium", theme === 'dark' ? 'text-white' : 'text-gray-800')}>干涉色</div>
-              <div className={cn("font-mono text-xs", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{color.rgb}</div>
-              <div className={cn("font-mono text-xs uppercase", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>{color.hex}</div>
-              <div className={cn("text-xs", theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')}>
+              <div className={cn("text-sm font-medium", dt.isDark ? 'text-white' : 'text-gray-800')}>干涉色</div>
+              <div className={cn("font-mono text-xs", dt.mutedTextClass)}>{color.rgb}</div>
+              <div className={cn("font-mono text-xs uppercase", dt.mutedTextClass)}>{color.hex}</div>
+              <div className={cn("text-xs", dt.isDark ? 'text-indigo-400' : 'text-indigo-600')}>
                 级次: {analysis.retardationOrder.toFixed(2)} λ
               </div>
             </div>
@@ -683,14 +653,14 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
           {/* Layer control */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className={cn("text-sm", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>胶带层数</span>
-              <span className={cn("font-mono", theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600')}>{layers}</span>
+              <span className={cn("text-sm", dt.bodyClass)}>胶带层数</span>
+              <span className={cn("font-mono", dt.isDark ? 'text-indigo-400' : 'text-indigo-600')}>{layers}</span>
             </div>
             <div className="flex items-center gap-3">
               <motion.button
                 className={cn(
                   "w-10 h-10 rounded-lg text-xl font-bold disabled:opacity-30",
-                  theme === 'dark' ? 'bg-slate-700 text-white' : 'bg-gray-200 text-gray-800'
+                  dt.isDark ? 'bg-slate-700 text-white' : 'bg-gray-200 text-gray-800'
                 )}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -707,13 +677,13 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
                 onChange={(e) => setLayers(parseInt(e.target.value))}
                 className={cn(
                   "flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-indigo-500",
-                  theme === 'dark' ? 'bg-slate-700' : 'bg-gray-300'
+                  dt.isDark ? 'bg-slate-700' : 'bg-gray-300'
                 )}
               />
               <motion.button
                 className={cn(
                   "w-10 h-10 rounded-lg text-xl font-bold disabled:opacity-30",
-                  theme === 'dark' ? 'bg-slate-700 text-white' : 'bg-gray-200 text-gray-800'
+                  dt.isDark ? 'bg-slate-700 text-white' : 'bg-gray-200 text-gray-800'
                 )}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -727,7 +697,7 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
 
           {/* Material selection */}
           <div className="space-y-2">
-            <span className={cn("text-sm", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>材料类型</span>
+            <span className={cn("text-sm", dt.bodyClass)}>材料类型</span>
             <div className="grid grid-cols-3 gap-2">
               {TAPE_MATERIALS.map((m) => (
                 <motion.button
@@ -735,10 +705,10 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
                   className={cn(
                     "p-2 rounded-lg text-xs transition-colors",
                     materialId === m.id
-                      ? theme === 'dark'
+                      ? dt.isDark
                         ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50'
                         : 'bg-indigo-100 text-indigo-700 border border-indigo-300'
-                      : theme === 'dark'
+                      : dt.isDark
                         ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600/50'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   )}
@@ -747,7 +717,7 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
                   onClick={() => setMaterialId(m.id)}
                 >
                   <div className="font-medium">{m.name}</div>
-                  <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>Δn={m.birefringence}</div>
+                  <div className={cn("text-[10px]", dt.mutedTextClass)}>Δn={m.birefringence}</div>
                 </motion.button>
               ))}
             </div>
@@ -755,16 +725,16 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
 
           {/* Polarizer configuration */}
           <div className="flex items-center justify-between">
-            <span className={cn("text-sm", theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>偏振片配置</span>
+            <span className={cn("text-sm", dt.bodyClass)}>偏振片配置</span>
             <div className="flex gap-2">
               <motion.button
                 className={cn(
                   "px-3 py-1.5 rounded text-xs transition-colors",
                   crossedPolarizers
-                    ? theme === 'dark'
+                    ? dt.isDark
                       ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
                       : 'bg-purple-100 text-purple-700 border border-purple-300'
-                    : theme === 'dark'
+                    : dt.isDark
                       ? 'bg-slate-700/50 text-gray-300'
                       : 'bg-gray-100 text-gray-600'
                 )}
@@ -778,10 +748,10 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
                 className={cn(
                   "px-3 py-1.5 rounded text-xs transition-colors",
                   !crossedPolarizers
-                    ? theme === 'dark'
+                    ? dt.isDark
                       ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/50'
                       : 'bg-cyan-100 text-cyan-700 border border-cyan-300'
-                    : theme === 'dark'
+                    : dt.isDark
                       ? 'bg-slate-700/50 text-gray-300'
                       : 'bg-gray-100 text-gray-600'
                 )}
@@ -798,7 +768,7 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
           <motion.button
             className={cn(
               "w-full py-2 rounded-lg text-sm transition-colors",
-              theme === 'dark'
+              dt.isDark
                 ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600/50'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             )}
@@ -813,40 +783,40 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
           {showAnalysis && (
             <motion.div
               className={cn(
-                "p-3 rounded-lg space-y-2 text-xs",
-                theme === 'dark' ? 'bg-slate-900/70' : 'bg-gray-100'
+                "p-3 rounded-xl space-y-2 text-xs",
+                dt.isDark ? 'bg-slate-900/70' : 'bg-gray-100'
               )}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
             >
               <div className="grid grid-cols-2 gap-2">
-                <div className={cn("p-2 rounded", theme === 'dark' ? 'bg-slate-800/50' : 'bg-white')}>
-                  <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>光程差 OPD</div>
-                  <div className={cn("font-mono", theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600')}>{analysis.opticalPathDifference.toFixed(0)} nm</div>
+                <div className={cn("p-2 rounded-lg", dt.isDark ? 'bg-slate-800/50' : 'bg-white')}>
+                  <div className={dt.mutedTextClass}>光程差 OPD</div>
+                  <div className={cn("font-mono", dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>{analysis.opticalPathDifference.toFixed(0)} nm</div>
                 </div>
-                <div className={cn("p-2 rounded", theme === 'dark' ? 'bg-slate-800/50' : 'bg-white')}>
-                  <div className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>级次 Order</div>
-                  <div className={cn("font-mono", theme === 'dark' ? 'text-purple-400' : 'text-purple-600')}>{analysis.retardationOrder.toFixed(3)} λ</div>
+                <div className={cn("p-2 rounded-lg", dt.isDark ? 'bg-slate-800/50' : 'bg-white')}>
+                  <div className={dt.mutedTextClass}>级次 Order</div>
+                  <div className={cn("font-mono", dt.isDark ? 'text-purple-400' : 'text-purple-600')}>{analysis.retardationOrder.toFixed(3)} λ</div>
                 </div>
               </div>
-              <div className={cn("p-2 rounded", theme === 'dark' ? 'bg-slate-800/50' : 'bg-white')}>
-                <div className={cn("mb-1", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>RGB透过率</div>
+              <div className={cn("p-2 rounded-lg", dt.isDark ? 'bg-slate-800/50' : 'bg-white')}>
+                <div className={cn("mb-1", dt.mutedTextClass)}>RGB透过率</div>
                 <div className="flex gap-2">
                   <div className="flex-1 text-center">
-                    <div className={cn("font-mono", theme === 'dark' ? 'text-red-400' : 'text-red-600')}>{(analysis.transmission.red * 100).toFixed(1)}%</div>
-                    <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>650nm</div>
+                    <div className={cn("font-mono", dt.isDark ? 'text-red-400' : 'text-red-600')}>{(analysis.transmission.red * 100).toFixed(1)}%</div>
+                    <div className={cn("text-[10px]", dt.mutedTextClass)}>650nm</div>
                   </div>
                   <div className="flex-1 text-center">
-                    <div className={cn("font-mono", theme === 'dark' ? 'text-green-400' : 'text-green-600')}>{(analysis.transmission.green * 100).toFixed(1)}%</div>
-                    <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>550nm</div>
+                    <div className={cn("font-mono", dt.isDark ? 'text-green-400' : 'text-green-600')}>{(analysis.transmission.green * 100).toFixed(1)}%</div>
+                    <div className={cn("text-[10px]", dt.mutedTextClass)}>550nm</div>
                   </div>
                   <div className="flex-1 text-center">
-                    <div className={cn("font-mono", theme === 'dark' ? 'text-blue-400' : 'text-blue-600')}>{(analysis.transmission.blue * 100).toFixed(1)}%</div>
-                    <div className={cn("text-[10px]", theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>450nm</div>
+                    <div className={cn("font-mono", dt.isDark ? 'text-blue-400' : 'text-blue-600')}>{(analysis.transmission.blue * 100).toFixed(1)}%</div>
+                    <div className={cn("text-[10px]", dt.mutedTextClass)}>450nm</div>
                   </div>
                 </div>
               </div>
-              <div className={cn("text-[10px] italic", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <div className={cn("text-[10px] italic", dt.mutedTextClass)}>
                 使用 SpectralJonesSolver 进行物理精确计算: δ(λ) = 2π·d·Δn/λ
               </div>
             </motion.div>
@@ -856,13 +826,13 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
 
       {/* Scientific note */}
       <div className={cn(
-        "mt-4 p-3 rounded-lg border",
-        theme === 'dark'
+        "mt-4 p-3 rounded-xl border",
+        dt.isDark
           ? 'bg-indigo-950/30 border-indigo-500/20'
           : 'bg-indigo-50 border-indigo-200'
       )}>
-        <div className={cn("text-xs font-medium mb-1", theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700')}>物理原理</div>
-        <div className={cn("text-xs", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+        <div className={cn("text-xs font-medium mb-1", dt.isDark ? 'text-indigo-300' : 'text-indigo-700')}>物理原理</div>
+        <div className={cn("text-xs", dt.mutedTextClass)}>
           相位延迟 δ = 2π × d × Δn / λ 随波长变化。厚度 d = {(layers * material.thickness).toFixed(0)} μm，
           双折射率 Δn = {material.birefringence}。不同波长(R:{'\u00A0'}650nm, G:{'\u00A0'}550nm, B:{'\u00A0'}450nm)
           的透过率不同，产生干涉色。
@@ -874,7 +844,7 @@ function VirtualTapeExperiment({ theme }: { theme: 'dark' | 'light' }) {
 
 // 主演示组件
 export function ChromaticDemo() {
-  const { theme } = useTheme()
+  const dt = useDemoTheme()
   const [thickness, setThickness] = useState(0.1)
   const [birefringence, setBirefringence] = useState(0.01)
   const [polarizerAngle, setPolarizerAngle] = useState(0)
@@ -892,246 +862,230 @@ export function ChromaticDemo() {
   const resultColor = calculateMixedColor(thickness, birefringence, polarizerAngle, analyzerAngle)
 
   // 计算相位延迟
-  // thickness is in mm, convert to nm by multiplying by 1e6
   const opticalPathDiff = birefringence * thickness * 1e6 // nm
   const phaseRetardation = (2 * Math.PI * opticalPathDiff) / 550 // 在550nm处
   const retardationOrders = phaseRetardation / (2 * Math.PI)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* 页面标题 */}
-      <div className="text-center">
-        <h2 className={cn(
-          "text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent",
-          theme === 'dark'
-            ? 'from-white via-purple-100 to-white'
-            : 'from-gray-800 via-purple-600 to-gray-800'
-        )}>
-          光学各向异性 - 色偏振
-        </h2>
-        <p className={cn("mt-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
-          探索双折射材料产生的彩色干涉效应
-        </p>
-      </div>
+      <DemoHeader
+        title="光学各向异性 - 色偏振"
+        subtitle="探索双折射材料产生的彩色干涉效应"
+        gradient="purple"
+      />
 
-      {/* 交互演示区域标题 */}
-      <div className="flex items-center gap-3 pt-2">
-        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-purple-500/30' : 'via-purple-300/50')} />
-        <h3 className={cn("text-lg font-semibold flex items-center gap-2", theme === 'dark' ? 'text-purple-300' : 'text-purple-600')}>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-          </svg>
-          交互演示
-        </h3>
-        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-purple-500/30' : 'via-purple-300/50')} />
-      </div>
+      {/* 核心公式 */}
+      <FormulaHighlight
+        formula="δ = 2π × Δn × d / λ"
+        description="不同波长的光经历不同的相位延迟，产生特征干涉色"
+      />
 
       {/* 主体内容 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左侧：可视化 */}
-        <div className="space-y-4">
-          {/* 光路图 */}
-          <div className={cn(
-            "rounded-xl border p-4",
-            theme === 'dark'
-              ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-purple-950/90 border-purple-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]'
-              : 'bg-gradient-to-br from-slate-50 via-white to-purple-50 border-purple-200 shadow-lg'
-          )}>
-            <OpticalPathDiagram
-              thickness={thickness}
-              birefringence={birefringence}
-              polarizerAngle={polarizerAngle}
-              analyzerAngle={analyzerAngle}
-              resultColor={resultColor.hex}
-              theme={theme}
-            />
+      <DemoMainLayout
+        controlsWidth="wide"
+        visualization={
+          <div className="space-y-5">
+            {/* 光路图 */}
+            <VisualizationPanel variant="indigo">
+              <OpticalPathDiagram
+                thickness={thickness}
+                birefringence={birefringence}
+                polarizerAngle={polarizerAngle}
+                analyzerAngle={analyzerAngle}
+                resultColor={resultColor.hex}
+              />
+            </VisualizationPanel>
+
+            {/* 观察到的颜色 + 统计卡片 */}
+            <div className={cn(
+              "rounded-2xl border p-5",
+              dt.isDark
+                ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30'
+                : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
+            )}>
+              <h4 className={cn("text-sm font-semibold mb-3", dt.isDark ? 'text-white' : 'text-gray-800')}>观察到的颜色</h4>
+              <ColorDisplayPanel color={resultColor} />
+            </div>
+
+            {/* 相位延迟 统计卡片 */}
+            <div className="grid grid-cols-3 gap-3">
+              <StatCard
+                label="光程差 Δn×d"
+                value={opticalPathDiff.toFixed(1)}
+                unit="nm"
+                color="cyan"
+              />
+              <StatCard
+                label="相位延迟 (550nm)"
+                value={`${(phaseRetardation * 180 / Math.PI).toFixed(0)}`}
+                unit="°"
+                color="purple"
+              />
+              <StatCard
+                label="延迟级次"
+                value={retardationOrders.toFixed(2)}
+                unit="λ"
+                color="orange"
+              />
+            </div>
           </div>
+        }
+        controls={
+          <div className="space-y-5">
+            {/* 样品参数 */}
+            <ControlPanel title="样品参数">
+              <SliderControl
+                label="样品厚度 d"
+                value={thickness}
+                min={0.01}
+                max={0.5}
+                step={0.01}
+                unit=" mm"
+                onChange={setThickness}
+                color="cyan"
+              />
+              <SliderControl
+                label="双折射率 Δn"
+                value={birefringence}
+                min={0.001}
+                max={0.2}
+                step={0.001}
+                onChange={setBirefringence}
+                formatValue={(v) => v.toFixed(3)}
+                color="purple"
+              />
 
-          {/* 观察到的颜色 */}
-          <div className={cn(
-            "rounded-xl border p-4",
-            theme === 'dark'
-              ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-600/30'
-              : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
-          )}>
-            <h4 className={cn("text-sm font-semibold mb-3", theme === 'dark' ? 'text-white' : 'text-gray-800')}>观察到的颜色</h4>
-            <ColorDisplayPanel color={resultColor} theme={theme} />
+              {/* 材料预设 */}
+              <div className="pt-2">
+                <div className={cn("text-xs mb-2", dt.mutedTextClass)}>预设材料</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {materials.map((m) => (
+                    <button
+                      key={m.name}
+                      onClick={() => setBirefringence(m.br)}
+                      className={cn(
+                        "px-2 py-1.5 text-xs rounded-lg transition-colors",
+                        Math.abs(birefringence - m.br) < 0.0001
+                          ? dt.isDark
+                            ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
+                            : 'bg-purple-100 text-purple-700 border border-purple-300'
+                          : dt.isDark
+                            ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      )}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ControlPanel>
+
+            {/* 偏振设置 */}
+            <ControlPanel title="偏振片设置">
+              <SliderControl
+                label="起偏器角度"
+                value={polarizerAngle}
+                min={0}
+                max={180}
+                step={5}
+                unit="°"
+                onChange={setPolarizerAngle}
+                color="cyan"
+              />
+              <SliderControl
+                label="检偏器角度"
+                value={analyzerAngle}
+                min={0}
+                max={180}
+                step={5}
+                unit="°"
+                onChange={setAnalyzerAngle}
+                color="purple"
+              />
+
+              <div className="flex gap-2 pt-2">
+                <motion.button
+                  className={cn(
+                    "flex-1 py-1.5 text-xs rounded-lg transition-colors",
+                    dt.isDark
+                      ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  )}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setAnalyzerAngle(polarizerAngle)}
+                >
+                  平行设置
+                </motion.button>
+                <motion.button
+                  className={cn(
+                    "flex-1 py-1.5 text-xs rounded-lg transition-colors",
+                    dt.isDark
+                      ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  )}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setAnalyzerAngle((polarizerAngle + 90) % 180)}
+                >
+                  正交设置
+                </motion.button>
+              </div>
+            </ControlPanel>
+
+            {/* 光谱透过率 */}
+            <ChartPanel title="光谱透过率" subtitle="T vs λ">
+              <SpectrumChart
+                thickness={thickness}
+                birefringence={birefringence}
+                polarizerAngle={polarizerAngle}
+                analyzerAngle={analyzerAngle}
+              />
+              <p className={cn("text-xs mt-2", dt.mutedTextClass)}>
+                不同波长的透过率不同，导致出射光呈现特定颜色。
+              </p>
+            </ChartPanel>
           </div>
-        </div>
-
-        {/* 右侧：控制与学习 */}
-        <div className="space-y-4">
-          {/* 样品参数 */}
-          <ControlPanel title="样品参数">
-            <SliderControl
-              label="样品厚度 d"
-              value={thickness}
-              min={0.01}
-              max={0.5}
-              step={0.01}
-              unit=" mm"
-              onChange={setThickness}
-              color="cyan"
-            />
-            <SliderControl
-              label="双折射率 Δn"
-              value={birefringence}
-              min={0.001}
-              max={0.2}
-              step={0.001}
-              onChange={setBirefringence}
-              formatValue={(v) => v.toFixed(3)}
-              color="purple"
-            />
-
-            {/* 材料预设 */}
-            <div className="pt-2">
-              <div className={cn("text-xs mb-2", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>预设材料</div>
-              <div className="grid grid-cols-2 gap-2">
-                {materials.map((m) => (
-                  <button
-                    key={m.name}
-                    onClick={() => setBirefringence(m.br)}
-                    className={cn(
-                      "px-2 py-1.5 text-xs rounded transition-colors",
-                      Math.abs(birefringence - m.br) < 0.0001
-                        ? theme === 'dark'
-                          ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-                          : 'bg-purple-100 text-purple-700 border border-purple-300'
-                        : theme === 'dark'
-                          ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    )}
-                  >
-                    {m.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </ControlPanel>
-
-          {/* 偏振设置 */}
-          <ControlPanel title="偏振片设置">
-            <SliderControl
-              label="起偏器角度"
-              value={polarizerAngle}
-              min={0}
-              max={180}
-              step={5}
-              unit="°"
-              onChange={setPolarizerAngle}
-              color="cyan"
-            />
-            <SliderControl
-              label="检偏器角度"
-              value={analyzerAngle}
-              min={0}
-              max={180}
-              step={5}
-              unit="°"
-              onChange={setAnalyzerAngle}
-              color="purple"
-            />
-
-            <div className="flex gap-2 pt-2">
-              <motion.button
-                className={cn(
-                  "flex-1 py-1.5 text-xs rounded transition-colors",
-                  theme === 'dark'
-                    ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setAnalyzerAngle(polarizerAngle)}
-              >
-                平行设置
-              </motion.button>
-              <motion.button
-                className={cn(
-                  "flex-1 py-1.5 text-xs rounded transition-colors",
-                  theme === 'dark'
-                    ? 'bg-slate-700/50 text-gray-300 hover:bg-slate-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setAnalyzerAngle((polarizerAngle + 90) % 180)}
-              >
-                正交设置
-              </motion.button>
-            </div>
-          </ControlPanel>
-
-          {/* 相位延迟信息 */}
-          <ControlPanel title="相位延迟">
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className={cn("p-2 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
-                <div className="text-gray-500 text-xs">光程差 Δn×d</div>
-                <div className="text-cyan-400 font-mono">{opticalPathDiff.toFixed(1)} nm</div>
-              </div>
-              <div className={cn("p-2 rounded-lg", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
-                <div className="text-gray-500 text-xs">相位延迟 (550nm)</div>
-                <div className="text-purple-400 font-mono">{(phaseRetardation * 180 / Math.PI).toFixed(0)}°</div>
-              </div>
-              <div className={cn("p-2 rounded-lg col-span-2", theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-100')}>
-                <div className="text-gray-500 text-xs">延迟级次</div>
-                <div className="text-orange-400 font-mono">{retardationOrders.toFixed(2)} λ</div>
-              </div>
-            </div>
-          </ControlPanel>
-
-          {/* 光谱透过率 */}
-          <ControlPanel title="光谱透过率">
-            <SpectrumChart
-              thickness={thickness}
-              birefringence={birefringence}
-              polarizerAngle={polarizerAngle}
-              analyzerAngle={analyzerAngle}
-              theme={theme}
-            />
-            <p className={cn("text-xs mt-2", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
-              不同波长的透过率不同，导致出射光呈现特定颜色。
-            </p>
-          </ControlPanel>
-        </div>
-      </div>
+        }
+      />
 
       {/* 虚拟胶带实验区域标题 */}
-      <div className="flex items-center gap-3 pt-4">
-        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-indigo-500/30' : 'via-indigo-300/50')} />
-        <h3 className={cn("text-lg font-semibold flex items-center gap-2", theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600')}>
+      <div className="flex items-center gap-3 pt-2">
+        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", dt.isDark ? 'via-indigo-500/30' : 'via-indigo-300/50')} />
+        <h3 className={cn("text-lg font-semibold flex items-center gap-2", dt.isDark ? 'text-indigo-300' : 'text-indigo-600')}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
           动手实验
         </h3>
-        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", theme === 'dark' ? 'via-indigo-500/30' : 'via-indigo-300/50')} />
+        <div className={cn("h-px flex-1 bg-gradient-to-r from-transparent to-transparent", dt.isDark ? 'via-indigo-500/30' : 'via-indigo-300/50')} />
       </div>
 
       {/* Virtual Tape Experiment */}
-      <VirtualTapeExperiment theme={theme} />
+      <VirtualTapeExperiment />
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <InfoGrid columns={3}>
         <InfoCard title="色偏振原理" color="cyan">
-          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
+          <p className={cn("text-xs", dt.bodyClass)}>
             白光通过双折射材料时，不同波长的光经历不同的相位延迟，在检偏器后发生干涉，产生特征颜色。
           </p>
         </InfoCard>
         <InfoCard title="米歇尔-列维色表" color="purple">
-          <p className={cn("text-xs", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
+          <p className={cn("text-xs", dt.bodyClass)}>
             光程差与颜色的对应关系构成米歇尔-列维色表，是矿物鉴定的重要工具。低级次：灰→白→黄，高级次：彩色序列。
           </p>
         </InfoCard>
         <InfoCard title="应用场景" color="orange">
-          <ul className={cn("text-xs space-y-1", theme === 'dark' ? 'text-gray-300' : 'text-gray-600')}>
+          <ul className={cn("text-xs space-y-1", dt.bodyClass)}>
             <li>• 矿物岩石鉴定</li>
             <li>• 应力分析（光弹性）</li>
             <li>• 液晶显示技术</li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

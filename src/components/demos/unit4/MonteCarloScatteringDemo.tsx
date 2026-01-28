@@ -2,11 +2,13 @@
  * 蒙特卡洛散射演示 - Unit 4
  * 演示光子在浑浊介质中的多次散射传输
  * 采用Monte Carlo方法模拟光子随机行走
+ * 使用 DemoLayout 统一布局组件
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useDemoTheme } from '../demoThemeColors'
-import { SliderControl, ControlPanel, InfoCard } from '../DemoControls'
+import { SliderControl, ControlPanel, Toggle, InfoCard } from '../DemoControls'
+import { DemoHeader, VisualizationPanel, DemoMainLayout, InfoGrid, ChartPanel, StatCard, FormulaHighlight } from '../DemoLayout'
 import { Play, Pause, RotateCcw } from 'lucide-react'
 
 // 光子状态
@@ -128,7 +130,7 @@ function stepPhoton(
 
 // 偏振角度到颜色
 function polarizationToColor(angle: number, alpha: number = 1): string {
-  // 0° 红色, 45° 黄色, 90° 绿色, 135° 蓝色
+  // 0deg 红色, 45deg 黄色, 90deg 绿色, 135deg 蓝色
   const hue = (angle * 2) % 360
   return `hsla(${hue}, 70%, 60%, ${alpha})`
 }
@@ -154,9 +156,9 @@ function PhotonVisualization({
     <svg viewBox="0 0 600 400" className="w-full h-auto">
       <defs>
         <linearGradient id="mediumGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#1e293b" stopOpacity="0.8" />
-          <stop offset="50%" stopColor="#334155" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#1e293b" stopOpacity="0.8" />
+          <stop offset="0%" stopColor={dt.isDark ? '#1e293b' : '#e2e8f0'} stopOpacity="0.8" />
+          <stop offset="50%" stopColor={dt.isDark ? '#334155' : '#cbd5e1'} stopOpacity="0.9" />
+          <stop offset="100%" stopColor={dt.isDark ? '#1e293b' : '#e2e8f0'} stopOpacity="0.8" />
         </linearGradient>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur" />
@@ -171,7 +173,7 @@ function PhotonVisualization({
       </defs>
 
       {/* 背景 */}
-      <rect x="0" y="0" width="600" height="400" fill={dt.canvasBg} rx="8" />
+      <rect x="0" y="0" width="600" height="400" fill={dt.canvasBg} rx="12" />
 
       {/* 介质区域 */}
       <rect
@@ -180,9 +182,9 @@ function PhotonVisualization({
         width={mediumWidth * scale}
         height={mediumHeight * scale}
         fill="url(#mediumGradient)"
-        stroke="#475569"
+        stroke={dt.isDark ? '#475569' : '#94a3b8'}
         strokeWidth="2"
-        rx="4"
+        rx="6"
       />
 
       {/* 介质标签 */}
@@ -285,7 +287,7 @@ function PhotonVisualization({
                 width="20"
                 height="15"
                 fill={polarizationToColor(angle)}
-                rx="2"
+                rx="3"
               />
               <text x="0" y="25" fill={dt.textSecondary} fontSize="8" textAnchor="middle">
                 {angle}°
@@ -296,7 +298,7 @@ function PhotonVisualization({
       )}
 
       {/* 统计信息 */}
-      <g transform="translate(50, 360)">
+      <g transform="translate(50, 370)">
         <text fill={dt.textSecondary} fontSize="11">
           活跃光子: {photons.filter(p => p.alive).length} |
           透射: {photons.filter(p => !p.alive && p.x > mediumWidth).length} |
@@ -305,65 +307,6 @@ function PhotonVisualization({
         </text>
       </g>
     </svg>
-  )
-}
-
-// 散射统计图
-function ScatteringStats({
-  photons,
-  mediumWidth,
-}: {
-  photons: Photon[]
-  mediumWidth: number
-}) {
-  const dt = useDemoTheme()
-  const stats = useMemo(() => {
-    const transmitted = photons.filter(p => !p.alive && p.x >= mediumWidth)
-    const reflected = photons.filter(p => !p.alive && p.x <= 0)
-    const absorbed = photons.filter(p => !p.alive && p.weight === 0)
-    const alive = photons.filter(p => p.alive)
-
-    const avgScattering = photons.length > 0
-      ? photons.reduce((sum, p) => sum + p.scattered, 0) / photons.length
-      : 0
-
-    const avgPolarization = transmitted.length > 0
-      ? transmitted.reduce((sum, p) => sum + p.polarization, 0) / transmitted.length
-      : 0
-
-    return {
-      total: photons.length,
-      transmitted: transmitted.length,
-      reflected: reflected.length,
-      absorbed: absorbed.length,
-      alive: alive.length,
-      avgScattering: avgScattering.toFixed(1),
-      transmittance: photons.length > 0 ? (transmitted.length / photons.length * 100).toFixed(1) : '0',
-      avgPolarization: avgPolarization.toFixed(1),
-    }
-  }, [photons, mediumWidth])
-
-  return (
-    <div className="grid grid-cols-2 gap-2 text-xs">
-      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-        <div className={dt.mutedTextClass}>透射率</div>
-        <div className="text-emerald-400 font-mono text-lg">{stats.transmittance}%</div>
-      </div>
-      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-        <div className={dt.mutedTextClass}>平均散射次数</div>
-        <div className="text-pink-400 font-mono text-lg">{stats.avgScattering}</div>
-      </div>
-      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-        <div className={dt.mutedTextClass}>透射光偏振角</div>
-        <div className="text-cyan-400 font-mono text-lg">{stats.avgPolarization}°</div>
-      </div>
-      <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-        <div className={dt.mutedTextClass}>状态分布</div>
-        <div className={`${dt.bodyClass} font-mono text-sm`}>
-          T:{stats.transmitted} R:{stats.reflected} A:{stats.absorbed}
-        </div>
-      </div>
-    </div>
   )
 }
 
@@ -458,170 +401,217 @@ export function MonteCarloScatteringDemo() {
     }
   }, [photons, initPhotons])
 
+  // 统计数据
+  const stats = useMemo(() => {
+    const transmitted = photons.filter(p => !p.alive && p.x >= mediumWidth)
+    const reflected = photons.filter(p => !p.alive && p.x <= 0)
+    const absorbed = photons.filter(p => !p.alive && p.weight === 0)
+    const alive = photons.filter(p => p.alive)
+
+    const avgScattering = photons.length > 0
+      ? photons.reduce((sum, p) => sum + p.scattered, 0) / photons.length
+      : 0
+
+    const avgPolarization = transmitted.length > 0
+      ? transmitted.reduce((sum, p) => sum + p.polarization, 0) / transmitted.length
+      : 0
+
+    return {
+      total: photons.length,
+      transmitted: transmitted.length,
+      reflected: reflected.length,
+      absorbed: absorbed.length,
+      alive: alive.length,
+      avgScattering: avgScattering.toFixed(1),
+      transmittance: photons.length > 0 ? (transmitted.length / photons.length * 100).toFixed(1) : '0',
+      avgPolarization: avgPolarization.toFixed(1),
+    }
+  }, [photons, mediumWidth])
+
   return (
     <div className="space-y-6">
-      {/* 标题 */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">
-          蒙特卡洛散射模拟
-        </h2>
-        <p className={`${dt.mutedTextClass} mt-1`}>
-          光子在浑浊介质中的随机行走与多次散射
-        </p>
-      </div>
+      {/* 标题区 */}
+      <DemoHeader
+        title="蒙特卡洛散射模拟"
+        subtitle="光子在浑浊介质中的随机行走与多次散射"
+        gradient="cyan"
+      />
 
-      {/* 主体内容 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左侧：可视化 */}
-        <div className="space-y-4">
-          <div className={`rounded-xl ${dt.isDark ? 'bg-gradient-to-br from-slate-900/90 via-slate-900/95 to-cyan-950/90 border-cyan-500/30 shadow-[0_15px_40px_rgba(0,0,0,0.5)]' : 'bg-gradient-to-br from-slate-50 via-white to-cyan-50/30 border-cyan-200/40 shadow-md'} border p-4`}>
-            <PhotonVisualization
-              photons={photons}
-              mediumWidth={mediumWidth}
-              mediumHeight={mediumHeight}
-              showPolarization={showPolarization}
-            />
-          </div>
+      {/* HG相函数公式 */}
+      <FormulaHighlight
+        formula="p(θ) = (1 - g²) / (1 + g² - 2g·cosθ)^(3/2)"
+        description="Henyey-Greenstein 相函数 — 用单参数 g 描述散射方向分布，g=0 各向同性，g>0 前向散射，g<0 后向散射"
+      />
 
-          {/* 控制按钮 */}
-          <div className="flex justify-center gap-4">
-            <motion.button
-              onClick={toggleRunning}
-              className={`px-6 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors ${
-                isRunning
-                  ? 'bg-orange-600 hover:bg-orange-500 text-white'
-                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isRunning ? <Pause size={18} /> : <Play size={18} />}
-              {isRunning ? '暂停' : '开始模拟'}
-            </motion.button>
-            <motion.button
-              onClick={reset}
-              className={`px-6 py-2 rounded-lg flex items-center gap-2 font-medium ${dt.isDark ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-200 hover:bg-slate-300 text-gray-700'}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <RotateCcw size={18} />
-              重置
-            </motion.button>
-          </div>
-
-          {/* 统计信息 */}
-          <div className={`rounded-xl ${dt.panelClass} border p-4`}>
-            <h3 className={`text-sm font-medium ${dt.headingClass} mb-3`}>模拟统计</h3>
-            <ScatteringStats photons={photons} mediumWidth={mediumWidth} />
-          </div>
-        </div>
-
-        {/* 右侧：控制与学习 */}
-        <div className="space-y-4">
-          {/* 参数控制 */}
-          <ControlPanel title="介质参数">
-            <SliderControl
-              label="平均自由程 MFP"
-              value={meanFreePath}
-              min={0.1}
-              max={2}
-              step={0.1}
-              unit=" (单位长度)"
-              onChange={setMeanFreePath}
-              color="cyan"
-            />
-            <SliderControl
-              label="各向异性因子 g"
-              value={anisotropy}
-              min={-0.9}
-              max={0.99}
-              step={0.05}
-              onChange={setAnisotropy}
-              formatValue={(v) => v.toFixed(2)}
-              color="purple"
-            />
-            <SliderControl
-              label="单次散射反照率 ω"
-              value={albedo}
-              min={0.5}
-              max={1}
-              step={0.05}
-              onChange={setAlbedo}
-              formatValue={(v) => v.toFixed(2)}
-              color="green"
-            />
-            <SliderControl
-              label="光子数量"
-              value={photonCount}
-              min={10}
-              max={200}
-              step={10}
-              onChange={(v) => { setPhotonCount(v); reset(); }}
-              color="orange"
-            />
-          </ControlPanel>
-
-          {/* 显示选项 */}
-          <ControlPanel title="显示选项">
-            <label className={`flex items-center gap-2 text-sm ${dt.bodyClass}`}>
-              <input
-                type="checkbox"
-                checked={showPolarization}
-                onChange={(e) => setShowPolarization(e.target.checked)}
-                className={`w-4 h-4 rounded ${dt.isDark ? 'border-gray-600 bg-slate-800' : 'border-gray-300 bg-white'}`}
+      {/* 主体布局 */}
+      <DemoMainLayout
+        controlsWidth="wide"
+        visualization={
+          <div className="space-y-4">
+            {/* 光子轨迹可视化 */}
+            <VisualizationPanel>
+              <PhotonVisualization
+                photons={photons}
+                mediumWidth={mediumWidth}
+                mediumHeight={mediumHeight}
+                showPolarization={showPolarization}
               />
-              显示偏振状态（颜色编码）
-            </label>
-          </ControlPanel>
+            </VisualizationPanel>
 
-          {/* 参数说明 */}
-          <ControlPanel title="参数说明">
-            <div className={`space-y-3 text-xs ${dt.bodyClass}`}>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <span className="text-cyan-400 font-medium">平均自由程 (MFP):</span>
-                <p className="mt-1">光子两次散射事件之间的平均距离。值越小，散射越频繁，介质越浑浊。</p>
-              </div>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <span className="text-pink-400 font-medium">各向异性因子 (g):</span>
-                <p className="mt-1">g=0 各向同性散射，g&gt;0 前向散射为主，g&lt;0 后向散射为主。云滴 g≈0.85。</p>
-              </div>
-              <div className={`p-2 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-lg`}>
-                <span className="text-emerald-400 font-medium">单次散射反照率 (ω):</span>
-                <p className="mt-1">散射/(散射+吸收)，ω=1 无吸收，ω&lt;1 部分吸收。</p>
-              </div>
+            {/* 模拟控制按钮 */}
+            <div className="flex justify-center gap-4">
+              <motion.button
+                onClick={toggleRunning}
+                className={`px-6 py-2.5 rounded-2xl flex items-center gap-2 font-medium transition-colors ${
+                  isRunning
+                    ? 'bg-orange-600 hover:bg-orange-500 text-white'
+                    : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {isRunning ? <Pause size={18} /> : <Play size={18} />}
+                {isRunning ? '暂停' : '开始模拟'}
+              </motion.button>
+              <motion.button
+                onClick={reset}
+                className={`px-6 py-2.5 rounded-2xl flex items-center gap-2 font-medium ${dt.isDark ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-200 hover:bg-slate-300 text-gray-700'}`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <RotateCcw size={18} />
+                重置
+              </motion.button>
             </div>
-          </ControlPanel>
 
-          {/* MC方法原理 */}
-          <ControlPanel title="蒙特卡洛方法原理">
-            <ul className={`text-xs ${dt.bodyClass} space-y-2`}>
-              <li className="flex items-start gap-2">
-                <span className="text-cyan-400">1.</span>
-                <span>光子从入射面进入介质，初始方向沿入射方向</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-cyan-400">2.</span>
-                <span>随机采样步长（指数分布），光子移动到新位置</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-cyan-400">3.</span>
-                <span>根据反照率决定散射/吸收，散射方向由相函数决定</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-cyan-400">4.</span>
-                <span>重复直到光子离开介质（透射/反射）或被吸收</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-cyan-400">5.</span>
-                <span>大量光子统计得到透射率、反照率等宏观量</span>
-              </li>
-            </ul>
-          </ControlPanel>
-        </div>
-      </div>
+            {/* 统计卡片 */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <StatCard
+                label="透射率"
+                value={`${stats.transmittance}%`}
+                color="green"
+              />
+              <StatCard
+                label="平均散射次数"
+                value={stats.avgScattering}
+                color="pink"
+              />
+              <StatCard
+                label="透射光偏振角"
+                value={`${stats.avgPolarization}°`}
+                color="cyan"
+              />
+              <StatCard
+                label="状态分布"
+                value={`T:${stats.transmitted} R:${stats.reflected} A:${stats.absorbed}`}
+                color="orange"
+              />
+            </div>
+          </div>
+        }
+        controls={
+          <div className="space-y-4">
+            {/* 介质参数 */}
+            <ControlPanel title="介质参数">
+              <SliderControl
+                label="平均自由程 MFP"
+                value={meanFreePath}
+                min={0.1}
+                max={2}
+                step={0.1}
+                unit=" (单位长度)"
+                onChange={setMeanFreePath}
+                color="cyan"
+              />
+              <SliderControl
+                label="各向异性因子 g"
+                value={anisotropy}
+                min={-0.9}
+                max={0.99}
+                step={0.05}
+                onChange={setAnisotropy}
+                formatValue={(v) => v.toFixed(2)}
+                color="purple"
+              />
+              <SliderControl
+                label="单次散射反照率 ω"
+                value={albedo}
+                min={0.5}
+                max={1}
+                step={0.05}
+                onChange={setAlbedo}
+                formatValue={(v) => v.toFixed(2)}
+                color="green"
+              />
+              <SliderControl
+                label="光子数量"
+                value={photonCount}
+                min={10}
+                max={200}
+                step={10}
+                onChange={(v) => { setPhotonCount(v); reset(); }}
+                color="orange"
+              />
+            </ControlPanel>
+
+            {/* 显示选项 */}
+            <ControlPanel title="显示选项">
+              <Toggle
+                label="显示偏振状态（颜色编码）"
+                checked={showPolarization}
+                onChange={setShowPolarization}
+              />
+            </ControlPanel>
+
+            {/* 参数说明 */}
+            <ChartPanel title="参数说明">
+              <div className={`space-y-3 text-xs ${dt.bodyClass}`}>
+                <div className={`p-2.5 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-xl`}>
+                  <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'} style={{ fontWeight: 500 }}>平均自由程 (MFP):</span>
+                  <p className="mt-1">光子两次散射事件之间的平均距离。值越小，散射越频繁，介质越浑浊。</p>
+                </div>
+                <div className={`p-2.5 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-xl`}>
+                  <span className={dt.isDark ? 'text-pink-400' : 'text-pink-600'} style={{ fontWeight: 500 }}>各向异性因子 (g):</span>
+                  <p className="mt-1">g=0 各向同性散射，g&gt;0 前向散射为主，g&lt;0 后向散射为主。云滴 g约0.85。</p>
+                </div>
+                <div className={`p-2.5 ${dt.isDark ? 'bg-slate-900/50' : 'bg-slate-100/80'} rounded-xl`}>
+                  <span className={dt.isDark ? 'text-emerald-400' : 'text-emerald-600'} style={{ fontWeight: 500 }}>单次散射反照率 (ω):</span>
+                  <p className="mt-1">散射/(散射+吸收)，ω=1 无吸收，ω&lt;1 部分吸收。</p>
+                </div>
+              </div>
+            </ChartPanel>
+
+            {/* MC方法原理 */}
+            <ControlPanel title="蒙特卡洛方法原理">
+              <ul className={`text-xs ${dt.bodyClass} space-y-2`}>
+                <li className="flex items-start gap-2">
+                  <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>1.</span>
+                  <span>光子从入射面进入介质，初始方向沿入射方向</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>2.</span>
+                  <span>随机采样步长（指数分布），光子移动到新位置</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>3.</span>
+                  <span>根据反照率决定散射/吸收，散射方向由相函数决定</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>4.</span>
+                  <span>重复直到光子离开介质（透射/反射）或被吸收</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>5.</span>
+                  <span>大量光子统计得到透射率、反照率等宏观量</span>
+                </li>
+              </ul>
+            </ControlPanel>
+          </div>
+        }
+      />
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <InfoGrid columns={3}>
         <InfoCard title="蒙特卡洛模拟" color="cyan">
           <p className={`text-xs ${dt.bodyClass}`}>
             Monte Carlo方法通过随机采样模拟物理过程。在光传输中，每个光子独立追踪，大量光子的统计结果收敛于解析解。适用于复杂几何和多次散射。
@@ -629,7 +619,7 @@ export function MonteCarloScatteringDemo() {
         </InfoCard>
         <InfoCard title="Henyey-Greenstein相函数" color="purple">
           <p className={`text-xs ${dt.bodyClass}`}>
-            HG相函数 p(θ) = (1-g²)/(1+g²-2g·cosθ)^(3/2) 用单参数g描述散射的方向分布。生物组织典型值 g=0.8-0.95，云滴 g≈0.85。
+            HG相函数 p(θ) = (1-g²)/(1+g²-2g·cosθ)^(3/2) 用单参数g描述散射的方向分布。生物组织典型值 g=0.8-0.95，云滴 g约0.85。
           </p>
         </InfoCard>
         <InfoCard title="偏振退极化" color="orange">
@@ -637,7 +627,7 @@ export function MonteCarloScatteringDemo() {
             多次散射导致偏振态随机化（退极化）。入射偏振光经过多次散射后趋于非偏振。透射光的偏振度与散射次数、各向异性相关。
           </p>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

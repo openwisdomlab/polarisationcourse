@@ -2,11 +2,12 @@
  * 演示组件导出索引
  */
 
-// 基础组件
+// 基础框架组件
 export * from './demoThemeColors'
 export * from './DemoCanvas'
 export * from './Demo2DCanvas'
 export * from './DemoControls'
+export * from './DemoLayout'
 export * from './DemoErrorBoundary'
 export * from './LifeSceneIllustrations'
 export * from './DifficultyStrategy'

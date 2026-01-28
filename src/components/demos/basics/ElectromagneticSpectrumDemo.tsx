@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { ControlPanel, Toggle, InfoCard } from '../DemoControls'
 import { useDemoTheme } from '../demoThemeColors'
+import { DemoHeader, VisualizationPanel, DemoMainLayout, InfoGrid, FormulaHighlight } from '../DemoLayout'
 
 // 电磁波谱区域定义
 interface SpectrumRegion {
@@ -206,11 +207,16 @@ export function ElectromagneticSpectrumDemo() {
   }, [selectedRegion])
 
   return (
-    <div className="space-y-6">
-      <div className="flex gap-6 flex-col lg:flex-row">
-        {/* 主可视化区域 */}
-        <div className="flex-1">
-          <div className={`${dt.svgContainerClass} rounded-xl border p-4 overflow-hidden`}>
+    <div className="space-y-5">
+      <DemoHeader
+        title={isZh ? '电磁波谱' : 'Electromagnetic Spectrum'}
+        subtitle={isZh ? '从无线电波到伽马射线的完整电磁波谱' : 'The full electromagnetic spectrum from radio waves to gamma rays'}
+        gradient="purple"
+      />
+
+      <DemoMainLayout
+        visualization={
+          <VisualizationPanel>
             <svg viewBox="0 0 800 400" className="w-full h-auto" style={{ minHeight: '360px' }}>
               <defs>
                 {/* 背景网格 */}
@@ -526,57 +532,64 @@ export function ElectromagneticSpectrumDemo() {
                 )}
               </AnimatePresence>
             </svg>
-          </div>
-        </div>
+          </VisualizationPanel>
+        }
+        controls={
+          <div className="space-y-5">
+            <ControlPanel title={isZh ? '显示选项' : 'Display Options'}>
+              <Toggle
+                label={isZh ? '显示大气穿透性' : 'Show Atmospheric Penetration'}
+                checked={showAtmosphere}
+                onChange={setShowAtmosphere}
+              />
+              <Toggle
+                label={isZh ? '显示尺寸比较' : 'Show Size Comparison'}
+                checked={showSizeComparison}
+                onChange={setShowSizeComparison}
+              />
+              <Toggle
+                label={isZh ? '展开可见光谱' : 'Expand Visible Spectrum'}
+                checked={showVisibleExpanded}
+                onChange={setShowVisibleExpanded}
+              />
 
-        {/* 控制面板 */}
-        <ControlPanel title={isZh ? '显示选项' : 'Display Options'} className="w-full lg:w-72">
-          <Toggle
-            label={isZh ? '显示大气穿透性' : 'Show Atmospheric Penetration'}
-            checked={showAtmosphere}
-            onChange={setShowAtmosphere}
-          />
-          <Toggle
-            label={isZh ? '显示尺寸比较' : 'Show Size Comparison'}
-            checked={showSizeComparison}
-            onChange={setShowSizeComparison}
-          />
-          <Toggle
-            label={isZh ? '展开可见光谱' : 'Expand Visible Spectrum'}
-            checked={showVisibleExpanded}
-            onChange={setShowVisibleExpanded}
-          />
-
-          <div className={`border-t ${dt.borderClass} pt-4 mt-4`}>
-            <h4 className={`text-sm font-medium ${dt.headingClass} mb-2`}>
-              {isZh ? '选择波段' : 'Select Region'}
-            </h4>
-            <div className="grid grid-cols-2 gap-2">
-              {SPECTRUM_REGIONS.map((region) => (
-                <button
-                  key={region.id}
-                  onClick={() => setSelectedRegion(region.id)}
-                  className={`px-2 py-1.5 rounded text-xs transition-all ${
-                    selectedRegion === region.id
-                      ? 'bg-opacity-30 border'
-                      : `${dt.buttonBgClass} border`
-                  }`}
-                  style={{
-                    backgroundColor: selectedRegion === region.id ? `${region.color}30` : undefined,
-                    borderColor: selectedRegion === region.id ? region.color : undefined,
-                    color: selectedRegion === region.id ? region.color : undefined,
-                  }}
-                >
-                  {isZh ? region.nameZh : region.name}
-                </button>
-              ))}
-            </div>
+              <div className={`border-t ${dt.borderClass} pt-4 mt-4`}>
+                <h4 className={`text-sm font-medium ${dt.headingClass} mb-2`}>
+                  {isZh ? '选择波段' : 'Select Region'}
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {SPECTRUM_REGIONS.map((region) => (
+                    <button
+                      key={region.id}
+                      onClick={() => setSelectedRegion(region.id)}
+                      className={`px-2 py-1.5 rounded-lg text-xs transition-all ${
+                        selectedRegion === region.id
+                          ? 'bg-opacity-30 border'
+                          : `${dt.buttonBgClass} border`
+                      }`}
+                      style={{
+                        backgroundColor: selectedRegion === region.id ? `${region.color}30` : undefined,
+                        borderColor: selectedRegion === region.id ? region.color : undefined,
+                        color: selectedRegion === region.id ? region.color : undefined,
+                      }}
+                    >
+                      {isZh ? region.nameZh : region.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ControlPanel>
           </div>
-        </ControlPanel>
-      </div>
+        }
+      />
 
       {/* 知识卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <FormulaHighlight
+        formula="c = λf = 3×10⁸ m/s"
+        description={isZh ? '所有电磁波在真空中速度相同' : 'All EM waves travel at the same speed in vacuum'}
+      />
+
+      <InfoGrid columns={3}>
         <InfoCard title={isZh ? '光的本质' : 'Nature of Light'} color="cyan">
           <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
             <li>
@@ -618,7 +631,7 @@ export function ElectromagneticSpectrumDemo() {
             </li>
           </ul>
         </InfoCard>
-      </div>
+      </InfoGrid>
     </div>
   )
 }

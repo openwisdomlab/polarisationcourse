@@ -16,6 +16,7 @@ import { Waves, BarChart3 } from 'lucide-react'
 import { SliderControl, ControlPanel, ValueDisplay, Toggle, InfoCard, Formula } from '../DemoControls'
 import { DifficultyLevel, useDifficultyConfig, WhyButton, DifficultyGate } from '../DifficultyStrategy'
 import { useDemoTheme } from '../demoThemeColors'
+import { DemoHeader, VisualizationPanel, DemoMainLayout, InfoGrid, StatCard, FormulaHighlight } from '../DemoLayout'
 
 type ViewMode = 'wave' | 'spectrum'
 
@@ -289,12 +290,18 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
   }, [selectedRegion])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      <DemoHeader
+        title={isZh ? '电磁波' : 'Electromagnetic Wave'}
+        subtitle={isZh ? '探索电磁波的波动特性与完整波谱' : 'Explore wave properties and the full electromagnetic spectrum'}
+        gradient="cyan"
+      />
+
       {/* View Mode Tabs */}
-      <div className={`flex gap-2 p-1 ${dt.tabBgClass} rounded-lg w-fit`}>
+      <div className={`flex gap-2 p-1 ${dt.tabBgClass} rounded-xl w-fit`}>
         <button
           onClick={() => setViewMode('wave')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             viewMode === 'wave'
               ? 'bg-cyan-500/20 text-cyan-400 shadow-sm'
               : dt.tabInactiveClass
@@ -305,7 +312,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
         </button>
         <button
           onClick={() => setViewMode('spectrum')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             viewMode === 'spectrum'
               ? 'bg-purple-500/20 text-purple-400 shadow-sm'
               : dt.tabInactiveClass
@@ -326,67 +333,49 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
             transition={{ duration: 0.2 }}
           >
             {/* Wave View Content */}
-            <div className="flex gap-6 flex-col lg:flex-row">
-              <div className="flex-1">
-                <div className={`${dt.svgContainerClassBlue} rounded-xl border p-4 overflow-hidden`}>
-                  <svg
-                    viewBox="0 0 700 300"
-                    className="w-full h-auto"
-                    style={{ minHeight: '280px' }}
-                  >
-                    <defs>
-                      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1"/>
-                      </pattern>
-                      <filter id="glow">
-                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                        <feMerge>
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                    </defs>
-                    <rect width="700" height="300" fill="url(#grid)" />
+            <DemoMainLayout
+              visualization={
+                <div className="space-y-5">
+                  <VisualizationPanel variant="blue">
+                    <svg
+                      viewBox="0 0 700 300"
+                      className="w-full h-auto"
+                      style={{ minHeight: '280px' }}
+                    >
+                      <defs>
+                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke={dt.gridStroke} strokeWidth="1"/>
+                        </pattern>
+                        <filter id="glow">
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <rect width="700" height="300" fill="url(#grid)" />
 
-                    {/* Axes */}
-                    <line x1="50" y1="150" x2="670" y2="150" stroke={dt.axisColor} strokeWidth="1.5" />
-                    <line x1="50" y1="50" x2="50" y2="250" stroke={dt.axisColor} strokeWidth="1.5" />
-                    <polygon points="670,150 660,145 660,155" fill={dt.axisColor} />
-                    <polygon points="50,50 45,60 55,60" fill={dt.axisColor} />
-                    <text x="680" y="155" fill={dt.textSecondary} fontSize="14">x</text>
-                    <text x="55" y="45" fill={dt.textSecondary} fontSize="14">E</text>
-                    {showBField && (
-                      <text x="55" y="265" fill="#60a5fa" fontSize="12">B</text>
-                    )}
+                      {/* Axes */}
+                      <line x1="50" y1="150" x2="670" y2="150" stroke={dt.axisColor} strokeWidth="1.5" />
+                      <line x1="50" y1="50" x2="50" y2="250" stroke={dt.axisColor} strokeWidth="1.5" />
+                      <polygon points="670,150 660,145 660,155" fill={dt.axisColor} />
+                      <polygon points="50,50 45,60 55,60" fill={dt.axisColor} />
+                      <text x="680" y="155" fill={dt.textSecondary} fontSize="14">x</text>
+                      <text x="55" y="45" fill={dt.textSecondary} fontSize="14">E</text>
+                      {showBField && (
+                        <text x="55" y="265" fill="#60a5fa" fontSize="12">B</text>
+                      )}
 
-                    {/* E-field wave */}
-                    <motion.path
-                      d={wavePaths.generatePath(0, 1, false)}
-                      fill="none"
-                      stroke={waveColor}
-                      strokeWidth="3"
-                      filter="url(#glow)"
-                      animate={isPlaying && wavePaths.paths.length > 0 ? {
-                        d: wavePaths.paths.map(p => p.ePath),
-                      } : {}}
-                      transition={{
-                        duration: animationDuration,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
-
-                    {/* B-field wave */}
-                    {showBField && (
+                      {/* E-field wave */}
                       <motion.path
-                        d={wavePaths.generatePath(0, 0.3, true)}
+                        d={wavePaths.generatePath(0, 1, false)}
                         fill="none"
-                        stroke="#60a5fa"
-                        strokeWidth="2"
-                        strokeDasharray="8 4"
-                        opacity="0.8"
+                        stroke={waveColor}
+                        strokeWidth="3"
+                        filter="url(#glow)"
                         animate={isPlaying && wavePaths.paths.length > 0 ? {
-                          d: wavePaths.paths.map(p => p.bPath),
+                          d: wavePaths.paths.map(p => p.ePath),
                         } : {}}
                         transition={{
                           duration: animationDuration,
@@ -394,122 +383,152 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                           ease: "linear",
                         }}
                       />
-                    )}
 
-                    {/* Wavelength marker */}
-                    <g transform="translate(150, 220)">
-                      <line x1="0" y1="0" x2="0" y2="15" stroke={dt.textMuted} strokeWidth="1" />
-                      <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke={dt.textMuted} strokeWidth="1" />
-                      <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke={dt.textMuted} strokeWidth="1" />
-                      <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill={dt.textSecondary} fontSize="11" textAnchor="middle">
-                        λ = {wavelength} nm
-                      </text>
-                    </g>
+                      {/* B-field wave */}
+                      {showBField && (
+                        <motion.path
+                          d={wavePaths.generatePath(0, 0.3, true)}
+                          fill="none"
+                          stroke="#60a5fa"
+                          strokeWidth="2"
+                          strokeDasharray="8 4"
+                          opacity="0.8"
+                          animate={isPlaying && wavePaths.paths.length > 0 ? {
+                            d: wavePaths.paths.map(p => p.bPath),
+                          } : {}}
+                          transition={{
+                            duration: animationDuration,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        />
+                      )}
 
-                    <text x="600" y="30" fill={dt.textMuted} fontSize="11">c ≈ 2.998×10⁸ m/s</text>
-                    <rect x="600" y="40" width="60" height="20" rx="4" fill={waveColor} opacity="0.8" />
-                  </svg>
+                      {/* Wavelength marker */}
+                      <g transform="translate(150, 220)">
+                        <line x1="0" y1="0" x2="0" y2="15" stroke={dt.textMuted} strokeWidth="1" />
+                        <line x1={80 + (wavelength - 400) / 4} y1="0" x2={80 + (wavelength - 400) / 4} y2="15" stroke={dt.textMuted} strokeWidth="1" />
+                        <line x1="0" y1="8" x2={80 + (wavelength - 400) / 4} y2="8" stroke={dt.textMuted} strokeWidth="1" />
+                        <text x={(80 + (wavelength - 400) / 4) / 2} y="30" fill={dt.textSecondary} fontSize="11" textAnchor="middle">
+                          λ = {wavelength} nm
+                        </text>
+                      </g>
+
+                      <text x="600" y="30" fill={dt.textMuted} fontSize="11">c ≈ 2.998×10⁸ m/s</text>
+                      <rect x="600" y="40" width="60" height="20" rx="4" fill={waveColor} opacity="0.8" />
+                    </svg>
+                  </VisualizationPanel>
+
+                  {/* Visible Spectrum Bar */}
+                  <div className={`p-4 rounded-2xl border ${dt.panelClass}`}>
+                    <h4 className={`text-sm font-semibold ${dt.headingClass} mb-2`}>{t('demoUi.common.visibleSpectrum')}</h4>
+                    <div
+                      className="h-8 rounded-lg cursor-pointer relative"
+                      style={{
+                        background: 'linear-gradient(to right, violet, blue, cyan, green, yellow, orange, red)',
+                      }}
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        const x = e.clientX - rect.left
+                        const percent = x / rect.width
+                        const newWavelength = Math.round(380 + percent * 320)
+                        setWavelength(Math.max(380, Math.min(700, newWavelength)))
+                      }}
+                    >
+                      <motion.div
+                        className="absolute top-0 w-1 h-full bg-white/80 rounded"
+                        style={{ left: `${((wavelength - 380) / 320) * 100}%` }}
+                        layoutId="wavelength-indicator"
+                      />
+                    </div>
+                    <div className={`flex justify-between text-xs ${dt.mutedTextClass} mt-1`}>
+                      <span>380 nm ({t('demoUi.common.violet')})</span>
+                      <span>550 nm ({t('demoUi.common.green')})</span>
+                      <span>700 nm ({t('demoUi.common.red')})</span>
+                    </div>
+                  </div>
+
+                  {/* Stats row */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <StatCard label={isZh ? '波长' : 'Wavelength'} value={wavelength} unit="nm" color="cyan" />
+                    <StatCard label={isZh ? '频率' : 'Frequency'} value={`${(2.998e8 / (wavelength * 1e-9) / 1e14).toFixed(2)}×10¹⁴`} unit="Hz" color="blue" />
+                    <StatCard label={isZh ? '颜色' : 'Color'} value={`${wavelength} nm`} color="purple" />
+                  </div>
                 </div>
-
-                {/* Visible Spectrum Bar */}
-                <div className={`mt-4 p-4 rounded-lg border ${dt.panelClass}`}>
-                  <h4 className={`text-sm font-semibold ${dt.headingClass} mb-2`}>{t('demoUi.common.visibleSpectrum')}</h4>
-                  <div
-                    className="h-8 rounded cursor-pointer relative"
-                    style={{
-                      background: 'linear-gradient(to right, violet, blue, cyan, green, yellow, orange, red)',
-                    }}
-                    onClick={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      const x = e.clientX - rect.left
-                      const percent = x / rect.width
-                      const newWavelength = Math.round(380 + percent * 320)
-                      setWavelength(Math.max(380, Math.min(700, newWavelength)))
-                    }}
-                  >
-                    <motion.div
-                      className="absolute top-0 w-1 h-full bg-white/80 rounded"
-                      style={{ left: `${((wavelength - 380) / 320) * 100}%` }}
-                      layoutId="wavelength-indicator"
+              }
+              controls={
+                <div className="space-y-5">
+                  <ControlPanel title={t('demoUi.lightWave.waveParameters')}>
+                    <SliderControl
+                      label={t('demoUi.common.wavelength')}
+                      value={wavelength}
+                      min={380}
+                      max={700}
+                      step={5}
+                      unit=" nm"
+                      onChange={setWavelength}
+                      color="cyan"
                     />
-                  </div>
-                  <div className={`flex justify-between text-xs ${dt.mutedTextClass} mt-1`}>
-                    <span>380 nm ({t('demoUi.common.violet')})</span>
-                    <span>550 nm ({t('demoUi.common.green')})</span>
-                    <span>700 nm ({t('demoUi.common.red')})</span>
-                  </div>
+                    <SliderControl
+                      label={t('demoUi.common.amplitude')}
+                      value={amplitude}
+                      min={20}
+                      max={80}
+                      step={5}
+                      onChange={setAmplitude}
+                      color="green"
+                    />
+                    <SliderControl
+                      label={t('demoUi.common.animationSpeed')}
+                      value={speed}
+                      min={0}
+                      max={2}
+                      step={0.1}
+                      onChange={setSpeed}
+                      color="orange"
+                    />
+
+                    <Toggle
+                      label={t('demoUi.common.showBField')}
+                      checked={showBField}
+                      onChange={setShowBField}
+                    />
+
+                    <motion.button
+                      className={`w-full py-2.5 rounded-lg font-medium transition-all ${
+                        isPlaying
+                          ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                          : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setIsPlaying(!isPlaying)}
+                    >
+                      {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
+                    </motion.button>
+
+                    <div className={`pt-2 border-t ${dt.borderClass}`}>
+                      <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
+                      {/* 使用精确光速值 c = 2.998×10^8 m/s 计算频率 f = c/λ */}
+                      <ValueDisplay label={t('demoUi.common.frequency')} value={`${(2.998e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
+                    </div>
+
+                    {/* Quick switch to spectrum */}
+                    <motion.button
+                      className="w-full py-2 rounded-lg text-sm text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all mt-2"
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => setViewMode('spectrum')}
+                    >
+                      {isZh ? '查看完整电磁波谱 →' : 'View Full EM Spectrum →'}
+                    </motion.button>
+                  </ControlPanel>
                 </div>
-              </div>
-
-              <ControlPanel title={t('demoUi.lightWave.waveParameters')} className="w-full lg:w-72">
-                <SliderControl
-                  label={t('demoUi.common.wavelength')}
-                  value={wavelength}
-                  min={380}
-                  max={700}
-                  step={5}
-                  unit=" nm"
-                  onChange={setWavelength}
-                  color="cyan"
-                />
-                <SliderControl
-                  label={t('demoUi.common.amplitude')}
-                  value={amplitude}
-                  min={20}
-                  max={80}
-                  step={5}
-                  onChange={setAmplitude}
-                  color="green"
-                />
-                <SliderControl
-                  label={t('demoUi.common.animationSpeed')}
-                  value={speed}
-                  min={0}
-                  max={2}
-                  step={0.1}
-                  onChange={setSpeed}
-                  color="orange"
-                />
-
-                <Toggle
-                  label={t('demoUi.common.showBField')}
-                  checked={showBField}
-                  onChange={setShowBField}
-                />
-
-                <motion.button
-                  className={`w-full py-2.5 rounded-lg font-medium transition-all ${
-                    isPlaying
-                      ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                      : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setIsPlaying(!isPlaying)}
-                >
-                  {isPlaying ? t('demoUi.common.pause') : t('demoUi.common.play')}
-                </motion.button>
-
-                <div className={`pt-2 border-t ${dt.borderClass}`}>
-                  <ValueDisplay label={t('demoUi.common.color')} value={waveColor} />
-                  {/* 使用精确光速值 c = 2.998×10^8 m/s 计算频率 f = c/λ */}
-                  <ValueDisplay label={t('demoUi.common.frequency')} value={`${(2.998e8 / (wavelength * 1e-9) / 1e14).toFixed(2)} × 10¹⁴ Hz`} />
-                </div>
-
-                {/* Quick switch to spectrum */}
-                <motion.button
-                  className="w-full py-2 rounded-lg text-sm text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all mt-2"
-                  whileHover={{ scale: 1.02 }}
-                  onClick={() => setViewMode('spectrum')}
-                >
-                  {isZh ? '查看完整电磁波谱 →' : 'View Full EM Spectrum →'}
-                </motion.button>
-              </ControlPanel>
-            </div>
+              }
+            />
 
             {/* Foundation: Why button */}
             <DifficultyGate level="foundation" currentLevel={difficultyLevel}>
-              <WhyButton className="mt-4">
+              <WhyButton className="mt-5">
                 <div className="space-y-2 text-sm">
                   <p>{isZh ? '光是一种电磁波，它由电场（E）和磁场（B）相互垂直振荡产生。' : 'Light is an electromagnetic wave consisting of perpendicular oscillating electric (E) and magnetic (B) fields.'}</p>
                   <p>{isZh ? '就像海浪在水面上波动，光波也在空间中传播，只是振动的是电场和磁场而不是水分子。' : 'Like ocean waves on water, light waves propagate through space, but instead of water molecules, electric and magnetic fields oscillate.'}</p>
@@ -517,26 +536,32 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
               </WhyButton>
             </DifficultyGate>
 
-            {/* Application/Research: Formula */}
+            {/* Application/Research: Formula + Info cards */}
             <DifficultyGate level="application" currentLevel={difficultyLevel} showWhen="at-least">
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InfoCard title={isZh ? '电磁波特性' : 'EM Wave Properties'} color="cyan">
-                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
-                    <li>• {isZh ? 'E场和B场相互垂直' : 'E and B fields are perpendicular'}</li>
-                    <li>• {isZh ? '横波：振动方向垂直于传播方向' : 'Transverse: oscillation ⊥ propagation'}</li>
-                    <li>• {isZh ? '真空中速度恒定：c = 3×10⁸ m/s' : 'Constant speed in vacuum: c = 3×10⁸ m/s'}</li>
-                  </ul>
-                  {config.showFormula && (
-                    <Formula className="mt-2">c = λf</Formula>
-                  )}
-                </InfoCard>
-                <InfoCard title={isZh ? '与偏振的联系' : 'Connection to Polarization'} color="purple">
-                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
-                    <li>• {isZh ? '偏振描述电场振动方向' : 'Polarization describes E-field oscillation direction'}</li>
-                    <li>• {isZh ? '自然光包含所有偏振方向' : 'Natural light contains all polarization directions'}</li>
-                    <li>• {isZh ? '只有横波才能偏振' : 'Only transverse waves can be polarized'}</li>
-                  </ul>
-                </InfoCard>
+              <div className="mt-5 space-y-5">
+                <FormulaHighlight
+                  formula="c = λf"
+                  description={isZh ? '电磁波基本关系式：光速 = 波长 × 频率' : 'Fundamental EM wave relation: speed of light = wavelength × frequency'}
+                />
+                <InfoGrid columns={2}>
+                  <InfoCard title={isZh ? '电磁波特性' : 'EM Wave Properties'} color="cyan">
+                    <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
+                      <li>• {isZh ? 'E场和B场相互垂直' : 'E and B fields are perpendicular'}</li>
+                      <li>• {isZh ? '横波：振动方向垂直于传播方向' : 'Transverse: oscillation ⊥ propagation'}</li>
+                      <li>• {isZh ? '真空中速度恒定：c = 3×10⁸ m/s' : 'Constant speed in vacuum: c = 3×10⁸ m/s'}</li>
+                    </ul>
+                    {config.showFormula && (
+                      <Formula className="mt-2">c = λf</Formula>
+                    )}
+                  </InfoCard>
+                  <InfoCard title={isZh ? '与偏振的联系' : 'Connection to Polarization'} color="purple">
+                    <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
+                      <li>• {isZh ? '偏振描述电场振动方向' : 'Polarization describes E-field oscillation direction'}</li>
+                      <li>• {isZh ? '自然光包含所有偏振方向' : 'Natural light contains all polarization directions'}</li>
+                      <li>• {isZh ? '只有横波才能偏振' : 'Only transverse waves can be polarized'}</li>
+                    </ul>
+                  </InfoCard>
+                </InfoGrid>
               </div>
             </DifficultyGate>
           </motion.div>
@@ -549,9 +574,9 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
             transition={{ duration: 0.2 }}
           >
             {/* Spectrum View Content */}
-            <div className="flex gap-6 flex-col lg:flex-row">
-              <div className="flex-1">
-                <div className={`${dt.svgContainerClass} rounded-xl border p-4 overflow-hidden`}>
+            <DemoMainLayout
+              visualization={
+                <VisualizationPanel>
                   <svg viewBox="0 0 800 380" className="w-full h-auto" style={{ minHeight: '360px' }}>
                     <defs>
                       <pattern id="spectrum-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -740,61 +765,64 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                       )}
                     </AnimatePresence>
                   </svg>
+                </VisualizationPanel>
+              }
+              controls={
+                <div className="space-y-5">
+                  <ControlPanel title={isZh ? '显示选项' : 'Display Options'}>
+                    <Toggle
+                      label={isZh ? '显示大气穿透性' : 'Show Atmospheric Penetration'}
+                      checked={showAtmosphere}
+                      onChange={setShowAtmosphere}
+                    />
+                    <Toggle
+                      label={isZh ? '显示尺寸比较' : 'Show Size Comparison'}
+                      checked={showSizeComparison}
+                      onChange={setShowSizeComparison}
+                    />
+
+                    <div className={`border-t ${dt.borderClass} pt-4 mt-4`}>
+                      <h4 className={`text-sm font-medium ${dt.headingClass} mb-2`}>
+                        {isZh ? '选择波段' : 'Select Region'}
+                      </h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {SPECTRUM_REGIONS.map((region) => (
+                          <button
+                            key={region.id}
+                            onClick={() => setSelectedRegion(region.id)}
+                            className={`px-2 py-1.5 rounded-lg text-xs transition-all ${
+                              selectedRegion === region.id
+                                ? 'bg-opacity-30 border'
+                                : `${dt.buttonBgClass} border`
+                            }`}
+                            style={{
+                              backgroundColor: selectedRegion === region.id ? `${region.color}30` : undefined,
+                              borderColor: selectedRegion === region.id ? region.color : undefined,
+                              color: selectedRegion === region.id ? region.color : undefined,
+                            }}
+                          >
+                            {isZh ? region.nameZh : region.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quick switch to wave view */}
+                    <motion.button
+                      className="w-full py-2 rounded-lg text-sm text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-all mt-4"
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => setViewMode('wave')}
+                    >
+                      {isZh ? '查看波动动画 →' : 'View Wave Animation →'}
+                    </motion.button>
+                  </ControlPanel>
                 </div>
-              </div>
-
-              <ControlPanel title={isZh ? '显示选项' : 'Display Options'} className="w-full lg:w-72">
-                <Toggle
-                  label={isZh ? '显示大气穿透性' : 'Show Atmospheric Penetration'}
-                  checked={showAtmosphere}
-                  onChange={setShowAtmosphere}
-                />
-                <Toggle
-                  label={isZh ? '显示尺寸比较' : 'Show Size Comparison'}
-                  checked={showSizeComparison}
-                  onChange={setShowSizeComparison}
-                />
-
-                <div className={`border-t ${dt.borderClass} pt-4 mt-4`}>
-                  <h4 className={`text-sm font-medium ${dt.headingClass} mb-2`}>
-                    {isZh ? '选择波段' : 'Select Region'}
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {SPECTRUM_REGIONS.map((region) => (
-                      <button
-                        key={region.id}
-                        onClick={() => setSelectedRegion(region.id)}
-                        className={`px-2 py-1.5 rounded text-xs transition-all ${
-                          selectedRegion === region.id
-                            ? 'bg-opacity-30 border'
-                            : `${dt.buttonBgClass} border`
-                        }`}
-                        style={{
-                          backgroundColor: selectedRegion === region.id ? `${region.color}30` : undefined,
-                          borderColor: selectedRegion === region.id ? region.color : undefined,
-                          color: selectedRegion === region.id ? region.color : undefined,
-                        }}
-                      >
-                        {isZh ? region.nameZh : region.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quick switch to wave view */}
-                <motion.button
-                  className="w-full py-2 rounded-lg text-sm text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-all mt-4"
-                  whileHover={{ scale: 1.02 }}
-                  onClick={() => setViewMode('wave')}
-                >
-                  {isZh ? '查看波动动画 →' : 'View Wave Animation →'}
-                </motion.button>
-              </ControlPanel>
-            </div>
+              }
+            />
 
             {/* Foundation: Why button */}
             <DifficultyGate level="foundation" currentLevel={difficultyLevel}>
-              <WhyButton className="mt-4">
+              <WhyButton className="mt-5">
                 <div className="space-y-2 text-sm">
                   <p>{isZh ? '电磁波谱就像一把无限长的"光尺子"——我们看到的彩虹只是其中很小的一段！' : 'The EM spectrum is like an infinite ruler of light—the rainbow we see is just a tiny portion!'}</p>
                   <p>{isZh ? '从广播塔发出的无线电波到医院X光机发出的射线，都是电磁波家族的成员。' : 'From radio towers to hospital X-ray machines, they are all part of the electromagnetic wave family.'}</p>
@@ -804,30 +832,36 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
 
             {/* Knowledge cards for application/research */}
             <DifficultyGate level="application" currentLevel={difficultyLevel} showWhen="at-least">
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <InfoCard title={isZh ? '光的本质' : 'Nature of Light'} color="cyan">
-                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
-                    <li>• {isZh ? '光是电磁波，不需要介质' : 'Light is EM wave, no medium needed'}</li>
-                    <li>• {isZh ? '波长与频率成反比' : 'λ inversely proportional to f'}</li>
-                    {config.showFormula && <li className="font-mono text-cyan-400">c = λf = 3×10⁸ m/s</li>}
-                  </ul>
-                </InfoCard>
+              <div className="mt-5 space-y-5">
+                <FormulaHighlight
+                  formula="E = hf = hc/λ"
+                  description={isZh ? '光子能量与频率成正比，与波长成反比' : 'Photon energy is proportional to frequency and inversely proportional to wavelength'}
+                />
+                <InfoGrid columns={3}>
+                  <InfoCard title={isZh ? '光的本质' : 'Nature of Light'} color="cyan">
+                    <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
+                      <li>• {isZh ? '光是电磁波，不需要介质' : 'Light is EM wave, no medium needed'}</li>
+                      <li>• {isZh ? '波长与频率成反比' : 'λ inversely proportional to f'}</li>
+                      {config.showFormula && <li className="font-mono text-cyan-400">c = λf = 3×10⁸ m/s</li>}
+                    </ul>
+                  </InfoCard>
 
-                <InfoCard title={isZh ? '能量与波长' : 'Energy & Wavelength'} color="purple">
-                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
-                    <li>• {isZh ? '波长越短，能量越高' : 'Shorter λ = higher energy'}</li>
-                    <li>• {isZh ? '伽马射线能量最高' : 'Gamma rays have highest energy'}</li>
-                    {config.showFormula && <li className="font-mono text-purple-400">E = hf = hc/λ</li>}
-                  </ul>
-                </InfoCard>
+                  <InfoCard title={isZh ? '能量与波长' : 'Energy & Wavelength'} color="purple">
+                    <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
+                      <li>• {isZh ? '波长越短，能量越高' : 'Shorter λ = higher energy'}</li>
+                      <li>• {isZh ? '伽马射线能量最高' : 'Gamma rays have highest energy'}</li>
+                      {config.showFormula && <li className="font-mono text-purple-400">E = hf = hc/λ</li>}
+                    </ul>
+                  </InfoCard>
 
-                <InfoCard title={isZh ? '人眼视觉' : 'Human Vision'} color="green">
-                  <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
-                    <li>• {isZh ? '人眼仅见380-700nm' : 'Eyes see only 380-700nm'}</li>
-                    <li>• {isZh ? '对绿光最敏感(~555nm)' : 'Most sensitive to green (~555nm)'}</li>
-                    <li>• {isZh ? '可见光只占极小部分' : 'Visible is tiny fraction of spectrum'}</li>
-                  </ul>
-                </InfoCard>
+                  <InfoCard title={isZh ? '人眼视觉' : 'Human Vision'} color="green">
+                    <ul className={`text-xs ${dt.bodyClass} space-y-1.5`}>
+                      <li>• {isZh ? '人眼仅见380-700nm' : 'Eyes see only 380-700nm'}</li>
+                      <li>• {isZh ? '对绿光最敏感(~555nm)' : 'Most sensitive to green (~555nm)'}</li>
+                      <li>• {isZh ? '可见光只占极小部分' : 'Visible is tiny fraction of spectrum'}</li>
+                    </ul>
+                  </InfoCard>
+                </InfoGrid>
               </div>
             </DifficultyGate>
           </motion.div>
