@@ -1,0 +1,42 @@
+{
+  "headers": [
+    {
+      "path": "/*",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block"
+      }
+    },
+    {
+      "path": "/index.html",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    },
+    {
+      "path": "/",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    },
+    {
+      "path": "/assets/*",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "path": "/sw.js",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    },
+    {
+      "path": "/workbox-*.js",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    }
+  ]
+}
