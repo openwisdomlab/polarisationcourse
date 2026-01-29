@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'images/**/*'],
       manifest: {
         name: 'PolarCraft - 偏振光下的新世界',
@@ -40,6 +40,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // 新版本立即生效，无需等待用户关闭所有标签页
+        skipWaiting: true,
+        clientsClaim: true,
         // 预缓存构建产物（JS/CSS）
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         // 运行时缓存策略
