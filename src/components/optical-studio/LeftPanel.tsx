@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -139,7 +139,7 @@ function ExperimentCard({ experiment, onLoad, isActive }: ExperimentCardProps) {
         </button>
         {experiment.linkedDemo && (
           <Link
-            to={`/demos?demo=${experiment.linkedDemo}`}
+            to={`/demos?demo=${experiment.linkedDemo}` as string}
             onClick={(e) => e.stopPropagation()}
             className={cn(
               'p-1 rounded transition-colors',

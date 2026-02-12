@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PersistentHeader } from '@/components/shared'
@@ -488,7 +488,7 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
             {unit.resources.demos?.map((demo, i) => (
               <Link
                 key={`demo-${i}`}
-                to={`/demos/${demo}`}
+                to={`/demos/${demo}` as string}
                 onClick={e => e.stopPropagation()}
                 className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
                   theme === 'dark'
@@ -1124,7 +1124,6 @@ function ProgressStats({ theme }: { theme: 'dark' | 'light' }) {
 export function CoursePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const [_searchParams] = useSearchParams()
   const { progress } = useCourseProgress()
 
   return (
@@ -1218,7 +1217,7 @@ export function CoursePage() {
               {t('course.cta.playGames')}
             </Link>
             <Link
-              to="/lab"
+              to="/research"
               className="px-6 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform"
             >
               <Telescope className="w-5 h-5" />

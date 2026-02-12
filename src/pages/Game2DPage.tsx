@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import {
   BookOpen,
@@ -802,7 +802,7 @@ export function Game2DPage() {
             {!isCompact && (
               <>
                 <Link
-                  to="/game"
+                  to="/games/3d"
                   className={cn(
                     'p-2 rounded-lg transition-colors',
                     isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-200 text-slate-600'

@@ -6,7 +6,7 @@
  * on the sphere corresponds to a unique polarization state.
  */
 import { useState, useRef, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Text, Line } from '@react-three/drei'
 import { useTranslation } from 'react-i18next'
@@ -385,7 +385,7 @@ export function PoincareSphereViewerPage() {
           <div className="flex items-center justify-between h-14 sm:h-16">
             <div className="flex items-center gap-3">
               <Link
-                to="/lab"
+                to="/research"
                 className={cn(
                   'flex items-center gap-2 text-sm font-medium transition-colors',
                   theme === 'dark'

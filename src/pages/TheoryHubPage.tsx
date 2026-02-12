@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -285,7 +285,7 @@ function TheoryUnitCard({ unit }: { unit: TheoryUnit }) {
             {unit.demoLinks.map(link => (
               <Link
                 key={link.id}
-                to={`/demos/${link.id}`}
+                to={`/demos/${link.id}` as string}
                 className={cn(
                   'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all',
                   'hover:-translate-y-0.5 hover:shadow-sm',

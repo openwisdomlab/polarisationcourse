@@ -12,7 +12,7 @@
  */
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -1075,7 +1075,7 @@ function ApplicationDetailModal({
         {/* Link to Demo */}
         {app.relatedDemo && (
           <Link
-            to={`/demos?demo=${app.relatedDemo}`}
+            to={`/demos?demo=${app.relatedDemo}` as string}
             className={cn(
               'flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors',
               theme === 'dark'

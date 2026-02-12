@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -562,7 +562,7 @@ export function CourseNavigator({
           className="mt-3"
         >
           <button
-            onClick={() => navigate('/course')}
+            onClick={() => navigate({ to: '/course' as string })}
             className={cn(
               'w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium',
               'transition-all hover:scale-105',

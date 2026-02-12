@@ -8,7 +8,7 @@
  */
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -82,7 +82,7 @@ function ExperimentCard({ experiment, onLoad }: ExperimentCardProps) {
         </button>
         {experiment.linkedDemo && (
           <Link
-            to={`/demos?demo=${experiment.linkedDemo}`}
+            to={`/demos?demo=${experiment.linkedDemo}` as string}
             className={cn(
               'p-1.5 rounded-lg transition-colors',
               theme === 'dark' ? 'text-gray-400 hover:bg-slate-700' : 'text-gray-500 hover:bg-gray-100'

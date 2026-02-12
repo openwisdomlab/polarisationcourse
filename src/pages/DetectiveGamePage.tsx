@@ -14,7 +14,7 @@
  */
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import {
   ChevronLeft,
@@ -454,7 +454,7 @@ export function DetectiveGamePage() {
           <div className="flex items-center gap-2">
             {/* Back button */}
             <Link
-              to="/game2d"
+              to="/games/2d"
               className={cn(
                 'p-2 rounded-lg transition-all',
                 isDark ? 'hover:bg-slate-700/50 text-slate-400' : 'hover:bg-slate-200 text-slate-600'

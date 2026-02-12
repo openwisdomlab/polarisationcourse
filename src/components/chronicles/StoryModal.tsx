@@ -4,7 +4,7 @@
  */
 
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import {
@@ -255,7 +255,7 @@ export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }:
                   <button
                     onClick={() => {
                       onClose()
-                      navigate(demoLink.route)
+                      navigate({ to: demoLink.route as string })
                     }}
                     className={cn(
                       'flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
@@ -272,7 +272,7 @@ export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }:
                   <button
                     onClick={() => {
                       onClose()
-                      navigate(benchLink.route)
+                      navigate({ to: benchLink.route as string })
                     }}
                     className={cn(
                       'flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',

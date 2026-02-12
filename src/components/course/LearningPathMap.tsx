@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
@@ -244,7 +244,7 @@ export function LearningPathMap({ theme, completedDemos, onUnitClick }: Learning
 
         {/* 节点主体 */}
         <Link
-          to={isClickable ? `/demos/${firstDemoId}` : '#'}
+          to={(isClickable ? `/demos/${firstDemoId}` : '#') as string}
           onClick={(e) => {
             if (!isClickable) {
               e.preventDefault()

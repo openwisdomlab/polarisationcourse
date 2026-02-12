@@ -9,7 +9,7 @@
  */
 
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -281,7 +281,7 @@ export function MysteryCard({
             {/* 演示入口 */}
             {mystery.relatedDemos.length > 0 && (
               <Link
-                to={`/demos/${mystery.relatedDemos[0]}`}
+                to={`/demos/${mystery.relatedDemos[0]}` as string}
                 onClick={(e) => e.stopPropagation()}
                 className={`px-3 py-2 rounded-full text-sm flex items-center gap-1.5 transition-colors ${
                   theme === 'dark'

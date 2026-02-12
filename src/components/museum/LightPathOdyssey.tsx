@@ -14,7 +14,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo, type CSSProperties } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -452,12 +452,12 @@ export function LightPathOdyssey() {
 
   // Handle navigation to demo
   const handleNavigateToDemo = useCallback((demoId: string) => {
-    navigate(`/demos/${demoId}`)
+    navigate({ to: `/demos/${demoId}` as string })
   }, [navigate])
 
   // Handle navigation to unit
   const handleNavigateToUnit = useCallback((unitId: number) => {
-    navigate(`/demos?unit=${unitId}`)
+    navigate({ to: `/demos?unit=${unitId}` as string })
   }, [navigate])
 
   return (
@@ -691,7 +691,7 @@ export function LightPathOdyssey() {
         {/* Call to action */}
         <div className="text-center mt-10">
           <button
-            onClick={() => navigate('/demos/em-wave')}
+            onClick={() => navigate({ to: '/demos/em-wave' as string })}
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium",
               "transition-all duration-300 hover:scale-105",

@@ -7,7 +7,7 @@
  */
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { getStorageJSON, setStorageJSON } from '@/lib/storage'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'

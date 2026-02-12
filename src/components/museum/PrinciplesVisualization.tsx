@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -436,7 +436,7 @@ export function PrinciplesVisualization() {
   }, [])
 
   const handleNavigate = useCallback((demoId: string) => {
-    navigate(`/demos/${demoId}`)
+    navigate({ to: `/demos/${demoId}` as string })
   }, [navigate])
 
   return (
@@ -541,7 +541,7 @@ export function PrinciplesVisualization() {
         {/* Call to action */}
         <div className="text-center mt-10">
           <button
-            onClick={() => navigate('/demos')}
+            onClick={() => navigate({ to: '/demos' as string })}
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm",
               "transition-all duration-300 hover:scale-105 active:scale-95",

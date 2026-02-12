@@ -5,7 +5,7 @@
 
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import {
@@ -227,7 +227,7 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
                       key={demo.id}
                       onClick={(e) => {
                         e.stopPropagation()
-                        navigate(demo.route)
+                        navigate({ to: demo.route as string })
                       }}
                       className={cn(
                         'inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors',
@@ -281,7 +281,7 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  navigate(demoLink.route)
+                  navigate({ to: demoLink.route as string })
                 }}
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
@@ -301,7 +301,7 @@ export function DualTrackCard({ event, eventIndex, isExpanded, onToggle, onReadS
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  navigate(benchLink.route)
+                  navigate({ to: benchLink.route as string })
                 }}
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',

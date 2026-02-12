@@ -10,7 +10,7 @@
  */
 
 import React, { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -438,7 +438,7 @@ export function WorldMap({
       if (onNodeClick) {
         onNodeClick(nodeId)
       } else {
-        navigate(`/demos/${node.demos[0]}`)
+        navigate({ to: `/demos/${node.demos[0]}` as string })
       }
     }
   }

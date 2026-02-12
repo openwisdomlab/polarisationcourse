@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearch, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -529,12 +529,13 @@ export function MerchandisePage() {
   const { theme } = useTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
-  const [searchParams, setSearchParams] = useSearchParams()
+  const search = useSearch({ strict: false }) as Record<string, string>
+  const navigate = useNavigate()
 
   // Get active tab from URL or default to 'gallery'
-  const activeTab = searchParams.get('tab') || 'gallery'
+  const activeTab = search.tab || 'gallery'
   const setActiveTab = (tab: string) => {
-    setSearchParams({ tab })
+    navigate({ search: { tab } as never })
   }
 
   // State

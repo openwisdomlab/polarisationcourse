@@ -9,7 +9,7 @@
  */
 
 import { useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
@@ -301,11 +301,11 @@ export function PSRTQuestStage({
     const stage = quest.stages[stageIndex]
     // 优先跳转到 demo
     if (stage.demoLink) {
-      navigate(stage.demoLink)
+      navigate({ to: stage.demoLink as string })
     } else if (stage.gameLink) {
-      navigate(stage.gameLink)
+      navigate({ to: stage.gameLink as string })
     } else if (stage.chronicleLink) {
-      navigate(stage.chronicleLink)
+      navigate({ to: stage.chronicleLink as string })
     }
   }
 

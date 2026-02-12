@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -1930,7 +1930,7 @@ function ExperimentDetailModal({
           {/* Related Demo */}
           {experiment.relatedDemo && (
             <Link
-              to={`/demos?demo=${experiment.relatedDemo}`}
+              to={`/demos/${experiment.relatedDemo}` as string}
               className={cn(
                 'flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors',
                 theme === 'dark'
@@ -2148,7 +2148,7 @@ export function ExperimentsPage() {
   const { i18n } = useTranslation()
   const { theme } = useTheme()
   const isZh = i18n.language === 'zh'
-  const { tabId } = useParams<{ tabId?: string }>()
+  const { tabId } = useParams({ strict: false }) as { tabId?: string }
   const navigate = useNavigate()
 
   // Determine active tab from URL param or default to 'diy'
@@ -2180,7 +2180,7 @@ export function ExperimentsPage() {
     setActiveTab(tab)
     setFilterCategory('all')
     setFilterDifficulty('all')
-    navigate(`/experiments/${tab}`)
+    navigate({ to: `/experiments/${tab}` })
   }
 
   // Filter experiments
@@ -2650,7 +2650,7 @@ export function ExperimentsPage() {
                   </div>
                 </Link>
                 <Link
-                  to="/devices"
+                  to="/studio"
                   className={cn(
                     'p-4 rounded-lg flex items-start gap-3 transition-colors',
                     theme === 'dark'
@@ -2669,7 +2669,7 @@ export function ExperimentsPage() {
                   </div>
                 </Link>
                 <Link
-                  to="/bench"
+                  to="/studio"
                   className={cn(
                     'p-4 rounded-lg flex items-start gap-3 transition-colors',
                     theme === 'dark'

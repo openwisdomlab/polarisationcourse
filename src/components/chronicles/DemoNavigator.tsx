@@ -11,7 +11,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -255,7 +255,7 @@ export function DemoNavigator({
   // Navigate to demo page
   const goToDemo = useCallback((demoId: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    navigate(`/demos/${demoId}`)
+    navigate({ to: `/demos/${demoId}` as string })
   }, [navigate])
 
   return (
@@ -645,7 +645,7 @@ export function DemoNavigator({
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation()
-                                          navigate('/optical-studio')
+                                          navigate({ to: '/optical-studio' as string })
                                         }}
                                         className={cn(
                                           'flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-[10px] font-medium transition-all',
@@ -661,7 +661,7 @@ export function DemoNavigator({
                                         onClick={(e) => {
                                           e.stopPropagation()
                                           // Navigate to P-SRT course for this unit
-                                          navigate(`/chronicles`)
+                                          navigate({ to: '/chronicles' as string })
                                           // Could set active tab to 'psrt' via state
                                         }}
                                         className={cn(
@@ -792,7 +792,7 @@ export function DemoNavigator({
           className="mt-3"
         >
           <button
-            onClick={() => navigate('/demos')}
+            onClick={() => navigate({ to: '/demos' as string })}
             className={cn(
               'w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium',
               'transition-all hover:scale-105',
