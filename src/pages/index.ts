@@ -48,15 +48,6 @@ export { HardwarePage } from './HardwarePage'
 // ============================================================
 export { HomePage } from './HomePage'
 
-// ============================================================
-// Legacy Hub Pages - 保留用于向后兼容
-// 这些页面现在通过 App.tsx 中的重定向处理
-// ============================================================
-export { EducationHubPage } from './EducationHubPage'
-export { ArsenalHubPage } from './ArsenalHubPage'
-export { TheoryHubPage } from './TheoryHubPage'
-export { GalleryHubPage } from './GalleryHubPage'
-export { ResearchHubPage } from './ResearchHubPage'
-
-// Note: Legacy pages (DevicesPage, BenchPage, OpticalDesignStudioPage, OpticalDesignStudioPageV2)
-// have been removed and consolidated into OpticalDesignPage
+// Note: Legacy hub pages (EducationHubPage, ArsenalHubPage, TheoryHubPage, GalleryHubPage, ResearchHubPage)
+// and legacy pages (DevicesPage, BenchPage, OpticalDesignStudioPage, OpticalDesignStudioPageV2)
+// have been removed. Legacy routes redirect via src/routes/$.tsx catch-all.

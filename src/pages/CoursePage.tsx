@@ -488,7 +488,8 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
             {unit.resources.demos?.map((demo, i) => (
               <Link
                 key={`demo-${i}`}
-                to={`/demos/${demo}` as string}
+                to="/demos/$demoId"
+                params={{ demoId: demo }}
                 onClick={e => e.stopPropagation()}
                 className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
                   theme === 'dark'

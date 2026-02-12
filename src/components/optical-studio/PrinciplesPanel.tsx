@@ -355,7 +355,8 @@ function PrincipleDetailCard({ principle, onClose }: PrincipleDetailCardProps) {
         {/* Link to Course Demo */}
         {principle.linkedDemo && (
           <Link
-            to={`/demos?demo=${principle.linkedDemo}` as string}
+            to="/demos/$demoId"
+            params={{ demoId: principle.linkedDemo }}
             className={cn(
               'flex items-center justify-between p-3 rounded-xl border transition-all group',
               theme === 'dark'

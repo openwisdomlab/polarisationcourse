@@ -910,7 +910,7 @@ export function KnowledgeMap() {
   const handleNodeClick = useCallback((nodeId: string) => {
     if (selectedNode === nodeId) {
       // Double click - navigate to demo
-      navigate({ to: `/demos/${nodeId}` as string })
+      navigate({ to: '/demos/$demoId', params: { demoId: nodeId } })
     } else {
       setSelectedNode(nodeId)
     }
@@ -918,7 +918,7 @@ export function KnowledgeMap() {
 
   // Handle navigate from panel
   const handleNavigate = useCallback((nodeId: string) => {
-    navigate({ to: `/demos/${nodeId}` as string })
+    navigate({ to: '/demos/$demoId', params: { demoId: nodeId } })
   }, [navigate])
 
   // Get selected node data

@@ -292,7 +292,8 @@ function PrinciplesReference() {
           {PRINCIPLES.map((p) => (
             <Link
               key={p.id}
-              to={`/demos/${p.linkedDemo}` as string}
+              to="/demos/$demoId"
+              params={{ demoId: p.linkedDemo! }}
               className={cn(
                 'flex items-center justify-center w-8 h-8 rounded-lg text-lg font-bold transition-all',
                 'hover:scale-110 hover:shadow-lg',
@@ -313,7 +314,8 @@ function PrinciplesReference() {
           {PRINCIPLES.map((p) => (
             <Link
               key={p.id}
-              to={`/demos/${p.linkedDemo}` as string}
+              to="/demos/$demoId"
+              params={{ demoId: p.linkedDemo! }}
               className={cn(
                 'flex items-center gap-3 p-2 rounded-lg transition-colors',
                 theme === 'dark'

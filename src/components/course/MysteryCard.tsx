@@ -281,7 +281,8 @@ export function MysteryCard({
             {/* 演示入口 */}
             {mystery.relatedDemos.length > 0 && (
               <Link
-                to={`/demos/${mystery.relatedDemos[0]}` as string}
+                to="/demos/$demoId"
+                params={{ demoId: mystery.relatedDemos[0] }}
                 onClick={(e) => e.stopPropagation()}
                 className={`px-3 py-2 rounded-full text-sm flex items-center gap-1.5 transition-colors ${
                   theme === 'dark'

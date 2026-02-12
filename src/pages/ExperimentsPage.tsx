@@ -1930,7 +1930,8 @@ function ExperimentDetailModal({
           {/* Related Demo */}
           {experiment.relatedDemo && (
             <Link
-              to={`/demos/${experiment.relatedDemo}` as string}
+              to="/demos/$demoId"
+              params={{ demoId: experiment.relatedDemo }}
               className={cn(
                 'flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors',
                 theme === 'dark'
@@ -2180,7 +2181,7 @@ export function ExperimentsPage() {
     setActiveTab(tab)
     setFilterCategory('all')
     setFilterDifficulty('all')
-    navigate({ to: `/gallery/${tab}` as string })
+    navigate({ to: '/gallery/$tabId', params: { tabId: tab } })
   }
 
   // Filter experiments

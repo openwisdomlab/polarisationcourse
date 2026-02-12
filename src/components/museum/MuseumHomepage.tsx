@@ -830,7 +830,7 @@ function QuickStartSection() {
       titleKey: 'museum.quickStart.explore.title',
       descriptionKey: 'museum.quickStart.explore.description',
       color: '#22d3ee',
-      action: () => navigate({ to: '/demos' as string })
+      action: () => navigate({ to: '/demos' })
     },
     {
       id: 'guided',
@@ -1207,7 +1207,7 @@ function MuseumFooter() {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => navigate({ to: '/demos' as string })}
+                  onClick={() => navigate({ to: '/demos' })}
                   className={cn(
                     "text-sm hover:underline",
                     theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
@@ -1291,7 +1291,7 @@ function MuseumFooter() {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => navigate({ to: '/chronicles' as string })}
+                  onClick={() => navigate({ to: '/chronicles' })}
                   className={cn(
                     "text-sm hover:underline flex items-center gap-1",
                     theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
@@ -1373,12 +1373,12 @@ export function MuseumHomepage() {
   const handleSelectHall = useCallback((hallId: string) => {
     const hall = EXHIBITION_HALLS.find(h => h.id === hallId)
     if (hall) {
-      navigate({ to: `/demos?unit=${hall.unit}` as string })
+      navigate({ to: '/demos', search: { unit: String(hall.unit) } })
     }
   }, [navigate])
 
   const handleSelectDemo = useCallback((demoId: string) => {
-    navigate({ to: `/demos/${demoId}` as string })
+    navigate({ to: '/demos/$demoId', params: { demoId } })
   }, [navigate])
 
   return (

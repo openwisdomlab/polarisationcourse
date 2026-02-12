@@ -1075,7 +1075,8 @@ function ApplicationDetailModal({
         {/* Link to Demo */}
         {app.relatedDemo && (
           <Link
-            to={`/demos?demo=${app.relatedDemo}` as string}
+            to="/demos/$demoId"
+            params={{ demoId: app.relatedDemo }}
             className={cn(
               'flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors',
               theme === 'dark'

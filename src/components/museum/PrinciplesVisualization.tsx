@@ -436,7 +436,7 @@ export function PrinciplesVisualization() {
   }, [])
 
   const handleNavigate = useCallback((demoId: string) => {
-    navigate({ to: `/demos/${demoId}` as string })
+    navigate({ to: '/demos/$demoId', params: { demoId } })
   }, [navigate])
 
   return (
@@ -541,7 +541,7 @@ export function PrinciplesVisualization() {
         {/* Call to action */}
         <div className="text-center mt-10">
           <button
-            onClick={() => navigate({ to: '/demos' as string })}
+            onClick={() => navigate({ to: '/demos' })}
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm",
               "transition-all duration-300 hover:scale-105 active:scale-95",

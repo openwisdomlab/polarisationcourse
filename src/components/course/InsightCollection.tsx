@@ -635,7 +635,8 @@ export function InsightCollection({
                       <>
                         {t('course.collection.completeDemo')}:
                         <Link
-                          to={`/demos/${selectedItem.unlockCondition.targetId}` as string}
+                          to="/demos/$demoId"
+                          params={{ demoId: selectedItem.unlockCondition.targetId! }}
                           className="ml-1 text-cyan-500 hover:underline"
                           onClick={() => setSelectedItem(null)}
                         >

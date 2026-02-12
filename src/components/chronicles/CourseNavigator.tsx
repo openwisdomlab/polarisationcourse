@@ -562,7 +562,7 @@ export function CourseNavigator({
           className="mt-3"
         >
           <button
-            onClick={() => navigate({ to: '/course' as string })}
+            onClick={() => navigate({ to: '/course' })}
             className={cn(
               'w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium',
               'transition-all hover:scale-105',

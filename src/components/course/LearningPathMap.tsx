@@ -244,7 +244,8 @@ export function LearningPathMap({ theme, completedDemos, onUnitClick }: Learning
 
         {/* 节点主体 */}
         <Link
-          to={(isClickable ? `/demos/${firstDemoId}` : '#') as string}
+          to={isClickable ? '/demos/$demoId' : '/'}
+          params={isClickable ? { demoId: firstDemoId! } : undefined}
           onClick={(e) => {
             if (!isClickable) {
               e.preventDefault()

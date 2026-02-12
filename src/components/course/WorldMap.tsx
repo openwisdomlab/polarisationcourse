@@ -438,7 +438,7 @@ export function WorldMap({
       if (onNodeClick) {
         onNodeClick(nodeId)
       } else {
-        navigate({ to: `/demos/${node.demos[0]}` as string })
+        navigate({ to: '/demos/$demoId', params: { demoId: node.demos[0] } })
       }
     }
   }

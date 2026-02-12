@@ -255,7 +255,7 @@ export function DemoNavigator({
   // Navigate to demo page
   const goToDemo = useCallback((demoId: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    navigate({ to: `/demos/${demoId}` as string })
+    navigate({ to: '/demos/$demoId', params: { demoId } })
   }, [navigate])
 
   return (
@@ -645,7 +645,7 @@ export function DemoNavigator({
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation()
-                                          navigate({ to: '/studio' as string })
+                                          navigate({ to: '/studio' })
                                         }}
                                         className={cn(
                                           'flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-[10px] font-medium transition-all',
@@ -661,7 +661,7 @@ export function DemoNavigator({
                                         onClick={(e) => {
                                           e.stopPropagation()
                                           // Navigate to P-SRT course for this unit
-                                          navigate({ to: '/chronicles' as string })
+                                          navigate({ to: '/chronicles' })
                                           // Could set active tab to 'psrt' via state
                                         }}
                                         className={cn(
@@ -792,7 +792,7 @@ export function DemoNavigator({
           className="mt-3"
         >
           <button
-            onClick={() => navigate({ to: '/demos' as string })}
+            onClick={() => navigate({ to: '/demos' })}
             className={cn(
               'w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium',
               'transition-all hover:scale-105',

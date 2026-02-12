@@ -139,7 +139,8 @@ function ExperimentCard({ experiment, onLoad, isActive }: ExperimentCardProps) {
         </button>
         {experiment.linkedDemo && (
           <Link
-            to={`/demos?demo=${experiment.linkedDemo}` as string}
+            to="/demos/$demoId"
+            params={{ demoId: experiment.linkedDemo }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
               'p-1 rounded transition-colors',
