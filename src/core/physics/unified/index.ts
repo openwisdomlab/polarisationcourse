@@ -167,6 +167,19 @@ export {
   type VictoryCheckResult
 } from './VictorySystem';
 
+// ========== Physics Interpreter (Semantic Bridge) ==========
+export {
+  PhysicsInterpreter,
+  physicsInterpreter,
+  type PolarizationCategory,
+  type Handedness,
+  type LinearOrientation,
+  type PolarizationStateDescription,
+  type InteractionEvent,
+  type TraceAnalysis,
+  type ConservationResult
+} from './PhysicsInterpreter';
+
 // ========== Legacy Adapter ==========
 export {
   fromLightPacket,
