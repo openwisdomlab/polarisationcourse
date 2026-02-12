@@ -17,9 +17,10 @@ import { cn } from '@/lib/utils'
 import {
   Play, Pause, Eye, EyeOff, RotateCcw, RotateCw,
   Trash2, Undo2, Redo2, Save, FolderOpen, Download,
-  Upload, Grid3X3, Magnet, X, Keyboard, Tag, MessageSquare
+  Upload, Grid3X3, Magnet, X, Keyboard, Tag, MessageSquare, Bug
 } from 'lucide-react'
 import { useOpticalBenchStore } from '@/stores/opticalBenchStore'
+import { useSimulationBlackBoxStore } from '@/stores/simulationBlackBoxStore'
 
 // ============================================
 // Toolbar Button Component
@@ -438,6 +439,24 @@ export function CanvasToolbar() {
     input.click()
   }, [importDesign])
 
+  const handleReportPhysicsIssue = useCallback(() => {
+    const { exportCurrentAsReport } = useSimulationBlackBoxStore.getState()
+    const report = exportCurrentAsReport()
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(report).then(() => {
+        // Brief visual feedback could be added here
+      })
+    }
+    // Also trigger a download as backup
+    const blob = new Blob([report], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `physics-report-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [])
+
   return (
     <>
       <div className={cn(
@@ -548,6 +567,11 @@ export function CanvasToolbar() {
           onClick={handleImport}
           icon={<Upload className="w-5 h-5" />}
           title={isZh ? '导入' : 'Import'}
+        />
+        <ToolbarButton
+          onClick={handleReportPhysicsIssue}
+          icon={<Bug className="w-5 h-5" />}
+          title={isZh ? '报告物理问题' : 'Report Physics Issue'}
         />
 
         <Divider />
