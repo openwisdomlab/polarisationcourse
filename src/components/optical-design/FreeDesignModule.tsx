@@ -33,6 +33,7 @@ import {
 import { useOpticalBenchStore, type BenchComponentType } from '@/stores/opticalBenchStore'
 import { OpticalCanvas } from '@/components/optical-studio/OpticalCanvas'
 import { useKeyboardShortcuts } from '@/components/optical-studio/useKeyboardShortcuts'
+import SimulationReplayer from '@/components/optical-studio/SimulationReplayer'
 
 // ============================================
 // Component Palette
@@ -595,6 +596,9 @@ export function FreeDesignModule() {
         {/* Properties Panel */}
         <PropertiesPanel />
       </div>
+
+      {/* Dev-only: Simulation BlackBox Replayer */}
+      {import.meta.env.DEV && <SimulationReplayer />}
     </div>
   )
 }
