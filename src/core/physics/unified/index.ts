@@ -180,6 +180,29 @@ export {
   type ConservationResult
 } from './PhysicsInterpreter';
 
+// ========== Dispersive Wave Plate (Material Physics) ==========
+export {
+  DispersiveWavePlate,
+  birefringenceAtWavelength,
+  phaseRetardation,
+  requiredThickness,
+  BIREFRINGENT_MATERIALS,
+  type BirefringentMaterial
+} from './DispersiveWavePlate';
+
+// ========== Unified Polarization State ==========
+export {
+  PolarizationState,
+  stokesToJones,
+  jonesToStokes,
+  validateConservation,
+  type JonesRepresentation,
+  type StokesRepresentation,
+  type EllipseParameters,
+  type MaterialContext,
+  type PolarizationStateJSON
+} from './PolarizationState';
+
 // ========== Legacy Adapter ==========
 export {
   fromLightPacket,
