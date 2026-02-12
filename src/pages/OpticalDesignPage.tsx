@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearch, useNavigate, Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -292,7 +292,8 @@ function PrinciplesReference() {
           {PRINCIPLES.map((p) => (
             <Link
               key={p.id}
-              to={`/demos?demo=${p.linkedDemo}`}
+              to="/demos/$demoId"
+              params={{ demoId: p.linkedDemo! }}
               className={cn(
                 'flex items-center justify-center w-8 h-8 rounded-lg text-lg font-bold transition-all',
                 'hover:scale-110 hover:shadow-lg',
@@ -313,7 +314,8 @@ function PrinciplesReference() {
           {PRINCIPLES.map((p) => (
             <Link
               key={p.id}
-              to={`/demos?demo=${p.linkedDemo}`}
+              to="/demos/$demoId"
+              params={{ demoId: p.linkedDemo! }}
               className={cn(
                 'flex items-center gap-3 p-2 rounded-lg transition-colors',
                 theme === 'dark'
@@ -363,7 +365,8 @@ export function OpticalDesignPage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { isMobile, isTablet } = useIsMobile()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const search = useSearch({ strict: false })
+  const navigate = useNavigate()
   const [activeModule, setActiveModule] = useState<ModuleId>('devices')
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
 
@@ -371,16 +374,16 @@ export function OpticalDesignPage() {
 
   // Handle URL query parameter for direct module linking
   useEffect(() => {
-    const moduleParam = searchParams.get('module') as ModuleId | null
+    const moduleParam = (search as Record<string, string>).module as ModuleId | undefined
     if (moduleParam && MODULES.some((m) => m.id === moduleParam)) {
       setActiveModule(moduleParam)
     }
-  }, [searchParams])
+  }, [search])
 
   // Update URL when module changes
   const handleModuleChange = (moduleId: ModuleId) => {
     setActiveModule(moduleId)
-    setSearchParams({ module: moduleId }, { replace: true })
+    navigate({ search: { module: moduleId } as never, replace: true })
     if (isCompact) {
       setShowMobileSidebar(false)
     }

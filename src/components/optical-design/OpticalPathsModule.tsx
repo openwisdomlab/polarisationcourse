@@ -12,7 +12,7 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import {
   Play,
   ExternalLink,
@@ -166,13 +166,13 @@ function ExperimentDetail({ experiment }: ExperimentDetailProps) {
     const { loadExperiment, setSimulating } = useOpticalBenchStore.getState()
     loadExperiment(experiment)
     setSimulating(true)
-    navigate('/optical-studio?module=design')
+    navigate({ to: '/studio' as string, search: { module: 'design' } as Record<string, string> })
   }
 
   // Go to related demo
   const handleGoToDemo = () => {
     if (experiment.linkedDemo) {
-      navigate(`/demos?demo=${experiment.linkedDemo}`)
+      navigate({ to: '/demos' as string, search: { demo: experiment.linkedDemo } as Record<string, string> })
     }
   }
 

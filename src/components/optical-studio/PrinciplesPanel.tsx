@@ -12,7 +12,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -355,7 +355,8 @@ function PrincipleDetailCard({ principle, onClose }: PrincipleDetailCardProps) {
         {/* Link to Course Demo */}
         {principle.linkedDemo && (
           <Link
-            to={`/demos?demo=${principle.linkedDemo}`}
+            to="/demos/$demoId"
+            params={{ demoId: principle.linkedDemo }}
             className={cn(
               'flex items-center justify-between p-3 rounded-xl border transition-all group',
               theme === 'dark'

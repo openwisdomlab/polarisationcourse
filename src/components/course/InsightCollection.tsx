@@ -8,7 +8,7 @@
  */
 
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -635,7 +635,8 @@ export function InsightCollection({
                       <>
                         {t('course.collection.completeDemo')}:
                         <Link
-                          to={`/demos/${selectedItem.unlockCondition.targetId}`}
+                          to="/demos/$demoId"
+                          params={{ demoId: selectedItem.unlockCondition.targetId! }}
                           className="ml-1 text-cyan-500 hover:underline"
                           onClick={() => setSelectedItem(null)}
                         >

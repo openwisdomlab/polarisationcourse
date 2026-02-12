@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
@@ -172,7 +172,8 @@ export function RelatedDemos({
       {/* 下一步推荐 */}
       {nextRecommended && (
         <Link
-          to={`/demos/${nextRecommended.id}`}
+          to="/demos/$demoId"
+          params={{ demoId: nextRecommended.id }}
           className={`block mb-4 p-4 rounded-xl border-2 transition-all hover:-translate-y-0.5 ${
             theme === 'dark'
               ? 'bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border-cyan-700 hover:border-cyan-500'
@@ -210,7 +211,8 @@ export function RelatedDemos({
             transition={{ delay: idx * 0.05 }}
           >
             <Link
-              to={`/demos/${demo.id}`}
+              to="/demos/$demoId"
+              params={{ demoId: demo.id }}
               className={`group flex items-center gap-3 p-3 rounded-lg transition-all ${
                 theme === 'dark'
                   ? 'hover:bg-slate-700/50'

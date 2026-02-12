@@ -8,7 +8,7 @@ import type { ComponentType } from 'react'
 import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
@@ -413,7 +413,7 @@ function SeriesLinkCard({
   const dt = useDemoTheme()
   return (
     <Link
-      to={`/experiments/showcase`}
+      to="/gallery/$tabId" params={{ tabId: 'showcase' }}
       className={`group flex items-center gap-3 p-2.5 rounded-lg ${dt.panelClass} border
         hover:border-pink-500/50 transition-all ${dt.isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}
     >
@@ -600,7 +600,7 @@ export function MediaGalleryPanel() {
                 {isZh ? '文创作品系列' : 'Art Series'}
               </p>
               <Link
-                to="/experiments/showcase"
+                to="/gallery/$tabId" params={{ tabId: 'showcase' }}
                 className="text-[10px] text-pink-400 hover:text-pink-300 flex items-center gap-1 transition-colors"
               >
                 {isZh ? '查看全部' : 'View all'}
@@ -677,7 +677,7 @@ export function MediaGalleryPanel() {
                     {isZh ? '相关文创作品系列' : 'Related Art Series'}
                   </h4>
                   <Link
-                    to="/experiments/showcase"
+                    to="/gallery/$tabId" params={{ tabId: 'showcase' }}
                     className="text-[10px] text-pink-400 hover:text-pink-300 flex items-center gap-1 transition-colors"
                   >
                     {isZh ? '浏览全部文创展示' : 'Browse all artworks'}

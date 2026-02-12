@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -830,7 +830,7 @@ function QuickStartSection() {
       titleKey: 'museum.quickStart.explore.title',
       descriptionKey: 'museum.quickStart.explore.description',
       color: '#22d3ee',
-      action: () => navigate('/demos')
+      action: () => navigate({ to: '/demos' })
     },
     {
       id: 'guided',
@@ -838,7 +838,7 @@ function QuickStartSection() {
       titleKey: 'museum.quickStart.guided.title',
       descriptionKey: 'museum.quickStart.guided.description',
       color: '#a78bfa',
-      action: () => navigate('/demos?unit=0')
+      action: () => navigate({ to: '/demos', search: { unit: '0' } })
     },
     {
       id: 'challenge',
@@ -846,7 +846,7 @@ function QuickStartSection() {
       titleKey: 'museum.quickStart.challenge.title',
       descriptionKey: 'museum.quickStart.challenge.description',
       color: '#f59e0b',
-      action: () => navigate('/game2d')
+      action: () => navigate({ to: '/games/2d' })
     }
   ]
 
@@ -1207,7 +1207,7 @@ function MuseumFooter() {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => navigate('/demos')}
+                  onClick={() => navigate({ to: '/demos' })}
                   className={cn(
                     "text-sm hover:underline",
                     theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
@@ -1218,7 +1218,7 @@ function MuseumFooter() {
               </li>
               <li>
                 <button
-                  onClick={() => navigate('/optical-studio')}
+                  onClick={() => navigate({ to: '/studio' })}
                   className={cn(
                     "text-sm hover:underline",
                     theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
@@ -1229,7 +1229,7 @@ function MuseumFooter() {
               </li>
               <li>
                 <button
-                  onClick={() => navigate('/game2d')}
+                  onClick={() => navigate({ to: '/games/2d' })}
                   className={cn(
                     "text-sm hover:underline",
                     theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
@@ -1291,7 +1291,7 @@ function MuseumFooter() {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => navigate('/chronicles')}
+                  onClick={() => navigate({ to: '/chronicles' })}
                   className={cn(
                     "text-sm hover:underline flex items-center gap-1",
                     theme === 'dark' ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
@@ -1373,12 +1373,12 @@ export function MuseumHomepage() {
   const handleSelectHall = useCallback((hallId: string) => {
     const hall = EXHIBITION_HALLS.find(h => h.id === hallId)
     if (hall) {
-      navigate(`/demos?unit=${hall.unit}`)
+      navigate({ to: '/demos', search: { unit: String(hall.unit) } })
     }
   }, [navigate])
 
   const handleSelectDemo = useCallback((demoId: string) => {
-    navigate(`/demos/${demoId}`)
+    navigate({ to: '/demos/$demoId', params: { demoId } })
   }, [navigate])
 
   return (

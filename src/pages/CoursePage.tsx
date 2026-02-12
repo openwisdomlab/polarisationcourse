@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { PersistentHeader } from '@/components/shared'
@@ -79,8 +79,8 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['light-wave', 'polarization-intro', 'polarization-types', 'birefringence', 'malus'],
-      tools: ['/optical-studio?tab=devices'],
-      games: ['/game2d?level=0', '/game2d?level=1', '/game2d?level=16', '/game2d?level=17'],
+      tools: ['/studio?tab=devices'],
+      games: ['/games/2d?level=0', '/games/2d?level=1', '/games/2d?level=16', '/games/2d?level=17'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit1PPT' },
@@ -107,7 +107,7 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['fresnel', 'brewster'],
-      experiments: ['/optical-studio?tab=experiments'],
+      experiments: ['/studio?tab=experiments'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit2PPT' },
@@ -132,8 +132,8 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['anisotropy', 'chromatic', 'optical-rotation', 'waveplate'],
-      experiments: ['/optical-studio?tab=experiments'],
-      games: ['/game2d?level=3'],
+      experiments: ['/studio?tab=experiments'],
+      games: ['/games/2d?level=3'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit3PPT' },
@@ -185,7 +185,7 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['stokes', 'mueller', 'jones', 'polarimetric-microscopy'],
-      tools: ['/calc/stokes', '/calc/mueller', '/calc/poincare', '/lab?tab=tasks'],
+      tools: ['/calc/stokes', '/calc/mueller', '/calc/poincare', '/research?tab=tasks'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit5PPT' },
@@ -488,7 +488,8 @@ function UnitCard({ unit, index, theme }: { unit: CourseUnit; index: number; the
             {unit.resources.demos?.map((demo, i) => (
               <Link
                 key={`demo-${i}`}
-                to={`/demos/${demo}`}
+                to="/demos/$demoId"
+                params={{ demoId: demo }}
                 onClick={e => e.stopPropagation()}
                 className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors ${
                   theme === 'dark'
@@ -681,7 +682,7 @@ function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
       descKey: 'course.apps.industryDesc',
       caseKey: 'course.apps.industryCase',
       color: '#f59e0b',
-      demoLink: '/optical-studio?tab=experiments',
+      demoLink: '/studio?tab=experiments',
     },
     {
       icon: AutonomousIcon,
@@ -913,7 +914,7 @@ function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
       icon: '🔍',
       color: '#3B82F6', // blue
       demoLink: '/demos/polarization-intro',
-      gameLink: '/game2d?level=0',
+      gameLink: '/games/2d?level=0',
     },
     {
       question: t('course.inquiry.q2'),
@@ -921,7 +922,7 @@ function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
       icon: '💎',
       color: '#8B5CF6', // purple
       demoLink: '/demos/birefringence',
-      gameLink: '/game2d?level=16',
+      gameLink: '/games/2d?level=16',
     },
     {
       question: t('course.inquiry.q3'),
@@ -1124,7 +1125,6 @@ function ProgressStats({ theme }: { theme: 'dark' | 'light' }) {
 export function CoursePage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const [_searchParams] = useSearchParams()
   const { progress } = useCourseProgress()
 
   return (
@@ -1218,7 +1218,7 @@ export function CoursePage() {
               {t('course.cta.playGames')}
             </Link>
             <Link
-              to="/lab"
+              to="/research"
               className="px-6 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium flex items-center gap-2 hover:scale-105 transition-transform"
             >
               <Telescope className="w-5 h-5" />

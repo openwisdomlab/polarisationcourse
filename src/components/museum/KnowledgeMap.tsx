@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo, type CSSProperties } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -910,7 +910,7 @@ export function KnowledgeMap() {
   const handleNodeClick = useCallback((nodeId: string) => {
     if (selectedNode === nodeId) {
       // Double click - navigate to demo
-      navigate(`/demos/${nodeId}`)
+      navigate({ to: '/demos/$demoId', params: { demoId: nodeId } })
     } else {
       setSelectedNode(nodeId)
     }
@@ -918,7 +918,7 @@ export function KnowledgeMap() {
 
   // Handle navigate from panel
   const handleNavigate = useCallback((nodeId: string) => {
-    navigate(`/demos/${nodeId}`)
+    navigate({ to: '/demos/$demoId', params: { demoId: nodeId } })
   }, [navigate])
 
   // Get selected node data

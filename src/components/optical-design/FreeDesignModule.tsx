@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
-import { useSearchParams } from 'react-router-dom'
+import { useSearch } from '@tanstack/react-router'
 import {
   Play,
   Pause,
@@ -542,7 +542,7 @@ function PropertiesPanel() {
 // ============================================
 
 export function FreeDesignModule() {
-  const [searchParams] = useSearchParams()
+  const search = useSearch({ strict: false })
 
   const [paletteCollapsed, setPaletteCollapsed] = useState(false)
   const { loadSavedDesigns, setSimulating } = useOpticalBenchStore()
@@ -554,12 +554,12 @@ export function FreeDesignModule() {
 
   // Check for component parameter from URL
   useEffect(() => {
-    const componentType = searchParams.get('component') as BenchComponentType | null
+    const componentType = (search as Record<string, string>)?.component as BenchComponentType | undefined
     if (componentType) {
       const { addComponent } = useOpticalBenchStore.getState()
       addComponent(componentType, { x: 350, y: 200 })
     }
-  }, [searchParams])
+  }, [search])
 
   // Start simulation by default
   useEffect(() => {

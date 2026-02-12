@@ -1,11 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [
+    TanStackRouterVite({
+      routesDirectory: './src/routes',
+      generatedRouteTree: './src/routeTree.gen.ts',
+    }),
     react(),
     tailwindcss(),
     VitePWA({
@@ -96,7 +101,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           // React core
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-react': ['react', 'react-dom', '@tanstack/react-router'],
           // 3D rendering (Three.js ecosystem - largest chunk)
           'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
           // Animation library

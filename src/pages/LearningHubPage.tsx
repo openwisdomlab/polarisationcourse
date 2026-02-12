@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { getStorageItem, setStorageItem, getStorageJSON } from '@/lib/storage'
@@ -124,7 +124,7 @@ const LEARNING_MODULES: LearningModule[] = [
     descriptionZh: '创建你自己的光学系统',
     icon: <Sparkles className="w-6 h-6" />,
     color: '#10B981',
-    route: '/optical-studio',
+    route: '/studio',
     category: 'create',
     difficulty: 2,
     estimatedTime: 'Unlimited',
@@ -140,7 +140,7 @@ const LEARNING_MODULES: LearningModule[] = [
     descriptionZh: '进行虚拟实验',
     icon: <FlaskConical className="w-6 h-6" />,
     color: '#6366F1',
-    route: '/lab',
+    route: '/research',
     category: 'create',
     difficulty: 3,
     estimatedTime: '30+ min',

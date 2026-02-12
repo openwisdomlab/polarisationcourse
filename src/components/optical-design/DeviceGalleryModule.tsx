@@ -13,7 +13,7 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 import {
   Search,
   BookOpen,
@@ -338,7 +338,7 @@ function DeviceDetail({ device, onClose }: DeviceDetailProps) {
         {/* Try in Bench */}
         {device.benchComponentType && (
           <Link
-            to={`/optical-studio?module=design&component=${device.benchComponentType}`}
+            to={`/studio?module=design&component=${device.benchComponentType}` as string}
             className={cn(
               'flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all',
               'hover:scale-[1.02]',

@@ -3,7 +3,7 @@
  * Enhanced with i18n, theme support, and improved interactivity indicators
  */
 import { useState, useEffect, Suspense, ReactNode, memo } from 'react'
-import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
+import { Link, useSearch, useParams, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -1542,9 +1542,9 @@ export function DemosPage() {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { isMobile, isTablet } = useIsMobile()
-  const { demoId: urlDemoId } = useParams<{ demoId?: string }>()
+  const { demoId: urlDemoId } = useParams({ strict: false }) as { demoId?: string }
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const search = useSearch({ strict: false }) as Record<string, string>
 
   // Determine initial demo from URL param or show museum homepage
   const getInitialDemo = (): string | null => {
@@ -1553,13 +1553,13 @@ export function DemosPage() {
       return urlDemoId
     }
     // Fallback to query param for backwards compatibility
-    const queryDemo = searchParams.get('demo')
+    const queryDemo = search.demo
     if (queryDemo && DEMOS.find(d => d.id === queryDemo)) {
       return queryDemo
     }
     // Check if unit param is specified (from museum hall navigation)
-    const unitParam = searchParams.get('unit')
-    if (unitParam !== null) {
+    const unitParam = search.unit
+    if (unitParam !== undefined) {
       const unitNum = parseInt(unitParam)
       const firstDemoInUnit = DEMOS.find(d => d.unit === unitNum)
       if (firstDemoInUnit) {
@@ -1592,22 +1592,22 @@ export function DemosPage() {
       }
     }
     // Legacy query param support - redirect to new URL format
-    const queryDemo = searchParams.get('demo')
+    const queryDemo = search.demo
     if (queryDemo) {
       const targetDemo = DEMOS.find(d => d.id === queryDemo)
       if (targetDemo) {
         // Redirect to new URL format, keeping other params
-        const newParams = new URLSearchParams(searchParams)
-        newParams.delete('demo')
+        const { demo: _demo, ...restParams } = search
+        const newParams = new URLSearchParams(restParams as Record<string, string>)
         const paramString = newParams.toString()
-        navigate(`/demos/${queryDemo}${paramString ? `?${paramString}` : ''}`, { replace: true })
+        navigate({ to: `/demos/${queryDemo}${paramString ? `?${paramString}` : ''}`, replace: true })
       }
     }
-  }, [urlDemoId, searchParams, activeDemo, navigate])
+  }, [urlDemoId, search, activeDemo, navigate])
 
   // Tab-based deep linking - allows /demos/chromatic?tab=diy
   const getInitialExpandedCards = (): Record<string, boolean> => {
-    const tabParam = searchParams.get('tab')
+    const tabParam = search.tab
     if (tabParam === 'diy') {
       return { diy: true }
     }
@@ -1800,10 +1800,10 @@ export function DemosPage() {
     setActiveDemo(demoId)
     setShowMuseumHomepage(false) // Hide museum homepage when a demo is selected
     // Update URL to reflect the selected demo (keep query params for tabs etc.)
-    const newParams = new URLSearchParams(searchParams)
-    newParams.delete('unit') // Remove unit param when selecting a specific demo
+    const { unit: _unit, ...restParams } = search
+    const newParams = new URLSearchParams(restParams as Record<string, string>)
     const paramString = newParams.toString()
-    navigate(`/demos/${demoId}${paramString ? `?${paramString}` : ''}`, { replace: true })
+    navigate({ to: `/demos/${demoId}${paramString ? `?${paramString}` : ''}`, replace: true })
 
     // Expand the unit containing this demo
     const demo = DEMOS.find(d => d.id === demoId)
@@ -1823,7 +1823,7 @@ export function DemosPage() {
     setShowMuseumHomepage(true)
     const currentUnit = currentDemo?.unit ?? null
     setActiveDemo(null)
-    navigate('/demos', { replace: true, state: { scrollToHalls: true, fromUnit: currentUnit } })
+    navigate({ to: '/demos', replace: true, state: { scrollToHalls: true, fromUnit: currentUnit } as Record<string, unknown> })
   }
 
   const toggleCard = (card: string) => {
@@ -1842,7 +1842,8 @@ export function DemosPage() {
       }))
 
       // Update URL with tab parameter for shareable links
-      const newParams = new URLSearchParams(searchParams)
+      const { tab: _tab, ...restParams } = search
+      const newParams = new URLSearchParams(restParams as Record<string, string>)
       if (newState) {
         newParams.set('tab', card)
       } else {
@@ -1850,14 +1851,15 @@ export function DemosPage() {
       }
       const paramString = newParams.toString()
       const demoPath = activeDemo ? `/demos/${activeDemo}` : '/demos'
-      navigate(`${demoPath}${paramString ? `?${paramString}` : ''}`, { replace: true })
+      navigate({ to: `${demoPath}${paramString ? `?${paramString}` : ''}`, replace: true })
     } else {
       // Other cards (diy) toggle independently
       const newState = !expandedCards[card]
       setExpandedCards(prev => ({ ...prev, [card]: newState }))
 
       // Update URL with tab parameter for shareable links
-      const newParams = new URLSearchParams(searchParams)
+      const { tab: _tab2, ...restParams2 } = search
+      const newParams = new URLSearchParams(restParams2 as Record<string, string>)
       if (newState) {
         newParams.set('tab', card)
       } else {
@@ -1865,7 +1867,7 @@ export function DemosPage() {
       }
       const paramString = newParams.toString()
       const demoPath = activeDemo ? `/demos/${activeDemo}` : '/demos'
-      navigate(`${demoPath}${paramString ? `?${paramString}` : ''}`, { replace: true })
+      navigate({ to: `${demoPath}${paramString ? `?${paramString}` : ''}`, replace: true })
     }
   }
 
