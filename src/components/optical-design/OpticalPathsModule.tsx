@@ -166,7 +166,7 @@ function ExperimentDetail({ experiment }: ExperimentDetailProps) {
     const { loadExperiment, setSimulating } = useOpticalBenchStore.getState()
     loadExperiment(experiment)
     setSimulating(true)
-    navigate({ to: '/optical-studio' as string, search: { module: 'design' } as Record<string, string> })
+    navigate({ to: '/studio' as string, search: { module: 'design' } as Record<string, string> })
   }
 
   // Go to related demo

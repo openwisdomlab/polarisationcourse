@@ -645,7 +645,7 @@ export function DemoNavigator({
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation()
-                                          navigate({ to: '/optical-studio' as string })
+                                          navigate({ to: '/studio' as string })
                                         }}
                                         className={cn(
                                           'flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-[10px] font-medium transition-all',

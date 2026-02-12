@@ -338,7 +338,7 @@ function DeviceDetail({ device, onClose }: DeviceDetailProps) {
         {/* Try in Bench */}
         {device.benchComponentType && (
           <Link
-            to={`/optical-studio?module=design&component=${device.benchComponentType}` as string}
+            to={`/studio?module=design&component=${device.benchComponentType}` as string}
             className={cn(
               'flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all',
               'hover:scale-[1.02]',

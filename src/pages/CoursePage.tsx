@@ -79,8 +79,8 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['light-wave', 'polarization-intro', 'polarization-types', 'birefringence', 'malus'],
-      tools: ['/optical-studio?tab=devices'],
-      games: ['/game2d?level=0', '/game2d?level=1', '/game2d?level=16', '/game2d?level=17'],
+      tools: ['/studio?tab=devices'],
+      games: ['/games/2d?level=0', '/games/2d?level=1', '/games/2d?level=16', '/games/2d?level=17'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit1PPT' },
@@ -107,7 +107,7 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['fresnel', 'brewster'],
-      experiments: ['/optical-studio?tab=experiments'],
+      experiments: ['/studio?tab=experiments'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit2PPT' },
@@ -132,8 +132,8 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['anisotropy', 'chromatic', 'optical-rotation', 'waveplate'],
-      experiments: ['/optical-studio?tab=experiments'],
-      games: ['/game2d?level=3'],
+      experiments: ['/studio?tab=experiments'],
+      games: ['/games/2d?level=3'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit3PPT' },
@@ -185,7 +185,7 @@ const COURSE_UNITS: CourseUnit[] = [
     ],
     resources: {
       demos: ['stokes', 'mueller', 'jones', 'polarimetric-microscopy'],
-      tools: ['/calc/stokes', '/calc/mueller', '/calc/poincare', '/lab?tab=tasks'],
+      tools: ['/calc/stokes', '/calc/mueller', '/calc/poincare', '/research?tab=tasks'],
     },
     attachments: [
       { type: 'ppt', titleKey: 'course.attachments.unit5PPT' },
@@ -681,7 +681,7 @@ function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
       descKey: 'course.apps.industryDesc',
       caseKey: 'course.apps.industryCase',
       color: '#f59e0b',
-      demoLink: '/optical-studio?tab=experiments',
+      demoLink: '/studio?tab=experiments',
     },
     {
       icon: AutonomousIcon,
@@ -913,7 +913,7 @@ function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
       icon: '🔍',
       color: '#3B82F6', // blue
       demoLink: '/demos/polarization-intro',
-      gameLink: '/game2d?level=0',
+      gameLink: '/games/2d?level=0',
     },
     {
       question: t('course.inquiry.q2'),
@@ -921,7 +921,7 @@ function InquiryExplorationSection({ theme }: { theme: 'dark' | 'light' }) {
       icon: '💎',
       color: '#8B5CF6', // purple
       demoLink: '/demos/birefringence',
-      gameLink: '/game2d?level=16',
+      gameLink: '/games/2d?level=16',
     },
     {
       question: t('course.inquiry.q3'),

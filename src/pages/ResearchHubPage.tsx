@@ -22,7 +22,7 @@ import type { ModuleTab } from '@/components/shared'
 const SUB_MODULES: ModuleTab[] = [
   {
     id: 'lab',
-    route: '/lab',
+    route: '/research',
     icon: FlaskRound,
     label: 'Virtual Lab',
     labelZh: '虚拟实验室',
@@ -32,7 +32,7 @@ const SUB_MODULES: ModuleTab[] = [
   },
   {
     id: 'applications',
-    route: '/applications',
+    route: '/research/applications',
     icon: Lightbulb,
     label: 'Applications',
     labelZh: '应用案例',

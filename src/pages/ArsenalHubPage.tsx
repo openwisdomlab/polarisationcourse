@@ -22,7 +22,7 @@ import type { ModuleTab } from '@/components/shared'
 const SUB_MODULES: ModuleTab[] = [
   {
     id: 'optical-studio',
-    route: '/optical-studio',
+    route: '/studio',
     icon: Microscope,
     label: 'Optical Design Studio',
     labelZh: '光学设计室',

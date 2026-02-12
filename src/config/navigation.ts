@@ -149,11 +149,11 @@ export const MODULES: ModuleConfig[] = [
       gradient: 'from-indigo-500 to-indigo-700',
       shadow: 'rgba(99, 102, 241, 0.25)',
     },
-    mainPath: '/optical-studio',
+    mainPath: '/studio',
     items: [
       {
         id: 'optical-devices',
-        path: '/optical-studio?tab=devices',
+        path: '/studio?tab=devices',
         titleKey: 'nav.modules.optical.items.devices',
         titleZh: '器件图鉴',
         titleEn: 'Device Library',
@@ -162,7 +162,7 @@ export const MODULES: ModuleConfig[] = [
       },
       {
         id: 'optical-bench',
-        path: '/optical-studio?tab=design',
+        path: '/studio?tab=design',
         titleKey: 'nav.modules.optical.items.bench',
         titleZh: '光学工作台',
         titleEn: 'Optical Bench',
@@ -171,7 +171,7 @@ export const MODULES: ModuleConfig[] = [
       },
       {
         id: 'optical-experiments',
-        path: '/optical-studio?tab=experiments',
+        path: '/studio?tab=experiments',
         titleKey: 'nav.modules.optical.items.experiments',
         titleZh: '经典光路实验',
         titleEn: 'Classic Experiments',
@@ -188,7 +188,7 @@ export const MODULES: ModuleConfig[] = [
         order: 4,
       },
     ],
-    relatedPaths: ['/optical-studio', '/hardware', '/devices', '/bench', '/optics'],
+    relatedPaths: ['/studio', '/hardware'],
   },
 
   // ========================================
@@ -350,7 +350,7 @@ export const MODULES: ModuleConfig[] = [
         order: 6,
       },
     ],
-    relatedPaths: ['/games', '/game', '/game2d', '/cardgame', '/escape'],
+    relatedPaths: ['/games'],
   },
 
   // ========================================
@@ -374,11 +374,11 @@ export const MODULES: ModuleConfig[] = [
       gradient: 'from-pink-500 to-rose-600',
       shadow: 'rgba(236, 72, 153, 0.25)',
     },
-    mainPath: '/experiments',
+    mainPath: '/gallery',
     items: [
       {
         id: 'showcase-diy',
-        path: '/experiments/diy',
+        path: '/gallery/diy',
         titleKey: 'nav.modules.showcase.items.diy',
         titleZh: 'DIY实验',
         titleEn: 'DIY Experiments',
@@ -387,7 +387,7 @@ export const MODULES: ModuleConfig[] = [
       },
       {
         id: 'showcase-gallery',
-        path: '/experiments/gallery',
+        path: '/gallery/gallery',
         titleKey: 'nav.modules.showcase.items.gallery',
         titleZh: '作品展廊',
         titleEn: 'Gallery',
@@ -396,7 +396,7 @@ export const MODULES: ModuleConfig[] = [
       },
       {
         id: 'showcase-generator',
-        path: '/experiments/generator',
+        path: '/gallery/generator',
         titleKey: 'nav.modules.showcase.items.generator',
         titleZh: '艺术生成器',
         titleEn: 'Art Generator',
@@ -413,7 +413,7 @@ export const MODULES: ModuleConfig[] = [
         order: 4,
       },
     ],
-    relatedPaths: ['/experiments', '/merchandise', '/creative'],
+    relatedPaths: ['/gallery', '/merchandise'],
   },
 
   // ========================================
@@ -437,11 +437,11 @@ export const MODULES: ModuleConfig[] = [
       gradient: 'from-emerald-500 to-emerald-700',
       shadow: 'rgba(16, 185, 129, 0.25)',
     },
-    mainPath: '/lab',
+    mainPath: '/research',
     items: [
       {
         id: 'research-tasks',
-        path: '/lab?tab=tasks',
+        path: '/research?tab=tasks',
         titleKey: 'nav.modules.research.items.tasks',
         titleZh: '研究课题',
         titleEn: 'Research Tasks',
@@ -450,7 +450,7 @@ export const MODULES: ModuleConfig[] = [
       },
       {
         id: 'research-applications',
-        path: '/applications',
+        path: '/research/applications',
         titleKey: 'nav.modules.research.items.applications',
         titleZh: '应用案例',
         titleEn: 'Applications',
@@ -459,7 +459,7 @@ export const MODULES: ModuleConfig[] = [
       },
       {
         id: 'research-data',
-        path: '/lab?tab=data',
+        path: '/research?tab=data',
         titleKey: 'nav.modules.research.items.data',
         titleZh: '数据记录',
         titleEn: 'Data Records',
@@ -468,7 +468,7 @@ export const MODULES: ModuleConfig[] = [
       },
       {
         id: 'research-community',
-        path: '/lab?tab=community',
+        path: '/research?tab=community',
         titleKey: 'nav.modules.research.items.community',
         titleZh: '社区广场',
         titleEn: 'Community',
@@ -476,7 +476,7 @@ export const MODULES: ModuleConfig[] = [
         order: 4,
       },
     ],
-    relatedPaths: ['/lab', '/applications', '/simulation'],
+    relatedPaths: ['/research', '/research/applications'],
   },
 ]
 
@@ -508,7 +508,7 @@ export const QUICK_LINKS = [
   { path: '/course', titleZh: '课程', titleEn: 'Course' },
   { path: '/demos', titleZh: '演示', titleEn: 'Demos' },
   { path: '/games', titleZh: '游戏', titleEn: 'Games' },
-  { path: '/optical-studio', titleZh: '设计室', titleEn: 'Studio' },
+  { path: '/studio', titleZh: '设计室', titleEn: 'Studio' },
 ]
 
 /**
@@ -521,7 +521,7 @@ export const FOOTER_LINKS = {
     { path: '/chronicles', titleZh: '历史故事', titleEn: 'Chronicles' },
   ],
   tools: [
-    { path: '/optical-studio', titleZh: '光学设计室', titleEn: 'Optical Studio' },
+    { path: '/studio', titleZh: '光学设计室', titleEn: 'Optical Studio' },
     { path: '/calc', titleZh: '计算工坊', titleEn: 'Calculators' },
     { path: '/hardware', titleZh: '硬件清单', titleEn: 'Hardware' },
   ],
@@ -531,9 +531,9 @@ export const FOOTER_LINKS = {
     { path: '/games/3d', titleZh: '3D 体素', titleEn: '3D Voxel' },
   ],
   community: [
-    { path: '/experiments', titleZh: '创作展示', titleEn: 'Creations' },
-    { path: '/lab', titleZh: '虚拟课题组', titleEn: 'Virtual Lab' },
-    { path: '/applications', titleZh: '应用案例', titleEn: 'Applications' },
+    { path: '/gallery', titleZh: '创作展示', titleEn: 'Creations' },
+    { path: '/research', titleZh: '虚拟课题组', titleEn: 'Virtual Lab' },
+    { path: '/research/applications', titleZh: '应用案例', titleEn: 'Applications' },
   ],
 }
 
@@ -548,10 +548,10 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/escape': '/games/escape',
 
   // Optical studio redirects
-  '/devices': '/optical-studio',
-  '/bench': '/optical-studio',
-  '/optics': '/optical-studio',
-  '/optical-studio-v2': '/optical-studio',
+  '/devices': '/studio',
+  '/bench': '/studio',
+  '/optics': '/studio',
+  '/optical-studio-v2': '/studio',
 
   // Lab tool redirects
   '/lab/poincare': '/calc/poincare',
@@ -560,8 +560,8 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/lab/mueller': '/calc/mueller',
 
   // Other redirects
-  '/creative': '/experiments',
-  '/simulation': '/lab',
+  '/creative': '/gallery',
+  '/simulation': '/research',
 }
 
 export default MODULES
