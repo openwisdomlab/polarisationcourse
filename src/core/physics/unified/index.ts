@@ -33,6 +33,32 @@
  *    - Victory system for puzzle checking
  *    - Legacy adapter for backward compatibility
  *
+ * 7. Mueller Calculus:
+ *    - 4×4 real Mueller matrices for Stokes vector transformations
+ *    - Jones → Mueller conversion for non-depolarizing elements
+ *    - Physical realizability validation (depolarization index)
+ *
+ * 8. Scattering Physics:
+ *    - Rayleigh scattering (λ⁻⁴, phase function, polarization degree)
+ *    - Mie scattering (size parameter, Henyey-Greenstein phase)
+ *    - Atmospheric color model (sky color, optical depth)
+ *    - Wavelength ↔ RGB conversion
+ *
+ * 9. Optical Activity:
+ *    - Chiral material database (sugars, amino acids, quartz)
+ *    - Drude dispersion for specific rotation
+ *    - Polarimeter simulation
+ *    - Optical Rotatory Dispersion (ORD) curves
+ *
+ * 10. Unified Polarization State:
+ *     - PolarizationState: bridges Jones ↔ Stokes ↔ CoherencyMatrix
+ *     - JSON serialization for LLM/AI context injection
+ *     - Energy conservation validation
+ *
+ * 11. Dispersive Material Physics:
+ *     - DispersiveWavePlate: retardation from δ(λ) = 2πdΔn(λ)/λ
+ *     - Birefringent material database with Cauchy dispersion
+ *
  * Usage:
  * ```typescript
  * import {
@@ -179,6 +205,69 @@ export {
   type TraceAnalysis,
   type ConservationResult
 } from './PhysicsInterpreter';
+
+// ========== Dispersive Wave Plate (Material Physics) ==========
+export {
+  DispersiveWavePlate,
+  birefringenceAtWavelength,
+  phaseRetardation,
+  requiredThickness,
+  BIREFRINGENT_MATERIALS,
+  type BirefringentMaterial
+} from './DispersiveWavePlate';
+
+// ========== Unified Polarization State ==========
+export {
+  PolarizationState,
+  stokesToJones,
+  jonesToStokes,
+  validateConservation,
+  type JonesRepresentation,
+  type StokesRepresentation,
+  type EllipseParameters,
+  type MaterialContext,
+  type PolarizationStateJSON
+} from './PolarizationState';
+
+// ========== Mueller Matrix ==========
+export {
+  MuellerMatrix,
+  chainMueller,
+  applyMuellerChain,
+} from './MuellerMatrix';
+
+// ========== Scattering Physics ==========
+export {
+  rayleighIntensity,
+  rayleighCrossSection,
+  rayleighPhaseFunction,
+  rayleighPolarizationDegree,
+  rayleighScatteredState,
+  mieSizeParameter,
+  mieScatteringEfficiency,
+  henyeyGreensteinPhase,
+  mieAsymmetryParameter,
+  wavelengthToRGB,
+  skyColor,
+  atmosphericOpticalDepth,
+  atmosphericTransmission,
+} from './ScatteringPhysics';
+
+// ========== Optical Activity ==========
+export {
+  specificRotationAtWavelength,
+  rotationAngle,
+  calculateOpticalRotation,
+  opticalActivityMatrix,
+  applyOpticalRotation,
+  simulatePolarimeter,
+  rotatoryDispersionCurve,
+  CHIRAL_MATERIALS,
+  SPECTRAL_LINES as POLARIMETRY_SPECTRAL_LINES,
+  type ChiralMaterial,
+  type SpectralLine as PolarimetrySpectralLine,
+  type PolarimetricResult,
+} from './OpticalActivity';
 
 // ========== Legacy Adapter ==========
 export {

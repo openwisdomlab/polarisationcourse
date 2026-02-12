@@ -27,6 +27,7 @@ import {
   Depolarizer,
   DielectricSurface,
 } from './OpticalSurface';
+import { DispersiveWavePlate } from './DispersiveWavePlate';
 import type { TraceResult } from './LightTracer';
 
 // ========== Classification Thresholds ==========
@@ -513,6 +514,13 @@ export class PhysicsInterpreter {
    */
   private surfaceTypeName(surface: OpticalSurface): string {
     if (surface instanceof IdealPolarizer) return 'Linear Polarizer';
+    if (surface instanceof DispersiveWavePlate) {
+      const retardanceDeg = radToDeg(surface.retardance);
+      const materialName = surface.material.name;
+      if (Math.abs(retardanceDeg - 90) < 5) return `Quarter-Wave Plate (${materialName})`;
+      if (Math.abs(retardanceDeg - 180) < 5) return `Half-Wave Plate (${materialName})`;
+      return `Dispersive Wave Plate (${materialName}, ${retardanceDeg.toFixed(0)}°)`;
+    }
     if (surface instanceof WavePlate) {
       const retardanceDeg = radToDeg(surface.retardance);
       if (Math.abs(retardanceDeg - 90) < 1) return 'Quarter-Wave Plate';
@@ -548,6 +556,9 @@ export class PhysicsInterpreter {
     // Specific descriptions by element type
     if (surface instanceof IdealPolarizer) {
       return this.describePolarizer(elementName, before, after, intensityPct);
+    }
+    if (surface instanceof DispersiveWavePlate) {
+      return this.describeDispersiveWavePlate(surface, elementName, before, after);
     }
     if (surface instanceof WavePlate) {
       return this.describeWavePlate(surface, elementName, before, after);
@@ -629,6 +640,50 @@ export class PhysicsInterpreter {
   ): string {
     const rotDeg = radToDeg(surface.rotationAngle);
     return `The Optical Rotator rotated the polarization by ${rotDeg.toFixed(0)}° without intensity loss (${before.label} → ${after.label}).`;
+  }
+
+  private describeDispersiveWavePlate(
+    surface: DispersiveWavePlate,
+    elementName: string,
+    before: PolarizationStateDescription,
+    after: PolarizationStateDescription,
+  ): string {
+    const retDeg = radToDeg(surface.retardance);
+    const designRetDeg = radToDeg(surface.designRetardance);
+    const deviation = Math.abs(retDeg - designRetDeg);
+    const materialName = surface.material.name;
+
+    let base = '';
+
+    // HWP behavior
+    if (Math.abs(designRetDeg - 180) < 5) {
+      if (before.category === 'linear' && after.category === 'linear') {
+        const rotation = after.orientationDeg - before.orientationDeg;
+        const normRotation = ((rotation % 180) + 180) % 180;
+        base = `The ${elementName} rotated the polarization axis by ${normRotation.toFixed(0)}° (${before.label} → ${after.label}).`;
+      } else {
+        base = `The ${elementName} (retardance ${retDeg.toFixed(1)}°) transformed: ${before.label} → ${after.label}.`;
+      }
+    }
+    // QWP behavior
+    else if (Math.abs(designRetDeg - 90) < 5) {
+      if (before.category === 'linear' && after.category === 'circular') {
+        base = `The ${elementName} converted linear to circular polarization (${before.label} → ${after.label}).`;
+      } else if (before.category === 'circular' && after.category === 'linear') {
+        base = `The ${elementName} converted circular to linear polarization (${before.label} → ${after.label}).`;
+      } else {
+        base = `The ${elementName} (retardance ${retDeg.toFixed(1)}°) transformed: ${before.label} → ${after.label}.`;
+      }
+    } else {
+      base = `The ${elementName} (retardance ${retDeg.toFixed(1)}°) transformed: ${before.label} → ${after.label}.`;
+    }
+
+    // Add chromatic deviation note if significant
+    if (deviation > 2) {
+      base += ` Note: ${materialName} introduces ${deviation.toFixed(1)}° chromatic retardation error at this wavelength.`;
+    }
+
+    return base;
   }
 
   /**

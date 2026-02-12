@@ -8,3 +8,10 @@ export {
   type PolarizationResult,
   type PolarizerChainResult
 } from './usePolarizationSimulation'
+export {
+  useWorldModelContext,
+  type WorldModelContext,
+  type SceneElement,
+  type LightBeamContext,
+  type LevelContext,
+} from './useWorldModelContext'
