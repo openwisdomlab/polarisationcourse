@@ -15,3 +15,8 @@ export {
   type LightBeamContext,
   type LevelContext,
 } from './useWorldModelContext'
+export {
+  useSimulationWorldState,
+  type SimulationWorldStateResult,
+  type BenchComponentInput,
+} from './useSimulationWorldState'
