@@ -27,6 +27,8 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { useOpticalBenchStore } from '@/stores/opticalBenchStore'
+import { deserializeBenchState, serializeBenchState } from '@/lib/benchSerializer'
 
 // Import KaTeX for rendering mathematical formulas 导入 KaTeX 用于渲染数学公式
 import 'katex/dist/katex.min.css';
@@ -379,6 +381,25 @@ export function OpticalDesignPage() {
       setActiveModule(moduleParam)
     }
   }, [search])
+
+  // Handle URL-encoded bench state: "URL as the Save File"
+  // When a ?setup= param is present, deserialize and load the bench state
+  useEffect(() => {
+    const setupParam = (search as Record<string, string>).setup
+    if (setupParam) {
+      const components = deserializeBenchState(setupParam)
+      if (components && components.length > 0) {
+        const store = useOpticalBenchStore.getState()
+        // Import the URL-encoded design
+        const importData = JSON.stringify({ version: 1, components })
+        store.importDesign(importData)
+        // Switch to design module to show the loaded setup
+        setActiveModule('design')
+        // Clear the setup param from URL to avoid re-loading on navigation
+        navigate({ search: { module: 'design' } as never, replace: true })
+      }
+    }
+  }, []) // Only on mount
 
   // Update URL when module changes
   const handleModuleChange = (moduleId: ModuleId) => {
