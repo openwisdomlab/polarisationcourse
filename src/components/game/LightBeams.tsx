@@ -1,13 +1,17 @@
 /**
- * LightBeams.tsx — Physics-Driven Light Beam Visualization
+ * LightBeams.tsx — Physics-Driven Light Beam Visualization (v2)
  *
  * Visual layer that is a pure function of the physics state.
  * All rendering uniforms (intensity, polarization, color) are derived strictly
  * from the PhysicsInterpreter's analysis of each LightPacket.
  *
- * Features:
- * 1. Data-driven shader uniforms: uIntensity (float 0-1), uPolarizationState (vec4 Stokes)
- * 2. Debug mode: E-vector oscillation ribbon trail revealing circular/elliptical states
+ * v2 Enhancements:
+ * 1. Custom PolarizationBeamMaterial (ShaderMaterial) with GPU-driven uniforms:
+ *    - uIntensity (float 0-1): drives radius scaling and alpha
+ *    - uPolarizationState (vec4 Stokes): encodes full polarization fingerprint
+ *    - uTime (float): animated circular polarization twist on the beam surface
+ *    - uCategory (int): 0=linear, 1=circular, 2=elliptical, 3=unpolarized
+ * 2. E-vector ribbon trail promoted to polarized vision mode (not just debug)
  * 3. Error visualization: flashing red on conservation violation (physics bug detector)
  */
 
@@ -54,6 +58,117 @@ const COLOR_UNPOLARIZED = new THREE.Color(0xaaaaaa)
 const COLOR_DEFAULT = new THREE.Color(0xffffaa)
 const COLOR_ERROR = new THREE.Color(0xff0000)
 
+// ========== Polarization Category Enum (for shader) ==========
+const CATEGORY_LINEAR = 0
+const CATEGORY_CIRCULAR = 1
+const CATEGORY_ELLIPTICAL = 2
+const CATEGORY_UNPOLARIZED = 3
+
+function categoryToInt(cat: PolarizationStateDescription['category']): number {
+  switch (cat) {
+    case 'linear': return CATEGORY_LINEAR
+    case 'circular': return CATEGORY_CIRCULAR
+    case 'elliptical': return CATEGORY_ELLIPTICAL
+    case 'unpolarized':
+    case 'partially-polarized':
+      return CATEGORY_UNPOLARIZED
+    default: return CATEGORY_LINEAR
+  }
+}
+
+// ========== Custom ShaderMaterial: PolarizationBeamMaterial ==========
+
+/**
+ * GLSL vertex/fragment pair for the core beam cylinder.
+ *
+ * The fragment shader modulates surface color based on:
+ * - uIntensity: overall brightness and alpha
+ * - uCategory: selects rendering style
+ * - uTime + uEllipticity: for circular/elliptical, creates an animated
+ *   helical twist pattern on the beam surface (the "twist" of CPL)
+ * - uHandedness: +1 for RCP, -1 for LCP (reverses twist direction)
+ */
+const beamVertexShader = /* glsl */ `
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  void main() {
+    vUv = uv;
+    vNormal = normalize(normalMatrix * normal);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`
+
+const beamFragmentShader = /* glsl */ `
+  uniform vec3 uColor;
+  uniform float uIntensity;
+  uniform float uTime;
+  uniform int uCategory;
+  uniform float uEllipticity;
+  uniform float uHandedness;
+  uniform float uOrientation;
+
+  varying vec2 vUv;
+  varying vec3 vNormal;
+
+  void main() {
+    float alpha = 0.3 + uIntensity * 0.5;
+
+    // Base color from physics-derived classification
+    vec3 color = uColor;
+
+    // For circular/elliptical polarization: add animated helical twist pattern
+    if (uCategory == 1 || uCategory == 2) {
+      // Twist frequency scales with ellipticity (0 = linear → no twist, 1 = circular → full twist)
+      float twistStrength = abs(uEllipticity);
+
+      // The twist pattern: a diagonal stripe that rotates along the beam axis (vUv.y)
+      // vUv.x wraps around the cylinder circumference, vUv.y runs along the beam length
+      float twistPhase = vUv.y * 6.2832 * 2.0 + uHandedness * uTime * 3.0;
+      float twist = sin(twistPhase + vUv.x * 6.2832) * 0.5 + 0.5;
+
+      // Blend twist pattern into color: brighter bands spiral along the beam
+      float twistAlpha = twist * twistStrength * 0.3;
+      color = mix(color, vec3(1.0), twistAlpha);
+      alpha += twistAlpha * uIntensity;
+    }
+
+    // For unpolarized light: subtle shimmer to indicate incoherence
+    if (uCategory == 3) {
+      float shimmer = sin(vUv.y * 20.0 + uTime * 5.0) * 0.5 + 0.5;
+      shimmer *= sin(vUv.x * 12.0 + uTime * 3.7) * 0.5 + 0.5;
+      alpha *= 0.7 + shimmer * 0.3;
+    }
+
+    // Edge glow: brighter at the silhouette (Fresnel-like)
+    float fresnel = 1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0)));
+    color += fresnel * 0.15 * uIntensity;
+
+    gl_FragColor = vec4(color, clamp(alpha, 0.0, 1.0));
+  }
+`
+
+/**
+ * Creates a reusable ShaderMaterial for polarization-aware beam rendering.
+ */
+function createPolarizationBeamMaterial(): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    vertexShader: beamVertexShader,
+    fragmentShader: beamFragmentShader,
+    uniforms: {
+      uColor: { value: new THREE.Color(0xffffaa) },
+      uIntensity: { value: 1.0 },
+      uTime: { value: 0.0 },
+      uCategory: { value: CATEGORY_LINEAR },
+      uEllipticity: { value: 0.0 },
+      uHandedness: { value: 1.0 },
+      uOrientation: { value: 0.0 },
+    },
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  })
+}
+
 // ========== Types ==========
 
 interface LightBeamsProps {
@@ -77,18 +192,13 @@ interface BeamPhysicsData {
   conservationViolation: boolean
 }
 
-// ========== Helper: LightPacket → Physics Data ==========
+// ========== Helper: LightPacket -> Physics Data ==========
 
 /**
  * Bridge from the game engine's discrete LightPacket to the unified physics
  * engine's continuous CoherencyMatrix, then analyze via PhysicsInterpreter.
  *
- * This is the critical translation step: Game State → Physics Truth → Semantics.
- *
- * Conservation checks performed:
- * 1. Intensity bounds: packet.intensity ∈ [0, MAX_GAME_INTENSITY]
- * 2. Polarization validity: angle ∈ {0, 45, 90, 135} (discrete game angles)
- * 3. CoherencyMatrix physical validity: positive semi-definite, non-negative DoP
+ * This is the critical translation step: Game State -> Physics Truth -> Semantics.
  */
 function analyzePacket(packet: LightPacket): BeamPhysicsData {
   const normalizedIntensity = packet.intensity / MAX_GAME_INTENSITY
@@ -101,9 +211,6 @@ function analyzePacket(packet: LightPacket): BeamPhysicsData {
   const stateDesc = interpreter.analyzeState(coherencyState)
 
   // Conservation check: intensity must be within physical bounds.
-  // In passive optics, light can only lose intensity (never gain).
-  // The game engine uses integer intensity [0, MAX], so we check both bounds
-  // and also validate the coherency matrix is physically consistent.
   const outOfBounds = packet.intensity < 0 || packet.intensity > MAX_GAME_INTENSITY
   const unphysical = !coherencyState.isPhysical()
   const conservationViolation = outOfBounds || unphysical
@@ -118,23 +225,19 @@ function analyzePacket(packet: LightPacket): BeamPhysicsData {
 
 /**
  * Derive beam color from the PhysicsInterpreter's semantic analysis.
- * This replaces the old hardcoded POLARIZATION_COLORS lookup.
  */
 function getPhysicsColor(
   data: BeamPhysicsData,
   visionMode: VisionMode,
 ): THREE.Color {
-  // Error state overrides everything
   if (data.conservationViolation) {
     return COLOR_ERROR
   }
 
-  // Normal mode: warm white beam
   if (visionMode !== 'polarized') {
     return COLOR_DEFAULT
   }
 
-  // Polarized vision: color encodes state category
   const { stateDesc } = data
 
   switch (stateDesc.category) {
@@ -260,19 +363,36 @@ function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacke
   const beamRadius = 0.02 + uIntensity * 0.03
   const glowRadius = 0.05 + uIntensity * 0.08
 
+  // Create the custom shader material (memoized per-beam)
+  const shaderMaterial = useMemo(() => createPolarizationBeamMaterial(), [])
+
+  // Update shader uniforms each frame
+  useFrame(({ clock }) => {
+    shaderMaterial.uniforms.uTime.value = clock.getElapsedTime()
+    shaderMaterial.uniforms.uColor.value.copy(color)
+    shaderMaterial.uniforms.uIntensity.value = uIntensity
+    shaderMaterial.uniforms.uCategory.value = categoryToInt(physicsData.stateDesc.category)
+    shaderMaterial.uniforms.uEllipticity.value = (physicsData.stateDesc.ellipticityDeg / 45.0)
+    shaderMaterial.uniforms.uHandedness.value = physicsData.stateDesc.handedness === 'left' ? -1.0 : 1.0
+    shaderMaterial.uniforms.uOrientation.value = physicsData.stateDesc.orientationDeg * Math.PI / 180
+  })
+
+  // Determine whether to show the E-vector ribbon:
+  // In polarized mode for circular/elliptical states, OR always in debug mode
+  const showRibbon =
+    debugMode ||
+    (visionMode === 'polarized' &&
+      (physicsData.stateDesc.category === 'circular' ||
+        physicsData.stateDesc.category === 'elliptical'))
+
   return (
     <group position={[beamPosition.x, beamPosition.y, beamPosition.z]} quaternion={quaternion}>
-      {/* Core beam — radius and opacity are pure functions of uIntensity */}
+      {/* Core beam — custom shader driven by physics uniforms */}
       {physicsData.conservationViolation ? (
         <ErrorBeam beamRadius={beamRadius} />
       ) : (
-        <mesh>
-          <cylinderGeometry args={[beamRadius, beamRadius, 1, 8]} />
-          <meshBasicMaterial
-            color={color}
-            transparent
-            opacity={0.3 + uIntensity * 0.5}
-          />
+        <mesh material={shaderMaterial}>
+          <cylinderGeometry args={[beamRadius, beamRadius, 1, 16]} />
         </mesh>
       )}
 
@@ -283,11 +403,12 @@ function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacke
           color={physicsData.conservationViolation ? COLOR_ERROR : color}
           transparent
           opacity={0.1 + uIntensity * 0.2}
+          depthWrite={false}
         />
       </mesh>
 
-      {/* Polarization E-vector indicator (polarized vision mode) */}
-      {visionMode === 'polarized' && !debugMode && (
+      {/* Polarization E-vector indicator (polarized vision, linear states) */}
+      {visionMode === 'polarized' && !showRibbon && (
         <PolarizationArrow
           stateDesc={physicsData.stateDesc}
           direction={packet.direction}
@@ -295,8 +416,9 @@ function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacke
         />
       )}
 
-      {/* Debug mode: E-vector oscillation ribbon trail */}
-      {debugMode && (
+      {/* E-vector oscillation ribbon: visible in polarized mode for circular/elliptical,
+          and always in debug mode for all states */}
+      {showRibbon && (
         <EVectorRibbon
           stateDesc={physicsData.stateDesc}
           stokes={physicsData.uPolarizationState}
@@ -313,7 +435,7 @@ function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacke
 /**
  * When the PhysicsInterpreter flags a conservation violation,
  * this replaces the normal beam with a flashing red cylinder.
- * This is the "Internal Error Correction" feedback loop —
+ * This is the "Internal Error Correction" feedback loop --
  * physics bugs become immediately visible in the game world.
  */
 function ErrorBeam({ beamRadius }: { beamRadius: number }) {
@@ -322,7 +444,6 @@ function ErrorBeam({ beamRadius }: { beamRadius: number }) {
 
   useFrame(({ clock }) => {
     if (materialRef.current) {
-      // Rapid sinusoidal flash: 4 Hz, sharp pulse
       const t = clock.getElapsedTime()
       const flash = Math.pow(Math.sin(t * 4 * Math.PI) * 0.5 + 0.5, 0.3)
       materialRef.current.opacity = 0.3 + flash * 0.7
@@ -342,7 +463,7 @@ function ErrorBeam({ beamRadius }: { beamRadius: number }) {
   )
 }
 
-// ========== Polarization Arrow (Upgraded) ==========
+// ========== Polarization Arrow (Linear States) ==========
 
 interface PolarizationArrowProps {
   stateDesc: PolarizationStateDescription
@@ -352,7 +473,7 @@ interface PolarizationArrowProps {
 
 /**
  * Draws the E-vector direction as a line segment perpendicular to the beam.
- * Now driven by PhysicsInterpreter's semantic analysis instead of raw game angles.
+ * Driven by PhysicsInterpreter's semantic analysis.
  */
 function PolarizationArrow({ stateDesc, direction, color }: PolarizationArrowProps) {
   const angle = (stateDesc.orientationDeg * Math.PI) / 180
@@ -363,7 +484,6 @@ function PolarizationArrow({ stateDesc, direction, color }: PolarizationArrowPro
     new THREE.Vector3(Math.cos(angle) * arrowLength, 0, Math.sin(angle) * arrowLength),
   ], [angle, arrowLength])
 
-  // Rotation to align with beam propagation direction
   const rotation = useMemo(() => {
     const dir = DIRECTION_VECTORS[direction as keyof typeof DIRECTION_VECTORS]
     if (dir.y !== 0) {
@@ -387,7 +507,7 @@ function PolarizationArrow({ stateDesc, direction, color }: PolarizationArrowPro
   )
 }
 
-// ========== E-Vector Ribbon Trail (Debug Mode) ==========
+// ========== E-Vector Ribbon Trail ==========
 
 interface EVectorRibbonProps {
   stateDesc: PolarizationStateDescription
@@ -397,15 +517,13 @@ interface EVectorRibbonProps {
 }
 
 /**
- * Debug visualization: renders the E-field oscillation as a helical ribbon
- * along the beam. This allows visual verification of polarization states:
+ * Renders the E-field oscillation as a helical ribbon along the beam.
+ * Now visible in polarized vision mode for circular/elliptical states,
+ * providing intuitive visual distinction:
  *
  * - Linear: flat ribbon oscillating in the polarization plane
  * - Circular: helical corkscrew (right-hand or left-hand twist)
  * - Elliptical: squashed helix
- *
- * The ribbon animates in real-time, so you can watch the E-vector rotate
- * and verify the physics engine is computing circular polarization correctly.
  */
 function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbonProps) {
   const groupRef = useRef<THREE.Group>(null)
@@ -413,15 +531,12 @@ function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbo
 
   const s0 = stokes[0]
 
-  // Orientation angle and ellipticity from the interpreter
   const orientationRad = (stateDesc.orientationDeg * Math.PI) / 180
   const ellipticityRad = (stateDesc.ellipticityDeg * Math.PI) / 180
 
-  // Semi-axes of the polarization ellipse
   const cosE = Math.cos(ellipticityRad)
   const sinE = Math.sin(ellipticityRad)
 
-  // Build the axis rotation to align with beam direction
   const dirRotation = useMemo(() => {
     const dir = DIRECTION_VECTORS[direction as keyof typeof DIRECTION_VECTORS]
     if (dir.y !== 0) {
@@ -432,7 +547,6 @@ function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbo
     return [0, 0, 0] as [number, number, number]
   }, [direction])
 
-  // Choose ribbon color based on polarization type
   const ribbonColor = useMemo(() => {
     switch (stateDesc.category) {
       case 'circular':
@@ -446,7 +560,6 @@ function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbo
     }
   }, [stateDesc.category, stateDesc.handedness, stateDesc.linearOrientation])
 
-  // Create THREE.Line imperatively — lets us update geometry per-frame efficiently
   const lineObj = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const positions = new Float32Array((EVECTOR_SAMPLES + 1) * 3)
@@ -461,13 +574,11 @@ function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbo
     return new THREE.Line(geo, mat)
   }, [])
 
-  // Keep material color in sync with React state
   useEffect(() => {
     const mat = lineObj.material as THREE.LineBasicMaterial
     mat.color.copy(ribbonColor)
   }, [lineObj, ribbonColor])
 
-  // Animate the E-vector oscillation every frame
   useFrame(({ clock }) => {
     phaseRef.current = clock.getElapsedTime() * 3
 

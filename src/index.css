@@ -66,6 +66,22 @@ html.light {
   .tech-border-glow {
     box-shadow: 0 0 10px rgba(34,211,238,0.2), inset 0 0 5px rgba(34,211,238,0.1);
   }
+
+  /* Physics data typography — JetBrains Mono for all numerical/formula displays */
+  .font-physics {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* Physics data readout — compact monospace for instrument-style readouts */
+  .physics-readout {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-primary);
+  }
 }
 
 /* Base styles */
