@@ -43,6 +43,7 @@ import {
   OPPOSITE_DIRECTION
 } from './types';
 import { logger } from '@/lib/logger';
+import { applyMalusLaw as sharedMalusLaw } from '@/lib/opticsPhysics';
 
 import {
   JonesVector,
@@ -86,15 +87,9 @@ export class LightPhysics {
     inputAngle: PolarizationAngle,
     filterAngle: PolarizationAngle
   ): number {
-    // Use canonical transmission calculation
-    // Core formula: I = I₀ × cos²(θ) where θ is the angle difference
-    const angleDiff = Math.abs(inputAngle - filterAngle) % 180;
-    const normalizedDiff = angleDiff > 90 ? 180 - angleDiff : angleDiff;
-    const radians = (normalizedDiff * Math.PI) / 180;
-    const transmissionFactor = Math.cos(radians) ** 2;
-
-    // Game engine uses discrete intensities
-    return Math.floor(inputIntensity * transmissionFactor);
+    // Delegate to shared Malus's Law implementation (returns continuous float)
+    // Game engine wraps with Math.floor for discrete intensities
+    return Math.floor(sharedMalusLaw(inputIntensity, inputAngle, filterAngle));
   }
 
   /**

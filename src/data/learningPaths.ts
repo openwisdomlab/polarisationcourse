@@ -103,6 +103,24 @@ export const DEMO_PREREQUISITES: DemoPrerequisite[] = [
     demoId: 'waveplate',
     prerequisites: ['birefringence'],
     estimatedMinutes: 20,
+    crossLinks: [
+      {
+        module: 'games',
+        path: '/games/2d',
+        labelKey: 'learningPaths.crossLinks.play2DPuzzle',
+      },
+      {
+        module: 'games',
+        path: '/games/3d',
+        labelKey: 'learningPaths.crossLinks.play3DPuzzle',
+      },
+    ],
+  },
+
+  {
+    demoId: 'arago-fresnel',
+    prerequisites: ['waveplate'],
+    estimatedMinutes: 20,
   },
 
   // ---- Unit 2: Interface Reflection ----
@@ -246,7 +264,13 @@ export function getDemoPrerequisites(demoId: string): DemoPrerequisite | undefin
 }
 
 /** Check if a demo is available (all prerequisites completed) */
-export function isDemoAvailable(demoId: string, completedDemoIds: Set<string>): boolean {
+export function isDemoAvailable(
+  demoId: string,
+  completedDemoIds: Set<string>,
+  tier?: 'foundation' | 'application' | 'research'
+): boolean {
+  // Research tier bypasses all prerequisites
+  if (tier === 'research') return true
   const prereq = prerequisiteMap.get(demoId)
   if (!prereq) return true // Unknown demo — allow access
   return prereq.prerequisites.every((pid) => completedDemoIds.has(pid))

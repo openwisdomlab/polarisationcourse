@@ -1505,6 +1505,43 @@
         "observation": "Cellophane acts like a wave plate! Each layer adds a phase delay, creating interference colors when viewed between crossed polarizers."
       }
     },
+    "aragoFresnel": {
+      "title": "Arago-Fresnel Laws",
+      "description": "The four laws governing interference of polarized light beams",
+      "questions": {
+        "leading": "Under what conditions can two polarized light beams interfere with each other?",
+        "guided": [
+          "Why don't orthogonally polarized beams produce interference?",
+          "What role does coherence play in polarized light interference?"
+        ],
+        "openEnded": [
+          "How do the Arago-Fresnel laws apply to modern optical coherence tomography?",
+          "Design an experiment to demonstrate all four Arago-Fresnel laws."
+        ]
+      },
+      "physics": {
+        "principle": "Orthogonally polarized coherent beams cannot interfere; parallel components can",
+        "formula": "I = I₁ + I₂ + 2√(I₁I₂)cos(δ)·cos²(θ₁-θ₂)",
+        "details": [
+          "Two rays polarized at right angles do not interfere",
+          "Two rays from an unpolarized source that are polarized at right angles can interfere only after being brought to the same polarization"
+        ]
+      },
+      "experiment": {
+        "title": "Polarized Light Interference",
+        "example": "Using crossed and parallel polarizers to control beam interference",
+        "details": [
+          "Setup two coherent beams with adjustable polarization to observe interference patterns"
+        ]
+      },
+      "frontier": {
+        "title": "Coherence & Polarimetry",
+        "example": "Applications in optical coherence tomography and fiber sensing",
+        "details": [
+          "Polarization-sensitive OCT uses Arago-Fresnel principles for tissue birefringence imaging"
+        ]
+      }
+    },
     "fresnel": {
       "title": "Fresnel Equations",
       "description": "Reflection/transmission coefficients for s and p polarizations vs incident angle",
@@ -4004,6 +4041,7 @@
       "chroniclesHistory": "History & Stories",
       "tryOpticalStudio": "Try Optical Studio",
       "play2DPuzzle": "Play 2D Puzzles",
+      "play3DPuzzle": "Play 3D Puzzles",
       "viewExperiments": "View Experiments",
       "realWorldApplications": "Real-World Applications",
       "virtualLab": "Virtual Lab",
@@ -4012,6 +4050,9 @@
       "jonesCalculator": "Jones Calculator"
     },
     "startHere": "Start here",
-    "unitProgress": "{{completed}}/{{total}}"
+    "unitProgress": "{{completed}}/{{total}}",
+    "markComplete": "I've explored this demo",
+    "markCompleteHint": "This unlocks related demos",
+    "suggestPrereq": "prereq"
   }
 }

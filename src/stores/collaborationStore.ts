@@ -106,6 +106,94 @@ function generateId(): string {
 }
 
 // ============================================
+// Validation — import safety
+// ============================================
+
+const MAX_STRING_LENGTH = 5000
+const MAX_COMPONENTS = 200
+const MAX_REVIEWS = 100
+
+function truncateString(value: unknown, maxLen = MAX_STRING_LENGTH): string {
+  if (typeof value !== 'string') return ''
+  return value.length > maxLen ? value.slice(0, maxLen) : value
+}
+
+function isValidProjectStatus(s: unknown): s is ProjectStatus {
+  return s === 'draft' || s === 'submitted' || s === 'reviewed' || s === 'published'
+}
+
+function sanitizeReview(r: unknown): ReviewResult | null {
+  if (!r || typeof r !== 'object') return null
+  const obj = r as Record<string, unknown>
+  if (typeof obj.id !== 'string' || typeof obj.projectId !== 'string') return null
+  return {
+    id: truncateString(obj.id, 50),
+    projectId: truncateString(obj.projectId, 50),
+    reviewerName: truncateString(obj.reviewerName, 200),
+    observations: truncateString(obj.observations),
+    suggestions: truncateString(obj.suggestions),
+    rating: Math.max(1, Math.min(5, Math.round(Number(obj.rating) || 3))),
+    reviewedAt: typeof obj.reviewedAt === 'number' ? obj.reviewedAt : Date.now(),
+  }
+}
+
+function sanitizeProject(p: unknown): ResearchProject | null {
+  if (!p || typeof p !== 'object') return null
+  const obj = p as Record<string, unknown>
+  if (typeof obj.id !== 'string' || !obj.id) return null
+  if (typeof obj.title !== 'string') return null
+
+  const reviews: ReviewResult[] = []
+  if (Array.isArray(obj.reviews)) {
+    for (const r of obj.reviews.slice(0, MAX_REVIEWS)) {
+      const sr = sanitizeReview(r)
+      if (sr) reviews.push(sr)
+    }
+  }
+
+  return {
+    id: truncateString(obj.id, 50),
+    title: truncateString(obj.title, 500),
+    description: truncateString(obj.description),
+    components: Array.isArray(obj.components) ? obj.components.slice(0, MAX_COMPONENTS) : [],
+    findings: truncateString(obj.findings),
+    status: isValidProjectStatus(obj.status) ? obj.status : 'draft',
+    reviews,
+    createdAt: typeof obj.createdAt === 'number' ? obj.createdAt : Date.now(),
+    updatedAt: typeof obj.updatedAt === 'number' ? obj.updatedAt : Date.now(),
+    authorName: truncateString(obj.authorName, 200),
+  }
+}
+
+function validateExportedProject(data: unknown): ExportedProject | null {
+  if (!data || typeof data !== 'object') return null
+  const obj = data as Record<string, unknown>
+  if (obj.version !== 1 || obj.type !== 'polarcraft-research-project') return null
+  const project = sanitizeProject(obj.project)
+  if (!project) return null
+  return {
+    version: 1,
+    type: 'polarcraft-research-project',
+    project,
+    exportedAt: typeof obj.exportedAt === 'number' ? obj.exportedAt : Date.now(),
+  }
+}
+
+function validateExportedReview(data: unknown): ExportedReview | null {
+  if (!data || typeof data !== 'object') return null
+  const obj = data as Record<string, unknown>
+  if (obj.version !== 1 || obj.type !== 'polarcraft-review') return null
+  const review = sanitizeReview(obj.review)
+  if (!review) return null
+  return {
+    version: 1,
+    type: 'polarcraft-review',
+    review,
+    exportedAt: typeof obj.exportedAt === 'number' ? obj.exportedAt : Date.now(),
+  }
+}
+
+// ============================================
 // Store Implementation
 // ============================================
 
@@ -184,12 +272,19 @@ export const useCollaborationStore = create<CollaborationState>()(
       },
 
       importForReview: (data) => {
-        if (data.version !== 1 || data.type !== 'polarcraft-research-project') return undefined
+        const validated = validateExportedProject(data)
+        if (!validated) return undefined
+
+        // Check for ID collision with existing projects
+        const existingIds = new Set(get().projects.map((p) => p.id))
+        if (existingIds.has(validated.project.id)) {
+          validated.project.id = generateId() // Reassign to avoid collision
+        }
 
         const request: ReviewRequest = {
           id: generateId(),
-          projectId: data.project.id,
-          projectData: { ...data.project },
+          projectId: validated.project.id,
+          projectData: { ...validated.project },
           requestedAt: Date.now(),
           status: 'pending',
         }
@@ -237,11 +332,17 @@ export const useCollaborationStore = create<CollaborationState>()(
       },
 
       importReview: (data) => {
-        if (data.version !== 1 || data.type !== 'polarcraft-review') return false
+        const validated = validateExportedReview(data)
+        if (!validated) return false
 
-        const review = data.review
-        const projectExists = get().projects.some((p) => p.id === review.projectId)
-        if (!projectExists) return false
+        const review = validated.review
+        const project = get().projects.find((p) => p.id === review.projectId)
+        if (!project) return false
+
+        // Check for duplicate review ID
+        if (project.reviews.some((r) => r.id === review.id)) {
+          review.id = generateId()
+        }
 
         set((state) => ({
           projects: state.projects.map((p) =>
@@ -278,6 +379,11 @@ export const useCollaborationStore = create<CollaborationState>()(
     {
       name: 'polarcraft-collaboration',
       version: 1,
+      partialize: (state) => ({
+        projects: state.projects,
+        reviewRequests: state.reviewRequests,
+        publishedWorks: state.publishedWorks,
+      }),
     }
   )
 )
