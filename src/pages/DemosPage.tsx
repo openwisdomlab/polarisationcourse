@@ -9,7 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { DemoErrorBoundary } from '@/components/demos/DemoErrorBoundary'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft, CheckCircle2, Lock } from 'lucide-react'
+import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
 import { SEO } from '@/components/shared/SEO'
@@ -22,6 +22,7 @@ import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
 import { BirefringenceDemo } from '@/components/demos/unit1/BirefringenceDemo'
 import { WaveplateDemo } from '@/components/demos/unit1/WaveplateDemo'
 import { PolarizationStateDemo } from '@/components/demos/unit1/PolarizationStateDemo'
+import { AragoFresnelDemo } from '@/components/demos/unit1/AragoFresnelDemo'
 import { FresnelDemo } from '@/components/demos/unit2/FresnelDemo'
 import { BrewsterDemo } from '@/components/demos/unit2/BrewsterDemo'
 import { ChromaticDemo } from '@/components/demos/unit3/ChromaticDemo'
@@ -613,6 +614,33 @@ const getDemoInfo = (t: (key: string) => string, difficultyLevel?: DifficultyLev
     diy: getDiy(t, 'demos.waveplate'),
     diagram: <WaveplateDiagram />,
     visualType: '3D',
+  },
+  'arago-fresnel': {
+    questions: getQuestions(t, 'demos.aragoFresnel', difficultyLevel),
+    physics: {
+      principle: t('demos.aragoFresnel.physics.principle'),
+      formula: t('demos.aragoFresnel.physics.formula'),
+      details: [
+        t('demos.aragoFresnel.physics.details.0'),
+        t('demos.aragoFresnel.physics.details.1'),
+      ],
+    },
+    experiment: {
+      title: t('demos.aragoFresnel.experiment.title'),
+      example: t('demos.aragoFresnel.experiment.example'),
+      details: [
+        t('demos.aragoFresnel.experiment.details.0'),
+      ],
+    },
+    frontier: {
+      title: t('demos.aragoFresnel.frontier.title'),
+      example: t('demos.aragoFresnel.frontier.example'),
+      details: [
+        t('demos.aragoFresnel.frontier.details.0'),
+      ],
+    },
+    diy: getDiy(t, 'demos.aragoFresnel'),
+    visualType: '2D',
   },
   fresnel: {
     questions: getQuestions(t, 'demos.fresnel', difficultyLevel),
@@ -1236,6 +1264,15 @@ const DEMOS: DemoItem[] = [
     visualType: '3D',
     difficulty: 'research', // 波片调制原理,相位差计算
   },
+  {
+    id: 'arago-fresnel',
+    titleKey: 'demos.aragoFresnel.title',
+    unit: 1,
+    component: AragoFresnelDemo,
+    descriptionKey: 'demos.aragoFresnel.description',
+    visualType: '2D',
+    difficulty: 'research', // 阿拉果-菲涅耳定律
+  },
   // Unit 2
   {
     id: 'fresnel',
@@ -1632,14 +1669,26 @@ export function DemosPage() {
   const recommendedDemos = useMemo(() => getRecommendedDemos(allDemoIds, completedDemoIds), [allDemoIds, completedDemoIds])
   const firstRecommended = recommendedDemos.length > 0 ? recommendedDemos[0] : null
 
-  // Mark demo as completed after 30 seconds of interaction
+  // Track demo viewing time for "Mark Complete" button visibility
+  const [, setDemoViewStart] = useState<number | null>(null)
+  const [showMarkComplete, setShowMarkComplete] = useState(false)
+
   useEffect(() => {
-    if (!activeDemo) return
+    if (!activeDemo) {
+      setDemoViewStart(null)
+      setShowMarkComplete(false)
+      return
+    }
+    // Reset when switching demos
+    setShowMarkComplete(false)
+    const start = Date.now()
+    setDemoViewStart(start)
+    // Show "Mark Complete" button after 2 minutes of viewing
     const timer = setTimeout(() => {
-      markDemoCompleted(activeDemo)
-    }, 30000)
+      setShowMarkComplete(true)
+    }, 120000)
     return () => clearTimeout(timer)
-  }, [activeDemo, markDemoCompleted])
+  }, [activeDemo])
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -2144,7 +2193,7 @@ export function DemosPage() {
                       {unitDemos.map((demo) => {
                         const demoMatches = searchQuery ? searchMatches.get(demo.id) : null
                         const isCompleted = completedDemoIds.has(demo.id)
-                        const isAvailable = isDemoAvailable(demo.id, completedDemoIds)
+                        const isAvailable = isDemoAvailable(demo.id, completedDemoIds, difficultyLevel)
                         const isRecommended = demo.id === firstRecommended
                         return (
                           <li key={demo.id}>
@@ -2194,12 +2243,16 @@ export function DemosPage() {
                                 )}>
                                   {t(demo.titleKey)}
                                 </span>
-                                {/* Status indicators */}
+                                {/* Soft guidance for unavailable demos */}
                                 {!isAvailable && !isCompleted && (
-                                  <Lock className={cn(
-                                    'w-3 h-3 flex-shrink-0',
-                                    theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-                                  )} />
+                                  <span className={cn(
+                                    'text-[8px] px-1 py-0.5 rounded flex-shrink-0 whitespace-nowrap',
+                                    theme === 'dark'
+                                      ? 'bg-slate-700/50 text-gray-500'
+                                      : 'bg-gray-100 text-gray-400'
+                                  )}>
+                                    {t('demos.suggestPrereq', 'prereq')}
+                                  </span>
                                 )}
                                 {isRecommended && !isCompleted && isAvailable && (
                                   <span className={cn(
@@ -2554,6 +2607,36 @@ export function DemosPage() {
                 {/* Cross-module recommendations */}
                 {activeDemo && (
                   <CrossModuleLinks demoId={activeDemo} theme={theme} />
+                )}
+
+                {/* Mark Complete button — appears after 2 min or immediately if already completed */}
+                {activeDemo && !completedDemoIds.has(activeDemo) && (
+                  <div className={cn(
+                    'mt-4 flex items-center gap-3 transition-all duration-500',
+                    showMarkComplete ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                  )}>
+                    <button
+                      onClick={() => {
+                        markDemoCompleted(activeDemo)
+                        setShowMarkComplete(false)
+                      }}
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                        theme === 'dark'
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25'
+                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                      )}
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      {t('demos.markComplete', "I've explored this demo")}
+                    </button>
+                    <span className={cn(
+                      'text-xs',
+                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                    )}>
+                      {t('demos.markCompleteHint', 'This unlocks related demos')}
+                    </span>
+                  </div>
                 )}
               </div>
             )}

@@ -1505,6 +1505,43 @@
         "observation": "玻璃纸就像波片！每一层都增加相位延迟，在正交偏振片之间观察时产生干涉色。"
       }
     },
+    "aragoFresnel": {
+      "title": "阿拉果-菲涅耳定律",
+      "description": "偏振光束干涉的四条基本定律",
+      "questions": {
+        "leading": "两束偏振光在什么条件下可以相互干涉？",
+        "guided": [
+          "为什么正交偏振的光束不会产生干涉？",
+          "相干性在偏振光干涉中起什么作用？"
+        ],
+        "openEnded": [
+          "阿拉果-菲涅耳定律如何应用于现代光学相干断层扫描？",
+          "设计一个实验来演示所有四条阿拉果-菲涅耳定律。"
+        ]
+      },
+      "physics": {
+        "principle": "正交偏振的相干光束不能干涉；平行分量可以",
+        "formula": "I = I₁ + I₂ + 2√(I₁I₂)cos(δ)·cos²(θ₁-θ₂)",
+        "details": [
+          "两束偏振方向垂直的光不会发生干涉",
+          "来自非偏振光源的两束垂直偏振光，只有在被调整到相同偏振方向后才能干涉"
+        ]
+      },
+      "experiment": {
+        "title": "偏振光干涉",
+        "example": "使用正交和平行偏振片控制光束干涉",
+        "details": [
+          "搭建两束偏振可调的相干光束，观察干涉条纹"
+        ]
+      },
+      "frontier": {
+        "title": "相干性与偏振测量",
+        "example": "在光学相干断层扫描和光纤传感中的应用",
+        "details": [
+          "偏振敏感OCT利用阿拉果-菲涅耳原理进行组织双折射成像"
+        ]
+      }
+    },
     "fresnel": {
       "title": "菲涅尔方程",
       "description": "s偏振和p偏振的反射/透射系数随入射角的变化",
@@ -4192,6 +4229,7 @@
       "chroniclesHistory": "历史故事",
       "tryOpticalStudio": "试试光学设计室",
       "play2DPuzzle": "玩2D谜题",
+      "play3DPuzzle": "玩3D谜题",
       "viewExperiments": "查看实验",
       "realWorldApplications": "实际应用",
       "virtualLab": "虚拟实验室",
@@ -4200,6 +4238,9 @@
       "jonesCalculator": "Jones计算器"
     },
     "startHere": "从这里开始",
-    "unitProgress": "{{completed}}/{{total}}"
+    "unitProgress": "{{completed}}/{{total}}",
+    "markComplete": "已探索此演示",
+    "markCompleteHint": "完成后解锁相关演示",
+    "suggestPrereq": "前置"
   }
 }

@@ -49,7 +49,7 @@ export type PolarizationHandedness = 'right' | 'left' | 'none';
 
 /**
  * Opaque polarization state — the single currency exchanged between all API methods.
- * Wraps the CoherencyMatrix internally; consumers use the read-only getters.
+ * Internal CoherencyMatrix is hidden behind a WeakMap; consumers only see read-only getters.
  */
 export interface PolarizationInfo {
   /** Total intensity (0-1 normalized) */
@@ -62,8 +62,6 @@ export interface PolarizationInfo {
   readonly polarizationType: PolarizationType;
   /** Handedness (right/left/none) */
   readonly handedness: PolarizationHandedness;
-  /** Internal coherency matrix — for advanced use or chaining */
-  readonly _coherency: CoherencyMatrix;
 }
 
 /**
@@ -98,6 +96,24 @@ export type { StokesRepresentation, JonesRepresentation, LegacyLightPacket, Lega
 
 // ========== Internal Helpers ==========
 
+/**
+ * WeakMap storing internal CoherencyMatrix for each PolarizationInfo.
+ * This keeps the internal representation hidden from public API consumers.
+ */
+const coherencyMap = new WeakMap<PolarizationInfo, CoherencyMatrix>();
+
+/**
+ * Retrieve the internal CoherencyMatrix for a PolarizationInfo.
+ * Throws if the PolarizationInfo was not created by this API.
+ */
+function getCoherency(info: PolarizationInfo): CoherencyMatrix {
+  const cm = coherencyMap.get(info);
+  if (!cm) {
+    throw new Error('PolarizationInfo was not created by the Physics API');
+  }
+  return cm;
+}
+
 /** Default basis: light propagating along +Z, s along X, p along Y */
 const DEFAULT_BASIS = PolarizationBasis.fromPropagation(Vector3.Z);
 
@@ -107,6 +123,7 @@ const NORMAL = new Vector3(0, 0, -1); // facing the incoming +Z light
 
 /**
  * Convert a CoherencyMatrix into the public PolarizationInfo.
+ * Stores the CoherencyMatrix in the WeakMap for later retrieval.
  */
 function coherencyToInfo(cm: CoherencyMatrix): PolarizationInfo {
   const ps = PolarizationState.fromCoherency(cm);
@@ -128,14 +145,15 @@ function coherencyToInfo(cm: CoherencyMatrix): PolarizationInfo {
     handedness = stokes.s3 > 0 ? 'right' : stokes.s3 < 0 ? 'left' : 'none';
   }
 
-  return {
+  const info: PolarizationInfo = {
     intensity: ps.intensity,
     angleDeg: ps.ellipse.orientationDeg,
     degreeOfPolarization: ps.dop,
     polarizationType,
     handedness,
-    _coherency: cm,
   };
+  coherencyMap.set(info, cm);
+  return info;
 }
 
 /**
@@ -181,7 +199,7 @@ export function createPhysicsAPI(mode: PhysicsMode = 'science'): PhysicsAPI {
 
     applyPolarizer(state: PolarizationInfo, axisDeg: number): PolarizationInfo {
       const polarizer = new IdealPolarizer('pol', ORIGIN, NORMAL, axisFromDeg(axisDeg));
-      const result = polarizer.interact(state._coherency, DEFAULT_BASIS);
+      const result = polarizer.interact(getCoherency(state), DEFAULT_BASIS);
       if (!result.hasOutput || !result.transmitted) {
         return coherencyToInfo(CoherencyMatrix.ZERO);
       }
@@ -191,7 +209,7 @@ export function createPhysicsAPI(mode: PhysicsMode = 'science'): PhysicsAPI {
     applyWavePlate(state: PolarizationInfo, retardationDeg: number, fastAxisDeg: number): PolarizationInfo {
       const retardanceRad = retardationDeg * Math.PI / 180;
       const wp = new WavePlate('wp', ORIGIN, NORMAL, axisFromDeg(fastAxisDeg), retardanceRad);
-      const result = wp.interact(state._coherency, DEFAULT_BASIS);
+      const result = wp.interact(getCoherency(state), DEFAULT_BASIS);
       if (!result.hasOutput || !result.transmitted) {
         return coherencyToInfo(CoherencyMatrix.ZERO);
       }
@@ -200,7 +218,7 @@ export function createPhysicsAPI(mode: PhysicsMode = 'science'): PhysicsAPI {
 
     applyRotator(state: PolarizationInfo, angleDeg: number): PolarizationInfo {
       const rotator = new OpticalRotator('rot', ORIGIN, NORMAL, angleDeg * Math.PI / 180);
-      const result = rotator.interact(state._coherency, DEFAULT_BASIS);
+      const result = rotator.interact(getCoherency(state), DEFAULT_BASIS);
       if (!result.hasOutput || !result.transmitted) {
         return coherencyToInfo(CoherencyMatrix.ZERO);
       }
@@ -209,7 +227,7 @@ export function createPhysicsAPI(mode: PhysicsMode = 'science'): PhysicsAPI {
 
     applyMirror(state: PolarizationInfo): PolarizationInfo {
       const mirror = new IdealMirror('mirror', ORIGIN, NORMAL);
-      const result = mirror.interact(state._coherency, DEFAULT_BASIS);
+      const result = mirror.interact(getCoherency(state), DEFAULT_BASIS);
       if (!result.hasOutput || !result.reflected) {
         return coherencyToInfo(CoherencyMatrix.ZERO);
       }
@@ -218,7 +236,7 @@ export function createPhysicsAPI(mode: PhysicsMode = 'science'): PhysicsAPI {
 
     applyAttenuation(state: PolarizationInfo, factor: number): PolarizationInfo {
       const attenuator = new Attenuator('att', ORIGIN, NORMAL, factor);
-      const result = attenuator.interact(state._coherency, DEFAULT_BASIS);
+      const result = attenuator.interact(getCoherency(state), DEFAULT_BASIS);
       if (!result.hasOutput || !result.transmitted) {
         return coherencyToInfo(CoherencyMatrix.ZERO);
       }
@@ -227,7 +245,7 @@ export function createPhysicsAPI(mode: PhysicsMode = 'science'): PhysicsAPI {
 
     applyPBS(state: PolarizationInfo): [PolarizationInfo, PolarizationInfo] {
       const pbs = new PolarizingBeamSplitter('pbs', ORIGIN, NORMAL);
-      const result = pbs.interact(state._coherency, DEFAULT_BASIS);
+      const result = pbs.interact(getCoherency(state), DEFAULT_BASIS);
       const transmitted = result.transmitted
         ? coherencyToInfo(result.transmitted.matrix)
         : coherencyToInfo(CoherencyMatrix.ZERO);
@@ -240,16 +258,16 @@ export function createPhysicsAPI(mode: PhysicsMode = 'science'): PhysicsAPI {
     // --- Analysis / conversion ---
 
     toStokes(state: PolarizationInfo): StokesRepresentation {
-      return PolarizationState.fromCoherency(state._coherency).stokes;
+      return PolarizationState.fromCoherency(getCoherency(state)).stokes;
     },
 
     toJones(state: PolarizationInfo): JonesRepresentation | null {
-      return PolarizationState.fromCoherency(state._coherency).jones;
+      return PolarizationState.fromCoherency(getCoherency(state)).jones;
     },
 
     toLegacyPacket(state: PolarizationInfo, direction: LegacyDirection): LegacyLightPacket {
       const dirVec = DIRECTION_TO_VECTOR[direction];
-      return toLightPacket(state._coherency, dirVec);
+      return toLightPacket(getCoherency(state), dirVec);
     },
 
     fromLegacyPacket(packet: LegacyLightPacket): PolarizationInfo {
