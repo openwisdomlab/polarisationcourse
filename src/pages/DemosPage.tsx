@@ -2,7 +2,7 @@
  * Demos Page - Interactive physics demonstrations for 5 units + Optical Basics
  * Enhanced with i18n, theme support, and improved interactivity indicators
  */
-import { useState, useEffect, Suspense, ReactNode, memo } from 'react'
+import { useState, useEffect, useRef, Suspense, ReactNode, memo } from 'react'
 import { Link, useSearch, useParams, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -13,6 +13,7 @@ import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight,
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
 import { SEO } from '@/components/shared/SEO'
+import { CrossModuleLinks } from '@/components/shared/CrossModuleLinks'
 
 // Demo components
 import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
@@ -1618,12 +1619,21 @@ export function DemosPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [difficultyLevel, setDifficultyLevel] = useState<DifficultyLevel>('application')
   const [showDifficultyChange, setShowDifficultyChange] = useState(false)
+  const difficultyTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (difficultyTimeoutRef.current) clearTimeout(difficultyTimeoutRef.current)
+    }
+  }, [])
 
   // Show visual feedback when difficulty changes
   const handleDifficultyChange = (level: DifficultyLevel) => {
     setDifficultyLevel(level)
     setShowDifficultyChange(true)
-    setTimeout(() => setShowDifficultyChange(false), 1500)
+    if (difficultyTimeoutRef.current) clearTimeout(difficultyTimeoutRef.current)
+    difficultyTimeoutRef.current = setTimeout(() => setShowDifficultyChange(false), 1500)
   }
 
   // Enhanced search function that returns demos with match location details
@@ -2168,7 +2178,7 @@ export function DemosPage() {
         {/* Mobile sidebar overlay */}
         {isCompact && showMobileSidebar && (
           <div
-            className="fixed inset-0 bg-black/50 z-30"
+            className="fixed inset-0 bg-black/50 z-[39]"
             onClick={() => setShowMobileSidebar(false)}
           />
         )}
@@ -2453,6 +2463,11 @@ export function DemosPage() {
                       )}
                     </div>
                   </CollapsibleCard>
+                )}
+
+                {/* Cross-module recommendations */}
+                {activeDemo && (
+                  <CrossModuleLinks demoId={activeDemo} theme={theme} />
                 )}
               </div>
             )}

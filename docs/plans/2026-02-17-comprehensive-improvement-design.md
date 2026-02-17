@@ -27,6 +27,25 @@ PolarCraft has three systemic issues:
 | UX guidance | Smart recommendations + prerequisites | Respects exploration freedom while preventing confusion |
 | Collaboration | Async (submit → review → feedback → showcase) | Works offline, compatible with any LMS via JSON export |
 | Team structure | 4 agents (physics, UX, course/collab, science) | Independent work domains with clear interfaces |
+| Rendering engine | Enhance existing Three.js shaders + plan TSL/WebGPU upgrade | PBRT/Mitsuba/DiffTaichi cannot run in browser; existing unified physics is already excellent |
+
+## Rendering Engine Decision (Updated 2026-02-17)
+
+### Evaluated Engines
+
+| Engine | Browser? | Polarization? | Real-time? | Verdict |
+|--------|----------|---------------|------------|---------|
+| PBRT-v4 | WASM possible but impractical (50x50px max) | No | No (minutes/frame) | NOT RECOMMENDED |
+| Mitsuba 3 | Cannot compile to WASM (Dr.Jit/LLVM deps) | Excellent (Stokes transport) | No | NOT RECOMMENDED (use as reference) |
+| DiffTaichi | taichi.js exists (WebGPU) | No native support | Possible | OVERKILL for education |
+
+### Recommended Path
+
+**Tier 1 (Now):** Enhance existing `LightBeams.tsx` custom GLSL shaders — full Stokes uniform, Poincare color mapping, E-vector ellipse animation
+
+**Tier 2 (Future):** Upgrade Three.js from 0.160.1 → r171+ for TSL (Three.js Shading Language) + WebGPU compute shaders — enables GPU-accelerated Mueller chain evaluation and interference pattern rendering
+
+**Key insight:** PolarCraft's `src/core/physics/unified/` already implements the same mathematical framework (Jones, Stokes, Mueller, Fresnel) that Mitsuba 3 uses internally. The gap is GPU-accelerated visualization, not physics computation.
 
 ---
 

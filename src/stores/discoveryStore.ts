@@ -291,6 +291,9 @@ interface DiscoveryState {
   /** Map of discovery ID to discovery info (if discovered) */
   discoveries: Record<string, Discovery>
 
+  /** Set of completed demo IDs (persisted as array) */
+  completedDemos: string[]
+
   /** Total mysteries solved count */
   mysteriesSolved: number
 
@@ -318,9 +321,15 @@ interface DiscoveryState {
   /** Clear all pending notifications */
   clearAllNotifications: () => void
 
-  /** Computed stats */
-  totalDiscoveries: number
-  secretDiscoveries: number
+  /** Mark a demo as completed */
+  markDemoCompleted: (demoId: string) => void
+  /** Check if a demo has been completed */
+  isDemoCompleted: (demoId: string) => boolean
+  /** Get all completed demo IDs as a Set */
+  getCompletedDemoIds: () => Set<string>
+
+  // Derived values - use selectors at call site:
+  // const total = useDiscoveryStore(s => Object.keys(s.discoveries).length)
 }
 
 // ============================================
@@ -331,6 +340,7 @@ export const useDiscoveryStore = create<DiscoveryState>()(
   persist(
     (set, get) => ({
       discoveries: {},
+      completedDemos: [],
       mysteriesSolved: 0,
       perfectDeductions: 0,
       currentStreak: 0,
@@ -402,9 +412,25 @@ export const useDiscoveryStore = create<DiscoveryState>()(
         })
       },
 
+      markDemoCompleted: (demoId: string) => {
+        set((state) => {
+          if (state.completedDemos.includes(demoId)) return state
+          return { completedDemos: [...state.completedDemos, demoId] }
+        })
+      },
+
+      isDemoCompleted: (demoId: string) => {
+        return get().completedDemos.includes(demoId)
+      },
+
+      getCompletedDemoIds: () => {
+        return new Set(get().completedDemos)
+      },
+
       resetProgress: () => {
         set({
           discoveries: {},
+          completedDemos: [],
           mysteriesSolved: 0,
           perfectDeductions: 0,
           currentStreak: 0,
@@ -425,14 +451,9 @@ export const useDiscoveryStore = create<DiscoveryState>()(
         set({ pendingNotifications: [] })
       },
 
-      // Computed values (using getters in the selector)
-      get totalDiscoveries() {
-        return Object.keys(get().discoveries).length
-      },
-
-      get secretDiscoveries() {
-        return Object.values(get().discoveries).filter((d) => d.secret).length
-      },
+      // Use selectors at call site for derived values:
+      // const totalDiscoveries = useDiscoveryStore(s => Object.keys(s.discoveries).length)
+      // const secretDiscoveries = useDiscoveryStore(s => Object.values(s.discoveries).filter(d => d.secret).length)
     }),
     {
       name: 'polarquest-discoveries',
@@ -440,6 +461,7 @@ export const useDiscoveryStore = create<DiscoveryState>()(
       // Don't persist pendingNotifications - they're session-only UI state
       partialize: (state) => ({
         discoveries: state.discoveries,
+        completedDemos: state.completedDemos,
         mysteriesSolved: state.mysteriesSolved,
         perfectDeductions: state.perfectDeductions,
         currentStreak: state.currentStreak,
