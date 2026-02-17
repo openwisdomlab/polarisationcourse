@@ -48,3 +48,14 @@ export * from './merchandise/products'
 
 // Cultural Creations (文创作品)
 export * from './cultural-creations'
+
+// Learning Paths (学习路径)
+export {
+  DEMO_PREREQUISITES,
+  getDemoPrerequisites,
+  isDemoAvailable,
+  getRecommendedDemos,
+  calculateProgress,
+  type DemoPrerequisite,
+  type CrossModuleLink,
+} from './learningPaths'
