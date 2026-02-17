@@ -206,7 +206,7 @@ function LoadDialog({ isOpen, onClose }: LoadDialogProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className={cn(
-        'w-[480px] max-h-[80vh] rounded-xl border flex flex-col',
+        'w-[480px] max-w-[calc(100vw-32px)] max-h-[80vh] rounded-xl border flex flex-col',
         theme === 'dark' ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
       )}>
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
@@ -319,7 +319,7 @@ function KeyboardShortcutsDialog({ isOpen, onClose }: KeyboardShortcutsDialogPro
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
       <div
         className={cn(
-          'w-[400px] rounded-xl border p-6',
+          'w-[400px] max-w-[calc(100vw-32px)] rounded-xl border p-6',
           theme === 'dark' ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
         )}
         onClick={(e) => e.stopPropagation()}

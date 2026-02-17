@@ -13,6 +13,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { setStorageItem } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 import {
   Unlock,
@@ -83,7 +84,7 @@ export function PasswordLock({ onUnlock }: { onUnlock: () => void }) {
   useEffect(() => {
     if (decodedChannels.size === 4 && !isComplete) {
       setIsComplete(true)
-      localStorage.setItem('polarcraft_unlocked', 'true')
+      setStorageItem('polarcraft_unlocked', 'true')
       setTimeout(onUnlock, 2000)
     }
   }, [decodedChannels, isComplete, onUnlock])

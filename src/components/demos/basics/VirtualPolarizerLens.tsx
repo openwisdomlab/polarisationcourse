@@ -47,8 +47,8 @@ export const POLARIZER_IMAGE_SETS: PolarizerImageSet[] = [
     nameZh: '湖面反射',
     description: 'Reduce glare from water surface to see fish below',
     descriptionZh: '减少水面眩光，看清水下的鱼',
-    imageGlare: 'https://placehold.co/800x500/1a365d/ffffff?text=Lake+With+Glare',
-    imageClear: 'https://placehold.co/800x500/0d9488/ffffff?text=Clear+View+Below',
+    imageGlare: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' y2='1'%3E%3Cstop offset='0' stop-color='%231a365d'/%3E%3Cstop offset='.5' stop-color='%23e0e7ff'/%3E%3Cstop offset='1' stop-color='%231e3a5f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='800' height='500'/%3E%3Ctext x='400' y='260' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3ELake With Glare%3C/text%3E%3C/svg%3E",
+    imageClear: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' y2='1'%3E%3Cstop offset='0' stop-color='%230d9488'/%3E%3Cstop offset='.5' stop-color='%2314b8a6'/%3E%3Cstop offset='1' stop-color='%23115e59'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='800' height='500'/%3E%3Ctext x='400' y='260' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3EClear View Below%3C/text%3E%3C/svg%3E",
     targetAngle: 90,
     explanation: 'Water reflects light that becomes horizontally polarized. A vertical polarizer (90°) blocks this glare.',
     explanationZh: '水面反射的光是水平偏振的，垂直偏振片(90°)可以阻挡这种眩光。'
@@ -59,8 +59,8 @@ export const POLARIZER_IMAGE_SETS: PolarizerImageSet[] = [
     nameZh: '汽车仪表盘',
     description: 'Remove dashboard reflection from windshield',
     descriptionZh: '消除挡风玻璃上的仪表盘反射',
-    imageGlare: 'https://placehold.co/800x500/334155/ffffff?text=Windshield+Reflection',
-    imageClear: 'https://placehold.co/800x500/22c55e/ffffff?text=Clear+Road+View',
+    imageGlare: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' y2='1'%3E%3Cstop offset='0' stop-color='%23334155'/%3E%3Cstop offset='.4' stop-color='%23cbd5e1'/%3E%3Cstop offset='1' stop-color='%23475569'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='800' height='500'/%3E%3Ctext x='400' y='260' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3EWindshield Reflection%3C/text%3E%3C/svg%3E",
+    imageClear: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' y2='1'%3E%3Cstop offset='0' stop-color='%2322c55e'/%3E%3Cstop offset='.5' stop-color='%2316a34a'/%3E%3Cstop offset='1' stop-color='%23166534'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='800' height='500'/%3E%3Ctext x='400' y='260' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3EClear Road View%3C/text%3E%3C/svg%3E",
     targetAngle: 90,
     explanation: 'Dashboard reflections on windshield are horizontally polarized. Photographers use polarizing filters at ~90° to eliminate them.',
     explanationZh: '仪表盘在挡风玻璃上的反射是水平偏振的。摄影师使用约90°的偏振滤镜来消除它们。'
@@ -71,8 +71,8 @@ export const POLARIZER_IMAGE_SETS: PolarizerImageSet[] = [
     nameZh: '玻璃展柜',
     description: 'See through reflective glass display case',
     descriptionZh: '透过反光的玻璃展柜看展品',
-    imageGlare: 'https://placehold.co/800x500/64748b/ffffff?text=Glass+Reflection',
-    imageClear: 'https://placehold.co/800x500/f59e0b/000000?text=Museum+Artifact',
+    imageGlare: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' y2='1'%3E%3Cstop offset='0' stop-color='%2364748b'/%3E%3Cstop offset='.5' stop-color='%23e2e8f0'/%3E%3Cstop offset='1' stop-color='%23475569'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='800' height='500'/%3E%3Ctext x='400' y='260' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3EGlass Reflection%3C/text%3E%3C/svg%3E",
+    imageClear: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g' y2='1'%3E%3Cstop offset='0' stop-color='%23f59e0b'/%3E%3Cstop offset='.5' stop-color='%23d97706'/%3E%3Cstop offset='1' stop-color='%2392400e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='800' height='500'/%3E%3Ctext x='400' y='260' text-anchor='middle' fill='%23000' font-size='28' font-family='sans-serif'%3EMuseum Artifact%3C/text%3E%3C/svg%3E",
     targetAngle: 90,
     explanation: 'Museum glass reflects ambient light. Polarizing filters help photographers capture exhibits without reflections.',
     explanationZh: '博物馆玻璃反射环境光。偏振滤镜帮助摄影师拍摄没有反射的展品。'

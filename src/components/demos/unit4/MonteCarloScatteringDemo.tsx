@@ -322,6 +322,8 @@ export function MonteCarloScatteringDemo() {
   const [photons, setPhotons] = useState<Photon[]>([])
   const [isRunning, setIsRunning] = useState(false)
   const animationRef = useRef<number | undefined>(undefined)
+  const photonsRef = useRef(photons)
+  photonsRef.current = photons
 
   const mediumWidth = 5 // 介质宽度
   const mediumHeight = 4 // 介质高度
@@ -355,7 +357,7 @@ export function MonteCarloScatteringDemo() {
     )
   }, [meanFreePath, anisotropy, albedo, mediumWidth, mediumHeight])
 
-  // 动画循环
+  // 动画循环 (uses photonsRef to avoid re-creating effect on every photon update)
   useEffect(() => {
     if (!isRunning) return
 
@@ -368,8 +370,8 @@ export function MonteCarloScatteringDemo() {
         lastTime = time
       }
 
-      // 检查是否所有光子都已完成
-      const aliveCount = photons.filter(p => p.alive).length
+      // 检查是否所有光子都已完成 (read from ref to avoid stale closure)
+      const aliveCount = photonsRef.current.filter(p => p.alive).length
       if (aliveCount > 0) {
         animationRef.current = requestAnimationFrame(animate)
       } else {
@@ -384,7 +386,7 @@ export function MonteCarloScatteringDemo() {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isRunning, step, photons])
+  }, [isRunning, step])
 
   // 初始化
   useEffect(() => {

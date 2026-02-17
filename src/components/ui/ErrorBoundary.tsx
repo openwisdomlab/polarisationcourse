@@ -71,23 +71,25 @@ export class ErrorBoundary extends Component<Props, State> {
               </svg>
             </div>
             <h2 className="text-xl font-semibold text-white mb-2">
-              Oops! Something went wrong
+              Oops! Something went wrong / 出错了
             </h2>
             <p className="text-gray-400 mb-4 text-sm">
-              {this.state.error?.message || 'An unexpected error occurred'}
+              {this.state.error?.message || 'An unexpected error occurred / 发生了意外错误'}
             </p>
             <div className="flex gap-3 justify-center">
               <button
+                type="button"
                 onClick={this.handleRetry}
                 className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg text-sm font-medium transition-colors"
               >
-                Try Again
+                Try Again / 重试
               </button>
               <button
-                onClick={() => window.location.href = '/'}
+                type="button"
+                onClick={() => window.location.replace('/')}
                 className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors"
               >
-                Go Home
+                Go Home / 首页
               </button>
             </div>
             {import.meta.env.DEV && this.state.error && (

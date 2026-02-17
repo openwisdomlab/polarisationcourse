@@ -279,7 +279,7 @@ function LoadDialog({ isOpen, onClose }: LoadDialogProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className={cn(
-        'w-[480px] max-h-[80vh] rounded-xl border flex flex-col',
+        'w-[480px] max-w-[calc(100vw-32px)] max-h-[80vh] rounded-xl border flex flex-col',
         theme === 'dark' ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-200'
       )}>
         <div className={cn(

@@ -120,14 +120,12 @@ export const useLabStore = create<LabState>()(
 
         // Open a task modal
         openTask: (taskId: string) => {
-          const currentProgress = get().taskProgress[taskId]
-
           set(state => ({
             activeTaskId: taskId,
             isModalOpen: true,
             taskProgress: {
               ...state.taskProgress,
-              [taskId]: currentProgress || {
+              [taskId]: state.taskProgress[taskId] || {
                 taskId,
                 status: 'in-progress',
                 startedAt: Date.now(),

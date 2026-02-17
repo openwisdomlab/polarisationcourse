@@ -8,7 +8,7 @@
  * Phase 1 Update: Jones Calculus support for interference and circular polarization
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import {
@@ -492,6 +492,12 @@ export function Game2DPage() {
   const [history, setHistory] = useState<Record<string, Partial<OpticalComponent>>[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
 
+  // Refs for history state to stabilize callbacks and avoid keyboard listener re-registration
+  const historyRef = useRef(history)
+  historyRef.current = history
+  const historyIndexRef = useRef(historyIndex)
+  historyIndexRef.current = historyIndex
+
   // NEW: Game mode toggle (classic vs advanced Jones physics)
   const [gameMode, setGameMode] = useState<GameMode>('advanced')
   const [showAdvancedLevels, setShowAdvancedLevels] = useState(false)
@@ -569,39 +575,37 @@ export function Game2DPage() {
     const component = currentLevel.components.find((c) => c.id === id)
     if (!component || component.locked) return
 
-    setComponentStates((prev) => {
-      const current = prev[id] || {}
-      let newValue: number
+    const current = componentStates[id] || {}
+    let newValue: number
 
-      if (property === 'rotationAmount') {
-        // Toggle between 45 and 90
-        newValue = (current.rotationAmount ?? component.rotationAmount ?? 45) === 45 ? 90 : 45
-      } else {
-        const currentVal = current[property] ?? (component[property as keyof OpticalComponent] as number) ?? 0
-        newValue = (currentVal + delta + 360) % 360
-        if (property === 'polarizationAngle') {
-          newValue = newValue % 180
-        }
+    if (property === 'rotationAmount') {
+      // Toggle between 45 and 90
+      newValue = (current.rotationAmount ?? component.rotationAmount ?? 45) === 45 ? 90 : 45
+    } else {
+      const currentVal = current[property] ?? (component[property as keyof OpticalComponent] as number) ?? 0
+      newValue = (currentVal + delta + 360) % 360
+      if (property === 'polarizationAngle') {
+        newValue = newValue % 180
       }
+    }
 
-      const newStates = {
-        ...prev,
-        [id]: {
-          ...current,
-          [property]: newValue,
-        },
-      }
+    const newStates = {
+      ...componentStates,
+      [id]: {
+        ...current,
+        [property]: newValue,
+      },
+    }
 
-      // Push to history for undo/redo (truncate any future history if we're not at the end)
-      setHistory((prevHistory) => {
-        const truncatedHistory = prevHistory.slice(0, historyIndex + 1)
-        return [...truncatedHistory, newStates]
-      })
-      setHistoryIndex((prevIndex) => prevIndex + 1)
-
-      return newStates
-    })
+    setComponentStates(newStates)
     setIsComplete(false)
+
+    // Push to history for undo/redo (truncate any future history if we're not at the end)
+    setHistory((prevHistory) => {
+      const truncatedHistory = prevHistory.slice(0, historyIndex + 1)
+      return [...truncatedHistory, newStates]
+    })
+    setHistoryIndex((prevIndex) => prevIndex + 1)
   }
 
   const handleReset = useCallback(() => {
@@ -615,33 +619,30 @@ export function Game2DPage() {
     })
     setComponentStates(initialStates)
     setIsComplete(false)
-    // Push reset state to history
-    setHistory((prev) => {
-      const truncatedHistory = prev.slice(0, historyIndex + 1)
-      return [...truncatedHistory, initialStates]
-    })
-    setHistoryIndex((prev) => prev + 1)
-  }, [currentLevel.components, historyIndex])
+    // Clear history and start fresh
+    setHistory([initialStates])
+    setHistoryIndex(0)
+  }, [currentLevel.components])
 
-  // Undo handler
+  // Undo handler (uses refs for stable reference)
   const handleUndo = useCallback(() => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1
+    if (historyIndexRef.current > 0) {
+      const newIndex = historyIndexRef.current - 1
       setHistoryIndex(newIndex)
-      setComponentStates(history[newIndex])
+      setComponentStates(historyRef.current[newIndex])
       setIsComplete(false)
     }
-  }, [history, historyIndex])
+  }, [])
 
-  // Redo handler
+  // Redo handler (uses refs for stable reference)
   const handleRedo = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      const newIndex = historyIndex + 1
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      const newIndex = historyIndexRef.current + 1
       setHistoryIndex(newIndex)
-      setComponentStates(history[newIndex])
+      setComponentStates(historyRef.current[newIndex])
       setIsComplete(false)
     }
-  }, [history, historyIndex])
+  }, [])
 
   // Check if undo/redo is available
   const canUndo = historyIndex > 0
