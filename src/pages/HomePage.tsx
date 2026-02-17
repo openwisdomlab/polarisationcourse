@@ -14,6 +14,8 @@ import {
   GalleryModuleIcon,
   ResearchModuleIcon,
 } from '@/components/icons'
+import { useDiscoveryStore } from '@/stores/discoveryStore'
+import { calculateProgress, DEMO_PREREQUISITES } from '@/data/learningPaths'
 
 // Icon component type for animated module icons
 type AnimatedIconComponent = React.ComponentType<{
@@ -214,6 +216,55 @@ const GLOW_STYLES: Record<string, string> = {
   teal: 'rgba(45, 212, 191, 0.4)',
 }
 
+// Progress ring for module cards - shows completion percentage
+function ProgressRing({ progress, size = 28, strokeWidth = 2.5 }: {
+  progress: number
+  size?: number
+  strokeWidth?: number
+}) {
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference - (progress / 100) * circumference
+
+  if (progress === 0) return null
+
+  return (
+    <svg width={size} height={size} className="absolute top-2 right-2 z-10">
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        className="text-slate-700/30"
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        className="text-emerald-400 transition-all duration-500"
+      />
+      <text
+        x={size / 2}
+        y={size / 2}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="fill-emerald-400 text-[7px] font-mono"
+      >
+        {progress}%
+      </text>
+    </svg>
+  )
+}
+
 // Module Card Component with redesigned layout - icon left, title right, subtitle below
 function ModuleCard({
   module,
@@ -233,6 +284,11 @@ function ModuleCard({
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const IconComponent = module.IconComponent
+
+  // Calculate progress for modules that have tracking data
+  const completedDemoIds = useDiscoveryStore(state => state.getCompletedDemoIds())
+  const allDemoIds = DEMO_PREREQUISITES.map(p => p.demoId)
+  const moduleProgress = module.id === 'theory' ? calculateProgress(allDemoIds, completedDemoIds) : 0
 
   const handleMouseEnter = () => {
     setIsHovered(true)
@@ -278,6 +334,11 @@ function ModuleCard({
         >
           {t('home.badges.inDevelopment')}
         </div>
+      )}
+
+      {/* Progress ring - shown when module has progress and no dev badge */}
+      {moduleProgress > 0 && !module.inDevelopment && (
+        <ProgressRing progress={moduleProgress} />
       )}
 
       {/* Background glow effect on hover */}

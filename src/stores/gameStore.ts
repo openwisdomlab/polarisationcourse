@@ -330,12 +330,3 @@ export const useGameStore = create<GameState>()(
   }))
 )
 
-// Subscribe to world changes
-export const subscribeToWorldChanges = (callback: () => void) => {
-  const { world } = useGameStore.getState()
-  if (world) {
-    world.addListener(() => {
-      callback()
-    })
-  }
-}

@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { cn } from '@/lib/utils'
+
 
 const POLARIZATION_COLORS = [
   { angle: '0°', color: 'var(--color-polarization-0)', labelKey: 'game.helpPanel.horizontal' },

@@ -12,7 +12,10 @@
     "chinese": "Chinese",
     "comingSoon": "Coming Soon",
     "close": "Close",
-    "explore": "Explore"
+    "explore": "Explore",
+    "pageNotFound": "Page Not Found",
+    "pageNotFoundDescription": "The page you are looking for does not exist or has been moved.",
+    "backToHome": "Back to Home"
   },
   "discovery": {
     "newDiscovery": "Discovery!",
@@ -186,9 +189,6 @@
     "viewHistory": "View History",
     "curriculum": "Course Curriculum",
     "unit": "Unit",
-    "units": {
-      "label": "Units"
-    },
     "demos": {
       "label": "Demos"
     },
@@ -206,6 +206,7 @@
       "community": "Research Community"
     },
     "units": {
+      "label": "Units",
       "unit1": {
         "title": "Polarization States: Modulation & Measurement",
         "subtitle": "Transverse Waves, Birefringence, Devices & Malus's Law",
@@ -3987,5 +3988,30 @@
       "mueller": "4×4 matrices for complete polarimetric analysis",
       "polarimetricMicroscopy": "Using polarization to reveal hidden structures"
     }
+  },
+  "learningPaths": {
+    "explore": "Explore more",
+    "progress": "{{completed}} of {{total}} demos completed",
+    "progressPercent": "{{percent}}% complete",
+    "recommended": "Recommended next",
+    "prerequisites": "Prerequisites",
+    "prerequisitesNeeded": "Complete these demos first",
+    "available": "Available",
+    "locked": "Locked",
+    "completed": "Completed",
+    "estimatedTime": "~{{minutes}} min",
+    "crossLinks": {
+      "chroniclesHistory": "History & Stories",
+      "tryOpticalStudio": "Try Optical Studio",
+      "play2DPuzzle": "Play 2D Puzzles",
+      "viewExperiments": "View Experiments",
+      "realWorldApplications": "Real-World Applications",
+      "virtualLab": "Virtual Lab",
+      "stokesCalculator": "Stokes Calculator",
+      "muellerCalculator": "Mueller Calculator",
+      "jonesCalculator": "Jones Calculator"
+    },
+    "startHere": "Start here",
+    "unitProgress": "{{completed}}/{{total}}"
   }
 }

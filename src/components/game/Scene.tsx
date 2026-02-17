@@ -22,7 +22,7 @@ export function Scene() {
   const { gl, camera } = useThree()
   const [targetPosition, setTargetPosition] = useState<BlockPosition | null>(null)
   const [hoveredBlock, setHoveredBlock] = useState<BlockPosition | null>(null)
-  const pointerLockRef = useRef<any>(null)
+  const pointerLockRef = useRef<typeof PointerLockControls.prototype | null>(null)
 
   // Set up scene background
   useEffect(() => {

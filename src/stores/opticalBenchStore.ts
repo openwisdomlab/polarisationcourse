@@ -10,6 +10,7 @@
  * Physics Engine: Jones Calculus for accurate polarization simulation
  * - Jones vectors represent full polarization state (linear, circular, elliptical)
  * - Jones matrices describe optical element transformations
+ * - Unified Physics API (CoherencyMatrix-based) available via benchPhysics export
  */
 
 import { create } from 'zustand'
@@ -36,6 +37,13 @@ import {
   TYPICAL_POLARIZER,
 } from '@/core/WaveOptics'
 import { logger } from '@/lib/logger'
+
+// Unified Physics API (gradual migration from direct Jones imports above)
+import { createPhysicsAPI, type PhysicsAPI } from '@/core/api'
+export type { PolarizationInfo } from '@/core/api'
+
+/** Shared unified physics instance for optical bench calculations */
+export const benchPhysics: PhysicsAPI = createPhysicsAPI('science')
 
 // ============================================
 // Types

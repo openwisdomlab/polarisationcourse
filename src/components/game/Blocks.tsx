@@ -26,12 +26,10 @@ interface BlocksProps {
 
 export function Blocks({ world, visionMode, onBlockClick, onBlockHover }: BlocksProps) {
   const [blocks, setBlocks] = useState<Array<{ position: BlockPosition; state: BlockState }>>([])
-  const [version, setVersion] = useState(0)
 
   useEffect(() => {
     const updateBlocks = () => {
       setBlocks(world.getAllBlocks())
-      setVersion(v => v + 1)
     }
 
     updateBlocks()
@@ -46,7 +44,7 @@ export function Blocks({ world, visionMode, onBlockClick, onBlockHover }: Blocks
     <group>
       {blocks.map(({ position, state }) => (
         <Block
-          key={`${position.x},${position.y},${position.z}-${version}`}
+          key={`${position.x},${position.y},${position.z}`}
           position={position}
           state={state}
           visionMode={visionMode}

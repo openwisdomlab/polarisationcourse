@@ -28,6 +28,29 @@
   --color-polarization-45: #ffaa00;
   --color-polarization-90: #44ff44;
   --color-polarization-135: #4444ff;
+
+  /* PolarCraft Semantic Palette */
+  --color-laser: #22d3ee;
+  --color-laser-active: #00f0ff;
+  --color-laser-dim: rgba(34,211,238,0.15);
+  --color-laser-glow: rgba(34,211,238,0.5);
+
+  --color-void: #050510;
+  --color-void-panel: rgba(10,10,25,0.8);
+  --color-void-border: rgba(100,200,255,0.1);
+
+  /* Legacy tech colors */
+  --color-tech-cyan: #00f0ff;
+  --color-tech-cyan-dim: rgba(0,240,255,0.1);
+  --color-tech-cyan-glow: rgba(0,240,255,0.5);
+  --color-tech-violet: #7000ff;
+  --color-tech-violet-dim: rgba(112,0,255,0.1);
+  --color-tech-violet-glow: rgba(112,0,255,0.5);
+
+  /* Custom font sizes */
+  --font-size-micro: 10px;
+  --font-size-caption: 11px;
+  --font-size-data: 12px;
 }
 
 /* Light Mode Overrides */
@@ -55,11 +78,11 @@ html.light {
 
 @layer utilities {
   .tech-card {
-    @apply bg-void-panel backdrop-blur-md border border-laser-dim shadow-[0_0_15px_rgba(34, 211, 238, 0.1)];
+    @apply bg-void-panel backdrop-blur-md border border-laser-dim shadow-[0_0_15px_rgba(34,211,238,0.1)];
   }
 
   .tech-card:hover {
-    @apply border-laser shadow-[0_0_25px_rgba(34, 211, 238, 0.2)];
+    @apply border-laser shadow-[0_0_25px_rgba(34,211,238,0.2)];
   }
 
   .tech-text-glow {
@@ -83,18 +106,11 @@ html.light {
     font-size: 0.75rem;
     font-weight: 500;
     font-variant-numeric: tabular-nums;
-    color: hsl(var(--primary));
+    color: var(--color-primary);
   }
 }
 
-/* Base styles */
-* {
-  border-color: hsl(var(--border));
-}
-
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
 
@@ -345,7 +361,7 @@ body {
 .crosshair::after {
   content: '';
   position: absolute;
-  @apply bg-laser/80 shadow-[0_0_4px_rgba(34, 211, 238, 0.6)];
+  @apply bg-laser/80 shadow-[0_0_4px_rgba(34,211,238,0.6)];
 }
 
 .crosshair::before {
@@ -709,19 +725,7 @@ body {
   background: transparent;
 }
 
-/* Auto-hide scrollbar when not scrolling */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-}
-
-/* Firefox scrollbar styling */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-}
-
-/* Auto-hide functionality using CSS transitions */
+/* Scrollbar styling (Firefox + standards) */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
@@ -892,7 +896,7 @@ select::-webkit-scrollbar-thumb {
 }
 
 /* Ensure scrollbar doesn't affect layout */
-* {
+html {
   scrollbar-gutter: stable;
 }
 

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useGameStore } from '@/stores/gameStore'
 import { TUTORIAL_LEVELS } from '@/core/World'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react' // Added Play icon if needed, or just numbers
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface LevelSelectorProps {

@@ -111,7 +111,7 @@ export default function SimulationReplayer() {
   return (
     <div
       className={cn(
-        'fixed bottom-4 right-4 z-50 w-[420px] max-h-[600px] rounded-xl',
+        'fixed bottom-4 right-4 z-50 w-[420px] max-w-[calc(100vw-32px)] max-h-[600px] rounded-xl',
         'border shadow-2xl backdrop-blur-md overflow-hidden flex flex-col',
         isDark ? 'bg-slate-900/95 border-slate-700' : 'bg-white/95 border-gray-300'
       )}

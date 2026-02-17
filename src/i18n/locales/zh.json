@@ -12,7 +12,10 @@
     "chinese": "中文",
     "comingSoon": "待更新",
     "close": "关闭",
-    "explore": "探索"
+    "explore": "探索",
+    "pageNotFound": "页面未找到",
+    "pageNotFoundDescription": "您访问的页面不存在或已被移动。",
+    "backToHome": "返回首页"
   },
   "discovery": {
     "newDiscovery": "新发现!",
@@ -195,6 +198,7 @@
     "game": "游戏",
     "experiment": "实验",
     "tool": "工具",
+    "viewDemo": "查看演示",
     "stats": {
       "units": "{{count}} 个单元",
       "games": "谜题游戏",
@@ -4172,5 +4176,30 @@
       "mueller": "完整偏振分析的 4×4 矩阵",
       "polarimetricMicroscopy": "利用偏振揭示隐藏结构"
     }
+  },
+  "learningPaths": {
+    "explore": "探索更多",
+    "progress": "已完成 {{completed}}/{{total}} 个演示",
+    "progressPercent": "完成 {{percent}}%",
+    "recommended": "推荐下一步",
+    "prerequisites": "前置条件",
+    "prerequisitesNeeded": "请先完成以下演示",
+    "available": "可学习",
+    "locked": "未解锁",
+    "completed": "已完成",
+    "estimatedTime": "约{{minutes}}分钟",
+    "crossLinks": {
+      "chroniclesHistory": "历史故事",
+      "tryOpticalStudio": "试试光学设计室",
+      "play2DPuzzle": "玩2D谜题",
+      "viewExperiments": "查看实验",
+      "realWorldApplications": "实际应用",
+      "virtualLab": "虚拟实验室",
+      "stokesCalculator": "Stokes计算器",
+      "muellerCalculator": "Mueller计算器",
+      "jonesCalculator": "Jones计算器"
+    },
+    "startHere": "从这里开始",
+    "unitProgress": "{{completed}}/{{total}}"
   }
 }
