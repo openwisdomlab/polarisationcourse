@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from '@tanstack/react-router'
 import { useGameStore } from '@/stores/gameStore'
 import {
   Dialog,
@@ -125,6 +126,20 @@ export function HelpPanel() {
               <li>{t('game.helpPanel.realPhase')}</li>
             </ul>
             <p className="text-laser text-caption mt-2 font-medium">{t('game.helpPanel.seeAccurateDemos')}</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <Link to="/demos/$demoId" params={{ demoId: 'waveplate' }} onClick={toggleHelp} className="text-xs px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors">
+                {t('game.helpPanel.learnWaveplate')}
+              </Link>
+              <Link to="/demos/$demoId" params={{ demoId: 'malus' }} onClick={toggleHelp} className="text-xs px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors">
+                {t('game.helpPanel.learnMalus')}
+              </Link>
+              <Link to="/demos/$demoId" params={{ demoId: 'birefringence' }} onClick={toggleHelp} className="text-xs px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors">
+                {t('game.helpPanel.learnBirefringence')}
+              </Link>
+              <Link to="/studio" onClick={toggleHelp} className="text-xs px-2 py-1 rounded bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors">
+                {t('game.helpPanel.openStudio')}
+              </Link>
+            </div>
           </section>
         </div>
       </DialogContent>

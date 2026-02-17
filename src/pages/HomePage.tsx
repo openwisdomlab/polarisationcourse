@@ -265,6 +265,21 @@ function ProgressRing({ progress, size = 28, strokeWidth = 2.5 }: {
   )
 }
 
+// Explored badge for exploration-type modules (Gallery, Chronicles)
+// Shows discovery count instead of percentage progress
+function ExploredBadge({ count }: { count: number }) {
+  if (count === 0) return null
+  return (
+    <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30">
+      <span className="text-emerald-400 text-[9px]">&#10003;</span>
+      <span className="text-emerald-400 text-[9px] font-mono">{count}</span>
+    </div>
+  )
+}
+
+// Categorize modules for different progress indicators
+const EXPLORATION_MODULES = new Set(['history', 'gallery'])
+
 // Module Card Component with redesigned layout - icon left, title right, subtitle below
 function ModuleCard({
   module,
@@ -285,10 +300,12 @@ function ModuleCard({
   const [isHovered, setIsHovered] = useState(false)
   const IconComponent = module.IconComponent
 
-  // Calculate progress for modules that have tracking data
+  // Calculate progress for structured modules (Demos)
   const completedDemoIds = useDiscoveryStore(state => state.getCompletedDemoIds())
+  const discoveryCount = useDiscoveryStore(state => Object.keys(state.discoveries).length)
   const allDemoIds = DEMO_PREREQUISITES.map(p => p.demoId)
   const moduleProgress = module.id === 'theory' ? calculateProgress(allDemoIds, completedDemoIds) : 0
+  const isExploration = EXPLORATION_MODULES.has(module.id)
 
   const handleMouseEnter = () => {
     setIsHovered(true)
@@ -336,9 +353,12 @@ function ModuleCard({
         </div>
       )}
 
-      {/* Progress ring - shown when module has progress and no dev badge */}
-      {moduleProgress > 0 && !module.inDevelopment && (
+      {/* Progress indicator - differentiated by module type */}
+      {!module.inDevelopment && moduleProgress > 0 && (
         <ProgressRing progress={moduleProgress} />
+      )}
+      {!module.inDevelopment && isExploration && (
+        <ExploredBadge count={discoveryCount} />
       )}
 
       {/* Background glow effect on hover */}

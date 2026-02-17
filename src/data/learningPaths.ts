@@ -19,6 +19,7 @@ export interface CrossModuleLink {
 export interface DemoPrerequisite {
   demoId: string
   prerequisites: string[] // demo IDs that must be completed first
+  softPrerequisites?: string[] // recommended but not required demos
   estimatedMinutes: number
   crossLinks?: CrossModuleLink[]
 }
@@ -120,6 +121,7 @@ export const DEMO_PREREQUISITES: DemoPrerequisite[] = [
   {
     demoId: 'arago-fresnel',
     prerequisites: ['waveplate'],
+    softPrerequisites: ['malus', 'birefringence'],
     estimatedMinutes: 20,
   },
 
@@ -163,6 +165,7 @@ export const DEMO_PREREQUISITES: DemoPrerequisite[] = [
   {
     demoId: 'optical-rotation',
     prerequisites: ['anisotropy'],
+    softPrerequisites: ['birefringence'],
     estimatedMinutes: 12,
   },
 
@@ -170,6 +173,7 @@ export const DEMO_PREREQUISITES: DemoPrerequisite[] = [
   {
     demoId: 'rayleigh',
     prerequisites: ['polarization-types-unified'],
+    softPrerequisites: ['malus'],
     estimatedMinutes: 10,
   },
   {
@@ -293,6 +297,16 @@ export function getRecommendedDemos(
       const countB = pb?.prerequisites.length ?? 0
       return countA - countB
     })
+}
+
+/** Get incomplete soft prerequisites for a demo (recommended but not blocking) */
+export function getIncompleteSoftPrereqs(
+  demoId: string,
+  completedDemoIds: Set<string>
+): string[] {
+  const prereq = prerequisiteMap.get(demoId)
+  if (!prereq?.softPrerequisites) return []
+  return prereq.softPrerequisites.filter((pid) => !completedDemoIds.has(pid))
 }
 
 /** Calculate overall progress as a percentage (0–100) */

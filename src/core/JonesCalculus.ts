@@ -1,16 +1,25 @@
 /**
- * @deprecated This module is deprecated and will be removed in a future release.
- * Use `src/core/physics/unified` instead, which provides:
+ * @deprecated **DEPRECATED — Targeted for removal in v2.0 (Q3 2026)**
+ *
+ * This module is superseded by `src/core/physics/unified` which provides:
  * - CoherencyMatrix for polarization state representation (supports partial polarization)
  * - Matrix2x2 for Jones matrix operations
  * - Complex number class with full arithmetic support
+ *
+ * For a high-level API, use `createPhysicsAPI()` from `src/core/api.ts`.
  *
  * Migration guide:
  * - Replace JonesVector with CoherencyMatrix.fromJones(ex, ey)
  * - Replace JonesMatrix with Matrix2x2
  * - Replace complex.* functions with Complex class methods
- * - For optical elements, use OpticalSurface subclasses
+ * - For optical elements, use OpticalSurface subclasses (IdealPolarizer, WavePlate, etc.)
+ * - For Malus's Law, use `createPhysicsAPI().applyPolarizer()`
  *
+ * Removal timeline:
+ * - v1.x: Deprecated, all new code should use unified API
+ * - v2.0: Module removed, all references must be migrated
+ *
+ * @see src/core/api.ts — Public physics API facade
  * @see src/core/physics/unified/CoherencyMatrix.ts
  * @see src/core/math/Matrix2x2.ts
  * @see src/core/math/Complex.ts

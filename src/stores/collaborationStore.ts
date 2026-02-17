@@ -30,12 +30,20 @@ export interface ResearchProject {
   authorName: string
 }
 
+export type ReviewReaction = '🤩' | '👍' | '🤔' | '💡' | '🔬'
+
 export interface ReviewResult {
   id: string
   projectId: string
   reviewerName: string
+  /** @deprecated Use `feedback` for new reviews */
   observations: string
+  /** @deprecated Use `feedback` for new reviews */
   suggestions: string
+  /** Unified feedback field (replaces observations+suggestions) */
+  feedback?: string
+  /** Quick emoji reaction */
+  reaction?: ReviewReaction
   rating: number // 1-5
   reviewedAt: number
 }
@@ -89,7 +97,7 @@ interface CollaborationState {
   importForReview: (data: ExportedProject) => ReviewRequest | undefined
 
   // Review actions
-  submitReview: (projectId: string, reviewerName: string, observations: string, suggestions: string, rating: number) => void
+  submitReview: (projectId: string, reviewerName: string, observations: string, suggestions: string, rating: number, reaction?: ReviewReaction) => void
   exportReview: (projectId: string, reviewId: string) => ExportedReview | undefined
   importReview: (data: ExportedReview) => boolean
 
@@ -122,16 +130,23 @@ function isValidProjectStatus(s: unknown): s is ProjectStatus {
   return s === 'draft' || s === 'submitted' || s === 'reviewed' || s === 'published'
 }
 
+const VALID_REACTIONS: ReviewReaction[] = ['🤩', '👍', '🤔', '💡', '🔬']
+
 function sanitizeReview(r: unknown): ReviewResult | null {
   if (!r || typeof r !== 'object') return null
   const obj = r as Record<string, unknown>
   if (typeof obj.id !== 'string' || typeof obj.projectId !== 'string') return null
+  const reaction = VALID_REACTIONS.includes(obj.reaction as ReviewReaction)
+    ? (obj.reaction as ReviewReaction)
+    : undefined
   return {
     id: truncateString(obj.id, 50),
     projectId: truncateString(obj.projectId, 50),
     reviewerName: truncateString(obj.reviewerName, 200),
     observations: truncateString(obj.observations),
     suggestions: truncateString(obj.suggestions),
+    feedback: obj.feedback ? truncateString(obj.feedback) : undefined,
+    reaction,
     rating: Math.max(1, Math.min(5, Math.round(Number(obj.rating) || 3))),
     reviewedAt: typeof obj.reviewedAt === 'number' ? obj.reviewedAt : Date.now(),
   }
@@ -296,13 +311,19 @@ export const useCollaborationStore = create<CollaborationState>()(
         return request
       },
 
-      submitReview: (projectId, reviewerName, observations, suggestions, rating) => {
+      submitReview: (projectId, reviewerName, observations, suggestions, rating, reaction?) => {
+        // Support both legacy (observations+suggestions) and simplified (feedback) modes
+        const feedback = observations && suggestions
+          ? `${observations}\n\n${suggestions}`
+          : observations || suggestions || ''
         const review: ReviewResult = {
           id: generateId(),
           projectId,
           reviewerName,
           observations,
           suggestions,
+          feedback,
+          reaction,
           rating: Math.max(1, Math.min(5, Math.round(rating))),
           reviewedAt: Date.now(),
         }

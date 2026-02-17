@@ -284,6 +284,27 @@ export const ALL_DISCOVERIES: Discovery[] = [
 ]
 
 // ============================================
+// Demo → Discovery Mapping
+// Completing a demo auto-unlocks related discoveries
+// ============================================
+
+const DEMO_DISCOVERY_MAP: Record<string, string[]> = {
+  'polarization-intro': ['linear_polarization'],
+  'polarization-types-unified': ['linear_polarization'],
+  'malus': ['malus_law', 'crossed_polarizers'],
+  'birefringence': ['birefringence'],
+  'waveplate': ['half_wave_plate', 'quarter_wave_plate'],
+  'arago-fresnel': ['constructive_interference', 'destructive_interference'],
+  'fresnel': [],
+  'brewster': ['brewster_angle'],
+  'optical-rotation': ['optical_rotation'],
+  'stokes': ['polarimetry'],
+  'jones': ['jones_calculus'],
+  'mueller': ['polarimetry'],
+  'polarization-state': ['linear_polarization', 'circular_polarization', 'elliptical_polarization'],
+}
+
+// ============================================
 // Store State
 // ============================================
 
@@ -413,10 +434,19 @@ export const useDiscoveryStore = create<DiscoveryState>()(
       },
 
       markDemoCompleted: (demoId: string) => {
-        set((state) => {
-          if (state.completedDemos.includes(demoId)) return state
-          return { completedDemos: [...state.completedDemos, demoId] }
-        })
+        const state = get()
+        if (state.completedDemos.includes(demoId)) return
+        set({ completedDemos: [...state.completedDemos, demoId] })
+
+        // Auto-unlock related discoveries
+        const relatedDiscoveries = DEMO_DISCOVERY_MAP[demoId]
+        if (relatedDiscoveries) {
+          for (const discoveryId of relatedDiscoveries) {
+            if (!state.discoveries[discoveryId]) {
+              get().unlockDiscovery(discoveryId, `demo:${demoId}`)
+            }
+          }
+        }
       },
 
       isDemoCompleted: (demoId: string) => {
