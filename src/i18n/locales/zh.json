@@ -4246,5 +4246,21 @@
     "markComplete": "已探索此演示",
     "markCompleteHint": "完成后解锁相关演示",
     "suggestPrereq": "前置"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出登录",
+    "loginTitle": "欢迎回来",
+    "registerTitle": "创建账号",
+    "email": "邮箱",
+    "emailPlaceholder": "your@email.com",
+    "password": "密码",
+    "passwordPlaceholder": "至少6个字符",
+    "displayName": "显示名称",
+    "displayNamePlaceholder": "你的名字",
+    "loginButton": "登录",
+    "registerButton": "注册",
+    "profile": "个人信息"
   }
 }

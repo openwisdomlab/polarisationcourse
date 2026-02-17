@@ -14,6 +14,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { PolarCraftLogo, ModuleIconMap, type ModuleIconKey } from '@/components/icons'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
+import { UserMenu } from '@/components/ui/UserMenu'
 import { ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 
@@ -224,12 +225,13 @@ export function PersistentHeader({
         </div>
       )}
 
-      {/* Right section: Settings + Custom content */}
+      {/* Right section: Settings + Auth + Custom content */}
       <div className="flex items-center gap-2">
         {rightContent}
         {showSettings && (
           <LanguageThemeSwitcher compact={compact} />
         )}
+        <UserMenu compact={compact} />
       </div>
     </header>
   )
