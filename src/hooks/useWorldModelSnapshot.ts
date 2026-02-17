@@ -291,11 +291,11 @@ function analyzePuzzleState(ctx: WorldModelContext): PuzzleSnapshot {
     ? `Level "${level.name}" complete! All ${level.totalSensors} sensors activated.`
     : `${level.activatedSensors}/${level.totalSensors} sensors activated on level "${level.name}".`
 
-  return { level: level.name, status, progress, issues, hints: hints.slice(0, 3) }
+  return { level: level.name, status, progress, issues, suggestedHints: hints.slice(0, 3) }
 }
 
 function generateSceneSummary(ctx: WorldModelContext, puzzle: PuzzleSnapshot): string {
-  const { sceneGraph, lightBeams, physicsSummary } = ctx
+  const { sceneGraph, physicsSummary } = ctx
 
   const deviceCount = sceneGraph.length
   const beamCount = physicsSummary.totalBeams

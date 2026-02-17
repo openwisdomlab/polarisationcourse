@@ -28,7 +28,7 @@ import {
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useOpticalBenchStore } from '@/stores/opticalBenchStore'
-import { deserializeBenchState, serializeBenchState } from '@/lib/benchSerializer'
+import { deserializeBenchState } from '@/lib/benchSerializer'
 
 // Import KaTeX for rendering mathematical formulas 导入 KaTeX 用于渲染数学公式
 import 'katex/dist/katex.min.css';
