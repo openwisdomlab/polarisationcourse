@@ -85,15 +85,20 @@ export type GameComponentType =
   | 'quarterWavePlate'
 
 /**
- * Result of polarization analysis with game-friendly properties
+ * Result of polarization analysis with game-friendly properties.
+ * Renamed to avoid conflict with the unified API's PolarizationInfo in core/api.ts.
+ * @see PolarizationInfo in core/api.ts for the unified API equivalent
  */
-export interface PolarizationInfo {
+export interface LegacyPolarizationInfo {
   type: 'linear' | 'circular' | 'elliptical'
   angle: number // Orientation angle in degrees [0, 180)
   intensity: number // Total intensity |Ex|² + |Ey|²
   ellipticity: number // Ellipticity angle χ (-π/4 to π/4)
   handedness: 'right' | 'left' | 'none'
 }
+
+/** @deprecated Use LegacyPolarizationInfo */
+export type PolarizationInfo = LegacyPolarizationInfo
 
 // ============================================
 // Game-Optimized Jones Vector Utilities
@@ -143,7 +148,7 @@ export function scaleJonesIntensity(jones: JonesVector, factor: number): JonesVe
 /**
  * Get complete polarization info from a Jones vector (game-friendly format)
  */
-export function getJonesPolarizationInfo(jones: JonesVector): PolarizationInfo {
+export function getJonesPolarizationInfo(jones: JonesVector): LegacyPolarizationInfo {
   const analysis = analyzePolarization(jones)
   const intensity = jonesIntensity(jones)
   const angle = jonesVectorToPolarization(jones)

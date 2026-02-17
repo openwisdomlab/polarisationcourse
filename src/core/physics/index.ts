@@ -23,6 +23,7 @@ export type {
   JonesMatrix,
   OpticalElementType,
   GameComponentType,
+  LegacyPolarizationInfo,
   PolarizationInfo,
   CrystalAxis,
   SplitBeamResult,

@@ -101,6 +101,11 @@ interface CollaborationState {
   exportReview: (projectId: string, reviewId: string) => ExportedReview | undefined
   importReview: (data: ExportedReview) => boolean
 
+  // Clipboard sharing (low-friction for classroom use)
+  copyProjectToClipboard: (projectId: string) => Promise<boolean>
+  copyReviewToClipboard: (projectId: string, reviewId: string) => Promise<boolean>
+  importFromClipboard: () => Promise<{ type: 'project' | 'review'; success: boolean }>
+
   // Publishing
   publishToShowcase: (projectId: string) => PublishedWork | undefined
 }
@@ -374,6 +379,46 @@ export const useCollaborationStore = create<CollaborationState>()(
         }))
 
         return true
+      },
+
+      copyProjectToClipboard: async (projectId) => {
+        const exported = get().exportProject(projectId)
+        if (!exported) return false
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(exported))
+          return true
+        } catch {
+          return false
+        }
+      },
+
+      copyReviewToClipboard: async (projectId, reviewId) => {
+        const exported = get().exportReview(projectId, reviewId)
+        if (!exported) return false
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(exported))
+          return true
+        } catch {
+          return false
+        }
+      },
+
+      importFromClipboard: async () => {
+        try {
+          const text = await navigator.clipboard.readText()
+          const data = JSON.parse(text)
+          if (data?.type === 'polarcraft-research-project') {
+            const result = get().importForReview(data)
+            return { type: 'project' as const, success: !!result }
+          }
+          if (data?.type === 'polarcraft-review') {
+            const result = get().importReview(data)
+            return { type: 'review' as const, success: result }
+          }
+          return { type: 'project' as const, success: false }
+        } catch {
+          return { type: 'project' as const, success: false }
+        }
       },
 
       publishToShowcase: (projectId) => {
