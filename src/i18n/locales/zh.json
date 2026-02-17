@@ -4198,6 +4198,8 @@
       "stokesCalculator": "Stokes计算器",
       "muellerCalculator": "Mueller计算器",
       "jonesCalculator": "Jones计算器"
-    }
+    },
+    "startHere": "从这里开始",
+    "unitProgress": "{{completed}}/{{total}}"
   }
 }

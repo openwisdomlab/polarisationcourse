@@ -2,18 +2,20 @@
  * Demos Page - Interactive physics demonstrations for 5 units + Optical Basics
  * Enhanced with i18n, theme support, and improved interactivity indicators
  */
-import { useState, useEffect, useRef, Suspense, ReactNode, memo } from 'react'
+import { useState, useEffect, useRef, useMemo, Suspense, ReactNode, memo } from 'react'
 import { Link, useSearch, useParams, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { cn } from '@/lib/utils'
 import { DemoErrorBoundary } from '@/components/demos/DemoErrorBoundary'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
-import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft } from 'lucide-react'
+import { Gamepad2, BookOpen, Box, BarChart2, Menu, X, ChevronDown, ChevronRight, Lightbulb, HelpCircle, Search, GraduationCap, ArrowLeft, CheckCircle2, Lock } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { PersistentHeader } from '@/components/shared/PersistentHeader'
 import { SEO } from '@/components/shared/SEO'
 import { CrossModuleLinks } from '@/components/shared/CrossModuleLinks'
+import { isDemoAvailable, getRecommendedDemos } from '@/data/learningPaths'
+import { useDiscoveryStore } from '@/stores/discoveryStore'
 
 // Demo components
 import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
@@ -1621,6 +1623,24 @@ export function DemosPage() {
   const [showDifficultyChange, setShowDifficultyChange] = useState(false)
   const difficultyTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
+  // Learning path tracking
+  const completedDemosList = useDiscoveryStore(state => state.completedDemos)
+  const markDemoCompleted = useDiscoveryStore(state => state.markDemoCompleted)
+  const completedDemoIds = useMemo(() => new Set(completedDemosList), [completedDemosList])
+
+  const allDemoIds = useMemo(() => DEMOS.map(d => d.id), [])
+  const recommendedDemos = useMemo(() => getRecommendedDemos(allDemoIds, completedDemoIds), [allDemoIds, completedDemoIds])
+  const firstRecommended = recommendedDemos.length > 0 ? recommendedDemos[0] : null
+
+  // Mark demo as completed after 30 seconds of interaction
+  useEffect(() => {
+    if (!activeDemo) return
+    const timer = setTimeout(() => {
+      markDemoCompleted(activeDemo)
+    }, 30000)
+    return () => clearTimeout(timer)
+  }, [activeDemo, markDemoCompleted])
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -2060,36 +2080,72 @@ export function DemosPage() {
 
               return (
                 <div key={unit.num} className="mb-3">
-                  <button
-                    onClick={() => isCompact && setExpandedUnit(expandedUnit === unit.num ? null : unit.num)}
-                    className={cn(
-                      'w-full text-[10px] uppercase tracking-wider mb-2 px-2 font-semibold flex items-center gap-2',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
-                      isCompact && (theme === 'dark' ? 'hover:text-cyan-400' : 'hover:text-cyan-600'),
-                      'transition-colors'
-                    )}
-                  >
-                    {unit.num === 0 ? (
-                      <span className="text-yellow-400">★</span>
-                    ) : (
-                      <span className={`text-${unit.color}-400`}>●</span>
-                    )}
-                    <span className="flex-1 text-left">
-                      {unit.num === 0
-                        ? t('basics.title')  // 光学基础不重复显示
-                        : `${t('game.level')} ${unit.num} · ${t(unit.titleKey)}`}
-                    </span>
-                    {isCompact && (
-                      <ChevronDown className={cn(
-                        "w-3 h-3 transition-transform",
-                        isExpanded && "rotate-180"
-                      )} />
-                    )}
-                  </button>
+                  {(() => {
+                    const allUnitDemos = DEMOS.filter(d => d.unit === unit.num)
+                    const unitCompletedCount = allUnitDemos.filter(d => completedDemoIds.has(d.id)).length
+                    const unitTotalCount = allUnitDemos.length
+                    const unitProgressPercent = unitTotalCount > 0 ? Math.round((unitCompletedCount / unitTotalCount) * 100) : 0
+                    return (
+                      <>
+                        <button
+                          onClick={() => isCompact && setExpandedUnit(expandedUnit === unit.num ? null : unit.num)}
+                          className={cn(
+                            'w-full text-[10px] uppercase tracking-wider mb-1 px-2 font-semibold flex items-center gap-2',
+                            theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
+                            isCompact && (theme === 'dark' ? 'hover:text-cyan-400' : 'hover:text-cyan-600'),
+                            'transition-colors'
+                          )}
+                        >
+                          {unit.num === 0 ? (
+                            <span className="text-yellow-400">★</span>
+                          ) : (
+                            <span className={`text-${unit.color}-400`}>●</span>
+                          )}
+                          <span className="flex-1 text-left">
+                            {unit.num === 0
+                              ? t('basics.title')
+                              : `${t('game.level')} ${unit.num} · ${t(unit.titleKey)}`}
+                          </span>
+                          <span className={cn(
+                            'text-[9px] font-normal tabular-nums',
+                            unitCompletedCount === unitTotalCount && unitTotalCount > 0
+                              ? 'text-emerald-400'
+                              : theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                          )}>
+                            {t('learningPaths.unitProgress', { completed: unitCompletedCount, total: unitTotalCount })}
+                          </span>
+                          {isCompact && (
+                            <ChevronDown className={cn(
+                              "w-3 h-3 transition-transform",
+                              isExpanded && "rotate-180"
+                            )} />
+                          )}
+                        </button>
+                        {/* Unit progress bar */}
+                        <div className={cn(
+                          'mx-2 mb-2 h-1 rounded-full overflow-hidden',
+                          theme === 'dark' ? 'bg-slate-800' : 'bg-gray-200'
+                        )}>
+                          <div
+                            className={cn(
+                              'h-full rounded-full transition-all duration-500',
+                              unitCompletedCount === unitTotalCount && unitTotalCount > 0
+                                ? 'bg-emerald-400'
+                                : theme === 'dark' ? 'bg-cyan-400/60' : 'bg-cyan-400'
+                            )}
+                            style={{ width: `${unitProgressPercent}%` }}
+                          />
+                        </div>
+                      </>
+                    )
+                  })()}
                   {isExpanded && (
                     <ul className="space-y-0.5">
                       {unitDemos.map((demo) => {
                         const demoMatches = searchQuery ? searchMatches.get(demo.id) : null
+                        const isCompleted = completedDemoIds.has(demo.id)
+                        const isAvailable = isDemoAvailable(demo.id, completedDemoIds)
+                        const isRecommended = demo.id === firstRecommended
                         return (
                           <li key={demo.id}>
                             <button
@@ -2104,9 +2160,13 @@ export function DemosPage() {
                                   ? theme === 'dark'
                                     ? 'bg-gradient-to-r from-cyan-400/20 to-blue-400/10 text-cyan-400 border-l-2 border-cyan-400'
                                     : 'bg-gradient-to-r from-cyan-100 to-blue-50 text-cyan-700 border-l-2 border-cyan-500'
-                                  : theme === 'dark'
-                                    ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
-                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                  : !isAvailable && !isCompleted
+                                    ? theme === 'dark'
+                                      ? 'text-gray-600 hover:bg-slate-800/30 hover:text-gray-500'
+                                      : 'text-gray-400 hover:bg-gray-50 hover:text-gray-500'
+                                    : theme === 'dark'
+                                      ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
+                                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                               )}
                             >
                               <div className="flex items-center gap-2">
@@ -2117,14 +2177,40 @@ export function DemosPage() {
                                       ? theme === 'dark'
                                         ? 'bg-cyan-400 text-black'
                                         : 'bg-cyan-500 text-white'
-                                      : theme === 'dark'
-                                        ? 'bg-slate-700 text-gray-400'
-                                        : 'bg-gray-200 text-gray-500'
+                                      : isCompleted
+                                        ? 'bg-emerald-400/20 text-emerald-400'
+                                        : theme === 'dark'
+                                          ? 'bg-slate-700 text-gray-400'
+                                          : 'bg-gray-200 text-gray-500'
                                   )}
                                 >
-                                  {unitDemos.indexOf(demo) + 1}
+                                  {isCompleted
+                                    ? <CheckCircle2 className="w-3.5 h-3.5" />
+                                    : unitDemos.indexOf(demo) + 1}
                                 </span>
-                                <span className="truncate flex-1">{t(demo.titleKey)}</span>
+                                <span className={cn(
+                                  'truncate flex-1',
+                                  !isAvailable && !isCompleted && 'opacity-60'
+                                )}>
+                                  {t(demo.titleKey)}
+                                </span>
+                                {/* Status indicators */}
+                                {!isAvailable && !isCompleted && (
+                                  <Lock className={cn(
+                                    'w-3 h-3 flex-shrink-0',
+                                    theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                                  )} />
+                                )}
+                                {isRecommended && !isCompleted && isAvailable && (
+                                  <span className={cn(
+                                    'text-[9px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0',
+                                    theme === 'dark'
+                                      ? 'bg-amber-400/15 text-amber-400 border border-amber-400/30'
+                                      : 'bg-amber-100 text-amber-700 border border-amber-200'
+                                  )}>
+                                    {t('learningPaths.startHere')}
+                                  </span>
+                                )}
                                 <VisualTypeBadge type={demo.visualType} />
                               </div>
                               {/* Search match details */}
