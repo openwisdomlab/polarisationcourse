@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  role         String   @default("student") // student | teacher | admin
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  demoProgress DemoProgress[]
+  discoveries  UserDiscovery[]
+  gameSaves    GameSave[]
+  labProgress  LabProgress[]
+}
+
+model DemoProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  demoId      String
+  completed   Boolean   @default(false)
+  difficulty  String? // foundation | application | research
+  completedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, demoId])
+}
+
+model UserDiscovery {
+  id           String   @id @default(cuid())
+  userId       String
+  discoveryId  String
+  discoveredIn String? // e.g. "demo:malus"
+  discoveredAt DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, discoveryId])
+}
+
+model GameSave {
+  id       String   @id @default(cuid())
+  userId   String
+  gameType String // 3d | 2d | card | escape | detective
+  level    Int
+  stateJson Json?
+  savedAt  DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, gameType, level])
+}
+
+model LabProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  taskId      String
+  status      String    @default("not-started")
+  dataJson    Json?
+  fitJson     Json?
+  notes       String?
+  skills      Json? // { experiment, theory, simulation, dataAnalysis }
+  startedAt   DateTime?
+  completedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, taskId])
+}

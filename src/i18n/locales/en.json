@@ -4058,5 +4058,21 @@
     "markComplete": "I've explored this demo",
     "markCompleteHint": "This unlocks related demos",
     "suggestPrereq": "prereq"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "loginTitle": "Welcome Back",
+    "registerTitle": "Create Account",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "At least 6 characters",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Your name",
+    "loginButton": "Sign In",
+    "registerButton": "Create Account",
+    "profile": "Profile"
   }
 }

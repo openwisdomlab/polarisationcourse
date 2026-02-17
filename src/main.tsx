@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom/client'     //导入react-dom模块
 import { App } from './App'  //导入App组件
 import { ThemeProvider } from './contexts/ThemeContext'   //导入主题提供者组件
 import './i18n'
+import { initSyncManager } from './lib/syncManager'
 import 'katex/dist/katex.min.css'   // 导入 KaTeX 样式表
 import './index.css'   //导入全局样式表
+
+// 初始化后端同步管理器
+initSyncManager()
 
 // 渲染应用程序到根元素
 
