@@ -11,6 +11,13 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -46,23 +53,28 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Custom game colors
-        cyan: {
-          400: '#64c8ff',
-          500: '#4090ff',
+        // --- PolarCraft Semantic Palette ---
+        // Primary Brand / Laser Color
+        laser: {
+          DEFAULT: '#22d3ee',      // Primary beam color (matches tailwind cyan-400)
+          active: '#00f0ff',       // High energy state
+          dim: 'rgba(34,211,238,0.15)', // Subtle backgrounds
+          glow: 'rgba(34,211,238,0.5)', // Glow effects
         },
-        orange: {
-          400: '#ffb464',
-          500: '#ff9030',
+        // Secondary / UI Accents
+        void: {
+          DEFAULT: '#050510',      // Deep space background
+          panel: 'rgba(10, 10, 25, 0.8)', // HUD panels
+          border: 'rgba(100, 200, 255, 0.1)', // Subtle borders
         },
-        // Polarization colors
+        // Physics Semantics (Polarization States)
         polarization: {
-          0: '#ff4444',    // 0° horizontal - red
-          45: '#ffaa00',   // 45° diagonal - orange
-          90: '#44ff44',   // 90° vertical - green
-          135: '#4444ff',  // 135° diagonal - blue
+          0: '#ff4444',    // 0°
+          45: '#ffaa00',   // 45°
+          90: '#44ff44',   // 90°
+          135: '#4444ff',  // 135°
         },
-        // Tech/Future Theme Palette
+        // Legacy/Compatibility (Mapped to new system where possible)
         tech: {
           cyan: {
             DEFAULT: '#00f0ff',
@@ -74,17 +86,18 @@ export default {
             dim: 'rgba(112, 0, 255, 0.1)',
             glow: 'rgba(112, 0, 255, 0.5)',
           },
-          dark: {
-            bg: '#050510',
-            card: 'rgba(10, 10, 25, 0.6)',
-            border: 'rgba(100, 200, 255, 0.1)',
-          }
         },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      // Typography Scale for High-Density UI
+      fontSize: {
+        'micro': ['10px', { lineHeight: '14px' }],
+        'caption': ['11px', { lineHeight: '16px' }],
+        'data': ['12px', { lineHeight: '16px', fontFamily: 'monospace' }],
       },
       animation: {
         'pulse-slow': 'pulse 3s ease-in-out infinite',
@@ -104,5 +117,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }

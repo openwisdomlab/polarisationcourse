@@ -2,7 +2,8 @@ import { useTranslation } from 'react-i18next'
 import { useGameStore } from '@/stores/gameStore'
 import { TUTORIAL_LEVELS } from '@/core/World'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react' // Added Play icon if needed, or just numbers
+import { Button } from '@/components/ui/button'
 
 interface LevelSelectorProps {
   compact?: boolean
@@ -19,33 +20,33 @@ export function LevelSelector({ compact = false }: LevelSelectorProps) {
 
     return (
       <div className="flex items-center justify-center gap-2">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => canGoPrev && loadLevel(currentLevelIndex - 1)}
           disabled={!canGoPrev}
           className={cn(
-            "p-1 rounded transition-all",
-            canGoPrev
-              ? "text-cyan-400 hover:bg-cyan-400/20"
-              : "text-gray-600 cursor-not-allowed"
+            "w-8 h-8 rounded",
+            canGoPrev ? "text-laser hover:text-laser-active hover:bg-laser-dim" : "text-muted-foreground"
           )}
         >
           <ChevronLeft className="w-4 h-4" />
-        </button>
-        <span className="text-xs text-cyan-400 min-w-[80px] text-center">
+        </Button>
+        <span className="text-xs text-laser min-w-[80px] text-center font-medium">
           {t('game.level')} {currentLevelIndex + 1}/{TUTORIAL_LEVELS.length}
         </span>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => canGoNext && loadLevel(currentLevelIndex + 1)}
           disabled={!canGoNext}
           className={cn(
-            "p-1 rounded transition-all",
-            canGoNext
-              ? "text-cyan-400 hover:bg-cyan-400/20"
-              : "text-gray-600 cursor-not-allowed"
+            "w-8 h-8 rounded",
+            canGoNext ? "text-laser hover:text-laser-active hover:bg-laser-dim" : "text-muted-foreground"
           )}
         >
           <ChevronRight className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     )
   }
@@ -54,35 +55,32 @@ export function LevelSelector({ compact = false }: LevelSelectorProps) {
   return (
     <div className="flex gap-1.5">
       {TUTORIAL_LEVELS.map((_, index) => (
-        <button
+        <Button
           key={index}
           onClick={() => loadLevel(index)}
+          variant={currentLevelIndex === index ? "game" : "outline"}
           className={cn(
-            "w-8 h-8 rounded-lg text-xs font-medium transition-all",
-            "border",
-            currentLevelIndex === index
-              ? "bg-cyan-400/20 border-cyan-400 text-cyan-400"
-              : "bg-slate-800/50 border-slate-600/50 text-gray-400 hover:border-cyan-400/50 hover:text-gray-200"
+            "w-8 h-8 rounded-lg text-xs font-medium p-0",
+            currentLevelIndex !== index && "bg-void/50 border-white/10 text-muted-foreground hover:border-laser/50 hover:text-white"
           )}
           title={t(`game.tutorials.${index}.name`)}
         >
           {index + 1}
-        </button>
+        </Button>
       ))}
-      <button
+      <Button
         onClick={() => {
           const { world } = useGameStore.getState()
           if (world) {
             world.clear()
           }
         }}
-        className="px-3 h-8 rounded-lg text-xs font-medium transition-all
-                   bg-orange-400/20 border border-orange-400/50 text-orange-400
-                   hover:bg-orange-400/30 hover:border-orange-400"
+        variant="outline"
+        className="px-3 h-8 rounded-lg text-xs font-medium bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20 hover:border-orange-500 hover:text-orange-300"
         title={t('game.sandboxMode')}
       >
         {t('game.sandbox')}
-      </button>
+      </Button>
     </div>
   )
 }

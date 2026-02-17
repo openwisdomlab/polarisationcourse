@@ -161,7 +161,7 @@ export function ControlHints() {
     <div
       className={cn(
         'absolute left-1/2 -translate-x-1/2 transition-all duration-500',
-        'rounded-xl bg-black/60 backdrop-blur-sm border border-cyan-400/20',
+        'rounded-xl bg-void/60 backdrop-blur-sm border border-laser/20',
         hasInteracted && 'opacity-50',
         isCompact
           ? 'bottom-20 flex flex-wrap justify-center gap-2 px-3 py-2 max-w-[90vw]'
@@ -171,16 +171,16 @@ export function ControlHints() {
       {hints.map((hint, i) => (
         <div key={i} className={cn(
           "flex items-center gap-1.5",
-          isCompact ? "text-[10px]" : "text-xs"
+          isCompact ? "text-micro" : "text-xs"
         )}>
           <span className={cn(
-            "rounded bg-cyan-400/20 text-cyan-400 font-mono",
-            isCompact ? "px-1 py-0.5 text-[9px]" : "px-1.5 py-0.5 text-[10px]"
+            "rounded bg-laser-dim text-laser font-mono",
+            isCompact ? "px-1 py-0.5 text-micro" : "px-1.5 py-0.5 text-[10px]" // Keeping [10px] for desktop override if needed, or use text-micro
           )}>
             {hint.key}
           </span>
-          <span className="text-gray-400">{hint.action}</span>
-          {!isCompact && i < hints.length - 1 && <span className="text-gray-600 ml-2">•</span>}
+          <span className="text-muted-foreground">{hint.action}</span>
+          {!isCompact && i < hints.length - 1 && <span className="text-gray-600/50 ml-2">•</span>}
         </div>
       ))}
     </div>

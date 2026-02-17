@@ -908,8 +908,8 @@
       "prism": "棱镜",
       "lens": "透镜",
       "beamSplitter": "分束器",
-      "quarterWave": "λ/4波片",
-      "halfWave": "λ/2波片",
+      "quarterWave": "旋转器 (45°)",
+      "halfWave": "旋转器 (90°)",
       "absorber": "吸收器",
       "phaseShifter": "相位器",
       "portal": "传送门"
@@ -956,8 +956,8 @@
       "sensorDesc": "检测光线，可设置所需角度阈值",
       "mirrorDesc": "反射光线方向",
       "advancedBlockGuide": "高级方块",
-      "quarterWaveDesc": "旋转偏振方向45°（简化模型）",
-      "halfWaveDesc": "旋转偏振方向90°（简化模型）",
+      "quarterWaveDesc": "旋转偏振方向45°（波片简化模型）",
+      "halfWaveDesc": "旋转偏振方向90°（波片简化模型）",
       "beamSplitterDesc": "50/50分束，不考虑偏振",
       "absorberDesc": "部分吸收光强",
       "phaseShifterDesc": "改变光的相位（简化二值模型）",
@@ -1590,7 +1590,7 @@
           "斜着看（像日落时）：超过50束光反射回来！",
           "所以渔民戴偏光眼镜——能穿透反射看到鱼"
         ],
-          "facts_research": [
+        "facts_research": [
           "空气-水界面菲涅尔反射率：$R_0 = 2\\%$（垂直），$R_{80^\\circ} = 35\\%$（s偏振），$R_{85^\\circ} > 50\\%$",
           "在临界角（水为 $48.6^\\circ$）处开始全内反射",
           "薄膜干涉镀膜利用菲涅尔方程实现 $R < 0.1\\%$"
@@ -3784,9 +3784,17 @@
       "malusLaw": "马吕斯定律",
       "malusDesc": "当线偏振光通过偏振片时，透射光强 $I = I_0\\cos^2\\theta$，其中 $\\theta$ 为偏振方向与透光轴的夹角。",
       "applications": "应用场景",
-      "appList": ["偏光太阳镜减少眩光", "LCD显示器的亮度控制", "摄影中的偏振滤镜"],
+      "appList": [
+        "偏光太阳镜减少眩光",
+        "LCD显示器的亮度控制",
+        "摄影中的偏振滤镜"
+      ],
       "specialAngles": "特殊角度",
-      "angleList": ["$\\theta = 0°: I = I_0$ (完全透过)", "$\\theta = 45°: I = I_0/2$ (半透过)", "$\\theta = 90°: I = 0$ (完全阻挡)"]
+      "angleList": [
+        "$\\theta = 0°: I = I_0$ (完全透过)",
+        "$\\theta = 45°: I = I_0/2$ (半透过)",
+        "$\\theta = 90°: I = 0$ (完全阻挡)"
+      ]
     },
     "birefringence": {
       "controlPanel": "参数控制",
@@ -3848,7 +3856,11 @@
       "physicalExplanation": "物理解释",
       "physicalDesc": "在布儒斯特角，折射光中的振动电荷（p偏振方向）与反射方向平行，无法有效辐射能量到反射方向。",
       "applicationsTitle": "应用场景",
-      "applicationsList": ["偏振镜片减少眩光", "激光器布儒斯特窗", "摄影偏振滤镜"],
+      "applicationsList": [
+        "偏振镜片减少眩光",
+        "激光器布儒斯特窗",
+        "摄影偏振滤镜"
+      ],
       "dispersionMode": "色散模式",
       "wavelength": "波长 $\\lambda$",
       "selectMaterial": "选择材料",
@@ -3904,7 +3916,11 @@
       "specificRotationTitle": "比旋光度",
       "specificRotationDesc": "$[\\alpha]$ 是物质的特征常数，定义为单位浓度(1 g/mL)和单位光程(1 dm)时的旋光角。依赖于波长和温度。",
       "applicationsTitle": "应用场景",
-      "applicationsList": ["糖度计测量糖浓度", "手性药物对映体鉴定", "食品工业质量控制"]
+      "applicationsList": [
+        "糖度计测量糖浓度",
+        "手性药物对映体鉴定",
+        "食品工业质量控制"
+      ]
     },
     "mieScattering": {
       "controlPanel": "参数控制",

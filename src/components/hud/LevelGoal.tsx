@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGameStore } from '@/stores/gameStore'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Check, Target, ChevronRight } from 'lucide-react'
 
 interface SensorStatus {
   position: { x: number; y: number; z: number }
@@ -41,67 +44,95 @@ export function LevelGoal() {
 
   const activatedCount = sensors.filter(s => s.activated).length
   const totalCount = sensors.length
+  const progress = (activatedCount / totalCount) * 100
 
   return (
-    <div className="bg-black/80 p-4 rounded-lg border border-green-500/30 min-w-[180px]">
-      <h4 className="text-green-400 mb-2.5 text-xs uppercase tracking-wider font-semibold">
-        🎯 {t('game.levelGoal')}
-      </h4>
+    <div className="bg-void-panel border border-void-border/50 p-4 rounded-lg min-w-[200px] backdrop-blur-md shadow-lg shadow-black/20">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="p-1.5 rounded-md bg-laser/10 text-laser">
+          <Target className="w-4 h-4" />
+        </div>
+        <h4 className="text-laser font-semibold text-xs uppercase tracking-wider">
+          {t('game.levelGoal')}
+        </h4>
+      </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {sensors.map((sensor, index) => (
-          <div
+          <motion.div
             key={index}
+            initial={false}
+            animate={{
+              color: sensor.activated ? 'var(--color-polarization-90)' : 'hsl(var(--muted-foreground))',
+              backgroundColor: sensor.activated ? 'rgba(68, 255, 68, 0.1)' : 'transparent'
+            }}
             className={cn(
-              "flex items-center gap-2 text-xs",
-              sensor.activated ? "text-green-400" : "text-gray-400"
+              "flex items-center gap-3 p-2 rounded-md transition-colors text-xs font-medium border border-transparent",
+              sensor.activated && "border-polarization-90/20"
             )}
           >
             <div
               className={cn(
-                "w-4 h-4 rounded-full border-2 flex items-center justify-center text-[10px]",
+                "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                 sensor.activated
-                  ? "bg-green-400 border-green-400 text-black"
-                  : "border-current"
+                  ? "bg-polarization-90 border-polarization-90 text-black scale-110"
+                  : "border-muted-foreground/30 bg-black/20"
               )}
             >
-              {sensor.activated && '✓'}
+              {sensor.activated && <Check className="w-3 h-3 stroke-[3]" />}
             </div>
             <span>{t('game.sensor')} {index + 1}</span>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Progress bar */}
-      <div className="mt-3 pt-3 border-t border-gray-700">
-        <div className="flex justify-between text-xs text-gray-400 mb-1">
+      <div className="mt-4 pt-3 border-t border-white/5">
+        <div className="flex justify-between text-[10px] text-muted-foreground mb-1.5 uppercase tracking-wider font-medium">
           <span>{t('game.progress')}</span>
-          <span>{activatedCount}/{totalCount}</span>
+          <span className={cn(activatedCount === totalCount && "text-polarization-90")}>
+            {activatedCount}/{totalCount}
+          </span>
         </div>
-        <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-green-400 transition-all duration-300 rounded-full"
-            style={{ width: `${(activatedCount / totalCount) * 100}%` }}
+        <div className="h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/5">
+          <motion.div
+            className="h-full bg-gradient-to-r from-laser to-polarization-90"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
           />
         </div>
       </div>
 
       {/* Completion message */}
-      {isLevelComplete && (
-        <div className="mt-3 pt-3 border-t border-green-500/30">
-          <div className="text-green-400 text-sm font-medium mb-2">
-            🎉 {t('game.levelComplete')}
-          </div>
-          <button
-            onClick={nextLevel}
-            className="w-full px-3 py-2 bg-green-500/20 border border-green-500/50
-                       rounded-lg text-green-400 text-xs
-                       hover:bg-green-500/30 transition-colors"
+      <AnimatePresence>
+        {isLevelComplete && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            className="overflow-hidden"
           >
-            {t('game.nextLevel')} →
-          </button>
-        </div>
-      )}
+            <div className="pt-3 border-t border-polarization-90/30">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="text-polarization-90 text-sm font-bold mb-3 flex items-center gap-2"
+              >
+                <span>🎉</span> {t('game.levelComplete')}
+              </motion.div>
+              <Button
+                variant="game"
+                size="sm"
+                onClick={nextLevel}
+                className="w-full text-xs font-bold gap-2 animate-pulse-slow"
+              >
+                {t('game.nextLevel')} <ChevronRight className="w-3 h-3" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -29,7 +29,7 @@ export function TutorialHint() {
         return (
           <span
             key={index}
-            className="mx-1 px-2 py-0.5 bg-cyan-400/20 rounded text-cyan-400 font-mono"
+            className="mx-1 px-2 py-0.5 bg-laser-dim rounded text-laser font-mono text-micro"
           >
             {key}
           </span>
@@ -43,13 +43,13 @@ export function TutorialHint() {
     <div
       className={cn(
         "absolute bottom-[120px] left-1/2 -translate-x-1/2",
-        "bg-black/90 px-6 py-4 rounded-xl border border-orange-400/50",
+        "bg-void/95 px-6 py-4 rounded-xl border border-amber-500/30 shadow-lg backdrop-blur-md",
         "text-sm text-center max-w-[500px]",
         "animate-fade-in-up"
       )}
     >
-      <span className="text-orange-400 mr-2">💡</span>
-      <span className="text-gray-300">{renderHintText(currentHint)}</span>
+      <span className="text-amber-500 mr-2">💡</span>
+      <span className="text-secondary-foreground">{renderHintText(currentHint)}</span>
 
       {/* Hint progress dots */}
       {tutorialHints.length > 1 && (
@@ -60,10 +60,10 @@ export function TutorialHint() {
               className={cn(
                 "w-1.5 h-1.5 rounded-full transition-colors",
                 index === currentHintIndex
-                  ? "bg-orange-400"
+                  ? "bg-amber-500"
                   : index < currentHintIndex
-                  ? "bg-orange-400/50"
-                  : "bg-gray-600"
+                    ? "bg-amber-500/50"
+                    : "bg-gray-600"
               )}
             />
           ))}
@@ -73,7 +73,7 @@ export function TutorialHint() {
       {/* Skip button */}
       <button
         onClick={hideHint}
-        className="absolute top-1 right-2 text-gray-500 hover:text-gray-300 text-xs"
+        className="absolute top-1 right-2 text-muted-foreground hover:text-foreground text-xs p-1"
       >
         ✕
       </button>

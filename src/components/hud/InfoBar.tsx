@@ -142,15 +142,15 @@ function LevelRealWorldScene({ levelIndex }: { levelIndex: number }) {
   if (!diagram) return null
 
   return (
-    <div className="mt-3 p-2 bg-slate-800/50 rounded-lg border border-cyan-400/20">
+    <div className="mt-3 p-2 bg-void/50 rounded-lg border border-laser/20">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-[10px] text-cyan-400 font-medium">{t('game.realWorldApp')}:</span>
-        <span className="text-[10px] text-white font-medium">{t(`game.realWorld.${levelIndex}.title`)}</span>
+        <span className="text-micro text-laser font-medium">{t('game.realWorldApp')}:</span>
+        <span className="text-micro text-foreground font-medium">{t(`game.realWorld.${levelIndex}.title`)}</span>
       </div>
-      <div className="bg-slate-900/50 rounded p-2">
+      <div className="bg-void/50 rounded p-2">
         {diagram}
       </div>
-      <p className="text-[10px] text-gray-500 mt-1">{t(`game.realWorld.${levelIndex}.description`)}</p>
+      <p className="text-micro text-muted-foreground mt-1">{t(`game.realWorld.${levelIndex}.description`)}</p>
     </div>
   )
 }
@@ -161,20 +161,20 @@ export function InfoBar() {
   const [showRealWorld, setShowRealWorld] = useState(true)
 
   return (
-    <div className="bg-black/70 p-4 rounded-lg border border-cyan-400/30 max-w-xs">
-      <h2 className="text-sm text-cyan-400 mb-2 flex items-center gap-2">
+    <div className="bg-void/70 p-4 rounded-lg border border-laser/30 max-w-xs backdrop-blur-md">
+      <h2 className="text-sm text-laser mb-2 flex items-center gap-2 font-medium">
         <span>⟡</span>
         <span>PolarCraft</span>
         {currentLevel && (
-          <span className="text-gray-500 ml-2">
+          <span className="text-muted-foreground ml-2">
             {t('game.level')} {currentLevelIndex + 1}: {t(`game.tutorials.${currentLevelIndex}.name`)}
           </span>
         )}
       </h2>
-      <p className="text-xs text-gray-400 leading-relaxed">
+      <p className="text-xs text-secondary-foreground leading-relaxed">
         {currentLevel ? t(`game.tutorials.${currentLevelIndex}.description`) : t('game.defaultControls')}
       </p>
-      <p className="text-xs text-gray-500 mt-1">
+      <p className="text-micro text-muted-foreground mt-2 font-mono">
         {t('game.shortControls')}
       </p>
 
@@ -182,7 +182,7 @@ export function InfoBar() {
       {currentLevel && (
         <button
           onClick={() => setShowRealWorld(!showRealWorld)}
-          className="mt-2 flex items-center gap-1 text-[10px] text-cyan-400/70 hover:text-cyan-400 transition-colors"
+          className="mt-2 flex items-center gap-1 text-micro text-laser/70 hover:text-laser transition-colors"
         >
           {showRealWorld ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           <span>{showRealWorld ? t('game.hideRealWorld') : t('game.showRealWorld')}</span>

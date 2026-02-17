@@ -911,8 +911,8 @@
       "prism": "Prism",
       "lens": "Lens",
       "beamSplitter": "Beam Splitter",
-      "quarterWave": "λ/4 Plate",
-      "halfWave": "λ/2 Plate",
+      "quarterWave": "Rotator (45°)",
+      "halfWave": "Rotator (90°)",
       "absorber": "Absorber",
       "phaseShifter": "Phase Shifter",
       "portal": "Portal"
@@ -959,8 +959,8 @@
       "sensorDesc": "Detects light, can set angle threshold",
       "mirrorDesc": "Reflects light direction",
       "advancedBlockGuide": "Advanced Blocks",
-      "quarterWaveDesc": "Rotates polarization 45° (simplified model)",
-      "halfWaveDesc": "Rotates polarization 90° (simplified model)",
+      "quarterWaveDesc": "Rotates polarization 45° (simplified model for QWP)",
+      "halfWaveDesc": "Rotates polarization 90° (simplified model for HWP)",
       "beamSplitterDesc": "Splits beam 50/50 regardless of polarization",
       "absorberDesc": "Partially absorbs light intensity",
       "phaseShifterDesc": "Shifts light phase (simplified binary model)",
@@ -3599,9 +3599,17 @@
       "malusLaw": "Malus's Law",
       "malusDesc": "When linearly polarized light passes through a polarizer, I = I₀cos²θ.",
       "applications": "Applications",
-      "appList": ["Polarized sunglasses reduce glare", "LCD brightness control", "Photography polarizing filters"],
+      "appList": [
+        "Polarized sunglasses reduce glare",
+        "LCD brightness control",
+        "Photography polarizing filters"
+      ],
       "specialAngles": "Special Angles",
-      "angleList": ["θ = 0°: I = I₀ (full transmission)", "θ = 45°: I = I₀/2 (half transmission)", "θ = 90°: I = 0 (full blocking)"]
+      "angleList": [
+        "θ = 0°: I = I₀ (full transmission)",
+        "θ = 45°: I = I₀/2 (half transmission)",
+        "θ = 90°: I = 0 (full blocking)"
+      ]
     },
     "birefringence": {
       "controlPanel": "Parameter Control",
@@ -3663,7 +3671,11 @@
       "physicalExplanation": "Physical Explanation",
       "physicalDesc": "At Brewster's angle, oscillating charges in refracted beam are parallel to reflection direction, cannot radiate effectively.",
       "applicationsTitle": "Applications",
-      "applicationsList": ["Polarizing lenses reduce glare", "Laser Brewster windows", "Photography polarizing filters"],
+      "applicationsList": [
+        "Polarizing lenses reduce glare",
+        "Laser Brewster windows",
+        "Photography polarizing filters"
+      ],
       "dispersionMode": "Dispersion Mode",
       "wavelength": "Wavelength λ",
       "selectMaterial": "Select Material",
@@ -3719,7 +3731,11 @@
       "specificRotationTitle": "Specific Rotation",
       "specificRotationDesc": "[α] is a characteristic constant of the substance, defined as rotation at unit concentration (1 g/mL) and unit path (1 dm). Depends on wavelength and temperature.",
       "applicationsTitle": "Applications",
-      "applicationsList": ["Saccharimeter measures sugar concentration", "Chiral drug enantiomer identification", "Food industry quality control"]
+      "applicationsList": [
+        "Saccharimeter measures sugar concentration",
+        "Chiral drug enantiomer identification",
+        "Food industry quality control"
+      ]
     },
     "mieScattering": {
       "controlPanel": "Parameter Control",

@@ -15,10 +15,10 @@ export function VisionModeIndicator() {
       aria-pressed={isPolarized}
       className={cn(
         "px-4 py-3 rounded-lg text-sm transition-all duration-300",
-        "border cursor-pointer",
+        "border cursor-pointer backdrop-blur-md shadow-sm",
         isPolarized
-          ? "bg-red-900/70 border-red-500/50 text-red-200"
-          : "bg-black/70 border-cyan-400/30 text-gray-300"
+          ? "bg-red-950/80 border-red-500/50 text-red-200 shadow-red-900/20"
+          : "bg-void/70 border-laser/30 text-muted-foreground hover:bg-void/80 hover:border-laser/50 hover:text-laser"
       )}
     >
       {isPolarized ? `🔴 ${t('game.polarizedVision')}` : `👁 ${t('game.normalVision')}`}
