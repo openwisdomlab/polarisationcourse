@@ -16,7 +16,6 @@ import {
   BlockPosition,
   LightPacket,
   LightState,
-  Direction,
   DIRECTION_VECTORS,
 } from './types'
 import { LightPhysics, WaveLight } from './LightPhysics'
