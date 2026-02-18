@@ -33,3 +33,4 @@ __pycache__/
 .Python
 *.egg-info/
 .eggs/
+docs/plans/2026-02-18-genie-polarization-world-prompts.md
