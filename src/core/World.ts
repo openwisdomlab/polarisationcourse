@@ -26,7 +26,7 @@ import { type LevelData } from './LevelData';
 import { logger } from '@/lib/logger';
 
 // Re-export for backward compatibility
-export { LevelData } from './LevelData';
+export type { LevelData } from './LevelData';
 export { TUTORIAL_LEVELS } from './LevelData';
 
 // 方块键值生成
