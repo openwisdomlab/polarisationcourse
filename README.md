@@ -154,6 +154,13 @@ src/
 ├── data/              # Static data (cards, hardware, products)
 ├── contexts/          # React Contexts
 └── i18n/              # Internationalization config
+
+docs/claude/           # Detailed developer documentation
+├── architecture.md    # Routes, modules, directory structure
+├── game-systems.md    # Game types, physics, controls
+├── optical-studio.md  # Optical Design Studio reference
+├── course-demos.md    # Course units & difficulty system
+└── development-guide.md # How-to guides for common tasks
 ```
 
 ---
@@ -324,6 +331,13 @@ src/
 ├── data/              # 静态数据（卡牌、硬件、产品）
 ├── contexts/          # React Context
 └── i18n/              # 国际化配置
+
+docs/claude/           # 详细开发者文档
+├── architecture.md    # 路由、模块、目录结构
+├── game-systems.md    # 游戏类型、物理引擎、控制
+├── optical-studio.md  # 光学设计室参考
+├── course-demos.md    # 课程单元与难度体系
+└── development-guide.md # 常见任务操作指南
 ```
 
 ---
