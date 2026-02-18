@@ -85,7 +85,7 @@ export function BlockSelector() {
           "bg-void-panel/80 border border-void-border text-muted-foreground",
           "hover:bg-void-panel hover:border-laser hover:text-laser",
           "flex items-center gap-1",
-          isCompact && "text-[10px] px-2 h-6"
+          isCompact && "text-xs px-2 min-h-[44px] min-w-[44px]"
         )}
       >
         {showAdvanced ? (
@@ -133,7 +133,7 @@ export function BlockSelector() {
                   "bg-void-panel/50 border-2 border-void-border/50 transition-colors duration-200",
                   "hover:bg-void-panel hover:border-laser/50",
                   isSelected && [colors.border, colors.shadow, "bg-void-panel z-10 scale-105"],
-                  isCompact ? "w-10 h-10" : "w-12 h-12"
+                  isCompact ? "min-h-[44px] min-w-[44px] w-11 h-11" : "w-12 h-12"
                 )}
               >
                 {!isCompact && (
@@ -158,7 +158,7 @@ export function BlockSelector() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-[10px] text-laser bg-void-panel px-3 py-1 rounded-full border border-laser/20"
+          className="text-xs text-laser bg-void-panel px-3 py-1 rounded-full border border-laser/20"
         >
           {t(`game.blocks.${selectedBlockType}`)}
         </motion.div>

@@ -161,17 +161,133 @@ export function createDefaultBlockState(type: BlockType): BlockState {
   return baseState;
 }
 
-// 游戏配置
+// ============================================
+// Physics Mode (物理模式)
+// ============================================
+
+/**
+ * Game physics fidelity mode.
+ * - 'teaching': Simplified physics for learning (current behavior, backward compatible).
+ *   Wave plates act as rotators, phase is binary, no circular polarization.
+ * - 'science': Full wave optics with circular/elliptical polarization,
+ *   continuous phase, and realistic birefringence.
+ */
+export type GamePhysicsMode = 'teaching' | 'science';
+
+// ============================================
+// Scoring System (计分系统)
+// ============================================
+
+/**
+ * Medal tier for level completion scoring.
+ */
+export type MedalTier = 'gold' | 'silver' | 'bronze' | 'none';
+
+/**
+ * Level completion record with scoring data.
+ */
+export interface LevelCompletionRecord {
+  /** Level index */
+  levelIndex: number;
+  /** Whether the level was completed */
+  completed: boolean;
+  /** Number of blocks placed to solve the puzzle */
+  blocksUsed: number;
+  /** Time taken in milliseconds */
+  timeMs: number;
+  /** Number of hints used */
+  hintsUsed: number;
+  /** Medal earned based on performance */
+  medal: MedalTier;
+  /** Timestamp of completion */
+  completedAt: number;
+}
+
+/**
+ * Scoring criteria for a level.
+ * Gold: <= goldBlocks within goldTimeMs
+ * Silver: <= silverBlocks within silverTimeMs
+ * Bronze: completed at all
+ */
+export interface LevelScoringCriteria {
+  goldBlocks: number;
+  goldTimeMs: number;
+  silverBlocks: number;
+  silverTimeMs: number;
+}
+
+/**
+ * Calculate medal tier based on performance.
+ */
+export function calculateMedal(
+  blocksUsed: number,
+  timeMs: number,
+  hintsUsed: number,
+  criteria: LevelScoringCriteria
+): MedalTier {
+  // No medal if hints were used (encourages independent solving)
+  if (hintsUsed > 0) return 'bronze';
+
+  if (blocksUsed <= criteria.goldBlocks && timeMs <= criteria.goldTimeMs) {
+    return 'gold';
+  }
+  if (blocksUsed <= criteria.silverBlocks && timeMs <= criteria.silverTimeMs) {
+    return 'silver';
+  }
+  return 'bronze';
+}
+
+// ============================================
+// Action Replay (操作回放)
+// ============================================
+
+/**
+ * A single recorded action for replay.
+ */
+export interface ReplayAction {
+  /** Action type */
+  type: 'place' | 'remove' | 'rotate';
+  /** Block position */
+  position: BlockPosition;
+  /** Block type (for place actions) */
+  blockType?: BlockType;
+  /** Block state snapshot (for place actions) */
+  blockState?: Partial<BlockState>;
+  /** Timestamp offset from replay start (ms) */
+  timestampMs: number;
+}
+
+/**
+ * Complete replay data for a level solution.
+ */
+export interface LevelReplay {
+  /** Level index */
+  levelIndex: number;
+  /** Ordered list of actions */
+  actions: ReplayAction[];
+  /** Total duration in milliseconds */
+  totalDurationMs: number;
+  /** Final completion record */
+  completion: LevelCompletionRecord;
+}
+
+// ============================================
+// Game Config (游戏配置)
+// ============================================
+
 export interface GameConfig {
   worldSize: number;
   chunkSize: number;
   maxLightIntensity: number;
   lightDecayPerBlock: number;
+  /** Physics fidelity mode */
+  physicsMode: GamePhysicsMode;
 }
 
 export const DEFAULT_CONFIG: GameConfig = {
   worldSize: 32,
   chunkSize: 16,
   maxLightIntensity: 15,
-  lightDecayPerBlock: 0  // 光在空气中不衰减
+  lightDecayPerBlock: 0,  // 光在空气中不衰减
+  physicsMode: 'teaching',
 };

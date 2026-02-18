@@ -33,9 +33,11 @@ export class AuthService {
       },
     })
 
-    const token = this.signToken(user.id, user.email)
+    const accessToken = this.signToken(user.id, user.email)
+    const refreshToken = this.generateRefreshToken(user.id, user.email)
     return {
-      token,
+      accessToken,
+      refreshToken,
       user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role },
     }
   }
@@ -53,9 +55,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials')
     }
 
-    const token = this.signToken(user.id, user.email)
+    const accessToken = this.signToken(user.id, user.email)
+    const refreshToken = this.generateRefreshToken(user.id, user.email)
     return {
-      token,
+      accessToken,
+      refreshToken,
       user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role },
     }
   }
@@ -72,6 +76,17 @@ export class AuthService {
   }
 
   private signToken(userId: string, email: string): string {
-    return this.jwtService.sign({ sub: userId, email })
+    return this.jwtService.sign({ sub: userId, email }, { expiresIn: '1h' })
+  }
+
+  /**
+   * 生成刷新令牌，有效期7天
+   * Generate a refresh token with a 7-day expiration
+   */
+  generateRefreshToken(userId: string, email: string): string {
+    return this.jwtService.sign(
+      { sub: userId, email, type: 'refresh' },
+      { expiresIn: '7d' },
+    )
   }
 }

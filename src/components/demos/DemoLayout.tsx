@@ -115,6 +115,7 @@ export function VisualizationPanel({
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, delay: 0.1 }}
+      aria-live="polite"
     >
       {children}
     </motion.div>
@@ -158,12 +159,15 @@ export function StatCard({ label, value, unit, color = 'cyan', icon, className }
   const colors = dt.isDark ? (statColorsDark[color] || statColorsDark.cyan) : (statColorsLight[color] || statColorsLight.cyan)
 
   return (
-    <div className={cn(
-      'rounded-xl border p-3',
-      colors.bg,
-      colors.border,
-      className
-    )}>
+    <div
+      className={cn(
+        'rounded-xl border p-3',
+        colors.bg,
+        colors.border,
+        className
+      )}
+      role="status"
+    >
       <div className={cn('text-[11px] font-medium mb-1', dt.mutedTextClass)}>
         {icon && <span className="mr-1.5">{icon}</span>}
         {label}
