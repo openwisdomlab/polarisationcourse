@@ -183,9 +183,12 @@ export const useGameStore = create<GameState>()(
       const { world, selectedBlockType, selectedBlockRotation, selectedPolarizationAngle } = get()
       if (!world) return
 
-      const blockState = createDefaultBlockState(selectedBlockType)
-      blockState.rotation = selectedBlockRotation
-      blockState.polarizationAngle = selectedPolarizationAngle
+      // Immutable block state creation — no direct mutation
+      const blockState: BlockState = {
+        ...createDefaultBlockState(selectedBlockType),
+        rotation: selectedBlockRotation,
+        polarizationAngle: selectedPolarizationAngle,
+      }
 
       world.setBlock(position.x, position.y, position.z, blockState)
       get().checkLevelCompletion()

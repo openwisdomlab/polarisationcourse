@@ -30,9 +30,17 @@ function RootLayout() {
 
   return (
     <ErrorBoundary>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:rounded"
+      >
+        Skip to main content
+      </a>
       <PWAUpdatePrompt />
       <FeedbackWidget />
-      <Outlet />
+      <div id="main-content">
+        <Outlet />
+      </div>
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
     </ErrorBoundary>
   )

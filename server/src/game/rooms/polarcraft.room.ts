@@ -268,22 +268,73 @@ export class PolarCraftRoom extends Room<PolarCraftState> {
   }
 
   private checkLevelCompletion() {
-    // This would integrate with the light physics system
-    // For now, just check if all sensors are activated
+    // Check if all sensors are activated
+    // TODO: Integrate server-side light physics (isomorphic LightPhysics module)
+    // Currently relies on client-reported sensor activation via block state sync
+    let hasSensors = false
     let allSensorsActivated = true
+
     this.state.blocks.forEach((block) => {
-      if (block.state.type === 'sensor' && !block.state.activated) {
-        allSensorsActivated = false
+      if (block.state.type === 'sensor') {
+        hasSensors = true
+        if (!block.state.activated) {
+          allSensorsActivated = false
+        }
       }
     })
 
-    if (allSensorsActivated && !this.state.levelComplete) {
+    if (hasSensors && allSensorsActivated && !this.state.levelComplete) {
       this.state.levelComplete = true
+
+      // Calculate completion stats
+      const elapsedMs = Date.now() - this.state.startTime
+      const blocksUsed = this.countPlayerPlacedBlocks()
+
+      // Calculate medal tier
+      const medal = this.calculateMedal(blocksUsed, elapsedMs)
+
       this.broadcast('level_complete', {
         levelIndex: this.state.levelIndex,
-        time: Date.now() - this.state.startTime,
+        timeMs: elapsedMs,
+        blocksUsed,
+        medal,
+      })
+
+      // Award points to all players
+      this.state.players.forEach((player) => {
+        const points = medal === 'gold' ? 100 : medal === 'silver' ? 75 : medal === 'bronze' ? 50 : 25
+        player.score += points
       })
     }
+  }
+
+  /**
+   * Count non-ground, non-level-preset blocks placed by players
+   */
+  private countPlayerPlacedBlocks(): number {
+    let count = 0
+    this.state.blocks.forEach((block) => {
+      if (block.position.y > 0 && block.state.type !== 'sensor') {
+        count++
+      }
+    })
+    return count
+  }
+
+  /**
+   * Calculate medal tier based on performance
+   * Criteria scale with level index (harder levels are more lenient)
+   */
+  private calculateMedal(blocksUsed: number, timeMs: number): 'gold' | 'silver' | 'bronze' | 'none' {
+    const levelFactor = 1 + this.state.levelIndex * 0.3
+    const goldBlocks = Math.ceil(3 * levelFactor)
+    const goldTimeMs = 60000 * levelFactor
+    const silverBlocks = Math.ceil(5 * levelFactor)
+    const silverTimeMs = 120000 * levelFactor
+
+    if (blocksUsed <= goldBlocks && timeMs <= goldTimeMs) return 'gold'
+    if (blocksUsed <= silverBlocks && timeMs <= silverTimeMs) return 'silver'
+    return 'bronze'
   }
 
   private update(deltaTime: number) {
@@ -292,7 +343,9 @@ export class PolarCraftRoom extends Room<PolarCraftState> {
     // Update elapsed time
     this.state.elapsedTime = Date.now() - this.state.startTime
 
-    // Here you would run light physics simulation
-    // and update sensor states accordingly
+    // TODO: Run server-side light physics simulation here
+    // When the isomorphic physics module is available, call:
+    //   this.runLightPropagation()
+    // to validate client-side results and update sensor states authoritatively
   }
 }
