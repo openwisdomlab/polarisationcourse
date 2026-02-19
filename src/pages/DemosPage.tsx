@@ -16,6 +16,7 @@ import { SEO } from '@/components/shared/SEO'
 import { CrossModuleLinks } from '@/components/shared/CrossModuleLinks'
 import { isDemoAvailable, getRecommendedDemos } from '@/data/learningPaths'
 import { useDiscoveryStore } from '@/stores/discoveryStore'
+import { InquiryProvider, InquiryPanel, getInquiryConfig } from '@/components/demos/inquiry'
 
 // Demo components
 import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
@@ -2443,23 +2444,41 @@ export function DemosPage() {
               </div>
             )}
 
-            {/* Demo area */}
-            <div
-              className={cn(
-                'rounded-2xl border overflow-hidden',
-                theme === 'dark'
-                  ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/50 border-cyan-400/20 shadow-[0_0_40px_rgba(34,211,238,0.1)]'
-                  : 'bg-gradient-to-br from-white to-gray-50 border-cyan-200 shadow-lg'
-              )}
-            >
-              <div className="p-5 min-h-[550px]">
-                <DemoErrorBoundary demoName={currentDemo?.titleKey ? t(currentDemo.titleKey) : undefined}>
-                  <Suspense fallback={<DemoLoading />}>
-                    {DemoComponent && <DemoComponent difficultyLevel={effectiveDifficultyLevel} />}
-                  </Suspense>
-                </DemoErrorBoundary>
-              </div>
-            </div>
+            {/* Demo area with optional Inquiry-Based Learning */}
+            {(() => {
+              const inquiryConfig = getInquiryConfig(currentDemo?.id)
+              const demoContent = (
+                <div
+                  className={cn(
+                    'rounded-2xl border overflow-hidden',
+                    theme === 'dark'
+                      ? 'bg-gradient-to-br from-slate-900/80 to-slate-800/50 border-cyan-400/20 shadow-[0_0_40px_rgba(34,211,238,0.1)]'
+                      : 'bg-gradient-to-br from-white to-gray-50 border-cyan-200 shadow-lg'
+                  )}
+                >
+                  <div className="p-5 min-h-[550px]">
+                    <DemoErrorBoundary demoName={currentDemo?.titleKey ? t(currentDemo.titleKey) : undefined}>
+                      <Suspense fallback={<DemoLoading />}>
+                        {DemoComponent && <DemoComponent difficultyLevel={effectiveDifficultyLevel} />}
+                      </Suspense>
+                    </DemoErrorBoundary>
+                  </div>
+                </div>
+              )
+
+              return inquiryConfig ? (
+                <InquiryProvider
+                  demoId={currentDemo!.id}
+                  points={inquiryConfig.points}
+                  difficultyLevel={effectiveDifficultyLevel}
+                >
+                  <InquiryPanel position="top" />
+                  {demoContent}
+                </InquiryProvider>
+              ) : (
+                demoContent
+              )
+            })()}
 
             {/* Theory summary + collapsible cards */}
             {demoInfo && (

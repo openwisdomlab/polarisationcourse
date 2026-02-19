@@ -11,6 +11,7 @@ export * from './DemoLayout'
 export * from './DemoErrorBoundary'
 export * from './LifeSceneIllustrations'
 export * from './DifficultyStrategy'
+export * from './inquiry'
 
 // Basics: 光学基础
 export * from './basics/LightWaveDemo'
