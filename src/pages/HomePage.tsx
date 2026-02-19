@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from 'react'
-import { Link } from '@tanstack/react-router'
+import { useState, useRef, useCallback, useMemo } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { LanguageThemeSwitcher } from '@/components/ui/LanguageThemeSwitcher'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -297,11 +297,15 @@ function ModuleCard({
   iconRef: React.RefObject<HTMLDivElement | null>
 }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [isHovered, setIsHovered] = useState(false)
   const IconComponent = module.IconComponent
 
   // Calculate progress for structured modules (Demos)
-  const completedDemoIds = useDiscoveryStore(state => state.getCompletedDemoIds())
+  // Select the raw array (referentially stable) and derive Set via useMemo
+  // to avoid creating a new Set on every render (which triggers infinite re-renders)
+  const completedDemos = useDiscoveryStore(state => state.completedDemos)
+  const completedDemoIds = useMemo(() => new Set(completedDemos), [completedDemos])
   const discoveryCount = useDiscoveryStore(state => Object.keys(state.discoveries).length)
   const allDemoIds = DEMO_PREREQUISITES.map(p => p.demoId)
   const moduleProgress = module.id === 'theory' ? calculateProgress(allDemoIds, completedDemoIds) : 0
@@ -323,10 +327,18 @@ function ModuleCard({
   const subtitle = t(`${module.i18nNamespace}.subtitle`)
   const description = t(`${module.i18nNamespace}.description`)
 
+  const handleCardClick = useCallback((e: React.MouseEvent) => {
+    // Don't navigate if user clicked an inner link
+    if ((e.target as HTMLElement).closest('a')) return
+    navigate({ to: module.path })
+  }, [navigate, module.path])
+
   return (
-    <Link
-      to={module.path}
-      ref={cardRef as unknown as React.RefObject<HTMLAnchorElement>}
+    <div
+      ref={cardRef}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate({ to: module.path }) }}
       className={`
         group relative flex flex-col p-4 sm:p-6 rounded-xl sm:rounded-2xl border transition-all duration-500
         ${module.colorTheme.bg} ${module.colorTheme.bgHover}
@@ -334,6 +346,7 @@ function ModuleCard({
         hover:-translate-y-2
         overflow-hidden cursor-pointer
       `}
+      onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -483,7 +496,7 @@ function ModuleCard({
           background: `linear-gradient(90deg, transparent, ${GLOW_STYLES[module.colorTheme.glowColor]}, transparent)`,
         }}
       />
-    </Link>
+    </div>
   )
 }
 
