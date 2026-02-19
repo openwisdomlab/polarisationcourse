@@ -11,7 +11,7 @@ import { useState, useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Line, Text } from '@react-three/drei'
 import * as THREE from 'three'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useDemoTheme } from '../demoThemeColors'
 import { cn } from '@/lib/utils'
@@ -28,8 +28,6 @@ import {
   FormulaHighlight,
   ChartPanel,
 } from '../DemoLayout'
-import { ThicknessVisualizer, StressComparator } from '@/components/gallery'
-import { FlaskConical, Box, Beaker } from 'lucide-react'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
 import type { DifficultyLevel } from '../DifficultyStrategy'
 import { WhyButton, DataExportPanel } from '../DifficultyStrategy'
@@ -483,39 +481,6 @@ function PresetButton({
   )
 }
 
-// Tab component for switching views
-type DemoTab = 'theory' | 'lab'
-
-function TabButton({
-  active,
-  onClick,
-  children,
-  icon: Icon,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-  icon: typeof FlaskConical
-}) {
-  const dt = useDemoTheme()
-  return (
-    <motion.button
-      onClick={onClick}
-      className={cn(
-        'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border',
-        active
-          ? 'bg-cyan-400/20 text-cyan-400 border-cyan-400/50'
-          : `${dt.inactiveButtonClass} hover:border-slate-500`
-      )}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      <Icon className="w-4 h-4" />
-      {children}
-    </motion.button>
-  )
-}
-
 // 环境介质预设
 const ENV_PRESETS = [
   { label: '空气', labelEn: 'Air', value: 1.0 },
@@ -534,7 +499,6 @@ export function BirefringenceDemo({ difficultyLevel = 'application' }: Birefring
   const isFoundation = difficultyLevel === 'foundation'
   const isResearch = difficultyLevel === 'research'
 
-  const [activeTab, setActiveTab] = useState<DemoTab>('theory')
   const [inputPolarization, setInputPolarization] = useState(45)
   const [animate, setAnimate] = useState(true)
 
@@ -577,34 +541,7 @@ export function BirefringenceDemo({ difficultyLevel = 'application' }: Birefring
         gradient="cyan"
       />
 
-      {/* Tab navigation */}
-      <div className="flex justify-center gap-2">
-        <TabButton
-          active={activeTab === 'theory'}
-          onClick={() => setActiveTab('theory')}
-          icon={Box}
-        >
-          {isZh ? '理论演示' : 'Theory Demo'}
-        </TabButton>
-        <TabButton
-          active={activeTab === 'lab'}
-          onClick={() => setActiveTab('lab')}
-          icon={FlaskConical}
-        >
-          {isZh ? '真实实验室' : 'Real World Lab'}
-        </TabButton>
-      </div>
-
-      <AnimatePresence mode="wait">
-        {activeTab === 'theory' ? (
-          <motion.div
-            key="theory"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col gap-5"
-          >
+      <div className="flex flex-col gap-5">
             {/* 3D可视化面板 */}
             <VisualizationPanel variant="blue" className="!p-0" noPadding>
               <div style={{ height: 400 }}>
@@ -908,70 +845,7 @@ export function BirefringenceDemo({ difficultyLevel = 'application' }: Birefring
                 </p>
               </InfoCard>
             </InfoGrid>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="lab"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col gap-5"
-          >
-            {/* Real World Lab content */}
-            <div className={cn(
-              "rounded-2xl border p-5",
-              dt.isDark
-                ? "bg-slate-900/50 border-emerald-400/20"
-                : "bg-white border-emerald-200 shadow-sm"
-            )}>
-              <div className="flex items-center gap-2 mb-4">
-                <Beaker className={cn("w-5 h-5", dt.isDark ? "text-emerald-400" : "text-emerald-600")} />
-                <h3 className={cn("text-lg font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>
-                  {isZh ? '厚度与干涉色实验' : 'Thickness & Interference Color Experiment'}
-                </h3>
-              </div>
-              <p className={cn('text-sm mb-4', dt.mutedTextClass)}>
-                {isZh
-                  ? '在正交偏振系统中，双折射材料的厚度直接影响观察到的干涉色。增加保鲜膜层数，观察颜色如何变化！'
-                  : 'In crossed polarizers, the thickness of birefringent materials directly affects the observed interference colors. Add layers of plastic wrap and observe the color changes!'}
-              </p>
-              <ThicknessVisualizer showTheoryBar={true} showVideoButton={true} />
-            </div>
-
-            {/* Stress comparison */}
-            <div className={cn(
-              "rounded-2xl border p-5",
-              dt.isDark
-                ? "bg-slate-900/50 border-purple-400/20"
-                : "bg-white border-purple-200 shadow-sm"
-            )}>
-              <div className="flex items-center gap-2 mb-4">
-                <FlaskConical className={cn("w-5 h-5", dt.isDark ? "text-purple-400" : "text-purple-600")} />
-                <h3 className={cn("text-lg font-semibold", dt.isDark ? "text-white" : "text-gray-800")}>
-                  {isZh ? '玻璃应力对比' : 'Glass Stress Comparison'}
-                </h3>
-              </div>
-              <p className={cn('text-sm mb-4', dt.mutedTextClass)}>
-                {isZh
-                  ? '钢化玻璃经过热处理产生预应力，在正交偏振下显示特征图案。拖动滑块对比钢化玻璃和普通玻璃的差异！'
-                  : 'Tempered glass has pre-stress from heat treatment, showing characteristic patterns under crossed polarizers. Drag the slider to compare tempered and ordinary glass!'}
-              </p>
-              <StressComparator />
-            </div>
-
-            {/* Tips card */}
-            <InfoCard title={isZh ? "实验提示" : "Experiment Tips"} color="green">
-              <ul className={cn('text-xs space-y-1 list-disc pl-4', dt.bodyClass)}>
-                <li>{isZh ? '保鲜膜、透明胶带等塑料薄膜都具有双折射性' : 'Plastic wrap, clear tape and other thin films are birefringent'}</li>
-                <li>{isZh ? '颜色随厚度周期变化，形成Michel-Levy色阶' : 'Colors change periodically with thickness, forming the Michel-Levy scale'}</li>
-                <li>{isZh ? '旋转样品或偏振片可以看到颜色变化' : 'Rotate the sample or polarizer to see color changes'}</li>
-                <li>{isZh ? '应力大小与颜色数量成正比' : 'Stress magnitude is proportional to the number of colors'}</li>
-              </ul>
-            </InfoCard>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </div>
   )
 }

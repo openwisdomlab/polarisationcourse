@@ -604,8 +604,8 @@ function PoincareSphere({
         {/* Sphere background */}
         <defs>
           <radialGradient id="sphere-gradient" cx="35%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#334155" />
-            <stop offset="100%" stopColor="#0f172a" />
+            <stop offset="0%" stopColor={dt.isDark ? '#334155' : '#cbd5e1'} />
+            <stop offset="100%" stopColor={dt.isDark ? '#0f172a' : '#94a3b8'} />
           </radialGradient>
           <filter id="glow-point">
             <feGaussianBlur stdDeviation="2" result="coloredBlur" />
@@ -622,7 +622,7 @@ function PoincareSphere({
           cy={centerY}
           r={radius}
           fill="url(#sphere-gradient)"
-          stroke="#475569"
+          stroke={dt.isDark ? '#475569' : '#64748b'}
           strokeWidth="1"
         />
 
@@ -653,13 +653,13 @@ function PoincareSphere({
         />
 
         {/* Axis labels */}
-        <text x={centerX + radius + 5} y={centerY + 4} fill="#94a3b8" fontSize="8">
+        <text x={centerX + radius + 5} y={centerY + 4} fill={dt.isDark ? '#94a3b8' : '#475569'} fontSize="8">
           S₁
         </text>
-        <text x={centerX} y={centerY - radius - 5} textAnchor="middle" fill="#94a3b8" fontSize="8">
+        <text x={centerX} y={centerY - radius - 5} textAnchor="middle" fill={dt.isDark ? '#94a3b8' : '#475569'} fontSize="8">
           S₃ (RCP)
         </text>
-        <text x={centerX} y={centerY + radius + 12} textAnchor="middle" fill="#94a3b8" fontSize="8">
+        <text x={centerX} y={centerY + radius + 12} textAnchor="middle" fill={dt.isDark ? '#94a3b8' : '#475569'} fontSize="8">
           (LCP)
         </text>
 

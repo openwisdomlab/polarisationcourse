@@ -116,11 +116,11 @@ export interface SpectralLine {
 }
 
 export const SPECTRAL_LINES: SpectralLine[] = [
-  { id: 'na-d', name: 'Sodium D', nameZh: '钠黄光 (Na D)', wavelengthNm: 589, color: '#fbbf24' },
-  { id: 'h-alpha', name: 'Hydrogen α', nameZh: '氢红光 (Hα)', wavelengthNm: 656, color: '#ef4444' },
-  { id: 'hg-green', name: 'Mercury green', nameZh: '汞绿光', wavelengthNm: 546, color: '#22c55e' },
-  { id: 'h-beta', name: 'Hydrogen β', nameZh: '氢蓝光 (Hβ)', wavelengthNm: 486, color: '#3b82f6' },
-  { id: 'hg-violet', name: 'Mercury violet', nameZh: '汞紫光', wavelengthNm: 436, color: '#a855f7' },
+  { id: 'na-d', name: '589 nm (D-line)', nameZh: '589 nm 黄光', wavelengthNm: 589, color: '#fbbf24' },
+  { id: 'h-alpha', name: '656 nm (Hα)', nameZh: '656 nm 红光 (Hα)', wavelengthNm: 656, color: '#ef4444' },
+  { id: 'hg-green', name: '546 nm (Hg)', nameZh: '546 nm 绿光', wavelengthNm: 546, color: '#22c55e' },
+  { id: 'h-beta', name: '486 nm (Hβ)', nameZh: '486 nm 蓝光 (Hβ)', wavelengthNm: 486, color: '#3b82f6' },
+  { id: 'hg-violet', name: '436 nm (Hg)', nameZh: '436 nm 紫光', wavelengthNm: 436, color: '#a855f7' },
 ];
 
 // ========== Core Calculations ==========

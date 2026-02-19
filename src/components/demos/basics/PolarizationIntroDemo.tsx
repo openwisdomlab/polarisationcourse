@@ -207,19 +207,77 @@ function PolarizedPanel({
 
       {/* 电场矢量可视化 */}
       <div className="relative w-full aspect-square max-w-[200px] mx-auto mb-4">
-        {/* 背景圆 */}
-        <div className={cn(
-          "absolute inset-0 rounded-full border",
-          theme === 'dark'
-            ? "border-slate-600/50 bg-slate-900/50"
-            : "border-gray-300 bg-gray-100/50"
-        )} />
+        {/* SVG 叠加层：参考轴 + 角度弧 */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          viewBox="-100 -100 200 200"
+        >
+          {/* 背景圆 */}
+          <circle
+            cx="0" cy="0" r="96"
+            fill="none"
+            stroke={theme === 'dark' ? 'rgba(100,116,139,0.4)' : 'rgba(156,163,175,0.6)'}
+            strokeWidth="1"
+          />
+
+          {!isUnpolarized && (
+            <>
+              {/* 水平参考轴（0°） */}
+              <line
+                x1="-88" y1="0" x2="88" y2="0"
+                stroke={theme === 'dark' ? 'rgba(100,116,139,0.35)' : 'rgba(156,163,175,0.5)'}
+                strokeWidth="1"
+                strokeDasharray="4 3"
+              />
+              {/* 垂直参考轴（90°） */}
+              <line
+                x1="0" y1="-88" x2="0" y2="88"
+                stroke={theme === 'dark' ? 'rgba(100,116,139,0.25)' : 'rgba(156,163,175,0.35)'}
+                strokeWidth="1"
+                strokeDasharray="3 4"
+              />
+              {/* 角度弧（从0°到当前角度） */}
+              {polarizationAngle > 0 && polarizationAngle <= 180 && (
+                <path
+                  d={`M 36 0 A 36 36 0 ${polarizationAngle > 90 ? 1 : 0} 0 ${
+                    36 * Math.cos((-polarizationAngle * Math.PI) / 180)
+                  } ${36 * Math.sin((-polarizationAngle * Math.PI) / 180)}`}
+                  fill="none"
+                  stroke="#22d3ee"
+                  strokeWidth="1.5"
+                  strokeOpacity="0.7"
+                />
+              )}
+              {/* 角度数字标注 */}
+              <text
+                x="68" y="-68"
+                textAnchor="middle"
+                fontSize="14"
+                fill={theme === 'dark' ? '#22d3ee' : '#0891b2'}
+                fontFamily="monospace"
+                fontWeight="600"
+              >
+                {polarizationAngle}°
+              </text>
+              {/* 0° 标签 */}
+              <text
+                x="78" y="4"
+                textAnchor="start"
+                fontSize="9"
+                fill={theme === 'dark' ? 'rgba(148,163,184,0.6)' : 'rgba(107,114,128,0.7)'}
+              >
+                0°
+              </text>
+            </>
+          )}
+        </svg>
 
         {/* 中心光源点 */}
         <motion.div
           className={`absolute left-1/2 top-1/2 w-4 h-4 rounded-full -ml-2 -mt-2 ${
             isUnpolarized ? 'bg-yellow-400' : 'bg-cyan-400'
           }`}
+          style={{ zIndex: 2 }}
           animate={{
             boxShadow: [
               `0 0 10px ${isUnpolarized ? '#fbbf24' : '#22d3ee'}`,
@@ -244,14 +302,6 @@ function PolarizedPanel({
             length={80}
             color="#22d3ee"
             animate={animationSpeed > 0}
-          />
-        )}
-
-        {/* 偏振方向指示线（偏振光） */}
-        {!isUnpolarized && (
-          <motion.div
-            className="absolute left-1/2 top-1/2 w-[180px] h-[1px] -ml-[90px] border-t border-dashed border-gray-500/50"
-            style={{ rotate: polarizationAngle }}
           />
         )}
       </div>
@@ -311,7 +361,7 @@ export function PolarizationIntroDemo() {
                 >
                   <PolarizedPanel
                     title={t('demoUi.polarizationIntro.unpolarizedLight')}
-                    subtitle="Unpolarized Light"
+                    subtitle={t('demoUi.polarizationIntro.unpolarizedDesc')}
                     isUnpolarized={true}
                     polarizationAngle={0}
                     animationSpeed={animationSpeed}
@@ -323,7 +373,7 @@ export function PolarizationIntroDemo() {
 
             <PolarizedPanel
               title={t('demoUi.polarizationIntro.polarizedLight')}
-              subtitle="Polarized Light"
+              subtitle={t('demoUi.polarizationIntro.polarizedDesc')}
               isUnpolarized={false}
               polarizationAngle={polarizationAngle}
               animationSpeed={animationSpeed}
@@ -436,7 +486,7 @@ export function PolarizationIntroDemo() {
       {/* 偏振方向颜色编码 */}
       <TipBanner color="cyan">
         <h4 className="text-sm font-semibold mb-3">{t('demoUi.polarizationIntro.colorCode')}</h4>
-        <div className="flex gap-4 justify-center flex-wrap">
+        <div className="flex gap-3 justify-center flex-wrap mb-4">
           {[
             { angle: 0, color: '#ef4444', labelKey: 'demoUi.polarizationIntro.horizontal' },
             { angle: 45, color: '#f97316', labelKey: 'demoUi.polarizationIntro.diagonal45' },
@@ -466,6 +516,32 @@ export function PolarizationIntroDemo() {
               <span className={cn("text-sm", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t(labelKey)}</span>
             </motion.button>
           ))}
+        </div>
+        {/* 两组正交基说明 */}
+        <div className={cn(
+          "text-xs rounded-xl px-4 py-3 space-y-1.5 border",
+          theme === 'dark'
+            ? "bg-slate-900/60 border-cyan-400/20 text-gray-400"
+            : "bg-cyan-50/80 border-cyan-200 text-gray-600"
+        )}>
+          <p className="font-medium text-sm mb-2" style={{ color: theme === 'dark' ? '#22d3ee' : '#0891b2' }}>
+            为什么选这四个角度？
+          </p>
+          <p>
+            <span style={{ color: '#ef4444' }}>●</span>
+            <span style={{ color: '#22c55e' }}>●</span>
+            {' '}
+            <strong>水平/垂直基（H/V basis）</strong>：0° 与 90° 互相垂直，是最基本的线偏振态对。
+          </p>
+          <p>
+            <span style={{ color: '#f97316' }}>●</span>
+            <span style={{ color: '#3b82f6' }}>●</span>
+            {' '}
+            <strong>对角基（D/A basis）</strong>：45° 与 135° 同样互相垂直，但相对 H/V 旋转了 45°。
+          </p>
+          <p className={theme === 'dark' ? "text-gray-500" : "text-gray-500"}>
+            这两组正交基共同描述了线偏振的完整状态空间，在量子密钥分发（BB84协议）等应用中都有直接用途。
+          </p>
         </div>
       </TipBanner>
     </div>

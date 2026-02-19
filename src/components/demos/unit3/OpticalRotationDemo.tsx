@@ -57,7 +57,7 @@ const SUBSTANCE_KEY_MAP: Record<string, string> = {
   tartaric: 'tartaricAcid',
 }
 
-/** 获取引擎中的比旋光度（Na D线） */
+/** 获取引擎中的比旋光度（589 nm D线参考波长） */
 function getSpecificRotationD(substance: string): number {
   const engineKey = SUBSTANCE_KEY_MAP[substance] || substance
   return CHIRAL_MATERIALS[engineKey]?.specificRotation ?? 66.5
@@ -1098,7 +1098,7 @@ export function OpticalRotationDemo({ difficultyLevel = 'application' }: Optical
                     <p className={cn("font-medium", dt.isDark ? 'text-purple-400' : 'text-purple-600')}>旋光色散效应</p>
                     <p>不同波长的光具有不同的比旋光度，导致各色光旋转角度不同。</p>
                     <p className={cn("font-mono text-[10px]", dt.mutedTextClass)}>
-                      Drude方程: [α]<sub>λ</sub> ≈ [α]<sub>D</sub> × (589/λ)²
+                      Drude方程: [α]<sub>λ</sub> ≈ [α]<sub>D</sub> × (589/λ)²&nbsp;&nbsp;[α]<sub>D</sub>为589 nm参考波长比旋光度
                     </p>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {POLYCHROMATIC_COMPONENTS.map(comp => (
