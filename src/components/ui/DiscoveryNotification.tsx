@@ -98,19 +98,19 @@ export function DiscoveryNotification({
     }
   }, [discoveries])
 
-  // Auto-dismiss notifications
+  // Auto-dismiss notifications — interval runs persistently, only updates state when items expire.
+  // Returning `prev` unchanged lets React bail out of re-renders, preventing a 500ms render loop.
   useEffect(() => {
-    if (notifications.length === 0) return
-
     const timer = setInterval(() => {
       const now = Date.now()
-      setNotifications((prev) =>
-        prev.filter((n) => now - n.timestamp < autoDismissDelay)
-      )
+      setNotifications((prev) => {
+        const filtered = prev.filter((n) => now - n.timestamp < autoDismissDelay)
+        return filtered.length === prev.length ? prev : filtered
+      })
     }, 500)
 
     return () => clearInterval(timer)
-  }, [notifications, autoDismissDelay])
+  }, [autoDismissDelay])
 
   const handleDismiss = useCallback(
     (notification: NotificationItem) => {

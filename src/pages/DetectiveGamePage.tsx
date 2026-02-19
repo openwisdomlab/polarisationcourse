@@ -13,7 +13,7 @@
  * - Discovery tracking and achievements
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import {
@@ -110,6 +110,8 @@ export function DetectiveGamePage() {
   const [selectedMysteryId, setSelectedMysteryId] = useState<string | null>(null)
   const [showDeductionPanel, setShowDeductionPanel] = useState(false)
   const [observations, setObservations] = useState<ObservationLog[]>([])
+  // Ref to track observation IDs already logged — avoids including observations array in effect deps
+  const observationIdsRef = useRef<Set<string>>(new Set())
   const [solvedMysteries, setSolvedMysteries] = useState<Set<string>>(new Set())
   const [mysteryAttempts, setMysteryAttempts] = useState<Record<string, number>>({})
   const [usedHints, setUsedHints] = useState(false)
@@ -158,6 +160,7 @@ export function DetectiveGamePage() {
     setSelectedComponent(null)
     setShowHint(false)
     setObservations([])
+    observationIdsRef.current = new Set()
     setSolvedMysteries(new Set())
     setMysteryAttempts({})
     setUsedHints(false)
@@ -199,9 +202,9 @@ export function DetectiveGamePage() {
         // Create observation ID based on input state
         const obsId = `${mystery.id}-${inputInfo.angle.toFixed(0)}-${inputInfo.type}`
 
-        // Check if we already have this observation
-        const existingObs = observations.find((o) => o.id === obsId)
-        if (!existingObs) {
+        // Use ref to track seen IDs — avoids putting observations array in deps (which would loop)
+        if (!observationIdsRef.current.has(obsId)) {
+          observationIdsRef.current.add(obsId)
           setObservations((prev) => [
             ...prev,
             {
@@ -214,16 +217,17 @@ export function DetectiveGamePage() {
             },
           ])
 
-          // Check for new discoveries
-          const newDiscoveries = checkPolarizationDiscovery(outputInfo, discoveryStore)
+          // Use getState() for non-reactive store access — avoids discoveryStore in deps
+          const store = useDiscoveryStore.getState()
+          const newDiscoveries = checkPolarizationDiscovery(outputInfo, store)
           newDiscoveries.forEach((d) => {
-            discoveryStore.unlockDiscovery(d, `detective-${currentLevelIndex}`)
+            store.unlockDiscovery(d, `detective-${currentLevelIndex}`)
             showToast(isZh ? `发现：${d}` : `Discovery: ${d}`, 'success')
           })
         }
       }
     })
-  }, [lightBeams, mysteryBoxes, observations, currentLevelIndex, discoveryStore, isZh])
+  }, [lightBeams, mysteryBoxes, currentLevelIndex, isZh])
 
   // Check if level is complete (all mysteries solved)
   useEffect(() => {
@@ -231,14 +235,15 @@ export function DetectiveGamePage() {
       setIsLevelComplete(true)
       showToast(isZh ? '关卡完成！' : 'Level Complete!', 'success')
 
-      // Unlock rewards
+      // Use getState() for non-reactive store access — avoids discoveryStore in deps
       if (currentLevel.rewards) {
+        const store = useDiscoveryStore.getState()
         currentLevel.rewards.forEach((reward) => {
-          discoveryStore.unlockDiscovery(reward, `detective-${currentLevelIndex}`)
+          store.unlockDiscovery(reward, `detective-${currentLevelIndex}`)
         })
       }
     }
-  }, [solvedMysteries, mysteryBoxes.length, isLevelComplete, currentLevel.rewards, discoveryStore, currentLevelIndex, isZh])
+  }, [solvedMysteries, mysteryBoxes.length, isLevelComplete, currentLevel.rewards, currentLevelIndex, isZh])
 
   // Toast helper
   const showToast = (message: string, type: 'success' | 'info' | 'error') => {
