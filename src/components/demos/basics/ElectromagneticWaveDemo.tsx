@@ -651,7 +651,7 @@ export function ElectromagneticWaveDemo({ difficultyLevel = 'application' }: Pro
                               x={x + 50}
                               y="-8"
                               textAnchor="middle"
-                              fill={isSelected ? region.color : '#9ca3af'}
+                              fill={isSelected ? region.color : dt.textMuted}
                               fontSize="11"
                               fontWeight={isSelected ? 'bold' : 'normal'}
                             >

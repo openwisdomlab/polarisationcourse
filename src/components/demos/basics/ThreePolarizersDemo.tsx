@@ -224,7 +224,7 @@ function MalusCurve({
           y1={padding.top + chartHeight}
           x2={padding.left + chartWidth}
           y2={padding.top + chartHeight}
-          stroke="#475569"
+          stroke={theme === 'dark' ? '#475569' : '#64748b'}
           strokeWidth="1"
         />
 
@@ -234,7 +234,7 @@ function MalusCurve({
           y1={padding.top}
           x2={padding.left}
           y2={padding.top + chartHeight}
-          stroke="#475569"
+          stroke={theme === 'dark' ? '#475569' : '#64748b'}
           strokeWidth="1"
         />
 
@@ -246,14 +246,14 @@ function MalusCurve({
               y1={padding.top + chartHeight}
               x2={xScale(angle)}
               y2={padding.top + chartHeight + 4}
-              stroke="#94a3b8"
+              stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
               strokeWidth="1"
             />
             <text
               x={xScale(angle)}
               y={padding.top + chartHeight + 16}
               textAnchor="middle"
-              fill="#94a3b8"
+              fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
               fontSize="9"
             >
               {angle}°
@@ -269,14 +269,14 @@ function MalusCurve({
               y1={yScale(val)}
               x2={padding.left}
               y2={yScale(val)}
-              stroke="#94a3b8"
+              stroke={theme === 'dark' ? '#94a3b8' : '#64748b'}
               strokeWidth="1"
             />
             <text
               x={padding.left - 8}
               y={yScale(val) + 3}
               textAnchor="end"
-              fill="#94a3b8"
+              fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
               fontSize="9"
             >
               {val.toFixed(1)}%
@@ -341,7 +341,7 @@ function MalusCurve({
           x={padding.left + chartWidth / 2}
           y={height - 4}
           textAnchor="middle"
-          fill="#94a3b8"
+          fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
           fontSize="10"
         >
           θ₂ ({isZh ? '中间偏振片角度' : 'Middle Polarizer'})
@@ -350,7 +350,7 @@ function MalusCurve({
           x={10}
           y={padding.top + chartHeight / 2}
           textAnchor="middle"
-          fill="#94a3b8"
+          fill={theme === 'dark' ? '#94a3b8' : '#64748b'}
           fontSize="10"
           transform={`rotate(-90, 10, ${padding.top + chartHeight / 2})`}
         >
@@ -397,6 +397,7 @@ function DraggablePolarizerVisualizer({
   onAngleChange,
   draggable = false,
 }: DraggablePolarizerProps) {
+  const { theme } = useTheme()
   const lineCount = 7
   const radius = 35
   const [isDragging, setIsDragging] = useState(false)
@@ -457,8 +458,8 @@ function DraggablePolarizerVisualizer({
         cy="0"
         rx={radius}
         ry={radius * 1.2}
-        fill={isActive ? `${color}15` : '#1e293b'}
-        stroke={isActive ? color : '#475569'}
+        fill={isActive ? `${color}15` : theme === 'dark' ? '#1e293b' : '#f1f5f9'}
+        stroke={isActive ? color : theme === 'dark' ? '#475569' : '#94a3b8'}
         strokeWidth={isActive ? 2 : 1}
         animate={{ scale: isActive ? 1.05 : 1 }}
         transition={{ duration: 0.3 }}
@@ -477,7 +478,7 @@ function DraggablePolarizerVisualizer({
                 y1={yOffset}
                 x2={xLength}
                 y2={yOffset}
-                stroke={isActive ? color : '#64748b'}
+                stroke={isActive ? color : theme === 'dark' ? '#64748b' : '#cbd5e1'}
                 strokeWidth={1.5}
                 opacity={isActive ? 0.8 : 0.4}
               />
@@ -529,7 +530,7 @@ function DraggablePolarizerVisualizer({
       )}
 
       {/* 角度标签 */}
-      <text x="0" y={radius + 25} textAnchor="middle" fill="#9ca3af" fontSize="11">
+      <text x="0" y={radius + 25} textAnchor="middle" fill={theme === 'dark' ? '#9ca3af' : '#64748b'} fontSize="11">
         {label}
       </text>
       <text x="0" y={radius + 40} textAnchor="middle" fill={color} fontSize="12" fontWeight="bold">
@@ -706,7 +707,7 @@ export function ThreePolarizersDemo() {
                 <rect width="700" height="320" fill="url(#three-pol-grid)" />
 
                 {/* 标题 */}
-                <text x="350" y="25" textAnchor="middle" fill="#e2e8f0" fontSize="14" fontWeight="bold">
+                <text x="350" y="25" textAnchor="middle" fill={theme === 'dark' ? '#e2e8f0' : '#1e293b'} fontSize="14" fontWeight="bold">
                   {isZh ? '三偏振片实验' : 'Three Polarizer Experiment'}
                 </text>
 
@@ -721,7 +722,7 @@ export function ThreePolarizersDemo() {
                     transition={{ duration: 2, repeat: Infinity }}
                   />
                   <circle cx="0" cy="0" r="15" fill="#fff" opacity="0.5" />
-                  <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
+                  <text x="0" y="45" textAnchor="middle" fill={theme === 'dark' ? '#9ca3af' : '#64748b'} fontSize="11">
                     {isZh ? '非偏振光' : 'Unpolarized'}
                   </text>
                   <text x="0" y="60" textAnchor="middle" fill="#ffd700" fontSize="11">
@@ -832,11 +833,11 @@ export function ThreePolarizersDemo() {
                     width="40"
                     height="50"
                     rx="4"
-                    fill={calculations.I3 > 0.01 ? '#22c55e20' : '#1e293b'}
-                    stroke={calculations.I3 > 0.01 ? '#22c55e' : '#475569'}
+                    fill={calculations.I3 > 0.01 ? '#22c55e20' : theme === 'dark' ? '#1e293b' : '#f1f5f9'}
+                    stroke={calculations.I3 > 0.01 ? '#22c55e' : theme === 'dark' ? '#475569' : '#94a3b8'}
                     strokeWidth="2"
                   />
-                  <text x="0" y="45" textAnchor="middle" fill="#9ca3af" fontSize="11">
+                  <text x="0" y="45" textAnchor="middle" fill={theme === 'dark' ? '#9ca3af' : '#64748b'} fontSize="11">
                     {isZh ? '探测器' : 'Detector'}
                   </text>
                   <text x="0" y="60" textAnchor="middle" fill="#22c55e" fontSize="11" fontWeight="bold">
