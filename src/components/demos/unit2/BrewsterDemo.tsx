@@ -592,7 +592,7 @@ function BrewsterDiagram({
         y1={cy}
         x2={reflectEnd.x}
         y2={reflectEnd.y}
-        stroke={isAtBrewster ? '#22d3ee' : '#94a3b8'}
+        stroke={isAtBrewster ? '#22d3ee' : dt.textSecondary}
         strokeWidth={Math.max(2, 4 * result.Rs)}
         strokeOpacity={Math.max(0.5, result.Rs)}
         filter={isAtBrewster ? 'url(#brewster-glowCyan)' : undefined}
@@ -605,12 +605,12 @@ function BrewsterDiagram({
         type={getPolarizationType()}
         x={(cx + reflectEnd.x) / 2 + 25}
         y={(cy + reflectEnd.y) / 2}
-        color={isAtBrewster ? '#22d3ee' : '#94a3b8'}
+        color={isAtBrewster ? '#22d3ee' : dt.textSecondary}
       />
       <text
         x={reflectEnd.x + 15}
         y={reflectEnd.y - 10}
-        fill={isAtBrewster ? '#22d3ee' : '#94a3b8'}
+        fill={isAtBrewster ? '#22d3ee' : dt.textSecondary}
         fontSize="12"
         fontWeight="500"
       >
