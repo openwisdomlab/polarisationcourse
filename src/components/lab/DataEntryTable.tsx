@@ -164,7 +164,7 @@ export function DataEntryTable({
 
         <span className={cn(
           'ml-auto text-xs',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           {data.length}/{maxRows} {isZh ? '数据点' : 'points'}
         </span>
@@ -198,7 +198,7 @@ export function DataEntryTable({
                   colSpan={4}
                   className={cn(
                     'px-4 py-8 text-center text-sm',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                   )}
                 >
                   {isZh
@@ -219,7 +219,7 @@ export function DataEntryTable({
                 >
                   <td className={cn(
                     'px-4 py-2 text-sm tabular-nums',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                   )}>
                     {index + 1}
                   </td>
@@ -272,7 +272,7 @@ export function DataEntryTable({
                         'p-1.5 rounded transition-colors',
                         theme === 'dark'
                           ? 'text-gray-500 hover:text-red-400 hover:bg-red-500/10'
-                          : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
+                          : 'text-gray-500 hover:text-red-500 hover:bg-red-50'
                       )}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -289,7 +289,7 @@ export function DataEntryTable({
       {data.length > 0 && data.length < 5 && (
         <p className={cn(
           'text-xs',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           {isZh
             ? '提示：建议录入至少 5 个数据点以获得可靠的拟合结果。'

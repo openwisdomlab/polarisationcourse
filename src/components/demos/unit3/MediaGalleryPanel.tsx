@@ -433,7 +433,7 @@ function SeriesLinkCard({
           {series.mediaCount} {isZh ? '个媒体' : 'items'}
         </p>
       </div>
-      <ExternalLink className={`w-3.5 h-3.5 group-hover:text-pink-400 transition-colors flex-shrink-0 ${dt.isDark ? 'text-gray-600' : 'text-gray-400'}`} />
+      <ExternalLink className={`w-3.5 h-3.5 group-hover:text-pink-400 transition-colors flex-shrink-0 ${dt.isDark ? 'text-gray-600' : 'text-gray-500'}`} />
     </Link>
   )
 }
@@ -520,7 +520,7 @@ export function MediaGalleryPanel() {
           <h3 className={cn("text-sm font-semibold", theme === 'dark' ? 'text-white' : 'text-gray-800')}>
             {isZh ? '真实实验场景' : 'Real Experiment Scenes'}
           </h3>
-          <span className={cn("text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <span className={cn("text-xs", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             ({allMedia.all.length} {isZh ? '个' : 'items'})
           </span>
         </div>
@@ -549,7 +549,7 @@ export function MediaGalleryPanel() {
                   ? '包含实验室拍摄的色偏振照片和视频：应力双折射、保鲜膜干涉、透明胶带效果等真实实验记录，以及偏振艺术文创作品展示。'
                   : 'Contains lab-captured chromatic polarization photos and videos: stress birefringence, plastic wrap interference, tape effects, and polarization art creations.'}
               </p>
-              <div className={cn("flex items-center gap-3 mt-2 text-[10px]", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <div className={cn("flex items-center gap-3 mt-2 text-[10px]", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 <span className="flex items-center gap-1">
                   <FlaskConical className="w-3 h-3" />
                   {allMedia.experiments.length} {isZh ? '实验记录' : 'experiments'}
@@ -564,7 +564,7 @@ export function MediaGalleryPanel() {
 
           {/* 缩略图预览 - 使用更大的网格布局 */}
           <div>
-            <p className={cn("text-[10px] mb-3 uppercase tracking-wider", theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <p className={cn("text-[10px] mb-3 uppercase tracking-wider", theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {isZh ? '精选预览' : 'Featured Preview'}
             </p>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">

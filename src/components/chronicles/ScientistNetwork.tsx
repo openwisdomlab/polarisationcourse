@@ -343,7 +343,7 @@ export function ScientistNetwork({ theme, onNavigateToEvent, externalSelectedSci
                   <div className="flex items-center justify-between text-xs">
                     <div className={cn(
                       'flex items-center gap-1',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}>
                       <Network className="w-3 h-3" />
                       <span>{relations.length} {isZh ? '个关系' : 'relations'}</span>
@@ -746,7 +746,7 @@ export function ScientistNetwork({ theme, onNavigateToEvent, externalSelectedSci
           ) : (
             <div className={cn(
               'h-full flex flex-col items-center justify-center text-center p-4',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               <User className="w-12 h-12 mb-3 opacity-50" />
               <p className="text-sm">

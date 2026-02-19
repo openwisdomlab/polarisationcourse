@@ -748,7 +748,7 @@ function ApplicationsSection({ theme }: { theme: 'dark' | 'light' }) {
 
                 {/* Case - compact */}
                 <span className={`text-[9px] mt-0.5 line-clamp-1 ${
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 }`}>
                   {t(app.caseKey)}
                 </span>
@@ -874,7 +874,7 @@ function HomeExperimentsSection({ theme }: { theme: 'dark' | 'light' }) {
                 </span>
               ))}
               {exp.materialsKeys.length > 2 && (
-                <span className={`text-[10px] ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                <span className={`text-[10px] ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                   +{exp.materialsKeys.length - 2}
                 </span>
               )}

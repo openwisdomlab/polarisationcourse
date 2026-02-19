@@ -73,7 +73,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <h2 className="text-xl font-semibold text-white mb-2">
               Oops! Something went wrong / 出错了
             </h2>
-            <p className="text-gray-400 mb-4 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               {this.state.error?.message || 'An unexpected error occurred / 发生了意外错误'}
             </p>
             <div className="flex gap-3 justify-center">

@@ -72,8 +72,8 @@ export const TUTORIAL_LEVELS: LevelData[] = [
     ]
   },
   {
-    name: "第五课：方解石分光",
-    description: "方解石将光分裂成两束垂直偏振的光。",
+    name: "第五课：偏振分束",
+    description: "偏振分束器(PBS)将光分裂成两束垂直偏振的光。",
     blocks: [
       { x: 0, y: 1, z: -3, type: 'emitter', state: { facing: 'south', polarizationAngle: 45 } },
       { x: 0, y: 1, z: 0, type: 'splitter', state: { facing: 'east' } },

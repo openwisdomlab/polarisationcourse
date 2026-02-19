@@ -409,7 +409,7 @@ export function StoryHookEffect({ theme, className = '' }: StoryHookEffectProps)
         >
           <span
             className={`text-xs ${
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             }`}
           >
             {isZh ? '—— 埃拉斯谟·巴托林发现双折射现象' : '—— Erasmus Bartholin discovers birefringence'}

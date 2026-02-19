@@ -16,6 +16,7 @@ import {
   StatCard,
   FormulaHighlight,
 } from '../DemoLayout'
+import { wavelengthToCSS, wavelengthToRGB as spectralRGB } from '@/core/physics/spectralColor'
 
 // ── 物理计算函数 ──
 
@@ -40,49 +41,64 @@ function rayleighPolarization(theta: number): number {
   return sinSq / (1 + cosSq)
 }
 
-// 波长到RGB
+// 使用CIE标准观察者的波长到RGB (CSS格式)
 function wavelengthToRGB(wavelength: number): string {
-  let R = 0, G = 0, B = 0
-
-  if (wavelength >= 380 && wavelength < 440) {
-    R = -(wavelength - 440) / (440 - 380)
-    B = 1
-  } else if (wavelength >= 440 && wavelength < 490) {
-    G = (wavelength - 440) / (490 - 440)
-    B = 1
-  } else if (wavelength >= 490 && wavelength < 510) {
-    G = 1
-    B = -(wavelength - 510) / (510 - 490)
-  } else if (wavelength >= 510 && wavelength < 580) {
-    R = (wavelength - 510) / (580 - 510)
-    G = 1
-  } else if (wavelength >= 580 && wavelength < 645) {
-    R = 1
-    G = -(wavelength - 645) / (645 - 580)
-  } else if (wavelength >= 645 && wavelength <= 780) {
-    R = 1
-  }
-
-  return `rgb(${Math.round(R * 255)}, ${Math.round(G * 255)}, ${Math.round(B * 255)})`
+  return wavelengthToCSS(wavelength)
 }
 
-// 计算天空颜色（基于太阳角度）
+/**
+ * 基于瑞利散射物理的天空颜色计算
+ *
+ * 原理: 太阳光穿过大气后, 透射谱 I(λ) = I₀(λ) × exp(-τ × (550/λ)⁴)
+ * 其中 τ (光学厚度) 与大气路径长度成正比, 太阳角度越低路径越长
+ * 使用 CIE 色匹配函数加权求和得到真实天空颜色
+ */
 function getSkyColor(sunAngle: number): string {
-  // 太阳低时，光线穿过更多大气，蓝光散射殆尽，呈现橙红色
-  // 太阳高时，天空呈现蓝色
-  const factor = sunAngle / 90 // 0-1
+  // 大气路径长度相对因子 (太阳天顶角余弦的倒数, 简化的平面平行大气模型)
+  // sunAngle = 90° → 路径最短(1x), sunAngle → 0° → 路径极长
+  const zenithAngle = 90 - sunAngle
+  const zenithRad = zenithAngle * Math.PI / 180
+  // 使用Kasten-Young近似: airmass ≈ 1 / (cos(z) + 0.50572 × (96.07995 - z)^-1.6364)
+  const z = Math.max(0, Math.min(89.5, zenithAngle))
+  const airMass = 1 / (Math.cos(zenithRad) + 0.50572 * Math.pow(96.07995 - z, -1.6364))
 
-  if (factor < 0.2) {
-    // 日出/日落 - 橙红色
-    return `rgb(${255}, ${Math.round(100 + factor * 200)}, ${Math.round(factor * 255)})`
-  } else if (factor < 0.5) {
-    // 早晨/傍晚 - 渐变到蓝色
-    const t = (factor - 0.2) / 0.3
-    return `rgb(${Math.round(255 * (1 - t))}, ${Math.round(150 + 50 * t)}, ${Math.round(200 + 55 * t)})`
-  } else {
-    // 正午 - 蓝色
-    return 'rgb(100, 180, 255)'
+  // 参考光学厚度 (天顶方向, 550nm处)
+  // 调整此值控制散射强度, ~0.1 对应清洁大气
+  const tau0 = 0.12
+
+  // 对可见光谱采样, 计算透射后的 XYZ 加权和
+  let sumR = 0, sumG = 0, sumB = 0
+  let sumWeight = 0
+
+  for (let wl = 400; wl <= 700; wl += 10) {
+    // 瑞利散射光学厚度: τ(λ) = τ₀ × (550/λ)⁴
+    const tau = tau0 * Math.pow(550 / wl, 4) * airMass
+
+    // 散射到观察者的光 ∝ (1 - exp(-τ)) × 太阳谱 × (550/λ)⁴
+    // 简化: 散射的光在天空中混合, 近似为 τ × exp(-τ/2) (单次散射近似)
+    const scattered = tau * Math.exp(-tau * 0.5)
+
+    // 太阳光谱近似 (5800K黑体, 归一化)
+    const solarWeight = 1.0 // 简化为平坦谱 (CIE已包含视觉灵敏度)
+
+    const { r, g, b } = spectralRGB(wl)
+    const weight = scattered * solarWeight
+
+    sumR += r * weight
+    sumG += g * weight
+    sumB += b * weight
+    sumWeight += weight
   }
+
+  if (sumWeight <= 0) return 'rgb(20, 30, 60)'
+
+  // 归一化
+  const scale = 255 / Math.max(sumR, sumG, sumB, 1)
+  const R = Math.round(Math.min(255, sumR * scale))
+  const G = Math.round(Math.min(255, sumG * scale))
+  const B = Math.round(Math.min(255, sumB * scale))
+
+  return `rgb(${R}, ${G}, ${B})`
 }
 
 // ── 瑞利散射场景图 ──

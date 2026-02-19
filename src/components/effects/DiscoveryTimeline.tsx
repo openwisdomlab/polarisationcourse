@@ -294,7 +294,7 @@ export function DiscoveryTimeline({
           <p
             className={`
               text-[10px] italic
-              ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}
+              ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}
             `}
           >
             — {isZh ? currentEvent.scientistZh : currentEvent.scientistEn}
@@ -342,7 +342,7 @@ export function DiscoveryTimeline({
               aria-label={`Show event ${i + 1}`}
             />
           ))}
-          <span className={`text-[10px] ml-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+          <span className={`text-[10px] ml-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
             +{DISCOVERY_EVENTS.length - 5}
           </span>
         </div>
@@ -356,7 +356,7 @@ export function DiscoveryTimeline({
             ${
               theme === 'dark'
                 ? 'text-gray-500 hover:text-cyan-400'
-                : 'text-gray-400 hover:text-cyan-600'
+                : 'text-gray-500 hover:text-cyan-600'
             }
           `}
         >
@@ -372,7 +372,7 @@ export function DiscoveryTimeline({
             ${
               theme === 'dark'
                 ? 'text-gray-500 hover:text-white hover:bg-gray-700/50'
-                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-200/50'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
             }
           `}
           aria-label="Next discovery"

@@ -359,7 +359,7 @@ function PropertiesPanel() {
         </h3>
         <p className={cn(
           'text-xs',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           ID: {selectedComponent.id}
         </p>

@@ -1329,7 +1329,7 @@ function LiteratureWorkspace({ taskId }: { taskId: string }) {
           <span className={cn('text-sm font-medium', theme === 'dark' ? 'text-gray-200' : 'text-gray-700')}>
             {isZh ? activeSectionConfig.labelZh : activeSectionConfig.labelEn}
           </span>
-          <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             {currentSectionWords} {isZh ? '词' : 'words'}
           </span>
         </div>

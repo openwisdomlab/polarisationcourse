@@ -245,9 +245,9 @@ export const ESCAPE_ROOM_LEVELS: EscapeRoomLevel[] = [
     nameZh: '双折射室',
 
     storyIntro:
-      'This room is dominated by a massive calcite crystal - a birefringent material that splits light into two beams! The door has TWO locks, each requiring a beam with different polarization. One beam won\'t be enough...',
+      'This room is dominated by a Polarizing Beam Splitter (PBS) - a device that splits light into two beams with orthogonal polarizations! The door has TWO locks, each requiring a beam with different polarization. One beam won\'t be enough...',
     storyIntroZh:
-      '这个房间的中央是一块巨大的方解石——一种能将光分成两束的双折射材料！门上有两把锁，每把锁需要不同偏振的光束。一束光是不够的...',
+      '这个房间的中央是一台偏振分束器(PBS)——一种能将光按偏振方向分成两束的器件！门上有两把锁，每把锁需要不同偏振的光束。一束光是不够的...',
 
     storyComplete:
       "The crystal's birefringence creates ordinary and extraordinary rays with perpendicular polarizations. You've mastered the art of splitting light!",
@@ -255,9 +255,9 @@ export const ESCAPE_ROOM_LEVELS: EscapeRoomLevel[] = [
       '晶体的双折射产生了偏振方向垂直的寻常光和非常光。你已经掌握了分光的艺术！',
 
     description:
-      'The calcite splitter divides 45° polarized light into two beams: o-ray (0°) and e-ray (90°). Direct both beams to their matching sensors.',
+      'The PBS divides 45° polarized light into two beams: o-ray (0°) and e-ray (90°). Direct both beams to their matching sensors.',
     descriptionZh:
-      '方解石分光器将45°偏振光分成两束：寻常光（0°）和非常光（90°）。将两束光分别引导至对应的传感器。',
+      '偏振分束器(PBS)将45°偏振光分成两束：寻常光（0°）和非常光（90°）。将两束光分别引导至对应的传感器。',
 
     objective: 'Activate BOTH sensors - one needs 0° polarization, the other needs 90°',
     objectiveZh: '同时激活两个传感器——一个需要0°偏振，另一个需要90°',

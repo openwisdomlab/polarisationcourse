@@ -359,7 +359,7 @@ export function DemoQuiz({
                 ? 'bg-cyan-500 hover:bg-cyan-600 text-white'
                 : theme === 'dark'
                   ? 'bg-slate-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
             }`}
           >
             {t('quiz.submit')}

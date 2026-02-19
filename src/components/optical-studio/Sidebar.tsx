@@ -227,7 +227,7 @@ function ComponentPalette() {
 
   return (
     <div className="space-y-3">
-      <p className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+      <p className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
         {isZh ? '点击或拖动添加组件' : 'Click or drag to add components'}
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -339,7 +339,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
         <div className="flex-1 overflow-y-auto p-3">
           {activeTab === 'experiments' && (
             <div className="space-y-2">
-              <p className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <p className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 {isZh ? '选择经典实验加载到光路' : 'Select an experiment to load'}
               </p>
               {CLASSIC_EXPERIMENTS.map(exp => (
@@ -356,7 +356,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
 
           {activeTab === 'challenges' && (
             <div className="space-y-2">
-              <p className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <p className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 {isZh ? '完成目标解锁更多挑战' : 'Complete goals to unlock more'}
               </p>
               {CHALLENGES.map(challenge => (
@@ -372,7 +372,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
 
           {activeTab === 'tutorials' && (
             <div className="space-y-2">
-              <p className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <p className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 {isZh ? '交互式教程帮助入门' : 'Interactive tutorials to get started'}
               </p>
               {TUTORIALS.map(tutorial => (

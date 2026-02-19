@@ -596,7 +596,7 @@ export function IntensityIndicator({
           ) : (
             <LightbulbOff
               size={iconSizes[size]}
-              className={theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}
+              className={theme === 'dark' ? 'text-gray-600' : 'text-gray-500'}
             />
           )}
         </motion.div>

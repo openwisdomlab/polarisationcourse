@@ -301,7 +301,7 @@ function LoadDialog({ isOpen, onClose }: LoadDialogProps) {
         </div>
         <div className="flex-1 overflow-y-auto p-4">
           {savedDesigns.length === 0 ? (
-            <div className={cn('text-center py-8', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <div className={cn('text-center py-8', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {isZh ? '没有保存的设计' : 'No saved designs'}
             </div>
           ) : (
@@ -325,7 +325,7 @@ function LoadDialog({ isOpen, onClose }: LoadDialogProps) {
                         {design.description}
                       </p>
                     )}
-                    <p className={cn('text-xs mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+                    <p className={cn('text-xs mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                       {new Date(design.updatedAt).toLocaleDateString()} · {design.components.length} {isZh ? '组件' : 'components'}
                     </p>
                   </div>

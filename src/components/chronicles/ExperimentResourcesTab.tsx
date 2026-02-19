@@ -705,7 +705,7 @@ function ExperimentTopicCard({
           </h4>
           <p className={cn(
             'text-xs mb-2',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             {isZh ? topic.subtitleZh : topic.subtitleEn}
           </p>
@@ -730,7 +730,7 @@ function ExperimentTopicCard({
             </span>
             <ArrowRight className={cn(
               'w-4 h-4 ml-auto transition-transform group-hover:translate-x-1',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )} />
           </div>
         </div>
@@ -785,7 +785,7 @@ function CategoryExplorationCard({
           </h4>
           <span className={cn(
             'text-xs',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             {resourceCount} {isZh ? '个资源' : 'resources'}
           </span>
@@ -799,7 +799,7 @@ function CategoryExplorationCard({
       </p>
       <div className={cn(
         'text-xs italic flex items-center gap-1',
-        theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
       )}>
         <Lightbulb className="w-3 h-3" />
         {isZh ? config.explorationQuestionZh : config.explorationQuestionEn}
@@ -1062,7 +1062,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
             <div className="flex-1 min-w-[200px] relative">
               <Search className={cn(
                 'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )} />
               <input
                 type="text"
@@ -1164,7 +1164,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
                     </h3>
                     <span className={cn(
                       'text-sm',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}>
                       ({resources.length})
                     </span>
@@ -1210,7 +1210,7 @@ export function ExperimentResourcesTab({ theme, isZh }: ExperimentResourcesTabPr
           {filteredResources.length === 0 && (
             <div className={cn(
               'text-center py-12',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p className="text-lg font-medium mb-1">

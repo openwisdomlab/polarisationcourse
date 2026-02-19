@@ -8,7 +8,7 @@
  * - application: 完整显示斯托克斯参数和可视化
  * - research: 添加Mueller矩阵计算、高级分析
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -16,6 +16,9 @@ import { cn } from '@/lib/utils'
 import { SliderControl, ControlPanel, InfoCard, ValueDisplay } from '../DemoControls'
 import { DemoHeader, VisualizationPanel, InfoGrid, ChartPanel, StatCard } from '../DemoLayout'
 import { useDemoTheme } from '../demoThemeColors'
+
+// 延迟加载 3D 庞加莱球组件（R3F 较重）
+const PoincareSphere3D = lazy(() => import('@/components/shared/PoincareSphere3D'))
 
 // 难度级别类型
 type DifficultyLevel = 'foundation' | 'application' | 'research'
@@ -688,7 +691,8 @@ function MuellerMatrixDisplay({ stokes }: { stokes: StokesVector }) {
 
 // 主演示组件
 export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVectorDemoProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const isZh = i18n.language === 'zh'
   const { theme } = useTheme()
   const dt = useDemoTheme()
   const [intensity, setIntensity] = useState(1)
@@ -729,11 +733,46 @@ export function StokesVectorDemo({ difficultyLevel = 'application' }: StokesVect
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <VisualizationPanel variant="indigo" noPadding className="overflow-hidden">
               <PoincareSphereView stokes={stokes} t={t} />
+              {isFoundation && (
+                <div className={cn('text-center py-1 text-[10px]', dt.mutedTextClass)}>
+                  {isZh ? '2D 投影 — S\u2083 未显示' : '2D projection — S\u2083 not shown'}
+                </div>
+              )}
             </VisualizationPanel>
             <VisualizationPanel variant="indigo" noPadding className="overflow-hidden">
               <PolarizationEllipseView stokes={stokes} t={t} />
             </VisualizationPanel>
           </div>
+
+          {/* 3D 庞加莱球可视化 */}
+          {!isFoundation && (
+            <ChartPanel title={`${t('demos.stokes.ui.poincareSphere')} 3D`}>
+              <div className="flex flex-col items-center">
+                <Suspense fallback={
+                  <div className={cn(
+                    'w-[300px] h-[300px] flex items-center justify-center rounded-xl',
+                    dt.isDark ? 'bg-slate-800/50' : 'bg-gray-100'
+                  )}>
+                    <span className={cn('text-xs', dt.mutedTextClass)}>
+                      {isZh ? '加载3D视图...' : 'Loading 3D view...'}
+                    </span>
+                  </div>
+                }>
+                  <PoincareSphere3D
+                    s1={stokes.S0 > 0.01 ? stokes.S1 / stokes.S0 : 0}
+                    s2={stokes.S0 > 0.01 ? stokes.S2 / stokes.S0 : 0}
+                    s3={stokes.S0 > 0.01 ? stokes.S3 / stokes.S0 : 0}
+                    size={300}
+                    showLabels
+                    showGrid
+                  />
+                </Suspense>
+                <p className={cn('text-xs mt-2', dt.mutedTextClass)}>
+                  {isZh ? '拖动旋转球体 | 滚轮缩放' : 'Drag to rotate | Scroll to zoom'}
+                </p>
+              </div>
+            </ChartPanel>
+          )}
 
           {/* 斯托克斯矢量柱状图 */}
           <ChartPanel title={t('demos.stokes.ui.stokesVector')}>

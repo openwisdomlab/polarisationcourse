@@ -261,7 +261,7 @@ export function MichelLevyChart({ className }: PolarizerSourceProps) {
           {Array.from({ length: 5 }).map((_, i) => {
             const value = viewRange.start + (i / 4) * (viewRange.end - viewRange.start)
             return (
-              <span key={i} className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <span key={i} className={cn(theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 {Math.round(value)}nm
               </span>
             )

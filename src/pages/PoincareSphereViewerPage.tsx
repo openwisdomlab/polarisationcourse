@@ -495,7 +495,7 @@ export function PoincareSphereViewerPage() {
                 </div>
                 <div className={cn(
                   'text-sm',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}>
                   {isZh ? '拖动旋转 · 滚轮缩放' : 'Drag to rotate · Scroll to zoom'}
                 </div>

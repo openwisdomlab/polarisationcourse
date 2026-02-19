@@ -70,7 +70,7 @@ export function Footer() {
               <p
                 className={cn(
                   'text-xs',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}
               >
                 supported by Open Wisdom Lab
@@ -83,7 +83,7 @@ export function Footer() {
             <span
               className={cn(
                 'text-xs font-medium uppercase tracking-wider',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )}
             >
               {isZh ? '关于我们' : 'About'}

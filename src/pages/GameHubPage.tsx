@@ -109,7 +109,7 @@ function GameModeCard({ mode, featured = false }: GameModeCardProps) {
         <Icon className={cn(
           featured ? 'w-7 h-7' : 'w-6 h-6',
           isComingSoon
-            ? theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            ? theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             : 'text-white'
         )} />
       </div>

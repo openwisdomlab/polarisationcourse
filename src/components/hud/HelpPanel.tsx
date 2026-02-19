@@ -69,25 +69,45 @@ export function HelpPanel() {
             </ul>
           </section>
 
-          {/* Block Types */}
+          {/* Block Types - 带物理演示链接 */}
           <section>
             <h3 className="text-white font-semibold mb-2">🔷 {t('game.helpPanel.blockGuide')}</h3>
-            <ul className="space-y-1 text-muted-foreground">
+            <ul className="space-y-1.5 text-muted-foreground">
               <li><strong className="text-foreground">💡 {t('game.blocks.emitter')}</strong> - {t('game.helpPanel.emitterDesc')}</li>
-              <li><strong className="text-foreground">▤ {t('game.blocks.polarizer')}</strong> - {t('game.helpPanel.polarizerDesc')}</li>
+              <li className="flex items-start gap-1">
+                <span className="flex-1"><strong className="text-foreground">▤ {t('game.blocks.polarizer')}</strong> - {t('game.helpPanel.polarizerDesc')}</span>
+                <Link to="/demos/$demoId" params={{ demoId: 'malus' }} search={{ from: 'game' }} onClick={toggleHelp} className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors whitespace-nowrap">
+                  📖 Malus
+                </Link>
+              </li>
               <li><strong className="text-foreground">↻ {t('game.blocks.rotator')}</strong> - {t('game.helpPanel.rotatorDesc')}</li>
-              <li><strong className="text-foreground">◇ {t('game.blocks.splitter')}</strong> - {t('game.helpPanel.splitterDesc')}</li>
+              <li className="flex items-start gap-1">
+                <span className="flex-1"><strong className="text-foreground">◇ {t('game.blocks.splitter')}</strong> - {t('game.helpPanel.splitterDesc')}</span>
+                <Link to="/demos/$demoId" params={{ demoId: 'birefringence' }} search={{ from: 'game' }} onClick={toggleHelp} className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors whitespace-nowrap">
+                  📖 PBS
+                </Link>
+              </li>
               <li><strong className="text-foreground">◎ {t('game.blocks.sensor')}</strong> - {t('game.helpPanel.sensorDesc')}</li>
               <li><strong className="text-foreground">▯ {t('game.blocks.mirror')}</strong> - {t('game.helpPanel.mirrorDesc')}</li>
             </ul>
           </section>
 
-          {/* Advanced Block Types */}
+          {/* Advanced Block Types - 带物理演示链接 */}
           <section>
             <h3 className="text-white font-semibold mb-2">🔶 {t('game.helpPanel.advancedBlockGuide')}</h3>
-            <ul className="space-y-1 text-muted-foreground">
-              <li><strong className="text-foreground">¼ {t('game.blocks.quarterWave')}</strong> - {t('game.helpPanel.quarterWaveDesc')}</li>
-              <li><strong className="text-foreground">½ {t('game.blocks.halfWave')}</strong> - {t('game.helpPanel.halfWaveDesc')}</li>
+            <ul className="space-y-1.5 text-muted-foreground">
+              <li className="flex items-start gap-1">
+                <span className="flex-1"><strong className="text-foreground">¼ {t('game.blocks.quarterWave')}</strong> - {t('game.helpPanel.quarterWaveDesc')}</span>
+                <Link to="/demos/$demoId" params={{ demoId: 'waveplate' }} search={{ from: 'game' }} onClick={toggleHelp} className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors whitespace-nowrap">
+                  📖 QWP
+                </Link>
+              </li>
+              <li className="flex items-start gap-1">
+                <span className="flex-1"><strong className="text-foreground">½ {t('game.blocks.halfWave')}</strong> - {t('game.helpPanel.halfWaveDesc')}</span>
+                <Link to="/demos/$demoId" params={{ demoId: 'waveplate' }} search={{ from: 'game' }} onClick={toggleHelp} className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors whitespace-nowrap">
+                  📖 HWP
+                </Link>
+              </li>
               <li><strong className="text-foreground">⊠ {t('game.blocks.beamSplitter')}</strong> - {t('game.helpPanel.beamSplitterDesc')}</li>
               <li><strong className="text-foreground">▣ {t('game.blocks.absorber')}</strong> - {t('game.helpPanel.absorberDesc')}</li>
               <li><strong className="text-foreground">◉ {t('game.blocks.phaseShifter')}</strong> - {t('game.helpPanel.phaseShifterDesc')}</li>

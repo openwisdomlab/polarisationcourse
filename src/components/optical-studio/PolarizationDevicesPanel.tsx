@@ -157,7 +157,7 @@ function DeviceCard({ device, isExpanded, onToggle }: DeviceCardProps) {
         )}>
           <ChevronDown className={cn(
             'w-4 h-4',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )} />
         </div>
       </button>
@@ -291,7 +291,7 @@ function DeviceCard({ device, isExpanded, onToggle }: DeviceCardProps) {
               )}>
                 <span className={cn(
                   'text-[10px]',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}>
                   {isZh ? '相关器件:' : 'Related:'}
                 </span>
@@ -337,7 +337,7 @@ function DeviceCard({ device, isExpanded, onToggle }: DeviceCardProps) {
             ) : (
               <span className={cn(
                 'text-[10px]',
-                theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
               )}>
                 {isZh ? '仅供参考' : 'Reference only'}
               </span>
@@ -522,7 +522,7 @@ export function PolarizationDevicesPanel({ onClose, compact: _compact = false }:
         <div className="relative">
           <Search className={cn(
             'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )} />
           <input
             type="text"
@@ -573,7 +573,7 @@ export function PolarizationDevicesPanel({ onClose, compact: _compact = false }:
         {filteredDevices.length === 0 ? (
           <div className={cn(
             'text-center py-12',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             <Filter className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p className="text-sm">

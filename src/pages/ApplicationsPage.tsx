@@ -724,7 +724,7 @@ function ApplicationCard({
             {category && (
               <span className={cn(
                 'text-xs',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )}>
                 {isZh ? category.labelZh : category.labelEn}
               </span>
@@ -1138,7 +1138,7 @@ function NatureDetailModal({
           {phenomenon.species && (
             <p className={cn(
               'text-sm italic',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               {phenomenon.species}
             </p>

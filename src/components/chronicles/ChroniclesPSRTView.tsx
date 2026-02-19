@@ -244,7 +244,7 @@ function SectionContent({
             {isZh ? '历史发现' : 'Historical Discoveries'}
           </h4>
           {onNavigateToEvent && (
-            <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+            <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
               ({isZh ? '点击跳转时间线' : 'Click to view in timeline'})
             </span>
           )}
@@ -814,7 +814,7 @@ function CourseOverview({
                 {isZh ? unit.titleZh : unit.titleEn}
               </h4>
               <p className={`text-xs truncate ${
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               }`}>
                 {isZh ? unit.subtitleZh : unit.subtitleEn}
               </p>
@@ -847,7 +847,7 @@ function CourseOverview({
                   {isZh ? '含家庭实验' : 'Home Lab'}
                 </span>
               )}
-              <ChevronRight className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
+              <ChevronRight className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`} />
             </div>
           </button>
         ))}
@@ -857,7 +857,7 @@ function CourseOverview({
       <div className={`px-5 py-3 border-t ${
         theme === 'dark' ? 'border-slate-700 bg-slate-800/30' : 'border-gray-100 bg-gray-50/50'
       }`}>
-        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
           {isZh
             ? '课程内容由浅入深：第1单元建立基础概念，第2-4单元分别探讨界面反射、透明介质和浑浊介质的偏振特征，第5单元综合运用偏振测量技术。各单元均可独立探索。'
             : 'Course progression: Unit 1 establishes fundamentals, Units 2-4 explore polarization in reflection, transparent, and turbid media respectively, Unit 5 integrates quantitative polarimetry. Each unit can be explored independently.'}

@@ -118,7 +118,7 @@ export function ChapterSelector({
           </span>
           <span className={cn(
             'text-xs',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             {isZh ? '(选择章节筛选历史事件)' : '(Select chapters to filter events)'}
           </span>
@@ -210,7 +210,7 @@ export function ChapterSelector({
                 </div>
                 <div className={cn(
                   'text-[10px]',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}>
                   {unit.sections.length} {isZh ? '章节' : 'sections'} · {eventCount} {isZh ? '事件' : 'events'}
                 </div>

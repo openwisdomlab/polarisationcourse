@@ -895,6 +895,233 @@ function calculateNonIdealOutput(
   }
 }
 
+// ========================================
+// Ex/Ey 相位波形可视化
+// 展示波片前后的 Ex、Ey 分量及相位差变化
+// 底部偏振椭圆展示偏振态演变
+// ========================================
+
+// 生成偏振椭圆 SVG 路径（用于内联小型椭圆显示）
+function polarizationEllipsePath(
+  cx: number, cy: number, radius: number,
+  azimuthDeg: number, ellipticityRad: number,
+): string {
+  const a = radius
+  const b = Math.abs(Math.tan(ellipticityRad)) * radius || 1
+  const angle = (azimuthDeg * Math.PI) / 180
+  const pts: string[] = []
+  for (let i = 0; i <= 48; i++) {
+    const t = (i / 48) * 2 * Math.PI
+    const ex = a * Math.cos(t)
+    const ey = b * Math.sin(t)
+    const x = cx + ex * Math.cos(angle) - ey * Math.sin(angle)
+    const y = cy - (ex * Math.sin(angle) + ey * Math.cos(angle))
+    pts.push(i === 0 ? `M ${x.toFixed(1)} ${y.toFixed(1)}` : `L ${x.toFixed(1)} ${y.toFixed(1)}`)
+  }
+  return pts.join(' ') + ' Z'
+}
+
+function PhaseWaveformPanel({
+  waveplateType,
+  inputAngle,
+  fastAxisAngle,
+}: {
+  waveplateType: WaveplateType
+  inputAngle: number
+  fastAxisAngle: number
+}) {
+  const dt = useDemoTheme()
+
+  const result = useMemo(() => {
+    const inputJones = JonesVector.linearPolarizationDegrees(inputAngle, 1)
+    const ret = waveplateType === 'quarter' ? Math.PI / 2 : Math.PI
+    const matrix = JonesMatrix.waveplate(ret, fastAxisAngle * Math.PI / 180)
+    const outputJones = matrix.apply(inputJones)
+
+    const amp = (c: { real: number; imag: number }) =>
+      Math.sqrt(c.real * c.real + c.imag * c.imag)
+    const phi = (c: { real: number; imag: number }) =>
+      Math.atan2(c.imag, c.real)
+
+    const outExPhi = phi(outputJones.Ex)
+    const outEyPhi = phi(outputJones.Ey)
+    const phaseDiff = outEyPhi - outExPhi
+    const phaseDiffDeg = ((phaseDiff * 180 / Math.PI) % 360 + 360) % 360
+
+    // 使用 Stokes 矢量计算输出偏振态的方位角和椭率角
+    const outStokes = StokesVector.fromJonesVector(outputJones)
+    const outAzimuth = outStokes.orientationAngle // deg
+    const outEllipticity = outStokes.ellipticityAngle * (Math.PI / 180) // rad
+
+    // 输出偏振类型描述
+    const absEll = Math.abs(outStokes.ellipticityAngle)
+    let outTypeLabel: string
+    if (absEll < 2) outTypeLabel = `线偏振 ${outAzimuth.toFixed(0)}°`
+    else if (absEll > 43) outTypeLabel = outStokes.ellipticityAngle > 0 ? '右旋圆偏振' : '左旋圆偏振'
+    else outTypeLabel = outStokes.ellipticityAngle > 0 ? '右旋椭圆偏振' : '左旋椭圆偏振'
+
+    return {
+      inExAmp: amp(inputJones.Ex), inExPhi: phi(inputJones.Ex),
+      inEyAmp: amp(inputJones.Ey), inEyPhi: phi(inputJones.Ey),
+      outExAmp: amp(outputJones.Ex), outExPhi,
+      outEyAmp: amp(outputJones.Ey), outEyPhi,
+      phaseDiffDeg,
+      // 偏振椭圆参数
+      inAzimuth: inputAngle, // 线偏振输入，方位角即输入角
+      outAzimuth,
+      outEllipticity,
+      outTypeLabel,
+      outHandedness: outStokes.ellipticityAngle > 0.5 ? 'right' : outStokes.ellipticityAngle < -0.5 ? 'left' : 'none',
+    }
+  }, [waveplateType, inputAngle, fastAxisAngle])
+
+  const w = 560, h = 340, waveLen = 80, mA = 28
+  const midY1 = 65, midY2 = 195, leftX = 30
+  const divX = w / 2, rightEnd = w - 20
+
+  // 偏振椭圆区域参数
+  const ellipseY = 285   // 椭圆中心 y
+  const ellipseR = 22    // 椭圆半径
+  const inEllX = w / 4   // 输入椭圆 x
+  const outEllX = w * 3 / 4 // 输出椭圆 x
+
+  const makeWavePath = (sx: number, ex: number, cy: number, a: number, phi: number) => {
+    const pts: string[] = []
+    const steps = Math.round((ex - sx) / 1.5)
+    for (let i = 0; i <= steps; i++) {
+      const x = sx + (i / steps) * (ex - sx)
+      const y = cy - a * mA * Math.sin(2 * Math.PI * (x - sx) / waveLen + phi)
+      pts.push(i === 0 ? `M ${x.toFixed(1)} ${y.toFixed(1)}` : `L ${x.toFixed(1)} ${y.toFixed(1)}`)
+    }
+    return pts.join(' ')
+  }
+
+  const bgColor = dt.isDark ? '#0f172a' : '#f8fafc'
+  const gridColor = dt.isDark ? '#1e293b' : '#e2e8f0'
+  const textColor = dt.textSecondary
+  const labelColor = dt.isDark ? '#94a3b8' : '#64748b'
+  const wpColor = waveplateType === 'quarter' ? '#a78bfa' : '#f472b6'
+  const phaseLabel = waveplateType === 'quarter' ? 'δ = π/2 (QWP)' : 'δ = π (HWP)'
+
+  // 输出椭圆颜色（按旋向）
+  const outEllColor = result.outHandedness === 'right' ? '#22d3ee'
+    : result.outHandedness === 'left' ? '#f472b6'
+    : '#fbbf24'
+
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full">
+      <rect x={0} y={0} width={w} height={h} fill={bgColor} rx={10} />
+      <text x={w / 2} y={18} textAnchor="middle" fill={textColor} fontSize={11} fontWeight="600">
+        Ex / Ey 分量波形 (波片前后)
+      </text>
+
+      {/* 波片分隔线 */}
+      <line x1={divX} y1={28} x2={divX} y2={230} stroke={wpColor} strokeWidth={2} strokeDasharray="6,4" opacity={0.7} />
+      <text x={divX} y={242} textAnchor="middle" fill={wpColor} fontSize={9} fontWeight="600">
+        {waveplateType === 'quarter' ? 'λ/4 波片' : 'λ/2 波片'}
+      </text>
+
+      {/* 标签和中轴线 */}
+      <text x={8} y={midY1 + 4} fill="#fbbf24" fontSize={11} fontWeight="bold">Ex</text>
+      <text x={8} y={midY2 + 4} fill="#60a5fa" fontSize={11} fontWeight="bold">Ey</text>
+      <line x1={leftX} y1={midY1} x2={rightEnd} y2={midY1} stroke={gridColor} strokeWidth={0.8} />
+      <line x1={leftX} y1={midY2} x2={rightEnd} y2={midY2} stroke={gridColor} strokeWidth={0.8} />
+      <line x1={leftX} y1={130} x2={rightEnd} y2={130} stroke={gridColor} strokeWidth={0.5} strokeDasharray="4,4" />
+
+      {/* 输入波形 */}
+      <path d={makeWavePath(leftX, divX - 5, midY1, result.inExAmp, result.inExPhi)} fill="none" stroke="#fbbf24" strokeWidth={2} opacity={0.9} />
+      <path d={makeWavePath(leftX, divX - 5, midY2, result.inEyAmp, result.inEyPhi)} fill="none" stroke="#60a5fa" strokeWidth={2} opacity={0.9} />
+      <text x={leftX + 10} y={midY1 - mA - 6} fill={labelColor} fontSize={8}>
+        A={result.inExAmp.toFixed(2)}, φ={((result.inExPhi * 180 / Math.PI) % 360).toFixed(0)}°
+      </text>
+      <text x={leftX + 10} y={midY2 - mA - 6} fill={labelColor} fontSize={8}>
+        A={result.inEyAmp.toFixed(2)}, φ={((result.inEyPhi * 180 / Math.PI) % 360).toFixed(0)}°
+      </text>
+
+      {/* 输出波形 */}
+      <path d={makeWavePath(divX + 5, rightEnd, midY1, result.outExAmp, result.outExPhi)} fill="none" stroke="#fbbf24" strokeWidth={2.5} />
+      <path d={makeWavePath(divX + 5, rightEnd, midY2, result.outEyAmp, result.outEyPhi)} fill="none" stroke="#60a5fa" strokeWidth={2.5} />
+      <text x={divX + 10} y={midY1 - mA - 6} fill={labelColor} fontSize={8}>
+        A={result.outExAmp.toFixed(2)}, φ={((result.outExPhi * 180 / Math.PI) % 360).toFixed(0)}°
+      </text>
+      <text x={divX + 10} y={midY2 - mA - 6} fill={labelColor} fontSize={8}>
+        A={result.outEyAmp.toFixed(2)}, φ={((result.outEyPhi * 180 / Math.PI) % 360).toFixed(0)}°
+      </text>
+
+      {/* 相位差标注 */}
+      <rect x={rightEnd - 120} y={118} width={115} height={22} rx={6} fill={`${wpColor}26`} stroke={wpColor} strokeWidth={1} opacity={0.8} />
+      <text x={rightEnd - 62} y={133} textAnchor="middle" fill={wpColor} fontSize={10} fontWeight="bold">
+        {phaseLabel} | Δφ={result.phaseDiffDeg.toFixed(0)}°
+      </text>
+
+      {/* ── 偏振椭圆演变区域 ── */}
+      <line x1={20} y1={252} x2={w - 20} y2={252} stroke={gridColor} strokeWidth={0.5} />
+      <text x={w / 2} y={264} textAnchor="middle" fill={labelColor} fontSize={9}>
+        偏振态演变
+      </text>
+
+      {/* 输入偏振椭圆（线偏振 → 一条线） */}
+      <g>
+        <circle cx={inEllX} cy={ellipseY} r={ellipseR + 4} fill="none" stroke={gridColor} strokeWidth={0.5} strokeDasharray="3,3" />
+        <path
+          d={polarizationEllipsePath(inEllX, ellipseY, ellipseR, result.inAzimuth, 0)}
+          fill="rgba(251,191,36,0.08)"
+          stroke="#fbbf24"
+          strokeWidth={2}
+        />
+        <text x={inEllX} y={ellipseY + ellipseR + 14} textAnchor="middle" fill="#fbbf24" fontSize={8} fontWeight="600">
+          线偏振 {inputAngle}°
+        </text>
+      </g>
+
+      {/* 箭头：输入 → 输出 */}
+      <defs>
+        <marker id="phase-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill={wpColor} />
+        </marker>
+      </defs>
+      <line
+        x1={inEllX + ellipseR + 12} y1={ellipseY}
+        x2={outEllX - ellipseR - 12} y2={ellipseY}
+        stroke={wpColor}
+        strokeWidth={1.5}
+        markerEnd="url(#phase-arrow)"
+        opacity={0.7}
+      />
+      <text x={w / 2} y={ellipseY - 4} textAnchor="middle" fill={wpColor} fontSize={8}>
+        {waveplateType === 'quarter' ? 'λ/4' : 'λ/2'}
+      </text>
+
+      {/* 输出偏振椭圆 */}
+      <g>
+        <circle cx={outEllX} cy={ellipseY} r={ellipseR + 4} fill="none" stroke={gridColor} strokeWidth={0.5} strokeDasharray="3,3" />
+        <path
+          d={polarizationEllipsePath(outEllX, ellipseY, ellipseR, result.outAzimuth, result.outEllipticity)}
+          fill={`${outEllColor}14`}
+          stroke={outEllColor}
+          strokeWidth={2}
+        />
+        {/* 旋向箭头（仅非线偏振时） */}
+        {result.outHandedness !== 'none' && (
+          <path
+            d={result.outHandedness === 'right'
+              ? `M ${outEllX + 10} ${ellipseY} A 10 10 0 0 1 ${outEllX} ${ellipseY - 10}`
+              : `M ${outEllX + 10} ${ellipseY} A 10 10 0 0 0 ${outEllX} ${ellipseY + 10}`}
+            fill="none"
+            stroke={outEllColor}
+            strokeWidth={1.5}
+            markerEnd="url(#phase-arrow)"
+            opacity={0.7}
+          />
+        )}
+        <text x={outEllX} y={ellipseY + ellipseR + 14} textAnchor="middle" fill={outEllColor} fontSize={8} fontWeight="600">
+          {result.outTypeLabel}
+        </text>
+      </g>
+    </svg>
+  )
+}
+
 // 主演示组件
 export function WaveplateDemo() {
   const dt = useDemoTheme()
@@ -1340,6 +1567,31 @@ export function WaveplateDemo() {
           </ControlPanel>
         )}
       </div>
+
+      {/* Ex/Ey 分量相位波形 */}
+      <ChartPanel
+        title="Ex / Ey 分量相位变化"
+        subtitle={waveplateType === 'quarter' ? '四分之一波片 δ=π/2' : '二分之一波片 δ=π'}
+      >
+        <PhaseWaveformPanel
+          waveplateType={waveplateType}
+          inputAngle={inputAngle}
+          fastAxisAngle={fastAxisAngle}
+        />
+        <div className={cn('text-xs mt-2 space-y-1', dt.subtleTextClass)}>
+          <p>
+            <span className="inline-block w-3 h-0.5 bg-[#fbbf24] mr-1 align-middle" />
+            Ex (水平分量) &nbsp;
+            <span className="inline-block w-3 h-0.5 bg-[#60a5fa] mr-1 align-middle" />
+            Ey (垂直分量)
+          </p>
+          <p>
+            {waveplateType === 'quarter'
+              ? '波片引入 π/2 相位延迟：当 45° 线偏振入射时，Ex 和 Ey 等幅且相差 90°，形成圆偏振'
+              : '波片引入 π 相位延迟：Ey 分量反相，等效于偏振方向旋转'}
+          </p>
+        </div>
+      </ChartPanel>
 
       {/* 波片功能说明 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

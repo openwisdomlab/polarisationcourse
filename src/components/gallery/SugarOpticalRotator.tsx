@@ -279,7 +279,7 @@ export function SugarOpticalRotator({
             <div className={cn('text-lg font-mono font-semibold', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
               +{opticalRotation.sugarRotation}°
             </div>
-            <div className={cn('text-xs mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <div className={cn('text-xs mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {isZh ? '蔗糖是右旋糖' : 'Sucrose is dextrorotatory'}
             </div>
           </div>
@@ -296,7 +296,7 @@ export function SugarOpticalRotator({
               <div className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>
                 I = I₀ × cos²(θ - α)
               </div>
-              <div className={cn('text-xs mt-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <div className={cn('text-xs mt-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 {isZh
                   ? 'α = 旋光角（糖浓度相关）'
                   : 'α = rotation angle (depends on sugar concentration)'}

@@ -555,7 +555,7 @@ function ElementCard({
           </span>
           <span className={cn(
             'text-xs font-mono',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             @ {element.angle}{'\u00B0'}
           </span>
@@ -635,7 +635,7 @@ function MatrixDisplay({
   return (
     <ChartPanel title={type === 'mueller' ? t('demos.calculator.muellerSystem') : t('demos.calculator.jonesSystem')}>
       <div className="flex items-center justify-center">
-        <span className={cn('text-lg', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>[</span>
+        <span className={cn('text-lg', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>[</span>
         <div className={cn('grid gap-0.5', isMueller ? 'grid-cols-4' : 'grid-cols-2')}>
           {flatValues.map((val, i) => {
             const displayVal = isMueller
@@ -652,7 +652,7 @@ function MatrixDisplay({
                   isMueller ? 'w-14 h-6' : 'w-24 h-7',
                   absVal > 0.001
                     ? theme === 'dark' ? 'text-cyan-400 bg-cyan-400/10' : 'text-cyan-700 bg-cyan-50'
-                    : theme === 'dark' ? 'text-gray-600 bg-slate-800/50' : 'text-gray-400 bg-gray-50'
+                    : theme === 'dark' ? 'text-gray-600 bg-slate-800/50' : 'text-gray-500 bg-gray-50'
                 )}
               >
                 {displayVal}
@@ -660,7 +660,7 @@ function MatrixDisplay({
             )
           })}
         </div>
-        <span className={cn('text-lg', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>]</span>
+        <span className={cn('text-lg', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>]</span>
       </div>
     </ChartPanel>
   )
@@ -904,7 +904,7 @@ export function PolarizationCalculatorDemo({ difficultyLevel }: PolarizationCalc
             {elements.length === 0 && (
               <div className={cn(
                 'text-center py-6 text-sm rounded-2xl border border-dashed',
-                theme === 'dark' ? 'text-gray-500 border-slate-700' : 'text-gray-400 border-gray-300'
+                theme === 'dark' ? 'text-gray-500 border-slate-700' : 'text-gray-500 border-gray-300'
               )}>
                 {t('demos.calculator.noElements')}
               </div>

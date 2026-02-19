@@ -291,16 +291,16 @@ function StokesDisplay({ stokes, theme, label }: { stokes: StokesVector; theme: 
         'inline-flex items-center gap-1 p-2 rounded-lg font-mono text-sm',
         isDark ? 'bg-slate-800' : 'bg-gray-100'
       )}>
-        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-400')}>[</span>
+        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-500')}>[</span>
         <div className="flex flex-col gap-0.5">
           {stokes.map((val, i) => (
             <div key={i} className="flex items-center gap-1">
-              <span className={cn('text-xs', isDark ? 'text-gray-500' : 'text-gray-400')}>{labels[i]}=</span>
+              <span className={cn('text-xs', isDark ? 'text-gray-500' : 'text-gray-500')}>{labels[i]}=</span>
               <span className={isDark ? colors[i] : colors[i].replace('400', '600')}>{val.toFixed(3)}</span>
             </div>
           ))}
         </div>
-        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-400')}>]</span>
+        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-500')}>]</span>
       </div>
       {label && (
         <div className={cn('text-xs mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
@@ -320,7 +320,7 @@ function MatrixDisplay({ matrix, theme }: { matrix: number[]; theme: string }) {
       'inline-flex items-center gap-1 p-2 rounded-lg font-mono text-[10px]',
       isDark ? 'bg-slate-800' : 'bg-gray-100'
     )}>
-      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-400')}>[</span>
+      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-500')}>[</span>
       <div className="flex flex-col gap-0.5">
         {[0, 1, 2, 3].map(row => (
           <div key={row} className="flex gap-1.5">
@@ -334,7 +334,7 @@ function MatrixDisplay({ matrix, theme }: { matrix: number[]; theme: string }) {
                     'w-10 text-right',
                     isNonZero
                       ? isDark ? 'text-cyan-400' : 'text-cyan-600'
-                      : isDark ? 'text-gray-600' : 'text-gray-400'
+                      : isDark ? 'text-gray-600' : 'text-gray-500'
                   )}
                 >
                   {val.toFixed(2)}
@@ -344,7 +344,7 @@ function MatrixDisplay({ matrix, theme }: { matrix: number[]; theme: string }) {
           </div>
         ))}
       </div>
-      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-400')}>]</span>
+      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-500')}>]</span>
     </div>
   )
 }
@@ -706,7 +706,7 @@ export function MuellerCalculatorPage() {
 
             {/* Arrow + Combined Matrix */}
             <div className="flex items-center gap-2">
-              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
+              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
               {elements.length > 0 && combinedMatrix && (
                 <div className="text-center">
                   <div className={cn(
@@ -718,7 +718,7 @@ export function MuellerCalculatorPage() {
                   <MatrixDisplay matrix={combinedMatrix} theme={theme} />
                 </div>
               )}
-              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
+              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
             </div>
 
             {/* Output */}
@@ -876,7 +876,7 @@ export function MuellerCalculatorPage() {
               {elements.length === 0 ? (
                 <div className={cn(
                   'text-center py-8',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}>
                   <p className="text-sm">
                     {isZh
@@ -891,7 +891,7 @@ export function MuellerCalculatorPage() {
                       {index > 0 && (
                         <div className={cn(
                           'absolute -left-4 top-1/2 -translate-y-1/2 text-xs',
-                          theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                          theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
                         )}>
                           ×
                         </div>

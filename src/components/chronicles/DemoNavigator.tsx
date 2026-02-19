@@ -388,7 +388,7 @@ export function DemoNavigator({
                     </div>
                     <div className={cn(
                       'text-[10px]',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}>
                       {demos.length} {isZh ? '演示' : 'demos'}
                     </div>
@@ -561,7 +561,7 @@ export function DemoNavigator({
                                     {relatedEvents.length > 3 && (
                                       <span className={cn(
                                         'text-[9px]',
-                                        theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                        theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                                       )}>
                                         +{relatedEvents.length - 3}
                                       </span>
@@ -746,7 +746,7 @@ export function DemoNavigator({
                                           {relatedEvents.length > 4 && (
                                             <div className={cn(
                                               'text-[9px] text-center py-1',
-                                              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                                             )}>
                                               +{relatedEvents.length - 4} {isZh ? '更多事件' : 'more events'}
                                             </div>

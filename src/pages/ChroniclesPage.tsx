@@ -325,7 +325,7 @@ function CoolFactCard({ fact, theme, isZh }: { fact: CoolFact; theme: 'dark' | '
           {isZh ? fact.contentZh : fact.contentEn}
         </p>
         {fact.scientistEn && (
-          <p className={cn('text-[10px] italic mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <p className={cn('text-[10px] italic mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             — {isZh ? fact.scientistZh : fact.scientistEn}
           </p>
         )}
@@ -1093,7 +1093,7 @@ export function ChroniclesPage() {
                         )}
                         <span className={cn(
                           'text-xs font-mono',
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                         )}>
                           {event.year}
                         </span>
@@ -1121,7 +1121,7 @@ export function ChroniclesPage() {
                       {event.scene?.location && (
                         <p className={cn(
                           'text-xs mt-2 flex items-center gap-1',
-                          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                         )}>
                           <MapPin className="w-3 h-3" />
                           {event.scene.location}

@@ -144,7 +144,7 @@ function ExperimentCard({ experiment, onLoad, isActive }: ExperimentCardProps) {
             onClick={(e) => e.stopPropagation()}
             className={cn(
               'p-1 rounded transition-colors',
-              theme === 'dark' ? 'text-gray-500 hover:bg-slate-700' : 'text-gray-400 hover:bg-gray-100'
+              theme === 'dark' ? 'text-gray-500 hover:bg-slate-700' : 'text-gray-500 hover:bg-gray-100'
             )}
             title={isZh ? '查看演示' : 'View Demo'}
           >
@@ -267,7 +267,7 @@ function TutorialCard({ tutorial, onStart }: TutorialCardProps) {
           )}>
             {isZh ? tutorial.nameZh : tutorial.nameEn}
           </h4>
-          <p className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <p className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             {tutorial.steps.length} {isZh ? '步骤' : 'steps'}
           </p>
         </div>
@@ -589,25 +589,25 @@ function ComponentPalette() {
           : 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
       )}>
         <div className="flex items-center gap-1.5 mb-2">
-          <Search className={cn('w-3 h-3', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
+          <Search className={cn('w-3 h-3', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
           <span className={cn('text-[10px] font-semibold', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
             {isZh ? '快捷操作' : 'Quick Actions'}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[9px]">
-          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             <kbd className={cn('px-1 rounded', theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200')}>1-7</kbd>
             <span>{isZh ? '添加组件' : 'Add'}</span>
           </div>
-          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             <kbd className={cn('px-1 rounded', theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200')}>R</kbd>
             <span>{isZh ? '旋转' : 'Rotate'}</span>
           </div>
-          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             <kbd className={cn('px-1 rounded', theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200')}>Del</kbd>
             <span>{isZh ? '删除' : 'Delete'}</span>
           </div>
-          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <div className={cn('flex items-center gap-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             <kbd className={cn('px-1 rounded', theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200')}>Space</kbd>
             <span>{isZh ? '模拟' : 'Simulate'}</span>
           </div>
@@ -726,7 +726,7 @@ export function LeftPanel({ collapsed = false, onToggleCollapse }: LeftPanelProp
                 'p-2 rounded-lg transition-colors',
                 activeTab === tab.id
                   ? theme === 'dark' ? 'bg-violet-500/20 text-violet-400' : 'bg-violet-100 text-violet-700'
-                  : theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                  : theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'
               )}
               title={isZh ? tab.labelZh : tab.labelEn}
             >
@@ -742,7 +742,7 @@ export function LeftPanel({ collapsed = false, onToggleCollapse }: LeftPanelProp
           <div className="relative">
             <Search className={cn(
               'absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )} />
             <input
               type="text"
@@ -774,7 +774,7 @@ export function LeftPanel({ collapsed = false, onToggleCollapse }: LeftPanelProp
           {activeTab === 'experiments' && (
             <>
               {filteredExperiments.length === 0 ? (
-                <p className={cn('text-xs text-center py-4', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+                <p className={cn('text-xs text-center py-4', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                   {isZh ? '未找到实验' : 'No experiments found'}
                 </p>
               ) : (
@@ -793,7 +793,7 @@ export function LeftPanel({ collapsed = false, onToggleCollapse }: LeftPanelProp
           {activeTab === 'challenges' && (
             <>
               {filteredChallenges.length === 0 ? (
-                <p className={cn('text-xs text-center py-4', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+                <p className={cn('text-xs text-center py-4', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                   {isZh ? '未找到挑战' : 'No challenges found'}
                 </p>
               ) : (

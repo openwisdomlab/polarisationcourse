@@ -244,7 +244,7 @@ export function DeviceLibrary({
             <div className="relative flex-shrink-0">
               <Search className={cn(
                 'absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )} />
               <input
                 type="text"
@@ -263,7 +263,7 @@ export function DeviceLibrary({
                   onClick={() => setSearchQuery('')}
                   className={cn(
                     'absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded',
-                    theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                    theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'
                   )}
                 >
                   <X className="w-2.5 h-2.5" />
@@ -328,7 +328,7 @@ export function DeviceLibrary({
               />
             ))}
             {filteredDevices.length === 0 && (
-              <p className={cn('text-xs py-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <p className={cn('text-xs py-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 {isZh ? '未找到器件' : 'No devices found'}
               </p>
             )}

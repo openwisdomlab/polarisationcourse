@@ -137,7 +137,7 @@ export function ExperimentTools({ experimentId, className }: ExperimentToolsProp
         )} />
         <p className={cn(
           'text-sm',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           {isZh
             ? '此实验暂无数字工具。按照实验步骤使用物理材料进行实验。'

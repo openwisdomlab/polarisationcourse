@@ -52,17 +52,17 @@ export function useDemoTheme() {
     // ── Text Tailwind classes ──
     headingClass: isDark ? 'text-gray-200' : 'text-gray-700',
     bodyClass: isDark ? 'text-gray-300' : 'text-gray-600',
-    mutedTextClass: isDark ? 'text-gray-400' : 'text-gray-500',
+    mutedTextClass: isDark ? 'text-gray-400' : 'text-gray-600',
     subtleTextClass: isDark ? 'text-slate-400' : 'text-slate-500',
     accentTextClass: isDark ? 'text-cyan-400' : 'text-cyan-600',
 
     // ── SVG fill / stroke colors ──
     textPrimary: isDark ? '#e2e8f0' : '#1e293b',
     textSecondary: isDark ? '#9ca3af' : '#475569',
-    textMuted: isDark ? '#6b7280' : '#94a3b8',
+    textMuted: isDark ? '#6b7280' : '#64748b',
     gridStroke: isDark ? 'rgba(100,150,255,0.05)' : 'rgba(100,150,255,0.08)',
     gridStrokeStrong: isDark ? 'rgba(100,150,255,0.1)' : 'rgba(100,150,255,0.12)',
-    axisColor: isDark ? '#475569' : '#94a3b8',
+    axisColor: isDark ? '#475569' : '#64748b',
     gridLineColor: isDark ? '#334155' : '#e2e8f0',
     infoPanelBg: isDark ? 'rgba(30,41,59,0.9)' : 'rgba(241,245,249,0.95)',
     infoPanelStroke: isDark ? '#475569' : '#cbd5e1',
@@ -75,7 +75,7 @@ export function useDemoTheme() {
     // ── Misc SVG fills ──
     detectorFill: isDark ? '#1e293b' : '#f1f5f9',
     polarizerInactiveFill: isDark ? '#1e293b' : '#f1f5f9',
-    polarizerInactiveStroke: isDark ? '#475569' : '#94a3b8',
+    polarizerInactiveStroke: isDark ? '#475569' : '#64748b',
 
     // ── Intensity bar track ──
     barTrackClass: isDark ? 'bg-slate-700' : 'bg-slate-200',

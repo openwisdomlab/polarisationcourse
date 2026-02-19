@@ -1,6 +1,11 @@
 /**
  * 双折射效应演示 - Unit 1
  * 使用React Three Fiber 3D可视化，可自由拖动旋转
+ *
+ * 支持难度分层:
+ * - foundation: 隐藏公式，简化说明，显示WhyButton直观解释
+ * - application: 完整显示走离角、o光/e光标签、斯涅尔定律
+ * - research: Jones矩阵、Sellmeier色散数据、DataExportPanel
  */
 import { useState, useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
@@ -21,10 +26,18 @@ import {
   InfoGrid,
   StatCard,
   FormulaHighlight,
+  ChartPanel,
 } from '../DemoLayout'
 import { ThicknessVisualizer, StressComparator } from '@/components/gallery'
 import { FlaskConical, Box, Beaker } from 'lucide-react'
 import { PolarizationPhysics } from '@/hooks/usePolarizationSimulation'
+import type { DifficultyLevel } from '../DifficultyStrategy'
+import { WhyButton, DataExportPanel } from '../DifficultyStrategy'
+
+// 组件属性接口
+interface BirefringenceDemoProps {
+  difficultyLevel?: DifficultyLevel
+}
 
 // 光源组件
 function LightSource({ position }: { position: [number, number, number] }) {
@@ -512,10 +525,14 @@ const ENV_PRESETS = [
 ]
 
 // 主演示组件
-export function BirefringenceDemo() {
+export function BirefringenceDemo({ difficultyLevel = 'application' }: BirefringenceDemoProps) {
   const { i18n } = useTranslation()
   const dt = useDemoTheme()
   const isZh = i18n.language === 'zh'
+
+  // 判断难度级别
+  const isFoundation = difficultyLevel === 'foundation'
+  const isResearch = difficultyLevel === 'research'
 
   const [activeTab, setActiveTab] = useState<DemoTab>('theory')
   const [inputPolarization, setInputPolarization] = useState(45)
@@ -608,13 +625,30 @@ export function BirefringenceDemo() {
               </div>
             </VisualizationPanel>
 
-            {/* 核心公式 */}
-            <FormulaHighlight
-              formula="I_o = I_0 cos²θ     I_e = I_0 sin²θ     I_o + I_e = I_0"
-              description={isZh
-                ? 'θ 为入射偏振方向与光轴的夹角，能量严格守恒'
-                : 'θ is the angle between input polarization and optical axis, energy is strictly conserved'}
-            />
+            {/* 核心公式 - 基础难度隐藏 */}
+            {!isFoundation && (
+              <FormulaHighlight
+                formula="I_o = I_0 cos²θ     I_e = I_0 sin²θ     I_o + I_e = I_0"
+                description={isZh
+                  ? 'θ 为入射偏振方向与光轴的夹角，能量严格守恒'
+                  : 'θ is the angle between input polarization and optical axis, energy is strictly conserved'}
+              />
+            )}
+
+            {/* 基础难度: 简化说明 */}
+            {isFoundation && (
+              <WhyButton>
+                <div className="space-y-2 text-sm">
+                  <p>{isZh ? '晶体能把一束光分成两束！' : 'A crystal can split one beam into two!'}</p>
+                  <p>{isZh
+                    ? '这两束光的偏振方向互相垂直，被称为o光（寻常光）和e光（非寻常光）。'
+                    : 'These two beams have perpendicular polarizations, called o-ray (ordinary) and e-ray (extraordinary).'}</p>
+                  <p>{isZh
+                    ? '调整偏振角度可以改变两束光的亮度分配。'
+                    : 'Adjusting the polarization angle changes the brightness distribution between the two beams.'}</p>
+                </div>
+              </WhyButton>
+            )}
 
             {/* 分量强度统计卡片 */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -643,7 +677,10 @@ export function BirefringenceDemo() {
             </div>
 
             {/* 控制和信息面板 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className={cn(
+              'grid gap-5',
+              isFoundation ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+            )}>
               {/* 入射光参数 */}
               <ControlPanel title={isZh ? "入射光参数" : "Input Light"}>
                 <SliderControl
@@ -651,7 +688,7 @@ export function BirefringenceDemo() {
                   value={inputPolarization}
                   min={0}
                   max={180}
-                  step={5}
+                  step={isFoundation ? 15 : 5}
                   unit="°"
                   onChange={setInputPolarization}
                   color="orange"
@@ -681,62 +718,106 @@ export function BirefringenceDemo() {
                 </motion.button>
               </ControlPanel>
 
-              {/* 晶体控制 */}
+              {/* 晶体控制 - 基础难度简化 */}
               <ControlPanel title={isZh ? "晶体控制" : "Crystal Control"}>
-                <SliderControl
-                  label={isZh ? "晶体旋转" : "Crystal Rotation"}
-                  value={crystalRotation}
-                  min={-180}
-                  max={180}
-                  step={5}
-                  unit="°"
-                  onChange={setCrystalRotation}
-                  color="cyan"
-                />
+                {!isFoundation && (
+                  <SliderControl
+                    label={isZh ? "晶体旋转" : "Crystal Rotation"}
+                    value={crystalRotation}
+                    min={-180}
+                    max={180}
+                    step={5}
+                    unit="°"
+                    onChange={setCrystalRotation}
+                    color="cyan"
+                  />
+                )}
                 <SliderControl
                   label={isZh ? "光轴方向" : "Optical Axis"}
                   value={opticalAxisAngle}
                   min={0}
                   max={90}
-                  step={5}
+                  step={isFoundation ? 15 : 5}
                   unit="°"
                   onChange={setOpticalAxisAngle}
                   color="orange"
                 />
-                <div className={cn('text-xs mt-1', dt.mutedTextClass)}>
-                  <span>{isZh ? '有效偏振角 (θ): ' : 'Effective θ: '}</span>
-                  <span className={cn('font-mono', dt.isDark ? 'text-yellow-400' : 'text-yellow-600')}>
-                    {((inputPolarization - opticalAxisAngle + 180) % 180).toFixed(0)}°
-                  </span>
-                </div>
+                {!isFoundation && (
+                  <div className={cn('text-xs mt-1', dt.mutedTextClass)}>
+                    <span>{isZh ? '有效偏振角 (θ): ' : 'Effective θ: '}</span>
+                    <span className={cn('font-mono', dt.isDark ? 'text-yellow-400' : 'text-yellow-600')}>
+                      {((inputPolarization - opticalAxisAngle + 180) % 180).toFixed(0)}°
+                    </span>
+                  </div>
+                )}
               </ControlPanel>
 
-              {/* 环境介质 */}
-              <ControlPanel title={isZh ? "环境介质" : "Environment"}>
-                <SliderControl
-                  label={isZh ? "折射率 n" : "Refractive Index n"}
-                  value={envRefractiveIndex}
-                  min={1.0}
-                  max={2.0}
-                  step={0.01}
-                  unit=""
-                  onChange={setEnvRefractiveIndex}
-                  color="purple"
-                />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {ENV_PRESETS.map((preset) => (
-                    <PresetButton
-                      key={preset.value}
-                      label={isZh ? preset.label : preset.labelEn}
-                      isActive={Math.abs(envRefractiveIndex - preset.value) < 0.01}
-                      onClick={() => setEnvRefractiveIndex(preset.value)}
-                    />
-                  ))}
-                </div>
-              </ControlPanel>
+              {/* 环境介质 - 基础难度隐藏 */}
+              {!isFoundation && (
+                <ControlPanel title={isZh ? "环境介质" : "Environment"}>
+                  <SliderControl
+                    label={isZh ? "折射率 n" : "Refractive Index n"}
+                    value={envRefractiveIndex}
+                    min={1.0}
+                    max={2.0}
+                    step={0.01}
+                    unit=""
+                    onChange={setEnvRefractiveIndex}
+                    color="purple"
+                  />
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {ENV_PRESETS.map((preset) => (
+                      <PresetButton
+                        key={preset.value}
+                        label={isZh ? preset.label : preset.labelEn}
+                        isActive={Math.abs(envRefractiveIndex - preset.value) < 0.01}
+                        onClick={() => setEnvRefractiveIndex(preset.value)}
+                      />
+                    ))}
+                  </div>
+                </ControlPanel>
+              )}
             </div>
 
-            {/* 晶体参数信息 */}
+            {/* 研究级别: Jones矩阵和Sellmeier色散数据 */}
+            {isResearch && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <ChartPanel title={isZh ? '双折射晶体Jones矩阵' : 'Birefringent Crystal Jones Matrix'}>
+                  <div className={cn('p-3 rounded-lg font-mono text-xs', dt.isDark ? 'bg-slate-800/60 text-purple-300' : 'bg-gray-50 text-purple-700')}>
+                    <div className={cn('mb-2 font-medium font-sans', dt.mutedTextClass)}>
+                      {isZh ? '单轴晶体相位延迟矩阵:' : 'Uniaxial crystal phase retardation matrix:'}
+                    </div>
+                    <div className="leading-relaxed">
+                      <div>J = [exp(i·2π·no·d/λ), 0]</div>
+                      <div>{'    '}[0, exp(i·2π·ne·d/λ)]</div>
+                    </div>
+                    <div className={cn('mt-2 pt-2 border-t text-[10px]', dt.borderClass, dt.mutedTextClass)}>
+                      <p>no = {no.toFixed(4)}, ne = {ne.toFixed(4)}</p>
+                      <p>{isZh ? '相位差' : 'Phase diff'}: δ = 2π·(no - ne)·d/λ</p>
+                    </div>
+                  </div>
+                </ChartPanel>
+
+                <DataExportPanel
+                  title={isZh ? '双折射数据' : 'Birefringence Data'}
+                  titleZh="双折射数据"
+                  data={{
+                    'no': no,
+                    'ne': ne,
+                    'Δn': birefringence,
+                    'θ_input (°)': inputPolarization,
+                    'θ_axis (°)': opticalAxisAngle,
+                    'I_o': oIntensity,
+                    'I_e': eIntensity,
+                    'env_n': envRefractiveIndex,
+                    'separation_factor': separationFactor,
+                  }}
+                />
+              </div>
+            )}
+
+            {/* 晶体参数信息 - 基础难度隐藏详细数值 */}
+            {!isFoundation && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <InfoCard title={isZh ? "方解石参数" : "Calcite Properties"} color="cyan">
                 <div className={cn('grid grid-cols-2 gap-4 text-xs', dt.bodyClass)}>
@@ -801,6 +882,7 @@ export function BirefringenceDemo() {
                 </div>
               </InfoCard>
             </div>
+            )}
 
             {/* 现实应用场景 */}
             <InfoGrid columns={3}>

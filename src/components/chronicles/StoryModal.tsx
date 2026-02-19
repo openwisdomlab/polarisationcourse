@@ -101,7 +101,7 @@ export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }:
           {event.scene && (
             <div className={cn(
               'flex items-center gap-4 mt-2 text-xs',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               {event.scene.location && (
                 <span className="flex items-center gap-1">
@@ -141,7 +141,7 @@ export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }:
               {event.scientistBio?.birthYear && event.scientistBio?.deathYear && (
                 <span className={cn(
                   'text-sm',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}>
                   ({event.scientistBio.birthYear} - {event.scientistBio.deathYear})
                 </span>
@@ -188,7 +188,7 @@ export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }:
               {event.scientistBio.nationality && (
                 <p className={cn(
                   'text-xs mt-2',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}>
                   {isZh ? '国籍' : 'Nationality'}: {event.scientistBio.nationality}
                 </p>
@@ -315,7 +315,7 @@ export function StoryModal({ event, onClose, onNext, onPrev, hasNext, hasPrev }:
 
           <span className={cn(
             'text-sm',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             {isZh ? '按 ← → 键导航 · ESC 关闭' : 'Press ← → to navigate · ESC to close'}
           </span>

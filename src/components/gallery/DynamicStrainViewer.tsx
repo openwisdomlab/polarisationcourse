@@ -223,7 +223,7 @@ export function DynamicStrainViewer({
                     }}
                   >
                     <div className="flex items-start gap-2">
-                      <Icon className={cn('w-4 h-4 mt-0.5 flex-shrink-0', isActive ? style.color : 'text-gray-400')} />
+                      <Icon className={cn('w-4 h-4 mt-0.5 flex-shrink-0', isActive ? style.color : 'text-gray-500')} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <span className={cn(
@@ -236,7 +236,7 @@ export function DynamicStrainViewer({
                           </span>
                           <span className={cn(
                             'text-xs font-mono flex-shrink-0',
-                            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                           )}>
                             {annotation.time}s
                           </span>
@@ -262,7 +262,7 @@ export function DynamicStrainViewer({
               'px-4 py-3 border-t',
               theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
             )}>
-              <div className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+              <div className={cn('text-xs mb-2', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                 {isZh ? '图例' : 'Legend'}
               </div>
               <div className="flex flex-wrap gap-3">

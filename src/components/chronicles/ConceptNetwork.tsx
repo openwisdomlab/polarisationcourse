@@ -303,7 +303,7 @@ export function ConceptNetwork({ theme, onNavigateToEvent, onFilterByYears }: Co
                   <div className="flex items-center justify-between text-xs">
                     <div className={cn(
                       'flex items-center gap-1',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}>
                       <Network className="w-3 h-3" />
                       <span>{connections.length} {isZh ? '个关联' : 'connections'}</span>
@@ -687,7 +687,7 @@ export function ConceptNetwork({ theme, onNavigateToEvent, onFilterByYears }: Co
             ) : (
               <div className={cn(
                 'h-full flex flex-col items-center justify-center text-center p-4',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )}>
                 <Lightbulb className="w-12 h-12 mb-3 opacity-50" />
                 <p className="text-sm">

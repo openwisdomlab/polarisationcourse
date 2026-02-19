@@ -284,7 +284,7 @@ function EmptyState() {
           'w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4',
           theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'
         )}>
-          <Layers className={cn('w-8 h-8', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')} />
+          <Layers className={cn('w-8 h-8', theme === 'dark' ? 'text-gray-600' : 'text-gray-500')} />
         </div>
         <h3 className={cn('text-lg font-semibold mb-2', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
           {isZh ? '开始设计光路' : 'Start Designing'}
@@ -326,7 +326,7 @@ function SelectedComponentInfo({ component }: SelectedComponentInfoProps) {
           <h4 className={cn('font-semibold text-sm', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
             {isZh ? paletteItem.nameZh : paletteItem.nameEn}
           </h4>
-          <p className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <p className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             {isZh ? `角度: ${component.rotation}°` : `Angle: ${component.rotation}°`}
             {component.properties.angle !== undefined && (
               <span className="ml-2">

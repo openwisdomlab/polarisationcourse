@@ -1017,7 +1017,7 @@ function ArtGenerator() {
             </div>
             <p className={cn(
               'text-xs mt-1',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               {crystalAxisMode === 'uniaxial'
                 ? (isZh ? '单轴晶体：黑十字等色环（石英、方解石）' : 'Uniaxial: Black cross isogyre (Quartz, Calcite)')
@@ -1058,7 +1058,7 @@ function ArtGenerator() {
                     'text-[10px] mt-0.5',
                     materialPreset === material.id
                       ? 'text-pink-200'
-                      : theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      : theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                   )}>
                     Δn={material.birefringence}
                   </div>
@@ -1118,7 +1118,7 @@ function ArtGenerator() {
           </div>
           <p className={cn(
             'text-xs mt-1',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             {isZh
               ? '旋转虚拟检偏器以改变干涉颜色'
@@ -1250,7 +1250,7 @@ function ArtGenerator() {
           {/* Export hints */}
           <p className={cn(
             'text-xs text-center',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             {isZh
               ? 'PNG 2K: 2048×2048 高清壁纸 | 动画帧: 可转换为GIF'
@@ -1611,14 +1611,14 @@ function ExperimentCard({
       <div className="flex items-center gap-3 text-xs">
         <span className={cn(
           'flex items-center gap-1',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           <Clock className="w-3.5 h-3.5" />
           {experiment.duration} min
         </span>
         <span className={cn(
           'flex items-center gap-1',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           <DollarSign className="w-3.5 h-3.5" />
           {cost.icon}
@@ -2022,7 +2022,7 @@ function GalleryCard({ work }: { work: GalleryWork }) {
         'aspect-video flex items-center justify-center relative',
         theme === 'dark' ? 'bg-gradient-to-br from-slate-700 to-slate-800' : 'bg-gradient-to-br from-gray-100 to-gray-200'
       )}>
-        <ImageIcon className={cn('w-12 h-12', theme === 'dark' ? 'text-slate-600' : 'text-gray-400')} />
+        <ImageIcon className={cn('w-12 h-12', theme === 'dark' ? 'text-slate-600' : 'text-gray-500')} />
         {work.featured && (
           <span className={cn(
             'absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-medium',
@@ -2049,7 +2049,7 @@ function GalleryCard({ work }: { work: GalleryWork }) {
 
         <p className={cn(
           'text-xs mb-2',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           {isZh ? work.authorZh : work.authorEn}
         </p>
@@ -2063,7 +2063,7 @@ function GalleryCard({ work }: { work: GalleryWork }) {
 
         <div className="flex items-center gap-1">
           <Heart className={cn('w-3.5 h-3.5', theme === 'dark' ? 'text-rose-400' : 'text-rose-500')} />
-          <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             {work.likes}
           </span>
         </div>
@@ -2114,14 +2114,14 @@ function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
       <div className="flex items-center gap-4 text-xs mb-3">
         <span className={cn(
           'flex items-center gap-1',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           <Clock className="w-3.5 h-3.5" />
           {tutorial.duration} {isZh ? '分钟' : 'min'}
         </span>
         <span className={cn(
           'flex items-center gap-1',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           <Layers className="w-3.5 h-3.5" />
           {tutorial.steps} {isZh ? '步骤' : 'steps'}

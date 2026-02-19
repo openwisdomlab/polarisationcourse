@@ -614,7 +614,7 @@ export default function LearningHubPage() {
       {[1, 2, 3].map(i => (
         <Star
           key={i}
-          className={`w-3 h-3 ${i <= level ? 'fill-current text-amber-400' : 'text-gray-400'}`}
+          className={`w-3 h-3 ${i <= level ? 'fill-current text-amber-400' : 'text-gray-500'}`}
         />
       ))}
     </div>

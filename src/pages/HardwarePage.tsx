@@ -430,7 +430,7 @@ function BOMTable({ config, language }: BOMTableProps) {
                   {item.notes && (
                     <p className={cn(
                       'text-xs',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}>
                       {isZh ? item.notesZh || item.notes : item.notes}
                     </p>

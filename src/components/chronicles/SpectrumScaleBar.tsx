@@ -177,7 +177,7 @@ export function SpectrumScaleBar({ activeBranch, theme, isZh, onHover }: Spectru
             >
               <span className={cn(
                 'text-[9px]',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )}>
                 {scale.label}
               </span>
@@ -188,7 +188,7 @@ export function SpectrumScaleBar({ activeBranch, theme, isZh, onHover }: Spectru
 
       {/* 波长方向指示 */}
       <div className="flex justify-between mt-2 px-2">
-        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
           {isZh ? '← 长波 (低能)' : '← Long λ (Low E)'}
         </span>
         <motion.span
@@ -202,7 +202,7 @@ export function SpectrumScaleBar({ activeBranch, theme, isZh, onHover }: Spectru
         >
           {isZh ? '可见光区' : 'Visible Light'}
         </motion.span>
-        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+        <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
           {isZh ? '短波 (高能) →' : 'Short λ (High E) →'}
         </span>
       </div>

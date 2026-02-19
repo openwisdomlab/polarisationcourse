@@ -86,7 +86,7 @@ function FormulasSection() {
           </span>
         ))}
         {!expanded && currentFormulas.length > 3 && (
-          <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             +{currentFormulas.length - 3}
           </span>
         )}
@@ -192,7 +192,7 @@ export function StatusBar() {
         {/* Stats */}
         <div className={cn(
           'flex items-center gap-3 text-[10px]',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           <span className="flex items-center gap-1">
             <Zap className="w-3 h-3" />
@@ -226,7 +226,7 @@ export function StatusBar() {
           'hidden md:flex items-center border-l pl-2',
           theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
         )}>
-          <BookOpen className={cn('w-3.5 h-3.5 mr-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
+          <BookOpen className={cn('w-3.5 h-3.5 mr-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
           {principles.map((p, idx) => (
             <PrincipleMini key={idx} {...p} />
           ))}

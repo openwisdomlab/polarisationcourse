@@ -1452,7 +1452,7 @@ function DemoLoading() {
         )} />
         <p className={cn(
           'text-sm',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           {t('common.loading')}
         </p>
@@ -2078,7 +2078,7 @@ export function DemosPage() {
             <div className="relative">
               <Search className={cn(
                 'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )} />
               <input
                 type="text"
@@ -2100,7 +2100,7 @@ export function DemosPage() {
                     'absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full transition-colors',
                     theme === 'dark'
                       ? 'text-gray-500 hover:text-gray-300 hover:bg-slate-700'
-                      : 'text-gray-400 hover:text-gray-600 hover:bg-gray-200'
+                      : 'text-gray-500 hover:text-gray-600 hover:bg-gray-200'
                   )}
                 >
                   <X className="w-3 h-3" />
@@ -2159,7 +2159,7 @@ export function DemosPage() {
                             'text-[9px] font-normal tabular-nums',
                             unitCompletedCount === unitTotalCount && unitTotalCount > 0
                               ? 'text-emerald-400'
-                              : theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                              : theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
                           )}>
                             {t('learningPaths.unitProgress', { completed: unitCompletedCount, total: unitTotalCount })}
                           </span>
@@ -2212,7 +2212,7 @@ export function DemosPage() {
                                   : !isAvailable && !isCompleted
                                     ? theme === 'dark'
                                       ? 'text-gray-600 hover:bg-slate-800/30 hover:text-gray-500'
-                                      : 'text-gray-400 hover:bg-gray-50 hover:text-gray-500'
+                                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-500'
                                     : theme === 'dark'
                                       ? 'text-gray-400 hover:bg-slate-800/50 hover:text-white'
                                       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -2295,7 +2295,7 @@ export function DemosPage() {
                                   {demoMatches.matches.length > 3 && (
                                     <span className={cn(
                                       'text-[10px]',
-                                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                                      theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
                                     )}>
                                       +{demoMatches.matches.length - 3} {t('gallery.search.moreMatches') || '更多匹配'}
                                     </span>
@@ -2632,7 +2632,7 @@ export function DemosPage() {
                     </button>
                     <span className={cn(
                       'text-xs',
-                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
                     )}>
                       {t('demos.markCompleteHint', 'This unlocks related demos')}
                     </span>

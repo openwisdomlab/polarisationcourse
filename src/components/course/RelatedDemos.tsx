@@ -225,7 +225,7 @@ export function RelatedDemos({
                   ? 'bg-green-500/20 text-green-500'
                   : theme === 'dark'
                     ? 'bg-slate-700 text-gray-500'
-                    : 'bg-gray-200 text-gray-400'
+                    : 'bg-gray-200 text-gray-500'
               }`}>
                 {demo.isCompleted ? (
                   <CheckCircle className="w-4 h-4" />
@@ -273,7 +273,7 @@ export function RelatedDemos({
                       ? 'text-yellow-500'
                       : theme === 'dark'
                         ? 'text-gray-400 hover:text-yellow-500'
-                        : 'text-gray-400 hover:text-yellow-500'
+                        : 'text-gray-500 hover:text-yellow-500'
                   }`}
                 >
                   <Bookmark
@@ -285,7 +285,7 @@ export function RelatedDemos({
 
               {/* 箭头 */}
               <ChevronRight className={`w-4 h-4 flex-shrink-0 transition-transform group-hover:translate-x-1 ${
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               }`} />
             </Link>
           </motion.div>

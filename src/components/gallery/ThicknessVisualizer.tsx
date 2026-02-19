@@ -270,10 +270,10 @@ export function ThicknessVisualizer({
               </div>
               {/* Scale labels */}
               <div className="flex justify-between mt-1">
-                <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+                <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                   0nm
                 </span>
-                <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+                <span className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                   1200nm
                 </span>
               </div>
@@ -325,7 +325,7 @@ export function ThicknessVisualizer({
                 <div className={cn('text-sm font-mono', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>
                   R = n × d × (n<sub>e</sub> - n<sub>o</sub>)
                 </div>
-                <div className={cn('text-xs mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+                <div className={cn('text-xs mt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
                   {isZh ? 'n=层数, d=厚度, n=双折射率' : 'n=layers, d=thickness, n=birefringence'}
                 </div>
               </div>

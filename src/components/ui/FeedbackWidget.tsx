@@ -344,7 +344,7 @@ export function FeedbackWidget() {
                   <p
                     className={cn(
                       'mt-2 text-xs',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}
                   >
                     {selectedTypeOption.goesToIssue
@@ -422,7 +422,7 @@ export function FeedbackWidget() {
                         : 'text-emerald-600'
                       : theme === 'dark'
                       ? 'text-gray-500'
-                      : 'text-gray-400'
+                      : 'text-gray-500'
                   )}
                 >
                   {content.length} / {MIN_CONTENT_LENGTH}+ {isZh ? '字符' : 'characters'}
@@ -445,7 +445,7 @@ export function FeedbackWidget() {
                   isSubmitting || !selectedType
                     ? theme === 'dark'
                       ? 'bg-slate-700 text-gray-500 cursor-not-allowed'
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-100 text-gray-500 cursor-not-allowed'
                     : theme === 'dark'
                     ? 'bg-cyan-600 hover:bg-cyan-500 text-white focus:ring-cyan-500 focus:ring-offset-slate-800'
                     : 'bg-cyan-500 hover:bg-cyan-400 text-white focus:ring-cyan-500 focus:ring-offset-white'

@@ -113,7 +113,7 @@ export function ModuleTabs({ tabs, colorTheme = 'purple', className }: ModuleTab
               className={cn(
                 'flex-1 min-w-[120px] px-4 py-2.5 rounded-lg border-2 border-transparent',
                 'opacity-50 cursor-not-allowed',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )}
             >
               {content}

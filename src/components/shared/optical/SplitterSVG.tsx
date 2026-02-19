@@ -48,7 +48,7 @@ export function SplitterSVG({
           <text x="5.5" y="0.5" textAnchor="start" fill="#ff4444" fontSize="1.5">o</text>
           <text x="0.5" y="-5" textAnchor="start" fill="#44ff44" fontSize="1.5">e</text>
           <text y="7" textAnchor="middle" fill="#22d3ee" fontSize="2">
-            Calcite
+            PBS
           </text>
         </>
       )}

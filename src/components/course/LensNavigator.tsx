@@ -505,7 +505,7 @@ export function LensNavigator({
         <motion.div
           className={cn(
             'absolute text-xs',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400',
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
             position === 'bottom'
               ? 'bottom-2 left-1/2 -translate-x-1/2'
               : 'bottom-4 left-1/2 -translate-x-1/2'

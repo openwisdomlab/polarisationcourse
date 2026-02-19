@@ -344,8 +344,8 @@ function PrincipleDetailCard({ principle, onClose }: PrincipleDetailCardProps) {
           theme === 'dark' ? 'bg-slate-800/50' : 'bg-gray-50'
         )}>
           <div className="flex items-center gap-1.5 mb-2">
-            <BookOpen className={cn('w-3 h-3', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
-            <span className={cn('text-[10px] font-semibold uppercase tracking-wide', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <BookOpen className={cn('w-3 h-3', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
+            <span className={cn('text-[10px] font-semibold uppercase tracking-wide', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {isZh ? '原理示意' : 'Diagram'}
             </span>
           </div>
@@ -483,7 +483,7 @@ function PrincipleMiniDiagram({ principleId }: { principleId: string }) {
         <polygon points="60,18 100,18 110,62 50,62" fill="url(#crystalGrad)" opacity="0.7" />
         <polygon points="60,18 100,18 110,62 50,62" fill="none" stroke={isDark ? '#a78bfa' : '#8b5cf6'} strokeWidth="1.5" />
         {/* Crystal label */}
-        <text x="80" y="44" fontSize="8" fill="white" textAnchor="middle" fontWeight="bold">Calcite</text>
+        <text x="80" y="44" fontSize="8" fill="white" textAnchor="middle" fontWeight="bold">PBS</text>
         {/* o-ray (ordinary) */}
         <line x1="110" y1="30" x2="175" y2="18" stroke="#ff4444" strokeWidth="2.5" strokeLinecap="round" />
         <circle cx="180" cy="16" r="5" fill="#ff4444" opacity="0.3" />
@@ -583,7 +583,7 @@ function OpticalPathsContent() {
             <span className={cn('text-xs font-medium', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
               {isZh ? path.nameZh : path.nameEn}
             </span>
-            <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {isZh ? path.descZh : path.descEn}
             </span>
           </div>
@@ -607,7 +607,7 @@ function OpticalPathsContent() {
         </div>
       ))}
 
-      <div className={cn('text-[10px] text-center pt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+      <div className={cn('text-[10px] text-center pt-1', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
         💡 {isZh ? '点击光路模板快速搭建' : 'Click template to quickly build'}
       </div>
     </div>
@@ -735,7 +735,7 @@ export function PrinciplesPanel() {
             <span className={cn('text-xs font-semibold', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
               {isZh ? '光学原理' : 'Optical Principles'}
             </span>
-            <p className={cn('text-[9px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <p className={cn('text-[9px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {isZh ? '点击展开详情' : 'Click for details'}
             </p>
           </div>
@@ -791,14 +791,14 @@ export function PrinciplesPanel() {
           'flex items-center justify-between px-3 py-2 border-t rounded-b-2xl',
           theme === 'dark' ? 'bg-slate-800/30 border-slate-700/50' : 'bg-gray-50 border-gray-200'
         )}>
-          <span className={cn('text-[9px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <span className={cn('text-[9px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             <kbd className={cn(
               'px-1.5 py-0.5 rounded text-[9px] font-mono',
               theme === 'dark' ? 'bg-slate-700 text-gray-400' : 'bg-white text-gray-500 border border-gray-200'
             )}>P</kbd>
             {' '}{isZh ? '切换' : 'toggle'}
           </span>
-          <span className={cn('text-[9px]', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
+          <span className={cn('text-[9px]', theme === 'dark' ? 'text-gray-600' : 'text-gray-500')}>
             {isZh ? '4个核心定律' : '4 Core Laws'}
           </span>
         </div>
@@ -842,7 +842,7 @@ export function PrinciplesPanel() {
             <span className={cn('text-sm font-bold', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
               {isZh ? '光学原理' : 'Optical Principles'}
             </span>
-            <p className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <p className={cn('text-[10px]', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {isZh ? '偏振光学四大定律' : 'Four Laws of Polarization'}
             </p>
           </div>

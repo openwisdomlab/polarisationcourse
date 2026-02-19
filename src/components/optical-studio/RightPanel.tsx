@@ -738,7 +738,7 @@ export function RightPanel({
           {!hasContent && (
             <div className={cn(
               'flex flex-col items-center justify-center py-8 text-center',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               <AlertCircle className="w-8 h-8 mb-2 opacity-50" />
               <p className="text-xs">

@@ -423,10 +423,10 @@ export function ThermalStressPlayer({
 
           {/* Time labels */}
           <div className="flex justify-between px-1">
-            <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               0s
             </span>
-            <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+            <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
               {totalDuration}s
             </span>
           </div>

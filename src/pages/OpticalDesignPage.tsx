@@ -194,7 +194,7 @@ function ModuleCard({ module, isActive, onClick }: ModuleCardProps) {
         <ChevronRight className={cn(
           'w-4 h-4 transition-transform',
           isActive && 'rotate-90',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )} />
       </div>
     </button>
@@ -284,7 +284,7 @@ function PrinciplesReference() {
         <ChevronRight className={cn(
           'w-4 h-4 transition-transform duration-300',
           expanded && 'rotate-90',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )} />
       </button>
 
@@ -349,7 +349,7 @@ function PrinciplesReference() {
               </div>
               <ArrowRight className={cn(
                 'w-4 h-4',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )} />
             </Link>
           ))}
@@ -514,7 +514,7 @@ export function OpticalDesignPage() {
             <div
               className={cn(
                 'text-xs font-medium uppercase tracking-wider mb-2',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )}
             >
               {t('opticalDesign.modulesLabel')}

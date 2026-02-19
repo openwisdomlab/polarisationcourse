@@ -319,7 +319,7 @@ function MatrixDisplay({ matrix, theme }: { matrix: JonesMatrix; theme: string }
       'inline-flex items-center gap-1 p-2 rounded-lg font-mono text-xs',
       isDark ? 'bg-slate-800' : 'bg-gray-100'
     )}>
-      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-400')}>[</span>
+      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-500')}>[</span>
       <div className="flex flex-col gap-0.5">
         <div className="flex gap-2">
           <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>{complex.toString(matrix.a, 2)}</span>
@@ -330,7 +330,7 @@ function MatrixDisplay({ matrix, theme }: { matrix: JonesMatrix; theme: string }
           <span className={isDark ? 'text-purple-400' : 'text-purple-600'}>{complex.toString(matrix.d, 2)}</span>
         </div>
       </div>
-      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-400')}>]</span>
+      <span className={cn('text-2xl', isDark ? 'text-gray-500' : 'text-gray-500')}>]</span>
     </div>
   )
 }
@@ -345,12 +345,12 @@ function VectorDisplay({ vector, theme, label }: { vector: JonesVector; theme: s
         'inline-flex items-center gap-1 p-2 rounded-lg font-mono text-sm',
         isDark ? 'bg-slate-800' : 'bg-gray-100'
       )}>
-        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-400')}>[</span>
+        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-500')}>[</span>
         <div className="flex flex-col gap-0.5">
           <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>{complex.toString(vector.Ex)}</span>
           <span className={isDark ? 'text-green-400' : 'text-green-600'}>{complex.toString(vector.Ey)}</span>
         </div>
-        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-400')}>]</span>
+        <span className={cn('text-xl', isDark ? 'text-gray-500' : 'text-gray-500')}>]</span>
       </div>
       {label && (
         <div className={cn('text-xs mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
@@ -629,7 +629,7 @@ export function JonesCalculatorPage() {
 
             {/* Arrow + Elements */}
             <div className="flex items-center gap-2">
-              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
+              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
               {elements.length > 0 && combinedMatrix && (
                 <div className="text-center">
                   <div className={cn(
@@ -641,7 +641,7 @@ export function JonesCalculatorPage() {
                   <MatrixDisplay matrix={combinedMatrix} theme={theme} />
                 </div>
               )}
-              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
+              <ArrowRight className={cn('w-6 h-6', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
             </div>
 
             {/* Output */}
@@ -799,7 +799,7 @@ export function JonesCalculatorPage() {
               {elements.length === 0 ? (
                 <div className={cn(
                   'text-center py-8',
-                  theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                  theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 )}>
                   <p className="text-sm">
                     {isZh
@@ -814,7 +814,7 @@ export function JonesCalculatorPage() {
                       {index > 0 && (
                         <div className={cn(
                           'absolute -left-4 top-1/2 -translate-y-1/2 text-xs',
-                          theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                          theme === 'dark' ? 'text-gray-600' : 'text-gray-500'
                         )}>
                           ×
                         </div>

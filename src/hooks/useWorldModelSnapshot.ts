@@ -104,7 +104,7 @@ function describeDeviceType(type: string): string {
     emitter: 'Light Source',
     polarizer: 'Polarizer Filter',
     rotator: 'Wave Plate (Rotator)',
-    splitter: 'Birefringent Crystal (Calcite)',
+    splitter: 'Polarizing Beam Splitter (PBS)',
     sensor: 'Light Sensor (Goal)',
     mirror: 'Mirror',
     solid: 'Solid Block',

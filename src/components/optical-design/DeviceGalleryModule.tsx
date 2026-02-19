@@ -442,7 +442,7 @@ export function DeviceGalleryModule() {
           <div className="relative mb-4">
             <Search className={cn(
               'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )} />
             <input
               type="text"
@@ -491,7 +491,7 @@ export function DeviceGalleryModule() {
           {Object.entries(groupedDevices).length === 0 ? (
             <div className={cn(
               'flex flex-col items-center justify-center h-64 text-center',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               <Search className="w-12 h-12 mb-4 opacity-50" />
               <p className="text-lg font-medium">{t('opticalDesign.noDevicesFound')}</p>

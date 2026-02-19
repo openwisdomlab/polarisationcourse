@@ -93,7 +93,7 @@ function ExperimentCard({ experiment, isSelected, onClick }: ExperimentCardProps
             'w-5 h-5',
             isSelected
               ? (theme === 'dark' ? 'text-amber-400' : 'text-amber-600')
-              : (theme === 'dark' ? 'text-gray-500' : 'text-gray-400')
+              : (theme === 'dark' ? 'text-gray-500' : 'text-gray-500')
           )} />
           <h3 className={cn(
             'font-semibold text-base',
@@ -115,7 +115,7 @@ function ExperimentCard({ experiment, isSelected, onClick }: ExperimentCardProps
       <div className="flex items-center gap-2">
         <span className={cn(
           'text-xs',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           {experiment.components.length} {isZh ? '个组件' : 'components'}
         </span>
@@ -408,7 +408,7 @@ function ExperimentDetail({ experiment }: ExperimentDetailProps) {
         )}>
           <Eye className={cn(
             'w-12 h-12 opacity-50',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )} />
           <div className="text-center">
             <p className={cn(
@@ -538,7 +538,7 @@ export function OpticalPathsModule() {
                   <DifficultyBadge difficulty={difficulty} />
                   <span className={cn(
                     'text-xs',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                    theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                   )}>
                     {experiments.length} {isZh ? '个实验' : 'experiments'}
                   </span>
@@ -566,7 +566,7 @@ export function OpticalPathsModule() {
         ) : (
           <div className={cn(
             'h-full flex flex-col items-center justify-center p-8 text-center',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
           )}>
             <FlaskConical className="w-16 h-16 mb-4 opacity-50" />
             <p className="text-lg font-medium mb-2">{t('opticalDesign.selectExperiment')}</p>

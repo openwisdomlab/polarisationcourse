@@ -7,6 +7,11 @@
  * - 溶液波动动画效果
  * - 暗色模式文字对比度优化
  *
+ * 支持难度分层:
+ * - foundation: 隐藏公式和曲线图，只显示蔗糖，简化说明
+ * - application: 完整控件 + TaskModeWrapper"神秘物质"测量任务
+ * - research: 多色光模式，ORD曲线，DataExportPanel
+ *
  * Redesigned with DemoLayout components for consistent UI.
  */
 import { useState, useMemo } from 'react'
@@ -24,30 +29,45 @@ import {
   StatCard,
   FormulaHighlight,
 } from '../DemoLayout'
+import type { DifficultyLevel } from '../DifficultyStrategy'
+import { WhyButton, TaskModeWrapper, DataExportPanel } from '../DifficultyStrategy'
+import {
+  CHIRAL_MATERIALS,
+  specificRotationAtWavelength,
+  rotationAngle as calcRotationAngle,
+  rotatoryDispersionCurve,
+  SPECTRAL_LINES as ENGINE_SPECTRAL_LINES,
+} from '@/core/physics/unified/OpticalActivity'
 
-// 旋光率数据 (deg/(dm·g/mL)) - 以钠黄光 (589nm) 为标准
-const SPECIFIC_ROTATIONS: Record<string, { value: number; direction: 'd' | 'l' }> = {
-  sucrose: { value: 66.5, direction: 'd' }, // 蔗糖 (右旋)
-  glucose: { value: 52.7, direction: 'd' }, // 葡萄糖 (右旋)
-  fructose: { value: -92, direction: 'l' }, // 果糖 (左旋)
-  tartaric: { value: 12, direction: 'd' }, // 酒石酸 (右旋)
+// 组件属性接口
+interface OpticalRotationDemoProps {
+  difficultyLevel?: DifficultyLevel
 }
 
-// 光谱线定义
-interface SpectralLine {
-  id: string
-  name: string
-  wavelength: number // nm
-  color: string // hex color
+// 将引擎光谱线映射为演示所用格式
+const SPECTRAL_LINES = ENGINE_SPECTRAL_LINES.map(l => ({
+  id: l.id,
+  name: l.nameZh,
+  wavelength: l.wavelengthNm,
+  color: l.color,
+}))
+
+// 物质键名映射：demo使用 'tartaric'，引擎使用 'tartaricAcid'
+const SUBSTANCE_KEY_MAP: Record<string, string> = {
+  tartaric: 'tartaricAcid',
 }
 
-const SPECTRAL_LINES: SpectralLine[] = [
-  { id: 'na-d', name: '钠黄光 (Na D)', wavelength: 589, color: '#fbbf24' },
-  { id: 'h-alpha', name: '氢红光 (Hα)', wavelength: 656, color: '#ef4444' },
-  { id: 'hg-green', name: '汞绿光', wavelength: 546, color: '#22c55e' },
-  { id: 'h-beta', name: '氢蓝光 (Hβ)', wavelength: 486, color: '#3b82f6' },
-  { id: 'hg-violet', name: '汞紫光', wavelength: 436, color: '#a855f7' },
-]
+/** 获取引擎中的比旋光度（Na D线） */
+function getSpecificRotationD(substance: string): number {
+  const engineKey = SUBSTANCE_KEY_MAP[substance] || substance
+  return CHIRAL_MATERIALS[engineKey]?.specificRotation ?? 66.5
+}
+
+/** 获取引擎中的手性材料对象 */
+function getChiralMaterial(substance: string) {
+  const engineKey = SUBSTANCE_KEY_MAP[substance] || substance
+  return CHIRAL_MATERIALS[engineKey] ?? CHIRAL_MATERIALS.sucrose
+}
 
 // 多色光各波长成分 (用于色散效果)
 const POLYCHROMATIC_COMPONENTS = [
@@ -57,18 +77,6 @@ const POLYCHROMATIC_COMPONENTS = [
   { wavelength: 486, color: '#3b82f6', name: '蓝' }, // Hβ
   { wavelength: 436, color: '#a855f7', name: '紫' }, // Hg violet
 ]
-
-// 根据波长计算比旋光度 (Drude方程简化形式)
-// [α]λ ≈ [α]D × (589/λ)²
-function calculateSpecificRotationAtWavelength(specificRotationD: number, wavelength: number): number {
-  return specificRotationD * Math.pow(589 / wavelength, 2)
-}
-
-// 计算旋光角度
-function calculateRotation(specificRotation: number, concentration: number, pathLength: number): number {
-  // α = [α] × c × l
-  return specificRotation * concentration * pathLength
-}
 
 // 光源模式类型
 type LightMode = 'monochromatic' | 'polychromatic'
@@ -92,25 +100,25 @@ function OpticalRotationDiagram({
   lightColor: string
 }) {
   const dt = useDemoTheme()
-  const specificRotationD = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+  const specificRotationD = getSpecificRotationD(substance)
 
-  // 根据波长计算实际比旋光度
+  // 根据波长计算实际比旋光度（统一物理引擎 Drude 方程）
   const specificRotation = lightMode === 'monochromatic'
-    ? calculateSpecificRotationAtWavelength(specificRotationD, wavelength)
+    ? specificRotationAtWavelength(specificRotationD, wavelength)
     : specificRotationD // 多色光模式下使用标准值（各波长分开显示）
 
-  const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
-  const isRightRotation = rotationAngle >= 0
+  const rotation = calcRotationAngle(specificRotation, concentration, pathLength)
+  const isRightRotation = rotation >= 0
 
   // 检偏器与偏振光的角度差 - 使用统一物理引擎的Malus定律
-  const intensity = PolarizationPhysics.malusIntensity(rotationAngle, analyzerAngle, 1.0)
+  const intensity = PolarizationPhysics.malusIntensity(rotation, analyzerAngle, 1.0)
 
-  // 多色光模式下计算各波长的旋转角和强度 - 使用统一物理引擎的Malus定律
+  // 多色光模式下计算各波长的旋转角和强度 - 使用统一物理引擎
   const polychromaticData = useMemo(() => {
     if (lightMode !== 'polychromatic') return []
     return POLYCHROMATIC_COMPONENTS.map(comp => {
-      const specRot = calculateSpecificRotationAtWavelength(specificRotationD, comp.wavelength)
-      const rot = calculateRotation(specRot, concentration, pathLength)
+      const specRot = specificRotationAtWavelength(specificRotationD, comp.wavelength)
+      const rot = calcRotationAngle(specRot, concentration, pathLength)
       const inten = PolarizationPhysics.malusIntensity(rot, analyzerAngle, 1.0)
       return {
         ...comp,
@@ -354,7 +362,7 @@ function OpticalRotationDiagram({
       {lightMode === 'monochromatic' ? (
         [0, 0.2, 0.4, 0.6, 0.8, 1].map((t, i) => {
           const x = 240 + t * (100 + pathLength * 60)
-          const currentAngle = rotationAngle * t
+          const currentAngle = rotation * t
           // 渐变透明度使演化过程更清晰
           const opacity = 0.3 + t * 0.5
           return (
@@ -430,24 +438,19 @@ function OpticalRotationDiagram({
           opacity="0.8"
         />
       ) : (
-        /* 多色光 - 各波长因旋转角不同而分开 */
+        /* 多色光 - 各波长同轴传播（物理上光束不分离） */
         <g>
-          {polychromaticData.map((comp) => {
-            // 根据旋转角差异计算垂直偏移（展示色散效果）
-            const angleOffset = comp.rotation - polychromaticData[2].rotation // 以绿光为基准
-            const yOffset = angleOffset * 0.15
-            return (
-              <rect
-                key={comp.wavelength}
-                x={410 + pathLength * 60}
-                y={147 + yOffset}
-                width="60"
-                height="2"
-                fill={comp.color}
-                opacity="0.8"
-              />
-            )
-          })}
+          {polychromaticData.map((comp) => (
+            <rect
+              key={comp.wavelength}
+              x={410 + pathLength * 60}
+              y="146"
+              width="60"
+              height="8"
+              fill={comp.color}
+              opacity="0.6"
+            />
+          ))}
         </g>
       )}
 
@@ -462,10 +465,10 @@ function OpticalRotationDiagram({
               y2="0"
               stroke={lightColor}
               strokeWidth="2.5"
-              transform={`rotate(${rotationAngle})`}
+              transform={`rotate(${rotation})`}
             />
             <text x="0" y="-20" textAnchor="middle" fill={lightColor} fontSize="9">
-              {rotationAngle >= 0 ? '+' : ''}{rotationAngle.toFixed(1)}°
+              {rotation >= 0 ? '+' : ''}{rotation.toFixed(1)}°
             </text>
           </>
         ) : (
@@ -518,23 +521,19 @@ function OpticalRotationDiagram({
           opacity={Math.max(0.2, intensity)}
         />
       ) : (
-        /* 多色光 - 各波长不同强度 */
+        /* 多色光 - 各波长同轴传播，强度由检偏器决定 */
         <g>
-          {polychromaticData.map((comp) => {
-            const angleOffset = comp.rotation - polychromaticData[2].rotation
-            const yOffset = angleOffset * 0.15
-            return (
-              <rect
-                key={comp.wavelength}
-                x={516 + pathLength * 60}
-                y={147 + yOffset}
-                width="40"
-                height="2"
-                fill={comp.color}
-                opacity={Math.max(0.2, comp.intensity)}
-              />
-            )
-          })}
+          {polychromaticData.map((comp) => (
+            <rect
+              key={comp.wavelength}
+              x={516 + pathLength * 60}
+              y="146"
+              width="40"
+              height="8"
+              fill={comp.color}
+              opacity={Math.max(0.2, comp.intensity) * 0.6}
+            />
+          ))}
         </g>
       )}
 
@@ -606,7 +605,7 @@ function OpticalRotationDiagram({
         <g transform="translate(350, 230)">
           <rect x="-80" y="-15" width="160" height="30" fill={dt.infoPanelBg} rx="6" />
           <text x="0" y="5" textAnchor="middle" fill={lightColor} fontSize="13" fontWeight="500">
-            {isRightRotation ? '右旋 (d/+)' : '左旋 (l/-)'}: α = {rotationAngle.toFixed(1)}°
+            {isRightRotation ? '右旋 (d/+)' : '左旋 (l/-)'}: α = {rotation.toFixed(1)}°
           </text>
         </g>
       ) : (
@@ -622,7 +621,7 @@ function OpticalRotationDiagram({
       {lightMode === 'monochromatic' && (
         <g transform={`translate(${440 + pathLength * 60}, 90)`}>
           <path
-            d={`M 0 0 A 25 25 0 ${Math.abs(rotationAngle) > 180 ? 1 : 0} ${isRightRotation ? 1 : 0} ${25 * Math.sin((rotationAngle * Math.PI) / 180)} ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}`}
+            d={`M 0 0 A 25 25 0 ${Math.abs(rotation) > 180 ? 1 : 0} ${isRightRotation ? 1 : 0} ${25 * Math.sin((rotation * Math.PI) / 180)} ${25 - 25 * Math.cos((rotation * Math.PI) / 180)}`}
             fill="none"
             stroke={lightColor}
             strokeWidth="2"
@@ -631,7 +630,7 @@ function OpticalRotationDiagram({
           <motion.polygon
             points="-4,-8 4,0 -4,8"
             fill={lightColor}
-            transform={`translate(${25 * Math.sin((rotationAngle * Math.PI) / 180)}, ${25 - 25 * Math.cos((rotationAngle * Math.PI) / 180)}) rotate(${rotationAngle + 90})`}
+            transform={`translate(${25 * Math.sin((rotation * Math.PI) / 180)}, ${25 - 25 * Math.cos((rotation * Math.PI) / 180)}) rotate(${rotation + 90})`}
           />
         </g>
       )}
@@ -650,7 +649,7 @@ function RotationChart({
   currentConcentration: number
 }) {
   const dt = useDemoTheme()
-  const specificRotation = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+  const specificRotation = getSpecificRotationD(substance)
   const isPositive = specificRotation >= 0
   const maxRotation = Math.abs(specificRotation * 1.0 * pathLength)
 
@@ -658,7 +657,7 @@ function RotationChart({
     const points: string[] = []
 
     for (let c = 0; c <= 1; c += 0.05) {
-      const rotation = calculateRotation(specificRotation, c, pathLength)
+      const rotation = calcRotationAngle(specificRotation, c, pathLength)
       const x = 40 + c * 220
       const y = 100 - (rotation / maxRotation) * 60
 
@@ -668,7 +667,7 @@ function RotationChart({
     return { pathData: points.join(' ') }
   }, [specificRotation, pathLength, maxRotation])
 
-  const currentRotation = calculateRotation(specificRotation, currentConcentration, pathLength)
+  const currentRotation = calcRotationAngle(specificRotation, currentConcentration, pathLength)
   const currentX = 40 + currentConcentration * 220
   const currentY = 100 - (currentRotation / maxRotation) * 60
 
@@ -722,15 +721,180 @@ function RotationChart({
   )
 }
 
-// 主演示组件
-export function OpticalRotationDemo() {
+// 波长 → 近似可见光颜色映射
+function wavelengthToColor(nm: number): string {
+  if (nm < 440) return '#7c3aed'
+  if (nm < 490) return '#3b82f6'
+  if (nm < 510) return '#06b6d4'
+  if (nm < 560) return '#22c55e'
+  if (nm < 590) return '#eab308'
+  if (nm < 630) return '#f97316'
+  return '#ef4444'
+}
+
+// ORD（旋光色散）曲线
+function ORDChart({
+  substance,
+  concentration,
+  pathLength,
+  currentWavelength,
+}: {
+  substance: string
+  concentration: number
+  pathLength: number
+  currentWavelength: number
+}) {
   const dt = useDemoTheme()
+  const material = getChiralMaterial(substance)
+
+  const ordData = useMemo(() => {
+    return rotatoryDispersionCurve(material, concentration, pathLength, 400, 700, 5)
+  }, [material, concentration, pathLength])
+
+  if (ordData.length === 0) return null
+
+  // 计算Y轴范围
+  const rotations = ordData.map(d => d.rotationDeg)
+  const maxRot = Math.max(...rotations.map(Math.abs))
+  const yMax = Math.ceil(maxRot / 10) * 10 || 10
+
+  // SVG坐标映射
+  const chartL = 45
+  const chartR = 275
+  const chartT = 25
+  const chartB = 125
+  const chartW = chartR - chartL
+  const chartH = chartB - chartT
+  const yMid = chartT + chartH / 2
+
+  const toX = (wl: number) => chartL + ((wl - 400) / 300) * chartW
+  const toY = (rot: number) => yMid - (rot / yMax) * (chartH / 2)
+
+  // 当前波长的旋转角
+  const specRot = specificRotationAtWavelength(material.specificRotation, currentWavelength)
+  const currentRot = calcRotationAngle(specRot, concentration, pathLength)
+  const curX = toX(currentWavelength)
+  const curY = toY(currentRot)
+
+  return (
+    <svg viewBox="0 0 300 160" className="w-full h-auto">
+      {/* 背景 */}
+      <rect x={chartL} y={chartT} width={chartW} height={chartH} fill={dt.canvasBgAlt} rx="4" />
+
+      {/* 光谱色带背景 */}
+      {ordData.slice(0, -1).map((d, i) => {
+        const next = ordData[i + 1]
+        const x1 = toX(d.wavelengthNm)
+        const x2 = toX(next.wavelengthNm)
+        return (
+          <rect
+            key={d.wavelengthNm}
+            x={x1}
+            y={chartT}
+            width={x2 - x1}
+            height={chartH}
+            fill={wavelengthToColor(d.wavelengthNm)}
+            opacity={0.06}
+          />
+        )
+      })}
+
+      {/* 零线 */}
+      <line
+        x1={chartL} y1={yMid} x2={chartR} y2={yMid}
+        stroke={dt.axisColor} strokeWidth="0.5" strokeDasharray="4 3"
+      />
+
+      {/* 坐标轴 */}
+      <line x1={chartL} y1={chartT} x2={chartL} y2={chartB} stroke={dt.axisColor} strokeWidth="1" />
+      <line x1={chartL} y1={chartB} x2={chartR} y2={chartB} stroke={dt.axisColor} strokeWidth="1" />
+
+      {/* X轴刻度 */}
+      {[400, 500, 600, 700].map(wl => {
+        const x = toX(wl)
+        return (
+          <g key={wl}>
+            <line x1={x} y1={chartB} x2={x} y2={chartB + 4} stroke={dt.textSecondary} strokeWidth="1" />
+            <text x={x} y={chartB + 14} textAnchor="middle" fill={dt.textSecondary} fontSize="9">{wl}</text>
+          </g>
+        )
+      })}
+
+      {/* Y轴刻度 */}
+      <text x={chartL - 4} y={chartT + 4} textAnchor="end" fill={dt.textSecondary} fontSize="9">
+        +{yMax.toFixed(0)}°
+      </text>
+      <text x={chartL - 4} y={yMid + 3} textAnchor="end" fill={dt.textSecondary} fontSize="9">0°</text>
+      <text x={chartL - 4} y={chartB + 2} textAnchor="end" fill={dt.textSecondary} fontSize="9">
+        -{yMax.toFixed(0)}°
+      </text>
+
+      {/* ORD曲线 - 光谱色描边 */}
+      {ordData.slice(0, -1).map((d, i) => {
+        const next = ordData[i + 1]
+        return (
+          <line
+            key={d.wavelengthNm}
+            x1={toX(d.wavelengthNm)}
+            y1={toY(d.rotationDeg)}
+            x2={toX(next.wavelengthNm)}
+            y2={toY(next.rotationDeg)}
+            stroke={wavelengthToColor(d.wavelengthNm)}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+        )
+      })}
+
+      {/* 当前波长垂直线 */}
+      <line
+        x1={curX} y1={chartT} x2={curX} y2={chartB}
+        stroke={dt.textMuted} strokeWidth="1" strokeDasharray="3 3"
+      />
+
+      {/* 当前波长点 */}
+      <circle cx={curX} cy={curY} r="5" fill="#fbbf24" stroke="#fff" strokeWidth="1.5" />
+
+      {/* 当前值标签 */}
+      <text
+        x={curX}
+        y={curY - 10}
+        textAnchor="middle"
+        fill="#fbbf24"
+        fontSize="9"
+        fontWeight="bold"
+      >
+        {currentRot >= 0 ? '+' : ''}{currentRot.toFixed(1)}°
+      </text>
+
+      {/* 轴标签 */}
+      <text x={(chartL + chartR) / 2} y={chartB + 26} textAnchor="middle" fill={dt.textSecondary} fontSize="10">
+        波长 λ (nm)
+      </text>
+      <text x="8" y={yMid + 3} fill={dt.textSecondary} fontSize="9" transform={`rotate(-90 8 ${yMid})`}>
+        α (°)
+      </text>
+    </svg>
+  )
+}
+
+// 主演示组件
+export function OpticalRotationDemo({ difficultyLevel = 'application' }: OpticalRotationDemoProps) {
+  const dt = useDemoTheme()
+
+  // 判断难度级别
+  const isFoundation = difficultyLevel === 'foundation'
+  const isResearch = difficultyLevel === 'research'
+
   const [substance, setSubstance] = useState('sucrose')
   const [concentration, setConcentration] = useState(0.3)
   const [pathLength, setPathLength] = useState(1.0)
   const [analyzerAngle, setAnalyzerAngle] = useState(0)
 
-  // 光源设置
+  // 应用模式: 神秘物质测量任务状态
+  const [mysteryTaskCompleted, setMysteryTaskCompleted] = useState(false)
+
+  // 光源设置 - 基础模式默认单色光
   const [lightMode, setLightMode] = useState<LightMode>('monochromatic')
   const [selectedWavelengthId, setSelectedWavelengthId] = useState('na-d')
 
@@ -740,22 +904,22 @@ export function OpticalRotationDemo() {
   const wavelength = selectedSpectralLine.wavelength
 
   // 根据波长计算实际比旋光度
-  const specificRotationD = SPECIFIC_ROTATIONS[substance]?.value || 66.5
+  const specificRotationD = getSpecificRotationD(substance)
   const specificRotation = lightMode === 'monochromatic'
-    ? calculateSpecificRotationAtWavelength(specificRotationD, wavelength)
+    ? specificRotationAtWavelength(specificRotationD, wavelength)
     : specificRotationD
 
-  const rotationAngle = calculateRotation(specificRotation, concentration, pathLength)
+  const rotationAngle = calcRotationAngle(specificRotation, concentration, pathLength)
 
   // 透过强度 - 使用统一物理引擎的Malus定律
   const intensity = PolarizationPhysics.malusIntensity(rotationAngle, analyzerAngle, 1.0)
 
   // 物质选项
   const substances = [
-    { value: 'sucrose', label: '蔗糖', rotation: '+66.5°' },
-    { value: 'glucose', label: '葡萄糖', rotation: '+52.7°' },
-    { value: 'fructose', label: '果糖', rotation: '-92.0°' },
-    { value: 'tartaric', label: '酒石酸', rotation: '+12.0°' },
+    { value: 'sucrose', label: CHIRAL_MATERIALS.sucrose.nameZh, rotation: `+${CHIRAL_MATERIALS.sucrose.specificRotation}°` },
+    { value: 'glucose', label: CHIRAL_MATERIALS.glucose.nameZh, rotation: `+${CHIRAL_MATERIALS.glucose.specificRotation}°` },
+    { value: 'fructose', label: CHIRAL_MATERIALS.fructose.nameZh, rotation: `${CHIRAL_MATERIALS.fructose.specificRotation}°` },
+    { value: 'tartaric', label: CHIRAL_MATERIALS.tartaricAcid.nameZh, rotation: `+${CHIRAL_MATERIALS.tartaricAcid.specificRotation}°` },
   ]
 
   return (
@@ -767,11 +931,24 @@ export function OpticalRotationDemo() {
         gradient="green"
       />
 
-      {/* 核心公式 */}
-      <FormulaHighlight
-        formula="α = [α]_λ × c × L"
-        description="旋光角 = 比旋光度 × 浓度 × 光程长度"
-      />
+      {/* 核心公式 - 基础难度隐藏 */}
+      {!isFoundation && (
+        <FormulaHighlight
+          formula="α = [α]_λ × c × L"
+          description="旋光角 = 比旋光度 × 浓度 × 光程长度"
+        />
+      )}
+
+      {/* 基础难度: 简化说明 */}
+      {isFoundation && (
+        <WhyButton>
+          <div className="space-y-2 text-sm">
+            <p>某些物质（如糖溶液）可以旋转光的偏振方向！</p>
+            <p>溶液浓度越高、管子越长，偏振面旋转得越多。</p>
+            <p>这就是旋光仪测量糖浓度的原理。</p>
+          </div>
+        </WhyButton>
+      )}
 
       {/* 主体内容 */}
       <DemoMainLayout
@@ -939,34 +1116,36 @@ export function OpticalRotationDemo() {
               )}
             </ControlPanel>
 
-            {/* 物质选择 */}
-            <ControlPanel title="物质选择">
-              <div className="space-y-2">
-                {substances.map((s) => (
-                  <motion.button
-                    key={s.value}
-                    className={cn(
-                      "w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors",
-                      substance === s.value
-                        ? dt.isDark
-                          ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
-                          : 'bg-cyan-100 border border-cyan-300 text-cyan-700'
-                        : dt.isDark
-                          ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
-                          : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
-                    )}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => setSubstance(s.value)}
-                  >
-                    <span className="font-medium">{s.label}</span>
-                    <span className={cn("font-mono text-sm", s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400')}>
-                      [α] = {s.rotation}
-                    </span>
-                  </motion.button>
-                ))}
-              </div>
-            </ControlPanel>
+            {/* 物质选择 - 基础模式仅蔗糖 */}
+            {!isFoundation && (
+              <ControlPanel title="物质选择">
+                <div className="space-y-2">
+                  {substances.map((s) => (
+                    <motion.button
+                      key={s.value}
+                      className={cn(
+                        "w-full py-2 px-3 rounded-lg flex justify-between items-center transition-colors",
+                        substance === s.value
+                          ? dt.isDark
+                            ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300'
+                            : 'bg-cyan-100 border border-cyan-300 text-cyan-700'
+                          : dt.isDark
+                            ? 'bg-slate-800/50 border border-slate-700 text-gray-400 hover:bg-slate-700/50'
+                            : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
+                      )}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => setSubstance(s.value)}
+                    >
+                      <span className="font-medium">{s.label}</span>
+                      <span className={cn("font-mono text-sm", s.rotation.startsWith('-') ? 'text-pink-400' : 'text-cyan-400')}>
+                        [α] = {s.rotation}
+                      </span>
+                    </motion.button>
+                  ))}
+                </div>
+              </ControlPanel>
+            )}
 
             {/* 实验参数 */}
             <ControlPanel title="实验参数">
@@ -1036,48 +1215,116 @@ export function OpticalRotationDemo() {
               </div>
             </ControlPanel>
 
-            {/* 计算公式 */}
-            <ChartPanel title="计算公式">
-              <div className={cn("p-3 rounded-xl text-center", dt.isDark ? 'bg-slate-900/50' : 'bg-gray-50')}>
-                <div className={cn("font-mono text-lg mb-2", dt.isDark ? 'text-white' : 'text-gray-800')}>
-                  α = [α]<sub>λ</sub> × c × L
+            {/* 计算公式 - 基础难度隐藏 */}
+            {!isFoundation && (
+              <ChartPanel title="计算公式">
+                <div className={cn("p-3 rounded-xl text-center", dt.isDark ? 'bg-slate-900/50' : 'bg-gray-50')}>
+                  <div className={cn("font-mono text-lg mb-2", dt.isDark ? 'text-white' : 'text-gray-800')}>
+                    α = [α]<sub>λ</sub> × c × L
+                  </div>
+                  <div className={cn("text-xs space-y-1", dt.mutedTextClass)}>
+                    {lightMode === 'monochromatic' && wavelength !== 589 && (
+                      <p className={cn("text-[10px] mb-1", dt.mutedTextClass)}>
+                        [α]<sub>{wavelength}</sub> = [α]<sub>D</sub> × (589/{wavelength})² = {specificRotationD.toFixed(1)} × {(Math.pow(589/wavelength, 2)).toFixed(3)} = <span style={{ color: lightColor }}>{specificRotation.toFixed(1)}°</span>
+                      </p>
+                    )}
+                    <p>α = {specificRotation.toFixed(1)} × {concentration.toFixed(2)} × {pathLength.toFixed(1)}</p>
+                    <p
+                      className="font-mono"
+                      style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
+                    >
+                      α = {rotationAngle.toFixed(2)}°
+                    </p>
+                  </div>
                 </div>
-                <div className={cn("text-xs space-y-1", dt.mutedTextClass)}>
-                  {lightMode === 'monochromatic' && wavelength !== 589 && (
-                    <p className={cn("text-[10px] mb-1", dt.mutedTextClass)}>
-                      [α]<sub>{wavelength}</sub> = [α]<sub>D</sub> × (589/{wavelength})² = {specificRotationD.toFixed(1)} × {(Math.pow(589/wavelength, 2)).toFixed(3)} = <span style={{ color: lightColor }}>{specificRotation.toFixed(1)}°</span>
+                <div className={cn("mt-3 text-xs", dt.mutedTextClass)}>
+                  <p>[α]<sub>λ</sub> = 波长λ时的比旋光度</p>
+                  <p>[α]<sub>D</sub> = {specificRotationD >= 0 ? '+' : ''}{specificRotationD.toFixed(1)}° (589nm钠光)</p>
+                  <p>c = 浓度 (g/mL)</p>
+                  <p>L = 光程 (dm)</p>
+                  {lightMode === 'monochromatic' && (
+                    <p className={cn("mt-1 pt-1 border-t", dt.isDark ? 'border-slate-700/50' : 'border-gray-200')} style={{ color: lightColor }}>
+                      当前: λ = {wavelength} nm
                     </p>
                   )}
-                  <p>α = {specificRotation.toFixed(1)} × {concentration.toFixed(2)} × {pathLength.toFixed(1)}</p>
-                  <p
-                    className="font-mono"
-                    style={{ color: lightMode === 'monochromatic' ? lightColor : (rotationAngle >= 0 ? '#22d3ee' : '#f472b6') }}
-                  >
-                    α = {rotationAngle.toFixed(2)}°
-                  </p>
                 </div>
-              </div>
-              <div className={cn("mt-3 text-xs", dt.mutedTextClass)}>
-                <p>[α]<sub>λ</sub> = 波长λ时的比旋光度</p>
-                <p>[α]<sub>D</sub> = {specificRotationD >= 0 ? '+' : ''}{specificRotationD.toFixed(1)}° (589nm钠光)</p>
-                <p>c = 浓度 (g/mL)</p>
-                <p>L = 光程 (dm)</p>
-                {lightMode === 'monochromatic' && (
-                  <p className={cn("mt-1 pt-1 border-t", dt.isDark ? 'border-slate-700/50' : 'border-gray-200')} style={{ color: lightColor }}>
-                    当前: λ = {wavelength} nm
-                  </p>
-                )}
-              </div>
-            </ChartPanel>
+              </ChartPanel>
+            )}
 
-            {/* 浓度-旋光角曲线 */}
-            <ChartPanel title="浓度-旋光角关系" subtitle="α vs c">
-              <RotationChart
-                substance={substance}
-                pathLength={pathLength}
-                currentConcentration={concentration}
+            {/* 浓度-旋光角曲线 - 基础难度隐藏 */}
+            {!isFoundation && (
+              <ChartPanel title="浓度-旋光角关系" subtitle="α vs c">
+                <RotationChart
+                  substance={substance}
+                  pathLength={pathLength}
+                  currentConcentration={concentration}
+                />
+              </ChartPanel>
+            )}
+
+            {/* ORD曲线 - 研究难度显示 */}
+            {isResearch && (
+              <ChartPanel title="旋光色散曲线 (ORD)" subtitle="α vs λ">
+                <ORDChart
+                  substance={substance}
+                  concentration={concentration}
+                  pathLength={pathLength}
+                  currentWavelength={wavelength}
+                />
+              </ChartPanel>
+            )}
+
+            {/* 应用模式: 神秘物质测量任务 */}
+            {difficultyLevel === 'application' && (
+              <TaskModeWrapper
+                taskTitle="Mystery Substance Identification"
+                taskTitleZh="神秘物质鉴定"
+                taskDescription="Adjust the analyzer angle to find the extinction position. From the rotation angle, identify which substance is in the tube."
+                taskDescriptionZh="调节检偏器角度找到消光位置，根据旋光角推断管中的物质种类。"
+                isCompleted={mysteryTaskCompleted}
+              >
+                <div className={cn('p-3 rounded-lg text-sm', dt.isDark ? 'bg-slate-800/50' : 'bg-gray-50')}>
+                  <p className={dt.bodyClass}>
+                    管中装有浓度为 0.30 g/mL、光程 1.0 dm 的未知溶液。
+                    使用检偏器找到消光位置，计算旋光角 α，然后对比各物质的比旋光度 [α]<sub>D</sub> 进行鉴定。
+                  </p>
+                  {Math.abs(analyzerAngle - rotationAngle) < 2 && !mysteryTaskCompleted && (
+                    <motion.button
+                      className={cn(
+                        'mt-3 px-4 py-2 rounded-lg text-sm font-medium',
+                        dt.isDark
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                          : 'bg-green-100 text-green-700 border border-green-300'
+                      )}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setMysteryTaskCompleted(true)}
+                    >
+                      确认鉴定结果
+                    </motion.button>
+                  )}
+                </div>
+              </TaskModeWrapper>
+            )}
+
+            {/* 研究模式: 数据导出 */}
+            {isResearch && (
+              <DataExportPanel
+                title="Optical Rotation Data"
+                titleZh="旋光数据"
+                data={{
+                  'substance': substance,
+                  '[α]_D (°)': specificRotationD,
+                  '[α]_λ (°)': specificRotation,
+                  'c (g/mL)': concentration,
+                  'L (dm)': pathLength,
+                  'α (°)': rotationAngle,
+                  'λ (nm)': wavelength,
+                  'I_transmitted': intensity,
+                  'analyzer (°)': analyzerAngle,
+                }}
               />
-            </ChartPanel>
+            )}
           </div>
         }
       />

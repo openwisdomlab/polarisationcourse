@@ -300,7 +300,7 @@ export function CourseNavigator({
                     </div>
                     <div className={cn(
                       'text-[10px]',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}>
                       {unit.sections.length} {isZh ? '章节' : 'sections'} · {unitEventCount} {isZh ? '事件' : 'events'}
                     </div>
@@ -494,7 +494,7 @@ export function CourseNavigator({
                                             <div className="flex items-center gap-1">
                                               <span className={cn(
                                                 'font-mono text-[10px]',
-                                                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                                               )}>
                                                 {eventData.year}
                                               </span>
@@ -513,7 +513,7 @@ export function CourseNavigator({
                                           {/* Arrow */}
                                           <ExternalLink className={cn(
                                             'w-3 h-3 flex-shrink-0',
-                                            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                                            theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                                           )} />
                                         </button>
                                       ))}

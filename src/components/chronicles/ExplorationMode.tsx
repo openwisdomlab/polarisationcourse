@@ -128,7 +128,7 @@ function StorylineCard({
         {isActive && (
           <div className="mt-3">
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}>
+              <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}>
                 {isZh ? '进度' : 'Progress'}
               </span>
               <span className={colors.text}>
@@ -198,7 +198,7 @@ function StorylineCard({
                     {idx < waypointScientists.length - 1 && (
                       <ChevronRight className={cn(
                         'w-4 h-4 flex-shrink-0',
-                        isPast ? 'text-green-400' : 'text-gray-400'
+                        isPast ? 'text-green-400' : 'text-gray-500'
                       )} />
                     )}
                   </div>

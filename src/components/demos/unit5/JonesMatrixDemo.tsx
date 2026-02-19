@@ -207,7 +207,7 @@ function JonesMatrixDisplay({ matrix, element, angle, theme, t }: {
       <div className="flex items-center justify-center gap-1 py-2">
         <span className={cn(
           'text-2xl font-light',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>[</span>
         <div className="grid grid-cols-2 gap-1.5">
           {matrix.flat().map((val, i) => (
@@ -217,7 +217,7 @@ function JonesMatrixDisplay({ matrix, element, angle, theme, t }: {
                 'w-28 h-8 flex items-center justify-center text-[11px] font-mono rounded-lg',
                 complex.abs(val) > 0.01
                   ? theme === 'dark' ? 'text-cyan-400 bg-cyan-400/10 border border-cyan-400/20' : 'text-cyan-600 bg-cyan-50 border border-cyan-200'
-                  : theme === 'dark' ? 'text-gray-600 bg-slate-800/50 border border-slate-700/30' : 'text-gray-400 bg-gray-50 border border-gray-200'
+                  : theme === 'dark' ? 'text-gray-600 bg-slate-800/50 border border-slate-700/30' : 'text-gray-500 bg-gray-50 border border-gray-200'
               )}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -229,7 +229,7 @@ function JonesMatrixDisplay({ matrix, element, angle, theme, t }: {
         </div>
         <span className={cn(
           'text-2xl font-light',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>]</span>
       </div>
       <div className="flex items-center justify-center gap-2 mt-1">
@@ -283,7 +283,7 @@ function JonesVectorCompare({
             </div>
             <div className={cn(
               'text-[11px] text-center mt-2 font-mono',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               I = {inputIntensity.toFixed(2)}
             </div>
@@ -311,7 +311,7 @@ function JonesVectorCompare({
             </div>
             <div className={cn(
               'text-[11px] text-center mt-2 font-mono',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               I = {outputIntensity.toFixed(2)}
             </div>
@@ -341,7 +341,7 @@ function PolarizationEllipse({
       )}>
         <span className={cn(
           'text-xs',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>No light</span>
       </div>
     )
@@ -406,7 +406,7 @@ function PolarizationEllipse({
       </svg>
       <div className={cn(
         'text-[10px] text-center font-medium',
-        theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
       )}>
         {handedness === 'Linear' ? '线偏振' : handedness === 'RCP' ? '右旋' : '左旋'}
       </div>
@@ -568,7 +568,7 @@ export function JonesMatrixDemo() {
             </div>
             <div className={cn(
               'text-[11px] font-mono',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               {'\u03B8'} = {angle}{'\u00B0'}
             </div>

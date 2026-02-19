@@ -207,7 +207,7 @@ function StokesVectorDisplay({
                   </span>
                   <span className={cn(
                     'text-xs',
-                    isDark ? 'text-gray-500' : 'text-gray-400'
+                    isDark ? 'text-gray-500' : 'text-gray-500'
                   )}>
                     {param.description}
                   </span>

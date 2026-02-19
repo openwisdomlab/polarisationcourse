@@ -829,7 +829,7 @@ export function MerchandisePage() {
                   {products.length > 3 && (
                     <li className={cn(
                       'text-xs',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                      theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                     )}>
                       +{products.length - 3} {isZh ? '更多...' : 'more...'}
                     </li>

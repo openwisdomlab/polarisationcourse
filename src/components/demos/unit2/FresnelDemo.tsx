@@ -8,6 +8,11 @@
  * - Uses brewsterAngle() and criticalAngle() for accurate angle computation
  * - No more hardcoded Fresnel equations - all physics delegated to engine
  *
+ * 支持难度分层:
+ * - foundation: 隐藏方程，简化为"反射光可以变成偏振光"
+ * - application: 显示菲涅尔方程图、布儒斯特角标记
+ * - research: 边界条件推导、复折射率、DataExportPanel
+ *
  * Verification: At n1=1, n2=1.5, Brewster angle should be ~56.31°
  * At this angle, Rp should be exactly 0 (no p-polarization reflection)
  */
@@ -18,6 +23,8 @@ import { useDemoTheme } from '../demoThemeColors'
 import { DemoHeader, VisualizationPanel, DemoMainLayout, InfoGrid, ChartPanel, StatCard } from '../DemoLayout'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import type { DifficultyLevel } from '../DifficultyStrategy'
+import { WhyButton, DataExportPanel } from '../DifficultyStrategy'
 // Import Fresnel solver from unified physics engine
 import {
   solveFresnel,
@@ -25,6 +32,11 @@ import {
   criticalAngle as computeCriticalAngle,
   REFRACTIVE_INDICES,
 } from '@/core/physics/unified'
+
+// 组件属性接口
+interface FresnelDemoProps {
+  difficultyLevel?: DifficultyLevel
+}
 
 /**
  * Calculate Fresnel coefficients using unified physics engine
@@ -983,10 +995,14 @@ function FresnelCurveChart({
 }
 
 // 主演示组件
-export function FresnelDemo() {
+export function FresnelDemo({ difficultyLevel = 'application' }: FresnelDemoProps) {
   const dt = useDemoTheme()
   const { i18n } = useTranslation()
   const isZh = i18n.language === 'zh'
+
+  // 判断难度级别
+  const isFoundation = difficultyLevel === 'foundation'
+  const isResearch = difficultyLevel === 'research'
 
   const [incidentAngle, setIncidentAngle] = useState(45)
   const [n1, setN1] = useState(1.0)
@@ -1139,48 +1155,55 @@ export function FresnelDemo() {
           onChange={setIncidentAngle}
           color="orange"
         />
-        <SliderControl
-          label={n1Label}
-          value={n1}
-          min={1.0}
-          max={2.5}
-          step={0.05}
-          onChange={setN1}
-          formatValue={(v) => v.toFixed(2)}
-          color="blue"
-        />
-        <SliderControl
-          label={n2Label}
-          value={n2}
-          min={1.0}
-          max={2.5}
-          step={0.05}
-          onChange={setN2}
-          formatValue={(v) => v.toFixed(2)}
-          color="green"
-        />
+        {/* 折射率控制 - 基础难度只用预设 */}
+        {!isFoundation && (
+          <>
+            <SliderControl
+              label={n1Label}
+              value={n1}
+              min={1.0}
+              max={2.5}
+              step={0.05}
+              onChange={setN1}
+              formatValue={(v) => v.toFixed(2)}
+              color="blue"
+            />
+            <SliderControl
+              label={n2Label}
+              value={n2}
+              min={1.0}
+              max={2.5}
+              step={0.05}
+              onChange={setN2}
+              formatValue={(v) => v.toFixed(2)}
+              color="green"
+            />
+          </>
+        )}
 
-        {/* 偏振选择 */}
-        <div className="flex gap-4 pt-2">
-          <label className={cn('flex items-center gap-2 text-sm cursor-pointer', dt.mutedTextClass)}>
-            <input
-              type="checkbox"
-              checked={showS}
-              onChange={(e) => setShowS(e.target.checked)}
-              className="rounded border-cyan-500 text-cyan-500 focus:ring-cyan-500"
-            />
-            <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>{sPolLabel}</span>
-          </label>
-          <label className={cn('flex items-center gap-2 text-sm cursor-pointer', dt.mutedTextClass)}>
-            <input
-              type="checkbox"
-              checked={showP}
-              onChange={(e) => setShowP(e.target.checked)}
-              className="rounded border-pink-500 text-pink-500 focus:ring-pink-500"
-            />
-            <span className={dt.isDark ? 'text-pink-400' : 'text-pink-600'}>{pPolLabel}</span>
-          </label>
-        </div>
+        {/* 偏振选择 - 基础难度隐藏 */}
+        {!isFoundation && (
+          <div className="flex gap-4 pt-2">
+            <label className={cn('flex items-center gap-2 text-sm cursor-pointer', dt.mutedTextClass)}>
+              <input
+                type="checkbox"
+                checked={showS}
+                onChange={(e) => setShowS(e.target.checked)}
+                className="rounded border-cyan-500 text-cyan-500 focus:ring-cyan-500"
+              />
+              <span className={dt.isDark ? 'text-cyan-400' : 'text-cyan-600'}>{sPolLabel}</span>
+            </label>
+            <label className={cn('flex items-center gap-2 text-sm cursor-pointer', dt.mutedTextClass)}>
+              <input
+                type="checkbox"
+                checked={showP}
+                onChange={(e) => setShowP(e.target.checked)}
+                className="rounded border-pink-500 text-pink-500 focus:ring-pink-500"
+              />
+              <span className={dt.isDark ? 'text-pink-400' : 'text-pink-600'}>{pPolLabel}</span>
+            </label>
+          </div>
+        )}
 
         {/* 交互选项 */}
         <div className={cn('pt-2 border-t mt-2', dt.borderClass)}>
@@ -1213,30 +1236,85 @@ export function FresnelDemo() {
         </div>
       </ControlPanel>
 
-      {/* 公式显示 */}
-      <div className={cn(
-        'rounded-xl border p-3',
-        dt.isDark
-          ? 'bg-gradient-to-br from-cyan-900/10 via-slate-800/30 to-blue-900/10 border-cyan-500/15'
-          : 'bg-gradient-to-br from-cyan-50/60 via-white to-blue-50/60 border-cyan-200/50',
-      )}>
-        <div className={cn('text-[11px] font-medium mb-2', dt.mutedTextClass)}>{formulaTitle}</div>
-        <div className={cn('font-mono text-xs space-y-1.5', dt.bodyClass)}>
-          <p>rs = (n{'\u2081'}cos{'\u03B8\u2081'} - n{'\u2082'}cos{'\u03B8\u2082'}) / (n{'\u2081'}cos{'\u03B8\u2081'} + n{'\u2082'}cos{'\u03B8\u2082'})</p>
-          <p>rp = (n{'\u2082'}cos{'\u03B8\u2081'} - n{'\u2081'}cos{'\u03B8\u2082'}) / (n{'\u2082'}cos{'\u03B8\u2081'} + n{'\u2081'}cos{'\u03B8\u2082'})</p>
-          <p className={cn('pt-1.5 font-semibold', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>
-            Rs = rs{'\u00B2'}, Rp = rp{'\u00B2'}
-          </p>
-        </div>
-      </div>
+      {/* 基础难度: 简化说明 */}
+      {isFoundation && (
+        <WhyButton>
+          <div className="space-y-2 text-sm">
+            <p>{isZh ? '光照射到玻璃表面时，一部分被反射，一部分透过。' : 'When light hits a glass surface, part is reflected and part is transmitted.'}</p>
+            <p>{isZh
+              ? '反射光可以变成偏振光！在一个特殊角度（布儒斯特角），反射光完全变成偏振光。'
+              : 'Reflected light can become polarized! At a special angle (Brewster angle), reflected light becomes fully polarized.'}</p>
+            <p>{isZh
+              ? '这就是为什么偏光太阳镜可以减少眩光 -- 它们阻挡了反射产生的偏振光。'
+              : 'This is why polarized sunglasses reduce glare -- they block polarized light from reflections.'}</p>
+          </div>
+        </WhyButton>
+      )}
 
-      {/* 反射率曲线 */}
-      <ChartPanel title={curveTitle} subtitle={curveSubtitle}>
-        <FresnelCurveChart n1={n1} n2={n2} currentAngle={incidentAngle} isZh={isZh} />
-        <p className={cn('text-[11px] mt-2 leading-relaxed', dt.mutedTextClass)}>
-          {curveNote}
-        </p>
-      </ChartPanel>
+      {/* 公式显示 - 基础难度隐藏 */}
+      {!isFoundation && (
+        <div className={cn(
+          'rounded-xl border p-3',
+          dt.isDark
+            ? 'bg-gradient-to-br from-cyan-900/10 via-slate-800/30 to-blue-900/10 border-cyan-500/15'
+            : 'bg-gradient-to-br from-cyan-50/60 via-white to-blue-50/60 border-cyan-200/50',
+        )}>
+          <div className={cn('text-[11px] font-medium mb-2', dt.mutedTextClass)}>{formulaTitle}</div>
+          <div className={cn('font-mono text-xs space-y-1.5', dt.bodyClass)}>
+            <p>rs = (n{'\u2081'}cos{'\u03B8\u2081'} - n{'\u2082'}cos{'\u03B8\u2082'}) / (n{'\u2081'}cos{'\u03B8\u2081'} + n{'\u2082'}cos{'\u03B8\u2082'})</p>
+            <p>rp = (n{'\u2082'}cos{'\u03B8\u2081'} - n{'\u2081'}cos{'\u03B8\u2082'}) / (n{'\u2082'}cos{'\u03B8\u2081'} + n{'\u2081'}cos{'\u03B8\u2082'})</p>
+            <p className={cn('pt-1.5 font-semibold', dt.isDark ? 'text-cyan-400' : 'text-cyan-600')}>
+              Rs = rs{'\u00B2'}, Rp = rp{'\u00B2'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 反射率曲线 - 基础难度隐藏 */}
+      {!isFoundation && (
+        <ChartPanel title={curveTitle} subtitle={curveSubtitle}>
+          <FresnelCurveChart n1={n1} n2={n2} currentAngle={incidentAngle} isZh={isZh} />
+          <p className={cn('text-[11px] mt-2 leading-relaxed', dt.mutedTextClass)}>
+            {curveNote}
+          </p>
+        </ChartPanel>
+      )}
+
+      {/* 研究级别: 边界条件推导和数据导出 */}
+      {isResearch && (
+        <>
+          <ChartPanel title={isZh ? '边界条件推导' : 'Boundary Condition Derivation'}>
+            <div className={cn('p-3 rounded-lg font-mono text-xs space-y-2', dt.isDark ? 'bg-slate-800/60 text-purple-300' : 'bg-gray-50 text-purple-700')}>
+              <div className={cn('font-sans font-medium mb-2', dt.mutedTextClass)}>
+                {isZh ? 'Maxwell方程组界面连续性条件:' : 'Maxwell equation interface continuity:'}
+              </div>
+              <p>E{'\u2081'}// = E{'\u2082'}//  ({isZh ? '切向电场连续' : 'tangential E continuous'})</p>
+              <p>H{'\u2081'}// = H{'\u2082'}//  ({isZh ? '切向磁场连续' : 'tangential H continuous'})</p>
+              <div className={cn('pt-2 mt-2 border-t text-[10px]', dt.borderClass, dt.mutedTextClass)}>
+                <p>{isZh ? '对s偏振: E平行于界面，直接应用边界条件' : 's-pol: E parallel to interface, direct BC application'}</p>
+                <p>{isZh ? '对p偏振: E有法向分量，需考虑介电常数不连续' : 'p-pol: E has normal component, dielectric discontinuity'}</p>
+              </div>
+            </div>
+          </ChartPanel>
+
+          <DataExportPanel
+            title={isZh ? '菲涅尔系数数据' : 'Fresnel Coefficient Data'}
+            titleZh="菲涅尔系数数据"
+            data={{
+              'θ_incident (°)': incidentAngle,
+              'n1': n1,
+              'n2': n2,
+              'Rs': Rs,
+              'Rp': Rp,
+              'Ts': Ts,
+              'Tp': Tp,
+              'θ_refracted (°)': fresnel.totalReflection ? 90 : fresnel.theta2,
+              'θ_Brewster (°)': brewsterAngle,
+              'TIR': fresnel.totalReflection ? 'yes' : 'no',
+            }}
+          />
+        </>
+      )}
     </div>
   )
 

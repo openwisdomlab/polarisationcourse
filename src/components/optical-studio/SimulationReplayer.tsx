@@ -223,7 +223,7 @@ export default function SimulationReplayer() {
                 'flex items-center gap-1.5 px-2.5 py-1 rounded text-xs',
                 snapshots.length > 0
                   ? 'text-red-400 hover:bg-red-500/10'
-                  : cn(isDark ? 'text-slate-600' : 'text-gray-400', 'cursor-not-allowed')
+                  : cn(isDark ? 'text-slate-600' : 'text-gray-500', 'cursor-not-allowed')
               )}
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -235,7 +235,7 @@ export default function SimulationReplayer() {
         {/* Snapshot List */}
         <Section title={`Snapshots (${snapshots.length})`} isDark={isDark}>
           {snapshots.length === 0 ? (
-            <p className={cn('text-xs italic', isDark ? 'text-slate-600' : 'text-gray-400')}>
+            <p className={cn('text-xs italic', isDark ? 'text-slate-600' : 'text-gray-500')}>
               No snapshots recorded yet. Click "Record Now" or enable auto-recording.
             </p>
           ) : (
@@ -272,7 +272,7 @@ function Section({ title, isDark, children }: { title: string; isDark: boolean; 
     )}>
       <h4 className={cn(
         'text-[10px] font-mono uppercase tracking-wider mb-2',
-        isDark ? 'text-slate-500' : 'text-gray-400'
+        isDark ? 'text-slate-500' : 'text-gray-500'
       )}>{title}</h4>
       {children}
     </div>
@@ -322,7 +322,7 @@ function SnapshotRow({ snapshot, isExpanded, onToggle, onReplay, onCopy, onRemov
           #{snapshot.fingerprint}
         </span>
 
-        <span className={cn('text-[10px]', isDark ? 'text-slate-500' : 'text-gray-400')}>
+        <span className={cn('text-[10px]', isDark ? 'text-slate-500' : 'text-gray-500')}>
           {snapshot.result.segmentCount} segs
         </span>
 
@@ -338,19 +338,19 @@ function SnapshotRow({ snapshot, isExpanded, onToggle, onReplay, onCopy, onRemov
           isDark ? 'border-slate-700/30' : 'border-gray-200/50'
         )}>
           <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1.5 text-[10px] font-mono">
-            <span className={isDark ? 'text-slate-500' : 'text-gray-400'}>Components:</span>
+            <span className={isDark ? 'text-slate-500' : 'text-gray-500'}>Components:</span>
             <span>{snapshot.layout.components.length}</span>
 
-            <span className={isDark ? 'text-slate-500' : 'text-gray-400'}>Segments:</span>
+            <span className={isDark ? 'text-slate-500' : 'text-gray-500'}>Segments:</span>
             <span>{snapshot.result.segmentCount}</span>
 
-            <span className={isDark ? 'text-slate-500' : 'text-gray-400'}>Energy In:</span>
+            <span className={isDark ? 'text-slate-500' : 'text-gray-500'}>Energy In:</span>
             <span>{snapshot.result.totalInputEnergy.toFixed(1)}%</span>
 
-            <span className={isDark ? 'text-slate-500' : 'text-gray-400'}>Energy Out:</span>
+            <span className={isDark ? 'text-slate-500' : 'text-gray-500'}>Energy Out:</span>
             <span>{snapshot.result.totalOutputEnergy.toFixed(1)}%</span>
 
-            <span className={isDark ? 'text-slate-500' : 'text-gray-400'}>Sensors:</span>
+            <span className={isDark ? 'text-slate-500' : 'text-gray-500'}>Sensors:</span>
             <span>{Object.keys(snapshot.result.sensorAnalysis).length}</span>
           </div>
 

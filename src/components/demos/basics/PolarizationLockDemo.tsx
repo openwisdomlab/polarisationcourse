@@ -570,7 +570,7 @@ function PhysicsPanel({
           <div className="font-mono text-blue-500 font-bold">
             I₁ = 50%
           </div>
-          <div className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <div className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             {isZh ? '(非偏振→偏振)' : '(Unpolarized→Polarized)'}
           </div>
         </div>
@@ -582,7 +582,7 @@ function PhysicsPanel({
           <div className="font-mono text-purple-500 font-bold">
             I₂ = {(intensity2 * 100).toFixed(0)}%
           </div>
-          <div className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
+          <div className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')}>
             cos²({angleBetween}°) = {(PolarizationPhysics.malusIntensity(0, angleBetween, 1.0) * 100).toFixed(0)}%
           </div>
         </div>

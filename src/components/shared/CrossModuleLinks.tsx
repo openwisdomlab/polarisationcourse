@@ -46,7 +46,7 @@ export function CrossModuleLinks({ demoId, theme }: CrossModuleLinksProps) {
     )}>
       <p className={cn(
         'text-xs font-medium uppercase tracking-wider mb-3',
-        theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
       )}>
         {t('learningPaths.explore')}
       </p>

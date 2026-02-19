@@ -485,7 +485,7 @@ function TaskCard({ task, onStart }: { task: ResearchTask; onStart?: (taskId: st
                 : theme === 'dark' ? 'bg-yellow-500/20' : 'bg-yellow-100'
         )}>
           {isLocked ? (
-            <Lock className={cn('w-5 h-5', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
+            <Lock className={cn('w-5 h-5', theme === 'dark' ? 'text-gray-500' : 'text-gray-500')} />
           ) : taskStatus === 'submitted' || taskStatus === 'published' ? (
             <CheckCircle2 className={cn('w-5 h-5', theme === 'dark' ? 'text-green-400' : 'text-green-600')} />
           ) : taskStatus === 'in-progress' ? (
@@ -494,7 +494,7 @@ function TaskCard({ task, onStart }: { task: ResearchTask; onStart?: (taskId: st
             <CategoryIcon className={cn(
               'w-5 h-5',
               isComingSoon
-                ? theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                ? theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
                 : theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
             )} />
           )}
@@ -506,7 +506,7 @@ function TaskCard({ task, onStart }: { task: ResearchTask; onStart?: (taskId: st
             </Badge>
             <div className={cn(
               'flex items-center gap-1 text-xs',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               <Clock className="w-3 h-3" />
               {task.estimatedHours}h
@@ -566,7 +566,7 @@ function TaskCard({ task, onStart }: { task: ResearchTask; onStart?: (taskId: st
           {isLocked && task.prerequisites && (
             <div className={cn(
               'mt-2 text-xs',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               {isZh ? '前置任务: ' : 'Prerequisites: '}
               {task.prerequisites.join(', ')}
@@ -710,7 +710,7 @@ function OpenChallengeCard({ challenge, onSelect }: { challenge: OpenChallenge; 
             )}
             <div className={cn(
               'flex items-center gap-1 text-xs',
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
             )}>
               <Clock className="w-3 h-3" />
               {challenge.estimatedWeeks} {isZh ? '周' : 'weeks'}
@@ -754,7 +754,7 @@ function OpenChallengeCard({ challenge, onSelect }: { challenge: OpenChallenge; 
       <div className="mb-4">
         <h4 className={cn(
           'text-xs font-semibold uppercase tracking-wider mb-2',
-          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
         )}>
           {isZh ? '研究任务' : 'Research Tasks'}
         </h4>
@@ -813,7 +813,7 @@ function OpenChallengeCard({ challenge, onSelect }: { challenge: OpenChallenge; 
               onClick={(e) => e.stopPropagation()}
               className={cn(
                 'flex items-center gap-1 text-xs',
-                theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'
               )}
             >
               <Github className="w-3.5 h-3.5" />

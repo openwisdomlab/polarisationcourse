@@ -378,7 +378,7 @@ export function OpticalOverviewDiagram({ onFilterChange }: OpticalOverviewDiagra
               {/* 说明文字 */}
               <p className={cn(
                 'text-center text-xs leading-relaxed',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
               )}>
                 {isZh
                   ? '💡 点击卡片或图例切换焦点 | 偏振光学揭示光的横波本质，是连接经典光学与量子光学的桥梁'

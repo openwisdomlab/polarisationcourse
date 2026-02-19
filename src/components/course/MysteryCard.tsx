@@ -167,7 +167,7 @@ export function MysteryCard({
             animate={{ opacity: 1 }}
           >
             <div className="text-center">
-              <Lock className={`w-10 h-10 mx-auto mb-2 ${theme === 'dark' ? 'text-slate-500' : 'text-gray-400'}`} />
+              <Lock className={`w-10 h-10 mx-auto mb-2 ${theme === 'dark' ? 'text-slate-500' : 'text-gray-500'}`} />
               <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}`}>
                 {t('course.mystery.unlockHint')}
               </p>
@@ -378,7 +378,7 @@ export function MysteryCard({
         {/* 展开指示器 */}
         {mystery.status !== 'locked' && (
           <motion.div
-            className={`absolute bottom-2 right-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}
+            className={`absolute bottom-2 right-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}
             animate={{ rotate: isExpanded ? 90 : 0 }}
           >
             <ChevronRight className="w-4 h-4" />

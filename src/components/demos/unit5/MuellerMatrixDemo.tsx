@@ -405,7 +405,7 @@ function MatrixDisplay({ matrix, element, angle, t }: {
                   ? val > 0
                     ? dt.isDark ? 'text-cyan-400 bg-cyan-400/10 border border-cyan-400/15' : 'text-cyan-700 bg-cyan-50 border border-cyan-200/50'
                     : dt.isDark ? 'text-pink-400 bg-pink-400/10 border border-pink-400/15' : 'text-pink-700 bg-pink-50 border border-pink-200/50'
-                  : dt.isDark ? 'text-gray-600 bg-slate-800/40 border border-slate-700/30' : 'text-gray-400 bg-gray-50 border border-gray-200/50'
+                  : dt.isDark ? 'text-gray-600 bg-slate-800/40 border border-slate-700/30' : 'text-gray-500 bg-gray-50 border border-gray-200/50'
               )}
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
