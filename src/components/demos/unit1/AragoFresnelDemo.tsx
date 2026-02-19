@@ -276,7 +276,7 @@ function OpticalSetupDiagram({
           strokeWidth="2"
           transform={`rotate(${pol1}, 172.5, 84.5)`}
         />
-        <text x="172.5" y="65" textAnchor="middle" fill="#ff6b6b" fontSize="9">P1: {pol1}deg</text>
+        <text x="172.5" y="65" textAnchor="middle" fill="#ff6b6b" fontSize="10">P1: {pol1}deg</text>
 
         {/* 下缝偏振片 */}
         <rect x="170" y="103" width="5" height="25" fill="rgba(78, 205, 196, 0.3)" stroke="#4ecdc4" strokeWidth="1" />
@@ -289,7 +289,7 @@ function OpticalSetupDiagram({
           strokeWidth="2"
           transform={`rotate(${pol2}, 172.5, 115.5)`}
         />
-        <text x="172.5" y="140" textAnchor="middle" fill="#4ecdc4" fontSize="9">P2: {pol2}deg</text>
+        <text x="172.5" y="140" textAnchor="middle" fill="#4ecdc4" fontSize="10">P2: {pol2}deg</text>
       </g>
 
       {/* 光束1 (上缝) */}
@@ -374,11 +374,11 @@ function OpticalSetupDiagram({
       {/* 偏振状态说明 */}
       <g transform="translate(480, 15)">
         <rect x="0" y="0" width="110" height="55" fill={dt.infoPanelBg} rx="4" stroke={dt.infoPanelStroke} />
-        <text x="10" y="15" fill={dt.textSecondary} fontSize="9">偏振状态:</text>
+        <text x="10" y="15" fill={dt.textSecondary} fontSize="10">偏振状态:</text>
         <line x1="10" y1="28" x2="30" y2="28" stroke="#ff6b6b" strokeWidth="2" />
-        <text x="35" y="31" fill="#ff6b6b" fontSize="9">光束1 ({pol1}deg)</text>
+        <text x="35" y="31" fill="#ff6b6b" fontSize="10">光束1 ({pol1}deg)</text>
         <line x1="10" y1="43" x2="30" y2="43" stroke="#4ecdc4" strokeWidth="2" />
-        <text x="35" y="46" fill="#4ecdc4" fontSize="9">光束2 ({pol2}deg)</text>
+        <text x="35" y="46" fill="#4ecdc4" fontSize="10">光束2 ({pol2}deg)</text>
       </g>
     </svg>
   )
@@ -552,7 +552,7 @@ export function AragoFresnelDemo() {
       </div>
 
       {/* 统计卡片 */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="偏振夹角"
           value={`${Math.abs(pol1 - pol2)}`}
@@ -723,7 +723,7 @@ export function AragoFresnelDemo() {
       </div>
 
       {/* 知识卡片 */}
-      <InfoGrid columns={2} className="md:grid-cols-4">
+      <InfoGrid columns={2} className="lg:grid-cols-4">
         <InfoCard title="阿拉戈-菲涅尔第一定律" color="cyan">
           <p className={`text-xs ${dt.bodyClass}`}>
             两束来自同一偏振光源、偏振方向相同的相干光可以产生干涉。这是最基本的干涉条件。
