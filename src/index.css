@@ -477,6 +477,43 @@ body {
   }
 }
 
+/* Odyssey scroll background — ambient particle drift */
+@keyframes drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(12px, -18px);
+  }
+  50% {
+    transform: translate(-8px, 10px);
+  }
+  75% {
+    transform: translate(15px, 5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.animate-drift {
+  animation: drift 30s ease-in-out infinite;
+}
+
+/* Odyssey hero — flowing beam gradient */
+@keyframes flowBeam {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-flow-beam {
+  animation: flowBeam 3s linear infinite;
+}
+
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
 

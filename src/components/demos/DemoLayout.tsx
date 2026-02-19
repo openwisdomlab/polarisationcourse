@@ -40,6 +40,7 @@ export function DemoHeader({ title, subtitle, badge, gradient = 'cyan' }: DemoHe
 
   return (
     <motion.div
+      data-demo-header
       className="text-center mb-2"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
