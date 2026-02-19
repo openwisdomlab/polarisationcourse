@@ -29,8 +29,6 @@ interface FeedbackState {
   bloomOpacity: number
   /** Whether the UI pulse CSS class should be active */
   isPulsing: boolean
-  /** Timestamp of last resonance event (for debouncing) */
-  lastResonanceAt: number
 }
 
 interface UseOpticalFeedbackOptions {
@@ -104,9 +102,10 @@ export function useOpticalFeedback(options: UseOpticalFeedbackOptions = {}) {
     activeEvent: null,
     bloomOpacity: 0,
     isPulsing: false,
-    lastResonanceAt: 0,
   })
 
+  // Track debounce timestamp via ref — avoids putting it in useCallback deps
+  const lastResonanceAtRef = useRef(0)
   const overlayRef = useRef<HTMLDivElement | null>(null)
 
   // Inject CSS on first mount
@@ -147,14 +146,14 @@ export function useOpticalFeedback(options: UseOpticalFeedbackOptions = {}) {
     const now = Date.now()
 
     if (event === 'resonance') {
-      // Debounce resonance events
-      if (now - state.lastResonanceAt < debounceMs) return
+      // Debounce resonance events using ref — no state update needed for timing
+      if (now - lastResonanceAtRef.current < debounceMs) return
+      lastResonanceAtRef.current = now
 
       setState(prev => ({
         ...prev,
         activeEvent: event,
         isPulsing: true,
-        lastResonanceAt: now,
       }))
 
       // Visual: screen bloom
@@ -183,7 +182,7 @@ export function useOpticalFeedback(options: UseOpticalFeedbackOptions = {}) {
         setState(prev => ({ ...prev, activeEvent: null }))
       }, 400)
     }
-  }, [state.lastResonanceAt, debounceMs, triggerBloom, audioEnabled, initAudio, playClick])
+  }, [debounceMs, triggerBloom, audioEnabled, initAudio, playClick])
 
   // Cleanup overlay on unmount
   useEffect(() => {
