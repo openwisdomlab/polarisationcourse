@@ -336,7 +336,20 @@ export const STANDARD_JONES_VECTORS = {
     complex.create(0, 1 / Math.SQRT2),
   ],
 
-  /** Unpolarized light (represented as average of H and V) */
+  /**
+   * ⚠️ DEPRECATED: This is PHYSICALLY INCORRECT representation of unpolarized light!
+   *
+   * Jones vectors can ONLY represent fully polarized light - they cannot represent
+   * unpolarized or partially polarized light. This is a common misconception.
+   *
+   * For unpolarized light, use CoherencyMatrix.createUnpolarized() instead:
+   *   - Unpolarized: J = (I/2) × Identity (Stokes: [1, 0, 0, 0])
+   *   - Partially polarized: J = p × J_polarized + (1-p) × J_unpolarized
+   *
+   * This representation was mistakenly treating unpolarized as the average of H and V,
+   * which is physically wrong - it would give DoP = 0 but with non-zero coherency
+   * terms that don't represent any real physical state.
+   */
   unpolarized: (): JonesVector => [
     complex.create(1 / Math.SQRT2),
     complex.create(1 / Math.SQRT2),

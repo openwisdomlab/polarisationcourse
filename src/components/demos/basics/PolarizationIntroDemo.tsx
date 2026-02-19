@@ -2,11 +2,17 @@
  * Polarization Introduction Demo - 偏振光入门演示
  * 使用 DOM + Framer Motion 对比非偏振光和偏振光
  *
- * Scientific Note: Unpolarized light is NOT multiple simultaneous polarization directions,
- * but rather a single polarization direction that changes randomly and rapidly over time.
- * The animation reflects this by showing a jittering vector rather than a static starburst.
+ * Scientific Accuracy:
+ * - 非偏振光 (Unpolarized light): 电场方向随时间快速随机变化，统计平均后等于振幅相等的所有方向
+ * - 偏振光 (Polarized light): 电场在确定的方向/模式中振动
+ * - 线偏振光: 电场矢量端点沿直线运动
+ * - 圆/椭圆偏振光: 电场矢量端点沿圆/椭圆轨迹旋转
+ *
+ * 底层计算: 使用 CoherencyMatrix (相干矩阵) 计算
+ * - 非偏振光: J = (I/2) × Identity, Stokes = [1, 0, 0, 0], DoP = 0
+ * - 线偏振光: Jones vector 或对应的 CoherencyMatrix
  */
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -84,13 +90,16 @@ function EFieldVector({
 }
 
 // 随机抖动电场矢量组件 - 用于非偏振光
-// 科学准确性：非偏振光是单一振动方向随时间快速随机变化，而非同时存在多个方向
+// 科学说明：非偏振光是单一振动方向随时间快速随机变化，而非同时存在多个方向
+// 抖动频率约为 10Hz (每100ms变化一次)，模拟热辐射光源的随机相位
 function JitteringEFieldVector({
   length,
   isAnimating,
+  colorMode = 'rainbow',
 }: {
   length: number
   isAnimating: boolean
+  colorMode?: 'rainbow' | 'white'
 }) {
   const [currentAngle, setCurrentAngle] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -114,8 +123,10 @@ function JitteringEFieldVector({
     }
   }, [isAnimating])
 
-  // 根据当前角度计算颜色 (HSL色轮)
-  const color = `hsl(${currentAngle}, 70%, 60%)`
+  // 根据当前角度计算颜色（HSL色轮）或使用白色
+  const color = colorMode === 'rainbow'
+    ? `hsl(${currentAngle}, 70%, 60%)`
+    : '#ffffff'
 
   return (
     <motion.div
@@ -174,6 +185,58 @@ function JitteringEFieldVector({
   )
 }
 
+// 叠加视图：同时显示多个方向的"幽灵"矢量，表示统计平均后的非偏振光
+// 这种视图更直观：非偏振光 = 所有方向偏振光的等概率叠加
+function SuperpositionEFieldVector({
+  length,
+  isAnimating,
+}: {
+  length: number
+  isAnimating: boolean
+}) {
+  // 显示8个方向的矢量，代表所有可能的方向
+  const directions = useMemo(() => {
+    return Array.from({ length: 8 }, (_, i) => i * 45) // 0°, 45°, 90°, ...
+  }, [])
+
+  return (
+    <div className="absolute left-1/2 top-1/2 origin-center">
+      {directions.map((angle, index) => (
+        <motion.div
+          key={angle}
+          className="absolute left-1/2 top-1/2 origin-center"
+          style={{
+            width: length * 2,
+            height: 2,
+            marginLeft: -length,
+            marginTop: -1,
+          }}
+          animate={isAnimating ? {
+            opacity: [0.15, 0.35, 0.15],
+          } : { opacity: 0.25 }}
+          transition={{
+            duration: 1.5 + index * 0.1,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: index * 0.1,
+          }}
+        >
+          <div
+            className="w-full h-full rounded-full"
+            style={{
+              background: `linear-gradient(90deg, transparent, #fbbf24, transparent)`,
+              boxShadow: `0 0 6px #fbbf24`,
+              transform: `rotate(${angle}deg)`,
+            }}
+          />
+        </motion.div>
+      ))}
+      {/* 中心点 */}
+      <div className="absolute left-1/2 top-1/2 w-3 h-3 -ml-1.5 -mt-1.5 rounded-full bg-yellow-400/60" />
+    </div>
+  )
+}
+
 // 偏振光面板
 function PolarizedPanel({
   title,
@@ -182,6 +245,7 @@ function PolarizedPanel({
   polarizationAngle,
   animationSpeed,
   propagationText,
+  visualizationMode = 'jitter', // 'jitter' = 动态抖动, 'superposition' = 叠加视图
 }: {
   title: string
   subtitle: string
@@ -189,6 +253,7 @@ function PolarizedPanel({
   polarizationAngle: number
   animationSpeed: number
   propagationText: string
+  visualizationMode?: 'jitter' | 'superposition'
 }) {
   const { theme } = useTheme()
   return (
@@ -270,6 +335,34 @@ function PolarizedPanel({
               </text>
             </>
           )}
+
+          {/* 非偏振光的参考圆（表示所有可能方向） */}
+          {isUnpolarized && (
+            <>
+              {/* 8个方向的虚线参考，表示统计平均的概念 */}
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+                <line
+                  key={angle}
+                  x1={-80 * Math.cos((angle * Math.PI) / 180)}
+                  y1={-80 * Math.sin((angle * Math.PI) / 180)}
+                  x2={80 * Math.cos((angle * Math.PI) / 180)}
+                  y2={80 * Math.sin((angle * Math.PI) / 180)}
+                  stroke={theme === 'dark' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(245, 158, 11, 0.2)'}
+                  strokeWidth="1"
+                  strokeDasharray="3 3"
+                />
+              ))}
+              {/* 中心标签 */}
+              <text
+                x="0" y="5"
+                textAnchor="middle"
+                fontSize="10"
+                fill={theme === 'dark' ? 'rgba(251, 191, 36, 0.5)' : 'rgba(245, 158, 11, 0.6)'}
+              >
+                随机
+              </text>
+            </>
+          )}
         </svg>
 
         {/* 中心光源点 */}
@@ -288,13 +381,22 @@ function PolarizedPanel({
           transition={{ duration: 1.5, repeat: Infinity }}
         />
 
-        {/* 电场矢量 */}
+        {/* 电场矢量 - 根据模式和类型选择 */}
         {isUnpolarized ? (
-          // 非偏振光 - 单一矢量随机抖动（科学准确：振动方向随时间快速随机变化）
-          <JitteringEFieldVector
-            length={70}
-            isAnimating={animationSpeed > 0}
-          />
+          visualizationMode === 'superposition' ? (
+            // 叠加视图：显示多个方向的幽灵矢量
+            <SuperpositionEFieldVector
+              length={70}
+              isAnimating={animationSpeed > 0}
+            />
+          ) : (
+            // 动态视图：单一矢量随机抖动
+            <JitteringEFieldVector
+              length={70}
+              isAnimating={animationSpeed > 0}
+              colorMode="rainbow"
+            />
+          )
         ) : (
           // 偏振光 - 单一方向的矢量
           <EFieldVector
@@ -337,6 +439,7 @@ export function PolarizationIntroDemo() {
   const [polarizationAngle, setPolarizationAngle] = useState(0)
   const [animationSpeed, setAnimationSpeed] = useState(0.5)
   const [showComparison, setShowComparison] = useState(true)
+  const [unpolarizedViewMode, setUnpolarizedViewMode] = useState<'jitter' | 'superposition'>('jitter')
 
   return (
     <div className="space-y-5">
@@ -366,6 +469,7 @@ export function PolarizationIntroDemo() {
                     polarizationAngle={0}
                     animationSpeed={animationSpeed}
                     propagationText={t('demoUi.polarizationIntro.propagationDirection')}
+                    visualizationMode={unpolarizedViewMode}
                   />
                 </motion.div>
               )}
@@ -446,17 +550,76 @@ export function PolarizationIntroDemo() {
                 <span className={cn("text-sm", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.showComparison')}</span>
               </label>
 
-              {/* 关键概念 */}
+              {/* 非偏振光可视化模式选择 */}
               <div className={cn("mt-4 pt-4 border-t space-y-2", theme === 'dark' ? "border-slate-700" : "border-gray-200")}>
-                <h4 className={cn("text-sm font-semibold", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{t('demoUi.common.keyConcepts')}</h4>
-                <div className={cn("text-xs space-y-1.5", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>
+                <span className={cn("text-xs font-medium", theme === 'dark' ? "text-yellow-400" : "text-yellow-600")}>
+                  非偏振光显示模式
+                </span>
+                <div className="flex gap-2">
+                  <motion.button
+                    className={cn(
+                      "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all border",
+                      unpolarizedViewMode === 'jitter'
+                        ? theme === 'dark'
+                          ? 'bg-yellow-400/20 text-yellow-400 border-yellow-400/50'
+                          : 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                        : theme === 'dark'
+                          ? 'bg-slate-700/50 text-gray-400 border-slate-600/50'
+                          : 'bg-white text-gray-600 border-gray-200'
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setUnpolarizedViewMode('jitter')}
+                  >
+                    动态抖动
+                  </motion.button>
+                  <motion.button
+                    className={cn(
+                      "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all border",
+                      unpolarizedViewMode === 'superposition'
+                        ? theme === 'dark'
+                          ? 'bg-yellow-400/20 text-yellow-400 border-yellow-400/50'
+                          : 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                        : theme === 'dark'
+                          ? 'bg-slate-700/50 text-gray-400 border-slate-600/50'
+                          : 'bg-white text-gray-600 border-gray-200'
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setUnpolarizedViewMode('superposition')}
+                  >
+                    多向叠加
+                  </motion.button>
+                </div>
+                <p className={cn("text-xs", theme === 'dark' ? "text-gray-500" : "text-gray-500")}>
+                  {unpolarizedViewMode === 'jitter'
+                    ? '模拟电场方向随时间快速随机变化（更物理准确）'
+                    : '同时显示所有可能方向，直观理解"统计平均"的概念'}
+                </p>
+              </div>
+
+              {/* 科学说明 - 简明版 */}
+              <div className={cn("mt-4 pt-4 border-t space-y-2", theme === 'dark' ? "border-slate-700" : "border-gray-200")}>
+                <h4 className={cn("text-sm font-semibold", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>
+                  💡 科学原理
+                </h4>
+                <div className={cn("text-xs space-y-2", theme === 'dark' ? "text-gray-400" : "text-gray-600")}>
                   <p className="flex items-start gap-2">
                     <span className="w-2 h-2 rounded-full bg-yellow-400 mt-1 flex-shrink-0" />
-                    <span><strong className={theme === 'dark' ? "text-yellow-400" : "text-yellow-600"}>{t('demoUi.polarizationIntro.unpolarizedLight')}:</strong> {t('demoUi.polarizationIntro.unpolarizedDesc')}</span>
+                    <span>
+                      <strong className={theme === 'dark' ? "text-yellow-400" : "text-yellow-600"}>非偏振光：</strong>
+                      电场方向随时间随机变化（~10Hz），统计平均后等于所有方向的等概率叠加
+                    </span>
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="w-2 h-2 rounded-full bg-cyan-400 mt-1 flex-shrink-0" />
-                    <span><strong className={theme === 'dark' ? "text-cyan-400" : "text-cyan-600"}>{t('demoUi.polarizationIntro.polarizedLight')}:</strong> {t('demoUi.polarizationIntro.polarizedDesc')}</span>
+                    <span>
+                      <strong className={theme === 'dark' ? "text-cyan-400" : "text-cyan-600"}>偏振光：</strong>
+                      电场在固定方向/模式中振动。线偏振在单一平面内，圆偏振端点做圆周运动
+                    </span>
+                  </p>
+                  <p className={theme === 'dark' ? "text-gray-500" : "text-gray-500 italic"}>
+                    底层计算使用相干矩阵（Coherency Matrix），非偏振光 DoP=0
                   </p>
                 </div>
               </div>
