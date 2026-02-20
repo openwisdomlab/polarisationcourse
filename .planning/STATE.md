@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Students voluntarily immerse in exploration for 2+ hours -- curiosity-driven discovery learning where polarization knowledge is a natural byproduct of exploring the world
-**Current focus:** Phase 4 complete. Ready for Phase 5: Polish & Optimization.
+**Current focus:** Phase 5 in progress. Full concept coverage complete (05-01). Next: visual polish (05-02).
 
 ## Current Position
 
-Phase: 4 of 5 (Depth Layers & Content Integration)
-Plan: 3 of 3 in current phase (04-03 complete -- PHASE COMPLETE)
-Status: Phase 4 Complete
-Last activity: 2026-02-21 -- Completed 04-03-PLAN.md (demo explorers & constellation map)
+Phase: 5 of 5 (Visual Polish & Full Coverage)
+Plan: 1 of 3 in current phase (05-01 complete)
+Status: Executing Phase 5
+Last activity: 2026-02-21 -- Completed 05-01-PLAN.md (full concept coverage + demo explorers)
 
-Progress: [##########] 93%
+Progress: [############] 95%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: 9 min
-- Total execution time: 1.57 hours
+- Total execution time: 1.77 hours
 
 **By Phase:**
 
@@ -39,6 +39,7 @@ Progress: [##########] 93%
 | Phase 04 P01 | 9min | 2 tasks | 6 files |
 | Phase 04 P02 | 12min | 2 tasks | 12 files |
 | Phase 04 P03 | 7min | 2 tasks | 7 files |
+| Phase 05 P01 | 12min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,10 @@ Recent decisions affecting current work:
 - [04-03]: DemoLayer React.lazy registry for code-splitting -- each explorer loads on demand
 - [04-03]: Concept constellation: deterministic node positions via index-based grid within region rectangles
 - [04-03]: Connection lines categorized: causal=solid/amber, analogous=dashed/blue, contrasting=dotted/rose
+- [05-01]: Cross-region connections link Phase 5 concepts to existing Phase 4 concepts (retardation->circular, fresnel->brewster, stokes->poincare, polarimetry->malus)
+- [05-01]: Rayleigh DOP formula rendered as polar scatter diagram with vertical DOP indicator bar
+- [05-01]: Stokes explorer auto-records measurements when slider passes within 4-degree threshold of measurement positions
+- [05-01]: Fresnel explorer shows both Rs/Rp curves above a ray diagram with Brewster angle annotation
 
 ### Pending Todos
 
@@ -123,5 +128,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 04-03-PLAN.md (demo explorers & constellation map) -- Phase 4 complete
+Stopped at: Completed 05-01-PLAN.md (full concept coverage + demo explorers)
 Resume file: None
