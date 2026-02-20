@@ -1,11 +1,12 @@
 /**
  * OdysseyPage.tsx -- Odyssey 等距光学世界入口
  *
- * 初始化场景状态，渲染占位符 (Plan 02 将替换为 OdysseyWorld 组件)。
+ * 初始化场景状态，渲染 OdysseyWorld 等距场景组件。
  * 组件挂载时初始化场景数据，卸载时清理状态。
  */
 import { useEffect } from 'react'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { OdysseyWorld } from '@/components/odyssey-world/OdysseyWorld'
 
 export function OdysseyPage() {
   useEffect(() => {
@@ -18,9 +19,5 @@ export function OdysseyPage() {
     }
   }, [])
 
-  return (
-    <div className="flex h-screen w-full items-center justify-center bg-gray-900 text-white">
-      <p className="text-lg opacity-60">Odyssey World Loading...</p>
-    </div>
-  )
+  return <OdysseyWorld />
 }
