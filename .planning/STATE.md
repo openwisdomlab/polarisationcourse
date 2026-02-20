@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Students voluntarily immerse in exploration for 2+ hours -- curiosity-driven discovery learning where polarization knowledge is a natural byproduct of exploring the world
-**Current focus:** Phase 2: Interaction & Visual Language
+**Current focus:** Phase 3: Multi-Region Isometric World
 
 ## Current Position
 
-Phase: 2 of 5 (Interaction & Visual Language) -- COMPLETE
-Plan: 4 of 4 in current phase (02-01, 02-02, 02-03, 02-04 complete)
-Status: Phase 2 Complete -- Ready for Phase 3
-Last activity: 2026-02-20 -- Completed 02-04-PLAN.md (discovery & feedback system)
+Phase: 3 of 5 (Multi-Region Isometric World)
+Plan: 1 of 3 in current phase (03-01 complete)
+Status: In Progress
+Last activity: 2026-02-21 -- Completed 03-01-PLAN.md (multi-region data layer)
 
-Progress: [######....] 53%
+Progress: [######....] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 7 min
-- Total execution time: 0.8 hours
+- Total plans completed: 8
+- Average duration: 8 min
+- Total execution time: 1.0 hours
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [######....] 53%
 |-------|-------|-------|----------|
 | 1 | 3 | 18 min | 6 min |
 | 2 | 4 | 30 min | 8 min |
+| 3 | 1 | 13 min | 13 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (4 min), 02-03 (8 min), 02-02 (11 min), 02-04 (7 min)
-- Trend: Stable
+- Last 5 plans: 02-03 (8 min), 02-02 (11 min), 02-04 (7 min), 03-01 (13 min)
+- Trend: Slightly increasing (multi-region complexity)
 
 *Updated after each plan completion*
 
@@ -75,6 +76,11 @@ Recent decisions affecting current work:
 - [02-04]: DiscoveryFeedback SVG layer at L2.5 (between objects and beam) maintains beam visual dominance per VISL-03
 - [02-04]: PolarizationLegend as HTML overlay consistent with EnvironmentPopup pattern for reliable text rendering
 - [02-04]: Environmental responses use subtle spring animations (stiffness 40-60, damping 15-20) with 15-40% opacity
+- [03-01]: Custom PersistStorage (not createJSONStorage) for direct Set/Map serialization control
+- [03-01]: Crystal Lab preserves all Phase 1/2 elements expanded to 13x13 -- no scene rewrite
+- [03-01]: Atomic switchRegion via single set() call to prevent stale beam physics
+- [03-01]: Rotation history capped at 20 entries per element during deserialization
+- [03-01]: Hydration-aware initScene via onFinishHydration + hasHydrated guard
 
 ### Pending Todos
 
@@ -88,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-20
-Stopped at: Completed 02-04-PLAN.md (discovery & feedback system -- Phase 2 complete)
+Last session: 2026-02-21
+Stopped at: Completed 03-01-PLAN.md (multi-region data layer)
 Resume file: None

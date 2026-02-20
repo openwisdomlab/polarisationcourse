@@ -10,11 +10,11 @@ Requirements for initial release. Each maps to roadmap phases.
 ### World Foundation
 
 - [x] **WRLD-01**: World uses click/tap point-and-click navigation in an isometric perspective -- student clicks to move between areas, not WASD free camera or scroll-driven linear path
-- [ ] **WRLD-02**: World consists of 4-6 interconnected optical environment regions, each with unique visual style and physics theme
+- [x] **WRLD-02**: World consists of 4-6 interconnected optical environment regions, each with unique visual style and physics theme
 - [ ] **WRLD-03**: Regions connected through animated transitions (parallax shifts, perspective slides, fade-throughs), no page-load interruptions
 - [x] **WRLD-04**: World has spatial coherence -- all regions feel like they belong to the same isometric world, not an independent demo gallery
 - [ ] **WRLD-05**: Regions lazy-load SVG/scene assets by proximity, maintaining smooth transitions between adjacent regions
-- [ ] **WRLD-06**: All regions freely accessible from the start, no mandatory prerequisites
+- [x] **WRLD-06**: All regions freely accessible from the start, no mandatory prerequisites
 
 ### Light & Physics
 
@@ -39,7 +39,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DISC-03**: Layered information architecture -- intuition (see phenomenon) -> qualitative (understand why) -> quantitative (mathematical description), student chooses depth
 - [x] **DISC-04**: Correct configurations trigger visible environmental changes -- beam changes, color shifts, patterns appear, regions illuminate
 - [ ] **DISC-05**: Cross-concept "aha" connections -- discovery in one region reveals related phenomenon in another region
-- [ ] **DISC-06**: Discovery state persists across sessions -- returning students continue from their last understanding
+- [x] **DISC-06**: Discovery state persists across sessions -- returning students continue from their last understanding
 
 ### Visual & Aesthetic
 
@@ -103,11 +103,11 @@ Deferred to future release. Tracked but not in current roadmap.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | WRLD-01 | Phase 1 | Complete |
-| WRLD-02 | Phase 3 | Pending |
+| WRLD-02 | Phase 3 | Complete |
 | WRLD-03 | Phase 3 | Pending |
 | WRLD-04 | Phase 1 | Complete |
 | WRLD-05 | Phase 3 | Pending |
-| WRLD-06 | Phase 3 | Pending |
+| WRLD-06 | Phase 3 | Complete |
 | PHYS-01 | Phase 1 | Complete |
 | PHYS-02 | Phase 1 | Complete |
 | PHYS-03 | Phase 2 | Complete |
@@ -123,7 +123,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | DISC-03 | Phase 4 | Pending |
 | DISC-04 | Phase 2 | Complete |
 | DISC-05 | Phase 3 | Pending |
-| DISC-06 | Phase 3 | Pending |
+| DISC-06 | Phase 3 | Complete |
 | VISL-01 | Phase 5 | Pending |
 | VISL-02 | Phase 1 | Complete |
 | VISL-03 | Phase 2 | Complete |
