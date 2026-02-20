@@ -110,14 +110,14 @@ export const LightBeam = React.memo(function LightBeam({ segment, ghost = false 
 
   return (
     <g className="light-beam-segment">
-      {/* 表面照明效果 -- 光束下方的微妙彩色光带 */}
+      {/* 表面照明效果 -- 光束下方的柔和彩色光带 (Phase 5: 增大半径和透明度) */}
       <ellipse
         cx={illumination.midX}
         cy={illumination.midY + 8}
-        rx={illumination.length / 2}
-        ry={12}
+        rx={illumination.length / 2 + 4}
+        ry={16}
         fill={segment.color}
-        opacity={0.06}
+        opacity={0.08}
         transform={`rotate(${illumination.angle} ${illumination.midX} ${illumination.midY + 8})`}
       />
 

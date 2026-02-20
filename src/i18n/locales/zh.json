@@ -4754,6 +4754,36 @@
           "stokes": "Mueller 矩阵作用于 Stokes 矢量"
         }
       }
+    },
+    "regions": {
+      "crystalLab": "晶体实验室",
+      "wavePlatform": "波动平台",
+      "refractionBench": "折射工作台",
+      "scatteringChamber": "散射实验室",
+      "interfaceLab": "界面实验室",
+      "measurementStudio": "测量工作室"
+    },
+    "ui": {
+      "backToHome": "返回首页",
+      "worldMap": "世界地图",
+      "settings": "设置",
+      "settingsPlaceholder": "设置功能即将推出",
+      "worldMapTitle": "光学世界",
+      "closeMap": "关闭地图",
+      "legendVisited": "已访问",
+      "legendUnvisited": "未访问",
+      "legendDiscoveryLink": "发现连线",
+      "legendConcept": "概念",
+      "legendCausal": "因果",
+      "legendAnalogous": "类比",
+      "legendContrasting": "对比",
+      "pressToggle": "按 M 切换",
+      "discoveryProgress": "{{count}}/{{total}} 个发现",
+      "polarization": "偏振编码",
+      "colorDirection": "颜色 = 方向",
+      "brightnessIntensity": "亮度 = 强度",
+      "shapePolarizationType": "形状 = 偏振类型",
+      "widthStrength": "线宽 = 强度"
     }
   },
   "odysseyLab": {

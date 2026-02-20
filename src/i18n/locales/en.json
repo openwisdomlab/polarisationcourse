@@ -4566,6 +4566,36 @@
           "stokes": "Mueller matrices operate on Stokes vectors"
         }
       }
+    },
+    "regions": {
+      "crystalLab": "Crystal Lab",
+      "wavePlatform": "Wave Platform",
+      "refractionBench": "Refraction Bench",
+      "scatteringChamber": "Scattering Chamber",
+      "interfaceLab": "Interface Lab",
+      "measurementStudio": "Measurement Studio"
+    },
+    "ui": {
+      "backToHome": "Back to home",
+      "worldMap": "World Map",
+      "settings": "Settings",
+      "settingsPlaceholder": "Settings coming soon",
+      "worldMapTitle": "OPTICAL WORLD",
+      "closeMap": "Close map",
+      "legendVisited": "Visited",
+      "legendUnvisited": "Unvisited",
+      "legendDiscoveryLink": "Discovery link",
+      "legendConcept": "Concept",
+      "legendCausal": "Causal",
+      "legendAnalogous": "Analogous",
+      "legendContrasting": "Contrasting",
+      "pressToggle": "Press M to toggle",
+      "discoveryProgress": "{{count}}/{{total}} discoveries",
+      "polarization": "Polarization",
+      "colorDirection": "Color = Direction",
+      "brightnessIntensity": "Brightness = Intensity",
+      "shapePolarizationType": "Shape = Polarization Type",
+      "widthStrength": "Width = Strength"
     }
   },
   "odysseyLab": {

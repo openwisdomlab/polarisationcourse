@@ -14,6 +14,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 interface PolarizationLegendProps {
   discoveredEncodings: {
@@ -28,7 +29,7 @@ interface PolarizationLegendProps {
 
 interface LegendItem {
   key: 'orientation' | 'intensity' | 'ellipticity' | 'intensityOpacity'
-  label: string
+  labelKey: string
   preview: React.ReactNode
 }
 
@@ -82,22 +83,22 @@ function IntensityOpacityPreview() {
 const LEGEND_ITEMS: LegendItem[] = [
   {
     key: 'orientation',
-    label: 'Color = Direction',
+    labelKey: 'odyssey.ui.colorDirection',
     preview: <OrientationPreview />,
   },
   {
     key: 'intensity',
-    label: 'Brightness = Intensity',
+    labelKey: 'odyssey.ui.brightnessIntensity',
     preview: <IntensityPreview />,
   },
   {
     key: 'ellipticity',
-    label: 'Shape = Polarization Type',
+    labelKey: 'odyssey.ui.shapePolarizationType',
     preview: <EllipticityPreview />,
   },
   {
     key: 'intensityOpacity',
-    label: 'Width = Strength',
+    labelKey: 'odyssey.ui.widthStrength',
     preview: <IntensityOpacityPreview />,
   },
 ]
@@ -120,6 +121,7 @@ const ITEM_SPRING = {
  * 每个图例项通过 AnimatePresence 从下方弹入。
  */
 export function PolarizationLegend({ discoveredEncodings }: PolarizationLegendProps) {
+  const { t } = useTranslation()
   const visibleItems = LEGEND_ITEMS.filter((item) => discoveredEncodings[item.key])
   const hasAny = visibleItems.length > 0
 
@@ -154,7 +156,7 @@ export function PolarizationLegend({ discoveredEncodings }: PolarizationLegendPr
           letterSpacing: '0.05em',
         }}
       >
-        Polarization
+        {t('odyssey.ui.polarization')}
       </motion.div>
 
       {/* 图例项列表 */}
@@ -184,7 +186,7 @@ export function PolarizationLegend({ discoveredEncodings }: PolarizationLegendPr
                 lineHeight: 1.2,
               }}
             >
-              {item.label}
+              {t(item.labelKey)}
             </span>
           </motion.div>
         ))}

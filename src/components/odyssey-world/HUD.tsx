@@ -15,10 +15,10 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, Settings, Map, X } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { worldToScreen, TILE_WIDTH_HALF, TILE_HEIGHT_HALF } from '@/lib/isometric'
-import { getRegionDefinition } from './regions/regionRegistry'
 
 /**
  * HUD 按钮基础样式
@@ -114,10 +114,13 @@ function Minimap() {
  * - Mobile: 最小 (小地图隐藏, 设置折叠, 区域名缩小)
  */
 export function HUD() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
-  const regionDef = getRegionDefinition(activeRegionId)
-  const regionName = regionDef?.theme.name ?? 'Unknown'
+
+  // 通过 i18n 键获取区域名称 -- 将 kebab-case ID 转换为 camelCase nameKey
+  const regionNameKey = activeRegionId.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
+  const regionName = t(`odyssey.regions.${regionNameKey}`)
 
   // 移动端设置折叠状态
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -130,7 +133,7 @@ export function HUD() {
         <button
           className={cn(hudButtonClass, 'pointer-events-auto h-8 w-8 md:h-9 md:w-9 lg:h-10 lg:w-10')}
           onClick={() => navigate({ to: '/' })}
-          aria-label="Back to home"
+          aria-label={t('odyssey.ui.backToHome')}
         >
           <ArrowLeft className="h-4 w-4 md:h-5 md:w-5 text-gray-600 dark:text-gray-300" />
         </button>
@@ -155,7 +158,7 @@ export function HUD() {
           <button
             className={cn(hudButtonClass, 'pointer-events-auto h-8 w-8 md:hidden')}
             onClick={() => useOdysseyWorldStore.getState().toggleWorldMap()}
-            aria-label="World Map"
+            aria-label={t('odyssey.ui.worldMap')}
           >
             <Map className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </button>
@@ -164,7 +167,7 @@ export function HUD() {
           <button
             className={cn(hudButtonClass, 'pointer-events-auto h-8 w-8 md:h-9 md:w-9 lg:h-10 lg:w-10')}
             onClick={() => setSettingsOpen(!settingsOpen)}
-            aria-label="Settings"
+            aria-label={t('odyssey.ui.settings')}
           >
             {settingsOpen ? (
               <X className="h-4 w-4 md:h-5 md:w-5 text-gray-600 dark:text-gray-300" />
@@ -188,7 +191,7 @@ export function HUD() {
             'min-w-[140px]',
           )}
         >
-          <p className="text-xs text-gray-500 dark:text-gray-400">Settings placeholder</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('odyssey.ui.settingsPlaceholder')}</p>
         </div>
       )}
 

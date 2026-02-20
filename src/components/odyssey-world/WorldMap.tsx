@@ -51,12 +51,12 @@ interface RegionLayout {
 }
 
 const REGION_LAYOUT: RegionLayout[] = [
-  { id: 'crystal-lab', col: 0, row: 0, label: 'Crystal Lab' },
-  { id: 'wave-platform', col: 1, row: 0, label: 'Wave Platform' },
-  { id: 'refraction-bench', col: 0, row: 1, label: 'Refraction Bench' },
-  { id: 'scattering-chamber', col: 1, row: 1, label: 'Scattering Chamber' },
-  { id: 'interface-lab', col: 0, row: 2, label: 'Interface Lab' },
-  { id: 'measurement-studio', col: 1, row: 2, label: 'Measurement Studio' },
+  { id: 'crystal-lab', col: 0, row: 0, label: 'crystalLab' },
+  { id: 'wave-platform', col: 1, row: 0, label: 'wavePlatform' },
+  { id: 'refraction-bench', col: 0, row: 1, label: 'refractionBench' },
+  { id: 'scattering-chamber', col: 1, row: 1, label: 'scatteringChamber' },
+  { id: 'interface-lab', col: 0, row: 2, label: 'interfaceLab' },
+  { id: 'measurement-studio', col: 1, row: 2, label: 'measurementStudio' },
 ]
 
 // ── 地图尺寸常量 ──────────────────────────────────────────────────────
@@ -102,6 +102,7 @@ const RegionShape = React.memo(function RegionShape({
   totalDiscoveries,
   onFastTravel,
 }: RegionShapeProps) {
+  const { t } = useTranslation()
   const { cx, cy } = getRegionCenter(layout.col, layout.row)
   const accentColor = regionDef?.theme.colorPalette.accentColor ?? '#888'
 
@@ -140,7 +141,7 @@ const RegionShape = React.memo(function RegionShape({
         )}
       </rect>
 
-      {/* 区域名称 */}
+      {/* 区域名称 -- i18n */}
       <text
         x={cx}
         y={cy - 2}
@@ -151,10 +152,10 @@ const RegionShape = React.memo(function RegionShape({
         fontWeight={isActive ? 600 : 400}
         style={{ pointerEvents: 'none', userSelect: 'none' }}
       >
-        {layout.label}
+        {t(`odyssey.regions.${layout.label}`)}
       </text>
 
-      {/* 发现进度 */}
+      {/* 发现进度 -- i18n */}
       <text
         x={cx}
         y={cy + 18}
@@ -164,7 +165,7 @@ const RegionShape = React.memo(function RegionShape({
         fontSize={9}
         style={{ pointerEvents: 'none', userSelect: 'none' }}
       >
-        {discoveryCount}/{totalDiscoveries} discoveries
+        {t('odyssey.ui.discoveryProgress', { count: discoveryCount, total: totalDiscoveries })}
       </text>
     </g>
   )
@@ -594,6 +595,7 @@ export const WorldMap = React.memo(function WorldMap({
   allConnections,
   metaDiscoveries,
 }: WorldMapProps) {
+  const { t } = useTranslation()
   const visitedRegions = useOdysseyWorldStore((s) => s.visitedRegions)
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
   // 使用全局累积发现集合 (跨所有区域) 而非当前活跃区域的工作集
@@ -666,12 +668,12 @@ export const WorldMap = React.memo(function WorldMap({
             {/* 标题栏 */}
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-light tracking-wider text-gray-300">
-                OPTICAL WORLD
+                {t('odyssey.ui.worldMapTitle')}
               </h3>
               <button
                 className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
                 onClick={onClose}
-                aria-label="Close map"
+                aria-label={t('odyssey.ui.closeMap')}
               >
                 <X className="h-4 w-4 text-gray-400" />
               </button>
@@ -723,37 +725,37 @@ export const WorldMap = React.memo(function WorldMap({
               />
             </svg>
 
-            {/* 图例 */}
+            {/* 图例 -- i18n */}
             <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] text-gray-500">
               <span className="flex items-center gap-1">
                 <span className="inline-block h-2 w-2 rounded-sm bg-gray-400/50" />
-                Visited
+                {t('odyssey.ui.legendVisited')}
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block h-2 w-2 rounded-sm border border-gray-600" />
-                Unvisited
+                {t('odyssey.ui.legendUnvisited')}
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block h-0.5 w-3 border-t border-dashed border-yellow-500/50" />
-                Discovery link
+                {t('odyssey.ui.legendDiscoveryLink')}
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block h-2 w-2 rounded-full bg-gray-400/60" />
-                Concept
+                {t('odyssey.ui.legendConcept')}
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block h-0.5 w-3 border-t border-amber-500/60" />
-                Causal
+                {t('odyssey.ui.legendCausal')}
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block h-0.5 w-3 border-t border-dashed border-blue-400/60" />
-                Analogous
+                {t('odyssey.ui.legendAnalogous')}
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block h-0.5 w-3 border-t border-dotted border-rose-400/60" />
-                Contrasting
+                {t('odyssey.ui.legendContrasting')}
               </span>
-              <span className="text-gray-600">Press M to toggle</span>
+              <span className="text-gray-600">{t('odyssey.ui.pressToggle')}</span>
             </div>
           </motion.div>
         </motion.div>
