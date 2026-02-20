@@ -6,10 +6,11 @@
  * (缩放振荡 0.95-1.05) 暗示活跃状态。
  */
 
-import React from 'react'
+import React, { useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { worldToScreen } from '@/lib/isometric'
 import type { SceneElement } from '@/stores/odysseyWorldStore'
+import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 
 interface LightSourceProps {
   element: SceneElement
@@ -20,9 +21,20 @@ interface LightSourceProps {
  *
  * 外层光晕 (大半透明圆) + 内核 (明亮圆形) + 星形高光。
  * 整体施加柔和脉冲动画。
+ * 点击打开环境属性弹窗 (不触发导航)。
  */
 const LightSource = React.memo(function LightSource({ element }: LightSourceProps) {
   const screen = worldToScreen(element.worldX, element.worldY)
+  const openPopup = useOdysseyWorldStore((s) => s.openEnvironmentPopup)
+
+  // 点击处理: 打开弹窗，阻止事件冒泡 (避免触发导航)
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      openPopup(element.id)
+    },
+    [element.id, openPopup],
+  )
 
   return (
     <motion.g
@@ -34,6 +46,8 @@ const LightSource = React.memo(function LightSource({ element }: LightSourceProp
         duration: 2,
         ease: 'easeInOut',
       }}
+      onClick={handleClick}
+      style={{ cursor: 'pointer' }}
     >
       {/* 最外层光晕 -- 大范围柔和发光 */}
       <circle

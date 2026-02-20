@@ -22,6 +22,7 @@ export type SceneElementType =
   | 'platform'
   | 'decoration'
   | 'prism'
+  | 'environment'
 
 /** 场景元素 -- 世界中的一个对象 */
 export interface SceneElement {
@@ -86,6 +87,9 @@ interface OdysseyWorldState {
   interactionMode: InteractionMode
   dragPreviewPos: { worldX: number; worldY: number } | null
 
+  // 环境弹窗状态 (Phase 2 - Plan 03)
+  environmentPopupTarget: string | null
+
   // ── 动作 ──
   setCamera: (x: number, y: number) => void
   setZoom: (zoom: number) => void
@@ -107,6 +111,10 @@ interface OdysseyWorldState {
   // 交互模式动作 (Phase 2)
   setInteractionMode: (mode: InteractionMode) => void
   setDragPreviewPos: (pos: { worldX: number; worldY: number } | null) => void
+
+  // 环境弹窗动作 (Phase 2 - Plan 03)
+  openEnvironmentPopup: (elementId: string) => void
+  closeEnvironmentPopup: () => void
 }
 
 // ── 初始场景定义 ────────────────────────────────────────────────────────
@@ -240,6 +248,21 @@ function createInitialSceneElements(): SceneElement[] {
     properties: { variant: 'notebook' },
   })
 
+  // 环境区域 -- 介质区域，影响光束的折射率
+  elements.push({
+    id: 'environment-medium-1',
+    type: 'environment',
+    worldX: 4,
+    worldY: 4,
+    worldZ: 0,
+    rotation: 0,
+    properties: {
+      mediumType: 'glass',
+      refractiveIndex: 1.52,
+      variant: 'medium-region',
+    },
+  })
+
   return elements
 }
 
@@ -321,6 +344,9 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
     interactionMode: 'idle',
     dragPreviewPos: null,
 
+    // 环境弹窗状态 (Phase 2 - Plan 03)
+    environmentPopupTarget: null,
+
     // ── 动作 ──
 
     setCamera: (x, y) => set({ cameraX: x, cameraY: y }),
@@ -395,5 +421,13 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
     setInteractionMode: (mode) => set({ interactionMode: mode }),
 
     setDragPreviewPos: (pos) => set({ dragPreviewPos: pos }),
+
+    // ── 环境弹窗动作 (Phase 2 - Plan 03) ──
+
+    /** 打开环境属性弹窗 */
+    openEnvironmentPopup: (elementId) => set({ environmentPopupTarget: elementId }),
+
+    /** 关闭环境属性弹窗 */
+    closeEnvironmentPopup: () => set({ environmentPopupTarget: null }),
   })),
 )

@@ -4,13 +4,15 @@
  * 等距场景的核心渲染器:
  * - 摄像机 CSS transform 应用于 motion.div (GPU 合成，无 React 重渲染)
  * - SVG viewBox 2400x1600 (场景大于视口)
- * - 按画家算法分层渲染: 背景 -> 平台 -> 场景物体 -> 光束 (空) -> 头像
- * - 背景包含暖色渐变、等距网格、远方轮廓
+ * - 按画家算法分层渲染:
+ *   L0: 背景 -> L1: 平台 -> L2: 场景物体 -> L3: 光束
+ *   -> L3.5: 幽灵光束预览 -> L4: 头像 -> L5: 设备架
+ * - 交互事件路由: 点击空白区域 -> 导航/取消选择; 元素点击 -> 阻止冒泡
  */
 
-import React, { useMemo, useCallback } from 'react'
+import React, { useMemo, useCallback, type RefObject } from 'react'
 import { motion, type MotionValue } from 'framer-motion'
-import type { SceneElement } from '@/stores/odysseyWorldStore'
+import type { SceneElement, BeamSegment } from '@/stores/odysseyWorldStore'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { Platform } from './Platform'
 import { Decoration } from './Decoration'
@@ -20,6 +22,7 @@ import { Avatar } from './Avatar'
 import { SceneLayer } from './SceneLayer'
 import { BeamGlowFilters } from './BeamGlowFilters'
 import { LightBeam } from './LightBeam'
+import { ElementPalette } from './ElementPalette'
 
 interface IsometricSceneProps {
   svgTransform: MotionValue<string>
@@ -28,6 +31,14 @@ interface IsometricSceneProps {
   avatarScreenY: MotionValue<number>
   onSceneClick: (e: React.MouseEvent<HTMLDivElement>) => void
   onWheel: (e: React.WheelEvent) => void
+  /** 场景容器 DOM 引用 -- 交互 hooks 需要用于坐标转换 */
+  containerRef: RefObject<HTMLDivElement | null>
+  /** 摄像机 MotionValue -- 交互 hooks 需要用于屏幕/世界坐标转换 */
+  cameraX: MotionValue<number>
+  cameraY: MotionValue<number>
+  zoom: MotionValue<number>
+  /** 幽灵光束预览段 (拖拽时显示 "如果放在这里光束会怎样") */
+  previewSegments: BeamSegment[] | null
 }
 
 // ── SVG viewBox 尺寸 ────────────────────────────────────────────────────
@@ -110,9 +121,15 @@ export const IsometricScene = React.memo(function IsometricScene({
   avatarScreenY,
   onSceneClick,
   onWheel,
+  containerRef,
+  cameraX,
+  cameraY,
+  zoom,
+  previewSegments,
 }: IsometricSceneProps) {
   // 光束段数据 (由 useBeamPhysics 写入 store)
   const beamSegments = useOdysseyWorldStore((s) => s.beamSegments)
+  const interactionMode = useOdysseyWorldStore((s) => s.interactionMode)
 
   // 分类场景元素
   const { platforms, decorations, lightSources, opticalElements } = useMemo(() => {
@@ -156,23 +173,47 @@ export const IsometricScene = React.memo(function IsometricScene({
       case 'polarizer':
       case 'waveplate':
       case 'prism':
-        return <OpticalElement element={el} />
+        return (
+          <OpticalElement
+            element={el}
+            containerRef={containerRef}
+            cameraX={cameraX}
+            cameraY={cameraY}
+            zoom={zoom}
+          />
+        )
       case 'decoration':
         return <Decoration element={el} />
       default:
         return null
     }
-  }, [])
+  }, [containerRef, cameraX, cameraY, zoom])
 
   // 渲染平台
   const renderPlatform = useCallback((el: SceneElement) => {
     return <Platform element={el} />
   }, [])
 
+  // 场景级点击处理: 空白区域点击 -> 导航 + 取消选择
+  const handleSceneClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      // 如果交互模式不是导航模式 (正在拖拽/旋转)，不触发导航
+      if (interactionMode !== 'idle' && interactionMode !== 'navigate') return
+
+      // 取消选择当前元素
+      useOdysseyWorldStore.getState().selectElement(null)
+
+      // 继续触发 click-to-move 导航
+      onSceneClick(e)
+    },
+    [interactionMode, onSceneClick],
+  )
+
   return (
     <div
+      ref={containerRef}
       className="h-full w-full overflow-hidden"
-      onClick={onSceneClick}
+      onClick={handleSceneClick}
       onWheel={onWheel}
     >
       <motion.div
@@ -204,7 +245,7 @@ export const IsometricScene = React.memo(function IsometricScene({
               <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
             </radialGradient>
 
-            {/* 光束辉光滤镜 + 表面照明渐变 */}
+            {/* 光束辉光滤镜 + 元素交互辉光 + 表面照明渐变 */}
             <BeamGlowFilters />
           </defs>
 
@@ -251,9 +292,23 @@ export const IsometricScene = React.memo(function IsometricScene({
             ))}
           </g>
 
+          {/* ── Layer 3.5: 幽灵光束预览 (拖拽时 30% 不透明度, 无指针事件) ── */}
+          {previewSegments && (
+            <g className="layer-beam-preview" opacity={0.3} style={{ pointerEvents: 'none' }}>
+              {previewSegments.map((segment) => (
+                <LightBeam key={`preview-${segment.id}`} segment={segment} ghost />
+              ))}
+            </g>
+          )}
+
           {/* ── Layer 4: 头像 + 效果 ── */}
           <g className="layer-avatar">
             <Avatar screenX={avatarScreenX} screenY={avatarScreenY} />
+          </g>
+
+          {/* ── Layer 5: 设备架 (场景内固定位置) ── */}
+          <g className="layer-palette">
+            <ElementPalette />
           </g>
         </svg>
       </motion.div>
