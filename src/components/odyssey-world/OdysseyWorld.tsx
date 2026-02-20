@@ -25,6 +25,8 @@ import { EnvironmentPopup } from './EnvironmentPopup'
 import { PolarizationLegend } from './PolarizationLegend'
 import { RegionTransition } from './RegionTransition'
 import { WorldMap } from './WorldMap'
+import { DepthPanel } from './depth/DepthPanel'
+import { ConceptTooltip } from './depth/ConceptTooltip'
 import { HUD } from './HUD'
 
 /**
@@ -129,6 +131,12 @@ export function OdysseyWorld() {
         allConnections={allConnections}
         metaDiscoveries={metaDiscoveries}
       />
+
+      {/* 概念悬停提示 (z-20, HTML 叠加层) */}
+      <ConceptTooltip />
+
+      {/* 深度面板叠加层 (遮罩 z-30, 面板 z-40) */}
+      <DepthPanel />
 
       {/* HUD 叠加层 */}
       <HUD />

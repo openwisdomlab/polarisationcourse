@@ -529,11 +529,12 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
 
         // ── 深度面板动作 (Phase 4) ──
 
-        /** 打开深度面板，显示指定概念，默认定性标签页 */
+        /** 打开深度面板，显示指定概念，默认定性标签页 (与 WorldMap 互斥) */
         openDepthPanel: (conceptId) =>
           set({
             depthPanelConceptId: conceptId,
             depthPanelActiveTab: 'qualitative',
+            worldMapOpen: false,
           }),
 
         /** 关闭深度面板 */
@@ -678,9 +679,13 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
             visitedRegions: new Set([...state.visitedRegions, regionId]),
           })),
 
-        /** 切换世界地图 */
+        /** 切换世界地图 (与 DepthPanel 互斥) */
         toggleWorldMap: () =>
-          set((state) => ({ worldMapOpen: !state.worldMapOpen })),
+          set((state) => ({
+            worldMapOpen: !state.worldMapOpen,
+            // 打开世界地图时关闭深度面板
+            ...(!state.worldMapOpen ? { depthPanelConceptId: null } : {}),
+          })),
 
         /** 更新指定区域的入境光束 (跨区域传播) */
         updateBoundaryBeams: (regionId, beams) =>

@@ -4461,6 +4461,9 @@
       },
       "depthPanel": {
         "learnMore": "深入了解",
+        "tryItYourself": "亲自试试",
+        "showDerivation": "展开推导",
+        "hideDerivation": "收起推导",
         "tabs": {
           "qualitative": "为什么会这样",
           "quantitative": "数学描述",

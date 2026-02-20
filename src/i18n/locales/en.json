@@ -4273,6 +4273,9 @@
       },
       "depthPanel": {
         "learnMore": "Learn More",
+        "tryItYourself": "Try it yourself",
+        "showDerivation": "Show derivation",
+        "hideDerivation": "Hide derivation",
         "tabs": {
           "qualitative": "Why It Happens",
           "quantitative": "The Math",

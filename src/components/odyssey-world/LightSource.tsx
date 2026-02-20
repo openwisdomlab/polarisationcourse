@@ -6,14 +6,19 @@
  * (缩放振荡 0.95-1.05) 暗示活跃状态。
  */
 
-import React, { useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { worldToScreen } from '@/lib/isometric'
+import React, { useCallback, type RefObject } from 'react'
+import { motion, type MotionValue } from 'framer-motion'
+import { worldToScreen, worldToScreenWithCamera } from '@/lib/isometric'
 import type { SceneElement } from '@/stores/odysseyWorldStore'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { getConceptForElement } from './concepts/conceptRegistry'
 
 interface LightSourceProps {
   element: SceneElement
+  containerRef?: RefObject<HTMLDivElement | null>
+  cameraX?: MotionValue<number>
+  cameraY?: MotionValue<number>
+  zoom?: MotionValue<number>
 }
 
 /**
@@ -23,9 +28,20 @@ interface LightSourceProps {
  * 整体施加柔和脉冲动画。
  * 点击打开环境属性弹窗 (不触发导航)。
  */
-const LightSource = React.memo(function LightSource({ element }: LightSourceProps) {
+const LightSource = React.memo(function LightSource({
+  element,
+  containerRef,
+  cameraX,
+  cameraY,
+  zoom,
+}: LightSourceProps) {
   const screen = worldToScreen(element.worldX, element.worldY)
   const openPopup = useOdysseyWorldStore((s) => s.openEnvironmentPopup)
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
+  const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
+  const interactionMode = useOdysseyWorldStore((s) => s.interactionMode)
+  const showConceptTooltip = useOdysseyWorldStore((s) => s.showConceptTooltip)
+  const hideConceptTooltip = useOdysseyWorldStore((s) => s.hideConceptTooltip)
 
   // 点击处理: 打开弹窗，阻止事件冒泡 (避免触发导航)
   const handleClick = useCallback(
@@ -35,6 +51,36 @@ const LightSource = React.memo(function LightSource({ element }: LightSourceProp
     },
     [element.id, openPopup],
   )
+
+  // 概念悬停提示 -- 光源也可关联概念 (如 "偏振发射")
+  const handlePointerEnter = useCallback(() => {
+    if (interactionMode === 'drag' || interactionMode === 'rotate') return
+
+    const concept = getConceptForElement(element.id, element.type, activeRegionId)
+    if (!concept) return
+    if (!allTimeDiscoveries.has(concept.discoveryId)) return
+
+    if (cameraX && cameraY && zoom) {
+      const screenPos = worldToScreenWithCamera(
+        element.worldX,
+        element.worldY,
+        cameraX.get(),
+        cameraY.get(),
+        zoom.get(),
+      )
+      const container = containerRef?.current
+      if (container) {
+        const rect = container.getBoundingClientRect()
+        showConceptTooltip(concept.id, screenPos.x + rect.left, screenPos.y + rect.top)
+      } else {
+        showConceptTooltip(concept.id, screenPos.x, screenPos.y)
+      }
+    }
+  }, [element, activeRegionId, allTimeDiscoveries, interactionMode, cameraX, cameraY, zoom, containerRef, showConceptTooltip])
+
+  const handlePointerLeave = useCallback(() => {
+    hideConceptTooltip()
+  }, [hideConceptTooltip])
 
   return (
     <motion.g
@@ -47,6 +93,8 @@ const LightSource = React.memo(function LightSource({ element }: LightSourceProp
         ease: 'easeInOut',
       }}
       onClick={handleClick}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       style={{ cursor: 'pointer' }}
     >
       {/* 最外层光晕 -- 大范围柔和发光 */}

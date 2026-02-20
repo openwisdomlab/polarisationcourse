@@ -173,7 +173,15 @@ export const IsometricScene = React.memo(function IsometricScene({
   const renderSceneObject = useCallback((el: SceneElement) => {
     switch (el.type) {
       case 'light-source':
-        return <LightSource element={el} />
+        return (
+          <LightSource
+            element={el}
+            containerRef={containerRef}
+            cameraX={cameraX}
+            cameraY={cameraY}
+            zoom={zoom}
+          />
+        )
       case 'polarizer':
       case 'waveplate':
       case 'prism':

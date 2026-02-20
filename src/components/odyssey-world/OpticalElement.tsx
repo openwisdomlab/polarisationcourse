@@ -11,10 +11,12 @@
  * 接线三个交互 Hook: useElementDrag, useElementRotation, useElementSelection
  */
 
-import React, { useRef, useState, type RefObject } from 'react'
+import React, { useRef, useState, useCallback, type RefObject } from 'react'
 import { useMotionValue, type MotionValue } from 'framer-motion'
-import { worldToScreen } from '@/lib/isometric'
+import { worldToScreen, worldToScreenWithCamera } from '@/lib/isometric'
 import type { SceneElement } from '@/stores/odysseyWorldStore'
+import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { getConceptForElement } from './concepts/conceptRegistry'
 import { useElementDrag } from './hooks/useElementDrag'
 import { useElementRotation } from './hooks/useElementRotation'
 import { useElementSelection } from './hooks/useElementSelection'
@@ -273,6 +275,13 @@ const OpticalElement = React.memo(function OpticalElement({
   const resolvedCameraY = externalCameraY ?? fallbackCameraY
   const resolvedZoom = externalZoom ?? fallbackZoom
 
+  // 概念悬停提示所需的 store actions
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
+  const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
+  const interactionMode = useOdysseyWorldStore((s) => s.interactionMode)
+  const showConceptTooltip = useOdysseyWorldStore((s) => s.showConceptTooltip)
+  const hideConceptTooltip = useOdysseyWorldStore((s) => s.hideConceptTooltip)
+
   // 交互 hooks
   const selection = useElementSelection(element.id)
   const drag = useElementDrag(element.id, resolvedContainerRef, resolvedCameraX, resolvedCameraY, resolvedZoom)
@@ -353,12 +362,45 @@ const OpticalElement = React.memo(function OpticalElement({
     }
   }
 
+  // 概念悬停提示触发 -- 仅在发现后显示 (隐形门禁)
+  const handleConceptTooltipShow = useCallback(() => {
+    // 拖拽/旋转中不显示提示
+    if (interactionMode === 'drag' || interactionMode === 'rotate') return
+
+    // 查找此元素关联的概念
+    const concept = getConceptForElement(element.id, element.type, activeRegionId)
+    if (!concept) return
+
+    // 检查概念的发现是否已达成
+    if (!allTimeDiscoveries.has(concept.discoveryId)) return
+
+    // 计算元素在视口中的位置
+    const screenPos = worldToScreenWithCamera(
+      element.worldX,
+      element.worldY,
+      resolvedCameraX.get(),
+      resolvedCameraY.get(),
+      resolvedZoom.get(),
+    )
+
+    // 补偿容器在视口中的偏移
+    const container = resolvedContainerRef.current
+    if (container) {
+      const rect = container.getBoundingClientRect()
+      showConceptTooltip(concept.id, screenPos.x + rect.left, screenPos.y + rect.top)
+    } else {
+      showConceptTooltip(concept.id, screenPos.x, screenPos.y)
+    }
+  }, [element, activeRegionId, allTimeDiscoveries, interactionMode, resolvedCameraX, resolvedCameraY, resolvedZoom, resolvedContainerRef, showConceptTooltip])
+
   const handlePointerEnter = () => {
     selection.onPointerEnter()
+    handleConceptTooltipShow()
   }
 
   const handlePointerLeave = () => {
     selection.onPointerLeave()
+    hideConceptTooltip()
   }
 
   // 滚轮: 选中元素时旋转 (阻止摄像机缩放)
