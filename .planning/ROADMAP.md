@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
-| 2. Interaction & Visual Language | 0/4 | Not started | - |
+| 2. Interaction & Visual Language | 0/4 | Planned | - |
 | 3. Multi-Region Isometric World | 0/3 | Not started | - |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |
 | 5. Visual Polish & Full Coverage | 0/2 | Not started | - |
