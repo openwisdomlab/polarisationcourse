@@ -90,6 +90,16 @@ interface OdysseyWorldState {
   // 环境弹窗状态 (Phase 2 - Plan 03)
   environmentPopupTarget: string | null
 
+  // 发现系统状态 (Phase 2 - Plan 04)
+  achievedDiscoveries: Set<string>
+  discoveredEncodings: {
+    orientation: boolean
+    intensity: boolean
+    ellipticity: boolean
+    intensityOpacity: boolean
+  }
+  rotationHistory: Map<string, number[]>
+
   // ── 动作 ──
   setCamera: (x: number, y: number) => void
   setZoom: (zoom: number) => void
@@ -115,6 +125,11 @@ interface OdysseyWorldState {
   // 环境弹窗动作 (Phase 2 - Plan 03)
   openEnvironmentPopup: (elementId: string) => void
   closeEnvironmentPopup: () => void
+
+  // 发现系统动作 (Phase 2 - Plan 04)
+  achieveDiscovery: (discoveryId: string) => void
+  discoverEncoding: (aspect: 'orientation' | 'intensity' | 'ellipticity' | 'intensityOpacity') => void
+  recordRotation: (elementId: string, angle: number) => void
 }
 
 // ── 初始场景定义 ────────────────────────────────────────────────────────
@@ -347,6 +362,16 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
     // 环境弹窗状态 (Phase 2 - Plan 03)
     environmentPopupTarget: null,
 
+    // 发现系统状态 (Phase 2 - Plan 04)
+    achievedDiscoveries: new Set<string>(),
+    discoveredEncodings: {
+      orientation: false,
+      intensity: false,
+      ellipticity: false,
+      intensityOpacity: false,
+    },
+    rotationHistory: new Map<string, number[]>(),
+
     // ── 动作 ──
 
     setCamera: (x, y) => set({ cameraX: x, cameraY: y }),
@@ -429,5 +454,31 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
 
     /** 关闭环境属性弹窗 */
     closeEnvironmentPopup: () => set({ environmentPopupTarget: null }),
+
+    // ── 发现系统动作 (Phase 2 - Plan 04) ──
+
+    /** 标记一个发现为已达成 (仅首次有效，Set 保证 O(1) 查询) */
+    achieveDiscovery: (discoveryId) => {
+      const current = get().achievedDiscoveries
+      if (current.has(discoveryId)) return
+      set({ achievedDiscoveries: new Set([...current, discoveryId]) })
+    },
+
+    /** 标记一个偏振编码方面已被发现 */
+    discoverEncoding: (aspect) => {
+      const current = get().discoveredEncodings
+      if (current[aspect]) return
+      set({ discoveredEncodings: { ...current, [aspect]: true } })
+    },
+
+    /** 记录元素旋转角度历史 (用于马吕斯定律发现检测) */
+    recordRotation: (elementId, angle) => {
+      const current = get().rotationHistory
+      const history = current.get(elementId) ?? []
+      const newHistory = [...history, angle]
+      const newMap = new Map(current)
+      newMap.set(elementId, newHistory)
+      set({ rotationHistory: newMap })
+    },
   })),
 )
