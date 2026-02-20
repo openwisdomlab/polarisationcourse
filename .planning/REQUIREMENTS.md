@@ -36,7 +36,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **DISC-01**: Core polarization concepts discovered through environmental interaction, not through text explanation
 - [x] **DISC-02**: Knowledge-gated progression -- student advances through understanding, gating is invisible (not locked doors)
-- [ ] **DISC-03**: Layered information architecture -- intuition (see phenomenon) -> qualitative (understand why) -> quantitative (mathematical description), student chooses depth
+- [x] **DISC-03**: Layered information architecture -- intuition (see phenomenon) -> qualitative (understand why) -> quantitative (mathematical description), student chooses depth
 - [x] **DISC-04**: Correct configurations trigger visible environmental changes -- beam changes, color shifts, patterns appear, regions illuminate
 - [x] **DISC-05**: Cross-concept "aha" connections -- discovery in one region reveals related phenomenon in another region
 - [x] **DISC-06**: Discovery state persists across sessions -- returning students continue from their last understanding
@@ -53,7 +53,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **CONT-01**: Covers core polarization concepts across all 6 units (fundamentals/modulation/interfaces/transparent media/scattering media/polarization measurement)
 - [ ] **CONT-02**: Existing 23 demo components accessible as "deep exploration" entry points from within the world, seamlessly embedded
-- [ ] **CONT-03**: Theory formulas emerge from phenomena -- experience first then formalize, formulas celebrate understanding rather than serve as prerequisites
+- [x] **CONT-03**: Theory formulas emerge from phenomena -- experience first then formalize, formulas celebrate understanding rather than serve as prerequisites
 - [ ] **CONT-04**: Concept constellation map -- visual knowledge graph showing discovered concepts and their connections
 - [ ] **CONT-05**: Multi-language support (Chinese/English), reusing existing i18n infrastructure
 
@@ -120,7 +120,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | INTR-05 | Phase 2 | Complete |
 | DISC-01 | Phase 2 | Complete |
 | DISC-02 | Phase 3 | Complete |
-| DISC-03 | Phase 4 | Pending |
+| DISC-03 | Phase 4 | Complete |
 | DISC-04 | Phase 2 | Complete |
 | DISC-05 | Phase 3 | Complete |
 | DISC-06 | Phase 3 | Complete |
@@ -131,7 +131,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | VISL-05 | Phase 4 | Pending |
 | CONT-01 | Phase 5 | Pending |
 | CONT-02 | Phase 4 | Pending |
-| CONT-03 | Phase 4 | Pending |
+| CONT-03 | Phase 4 | Complete |
 | CONT-04 | Phase 4 | Pending |
 | CONT-05 | Phase 5 | Pending |
 | TECH-01 | Phase 1 | Complete |

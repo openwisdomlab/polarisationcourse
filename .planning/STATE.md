@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Students voluntarily immerse in exploration for 2+ hours -- curiosity-driven discovery learning where polarization knowledge is a natural byproduct of exploring the world
-**Current focus:** Phase 4: Depth Layers & Content Integration -- context gathered, ready for planning
+**Current focus:** Phase 4: Depth Layers & Content Integration -- executing plans
 
 ## Current Position
 
-Phase: 4 of 5 (Depth Layers & Content Integration) -- Context Gathered
-Plan: 0 of TBD in current phase
-Status: Ready for planning
-Last activity: 2026-02-21 -- Phase 4 context gathered
+Phase: 4 of 5 (Depth Layers & Content Integration)
+Plan: 1 of 3 in current phase (04-01 complete)
+Status: Executing
+Last activity: 2026-02-21 -- Completed 04-01-PLAN.md (concept data model & store foundation)
 
-Progress: [########..] 80%
+Progress: [########..] 83%
 
 ## Performance Metrics
 
@@ -36,6 +36,7 @@ Progress: [########..] 80%
 - Trend: Consistent at ~13 min for multi-region phase
 
 *Updated after each plan completion*
+| Phase 04 P01 | 9min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 - [03-03]: Per-region discovery configs replace hardcoded global list for scalable region content
 - [03-03]: CSS animations (not Framer Motion) for boundary indicators to maintain beam layer lightweight pattern
 - [03-03]: allTimeDiscoveries Set for global discovery accumulation -- switchRegion only overwrites per-region achievedDiscoveries, not the global set
+- [Phase 04]: 4 Crystal Lab + 3 Refraction Bench concepts with three-layer depth content (intuition/qualitative/quantitative)
+- [Phase 04]: triggerCondition always 'discovered' -- invisible gating per research recommendation
+- [Phase 04]: Depth panel default tab 'qualitative' -- formulas are deepest layer, never shown first
 
 ### Pending Todos
 
@@ -108,5 +112,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 03-03-PLAN.md (cross-region physics & discovery) -- Phase 3 complete
+Stopped at: Completed 04-01-PLAN.md (concept data model & store foundation)
 Resume file: None
