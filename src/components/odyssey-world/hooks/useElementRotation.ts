@@ -87,10 +87,14 @@ export function useElementRotation(
         patch.fastAxis = newAngle
       }
 
-      useOdysseyWorldStore.getState().updateElement(elementId, {
+      const store = useOdysseyWorldStore.getState()
+      store.updateElement(elementId, {
         rotation: newAngle,
         properties: patch,
       })
+
+      // 记录旋转历史 (用于马吕斯定律发现检测)
+      store.recordRotation(elementId, newAngle)
     },
     [elementId],
   )

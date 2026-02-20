@@ -5,8 +5,8 @@
  * - 摄像机 CSS transform 应用于 motion.div (GPU 合成，无 React 重渲染)
  * - SVG viewBox 2400x1600 (场景大于视口)
  * - 按画家算法分层渲染:
- *   L0: 背景 -> L1: 平台 -> L2: 场景物体 -> L3: 光束
- *   -> L3.5: 幽灵光束预览 -> L4: 头像 -> L5: 设备架
+ *   L0: 背景 -> L1: 平台 -> L2: 场景物体 -> L2.5: 发现环境响应
+ *   -> L3: 光束 -> L3.5: 幽灵光束预览 -> L4: 头像 -> L5: 设备架
  * - 交互事件路由: 点击空白区域 -> 导航/取消选择; 元素点击 -> 阻止冒泡
  */
 
@@ -23,6 +23,8 @@ import { SceneLayer } from './SceneLayer'
 import { BeamGlowFilters } from './BeamGlowFilters'
 import { LightBeam } from './LightBeam'
 import { ElementPalette } from './ElementPalette'
+import { DiscoveryFeedback } from './DiscoveryFeedback'
+import { worldToScreen } from '@/lib/isometric'
 
 interface IsometricSceneProps {
   svgTransform: MotionValue<string>
@@ -39,6 +41,10 @@ interface IsometricSceneProps {
   zoom: MotionValue<number>
   /** 幽灵光束预览段 (拖拽时显示 "如果放在这里光束会怎样") */
   previewSegments: BeamSegment[] | null
+  /** 已达成的发现 ID 集合 */
+  achievedDiscoveries: Set<string>
+  /** 刚刚达成的发现 ID (用于触发入场动画) */
+  newlyAchieved: string | null
 }
 
 // ── SVG viewBox 尺寸 ────────────────────────────────────────────────────
@@ -126,6 +132,8 @@ export const IsometricScene = React.memo(function IsometricScene({
   cameraY,
   zoom,
   previewSegments,
+  achievedDiscoveries,
+  newlyAchieved,
 }: IsometricSceneProps) {
   // 光束段数据 (由 useBeamPhysics 写入 store)
   const beamSegments = useOdysseyWorldStore((s) => s.beamSegments)
@@ -283,6 +291,41 @@ export const IsometricScene = React.memo(function IsometricScene({
           {/* ── Layer 2: 场景物体 (光源、光学元件、装饰 -- 深度排序) ── */}
           <g className="layer-objects">
             <SceneLayer elements={sceneObjects} renderElement={renderSceneObject} />
+          </g>
+
+          {/* ── Layer 2.5: 发现环境响应 (在光束后面，维持光束视觉主导) ── */}
+          <g className="layer-discovery-feedback">
+            {/* 发现区域占位组 -- 定位在场景中相关光学元件附近 */}
+            <g id="discovery-area-malus" transform={`translate(${worldToScreen(3.5, 3).x}, ${worldToScreen(3.5, 3).y})`}>
+              <DiscoveryFeedback
+                achievedDiscoveries={new Set([...achievedDiscoveries].filter(id => id === 'malus-law-basic'))}
+                newlyAchieved={newlyAchieved === 'malus-law-basic' ? newlyAchieved : null}
+              />
+            </g>
+            <g id="discovery-area-extinction" transform={`translate(${worldToScreen(4, 3).x}, ${worldToScreen(4, 3).y})`}>
+              <DiscoveryFeedback
+                achievedDiscoveries={new Set([...achievedDiscoveries].filter(id => id === 'crossed-polarizers'))}
+                newlyAchieved={newlyAchieved === 'crossed-polarizers' ? newlyAchieved : null}
+              />
+            </g>
+            <g id="discovery-area-circular" transform={`translate(${worldToScreen(5.5, 3).x}, ${worldToScreen(5.5, 3).y})`}>
+              <DiscoveryFeedback
+                achievedDiscoveries={new Set([...achievedDiscoveries].filter(id => id === 'circular-polarization'))}
+                newlyAchieved={newlyAchieved === 'circular-polarization' ? newlyAchieved : null}
+              />
+            </g>
+            <g id="discovery-area-hwp" transform={`translate(${worldToScreen(4, 3).x}, ${worldToScreen(4, 3).y})`}>
+              <DiscoveryFeedback
+                achievedDiscoveries={new Set([...achievedDiscoveries].filter(id => id === 'half-wave-rotation'))}
+                newlyAchieved={newlyAchieved === 'half-wave-rotation' ? newlyAchieved : null}
+              />
+            </g>
+            <g id="discovery-area-surprise" transform={`translate(${worldToScreen(3, 3).x}, ${worldToScreen(3, 3).y})`}>
+              <DiscoveryFeedback
+                achievedDiscoveries={new Set([...achievedDiscoveries].filter(id => id === 'three-polarizer-surprise'))}
+                newlyAchieved={newlyAchieved === 'three-polarizer-surprise' ? newlyAchieved : null}
+              />
+            </g>
           </g>
 
           {/* ── Layer 3: 光束 (偏振编码光束段 + 粒子 + 辉光) ── */}

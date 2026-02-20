@@ -6,6 +6,7 @@
  * 传递给 IsometricScene 进行渲染。
  *
  * Phase 2 新增: useBeamPreview (幽灵光束预览) 和 containerRef (交互坐标转换)。
+ * Phase 2 Plan 04 新增: useDiscoveryState (发现系统) 和 PolarizationLegend (渐进图例)。
  */
 
 import { useRef } from 'react'
@@ -14,8 +15,10 @@ import { useIsometricCamera } from './hooks/useIsometricCamera'
 import { useClickToMove } from './hooks/useClickToMove'
 import { useBeamPhysics } from './hooks/useBeamPhysics'
 import { useBeamPreview } from './hooks/useBeamPreview'
+import { useDiscoveryState } from './hooks/useDiscoveryState'
 import { IsometricScene } from './IsometricScene'
 import { EnvironmentPopup } from './EnvironmentPopup'
+import { PolarizationLegend } from './PolarizationLegend'
 import { HUD } from './HUD'
 
 /**
@@ -45,6 +48,12 @@ export function OdysseyWorld() {
   // 幽灵光束预览 (拖拽元素时显示临时光束路径)
   const { previewSegments } = useBeamPreview()
 
+  // 发现系统 (监测物理配置变化，触发环境响应)
+  const { achievedDiscoveries, newlyAchieved } = useDiscoveryState()
+
+  // 编码发现状态 (渐进图例显示)
+  const discoveredEncodings = useOdysseyWorldStore((s) => s.discoveredEncodings)
+
   // 场景数据 (从 Zustand store 读取)
   const sceneElements = useOdysseyWorldStore((s) => s.sceneElements)
 
@@ -63,10 +72,15 @@ export function OdysseyWorld() {
         cameraY={cameraY}
         zoom={zoom}
         previewSegments={previewSegments}
+        achievedDiscoveries={achievedDiscoveries}
+        newlyAchieved={newlyAchieved}
       />
 
       {/* 环境属性弹窗 (HTML 叠加层，定位在场景元素上方) */}
       <EnvironmentPopup />
+
+      {/* 偏振编码渐进图例 (HTML 叠加层，右下角) */}
+      <PolarizationLegend discoveredEncodings={discoveredEncodings} />
 
       {/* HUD 叠加层 */}
       <HUD />
