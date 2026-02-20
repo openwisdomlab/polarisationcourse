@@ -68,8 +68,8 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Region registry (6 RegionDefinitions with themes/physics/palettes), store restructure with multi-region state, Zustand persist middleware for session persistence
-- [ ] 03-02-PLAN.md — Region transitions (smooth camera slides, title cards, avatar teleport, boundary detection), lazy-loaded per-region SVG decorations, dynamic theme rendering
+- [x] 03-01-PLAN.md — Region registry (6 RegionDefinitions with themes/physics/palettes), store restructure with multi-region state, Zustand persist middleware for session persistence
+- [x] 03-02-PLAN.md — Region transitions (smooth camera slides, title cards, avatar teleport, boundary detection), lazy-loaded per-region SVG decorations, dynamic theme rendering
 - [ ] 03-03-PLAN.md — Cross-region beam propagation with boundary indicators, discovery connections with in-scene cues, world map with fast-travel, knowledge-gated equipment palettes
 
 ### Phase 4: Depth Layers & Content Integration
@@ -111,6 +111,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
 | 2. Interaction & Visual Language | 4/4 | Complete    | 2026-02-20 |
-| 3. Multi-Region Isometric World | 0/3 | Not started | - |
+| 3. Multi-Region Isometric World | 2/3 | In progress | - |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |
 | 5. Visual Polish & Full Coverage | 0/2 | Not started | - |

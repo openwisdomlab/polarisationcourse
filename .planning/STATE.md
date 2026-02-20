@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 3 of 5 (Multi-Region Isometric World)
-Plan: 1 of 3 in current phase (03-01 complete)
+Plan: 2 of 3 in current phase (03-02 complete)
 Status: In Progress
-Last activity: 2026-02-21 -- Completed 03-01-PLAN.md (multi-region data layer)
+Last activity: 2026-02-21 -- Completed 03-02-PLAN.md (region transitions & lazy decorations)
 
-Progress: [######....] 60%
+Progress: [######....] 67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 8 min
-- Total execution time: 1.0 hours
+- Total execution time: 1.2 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [######....] 60%
 |-------|-------|-------|----------|
 | 1 | 3 | 18 min | 6 min |
 | 2 | 4 | 30 min | 8 min |
-| 3 | 1 | 13 min | 13 min |
+| 3 | 2 | 25 min | 13 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (8 min), 02-02 (11 min), 02-04 (7 min), 03-01 (13 min)
-- Trend: Slightly increasing (multi-region complexity)
+- Last 5 plans: 02-02 (11 min), 02-04 (7 min), 03-01 (13 min), 03-02 (12 min)
+- Trend: Consistent at ~12-13 min for multi-region phase
 
 *Updated after each plan completion*
 
@@ -81,6 +81,12 @@ Recent decisions affecting current work:
 - [03-01]: Atomic switchRegion via single set() call to prevent stale beam physics
 - [03-01]: Rotation history capped at 20 entries per element during deserialization
 - [03-01]: Hydration-aware initScene via onFinishHydration + hasHydrated guard
+- [03-02]: Ref-based callback pattern for useRegionTransition/useClickToMove to avoid circular initialization
+- [03-02]: Boundary proximity radius 0.8 grid units -- triggers region transition when avatar walks near exit point
+- [03-02]: First-entry zoom arc (0.8 -> 1.0, stiffness 40) vs normal spring (stiffness 60) for reveal feeling
+- [03-02]: MotionValue-driven avatar opacity for consistent Framer Motion animation during transitions
+- [03-02]: Decoration layer at L1.5 (between platforms and objects) for correct visual layering
+- [03-02]: preloadAdjacentRegions via switch-case explicit imports for reliable Vite chunk splitting
 
 ### Pending Todos
 
@@ -95,5 +101,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 03-01-PLAN.md (multi-region data layer)
+Stopped at: Completed 03-02-PLAN.md (region transitions & lazy decorations)
 Resume file: None

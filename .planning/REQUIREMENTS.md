@@ -11,9 +11,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **WRLD-01**: World uses click/tap point-and-click navigation in an isometric perspective -- student clicks to move between areas, not WASD free camera or scroll-driven linear path
 - [x] **WRLD-02**: World consists of 4-6 interconnected optical environment regions, each with unique visual style and physics theme
-- [ ] **WRLD-03**: Regions connected through animated transitions (parallax shifts, perspective slides, fade-throughs), no page-load interruptions
+- [x] **WRLD-03**: Regions connected through animated transitions (parallax shifts, perspective slides, fade-throughs), no page-load interruptions
 - [x] **WRLD-04**: World has spatial coherence -- all regions feel like they belong to the same isometric world, not an independent demo gallery
-- [ ] **WRLD-05**: Regions lazy-load SVG/scene assets by proximity, maintaining smooth transitions between adjacent regions
+- [x] **WRLD-05**: Regions lazy-load SVG/scene assets by proximity, maintaining smooth transitions between adjacent regions
 - [x] **WRLD-06**: All regions freely accessible from the start, no mandatory prerequisites
 
 ### Light & Physics
