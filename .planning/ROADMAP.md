@@ -50,7 +50,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Store extension with element CRUD, interaction hooks (drag, rotation, selection, beam preview)
+- [x] 02-01-PLAN.md — Store extension with element CRUD, interaction hooks (drag, rotation, selection, beam preview)
 - [ ] 02-02-PLAN.md — Interactive OpticalElement UI, element palette, ghost beam preview, visual cues
 - [ ] 02-03-PLAN.md — Environment popup with property sliders/dropdowns for material and light source adjustment
 - [ ] 02-04-PLAN.md — Discovery system (5 configurations), environmental feedback, progressive polarization legend
@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
-| 2. Interaction & Visual Language | 0/4 | Planned | - |
+| 2. Interaction & Visual Language | 1/4 | In Progress | - |
 | 3. Multi-Region Isometric World | 0/3 | Not started | - |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |
 | 5. Visual Polish & Full Coverage | 0/2 | Not started | - |

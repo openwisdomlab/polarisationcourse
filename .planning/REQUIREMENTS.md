@@ -113,10 +113,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | PHYS-03 | Phase 2 | Pending |
 | PHYS-04 | Phase 3 | Pending |
 | PHYS-05 | Phase 1 | Complete |
-| INTR-01 | Phase 2 | Pending |
-| INTR-02 | Phase 2 | Pending |
+| INTR-01 | Phase 2 | In Progress |
+| INTR-02 | Phase 2 | In Progress |
 | INTR-03 | Phase 2 | Pending |
-| INTR-04 | Phase 2 | Pending |
+| INTR-04 | Phase 2 | In Progress |
 | INTR-05 | Phase 2 | Pending |
 | DISC-01 | Phase 2 | Pending |
 | DISC-02 | Phase 3 | Pending |

@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Students voluntarily immerse in exploration for 2+ hours -- curiosity-driven discovery learning where polarization knowledge is a natural byproduct of exploring the world
-**Current focus:** Phase 1: Foundation & Minimum Viable Scene
+**Current focus:** Phase 2: Interaction & Visual Language
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation & Minimum Viable Scene) -- COMPLETE
-Plan: 3 of 3 in current phase (all complete)
-Status: Phase 1 complete, ready for Phase 2
-Last activity: 2026-02-20 -- Completed 01-03-PLAN.md (light beam rendering + physics bridge)
+Phase: 2 of 5 (Interaction & Visual Language)
+Plan: 1 of 4 in current phase (02-01 complete)
+Status: Executing Phase 2
+Last activity: 2026-02-20 -- Completed 02-01-PLAN.md (store extension + interaction hooks)
 
-Progress: [####......] 20%
+Progress: [####......] 27%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: 6 min
-- Total execution time: 0.3 hours
+- Total execution time: 0.4 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 3 | 18 min | 6 min |
+| 2 | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (6 min), 01-03 (7 min)
+- Last 5 plans: 01-01 (5 min), 01-02 (6 min), 01-03 (7 min), 02-01 (4 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -57,6 +58,10 @@ Recent decisions affecting current work:
 - [01-03]: Continuous HSL polarization encoding (not discrete 4-color) -- orientation 0-180 deg maps to hue 0-360
 - [01-03]: rAF + direct DOM mutation for beam particles -- not Framer Motion (better for 50-100+ particles)
 - [01-03]: Waveplate fastAxis=0 (not 22.5) for physically correct circular polarization demonstration
+- [02-01]: snapToBeamPath uses parametric projection with 0.5 grid quantization for clean element placement
+- [02-01]: Rotation hook syncs both rotation and physics properties (transmissionAxis/fastAxis) for real-time beam updates
+- [02-01]: useBeamPreview imports calculateBeamPath from useBeamPhysics rather than duplicating physics logic
+- [02-01]: Interaction hooks use useRef for per-frame state, store.getState() for event reads, set actions for commits
 
 ### Pending Todos
 
@@ -71,5 +76,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 01-03-PLAN.md (light beam + physics bridge) -- Phase 1 complete
+Stopped at: Completed 02-01-PLAN.md (store extension + interaction hooks)
 Resume file: None
