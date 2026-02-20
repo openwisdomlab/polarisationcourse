@@ -34,10 +34,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Discovery & Learning
 
-- [ ] **DISC-01**: Core polarization concepts discovered through environmental interaction, not through text explanation
+- [x] **DISC-01**: Core polarization concepts discovered through environmental interaction, not through text explanation
 - [ ] **DISC-02**: Knowledge-gated progression -- student advances through understanding, gating is invisible (not locked doors)
 - [ ] **DISC-03**: Layered information architecture -- intuition (see phenomenon) -> qualitative (understand why) -> quantitative (mathematical description), student chooses depth
-- [ ] **DISC-04**: Correct configurations trigger visible environmental changes -- beam changes, color shifts, patterns appear, regions illuminate
+- [x] **DISC-04**: Correct configurations trigger visible environmental changes -- beam changes, color shifts, patterns appear, regions illuminate
 - [ ] **DISC-05**: Cross-concept "aha" connections -- discovery in one region reveals related phenomenon in another region
 - [ ] **DISC-06**: Discovery state persists across sessions -- returning students continue from their last understanding
 
@@ -118,10 +118,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | INTR-03 | Phase 2 | Complete |
 | INTR-04 | Phase 2 | In Progress |
 | INTR-05 | Phase 2 | Complete |
-| DISC-01 | Phase 2 | Pending |
+| DISC-01 | Phase 2 | Complete |
 | DISC-02 | Phase 3 | Pending |
 | DISC-03 | Phase 4 | Pending |
-| DISC-04 | Phase 2 | Pending |
+| DISC-04 | Phase 2 | Complete |
 | DISC-05 | Phase 3 | Pending |
 | DISC-06 | Phase 3 | Pending |
 | VISL-01 | Phase 5 | Pending |

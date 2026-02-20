@@ -9,29 +9,29 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 2 of 5 (Interaction & Visual Language)
-Plan: 3 of 4 in current phase (02-01, 02-02, 02-03 complete)
-Status: Executing Phase 2
-Last activity: 2026-02-20 -- Completed 02-02-PLAN.md (interactive element UI + ghost beam)
+Phase: 2 of 5 (Interaction & Visual Language) -- COMPLETE
+Plan: 4 of 4 in current phase (02-01, 02-02, 02-03, 02-04 complete)
+Status: Phase 2 Complete -- Ready for Phase 3
+Last activity: 2026-02-20 -- Completed 02-04-PLAN.md (discovery & feedback system)
 
-Progress: [######....] 47%
+Progress: [######....] 53%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 7 min
-- Total execution time: 0.7 hours
+- Total execution time: 0.8 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 3 | 18 min | 6 min |
-| 2 | 3 | 23 min | 8 min |
+| 2 | 4 | 30 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (7 min), 02-01 (4 min), 02-03 (8 min), 02-02 (11 min)
+- Last 5 plans: 02-01 (4 min), 02-03 (8 min), 02-02 (11 min), 02-04 (7 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -70,6 +70,11 @@ Recent decisions affecting current work:
 - [02-02]: Ghost beam uses dashed stroke-dasharray with no glow filter -- visually distinct preview without competing with real beam
 - [02-02]: ElementPalette at fixed SVG coordinates as diegetic shelf (not HTML overlay) for immersive design
 - [02-02]: Removed broken EnvironmentElement import from pre-existing out-of-order commit to unblock build
+- [02-04]: Discovery checks throttled to 200ms via setTimeout to avoid expensive Stokes comparisons during rapid rotation
+- [02-04]: Encoding discoveries delayed 1 second per research recommendation -- prevents premature legend reveal
+- [02-04]: DiscoveryFeedback SVG layer at L2.5 (between objects and beam) maintains beam visual dominance per VISL-03
+- [02-04]: PolarizationLegend as HTML overlay consistent with EnvironmentPopup pattern for reliable text rendering
+- [02-04]: Environmental responses use subtle spring animations (stiffness 40-60, damping 15-20) with 15-40% opacity
 
 ### Pending Todos
 
@@ -84,5 +89,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 02-02-PLAN.md (interactive element UI + ghost beam preview)
+Stopped at: Completed 02-04-PLAN.md (discovery & feedback system -- Phase 2 complete)
 Resume file: None
