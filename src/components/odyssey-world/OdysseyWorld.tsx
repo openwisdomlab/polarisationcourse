@@ -9,16 +9,18 @@
  * Phase 2 Plan 04 新增: useDiscoveryState (发现系统) 和 PolarizationLegend (渐进图例)。
  */
 
-import { useRef } from 'react'
+import { useRef, useCallback } from 'react'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { useIsometricCamera } from './hooks/useIsometricCamera'
 import { useClickToMove } from './hooks/useClickToMove'
 import { useBeamPhysics } from './hooks/useBeamPhysics'
 import { useBeamPreview } from './hooks/useBeamPreview'
 import { useDiscoveryState } from './hooks/useDiscoveryState'
+import { useRegionTransition, type BoundaryProximityResult } from './hooks/useRegionTransition'
 import { IsometricScene } from './IsometricScene'
 import { EnvironmentPopup } from './EnvironmentPopup'
 import { PolarizationLegend } from './PolarizationLegend'
+import { RegionTransition } from './RegionTransition'
 import { HUD } from './HUD'
 
 /**
@@ -35,12 +37,36 @@ export function OdysseyWorld() {
   // 摄像机系统 (MotionValue 驱动，不触发 React 重渲染)
   const { cameraX, cameraY, zoom, svgTransform, handleWheel } = useIsometricCamera()
 
-  // 点击移动系统
+  // 区域过渡系统 (需要在 useClickToMove 之前初始化以获取 initiateTransition)
+  // avatarScreenX/Y 在 useClickToMove 中创建，因此先初始化占位
+  // 实际连接在下方通过 onBoundaryDetected 回调完成
+
+  // 边界检测回调 -- 由 useClickToMove 导航完成后触发
+  const initiateTransitionRef = useRef<((targetRegionId: string, entryPoint: { x: number; y: number }) => void) | undefined>(undefined)
+
+  const onBoundaryDetected = useCallback((result: BoundaryProximityResult) => {
+    initiateTransitionRef.current?.(result.targetRegionId, result.entryPoint)
+  }, [])
+
+  // 点击移动系统 (Phase 3: 添加边界检测回调)
   const { handleSceneClick, avatarScreenX, avatarScreenY } = useClickToMove(
     cameraX,
     cameraY,
     zoom,
+    onBoundaryDetected,
   )
+
+  // 区域过渡系统 (使用 useClickToMove 的 MotionValue)
+  const { initiateTransition } = useRegionTransition(
+    cameraX,
+    cameraY,
+    zoom,
+    avatarScreenX,
+    avatarScreenY,
+  )
+
+  // 将 initiateTransition 存入 ref，供回调使用
+  initiateTransitionRef.current = initiateTransition
 
   // 光束物理计算 (场景元素变化时重新计算偏振态 + 视觉编码)
   useBeamPhysics()
@@ -81,6 +107,9 @@ export function OdysseyWorld() {
 
       {/* 偏振编码渐进图例 (HTML 叠加层，右下角) */}
       <PolarizationLegend discoveredEncodings={discoveredEncodings} />
+
+      {/* 区域过渡覆盖层 (标题卡片 + 交互遮罩) */}
+      <RegionTransition />
 
       {/* HUD 叠加层 */}
       <HUD />

@@ -52,6 +52,9 @@ export function useElementDrag(
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
+      // 过渡期间阻断拖拽
+      if (useOdysseyWorldStore.getState().isTransitioning) return
+
       // 记录起始位置
       startPosRef.current = { x: e.clientX, y: e.clientY }
       isDraggingRef.current = false

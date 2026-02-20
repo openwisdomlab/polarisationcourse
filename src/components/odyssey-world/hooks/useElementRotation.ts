@@ -103,6 +103,9 @@ export function useElementRotation(
 
   const onRotatePointerDown = useCallback(
     (e: React.PointerEvent) => {
+      // 过渡期间阻断旋转
+      if (useOdysseyWorldStore.getState().isTransitioning) return
+
       const center = getElementScreenCenter()
       if (!center) return
 
@@ -193,6 +196,9 @@ export function useElementRotation(
 
   const onWheel = useCallback(
     (e: React.WheelEvent) => {
+      // 过渡期间阻断滚轮旋转
+      if (useOdysseyWorldStore.getState().isTransitioning) return
+
       // 仅在元素被选中时响应滚轮
       const selectedId = useOdysseyWorldStore.getState().selectedElementId
       if (selectedId !== elementId) return

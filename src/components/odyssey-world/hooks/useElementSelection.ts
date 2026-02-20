@@ -43,6 +43,9 @@ export function useElementSelection(
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
+      // 过渡期间阻断选择
+      if (useOdysseyWorldStore.getState().isTransitioning) return
+
       startPosRef.current = { x: e.clientX, y: e.clientY }
     },
     [],
@@ -51,6 +54,7 @@ export function useElementSelection(
   const onPointerUp = useCallback(
     (e: React.PointerEvent) => {
       if (!startPosRef.current) return
+      if (useOdysseyWorldStore.getState().isTransitioning) return
 
       const dx = e.clientX - startPosRef.current.x
       const dy = e.clientY - startPosRef.current.y

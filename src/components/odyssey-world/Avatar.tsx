@@ -4,10 +4,14 @@
  * 渲染一个小型发光粒子/球体 (photon explorer)，
  * 位置由 MotionValue 驱动 (来自 useClickToMove)。
  * 静止时有柔和呼吸光晕动画。
+ *
+ * Phase 3: 区域过渡时自动淡出/淡入 (isTransitioning)。
  */
 
 import React from 'react'
-import { motion, type MotionValue } from 'framer-motion'
+import { motion, type MotionValue, useMotionValue, animate } from 'framer-motion'
+import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { useEffect } from 'react'
 
 interface AvatarProps {
   screenX: MotionValue<number>
@@ -19,10 +23,25 @@ interface AvatarProps {
  *
  * 明亮暖色球体 (#FFD700) + 半透明光晕。
  * 位置由 MotionValue 直接驱动 (无 React 重渲染)。
+ * 区域过渡时: 淡出 200ms -> 过渡 -> 淡入 300ms。
  */
 const Avatar = React.memo(function Avatar({ screenX, screenY }: AvatarProps) {
+  const isTransitioning = useOdysseyWorldStore((s) => s.isTransitioning)
+  const avatarOpacity = useMotionValue(1)
+
+  // 过渡时淡出，结束后淡入
+  useEffect(() => {
+    if (isTransitioning) {
+      // 淡出: 200ms
+      animate(avatarOpacity, 0, { duration: 0.2 })
+    } else {
+      // 淡入: 300ms
+      animate(avatarOpacity, 1, { duration: 0.3 })
+    }
+  }, [isTransitioning, avatarOpacity])
+
   return (
-    <g>
+    <motion.g style={{ opacity: avatarOpacity }}>
       {/* 光晕 -- 呼吸动画 */}
       <motion.circle
         cx={screenX}
@@ -66,7 +85,7 @@ const Avatar = React.memo(function Avatar({ screenX, screenY }: AvatarProps) {
         opacity={0.7}
         style={{ translateX: -1.5, translateY: -1.5 }}
       />
-    </g>
+    </motion.g>
   )
 })
 
