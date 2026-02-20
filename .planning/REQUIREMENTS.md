@@ -60,9 +60,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Technical Foundation
 
 - [ ] **TECH-01**: SVG/CSS-primary scene architecture -- scenes built with SVG illustrations, CSS 3D transforms for depth, Framer Motion for animations; Canvas/WebGL used sparingly for beam effects only
-- [ ] **TECH-02**: Isometric geometry system -- consistent coordinate mapping between isometric visual space and interaction hit-targets, reusable across all regions
-- [ ] **TECH-03**: Data model designed around "composable physics behaviors in environments", not "stations array"
-- [ ] **TECH-04**: Coexists with other PolarCraft modules (games, studio, calculator), accessed via /odyssey/ route
+- [x] **TECH-02**: Isometric geometry system -- consistent coordinate mapping between isometric visual space and interaction hit-targets, reusable across all regions
+- [x] **TECH-03**: Data model designed around "composable physics behaviors in environments", not "stations array"
+- [x] **TECH-04**: Coexists with other PolarCraft modules (games, studio, calculator), accessed via /odyssey/ route
 - [ ] **TECH-05**: Desktop-first (mouse + keyboard), but 2D-primary approach makes mobile adaptation significantly easier for v2
 
 ## v2 Requirements
@@ -135,9 +135,9 @@ Deferred to future release. Tracked but not in current roadmap.
 | CONT-04 | Phase 4 | Pending |
 | CONT-05 | Phase 5 | Pending |
 | TECH-01 | Phase 1 | Pending |
-| TECH-02 | Phase 1 | Pending |
-| TECH-03 | Phase 1 | Pending |
-| TECH-04 | Phase 1 | Pending |
+| TECH-02 | Phase 1 | Complete |
+| TECH-03 | Phase 1 | Complete |
+| TECH-04 | Phase 1 | Complete |
 | TECH-05 | Phase 1 | Pending |
 
 **Coverage:**
