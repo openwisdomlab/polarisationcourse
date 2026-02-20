@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 2 of 5 (Interaction & Visual Language)
-Plan: 1 of 4 in current phase (02-01 complete)
+Plan: 3 of 4 in current phase (02-01, 02-03 complete)
 Status: Executing Phase 2
-Last activity: 2026-02-20 -- Completed 02-01-PLAN.md (store extension + interaction hooks)
+Last activity: 2026-02-20 -- Completed 02-03-PLAN.md (environment property popup)
 
-Progress: [####......] 27%
+Progress: [#####.....] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 6 min
-- Total execution time: 0.4 hours
+- Total execution time: 0.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 3 | 18 min | 6 min |
-| 2 | 1 | 4 min | 4 min |
+| 2 | 2 | 12 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (6 min), 01-03 (7 min), 02-01 (4 min)
+- Last 5 plans: 01-02 (6 min), 01-03 (7 min), 02-01 (4 min), 02-03 (8 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -62,6 +62,10 @@ Recent decisions affecting current work:
 - [02-01]: Rotation hook syncs both rotation and physics properties (transmissionAxis/fastAxis) for real-time beam updates
 - [02-01]: useBeamPreview imports calculateBeamPath from useBeamPhysics rather than duplicating physics logic
 - [02-01]: Interaction hooks use useRef for per-frame state, store.getState() for event reads, set actions for commits
+- [02-03]: HTML overlay popup (not SVG foreignObject) for reliable native form controls over SVG scene
+- [02-03]: Popup positioned via worldToScreenWithCamera with viewport clamping for all camera positions
+- [02-03]: Medium type dropdown auto-updates refractive index to standard physical values for discovery learning
+- [02-03]: Outside-click dismissal uses setTimeout(0) to prevent opening click from immediately closing popup
 
 ### Pending Todos
 
@@ -76,5 +80,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 02-01-PLAN.md (store extension + interaction hooks)
+Stopped at: Completed 02-03-PLAN.md (environment property popup)
 Resume file: None

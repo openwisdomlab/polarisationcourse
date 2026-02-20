@@ -28,9 +28,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **INTR-01**: Student can place optical elements on light path (polarizers, waveplates, crystals, etc.) via drag-and-drop in the isometric scene
 - [ ] **INTR-02**: Student can rotate/adjust placed optical elements, observing real-time beam behavior changes
-- [ ] **INTR-03**: Student can change environment/material properties (medium type, refractive index, etc.), observing different light behaviors
+- [x] **INTR-03**: Student can change environment/material properties (medium type, refractive index, etc.), observing different light behaviors
 - [ ] **INTR-04**: Interaction uses click-to-move for navigation and drag for element placement -- no text instructions needed, gestures feel natural in the isometric context
-- [ ] **INTR-05**: Optical element interactability communicated through visual cues (glowing edges, hover hints, subtle animation), not UI buttons
+- [x] **INTR-05**: Optical element interactability communicated through visual cues (glowing edges, hover hints, subtle animation), not UI buttons
 
 ### Discovery & Learning
 
@@ -115,9 +115,9 @@ Deferred to future release. Tracked but not in current roadmap.
 | PHYS-05 | Phase 1 | Complete |
 | INTR-01 | Phase 2 | In Progress |
 | INTR-02 | Phase 2 | In Progress |
-| INTR-03 | Phase 2 | Pending |
+| INTR-03 | Phase 2 | Complete |
 | INTR-04 | Phase 2 | In Progress |
-| INTR-05 | Phase 2 | Pending |
+| INTR-05 | Phase 2 | Complete |
 | DISC-01 | Phase 2 | Pending |
 | DISC-02 | Phase 3 | Pending |
 | DISC-03 | Phase 4 | Pending |
