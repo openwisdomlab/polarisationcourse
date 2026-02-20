@@ -269,3 +269,80 @@ export function snapToBeamPath(
 function quantize(value: number): number {
   return Math.round(value / GRID_QUANTIZE_STEP) * GRID_QUANTIZE_STEP
 }
+
+// ── 多区域坐标工具 ────────────────────────────────────────────────────
+
+/** 区域边界 (世界坐标) */
+export interface RegionBounds {
+  minX: number
+  maxX: number
+  minY: number
+  maxY: number
+}
+
+/** 最小区域定义接口，避免循环依赖 */
+interface RegionCoordinateInfo {
+  gridWidth: number
+  gridHeight: number
+  worldOffsetX: number
+  worldOffsetY: number
+}
+
+/**
+ * 区域本地坐标 -> 全局世界坐标
+ *
+ * 将区域内的本地网格坐标加上区域的世界偏移量，
+ * 得到全局世界空间中的坐标。
+ *
+ * @param localX 区域内本地 X 坐标
+ * @param localY 区域内本地 Y 坐标
+ * @param regionDef 区域定义 (需包含 worldOffsetX/Y)
+ * @returns 全局世界坐标
+ */
+export function regionToWorld(
+  localX: number,
+  localY: number,
+  regionDef: RegionCoordinateInfo,
+): WorldPoint {
+  return {
+    x: localX + regionDef.worldOffsetX,
+    y: localY + regionDef.worldOffsetY,
+  }
+}
+
+/**
+ * 全局世界坐标 -> 区域本地坐标
+ *
+ * 将全局世界坐标减去区域的世界偏移量，
+ * 得到区域内的本地网格坐标。
+ *
+ * @param worldX 全局世界 X 坐标
+ * @param worldY 全局世界 Y 坐标
+ * @param regionDef 区域定义 (需包含 worldOffsetX/Y)
+ * @returns 区域内本地坐标
+ */
+export function worldToRegion(
+  worldX: number,
+  worldY: number,
+  regionDef: RegionCoordinateInfo,
+): WorldPoint {
+  return {
+    x: worldX - regionDef.worldOffsetX,
+    y: worldY - regionDef.worldOffsetY,
+  }
+}
+
+/**
+ * 获取区域在全局世界坐标中的边界
+ *
+ * @param regionDef 区域定义 (需包含 gridWidth, gridHeight, worldOffsetX/Y)
+ * @returns 区域边界 {minX, maxX, minY, maxY} (世界坐标)
+ */
+export function getRegionBounds(regionDef: RegionCoordinateInfo): RegionBounds {
+  return {
+    minX: regionDef.worldOffsetX,
+    maxX: regionDef.worldOffsetX + regionDef.gridWidth - 1,
+    minY: regionDef.worldOffsetY,
+    maxY: regionDef.worldOffsetY + regionDef.gridHeight - 1,
+  }
+}
