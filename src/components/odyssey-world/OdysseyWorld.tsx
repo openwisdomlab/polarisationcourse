@@ -9,6 +9,7 @@
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { useIsometricCamera } from './hooks/useIsometricCamera'
 import { useClickToMove } from './hooks/useClickToMove'
+import { useBeamPhysics } from './hooks/useBeamPhysics'
 import { IsometricScene } from './IsometricScene'
 import { HUD } from './HUD'
 
@@ -29,6 +30,9 @@ export function OdysseyWorld() {
     cameraY,
     zoom,
   )
+
+  // 光束物理计算 (场景元素变化时重新计算偏振态 + 视觉编码)
+  useBeamPhysics()
 
   // 场景数据 (从 Zustand store 读取)
   const sceneElements = useOdysseyWorldStore((s) => s.sceneElements)

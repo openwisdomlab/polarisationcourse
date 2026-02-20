@@ -11,12 +11,15 @@
 import React, { useMemo, useCallback } from 'react'
 import { motion, type MotionValue } from 'framer-motion'
 import type { SceneElement } from '@/stores/odysseyWorldStore'
+import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { Platform } from './Platform'
 import { Decoration } from './Decoration'
 import { LightSource } from './LightSource'
 import { OpticalElement } from './OpticalElement'
 import { Avatar } from './Avatar'
 import { SceneLayer } from './SceneLayer'
+import { BeamGlowFilters } from './BeamGlowFilters'
+import { LightBeam } from './LightBeam'
 
 interface IsometricSceneProps {
   svgTransform: MotionValue<string>
@@ -108,6 +111,9 @@ export const IsometricScene = React.memo(function IsometricScene({
   onSceneClick,
   onWheel,
 }: IsometricSceneProps) {
+  // 光束段数据 (由 useBeamPhysics 写入 store)
+  const beamSegments = useOdysseyWorldStore((s) => s.beamSegments)
+
   // 分类场景元素
   const { platforms, decorations, lightSources, opticalElements } = useMemo(() => {
     const p: SceneElement[] = []
@@ -198,14 +204,8 @@ export const IsometricScene = React.memo(function IsometricScene({
               <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
             </radialGradient>
 
-            {/* 光束发光滤镜 (Plan 03 使用，提前定义) */}
-            <filter id="beam-glow" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="1.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
+            {/* 光束辉光滤镜 + 表面照明渐变 */}
+            <BeamGlowFilters />
           </defs>
 
           {/* ── Layer 0: 背景 ── */}
@@ -244,8 +244,12 @@ export const IsometricScene = React.memo(function IsometricScene({
             <SceneLayer elements={sceneObjects} renderElement={renderSceneObject} />
           </g>
 
-          {/* ── Layer 3: 光束 (Plan 03 填充，此处为空) ── */}
-          <g className="layer-beams" />
+          {/* ── Layer 3: 光束 (偏振编码光束段 + 粒子 + 辉光) ── */}
+          <g className="layer-beams">
+            {beamSegments.map((segment) => (
+              <LightBeam key={segment.id} segment={segment} />
+            ))}
+          </g>
 
           {/* ── Layer 4: 头像 + 效果 ── */}
           <g className="layer-avatar">
