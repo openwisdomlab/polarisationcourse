@@ -4074,5 +4074,268 @@
     "loginButton": "Sign In",
     "registerButton": "Create Account",
     "profile": "Profile"
+  },
+  "odyssey": {
+    "pageTitle": "Quantum Chamber",
+    "hubSubtitle": "Journey through the world of polarized light",
+    "enterPortal": "Enter",
+    "returnToHub": "Return to Chamber",
+    "unitComplete": "Unit Complete",
+    "mysteryButton": "?",
+    "whatHappening": "What's happening here?",
+    "unlockSteps": {
+      "step1": "Observing phenomenon...",
+      "step2": "Analyzing patterns...",
+      "step3": "Unlocking theory!"
+    },
+    "theoryTiers": {
+      "foundation": "Foundation",
+      "application": "Application",
+      "research": "Research"
+    },
+    "realWorldTitle": "Real-World Application",
+    "keyInsightLabel": "Key Insight",
+    "scrollHint": "Scroll to explore ↓",
+    "units": {
+      "0": { "title": "Polarization Basics", "subtitle": "The hidden dimension of light" },
+      "1": { "title": "Modulation & Measurement", "subtitle": "Malus's Law and wave plates" },
+      "2": { "title": "Interface Reflection", "subtitle": "Fresnel and Brewster" },
+      "3": { "title": "Transparent Media", "subtitle": "Dispersion, rotation, anisotropy" },
+      "4": { "title": "Turbid Media", "subtitle": "Scattering and polarization" },
+      "5": { "title": "Full Polarimetry", "subtitle": "Stokes, Jones, and Mueller" }
+    },
+    "concepts": {
+      "malusLaw": {
+        "name": "Malus's Law",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When you rotated the polarizer, the beam's brightness changed smoothly. At some angles the light passed through almost unchanged, while at others it dimmed dramatically or vanished entirely."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "Light is a transverse electromagnetic wave whose electric field oscillates in a specific direction. A polarizer acts as a directional gate: it only transmits the component of the electric field that aligns with its transmission axis.\n\nWhen linearly polarized light meets a second polarizer (called an analyzer), the transmitted component is the projection of the original electric field onto the analyzer's axis. Projection follows the cosine of the angle between the two directions, and since intensity is proportional to the square of the electric field amplitude, the transmitted intensity follows cos\u00b2.\n\nAt 0\u00b0 the axes are aligned and everything passes through. At 90\u00b0 the axes are perpendicular and nothing gets through. Every angle in between gives a smooth, continuous variation of brightness."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The transmitted intensity through a pair of ideal polarizers follows a remarkably simple relationship discovered by \u00c9tienne-Louis Malus in 1809.",
+          "derivation": "Starting from the electric field projection: E_out = E_in cos\u03b8. Since intensity is proportional to the square of the field amplitude: I = I\u2080 cos\u00b2\u03b8. This is Malus's Law, one of the simplest and most fundamental results in polarization optics."
+        },
+        "formulas": {
+          "main": "Transmitted Intensity",
+          "angleDefinition": "Angle Between Polarizer Axes"
+        },
+        "connections": {
+          "brewster": "Both involve cos\u00b2 intensity dependence",
+          "threePolarizer": "Foundation for the three-polarizer cascade"
+        }
+      },
+      "crossedPolarizers": {
+        "name": "Crossed Polarizers",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When you placed two polarizers at right angles to each other, the beam was completely blocked. No light made it through the pair, as if the second polarizer created an impenetrable barrier."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "When two polarizers have perpendicular transmission axes (90\u00b0 apart), they are called \"crossed polarizers.\" The first polarizer transmits only one direction of oscillation. The second polarizer's axis is exactly perpendicular to this direction, meaning there is zero projection of the transmitted field onto the second axis.\n\nThis complete extinction is a direct consequence of Malus's Law at \u03b8 = 90\u00b0: cos\u00b2(90\u00b0) = 0. No matter how intense the original beam, the output is always zero.\n\nCrossed polarizers are used in LCD screens, stress analysis, and microscopy to create a dark background against which polarization-active materials can be clearly seen."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "Complete extinction occurs when the angle between polarizer axes equals 90\u00b0."
+        },
+        "formulas": {
+          "extinction": "Complete Extinction Condition"
+        },
+        "connections": {
+          "malus": "Special case of Malus's Law at 90\u00b0",
+          "threePolarizer": "Adding a middle polarizer breaks the extinction"
+        }
+      },
+      "circularPolarization": {
+        "name": "Circular Polarization",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When the light passed through the quarter-wave plate at just the right angle, the beam transformed from a straight oscillation into a spiraling helix pattern. The beam looked and behaved completely differently."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "A quarter-wave plate is a birefringent crystal that introduces a 90\u00b0 phase delay between two perpendicular components of the electric field. When linearly polarized light enters at 45\u00b0 to the fast axis, the two components have equal amplitude.\n\nAfter passing through the crystal, one component is delayed by a quarter wavelength relative to the other. The result is that the tip of the electric field vector traces out a circle as the wave propagates, rather than oscillating back and forth along a line.\n\nThis is circular polarization \u2014 one of the most beautiful states of light. It can be right-handed or left-handed, depending on the direction of rotation. Many natural phenomena involve circularly polarized light, from beetle carapaces to 3D cinema glasses."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "Circular polarization is described by complex Jones vectors or Stokes parameters with a dominant S\u2083 component.",
+          "derivation": ""
+        },
+        "formulas": {
+          "jonesVector": "Jones Vector for Circular Polarization",
+          "stokesVector": "Stokes Vector (\u00b11 = Right/Left Circular)",
+          "phaseRetardation": "Quarter-Wave Phase Delay"
+        },
+        "connections": {
+          "snell": "Both involve phase relationships between orthogonal components"
+        }
+      },
+      "threePolarizer": {
+        "name": "Three-Polarizer Surprise",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "You had two crossed polarizers blocking all light. Then you slid a third polarizer between them at 45\u00b0, and somehow light reappeared. Adding a filter brought light back from total darkness!"
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "This is one of the most counterintuitive results in optics. With two crossed polarizers, no light passes through. But inserting a third polarizer at 45\u00b0 between them creates two non-orthogonal projections in sequence.\n\nThe first polarizer transmits light polarized along its axis. The middle polarizer at 45\u00b0 projects this light onto its own axis \u2014 reducing the intensity by cos\u00b2(45\u00b0) = 1/2 but rotating the polarization direction. Now the light is polarized at 45\u00b0 to the final polarizer, so it can partially pass through that too.\n\nThe key insight is that each polarizer is a projection operation, not just a filter. The middle polarizer doesn't just block some light \u2014 it creates a new polarization state that has a component along the final polarizer's axis."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "Applying Malus's Law twice in cascade gives the transmitted intensity.",
+          "derivation": "First stage: I\u2081 = I\u2080 cos\u00b2\u03b1 (after middle polarizer). Second stage: I\u2082 = I\u2081 cos\u00b2(90\u00b0-\u03b1) = I\u2080 cos\u00b2\u03b1 sin\u00b2\u03b1. Using the identity sin(2\u03b1) = 2sin\u03b1 cos\u03b1, this becomes I = (I\u2080/4)sin\u00b2(2\u03b1), maximized at \u03b1 = 45\u00b0."
+        },
+        "formulas": {
+          "cascadedMalus": "Cascaded Malus's Law",
+          "maxIntensity": "Maximum Output at 45\u00b0"
+        },
+        "connections": {
+          "malus": "Double application of Malus's Law",
+          "crossed": "Breaks the extinction of crossed polarizers"
+        }
+      },
+      "brewsterAngle": {
+        "name": "Brewster's Angle",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "As you adjusted the angle of incidence on the glass surface, the reflected beam's intensity changed. At one particular angle, the reflected light became perfectly polarized \u2014 passing completely through the analyzer at one orientation."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "When light hits a transparent surface like glass, both reflected and refracted beams are produced. The reflected light is partially polarized because the s-component (perpendicular to the plane of incidence) and p-component (parallel to the plane) reflect with different efficiencies.\n\nAt Brewster's angle, something remarkable happens: the reflected and refracted beams are exactly 90\u00b0 apart. The p-component cannot be reflected because the oscillating charges in the surface would need to radiate along their own oscillation direction, which is physically impossible for a transverse wave.\n\nThe result is that only the s-component reflects, producing perfectly linearly polarized reflected light. This is used in laser cavities (Brewster windows) and polarizing beam splitters."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "Brewster's angle depends only on the ratio of refractive indices.",
+          "derivation": "At Brewster's angle, the reflected and refracted rays are perpendicular: \u03b8_B + \u03b8_r = 90\u00b0. Combined with Snell's law n\u2081sin\u03b8_B = n\u2082sin\u03b8_r, we get tan\u03b8_B = n\u2082/n\u2081. For glass (n=1.52) in air, \u03b8_B \u2248 56.7\u00b0."
+        },
+        "formulas": {
+          "main": "Brewster's Angle Formula",
+          "complementary": "Reflected and Refracted Rays Perpendicular",
+          "fresnelRp": "p-Component Reflection Vanishes"
+        },
+        "connections": {
+          "malus": "Both involve cos\u00b2 intensity dependence",
+          "tir": "Both are critical angle phenomena at interfaces",
+          "snell": "Brewster's angle derives from Snell's law"
+        }
+      },
+      "snellPolarization": {
+        "name": "Snell's Law Polarization",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When the beam crossed the glass surface, you noticed the beam's color changed, indicating its polarization direction shifted. The refracted light had a different polarization than the incident beam."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "Snell's law tells us that light bends when crossing an interface between media with different refractive indices. But polarization adds another layer of complexity: the s-polarized component (perpendicular to the incidence plane) and p-polarized component (parallel) refract identically in direction but transmit with different efficiencies.\n\nThis difference is described by the Fresnel equations, which give the reflection and transmission coefficients for each polarization component separately. At most angles, both components are partially transmitted but in different proportions, changing the polarization state of the refracted beam.\n\nThis effect is why polarized sunglasses work: reflected glare from roads and water is preferentially s-polarized, and the glasses block that component."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The Fresnel equations describe how s and p components reflect and transmit differently at an interface."
+        },
+        "formulas": {
+          "snell": "Snell's Law",
+          "fresnelRs": "s-Component Reflection Coefficient",
+          "fresnelRp": "p-Component Reflection Coefficient"
+        },
+        "connections": {
+          "brewster": "Special case where r_p = 0",
+          "circular": "Both involve component-wise phase/amplitude changes"
+        }
+      },
+      "totalInternalReflection": {
+        "name": "Total Internal Reflection",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When the light hit the glass surface from inside at a steep angle, instead of passing through, it bounced back entirely. The beam was perfectly reflected with no loss in intensity."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "When light travels from a denser medium (higher refractive index) to a less dense one, Snell's law predicts the refracted angle. As the incidence angle increases, the refracted angle grows faster. At the critical angle, the refracted ray would exit parallel to the surface.\n\nBeyond the critical angle, there is no real refracted ray \u2014 all light is reflected back into the denser medium. This is total internal reflection, and it is truly total: every photon bounces back with no energy loss (in theory).\n\nThis principle is the foundation of fiber optics, which carries the internet across oceans. It's also why diamonds sparkle: their high refractive index (n=2.42) creates a small critical angle, trapping light inside through multiple reflections."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The critical angle depends on the ratio of refractive indices."
+        },
+        "formulas": {
+          "criticalAngle": "Critical Angle Formula",
+          "totalReflection": "Total Reflection Condition"
+        },
+        "connections": {
+          "brewster": "Both are critical angle phenomena at interfaces"
+        }
+      },
+      "depthPanel": {
+        "learnMore": "Learn More",
+        "tabs": {
+          "qualitative": "Why It Happens",
+          "quantitative": "The Math",
+          "demo": "Try It"
+        }
+      }
+    }
+  },
+  "odysseyLab": {
+    "readout": "Readout",
+    "intensity": "Intensity",
+    "dop": "Degree of Polarization",
+    "state": "Polarization State",
+    "noSensor": "No sensor readings.",
+    "allSensors": "All Sensors",
+    "poincareSphere": "Poincare Sphere",
+    "properties": "Properties",
+    "angle": "Angle",
+    "retardation": "Retardation",
+    "fastAxis": "Fast Axis",
+    "focalLength": "Focal Length",
+    "rotation": "Rotation",
+    "formulas": "Ray Trace Log",
+    "noTheory": "No theory data available.",
+    "keyInsight": "Key Insight",
+    "realWorldExample": "Real-World Example",
+    "deeper": "Deeper...",
+    "switchToFree": "Switch to Free Explore",
+    "switchToGuided": "Switch to Guided",
+    "freeMode": "Free",
+    "guidedMode": "Guided",
+    "addComponent": "Add:",
+
+    "compEmitter": "Emitter",
+    "compPolarizer": "Polarizer",
+    "compWaveplate": "Waveplate",
+    "compMirror": "Mirror",
+    "compSplitter": "Splitter",
+    "compSensor": "Sensor",
+    "compLens": "Lens",
+
+    "showTheory": "Show Theory (T)",
+    "showReadout": "Show Readout",
+    "hidePanel": "Hide (T)",
+    "fitToView": "Fit to View (H)",
+    "freeExplore": "Free Explore",
+
+    "emptyBench": "Bench is empty. Add components from the toolbar below.",
+    "emptyGuided": "Loading station...",
+
+    "qwp": "QWP (90°)",
+    "hwp": "HWP (180°)",
+    "unpolarized": "Unpol.",
+
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "shortcutToggleTheory": "Toggle Theory Panel",
+    "shortcutToggleMode": "Toggle Guided / Free Mode",
+    "shortcutFitView": "Fit to View",
+    "shortcutJumpUnit": "Jump to Unit 1-6",
+    "shortcutNavStation": "Previous / Next Station",
+    "shortcutDelete": "Delete Selected Component",
+    "shortcutDeselect": "Deselect / Close Overlay",
+    "shortcutRotateZoom": "Rotate Component / Zoom Canvas",
+    "shortcutHelp": "Toggle Shortcut Help"
   }
 }

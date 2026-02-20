@@ -142,6 +142,16 @@ interface OdysseyWorldState {
   transitionTarget: string | null
   worldMapOpen: boolean
 
+  // ── 深度面板状态 (Phase 4) ──
+  /** 当前打开的概念 ID (null = 面板关闭) -- 瞬态 UI 状态，不持久化 */
+  depthPanelConceptId: string | null
+  /** 当前激活的标签页 (默认 'qualitative'，公式层永远不首先显示) */
+  depthPanelActiveTab: 'qualitative' | 'quantitative' | 'demo'
+  /** 当前显示悬停提示的概念 ID (null = 无提示) */
+  tooltipConceptId: string | null
+  /** 悬停提示的屏幕坐标位置 */
+  tooltipPosition: { x: number; y: number } | null
+
   // ── 动作 ──
   setCamera: (x: number, y: number) => void
   setZoom: (zoom: number) => void
@@ -172,6 +182,13 @@ interface OdysseyWorldState {
   achieveDiscovery: (discoveryId: string) => void
   discoverEncoding: (aspect: 'orientation' | 'intensity' | 'ellipticity' | 'intensityOpacity') => void
   recordRotation: (elementId: string, angle: number) => void
+
+  // ── 深度面板动作 (Phase 4) ──
+  openDepthPanel: (conceptId: string) => void
+  closeDepthPanel: () => void
+  setDepthPanelTab: (tab: 'qualitative' | 'quantitative' | 'demo') => void
+  showConceptTooltip: (conceptId: string, x: number, y: number) => void
+  hideConceptTooltip: () => void
 
   // ── 多区域动作 (Phase 3) ──
   switchRegion: (regionId: string, entryPoint?: { x: number; y: number }) => void
@@ -375,6 +392,12 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
         transitionTarget: null,
         worldMapOpen: false,
 
+        // 深度面板状态 (Phase 4) -- 瞬态 UI 状态，不持久化
+        depthPanelConceptId: null,
+        depthPanelActiveTab: 'qualitative' as const,
+        tooltipConceptId: null,
+        tooltipPosition: null,
+
         // ── 动作 ──
 
         setCamera: (x, y) => set({ cameraX: x, cameraY: y }),
@@ -504,6 +527,37 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
           set({ rotationHistory: newMap })
         },
 
+        // ── 深度面板动作 (Phase 4) ──
+
+        /** 打开深度面板，显示指定概念，默认定性标签页 */
+        openDepthPanel: (conceptId) =>
+          set({
+            depthPanelConceptId: conceptId,
+            depthPanelActiveTab: 'qualitative',
+          }),
+
+        /** 关闭深度面板 */
+        closeDepthPanel: () =>
+          set({ depthPanelConceptId: null }),
+
+        /** 切换深度面板标签页 */
+        setDepthPanelTab: (tab) =>
+          set({ depthPanelActiveTab: tab }),
+
+        /** 显示概念悬停提示 */
+        showConceptTooltip: (conceptId, x, y) =>
+          set({
+            tooltipConceptId: conceptId,
+            tooltipPosition: { x, y },
+          }),
+
+        /** 隐藏概念悬停提示 */
+        hideConceptTooltip: () =>
+          set({
+            tooltipConceptId: null,
+            tooltipPosition: null,
+          }),
+
         // ── 多区域动作 (Phase 3) ──
 
         /**
@@ -552,6 +606,10 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
               interactionMode: 'idle' as InteractionMode,
               dragPreviewPos: null,
               environmentPopupTarget: null,
+              // 清除深度面板状态 (Phase 4)
+              depthPanelConceptId: null,
+              tooltipConceptId: null,
+              tooltipPosition: null,
             }
           }),
 
