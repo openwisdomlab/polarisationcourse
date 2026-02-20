@@ -65,12 +65,12 @@ Plans:
   3. A light beam originating in one region visibly propagates into an adjacent region, exhibiting different polarization behavior in the new environment
   4. A discovery made in one region creates a visible connection to a related phenomenon in another region -- the student experiences cross-concept "aha" moments
   5. A returning student finds all their previous discoveries intact and can continue from where they left off
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — Region registry (6 RegionDefinitions with themes/physics/palettes), store restructure with multi-region state, Zustand persist middleware for session persistence
+- [ ] 03-02-PLAN.md — Region transitions (smooth camera slides, title cards, avatar teleport, boundary detection), lazy-loaded per-region SVG decorations, dynamic theme rendering
+- [ ] 03-03-PLAN.md — Cross-region beam propagation with boundary indicators, discovery connections with in-scene cues, world map with fast-travel, knowledge-gated equipment palettes
 
 ### Phase 4: Depth Layers & Content Integration
 **Goal**: A student who wants to go deeper can transition from intuitive observation to qualitative understanding to quantitative formalism, accessing existing demo components as "deep dives" from within the world
