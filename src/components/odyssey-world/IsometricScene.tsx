@@ -24,6 +24,7 @@ import { BeamGlowFilters } from './BeamGlowFilters'
 import { LightBeam } from './LightBeam'
 import { ElementPalette } from './ElementPalette'
 import { DiscoveryFeedback } from './DiscoveryFeedback'
+import { EnvironmentElement } from './EnvironmentElement'
 import { worldToScreen } from '@/lib/isometric'
 
 interface IsometricSceneProps {
@@ -160,6 +161,7 @@ export const IsometricScene = React.memo(function IsometricScene({
         case 'polarizer':
         case 'waveplate':
         case 'prism':
+        case 'environment':
           o.push(el)
           break
       }
@@ -192,6 +194,8 @@ export const IsometricScene = React.memo(function IsometricScene({
         )
       case 'decoration':
         return <Decoration element={el} />
+      case 'environment':
+        return <EnvironmentElement element={el} />
       default:
         return null
     }
