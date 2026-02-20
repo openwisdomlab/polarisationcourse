@@ -4097,12 +4097,30 @@
     "keyInsightLabel": "Key Insight",
     "scrollHint": "Scroll to explore ↓",
     "units": {
-      "0": { "title": "Polarization Basics", "subtitle": "The hidden dimension of light" },
-      "1": { "title": "Modulation & Measurement", "subtitle": "Malus's Law and wave plates" },
-      "2": { "title": "Interface Reflection", "subtitle": "Fresnel and Brewster" },
-      "3": { "title": "Transparent Media", "subtitle": "Dispersion, rotation, anisotropy" },
-      "4": { "title": "Turbid Media", "subtitle": "Scattering and polarization" },
-      "5": { "title": "Full Polarimetry", "subtitle": "Stokes, Jones, and Mueller" }
+      "0": {
+        "title": "Polarization Basics",
+        "subtitle": "The hidden dimension of light"
+      },
+      "1": {
+        "title": "Modulation & Measurement",
+        "subtitle": "Malus's Law and wave plates"
+      },
+      "2": {
+        "title": "Interface Reflection",
+        "subtitle": "Fresnel and Brewster"
+      },
+      "3": {
+        "title": "Transparent Media",
+        "subtitle": "Dispersion, rotation, anisotropy"
+      },
+      "4": {
+        "title": "Turbid Media",
+        "subtitle": "Scattering and polarization"
+      },
+      "5": {
+        "title": "Full Polarimetry",
+        "subtitle": "Stokes, Jones, and Mueller"
+      }
     },
     "concepts": {
       "malusLaw": {
@@ -4113,19 +4131,19 @@
         },
         "qualitative": {
           "title": "Why This Happens",
-          "content": "Light is a transverse electromagnetic wave whose electric field oscillates in a specific direction. A polarizer acts as a directional gate: it only transmits the component of the electric field that aligns with its transmission axis.\n\nWhen linearly polarized light meets a second polarizer (called an analyzer), the transmitted component is the projection of the original electric field onto the analyzer's axis. Projection follows the cosine of the angle between the two directions, and since intensity is proportional to the square of the electric field amplitude, the transmitted intensity follows cos\u00b2.\n\nAt 0\u00b0 the axes are aligned and everything passes through. At 90\u00b0 the axes are perpendicular and nothing gets through. Every angle in between gives a smooth, continuous variation of brightness."
+          "content": "Light is a transverse electromagnetic wave whose electric field oscillates in a specific direction. A polarizer acts as a directional gate: it only transmits the component of the electric field that aligns with its transmission axis.\n\nWhen linearly polarized light meets a second polarizer (called an analyzer), the transmitted component is the projection of the original electric field onto the analyzer's axis. Projection follows the cosine of the angle between the two directions, and since intensity is proportional to the square of the electric field amplitude, the transmitted intensity follows cos².\n\nAt 0° the axes are aligned and everything passes through. At 90° the axes are perpendicular and nothing gets through. Every angle in between gives a smooth, continuous variation of brightness."
         },
         "quantitative": {
           "title": "The Mathematics",
-          "content": "The transmitted intensity through a pair of ideal polarizers follows a remarkably simple relationship discovered by \u00c9tienne-Louis Malus in 1809.",
-          "derivation": "Starting from the electric field projection: E_out = E_in cos\u03b8. Since intensity is proportional to the square of the field amplitude: I = I\u2080 cos\u00b2\u03b8. This is Malus's Law, one of the simplest and most fundamental results in polarization optics."
+          "content": "The transmitted intensity through a pair of ideal polarizers follows a remarkably simple relationship discovered by Étienne-Louis Malus in 1809.",
+          "derivation": "Starting from the electric field projection: E_out = E_in cosθ. Since intensity is proportional to the square of the field amplitude: I = I₀ cos²θ. This is Malus's Law, one of the simplest and most fundamental results in polarization optics."
         },
         "formulas": {
           "main": "Transmitted Intensity",
           "angleDefinition": "Angle Between Polarizer Axes"
         },
         "connections": {
-          "brewster": "Both involve cos\u00b2 intensity dependence",
+          "brewster": "Both involve cos² intensity dependence",
           "threePolarizer": "Foundation for the three-polarizer cascade"
         }
       },
@@ -4137,17 +4155,17 @@
         },
         "qualitative": {
           "title": "Why This Happens",
-          "content": "When two polarizers have perpendicular transmission axes (90\u00b0 apart), they are called \"crossed polarizers.\" The first polarizer transmits only one direction of oscillation. The second polarizer's axis is exactly perpendicular to this direction, meaning there is zero projection of the transmitted field onto the second axis.\n\nThis complete extinction is a direct consequence of Malus's Law at \u03b8 = 90\u00b0: cos\u00b2(90\u00b0) = 0. No matter how intense the original beam, the output is always zero.\n\nCrossed polarizers are used in LCD screens, stress analysis, and microscopy to create a dark background against which polarization-active materials can be clearly seen."
+          "content": "When two polarizers have perpendicular transmission axes (90° apart), they are called \"crossed polarizers.\" The first polarizer transmits only one direction of oscillation. The second polarizer's axis is exactly perpendicular to this direction, meaning there is zero projection of the transmitted field onto the second axis.\n\nThis complete extinction is a direct consequence of Malus's Law at θ = 90°: cos²(90°) = 0. No matter how intense the original beam, the output is always zero.\n\nCrossed polarizers are used in LCD screens, stress analysis, and microscopy to create a dark background against which polarization-active materials can be clearly seen."
         },
         "quantitative": {
           "title": "The Mathematics",
-          "content": "Complete extinction occurs when the angle between polarizer axes equals 90\u00b0."
+          "content": "Complete extinction occurs when the angle between polarizer axes equals 90°."
         },
         "formulas": {
           "extinction": "Complete Extinction Condition"
         },
         "connections": {
-          "malus": "Special case of Malus's Law at 90\u00b0",
+          "malus": "Special case of Malus's Law at 90°",
           "threePolarizer": "Adding a middle polarizer breaks the extinction"
         }
       },
@@ -4159,16 +4177,16 @@
         },
         "qualitative": {
           "title": "Why This Happens",
-          "content": "A quarter-wave plate is a birefringent crystal that introduces a 90\u00b0 phase delay between two perpendicular components of the electric field. When linearly polarized light enters at 45\u00b0 to the fast axis, the two components have equal amplitude.\n\nAfter passing through the crystal, one component is delayed by a quarter wavelength relative to the other. The result is that the tip of the electric field vector traces out a circle as the wave propagates, rather than oscillating back and forth along a line.\n\nThis is circular polarization \u2014 one of the most beautiful states of light. It can be right-handed or left-handed, depending on the direction of rotation. Many natural phenomena involve circularly polarized light, from beetle carapaces to 3D cinema glasses."
+          "content": "A quarter-wave plate is a birefringent crystal that introduces a 90° phase delay between two perpendicular components of the electric field. When linearly polarized light enters at 45° to the fast axis, the two components have equal amplitude.\n\nAfter passing through the crystal, one component is delayed by a quarter wavelength relative to the other. The result is that the tip of the electric field vector traces out a circle as the wave propagates, rather than oscillating back and forth along a line.\n\nThis is circular polarization — one of the most beautiful states of light. It can be right-handed or left-handed, depending on the direction of rotation. Many natural phenomena involve circularly polarized light, from beetle carapaces to 3D cinema glasses."
         },
         "quantitative": {
           "title": "The Mathematics",
-          "content": "Circular polarization is described by complex Jones vectors or Stokes parameters with a dominant S\u2083 component.",
+          "content": "Circular polarization is described by complex Jones vectors or Stokes parameters with a dominant S₃ component.",
           "derivation": ""
         },
         "formulas": {
           "jonesVector": "Jones Vector for Circular Polarization",
-          "stokesVector": "Stokes Vector (\u00b11 = Right/Left Circular)",
+          "stokesVector": "Stokes Vector (±1 = Right/Left Circular)",
           "phaseRetardation": "Quarter-Wave Phase Delay"
         },
         "connections": {
@@ -4179,20 +4197,20 @@
         "name": "Three-Polarizer Surprise",
         "intuition": {
           "title": "What You Observed",
-          "content": "You had two crossed polarizers blocking all light. Then you slid a third polarizer between them at 45\u00b0, and somehow light reappeared. Adding a filter brought light back from total darkness!"
+          "content": "You had two crossed polarizers blocking all light. Then you slid a third polarizer between them at 45°, and somehow light reappeared. Adding a filter brought light back from total darkness!"
         },
         "qualitative": {
           "title": "Why This Happens",
-          "content": "This is one of the most counterintuitive results in optics. With two crossed polarizers, no light passes through. But inserting a third polarizer at 45\u00b0 between them creates two non-orthogonal projections in sequence.\n\nThe first polarizer transmits light polarized along its axis. The middle polarizer at 45\u00b0 projects this light onto its own axis \u2014 reducing the intensity by cos\u00b2(45\u00b0) = 1/2 but rotating the polarization direction. Now the light is polarized at 45\u00b0 to the final polarizer, so it can partially pass through that too.\n\nThe key insight is that each polarizer is a projection operation, not just a filter. The middle polarizer doesn't just block some light \u2014 it creates a new polarization state that has a component along the final polarizer's axis."
+          "content": "This is one of the most counterintuitive results in optics. With two crossed polarizers, no light passes through. But inserting a third polarizer at 45° between them creates two non-orthogonal projections in sequence.\n\nThe first polarizer transmits light polarized along its axis. The middle polarizer at 45° projects this light onto its own axis — reducing the intensity by cos²(45°) = 1/2 but rotating the polarization direction. Now the light is polarized at 45° to the final polarizer, so it can partially pass through that too.\n\nThe key insight is that each polarizer is a projection operation, not just a filter. The middle polarizer doesn't just block some light — it creates a new polarization state that has a component along the final polarizer's axis."
         },
         "quantitative": {
           "title": "The Mathematics",
           "content": "Applying Malus's Law twice in cascade gives the transmitted intensity.",
-          "derivation": "First stage: I\u2081 = I\u2080 cos\u00b2\u03b1 (after middle polarizer). Second stage: I\u2082 = I\u2081 cos\u00b2(90\u00b0-\u03b1) = I\u2080 cos\u00b2\u03b1 sin\u00b2\u03b1. Using the identity sin(2\u03b1) = 2sin\u03b1 cos\u03b1, this becomes I = (I\u2080/4)sin\u00b2(2\u03b1), maximized at \u03b1 = 45\u00b0."
+          "derivation": "First stage: I₁ = I₀ cos²α (after middle polarizer). Second stage: I₂ = I₁ cos²(90°-α) = I₀ cos²α sin²α. Using the identity sin(2α) = 2sinα cosα, this becomes I = (I₀/4)sin²(2α), maximized at α = 45°."
         },
         "formulas": {
           "cascadedMalus": "Cascaded Malus's Law",
-          "maxIntensity": "Maximum Output at 45\u00b0"
+          "maxIntensity": "Maximum Output at 45°"
         },
         "connections": {
           "malus": "Double application of Malus's Law",
@@ -4203,16 +4221,16 @@
         "name": "Brewster's Angle",
         "intuition": {
           "title": "What You Observed",
-          "content": "As you adjusted the angle of incidence on the glass surface, the reflected beam's intensity changed. At one particular angle, the reflected light became perfectly polarized \u2014 passing completely through the analyzer at one orientation."
+          "content": "As you adjusted the angle of incidence on the glass surface, the reflected beam's intensity changed. At one particular angle, the reflected light became perfectly polarized — passing completely through the analyzer at one orientation."
         },
         "qualitative": {
           "title": "Why This Happens",
-          "content": "When light hits a transparent surface like glass, both reflected and refracted beams are produced. The reflected light is partially polarized because the s-component (perpendicular to the plane of incidence) and p-component (parallel to the plane) reflect with different efficiencies.\n\nAt Brewster's angle, something remarkable happens: the reflected and refracted beams are exactly 90\u00b0 apart. The p-component cannot be reflected because the oscillating charges in the surface would need to radiate along their own oscillation direction, which is physically impossible for a transverse wave.\n\nThe result is that only the s-component reflects, producing perfectly linearly polarized reflected light. This is used in laser cavities (Brewster windows) and polarizing beam splitters."
+          "content": "When light hits a transparent surface like glass, both reflected and refracted beams are produced. The reflected light is partially polarized because the s-component (perpendicular to the plane of incidence) and p-component (parallel to the plane) reflect with different efficiencies.\n\nAt Brewster's angle, something remarkable happens: the reflected and refracted beams are exactly 90° apart. The p-component cannot be reflected because the oscillating charges in the surface would need to radiate along their own oscillation direction, which is physically impossible for a transverse wave.\n\nThe result is that only the s-component reflects, producing perfectly linearly polarized reflected light. This is used in laser cavities (Brewster windows) and polarizing beam splitters."
         },
         "quantitative": {
           "title": "The Mathematics",
           "content": "Brewster's angle depends only on the ratio of refractive indices.",
-          "derivation": "At Brewster's angle, the reflected and refracted rays are perpendicular: \u03b8_B + \u03b8_r = 90\u00b0. Combined with Snell's law n\u2081sin\u03b8_B = n\u2082sin\u03b8_r, we get tan\u03b8_B = n\u2082/n\u2081. For glass (n=1.52) in air, \u03b8_B \u2248 56.7\u00b0."
+          "derivation": "At Brewster's angle, the reflected and refracted rays are perpendicular: θ_B + θ_r = 90°. Combined with Snell's law n₁sinθ_B = n₂sinθ_r, we get tanθ_B = n₂/n₁. For glass (n=1.52) in air, θ_B ≈ 56.7°."
         },
         "formulas": {
           "main": "Brewster's Angle Formula",
@@ -4220,7 +4238,7 @@
           "fresnelRp": "p-Component Reflection Vanishes"
         },
         "connections": {
-          "malus": "Both involve cos\u00b2 intensity dependence",
+          "malus": "Both involve cos² intensity dependence",
           "tir": "Both are critical angle phenomena at interfaces",
           "snell": "Brewster's angle derives from Snell's law"
         }
@@ -4257,7 +4275,7 @@
         },
         "qualitative": {
           "title": "Why This Happens",
-          "content": "When light travels from a denser medium (higher refractive index) to a less dense one, Snell's law predicts the refracted angle. As the incidence angle increases, the refracted angle grows faster. At the critical angle, the refracted ray would exit parallel to the surface.\n\nBeyond the critical angle, there is no real refracted ray \u2014 all light is reflected back into the denser medium. This is total internal reflection, and it is truly total: every photon bounces back with no energy loss (in theory).\n\nThis principle is the foundation of fiber optics, which carries the internet across oceans. It's also why diamonds sparkle: their high refractive index (n=2.42) creates a small critical angle, trapping light inside through multiple reflections."
+          "content": "When light travels from a denser medium (higher refractive index) to a less dense one, Snell's law predicts the refracted angle. As the incidence angle increases, the refracted angle grows faster. At the critical angle, the refracted ray would exit parallel to the surface.\n\nBeyond the critical angle, there is no real refracted ray — all light is reflected back into the denser medium. This is total internal reflection, and it is truly total: every photon bounces back with no energy loss (in theory).\n\nThis principle is the foundation of fiber optics, which carries the internet across oceans. It's also why diamonds sparkle: their high refractive index (n=2.42) creates a small critical angle, trapping light inside through multiple reflections."
         },
         "quantitative": {
           "title": "The Mathematics",
@@ -4280,6 +4298,272 @@
           "qualitative": "Why It Happens",
           "quantitative": "The Math",
           "demo": "Try It"
+        }
+      },
+      "retardationSeries": {
+        "name": "Retardation Series",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "As you adjusted the waveplate, the beam's polarization state changed continuously. From a simple straight oscillation, it morphed into an ellipse, then a perfect circle, then back through an ellipse to a straight line again — a complete cycle of polarization transformation."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "A waveplate is a birefringent crystal that introduces a phase delay (retardation) between two perpendicular components of the electric field. The fast axis transmits one component slightly ahead of the slow axis.\n\nAs the retardation increases from zero to a full wavelength, the output polarization traces a beautiful sequence: linear → right elliptical → right circular (at quarter-wave) → left elliptical → linear rotated by 90° (at half-wave) → left elliptical → left circular (at three-quarter wave) → right elliptical → back to the original linear state (at full wave).\n\nThis continuous progression reveals that all polarization states are connected through a single parameter: the phase retardation. Quarter-wave plates and half-wave plates are simply special points along this continuum."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The Jones matrix for a general waveplate with retardation δ and fast-axis angle θ describes the complete transformation.",
+          "derivation": "The retardation phase δ = 2πd·Δn/λ depends on crystal thickness d, birefringence Δn, and wavelength λ. At δ = π/2 (quarter-wave) with 45° input, the output is circular. At δ = π (half-wave), the output is linear but rotated. The full sequence repeats every 2π."
+        },
+        "formulas": {
+          "jonesMatrix": "General Waveplate Jones Matrix",
+          "retardationPhase": "Retardation Phase",
+          "stateProgression": "Polarization State Progression"
+        },
+        "connections": {
+          "circular": "Quarter-wave retardation produces circular polarization",
+          "compensation": "Multiple waveplates combine retardations"
+        }
+      },
+      "waveplateCompensation": {
+        "name": "Waveplate Compensation",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "By placing two waveplates in sequence and adjusting their orientations, you could fine-tune the output polarization to any desired state. The second waveplate could either enhance or undo the effect of the first."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "When two waveplates are placed in series, their combined effect is the product of their individual Jones matrices. If the fast axes are aligned, the retardations simply add. If the axes are at different angles, the combination produces a more complex transformation.\n\nThis is the principle behind the Babinet–Soleil compensator: two wedge-shaped birefringent crystals whose relative displacement continuously varies the net retardation from zero to several wavelengths. It’s the optical equivalent of a tunable phase knob.\n\nThe key insight is that any desired polarization transformation can be achieved by cascading waveplates with the right retardations and axis orientations — a fundamental principle used in optical instrument design."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The Jones matrix of cascaded waveplates is the matrix product of individual waveplate Jones matrices."
+        },
+        "formulas": {
+          "cascadedJones": "Cascaded Jones Matrices",
+          "netRetardation": "Net Retardation (Aligned Axes)"
+        },
+        "connections": {
+          "retardation": "Individual waveplate retardation is the building block",
+          "poincare": "Cascaded waveplates trace paths on the Poincaré sphere"
+        }
+      },
+      "poincareSphere": {
+        "name": "Poincaré Sphere",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "By rotating the waveplate through many different angles, you explored a wide variety of polarization states. The beam traced out different ellipses, circles, and lines — as if sampling points across an entire landscape of possible states."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "Every possible polarization state of fully polarized light can be mapped to a unique point on a sphere called the Poincaré sphere. The north pole represents right-circular polarization, the south pole left-circular, and the equator represents all linear polarizations at different angles.\n\nThe three Stokes parameters S₁, S₂, and S₃ serve as Cartesian coordinates on this sphere. A waveplate operation corresponds to a rotation of the state point around a specific axis on the sphere. The rotation axis is determined by the waveplate’s fast-axis orientation, and the rotation angle equals the retardation.\n\nThis geometric picture transforms complex polarization algebra into intuitive spatial rotations, making it much easier to design and understand optical systems."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The Poincaré sphere maps normalized Stokes parameters to spherical coordinates, with waveplate operations as rotations."
+        },
+        "formulas": {
+          "stokesMapping": "Stokes-to-Poincaré Mapping",
+          "sphereConstraint": "Sphere Constraint (Fully Polarized)",
+          "waveplateRotation": "Waveplate as Sphere Rotation"
+        },
+        "connections": {
+          "stokes": "Stokes parameters are coordinates on the Poincaré sphere",
+          "retardation": "Retardation sweeps trace arcs on the sphere"
+        }
+      },
+      "rayleighPolarization": {
+        "name": "Rayleigh Scattering Polarization",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When unpolarized light entered the scattering medium, the scattered light at different angles had different polarization properties. Looking at the scattered beam from the side (90°), the light was strongly polarized, while looking straight ahead or behind, it remained unpolarized."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "When unpolarized light hits tiny particles (much smaller than the wavelength), the oscillating electric field of the incoming wave drives the particle’s electrons to oscillate as tiny dipoles. These dipoles radiate in all directions perpendicular to their oscillation.\n\nAt 90° to the original beam, only one component of the dipole radiation reaches the observer (the component oscillating perpendicular to the scattering plane). The parallel component oscillates along the observation direction and cannot radiate toward the observer. The result is perfectly linearly polarized scattered light.\n\nAt 0° and 180° (forward and backward), both dipole components contribute equally, so the scattered light remains unpolarized. At intermediate angles, the light is partially polarized, with polarization degree increasing toward 90°."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "Rayleigh scattering intensity and polarization degree depend on the scattering angle θ.",
+          "derivation": "For an oscillating dipole, the radiated intensity depends on the angle between the dipole axis and the observation direction. Summing over random dipole orientations (unpolarized input) gives I(θ) ∝ 1 + cos²θ. The degree of polarization is DOP(θ) = sin²θ / (1 + cos²θ), which equals 1 at θ = 90°."
+        },
+        "formulas": {
+          "scatteringIntensity": "Rayleigh Scattering Intensity",
+          "degreeOfPolarization": "Degree of Polarization vs. Angle",
+          "maxPolarization": "Maximum Polarization at 90°"
+        },
+        "connections": {
+          "fresnel": "Both produce polarization from unpolarized light",
+          "skyPattern": "Single-particle scattering scales to sky-wide pattern"
+        }
+      },
+      "skyPolarizationPattern": {
+        "name": "Sky Polarization Pattern",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "Different directions in the scattering medium showed different polarization strengths. A clear band of strongly polarized light appeared at 90° from the light source, while the areas closest to and directly opposite the source showed little polarization."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "The sky is a giant Rayleigh scattering laboratory. Sunlight is unpolarized, but as it scatters off air molecules, each scattering angle produces a different degree of polarization. The result is a systematic pattern across the entire sky dome.\n\nMaximum polarization occurs in a band 90° from the sun. As you look closer to the sun or directly away from it, the polarization decreases to zero. This pattern shifts throughout the day as the sun moves.\n\nMany insects — especially bees and desert ants — can detect this polarization pattern and use it as a compass for navigation, even when the sun is hidden behind clouds. Viking seafarers may have used sunstones (birefringent calcite crystals) to detect skylight polarization for ocean navigation."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The sky polarization degree depends on the angular distance γ from the sun."
+        },
+        "formulas": {
+          "solarAngleDOP": "DOP as Function of Solar Angle",
+          "gammaDefinition": "Angular Distance from Sun"
+        },
+        "connections": {
+          "rayleigh": "Sky pattern is the macroscopic sum of Rayleigh scattering events",
+          "dop": "Sky polarization is a natural example of partial polarization"
+        }
+      },
+      "fresnelReflection": {
+        "name": "Fresnel Reflection",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "As you changed the incidence angle at the glass surface, the reflected beam’s behavior diverged for s and p polarizations. The s-polarized reflection grew steadily, while the p-polarized reflection dipped to nearly zero at Brewster’s angle before rising again."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "The Fresnel equations are the complete description of how light reflects and refracts at a planar interface between two media. They treat s-polarization (oscillating perpendicular to the incidence plane) and p-polarization (oscillating in the incidence plane) separately.\n\nFor s-polarization, the reflection coefficient increases monotonically from a small value at normal incidence to total reflection at grazing angles. For p-polarization, the reflection coefficient passes through zero at Brewster’s angle before rising to meet the s-curve at grazing incidence.\n\nThis is a generalization of the Brewster concept from the Refraction Bench. There you observed that Rp vanishes at one special angle; here you see the complete picture of how both Rs and Rp vary across all incidence angles."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The Fresnel equations give amplitude reflection coefficients for s and p polarizations at a dielectric interface.",
+          "derivation": "From the boundary conditions for electromagnetic waves at an interface: continuity of tangential E and H fields yields the Fresnel coefficients. The reflectance (power) is R = |r|². At Brewster’s angle, θ_i + θ_t = 90°, making r_p = 0."
+        },
+        "formulas": {
+          "rs": "s-Polarization Reflection Coefficient",
+          "rp": "p-Polarization Reflection Coefficient",
+          "reflectance": "Reflectance (Power)"
+        },
+        "connections": {
+          "brewster": "Fresnel equations predict the Brewster angle",
+          "medium": "Different media shift the Fresnel curves",
+          "rayleigh": "Both produce polarization from unpolarized light"
+        }
+      },
+      "mediumComparison": {
+        "name": "Medium Comparison",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When you switched between glass and water surfaces, the reflected beam behaved differently. The Brewster angle shifted, the reflection strengths changed, and the overall polarization behavior had a distinctly different character for each medium."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "Every transparent medium has a characteristic refractive index that determines how light behaves at its surface. Glass (n ≈ 1.52) and water (n ≈ 1.33) have different Brewster angles, different reflection strengths at each incidence angle, and different critical angles for total internal reflection.\n\nThe refractive index connects many polarization phenomena: it determines the Brewster angle (θ_B = arctan n), the Fresnel reflection curves, the refraction angle via Snell’s law, and the critical angle for total internal reflection.\n\nComparing media side by side reveals that polarization effects are not properties of light alone but arise from the interaction between light and matter. The same beam of light produces dramatically different polarization effects depending on which surface it meets."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "Snell’s law governs the refraction angle, and the Brewster angle depends directly on the refractive index ratio."
+        },
+        "formulas": {
+          "snellLaw": "Snell’s Law",
+          "brewsterVaries": "Brewster Angle Varies with Medium"
+        },
+        "connections": {
+          "fresnel": "Fresnel curves shift with refractive index",
+          "stacked": "Multiple media create stacked-interface effects"
+        }
+      },
+      "stackedInterfaces": {
+        "name": "Stacked Interfaces",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "When the beam passed through multiple glass surfaces in sequence, the polarization effect was amplified. Each interface added a small polarization preference, and the cumulative result was much stronger than any single reflection."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "At each interface, the s-component reflects more strongly than the p-component. After many interfaces, the transmitted beam becomes increasingly p-polarized as the s-component is preferentially stripped away by each successive reflection.\n\nThis is the principle behind \"pile-of-plates\" polarizers used before synthetic polaroid film was invented. A stack of glass plates at Brewster’s angle can produce highly polarized transmitted light.\n\nThe transfer matrix method provides a systematic way to calculate the cumulative effect. Each interface is represented by a 2×2 matrix, and the total system is the ordered product of all individual matrices. This formalism handles interference between multiple reflections and is essential for designing anti-reflection coatings and multilayer optical filters."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The transfer matrix method multiplies individual interface matrices to get the total optical response."
+        },
+        "formulas": {
+          "transferMatrix": "Transfer Matrix Product",
+          "cumulativeReflection": "Cumulative Reflectance (Incoherent)"
+        },
+        "connections": {
+          "medium": "Each interface depends on the medium pair",
+          "fresnel": "Individual Fresnel coefficients are the building blocks"
+        }
+      },
+      "stokesMeasurement": {
+        "name": "Stokes Measurement",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "By rotating the analyzer through several specific positions and recording the intensity at each, you gathered enough information to fully describe the beam’s polarization state. Four measurements were enough to capture everything about the beam’s polarization."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "The polarization state of any beam of light can be completely described by four numbers called the Stokes parameters: S₀, S₁, S₂, and S₃. Each parameter corresponds to a specific measurement.\n\nS₀ is the total intensity. S₁ measures the preference for horizontal over vertical polarization. S₂ measures the preference for +45° over -45° polarization. S₃ measures the preference for right-circular over left-circular polarization.\n\nTo measure S₁, you take the difference of intensities through a horizontal analyzer and a vertical analyzer. Similarly for S₂ at 45°/135°. For S₃, you insert a quarter-wave plate before the analyzer to convert circular components into linear ones that can be measured.\n\nThese four numbers encode every possible polarization state, from fully polarized to completely unpolarized."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The four Stokes parameters are determined by intensity measurements at four analyzer orientations.",
+          "derivation": "Using a rotating linear analyzer at 0°, 45°, 90°, 135° plus a quarter-wave plate measurement: S₀ = I(0°) + I(90°), S₁ = I(0°) - I(90°), S₂ = I(45°) - I(135°), S₃ = I_RHC - I_LHC. The four parameters fully characterize the polarization ellipse and degree of polarization."
+        },
+        "formulas": {
+          "s0": "Total Intensity",
+          "s1": "Horizontal/Vertical Preference",
+          "s2": "Diagonal Preference",
+          "s3": "Circular Preference"
+        },
+        "connections": {
+          "dop": "Stokes parameters define the degree of polarization",
+          "poincare": "Stokes parameters are coordinates on the Poincaré sphere"
+        }
+      },
+      "degreeOfPolarization": {
+        "name": "Degree of Polarization",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "Some beams were perfectly polarized — rotating the analyzer produced a clear pattern of bright and dark. Other beams seemed partially random, with the analyzer making less difference. The degree of polarization captured this distinction as a single number."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "Real light is rarely perfectly polarized. Sunlight, lamplight, and most natural sources are unpolarized — the electric field oscillates in random directions that change billions of times per second. Scattered skylight, reflected glare, and laser light represent different degrees of polarization.\n\nThe degree of polarization (DOP) is a single number between 0 and 1 that quantifies how polarized a beam is. DOP = 1 means perfectly polarized (the tip of the electric field traces a perfect ellipse). DOP = 0 means completely unpolarized (random directions).\n\nDOP is calculated from the Stokes parameters as the ratio of polarized intensity to total intensity. Geometrically, it’s the ratio of the state point’s distance from the Poincaré sphere center to the sphere radius."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The degree of polarization is the normalized length of the Stokes vector in S₁-S₂-S₃ space."
+        },
+        "formulas": {
+          "dopFormula": "Degree of Polarization Formula",
+          "dopRange": "DOP Range",
+          "dopInterpretation": "DOP Interpretation"
+        },
+        "connections": {
+          "stokes": "DOP is derived from measured Stokes parameters",
+          "polarimetry": "Full polarimetry determines DOP for any optical system"
+        }
+      },
+      "fullPolarimetry": {
+        "name": "Full Polarimetry",
+        "intuition": {
+          "title": "What You Observed",
+          "content": "By combining the polarizer and quarter-wave plate in a systematic measurement sequence, you could characterize not just the beam’s polarization but the complete transformation performed by any optical element in the path."
+        },
+        "qualitative": {
+          "title": "Why This Happens",
+          "content": "The Mueller matrix formalism is the most general description of how an optical element transforms polarization. It’s a 4×4 matrix that maps input Stokes vectors to output Stokes vectors, handling everything from perfect polarizers to partial depolarizers.\n\nMalus’s Law, Brewster’s angle, waveplate retardation, and scattering polarization are all special cases described by specific Mueller matrices. The formalism unifies all polarization phenomena into a single mathematical framework.\n\nTo measure the Mueller matrix of an unknown element, you send in several known polarization states and measure the output Stokes vectors. From these input–output pairs, all 16 elements of the Mueller matrix can be determined. This technique is used in ellipsometry, remote sensing, and biomedical imaging."
+        },
+        "quantitative": {
+          "title": "The Mathematics",
+          "content": "The Mueller matrix transforms input Stokes vectors to output Stokes vectors.",
+          "derivation": "For a linear polarizer at angle θ, the Mueller matrix has a characteristic structure with cos 2θ and sin 2θ terms. At θ = 0, the matrix reduces to the horizontal polarizer form, and applying it to unpolarized light gives S_out = (1/2)[1, 1, 0, 0]^T, which is Malus’s Law for unpolarized input."
+        },
+        "formulas": {
+          "muellerTransform": "Mueller Matrix Transformation",
+          "analyzerMueller": "Mueller Matrix for Linear Polarizer"
+        },
+        "connections": {
+          "malus": "Mueller formalism generalizes Malus’s Law",
+          "stokes": "Mueller matrices operate on Stokes vectors"
         }
       }
     }
@@ -4308,7 +4592,6 @@
     "freeMode": "Free",
     "guidedMode": "Guided",
     "addComponent": "Add:",
-
     "compEmitter": "Emitter",
     "compPolarizer": "Polarizer",
     "compWaveplate": "Waveplate",
@@ -4316,20 +4599,16 @@
     "compSplitter": "Splitter",
     "compSensor": "Sensor",
     "compLens": "Lens",
-
     "showTheory": "Show Theory (T)",
     "showReadout": "Show Readout",
     "hidePanel": "Hide (T)",
     "fitToView": "Fit to View (H)",
     "freeExplore": "Free Explore",
-
     "emptyBench": "Bench is empty. Add components from the toolbar below.",
     "emptyGuided": "Loading station...",
-
     "qwp": "QWP (90°)",
     "hwp": "HWP (180°)",
     "unpolarized": "Unpol.",
-
     "keyboardShortcuts": "Keyboard Shortcuts",
     "shortcutToggleTheory": "Toggle Theory Panel",
     "shortcutToggleMode": "Toggle Guided / Free Mode",
