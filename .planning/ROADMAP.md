@@ -33,8 +33,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Foundation: isometric coordinate utilities, Zustand scene store, route wiring
-- [ ] 01-02-PLAN.md — Isometric scene rendering with SVG layers, click-to-move navigation, HUD overlay
+- [x] 01-01-PLAN.md — Foundation: isometric coordinate utilities, Zustand scene store, route wiring
+- [x] 01-02-PLAN.md — Isometric scene rendering with SVG layers, click-to-move navigation, HUD overlay
 - [ ] 01-03-PLAN.md — Light beam rendering with polarization visual encoding, particles, physics bridge
 
 ### Phase 2: Interaction & Visual Language
@@ -108,7 +108,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Minimum Viable Scene | 0/3 | Planned | - |
+| 1. Foundation & Minimum Viable Scene | 2/3 | In Progress | - |
 | 2. Interaction & Visual Language | 0/3 | Not started | - |
 | 3. Multi-Region Isometric World | 0/3 | Not started | - |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |

@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 1 of 5 (Foundation & Minimum Viable Scene)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: Executing phase 1
-Last activity: 2026-02-20 -- Completed 01-01-PLAN.md (coordinate system + scene store)
+Last activity: 2026-02-20 -- Completed 01-02-PLAN.md (isometric scene + click-to-move + HUD)
 
-Progress: [##........] 7%
+Progress: [###.......] 13%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 5 min
-- Total execution time: 0.08 hours
+- Total plans completed: 2
+- Average duration: 5.5 min
+- Total execution time: 0.18 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 1 | 5 min | 5 min |
+| 1 | 2 | 11 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min)
-- Trend: Starting
+- Last 5 plans: 01-01 (5 min), 01-02 (6 min)
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -50,6 +50,10 @@ Recent decisions affecting current work:
 - [01-01]: New odysseyWorldStore.ts created instead of modifying old odysseyStore.ts -- old store for abandoned 3D portal model
 - [01-01]: Composable SceneElement types with properties Record pattern for element-specific physics data
 - [01-01]: Stokes parameters stored directly on BeamSegment for physics-accurate visual encoding
+- [01-02]: SVG viewBox 2400x1600 with centered origin for scene larger than viewport
+- [01-02]: Camera transform uses scale() then translate() on motion.div for GPU-composited pan/zoom
+- [01-02]: Zoom-toward-cursor preserves world point under cursor by recalculating camera offset
+- [01-02]: Avatar photon orb uses MotionValue-driven position for zero React re-renders during movement
 
 ### Pending Todos
 
@@ -64,5 +68,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 01-01-PLAN.md (isometric coordinate system + world store + route wiring)
+Stopped at: Completed 01-02-PLAN.md (isometric scene rendering + click-to-move + HUD)
 Resume file: None

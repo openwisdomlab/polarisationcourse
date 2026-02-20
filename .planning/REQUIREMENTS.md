@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### World Foundation
 
-- [ ] **WRLD-01**: World uses click/tap point-and-click navigation in an isometric perspective -- student clicks to move between areas, not WASD free camera or scroll-driven linear path
+- [x] **WRLD-01**: World uses click/tap point-and-click navigation in an isometric perspective -- student clicks to move between areas, not WASD free camera or scroll-driven linear path
 - [ ] **WRLD-02**: World consists of 4-6 interconnected optical environment regions, each with unique visual style and physics theme
 - [ ] **WRLD-03**: Regions connected through animated transitions (parallax shifts, perspective slides, fade-throughs), no page-load interruptions
-- [ ] **WRLD-04**: World has spatial coherence -- all regions feel like they belong to the same isometric world, not an independent demo gallery
+- [x] **WRLD-04**: World has spatial coherence -- all regions feel like they belong to the same isometric world, not an independent demo gallery
 - [ ] **WRLD-05**: Regions lazy-load SVG/scene assets by proximity, maintaining smooth transitions between adjacent regions
 - [ ] **WRLD-06**: All regions freely accessible from the start, no mandatory prerequisites
 
@@ -44,9 +44,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Visual & Aesthetic
 
 - [ ] **VISL-01**: Each region has unique visual atmosphere (color palette, illustration style, particle effects, geometric motifs), reaching "every frame worth pausing on" quality -- Monument Valley level of visual craft
-- [ ] **VISL-02**: Isometric illustration art direction -- 2D scenes with perspective/depth illusion (CSS 3D transforms, parallax layers, SVG depth ordering), geometric precision directs attention to physics phenomena
+- [x] **VISL-02**: Isometric illustration art direction -- 2D scenes with perspective/depth illusion (CSS 3D transforms, parallax layers, SVG depth ordering), geometric precision directs attention to physics phenomena
 - [ ] **VISL-03**: Light beam is the visually most prominent element -- environmental illustrations never overpower physics signals
-- [ ] **VISL-04**: 2D-primary rendering with selective 3D accents -- SVG scenes and CSS transforms for the world, optional Canvas/WebGL only for beam glow effects or key visual moments
+- [x] **VISL-04**: 2D-primary rendering with selective 3D accents -- SVG scenes and CSS transforms for the world, optional Canvas/WebGL only for beam glow effects or key visual moments
 - [ ] **VISL-05**: Depth layers within the 2D world -- zooming into a phenomenon smoothly reveals deeper information layers (qualitative explanation, then mathematical formalism) without breaking the visual context
 
 ### Content Integration
@@ -59,11 +59,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Technical Foundation
 
-- [ ] **TECH-01**: SVG/CSS-primary scene architecture -- scenes built with SVG illustrations, CSS 3D transforms for depth, Framer Motion for animations; Canvas/WebGL used sparingly for beam effects only
+- [x] **TECH-01**: SVG/CSS-primary scene architecture -- scenes built with SVG illustrations, CSS 3D transforms for depth, Framer Motion for animations; Canvas/WebGL used sparingly for beam effects only
 - [x] **TECH-02**: Isometric geometry system -- consistent coordinate mapping between isometric visual space and interaction hit-targets, reusable across all regions
 - [x] **TECH-03**: Data model designed around "composable physics behaviors in environments", not "stations array"
 - [x] **TECH-04**: Coexists with other PolarCraft modules (games, studio, calculator), accessed via /odyssey/ route
-- [ ] **TECH-05**: Desktop-first (mouse + keyboard), but 2D-primary approach makes mobile adaptation significantly easier for v2
+- [x] **TECH-05**: Desktop-first (mouse + keyboard), but 2D-primary approach makes mobile adaptation significantly easier for v2
 
 ## v2 Requirements
 
@@ -102,10 +102,10 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WRLD-01 | Phase 1 | Pending |
+| WRLD-01 | Phase 1 | Complete |
 | WRLD-02 | Phase 3 | Pending |
 | WRLD-03 | Phase 3 | Pending |
-| WRLD-04 | Phase 1 | Pending |
+| WRLD-04 | Phase 1 | Complete |
 | WRLD-05 | Phase 3 | Pending |
 | WRLD-06 | Phase 3 | Pending |
 | PHYS-01 | Phase 1 | Pending |
@@ -125,20 +125,20 @@ Deferred to future release. Tracked but not in current roadmap.
 | DISC-05 | Phase 3 | Pending |
 | DISC-06 | Phase 3 | Pending |
 | VISL-01 | Phase 5 | Pending |
-| VISL-02 | Phase 1 | Pending |
+| VISL-02 | Phase 1 | Complete |
 | VISL-03 | Phase 2 | Pending |
-| VISL-04 | Phase 1 | Pending |
+| VISL-04 | Phase 1 | Complete |
 | VISL-05 | Phase 4 | Pending |
 | CONT-01 | Phase 5 | Pending |
 | CONT-02 | Phase 4 | Pending |
 | CONT-03 | Phase 4 | Pending |
 | CONT-04 | Phase 4 | Pending |
 | CONT-05 | Phase 5 | Pending |
-| TECH-01 | Phase 1 | Pending |
+| TECH-01 | Phase 1 | Complete |
 | TECH-02 | Phase 1 | Complete |
 | TECH-03 | Phase 1 | Complete |
 | TECH-04 | Phase 1 | Complete |
-| TECH-05 | Phase 1 | Pending |
+| TECH-05 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 37 total
