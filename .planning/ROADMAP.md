@@ -12,7 +12,7 @@ Transform 23 independent polarization optics demos into a discovery-based isomet
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation & Minimum Viable Scene** - Single isometric environment with click navigation, SVG light source, beam rendering with polarization encoding, and physics-accurate visualization at 60fps
+- [x] **Phase 1: Foundation & Minimum Viable Scene** - Single isometric environment with click navigation, SVG light source, beam rendering with polarization encoding, and physics-accurate visualization at 60fps (completed 2026-02-20)
 - [ ] **Phase 2: Interaction & Visual Language** - Place/rotate/adjust optical elements with consistent polarization visual encoding and environmental feedback on correct configurations
 - [ ] **Phase 3: Multi-Region Isometric World** - 4-6 interconnected isometric environments with smooth animated transitions, cross-region beams, knowledge-gated progression, and session persistence
 - [ ] **Phase 4: Depth Layers & Content Integration** - Layered information architecture (intuition to quantitative), embedded demo deep-dives, concept constellation map, and diegetic theory emergence
@@ -108,7 +108,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Minimum Viable Scene | 2/3 | In Progress | - |
+| 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
 | 2. Interaction & Visual Language | 0/3 | Not started | - |
 | 3. Multi-Region Isometric World | 0/3 | Not started | - |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |
