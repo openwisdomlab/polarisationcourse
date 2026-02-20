@@ -168,10 +168,10 @@ export const scatteringChamberDefinition: RegionDefinition = {
     name: 'Scattering Chamber',
     nameKey: 'odyssey.regions.scatteringChamber',
     colorPalette: {
-      background: ['#2d1f4e', '#1a1230'],  // 深紫渐变
-      platformFill: '#3d2d5e',
-      platformStroke: '#6b4fa0',
-      accentColor: '#9b7dd4',
+      background: ['#1e2444', '#141a30'],  // 深靛蓝渐变 (235deg hue)
+      platformFill: '#242d50',
+      platformStroke: '#4a5580',
+      accentColor: '#5b68a4',
     },
     gridOpacity: 0.015,
   },

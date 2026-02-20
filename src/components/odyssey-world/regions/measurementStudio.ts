@@ -244,10 +244,10 @@ export const measurementStudioDefinition: RegionDefinition = {
     name: 'Measurement Studio',
     nameKey: 'odyssey.regions.measurementStudio',
     colorPalette: {
-      background: ['#f0f0f2', '#d0d0d8'],  // 银灰渐变
-      platformFill: '#e0e0e4',
-      platformStroke: '#a0a0b0',
-      accentColor: '#7070a0',
+      background: ['#eaecf2', '#c8ccd8'],  // 钢灰蓝渐变 (225deg hue)
+      platformFill: '#d8dce8',
+      platformStroke: '#9ca0b8',
+      accentColor: '#7080a8',
     },
     gridOpacity: 0.02,
   },

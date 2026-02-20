@@ -241,12 +241,12 @@ export const refractionBenchDefinition: RegionDefinition = {
     name: 'Refraction Bench',
     nameKey: 'odyssey.regions.refractionBench',
     colorPalette: {
-      background: ['#fdf0e2', '#f5d4a8'],  // 暖橙渐变
-      platformFill: '#f7e4c8',
-      platformStroke: '#d4a86a',
-      accentColor: '#d4863a',
+      background: ['#e4e8f4', '#bcc4e0'],  // 石板蓝渐变 (230deg hue)
+      platformFill: '#d0d6ea',
+      platformStroke: '#8890b8',
+      accentColor: '#6b7db4',
     },
-    gridOpacity: 0.03,
+    gridOpacity: 0.025,
   },
   gridWidth: 15,
   gridHeight: 12,

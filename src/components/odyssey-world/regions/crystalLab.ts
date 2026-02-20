@@ -462,10 +462,10 @@ export const crystalLabDefinition: Omit<RegionDefinition, 'theme'> & { theme: Re
     name: 'Crystal Lab',
     nameKey: 'odyssey.regions.crystalLab',
     colorPalette: {
-      background: ['#e8f4fd', '#b8dff5'],  // 冰蓝渐变
-      platformFill: '#d4eaf7',
+      background: ['#e8f4fd', '#b8dff5'],  // 冰蓝渐变 (210deg hue)
+      platformFill: '#d0eaf7',
       platformStroke: '#8ec5e3',
-      accentColor: '#4ba3d4',
+      accentColor: '#5b9fd4',
     },
     gridOpacity: 0.025,
   },

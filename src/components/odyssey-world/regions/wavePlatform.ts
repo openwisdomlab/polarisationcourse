@@ -237,10 +237,10 @@ export const wavePlatformDefinition: RegionDefinition = {
     name: 'Wave Platform',
     nameKey: 'odyssey.regions.wavePlatform',
     colorPalette: {
-      background: ['#e0f7f7', '#a8e6e6'],  // 青蓝渐变
-      platformFill: '#c8eded',
-      platformStroke: '#6bc4c4',
-      accentColor: '#2ea8a8',
+      background: ['#ddf0f8', '#a0d8e8'],  // 青蓝渐变 (190deg hue)
+      platformFill: '#c8e4f0',
+      platformStroke: '#6bb8c8',
+      accentColor: '#4db8c9',
     },
     gridOpacity: 0.02,
   },

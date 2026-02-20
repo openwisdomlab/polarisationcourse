@@ -6,6 +6,7 @@
  * 使用 React.memo 避免不必要的重渲染。
  *
  * Phase 3: 支持区域主题色覆盖 (platformFill, platformStroke)。
+ * Phase 5: 每区域地板纹理图案 (SVG <pattern>, opacity 0.05-0.1)。
  */
 
 import React from 'react'
@@ -19,11 +20,71 @@ interface PlatformProps {
 }
 
 /**
+ * 区域地板纹理 pattern ID 映射
+ * 每个区域有独特的微妙 SVG 纹理叠加在平台上
+ */
+const FLOOR_PATTERN_IDS: Record<string, string> = {
+  'crystal-lab': 'floor-crystal-lattice',
+  'wave-platform': 'floor-wave-ripple',
+  'refraction-bench': 'floor-glass-layers',
+  'scattering-chamber': 'floor-particle-dots',
+  'interface-lab': 'floor-strata-layers',
+  'measurement-studio': 'floor-precision-grid',
+}
+
+/**
+ * FloorPatternDefs -- 区域地板纹理 SVG pattern 定义
+ *
+ * 渲染在 Platform 内部，利用 <defs> + <pattern>。
+ * 每个纹理非常微妙 (内部 opacity 0.3-0.5)，外部通过 polygon opacity 0.06-0.08 控制。
+ */
+function FloorPatternDefs({ accent }: { accent: string }) {
+  return (
+    <defs>
+      {/* 水晶晶格纹理 -- Crystal Lab */}
+      <pattern id="floor-crystal-lattice" x={0} y={0} width={16} height={14} patternUnits="userSpaceOnUse">
+        <polygon points="8,0 16,4 16,10 8,14 0,10 0,4" fill="none" stroke={accent} strokeWidth={0.3} opacity={0.4} />
+      </pattern>
+
+      {/* 波纹纹理 -- Wave Platform */}
+      <pattern id="floor-wave-ripple" x={0} y={0} width={24} height={12} patternUnits="userSpaceOnUse">
+        <path d="M0,6 Q6,2 12,6 Q18,10 24,6" fill="none" stroke={accent} strokeWidth={0.3} opacity={0.35} />
+      </pattern>
+
+      {/* 玻璃层纹理 -- Refraction Bench */}
+      <pattern id="floor-glass-layers" x={0} y={0} width={20} height={8} patternUnits="userSpaceOnUse">
+        <line x1={0} y1={4} x2={20} y2={4} stroke={accent} strokeWidth={0.25} opacity={0.35} />
+        <line x1={2} y1={7} x2={18} y2={7} stroke={accent} strokeWidth={0.15} opacity={0.2} />
+      </pattern>
+
+      {/* 粒子点纹理 -- Scattering Chamber */}
+      <pattern id="floor-particle-dots" x={0} y={0} width={12} height={12} patternUnits="userSpaceOnUse">
+        <circle cx={3} cy={3} r={0.5} fill={accent} opacity={0.35} />
+        <circle cx={9} cy={9} r={0.4} fill={accent} opacity={0.25} />
+        <circle cx={7} cy={2} r={0.3} fill={accent} opacity={0.2} />
+      </pattern>
+
+      {/* 分层纹理 -- Interface Lab */}
+      <pattern id="floor-strata-layers" x={0} y={0} width={30} height={10} patternUnits="userSpaceOnUse">
+        <line x1={0} y1={3} x2={30} y2={3} stroke={accent} strokeWidth={0.2} opacity={0.3} />
+        <line x1={0} y1={7} x2={30} y2={7} stroke={accent} strokeWidth={0.3} opacity={0.4} />
+      </pattern>
+
+      {/* 精密网格纹理 -- Measurement Studio */}
+      <pattern id="floor-precision-grid" x={0} y={0} width={10} height={10} patternUnits="userSpaceOnUse">
+        <rect x={0} y={0} width={10} height={10} fill="none" stroke={accent} strokeWidth={0.2} opacity={0.3} />
+      </pattern>
+    </defs>
+  )
+}
+
+/**
  * 等距平台
  *
  * 菱形顶面 + 可选侧面 (Z > 0)。
  * 地面层 (Z=0): 暖白色 (#F0EDE6)，细微边框。
  * 抬升层 (Z=1): 更亮 (#F5F2EC)，下方柔和阴影。
+ * Phase 5: 区域地板纹理叠加 (微妙 SVG pattern fill)。
  */
 const Platform = React.memo(function Platform({ element }: PlatformProps) {
   const { worldX, worldY, worldZ } = element
@@ -34,6 +95,7 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
   const regionDef = getRegionDefinition(activeRegionId)
   const themeFill = regionDef?.theme.colorPalette.platformFill
   const themeStroke = regionDef?.theme.colorPalette.platformStroke
+  const themeAccent = regionDef?.theme.colorPalette.accentColor ?? '#888'
 
   // Z 轴高度偏移 (每层抬升 24 像素)
   const zOffset = worldZ * 24
@@ -61,8 +123,14 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
   // 侧面高度 (Z > 0 时显示)
   const sideHeight = worldZ * 24
 
+  // 地板纹理 pattern ID
+  const floorPatternId = FLOOR_PATTERN_IDS[activeRegionId]
+
   return (
     <g transform={`translate(${tx}, ${ty})`}>
+      {/* 地板纹理 pattern 定义 (仅首次渲染生效，SVG defs 全局去重) */}
+      <FloorPatternDefs accent={themeAccent} />
+
       {/* 侧面 -- Z > 0 的平台显示 "墙壁" */}
       {isElevated && (
         <>
@@ -103,6 +171,15 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
         strokeWidth={0.8}
         strokeOpacity={topStrokeOpacity}
       />
+
+      {/* 区域地板纹理叠加 (非常微妙, 不与光束竞争) */}
+      {floorPatternId && !isGlass && !isElevated && (
+        <polygon
+          points={topPoints}
+          fill={`url(#${floorPatternId})`}
+          opacity={0.07}
+        />
+      )}
 
       {/* 玻璃材质的微妙高光 */}
       {isGlass && (

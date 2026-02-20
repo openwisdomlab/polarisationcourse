@@ -214,10 +214,10 @@ export const interfaceLabDefinition: RegionDefinition = {
     name: 'Interface Lab',
     nameKey: 'odyssey.regions.interfaceLab',
     colorPalette: {
-      background: ['#f0f5e0', '#d4e0a0'],  // 绿金渐变
-      platformFill: '#e4ecc0',
-      platformStroke: '#a8bf5a',
-      accentColor: '#7a9a2a',
+      background: ['#e4eaf2', '#b8c4dc'],  // 冷蓝渐变 (220deg hue)
+      platformFill: '#d0d8ea',
+      platformStroke: '#8898b8',
+      accentColor: '#5b84b4',
     },
     gridOpacity: 0.025,
   },
