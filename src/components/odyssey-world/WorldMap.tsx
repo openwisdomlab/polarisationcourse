@@ -16,8 +16,9 @@
  * 保持轻量: 无实际场景元素 (pitfall 5)。
  */
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
@@ -26,7 +27,15 @@ import {
   META_DISCOVERIES,
   type RegionDefinition,
 } from './regions/regionRegistry'
+import {
+  getConceptsForRegion,
+  type ConceptDefinition,
+} from './concepts/conceptRegistry'
 import type { ActiveConnection } from './hooks/useDiscoveryConnections'
+
+// 确保概念注册表已初始化 (副作用导入)
+import './concepts/crystalLabConcepts'
+import './concepts/refractionBenchConcepts'
 
 // ── 区域布局配置 (2x3 网格) ──────────────────────────────────────────
 
@@ -304,6 +313,266 @@ function MetaDiscoveryIndicators({ achievedMeta }: MetaDiscoveryIndicatorsProps)
   )
 }
 
+// ── 概念节点位置计算 ──────────────────────────────────────────────
+
+/** 概念节点半径 */
+const CONCEPT_NODE_R = 5
+
+/**
+ * 计算概念在其区域矩形内的确定性位置
+ *
+ * 基于概念在区域内的索引，在区域矩形内均匀分布。
+ * 位置偏移到区域形状下半部分，避免与区域名称文字重叠。
+ */
+function getConceptPosition(
+  regionLayout: RegionLayout,
+  conceptIndex: number,
+  totalConcepts: number,
+): { x: number; y: number } {
+  const { cx, cy } = getRegionCenter(regionLayout.col, regionLayout.row)
+
+  // 在区域矩形下半部分布置节点 (上半部分留给区域名称和进度文字)
+  const areaLeft = cx - REGION_WIDTH / 2 + 20
+  const areaRight = cx + REGION_WIDTH / 2 - 20
+  const areaWidth = areaRight - areaLeft
+
+  // 根据概念数量均匀分布 x 坐标
+  const step = totalConcepts > 1 ? areaWidth / (totalConcepts - 1) : 0
+  const x = totalConcepts === 1 ? cx : areaLeft + conceptIndex * step
+
+  // y 坐标: 区域底部附近，微小交错避免完全对齐
+  const baseY = cy + REGION_HEIGHT / 2 - 12
+  const offsetY = conceptIndex % 2 === 0 ? -3 : 3
+
+  return { x, y: baseY + offsetY }
+}
+
+// ── 概念连接线 (星座图) ──────────────────────────────────────────
+
+interface ConceptConnectionLinesProps {
+  allTimeDiscoveries: Set<string>
+}
+
+/**
+ * ConceptConnectionLines -- 概念间的分类连接线
+ *
+ * 遍历所有已发现概念的 connections 数组，
+ * 当源和目标概念都已发现时绘制连接线。
+ * 线型按关系类型分类:
+ * - causal: 实线, 琥珀色
+ * - analogous: 虚线, 蓝色
+ * - contrasting: 点线, 玫瑰色
+ */
+function ConceptConnectionLines({ allTimeDiscoveries }: ConceptConnectionLinesProps) {
+  // 构建已发现概念及其位置的查找表
+  const { connections, positionMap } = useMemo(() => {
+    const posMap = new Map<string, { x: number; y: number }>()
+    const discoveredConcepts: ConceptDefinition[] = []
+
+    for (const layout of REGION_LAYOUT) {
+      const concepts = getConceptsForRegion(layout.id)
+      const discovered = concepts.filter((c) => allTimeDiscoveries.has(c.discoveryId))
+
+      discovered.forEach((concept, idx) => {
+        const pos = getConceptPosition(layout, idx, discovered.length)
+        posMap.set(concept.id, pos)
+      })
+
+      discoveredConcepts.push(...discovered)
+    }
+
+    // 收集所有需要绘制的连接线 (去重: 只从 ID 较小的概念绘制)
+    const conns: {
+      key: string
+      from: { x: number; y: number }
+      to: { x: number; y: number }
+      type: 'causal' | 'analogous' | 'contrasting'
+    }[] = []
+
+    const seen = new Set<string>()
+
+    for (const concept of discoveredConcepts) {
+      const fromPos = posMap.get(concept.id)
+      if (!fromPos) continue
+
+      for (const conn of concept.connections) {
+        const toPos = posMap.get(conn.targetConceptId)
+        if (!toPos) continue // 目标概念未发现或不存在
+
+        const pairKey = [concept.id, conn.targetConceptId].sort().join('|')
+        if (seen.has(pairKey)) continue
+        seen.add(pairKey)
+
+        conns.push({
+          key: `concept-conn-${pairKey}`,
+          from: fromPos,
+          to: toPos,
+          type: conn.type,
+        })
+      }
+    }
+
+    return { connections: conns, positionMap: posMap }
+  }, [allTimeDiscoveries])
+
+  // 忽略 positionMap 用于渲染 -- 只用于计算
+  void positionMap
+
+  return (
+    <>
+      {connections.map((conn) => {
+        // 按关系类型设置线型
+        let stroke: string
+        let strokeDasharray: string | undefined
+        switch (conn.type) {
+          case 'causal':
+            stroke = '#f59e0b' // 琥珀色
+            strokeDasharray = undefined // 实线
+            break
+          case 'analogous':
+            stroke = '#60a5fa' // 蓝色
+            strokeDasharray = '6,4' // 虚线
+            break
+          case 'contrasting':
+            stroke = '#f43f5e' // 玫瑰色
+            strokeDasharray = '2,3' // 点线
+            break
+        }
+
+        return (
+          <line
+            key={conn.key}
+            x1={conn.from.x}
+            y1={conn.from.y}
+            x2={conn.to.x}
+            y2={conn.to.y}
+            stroke={stroke}
+            strokeWidth={1.2}
+            strokeDasharray={strokeDasharray}
+            opacity={0.5}
+          />
+        )
+      })}
+    </>
+  )
+}
+
+// ── 概念节点 ──────────────────────────────────────────────────────
+
+interface ConceptNodesProps {
+  allTimeDiscoveries: Set<string>
+  onConceptClick: (conceptId: string) => void
+  hoveredConceptId: string | null
+  onConceptHover: (conceptId: string | null) => void
+}
+
+/**
+ * ConceptNodes -- 已发现概念的小圆点
+ *
+ * 在每个区域矩形内渲染已发现概念的彩色节点。
+ * 悬停显示概念名称，点击打开深度面板。
+ */
+function ConceptNodes({
+  allTimeDiscoveries,
+  onConceptClick,
+  hoveredConceptId,
+  onConceptHover,
+}: ConceptNodesProps) {
+  const { t } = useTranslation()
+  const nodes = useMemo(() => {
+    const result: {
+      concept: ConceptDefinition
+      pos: { x: number; y: number }
+      accentColor: string
+    }[] = []
+
+    for (const layout of REGION_LAYOUT) {
+      const regionDef = REGION_DEFINITIONS.get(layout.id)
+      const accentColor = regionDef?.theme.colorPalette.accentColor ?? '#888'
+      const concepts = getConceptsForRegion(layout.id)
+      const discovered = concepts.filter((c) => allTimeDiscoveries.has(c.discoveryId))
+
+      discovered.forEach((concept, idx) => {
+        const pos = getConceptPosition(layout, idx, discovered.length)
+        result.push({ concept, pos, accentColor })
+      })
+    }
+
+    return result
+  }, [allTimeDiscoveries])
+
+  return (
+    <>
+      {nodes.map(({ concept, pos, accentColor }) => {
+        const isHovered = hoveredConceptId === concept.id
+
+        return (
+          <g
+            key={`concept-node-${concept.id}`}
+            className="concept-node"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => {
+              e.stopPropagation()
+              onConceptClick(concept.id)
+            }}
+            onMouseEnter={() => onConceptHover(concept.id)}
+            onMouseLeave={() => onConceptHover(null)}
+          >
+            {/* 悬停光晕 */}
+            {isHovered && (
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r={CONCEPT_NODE_R + 4}
+                fill={accentColor}
+                opacity={0.2}
+              />
+            )}
+
+            {/* 概念节点 */}
+            <circle
+              cx={pos.x}
+              cy={pos.y}
+              r={isHovered ? CONCEPT_NODE_R + 1 : CONCEPT_NODE_R}
+              fill={accentColor}
+              stroke="#fff"
+              strokeWidth={isHovered ? 1.5 : 0.5}
+              strokeOpacity={isHovered ? 0.8 : 0.3}
+              opacity={isHovered ? 1 : 0.8}
+            />
+
+            {/* 悬停时显示概念名称标签 */}
+            {isHovered && (
+              <>
+                <rect
+                  x={pos.x - 50}
+                  y={pos.y - 22}
+                  width={100}
+                  height={14}
+                  rx={3}
+                  fill="rgba(0,0,0,0.8)"
+                />
+                <text
+                  x={pos.x}
+                  y={pos.y - 13}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="#fff"
+                  fontSize={8}
+                  fontWeight={500}
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {t(concept.nameKey)}
+                </text>
+              </>
+            )}
+          </g>
+        )
+      })}
+    </>
+  )
+}
+
 // ── 主组件 ──────────────────────────────────────────────────────────
 
 interface WorldMapProps {
@@ -325,6 +594,22 @@ export const WorldMap = React.memo(function WorldMap({
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
   // 使用全局累积发现集合 (跨所有区域) 而非当前活跃区域的工作集
   const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
+  const openDepthPanel = useOdysseyWorldStore((s) => s.openDepthPanel)
+
+  // 概念节点悬停状态 (本地 UI 状态)
+  const [hoveredConceptId, setHoveredConceptId] = useState<string | null>(null)
+
+  // 概念节点点击: 关闭世界地图 + 打开深度面板
+  const handleConceptClick = useCallback(
+    (conceptId: string) => {
+      onClose()
+      // 使用 requestAnimationFrame 确保地图关闭后再打开面板
+      requestAnimationFrame(() => {
+        openDepthPanel(conceptId)
+      })
+    },
+    [onClose, openDepthPanel],
+  )
 
   // 计算每个区域的发现进度 (基于全局累积发现)
   const regionProgress = useMemo(() => {
@@ -421,10 +706,21 @@ export const WorldMap = React.memo(function WorldMap({
                   />
                 )
               })}
+
+              {/* 概念连接线 (在区域形状之上，概念节点之下) */}
+              <ConceptConnectionLines allTimeDiscoveries={allTimeDiscoveries} />
+
+              {/* 概念节点 (最顶层，可交互) */}
+              <ConceptNodes
+                allTimeDiscoveries={allTimeDiscoveries}
+                onConceptClick={handleConceptClick}
+                hoveredConceptId={hoveredConceptId}
+                onConceptHover={setHoveredConceptId}
+              />
             </svg>
 
             {/* 图例 */}
-            <div className="mt-3 flex items-center gap-4 text-[10px] text-gray-500">
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] text-gray-500">
               <span className="flex items-center gap-1">
                 <span className="inline-block h-2 w-2 rounded-sm bg-gray-400/50" />
                 Visited
@@ -436,6 +732,22 @@ export const WorldMap = React.memo(function WorldMap({
               <span className="flex items-center gap-1">
                 <span className="inline-block h-0.5 w-3 border-t border-dashed border-yellow-500/50" />
                 Discovery link
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block h-2 w-2 rounded-full bg-gray-400/60" />
+                Concept
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block h-0.5 w-3 border-t border-amber-500/60" />
+                Causal
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block h-0.5 w-3 border-t border-dashed border-blue-400/60" />
+                Analogous
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block h-0.5 w-3 border-t border-dotted border-rose-400/60" />
+                Contrasting
               </span>
               <span className="text-gray-600">Press M to toggle</span>
             </div>
