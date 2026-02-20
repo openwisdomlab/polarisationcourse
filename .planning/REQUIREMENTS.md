@@ -43,7 +43,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Visual & Aesthetic
 
-- [ ] **VISL-01**: Each region has unique visual atmosphere (color palette, illustration style, particle effects, geometric motifs), reaching "every frame worth pausing on" quality -- Monument Valley level of visual craft
+- [x] **VISL-01**: Each region has unique visual atmosphere (color palette, illustration style, particle effects, geometric motifs), reaching "every frame worth pausing on" quality -- Monument Valley level of visual craft
 - [x] **VISL-02**: Isometric illustration art direction -- 2D scenes with perspective/depth illusion (CSS 3D transforms, parallax layers, SVG depth ordering), geometric precision directs attention to physics phenomena
 - [x] **VISL-03**: Light beam is the visually most prominent element -- environmental illustrations never overpower physics signals
 - [x] **VISL-04**: 2D-primary rendering with selective 3D accents -- SVG scenes and CSS transforms for the world, optional Canvas/WebGL only for beam glow effects or key visual moments
@@ -124,7 +124,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | DISC-04 | Phase 2 | Complete |
 | DISC-05 | Phase 3 | Complete |
 | DISC-06 | Phase 3 | Complete |
-| VISL-01 | Phase 5 | Pending |
+| VISL-01 | Phase 5 | Complete |
 | VISL-02 | Phase 1 | Complete |
 | VISL-03 | Phase 2 | Complete |
 | VISL-04 | Phase 1 | Complete |
