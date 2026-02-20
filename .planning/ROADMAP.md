@@ -47,12 +47,13 @@ Plans:
   3. All optical elements signal their interactability through visual cues (glow, hover effects, subtle animation) without any UI buttons or text labels -- interactions feel native to the illustrated world
   4. Achieving a correct optical configuration triggers a visible environmental response -- the illustration changes (light spreads, colors shift, patterns appear in the SVG scene)
   5. The light beam remains the visually dominant element in the scene -- environmental illustrations and decorations never compete with the physics signal
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md — Store extension with element CRUD, interaction hooks (drag, rotation, selection, beam preview)
+- [ ] 02-02-PLAN.md — Interactive OpticalElement UI, element palette, ghost beam preview, visual cues
+- [ ] 02-03-PLAN.md — Environment popup with property sliders/dropdowns for material and light source adjustment
+- [ ] 02-04-PLAN.md — Discovery system (5 configurations), environmental feedback, progressive polarization legend
 
 ### Phase 3: Multi-Region Isometric World
 **Goal**: A student can freely move between 4-6 interconnected isometric environments, each with a distinct physics theme, with their discovery progress persisting across sessions
@@ -109,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
-| 2. Interaction & Visual Language | 0/3 | Not started | - |
+| 2. Interaction & Visual Language | 0/4 | Not started | - |
 | 3. Multi-Region Isometric World | 0/3 | Not started | - |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |
 | 5. Visual Polish & Full Coverage | 0/2 | Not started | - |
