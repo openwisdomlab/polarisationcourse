@@ -84,12 +84,12 @@ export function DepthPanel() {
             onClick={closeDepthPanel}
           />
 
-          {/* 面板主体 -- 从右侧滑入 */}
+          {/* 面板主体 -- 从右侧滑入
+              响应式宽度: mobile 100vw / tablet 80vw / desktop 65vw */}
           <motion.div
             key="depth-panel"
-            className="fixed bottom-0 right-0 top-0 z-40 overflow-y-auto"
+            className="fixed bottom-0 right-0 top-0 z-40 w-full overflow-y-auto md:w-[80vw] lg:w-[65vw]"
             style={{
-              width: '65vw',
               maxWidth: '900px',
               background: 'rgba(20, 20, 30, 0.92)',
               backdropFilter: 'blur(12px)',
@@ -99,17 +99,17 @@ export function DepthPanel() {
             exit={{ x: '100%' }}
             transition={PANEL_SPRING}
           >
-            {/* 关闭按钮 */}
+            {/* 关闭按钮 -- mobile 更大更醒目 */}
             <button
-              className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
+              className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white/80 md:right-4 md:top-4 md:h-8 md:w-8 md:text-white/50"
               onClick={closeDepthPanel}
               aria-label="Close depth panel"
             >
-              <X className="h-5 w-5" />
+              <X className="h-6 w-6 md:h-5 md:w-5" />
             </button>
 
-            {/* 面板内容 */}
-            <div className="p-6 pr-14 pt-6">
+            {/* 面板内容 -- mobile 紧凑内边距, 更大顶部留白给关闭按钮 */}
+            <div className="p-4 pr-14 pt-14 md:p-6 md:pr-14 md:pt-6">
               <DepthPanelContent concept={concept} />
             </div>
           </motion.div>

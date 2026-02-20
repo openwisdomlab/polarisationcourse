@@ -14,9 +14,13 @@
  * - 动态应用区域主题色彩 (背景渐变、网格透明度)
  * - 懒加载区域装饰组件 (RegionDecorationsLoader)
  * - 替换 DistantSilhouettes 为实际区域装饰
+ *
+ * Phase 5 扩展:
+ * - 响应式初始缩放 (desktop 1.0, tablet 0.75, mobile 0.55)
+ * - 触摸设备 pinch-to-zoom (pointer events 双指检测)
  */
 
-import React, { useMemo, useCallback, useEffect, type RefObject } from 'react'
+import React, { useMemo, useCallback, useEffect, useRef, type RefObject } from 'react'
 import { motion, type MotionValue } from 'framer-motion'
 import type { SceneElement, BeamSegment } from '@/stores/odysseyWorldStore'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
@@ -66,6 +70,29 @@ interface IsometricSceneProps {
 // ── SVG viewBox 尺寸 ────────────────────────────────────────────────────
 const VIEW_WIDTH = 2400
 const VIEW_HEIGHT = 1600
+
+// ── 响应式缩放断点 ────────────────────────────────────────────────────
+const RESPONSIVE_ZOOM = {
+  desktop: 1.0,   // >1024px
+  tablet: 0.75,   // 768-1024px
+  mobile: 0.55,   // <768px
+}
+
+// ── Pinch-to-zoom 参数 ────────────────────────────────────────────────
+const ZOOM_MIN = 0.3
+const ZOOM_MAX = 2.0
+const PINCH_SENSITIVITY = 200 // 像素距离变化量映射到 zoom 增量的分母
+
+/**
+ * 获取当前设备类型对应的初始缩放值
+ */
+function getResponsiveZoom(): number {
+  if (typeof window === 'undefined') return RESPONSIVE_ZOOM.desktop
+  const w = window.innerWidth
+  if (w < 768) return RESPONSIVE_ZOOM.mobile
+  if (w <= 1024) return RESPONSIVE_ZOOM.tablet
+  return RESPONSIVE_ZOOM.desktop
+}
 
 // ── 等距网格线生成 (2% 透明度) ──────────────────────────────────────────
 /** 生成等距网格线路径 (NE-SW 和 NW-SE 方向) */
@@ -133,6 +160,99 @@ export const IsometricScene = React.memo(function IsometricScene({
   useEffect(() => {
     preloadAdjacentRegions(activeRegionId)
   }, [activeRegionId])
+
+  // ── 响应式初始缩放 (Phase 5) ──
+  useEffect(() => {
+    const responsiveZoom = getResponsiveZoom()
+    const currentZoom = zoom.get()
+    // 仅在初始加载时设置 (当 zoom 还在默认值 1.0 附近时)
+    if (Math.abs(currentZoom - 1.0) < 0.05 && responsiveZoom !== 1.0) {
+      zoom.set(responsiveZoom)
+      // 同步 store 的 camera zoom state
+      const store = useOdysseyWorldStore.getState()
+      if ('setCameraZoom' in store && typeof (store as Record<string, unknown>).setCameraZoom === 'function') {
+        (store as Record<string, (...args: unknown[]) => void>).setCameraZoom(responsiveZoom)
+      }
+    }
+  }, [zoom])
+
+  // ── Pinch-to-zoom 触摸支持 (Phase 5) ──
+  const pinchRef = useRef<{ active: boolean; startDist: number; startZoom: number }>({
+    active: false,
+    startDist: 0,
+    startZoom: 1,
+  })
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    // 不拦截鼠标事件，只处理 touch
+    if (e.pointerType !== 'touch') return
+    const el = containerRef.current
+    if (!el) return
+    el.setPointerCapture(e.pointerId)
+  }, [containerRef])
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (e.pointerType !== 'touch') return
+    // 双指检测: 检查当前活跃指针数量
+    // 使用简化方法: 检测 pinch 状态
+    // 由于 React 合成事件不直接提供 touches，我们通过原生事件处理
+  }, [])
+
+  // 使用原生事件监听器进行 pinch-to-zoom (更可靠的双指检测)
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    let touches: { id: number; x: number; y: number }[] = []
+
+    function getDistance(t: { x: number; y: number }[]) {
+      if (t.length < 2) return 0
+      const dx = t[0].x - t[1].x
+      const dy = t[0].y - t[1].y
+      return Math.sqrt(dx * dx + dy * dy)
+    }
+
+    function onTouchStart(e: TouchEvent) {
+      touches = Array.from(e.touches).map(t => ({ id: t.identifier, x: t.clientX, y: t.clientY }))
+      if (touches.length === 2) {
+        e.preventDefault()
+        pinchRef.current = {
+          active: true,
+          startDist: getDistance(touches),
+          startZoom: zoom.get(),
+        }
+      }
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (!pinchRef.current.active) return
+      touches = Array.from(e.touches).map(t => ({ id: t.identifier, x: t.clientX, y: t.clientY }))
+      if (touches.length < 2) return
+      e.preventDefault()
+
+      const currentDist = getDistance(touches)
+      const delta = currentDist - pinchRef.current.startDist
+      const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, pinchRef.current.startZoom + delta / PINCH_SENSITIVITY))
+      zoom.set(newZoom)
+    }
+
+    function onTouchEnd() {
+      touches = []
+      pinchRef.current.active = false
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: false })
+    el.addEventListener('touchmove', onTouchMove, { passive: false })
+    el.addEventListener('touchend', onTouchEnd)
+    el.addEventListener('touchcancel', onTouchEnd)
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchEnd)
+    }
+  }, [containerRef, zoom])
 
   // 分类场景元素
   const { platforms, decorations, lightSources, opticalElements } = useMemo(() => {
@@ -229,6 +349,8 @@ export const IsometricScene = React.memo(function IsometricScene({
       className="h-full w-full overflow-hidden"
       onClick={handleSceneClick}
       onWheel={onWheel}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
     >
       <motion.div
         className="h-full w-full origin-top-left"

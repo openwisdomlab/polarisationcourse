@@ -96,7 +96,16 @@ export function OdysseyWorld() {
   const sceneElements = useOdysseyWorldStore((s) => s.sceneElements)
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-[#FAFAF5]">
+    <div
+      className="relative h-screen w-screen overflow-hidden bg-[#FAFAF5]"
+      style={{
+        touchAction: 'none',
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)',
+      }}
+    >
       {/* 等距场景 */}
       <IsometricScene
         svgTransform={svgTransform}
