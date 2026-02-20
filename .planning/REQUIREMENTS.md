@@ -52,9 +52,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Content Integration
 
 - [ ] **CONT-01**: Covers core polarization concepts across all 6 units (fundamentals/modulation/interfaces/transparent media/scattering media/polarization measurement)
-- [ ] **CONT-02**: Existing 23 demo components accessible as "deep exploration" entry points from within the world, seamlessly embedded
+- [x] **CONT-02**: Existing 23 demo components accessible as "deep exploration" entry points from within the world, seamlessly embedded
 - [x] **CONT-03**: Theory formulas emerge from phenomena -- experience first then formalize, formulas celebrate understanding rather than serve as prerequisites
-- [ ] **CONT-04**: Concept constellation map -- visual knowledge graph showing discovered concepts and their connections
+- [x] **CONT-04**: Concept constellation map -- visual knowledge graph showing discovered concepts and their connections
 - [ ] **CONT-05**: Multi-language support (Chinese/English), reusing existing i18n infrastructure
 
 ### Technical Foundation
@@ -130,9 +130,9 @@ Deferred to future release. Tracked but not in current roadmap.
 | VISL-04 | Phase 1 | Complete |
 | VISL-05 | Phase 4 | Complete |
 | CONT-01 | Phase 5 | Pending |
-| CONT-02 | Phase 4 | Pending |
+| CONT-02 | Phase 4 | Complete |
 | CONT-03 | Phase 4 | Complete |
-| CONT-04 | Phase 4 | Pending |
+| CONT-04 | Phase 4 | Complete |
 | CONT-05 | Phase 5 | Pending |
 | TECH-01 | Phase 1 | Complete |
 | TECH-02 | Phase 1 | Complete |

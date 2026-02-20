@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Students voluntarily immerse in exploration for 2+ hours -- curiosity-driven discovery learning where polarization knowledge is a natural byproduct of exploring the world
-**Current focus:** Phase 4: Depth Layers & Content Integration -- executing plans
+**Current focus:** Phase 4 complete. Ready for Phase 5: Polish & Optimization.
 
 ## Current Position
 
 Phase: 4 of 5 (Depth Layers & Content Integration)
-Plan: 2 of 3 in current phase (04-02 complete)
-Status: Executing
-Last activity: 2026-02-21 -- Completed 04-02-PLAN.md (depth panel UI & content layers)
+Plan: 3 of 3 in current phase (04-03 complete -- PHASE COMPLETE)
+Status: Phase 4 Complete
+Last activity: 2026-02-21 -- Completed 04-03-PLAN.md (demo explorers & constellation map)
 
-Progress: [#########.] 87%
+Progress: [##########] 93%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 9 min
-- Total execution time: 1.45 hours
+- Total execution time: 1.57 hours
 
 **By Phase:**
 
@@ -38,6 +38,7 @@ Progress: [#########.] 87%
 *Updated after each plan completion*
 | Phase 04 P01 | 9min | 2 tasks | 6 files |
 | Phase 04 P02 | 12min | 2 tasks | 12 files |
+| Phase 04 P03 | 7min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,11 @@ Recent decisions affecting current work:
 - [Phase 04]: WorldMap/DepthPanel mutual exclusivity via store action cross-cleanup
 - [Phase 04]: Spring animation stiffness 120, damping 20 for ~0.7s panel settle time
 - [Phase 04]: SVG physics diagrams at 440x200 viewBox with Framer Motion micro-animations
+- [04-03]: useDemoSync throttle via useRef (200ms) + syncImmediate for pointerUp, avoiding lodash dependency
+- [04-03]: Demo explorers pure SVG (no Canvas/WebGL) matching dark panel aesthetic
+- [04-03]: DemoLayer React.lazy registry for code-splitting -- each explorer loads on demand
+- [04-03]: Concept constellation: deterministic node positions via index-based grid within region rectangles
+- [04-03]: Connection lines categorized: causal=solid/amber, analogous=dashed/blue, contrasting=dotted/rose
 
 ### Pending Todos
 
@@ -117,5 +123,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 04-02-PLAN.md (depth panel UI & content layers)
+Stopped at: Completed 04-03-PLAN.md (demo explorers & constellation map) -- Phase 4 complete
 Resume file: None
