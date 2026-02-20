@@ -1,8 +1,14 @@
 /**
  * BeamGlowFilters.tsx -- 共享 SVG 滤镜定义
  *
- * 提供光束辉光效果的 SVG filter 和渐变定义。
- * 在 IsometricScene 的 <defs> 中渲染一次，所有光束引用共享 filter ID。
+ * 提供光束辉光效果和元素交互辉光的 SVG filter 和渐变定义。
+ * 在 IsometricScene 的 <defs> 中渲染一次，所有组件引用共享 filter ID。
+ *
+ * 视觉层级 (VISL-03 -- 光束始终最亮):
+ * - beam-glow: stdDeviation 1.5 (最强 -- 高强度光束段)
+ * - beam-glow-soft: stdDeviation 0.8 (低强度光束段)
+ * - element-select-glow: stdDeviation 1.2 (元素选中)
+ * - element-hover-glow: stdDeviation 0.8 (元素悬停 -- 最弱)
  *
  * 性能优化:
  * - stdDeviation 上限 1.5 (研究 pitfall 1: SVG 滤镜是 CPU 光栅化的)
@@ -13,18 +19,14 @@
 import React from 'react'
 
 /**
- * BeamGlowFilters -- 光束辉光 SVG 滤镜组件
- *
- * 渲染两个共享滤镜:
- * 1. beam-glow: 标准辉光 (stdDeviation=1.5) -- 用于高强度光束段
- * 2. beam-glow-soft: 柔和辉光 (stdDeviation=0.8) -- 用于低强度光束段
- *
- * 以及表面照明效果的渐变定义。
+ * BeamGlowFilters -- SVG 滤镜组件 (光束辉光 + 元素交互辉光)
  */
 export const BeamGlowFilters = React.memo(function BeamGlowFilters() {
   return (
     <>
-      {/* 标准辉光滤镜 -- 高强度光束段 */}
+      {/* ── 光束辉光滤镜 ── */}
+
+      {/* 标准辉光滤镜 -- 高强度光束段 (stdDeviation 1.5, 最强) */}
       <filter id="beam-glow" x="-40%" y="-40%" width="180%" height="180%">
         <feGaussianBlur stdDeviation="1.5" result="blur" />
         <feMerge>
@@ -33,11 +35,46 @@ export const BeamGlowFilters = React.memo(function BeamGlowFilters() {
         </feMerge>
       </filter>
 
-      {/* 柔和辉光滤镜 -- 低强度光束段 */}
+      {/* 柔和辉光滤镜 -- 低强度光束段 (stdDeviation 0.8) */}
       <filter id="beam-glow-soft" x="-40%" y="-40%" width="180%" height="180%">
         <feGaussianBlur stdDeviation="0.8" result="blur" />
         <feMerge>
           <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      {/* ── 元素交互辉光滤镜 (VISL-03: 始终弱于光束辉光) ── */}
+
+      {/* 悬停辉光 -- 柔和蓝色 (stdDeviation 0.8, flood #6CB4FF 40%) */}
+      <filter id="element-hover-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blur" />
+        <feFlood floodColor="#6CB4FF" floodOpacity="0.4" result="color" />
+        <feComposite in="color" in2="blur" operator="in" result="glow" />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      {/* 选中辉光 -- 较亮蓝色 (stdDeviation 1.2, flood #4DA6FF 60%) */}
+      <filter id="element-select-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="blur" />
+        <feFlood floodColor="#4DA6FF" floodOpacity="0.6" result="color" />
+        <feComposite in="color" in2="blur" operator="in" result="glow" />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      {/* ── 吸附提示滤镜 -- 光束段吸附区域脉冲 ── */}
+      <filter id="snap-hint-pulse" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="1.0" result="blur" />
+        <feFlood floodColor="#FFFFFF" floodOpacity="0.3" result="white" />
+        <feComposite in="white" in2="blur" operator="in" result="glow" />
+        <feMerge>
+          <feMergeNode in="glow" />
           <feMergeNode in="SourceGraphic" />
         </feMerge>
       </filter>
