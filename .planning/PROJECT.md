@@ -1,95 +1,99 @@
-# Odyssey — 偏振光学开放世界
+# Odyssey -- Polarization Optics Isometric World
 
 ## What This Is
 
-PolarCraft 的"理论与模拟"模块的颠覆性重构——将 23 个独立的偏振光学 Demo 融合为一个开放世界探索体验。灵感来自 The Witness 和纪念碑谷：学生作为探索者在不同的光学环境中自由移动，通过放置/调整光学元件和改变环境材料来观察光的偏振行为，在操作中自然发现物理规律。面向高等物理教育中偏振光学课程的学生和教师。
+PolarCraft's "Theory & Simulation" module reimagined -- transforming 23 independent polarization optics demos into a beautifully crafted isometric exploration world. Inspired by Monument Valley's visual craft and The Witness's discovery design: students explore interconnected optical environments rendered as 2D isometric illustrations with depth illusion, placing and adjusting optical elements to observe polarization behavior, discovering physics through observation rather than instruction. For students and teachers in higher physics polarization optics courses.
 
 ## Core Value
 
-**学生自发沉浸探索2小时以上**——通过好奇心驱动的发现式学习，让偏振光学知识的获取成为探索世界的自然副产品，而非被灌输的任务。
+**Students voluntarily immerse in exploration for 2+ hours** -- curiosity-driven discovery learning where polarization knowledge is a natural byproduct of exploring the world.
 
 ## Requirements
 
 ### Validated
 
-<!-- 已有基础设施 -->
+<!-- Existing infrastructure -->
 
-- ✓ 统一物理引擎（Mueller/Jones/Stokes 矩阵计算）— existing
-- ✓ 23 个 Demo 组件（可作为深度内容源）— existing
-- ✓ 光路追踪系统（2D/3D）— existing
-- ✓ 多语言支持（EN/ZH）— existing
-- ✓ 暗色/亮色主题 — existing
+- Validated: Unified physics engine (Mueller/Jones/Stokes matrix calculation) -- existing
+- Validated: 23 Demo components (deep content sources) -- existing
+- Validated: Light path tracing system (2D/3D) -- existing
+- Validated: Multi-language support (EN/ZH) -- existing
+- Validated: Dark/Light theme -- existing
 
 ### Active
 
-- [ ] 开放世界架构——自由探索，非线性，场景自然过渡
-- [ ] 环境即课程——偏振现象嵌入场景本身，不是独立的"站点"
-- [ ] 核心交互：放置/调整光学元件 + 改变环境/材料
-- [ ] 光的统一行为——一束光在不同环境中展现不同偏振现象
-- [ ] 层层递进信息架构——直觉→定性→定量，学生选择深度
-- [ ] 混合视觉世界——关键场景3D沉浸 + 理论展开2D精致
-- [ ] 环境反馈系统——操作光学元件后世界因此变化（光束变化、色彩变化、图案出现）
-- [ ] 发现式学习——无文字教程，通过观察和实验自然领悟
-- [ ] 知识融合——偏振概念间的交叉连接，不是孤立模块
-- [ ] 渐进式信息呈现——避免信息过载
-- [ ] 游戏化设计元素——探索驱动，非任务驱动
-- [ ] 高质量视觉和交互设计——每一帧都值得停留
+- [ ] Open world architecture -- free exploration, non-linear, natural scene transitions
+- [ ] Environment-as-curriculum -- polarization phenomena embedded in scenes, not standalone "stations"
+- [ ] Core interaction: place/adjust optical elements + change environment/materials
+- [ ] Unified light behavior -- one beam shows different polarization phenomena in different environments
+- [ ] Layered information architecture -- intuition -> qualitative -> quantitative, student chooses depth
+- [ ] 2D-primary isometric visual world -- SVG/CSS scenes with depth illusion, selective 3D accents for beam effects only
+- [ ] Environmental feedback system -- world visually responds to optical element manipulation
+- [ ] Discovery-based learning -- no text tutorials, learn through observation and experimentation
+- [ ] Knowledge fusion -- cross-connections between polarization concepts, not isolated modules
+- [ ] Progressive information presentation -- avoid information overload
+- [ ] Gamified design elements -- exploration-driven, not task-driven
+- [ ] High-quality visual and interaction design -- every frame worth pausing on, Monument Valley aesthetic
 
 ### Out of Scope
 
-- 重写已有的 23 个 Demo 组件 — 作为深度理论的内容源复用，不是重建
-- 传统课件/教材式呈现 — 这不是 PPT，是体验
-- 线性强制路径 — 违反开放探索的核心设计
-- 成绩/评分系统 — 探索驱动，不是考试驱动
-- 移动端优先 — Web 桌面端优先，移动端后续适配
+- Rewriting existing 23 Demo components -- reuse as deep-dive content sources, not rebuild
+- Traditional courseware/textbook presentation -- this is an experience, not slides
+- Linear forced path -- violates open exploration core design
+- Scoring/grading system -- exploration-driven, not exam-driven
+- Mobile-first -- desktop-first web, mobile adaptation deferred (but 2D makes it much easier)
+- R3F/Three.js as primary rendering -- 2D isometric chosen for visual polish and iterability
 
 ## Context
 
-### 迭代历史
+### Iteration History
 
-经历了 5 个版本的迭代，核心问题始终是**设计哲学**而非技术：
+5 versions iterated, with the core problem always being **design philosophy** not technology:
 
-| 版本 | 方案 | 为什么不满意 |
-|------|------|-------------|
-| v0 (odyssey) | 内容数据层 | 仅数据定义，无交互体验 |
-| v1 (odyssey-lab) | 三栏实验室布局 | 功能完整但体验扁平——"物理公式电子表格" |
-| odyssey-scroll | 滚动驱动 | 本质还是"滚动浏览Demo列表" |
-| v2 | 3D走廊设计 | 愿景宏大但只有骨架，仍是线性滚动 |
-| v3 | 折中方案 | 内容整合度低，体验稀疏 |
+| Version | Approach | Why Unsatisfying |
+|---------|----------|-----------------|
+| v0 (odyssey) | Content data layer | Data definitions only, no interactive experience |
+| v1 (odyssey-lab) | Three-column lab layout | Functionally complete but flat experience -- "physics formula spreadsheet" |
+| odyssey-scroll | Scroll-driven | Still "scrolling through a Demo list" at its core |
+| v2 | 3D corridor design | Grand vision but only skeleton, still linear scrolling |
+| v3 | Compromise approach | Low content integration, sparse experience |
 
-**根本问题**：所有版本都在做"怎么排列23个独立Demo"，而不是"怎么让知识融为一体"。
+**Root problem**: All versions were solving "how to arrange 23 independent demos" instead of "how to fuse knowledge into a whole."
 
-### 现有技术资产
+### Existing Technical Assets
 
-- `odysseyData.ts`：23站内容定义（39.7KB），可作为内容源
-- `benchPhysicsCalc.ts`：光路物理计算引擎
-- `@/core/physics/unified/`：Mueller/Jones/Stokes 统一物理系统
-- `odyssey-lab/`：完整的23站实现（可参考交互模式）
-- `odyssey-v2/shaders/`：光束着色器、全息HUD等视觉资产
+- `odysseyData.ts`: 23-station content definitions (39.7KB), usable as content source
+- `benchPhysicsCalc.ts`: Light path physics calculation engine
+- `@/core/physics/unified/`: Mueller/Jones/Stokes unified physics system
+- `odyssey-lab/`: Complete 23-station implementation (reference for interaction patterns)
+- `odyssey-v2/shaders/`: Beam shaders, holographic HUD visual assets (may selectively adapt for Canvas beam effects)
 
-### 设计参考
+### Design References
 
-- **The Witness**：环境即教程，无文字教学，谜题互相关联，通过观察和实验学习规则
-- **纪念碑谷**：每帧皆艺术，极简UI，静谧而惊艳
-- **建构主义教育理论**：学习者通过主动构建知识，而非被动接收
+- **The Witness**: Environment-as-tutorial, no text teaching, puzzles interrelate, learn rules through observation and experimentation
+- **Monument Valley**: Every frame is art, minimal UI, serene yet stunning, isometric perspective, impossible geometry
+- **Animal Crossing**: Isometric exploration, click/tap navigation, gentle discovery pace
+- **Constructivist education theory**: Learners build knowledge through active construction, not passive reception
 
 ## Constraints
 
-- **Tech stack**: React 19 + TypeScript + R3F/Three.js + Framer Motion + Zustand + Tailwind — existing stack
-- **Performance**: ≥55fps desktop, ≥30fps mobile (3D scenes)
-- **Browser**: 现代浏览器，WebGL 2.0 required
-- **Content**: 必须覆盖现有6个单元的核心偏振概念（可重组，不可遗漏）
-- **Integration**: 与 PolarCraft 其他模块共存（游戏、工作室、计算器等）
+- **Tech stack**: React 19 + TypeScript + SVG/CSS 3D transforms + Framer Motion + Zustand + Tailwind -- 2D-primary; Canvas/WebGL only for beam glow effects
+- **Performance**: >=60fps desktop, >=30fps mobile (2D scenes are inherently lighter)
+- **Browser**: Modern browsers, SVG 2.0 support, CSS transforms
+- **Content**: Must cover all 6 units' core polarization concepts (can reorganize, cannot omit)
+- **Integration**: Coexists with other PolarCraft modules (games, studio, calculator)
+- **Visual**: Isometric illustration style -- geometric precision, every scene hand-craftable and incrementally refinable
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| 开放世界而非线性滚动 | 之前5个版本线性设计都不满意，The Witness 式开放探索匹配学习本质 | — Pending |
-| 知识融合而非独立站点 | 偏振现象本质是光在不同环境中的行为，人为切割违反知识本质 | — Pending |
-| 发现式而非讲授式 | 建构主义教育 + The Witness 设计哲学 + 2小时沉浸目标 | — Pending |
-| 混合2D/3D视觉 | 场景沉浸用3D，理论展开用2D精致——兼顾体验和信息密度 | — Pending |
-| 渐进扩展策略 | 先做核心框架+标杆区域，设计好扩展模式，后续逐步填充 | — Pending |
+| Open world not linear scrolling | Previous 5 versions' linear designs all unsatisfying, The Witness open exploration matches learning essence | -- Pending |
+| Knowledge fusion not standalone stations | Polarization phenomena are inherently about light behavior in different environments, artificial separation violates knowledge essence | -- Pending |
+| Discovery-based not lecture-based | Constructivist education + The Witness design philosophy + 2-hour immersion goal | -- Pending |
+| **2D isometric primary, minimize 3D** | Monument Valley aesthetic; 2D allows much more refined, precise visual design than rough 3D; eliminates GPU overhead; scenes are incrementally refinable; SVG/CSS is lighter than R3F Canvas; only use WebGL sparingly for beam glow effects if needed | -- Pending |
+| Click/tap navigation not WASD free camera | Isometric world suits point-and-click; lower barrier to entry; more intuitive; matches Monument Valley interaction model | -- Pending |
+| Progressive expansion strategy | Build core framework + benchmark region first, design expansion patterns, then gradually fill content | -- Pending |
 
 ---
-*Last updated: 2026-02-20 after initialization*
+*Last updated: 2026-02-20 after roadmap revision (2D-primary pivot)*

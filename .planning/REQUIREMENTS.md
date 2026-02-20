@@ -1,7 +1,7 @@
-# Requirements: Odyssey — 偏振光学开放世界
+# Requirements: Odyssey -- Polarization Optics Isometric World
 
 **Defined:** 2026-02-20
-**Core Value:** 学生自发沉浸探索2小时以上——好奇心驱动的发现式学习
+**Core Value:** Students voluntarily immerse in exploration for 2+ hours -- curiosity-driven discovery learning
 
 ## v1 Requirements
 
@@ -9,61 +9,61 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### World Foundation
 
-- [ ] **WRLD-01**: 世界使用自由相机探索（WASD+鼠标），非滚动驱动，非线性路径
-- [ ] **WRLD-02**: 世界由4-6个互联的光学环境区域组成，每个区域有独特的视觉风格和物理主题
-- [ ] **WRLD-03**: 区域之间通过流畅的相机过渡连接，无页面加载中断
-- [ ] **WRLD-04**: 世界有空间连贯性——所有区域感觉属于同一个物理世界，非独立Demo展厅
-- [ ] **WRLD-05**: 区域按距离懒加载/卸载（RegionManager），同时保持2-3个活跃区域
-- [ ] **WRLD-06**: 所有区域从开始即可自由访问，无强制前置条件
+- [ ] **WRLD-01**: World uses click/tap point-and-click navigation in an isometric perspective -- student clicks to move between areas, not WASD free camera or scroll-driven linear path
+- [ ] **WRLD-02**: World consists of 4-6 interconnected optical environment regions, each with unique visual style and physics theme
+- [ ] **WRLD-03**: Regions connected through animated transitions (parallax shifts, perspective slides, fade-throughs), no page-load interruptions
+- [ ] **WRLD-04**: World has spatial coherence -- all regions feel like they belong to the same isometric world, not an independent demo gallery
+- [ ] **WRLD-05**: Regions lazy-load SVG/scene assets by proximity, maintaining smooth transitions between adjacent regions
+- [ ] **WRLD-06**: All regions freely accessible from the start, no mandatory prerequisites
 
 ### Light & Physics
 
-- [ ] **PHYS-01**: 光束实时渲染偏振状态变化（颜色/亮度/形态编码偏振角/椭圆率/强度）
-- [ ] **PHYS-02**: 操作光学元件后光束在<16ms内视觉响应，物理精确（Mueller/Jones计算）
-- [ ] **PHYS-03**: 统一的偏振视觉语言——所有区域使用一致的颜色/形状/动画编码偏振状态
-- [ ] **PHYS-04**: 光束可在区域间传播——同一束光在不同环境中自然展现不同偏振现象
-- [ ] **PHYS-05**: 保持≥55fps桌面端，≥30fps移动端的性能预算
+- [ ] **PHYS-01**: Light beam renders polarization state changes in real-time (color/brightness/shape encodes polarization angle/ellipticity/intensity) using SVG/Canvas beam rendering
+- [ ] **PHYS-02**: Beam responds visually within <16ms after optical element manipulation, physically accurate (Mueller/Jones calculation)
+- [ ] **PHYS-03**: Unified polarization visual language -- all regions use consistent color/shape/animation encoding for polarization states
+- [ ] **PHYS-04**: Light beam can propagate across regions -- same beam exhibits different polarization phenomena in different environments
+- [ ] **PHYS-05**: Maintains 60fps desktop, 30fps+ mobile performance budget (2D rendering is inherently lighter than 3D)
 
 ### Interaction
 
-- [ ] **INTR-01**: 学生可在光路上放置光学元件（偏振片、波片、晶体等）
-- [ ] **INTR-02**: 学生可旋转/调整已放置的光学元件，实时观察光束行为变化
-- [ ] **INTR-03**: 学生可改变环境/材料属性（介质类型、折射率等），观察光的不同行为
-- [ ] **INTR-04**: 交互使用拖拽/滚轮语义（拖拽放置、滚轮旋转、点击检查），无需文字说明
-- [ ] **INTR-05**: 光学元件的可交互性通过视觉提示传达（发光边缘、悬浮提示），非UI按钮
+- [ ] **INTR-01**: Student can place optical elements on light path (polarizers, waveplates, crystals, etc.) via drag-and-drop in the isometric scene
+- [ ] **INTR-02**: Student can rotate/adjust placed optical elements, observing real-time beam behavior changes
+- [ ] **INTR-03**: Student can change environment/material properties (medium type, refractive index, etc.), observing different light behaviors
+- [ ] **INTR-04**: Interaction uses click-to-move for navigation and drag for element placement -- no text instructions needed, gestures feel natural in the isometric context
+- [ ] **INTR-05**: Optical element interactability communicated through visual cues (glowing edges, hover hints, subtle animation), not UI buttons
 
 ### Discovery & Learning
 
-- [ ] **DISC-01**: 核心偏振概念通过环境交互被"发现"，非通过文字讲解
-- [ ] **DISC-02**: 知识门控进度——学生因"理解"而前进，门控不可见（不是锁定的门）
-- [ ] **DISC-03**: 层层递进信息架构——直觉（看到现象）→定性（理解原因）→定量（数学描述），学生选择深度
-- [ ] **DISC-04**: 达成正确配置时环境可见变化——光束变化、色彩转换、图案出现、区域照亮
-- [ ] **DISC-05**: 跨概念"啊哈"连接——在一个区域的发现揭示另一个区域的相关现象
-- [ ] **DISC-06**: 发现状态跨会话持久化——返回的学生从上次的理解继续
+- [ ] **DISC-01**: Core polarization concepts discovered through environmental interaction, not through text explanation
+- [ ] **DISC-02**: Knowledge-gated progression -- student advances through understanding, gating is invisible (not locked doors)
+- [ ] **DISC-03**: Layered information architecture -- intuition (see phenomenon) -> qualitative (understand why) -> quantitative (mathematical description), student chooses depth
+- [ ] **DISC-04**: Correct configurations trigger visible environmental changes -- beam changes, color shifts, patterns appear, regions illuminate
+- [ ] **DISC-05**: Cross-concept "aha" connections -- discovery in one region reveals related phenomenon in another region
+- [ ] **DISC-06**: Discovery state persists across sessions -- returning students continue from their last understanding
 
 ### Visual & Aesthetic
 
-- [ ] **VISL-01**: 每个区域有独特的视觉氛围（光照、色调、粒子、几何风格），达到"每帧值得停留"的标准
-- [ ] **VISL-02**: 采用风格化而非写实美术方向——几何极简主义引导注意力到物理现象
-- [ ] **VISL-03**: 光束是视觉上最突出的元素——环境效果不得压过物理信号
-- [ ] **VISL-04**: 混合2D/3D呈现——3D用于空间沉浸和现象观察，2D用于理论展开和精确测量
-- [ ] **VISL-05**: 从3D现象到2D理论的过渡感觉自然——像"放大"从体验到数学表示
+- [ ] **VISL-01**: Each region has unique visual atmosphere (color palette, illustration style, particle effects, geometric motifs), reaching "every frame worth pausing on" quality -- Monument Valley level of visual craft
+- [ ] **VISL-02**: Isometric illustration art direction -- 2D scenes with perspective/depth illusion (CSS 3D transforms, parallax layers, SVG depth ordering), geometric precision directs attention to physics phenomena
+- [ ] **VISL-03**: Light beam is the visually most prominent element -- environmental illustrations never overpower physics signals
+- [ ] **VISL-04**: 2D-primary rendering with selective 3D accents -- SVG scenes and CSS transforms for the world, optional Canvas/WebGL only for beam glow effects or key visual moments
+- [ ] **VISL-05**: Depth layers within the 2D world -- zooming into a phenomenon smoothly reveals deeper information layers (qualitative explanation, then mathematical formalism) without breaking the visual context
 
 ### Content Integration
 
-- [ ] **CONT-01**: 覆盖6个单元的核心偏振概念（基础/调制/界面/透明介质/散射介质/偏振测量）
-- [ ] **CONT-02**: 现有23个Demo组件作为"深度探索"入口可从世界内无缝访问
-- [ ] **CONT-03**: 理论公式从现象中涌现——先体验再形式化，公式是理解的庆祝而非前提
-- [ ] **CONT-04**: 概念星座图——可视化知识图谱展示已发现概念及其连接关系
-- [ ] **CONT-05**: 多语言支持（中文/英文），复用现有i18n基础设施
+- [ ] **CONT-01**: Covers core polarization concepts across all 6 units (fundamentals/modulation/interfaces/transparent media/scattering media/polarization measurement)
+- [ ] **CONT-02**: Existing 23 demo components accessible as "deep exploration" entry points from within the world, seamlessly embedded
+- [ ] **CONT-03**: Theory formulas emerge from phenomena -- experience first then formalize, formulas celebrate understanding rather than serve as prerequisites
+- [ ] **CONT-04**: Concept constellation map -- visual knowledge graph showing discovered concepts and their connections
+- [ ] **CONT-05**: Multi-language support (Chinese/English), reusing existing i18n infrastructure
 
 ### Technical Foundation
 
-- [ ] **TECH-01**: 单Canvas架构，显式GPU资源回收协议，防止SPA导航内存泄漏
-- [ ] **TECH-02**: three.js升级到~0.175，审计现有着色器兼容性
-- [ ] **TECH-03**: 数据模型围绕"环境中的可组合物理行为"设计，非"站点数组"
-- [ ] **TECH-04**: 与PolarCraft其他模块（游戏、工作室、计算器）共存，通过/odyssey/路由访问
-- [ ] **TECH-05**: 桌面端优先（鼠标+键盘），移动端后续适配
+- [ ] **TECH-01**: SVG/CSS-primary scene architecture -- scenes built with SVG illustrations, CSS 3D transforms for depth, Framer Motion for animations; Canvas/WebGL used sparingly for beam effects only
+- [ ] **TECH-02**: Isometric geometry system -- consistent coordinate mapping between isometric visual space and interaction hit-targets, reusable across all regions
+- [ ] **TECH-03**: Data model designed around "composable physics behaviors in environments", not "stations array"
+- [ ] **TECH-04**: Coexists with other PolarCraft modules (games, studio, calculator), accessed via /odyssey/ route
+- [ ] **TECH-05**: Desktop-first (mouse + keyboard), but 2D-primary approach makes mobile adaptation significantly easier for v2
 
 ## v2 Requirements
 
@@ -71,37 +71,39 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Depth & Polish
 
-- **DPTH-01**: 三层深度架构（Animal Well模型）——Layer 2隐藏连接 + Layer 3研究级挑战
-- **DPTH-02**: 响应光学状态的环境音景（非游戏化音效，是氛围）
-- **DPTH-03**: 引导探索模式——可调节提示强度（关/微妙/中等/明确），基于游测数据设计
-- **DPTH-04**: 真实世界上下文锚点——每个现象连接真实应用（LCD、应力分析、天空偏振等）
-- **DPTH-05**: 移动端适配方案
+- **DPTH-01**: Three-layer depth architecture (Animal Well model) -- Layer 2 hidden connections + Layer 3 research-level challenges
+- **DPTH-02**: Ambient soundscape responsive to optical state (atmosphere, not game-like sound effects)
+- **DPTH-03**: Guided exploration mode -- adjustable hint intensity (off/subtle/medium/explicit), designed from playtest data
+- **DPTH-04**: Real-world context anchors -- each phenomenon connects to real applications (LCD, stress analysis, sky polarization, etc.)
+- **DPTH-05**: Mobile adaptation (now much more feasible with 2D-primary architecture)
 
 ### Community
 
-- **CMTY-01**: 发现状态分享/对比
-- **CMTY-02**: 社区挑战/研究级谜题
+- **CMTY-01**: Discovery state sharing/comparison
+- **CMTY-02**: Community challenges / research-level puzzles
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| 评分/成绩/XP系统 | 外在奖励破坏内在好奇心，违反发现式学习哲学 |
-| 线性教程序列 | 违反开放探索核心设计，前5次迭代的根本错误 |
-| 文字为主的教学 | 文字是Layer 2+的深度选择，非Layer 1的主要教学手段 |
-| 强制前置/锁定区域 | 违反非线性探索，部分学生已有前置知识 |
-| 写实3D环境 | 风格化引导注意力到物理，写实增加性能负担无教育收益 |
-| 重写现有23个Demo | 已有组件功能完整，嵌入复用而非重建 |
-| 物理引擎（rapier/cannon） | 项目的"物理"是光学计算，非刚体碰撞 |
-| 滚动驱动相机 | 5次迭代证明线性滚动无法实现开放探索 |
-| 多人/社交功能（v1） | 单人体验验证后再考虑 |
+| Scoring/grades/XP system | Extrinsic rewards undermine intrinsic curiosity, violates discovery learning philosophy |
+| Linear tutorial sequence | Violates open exploration core design, the fundamental error of 5 previous iterations |
+| Text-dominant teaching | Text is Layer 2+ depth choice, not Layer 1 primary teaching method |
+| Mandatory prerequisites / locked regions | Violates non-linear exploration, some students have prior knowledge |
+| R3F/Three.js as primary rendering layer | 2D isometric approach chosen for visual polish, performance, and iterability; 3D used sparingly if at all |
+| WASD + mouse free camera 3D navigation | Replaced by click/tap point-and-click in isometric world; more intuitive, lower barrier |
+| 3D postprocessing pipeline | Unnecessary with 2D-primary approach; visual quality comes from illustration craft |
+| Rewriting existing 23 demos | Existing components are functionally complete, embed and reuse rather than rebuild |
+| Physics engine (rapier/cannon) | Project's "physics" is optical calculation, not rigid body collision |
+| Scroll-driven camera | 5 iterations proved linear scrolling cannot achieve open exploration |
+| Multiplayer/social features (v1) | Validate single-player experience first |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | WRLD-01 | Phase 1 | Pending |
-| WRLD-02 | Phase 1+3 | Pending |
+| WRLD-02 | Phase 3 | Pending |
 | WRLD-03 | Phase 3 | Pending |
 | WRLD-04 | Phase 1 | Pending |
 | WRLD-05 | Phase 3 | Pending |
@@ -122,12 +124,12 @@ Deferred to future release. Tracked but not in current roadmap.
 | DISC-04 | Phase 2 | Pending |
 | DISC-05 | Phase 3 | Pending |
 | DISC-06 | Phase 3 | Pending |
-| VISL-01 | Phase 2+5 | Pending |
+| VISL-01 | Phase 5 | Pending |
 | VISL-02 | Phase 1 | Pending |
 | VISL-03 | Phase 2 | Pending |
-| VISL-04 | Phase 4 | Pending |
+| VISL-04 | Phase 1 | Pending |
 | VISL-05 | Phase 4 | Pending |
-| CONT-01 | Phase 3+5 | Pending |
+| CONT-01 | Phase 5 | Pending |
 | CONT-02 | Phase 4 | Pending |
 | CONT-03 | Phase 4 | Pending |
 | CONT-04 | Phase 4 | Pending |
@@ -139,10 +141,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | TECH-05 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 35 total
-- Mapped to phases: 35
-- Unmapped: 0 ✓
+- v1 requirements: 37 total
+- Mapped to phases: 37
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-20*
-*Last updated: 2026-02-20 after initial definition*
+*Last updated: 2026-02-20 after roadmap revision (2D-primary pivot)*
