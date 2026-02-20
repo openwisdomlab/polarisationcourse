@@ -19,7 +19,7 @@
 import { useMemo } from 'react'
 import { PolarizationState } from '@/core/physics/unified/PolarizationState'
 import { MuellerMatrix } from '@/core/physics/unified/MuellerMatrix'
-import { useOdysseyWorldStore, type SceneElement, type BeamSegment } from '@/stores/odysseyWorldStore'
+import { useOdysseyWorldStore, type SceneElement, type BeamSegment, type BoundaryBeam } from '@/stores/odysseyWorldStore'
 
 // ── 视觉编码接口 ──────────────────────────────────────────────────────
 
@@ -252,6 +252,112 @@ function applyElementTransform(
   return PolarizationState.fromStokes(result[0], result[1], result[2], result[3])
 }
 
+// ── 入境光束路径计算 ──────────────────────────────────────────────────
+
+/**
+ * 从入境光束 (来自相邻区域) 计算额外的光束路径段
+ *
+ * 入境光束在边界入口点开始，携带来源区域的 Stokes 参数，
+ * 沿原传播方向延伸，经过当前区域中的光学元件时产生不同偏振行为。
+ *
+ * @param incomingBeams 入境光束数组
+ * @param elements 当前区域的场景元素
+ * @returns 额外的 BeamSegment[]
+ */
+export function calculateIncomingBeamPaths(
+  incomingBeams: BoundaryBeam[],
+  elements: SceneElement[],
+): BeamSegment[] {
+  const allSegments: BeamSegment[] = []
+
+  for (let bi = 0; bi < incomingBeams.length; bi++) {
+    const incoming = incomingBeams[bi]
+
+    // 从入口点开始的偏振态
+    let currentState = PolarizationState.fromStokes(
+      incoming.stokes.s0,
+      incoming.stokes.s1,
+      incoming.stokes.s2,
+      incoming.stokes.s3,
+    )
+
+    // 筛选光学元件
+    const opticalElements = elements.filter(
+      (el) => el.type === 'polarizer' || el.type === 'waveplate',
+    )
+
+    // 按沿传播方向的投影距离排序 (只取传播方向前方的元件)
+    const startX = incoming.exitPoint.x
+    const startY = incoming.exitPoint.y
+    const dirX = incoming.direction.dx
+    const dirY = incoming.direction.dy
+
+    const sortedElements = opticalElements
+      .map((el) => {
+        // 沿传播方向的投影距离
+        const relX = el.worldX - startX
+        const relY = el.worldY - startY
+        const projDist = relX * dirX + relY * dirY
+        // 垂直距离 (与光束路径的偏差)
+        const perpDist = Math.abs(relX * dirY - relY * dirX)
+        return { el, projDist, perpDist }
+      })
+      .filter((item) => item.projDist > 0 && item.perpDist < 1.5) // 在传播方向前方且路径附近
+      .sort((a, b) => a.projDist - b.projDist)
+
+    let prevX = startX
+    let prevY = startY
+    let segIndex = 0
+
+    for (const { el } of sortedElements) {
+      const visual = polarizationToVisual(currentState)
+      const stokes = currentState.stokes
+
+      allSegments.push({
+        id: `incoming-${bi}-seg-${segIndex++}`,
+        fromX: prevX,
+        fromY: prevY,
+        fromZ: 0,
+        toX: el.worldX,
+        toY: el.worldY,
+        toZ: el.worldZ,
+        stokes: { s0: stokes.s0, s1: stokes.s1, s2: stokes.s2, s3: stokes.s3 },
+        color: visual.color,
+        opacity: visual.opacity,
+        strokeWidth: visual.strokeWidth,
+        shape: visual.shape,
+      })
+
+      currentState = applyElementTransform(el, currentState)
+      prevX = el.worldX
+      prevY = el.worldY
+    }
+
+    // 延伸段: 沿传播方向延伸 1.5 格
+    const extendX = prevX + dirX * 1.5
+    const extendY = prevY + dirY * 1.5
+    const visual = polarizationToVisual(currentState)
+    const stokes = currentState.stokes
+
+    allSegments.push({
+      id: `incoming-${bi}-seg-${segIndex}`,
+      fromX: prevX,
+      fromY: prevY,
+      fromZ: 0,
+      toX: extendX,
+      toY: extendY,
+      toZ: 0,
+      stokes: { s0: stokes.s0, s1: stokes.s1, s2: stokes.s2, s3: stokes.s3 },
+      color: visual.color,
+      opacity: visual.opacity,
+      strokeWidth: visual.strokeWidth,
+      shape: visual.shape,
+    })
+  }
+
+  return allSegments
+}
+
 // ── Hook ──────────────────────────────────────────────────────────────
 
 /**
@@ -260,24 +366,43 @@ function applyElementTransform(
  * 当场景元素变化时，同步重新计算光束路径和偏振态。
  * 计算在 useMemo 中完成，对 3-5 个元件远低于 16ms。
  * 结果写入 store 的 beamSegments 以供渲染使用。
+ *
+ * Phase 3 扩展: 同时处理入境光束 (来自相邻区域)，
+ * 使跨区域传播的光束与当前区域的光学元件产生不同偏振行为。
  */
 export function useBeamPhysics() {
   const sceneElements = useOdysseyWorldStore((s) => s.sceneElements)
   const setBeamSegments = useOdysseyWorldStore((s) => s.setBeamSegments)
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
+  const regions = useOdysseyWorldStore((s) => s.regions)
+
+  // 获取当前区域的入境光束
+  const incomingBeams = useMemo(() => {
+    const regionState = regions.get(activeRegionId)
+    return regionState?.incomingBeams ?? []
+  }, [regions, activeRegionId])
 
   const beamSegments = useMemo(() => {
     if (sceneElements.length === 0) return []
 
-    const segments = calculateBeamPath(sceneElements)
+    // 主光束路径 (来自本区域光源)
+    const mainSegments = calculateBeamPath(sceneElements)
+
+    // 入境光束路径 (来自相邻区域)
+    const incomingSegments = incomingBeams.length > 0
+      ? calculateIncomingBeamPaths(incomingBeams, sceneElements)
+      : []
+
+    const allSegments = [...mainSegments, ...incomingSegments]
 
     // 写入 store 供其他组件使用
     // 使用 queueMicrotask 避免在渲染期间更新 store
     queueMicrotask(() => {
-      setBeamSegments(segments)
+      setBeamSegments(allSegments)
     })
 
-    return segments
-  }, [sceneElements, setBeamSegments])
+    return allSegments
+  }, [sceneElements, setBeamSegments, incomingBeams])
 
   return { beamSegments }
 }

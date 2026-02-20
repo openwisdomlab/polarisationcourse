@@ -179,6 +179,7 @@ interface OdysseyWorldState {
   setTransitioning: (isTransitioning: boolean, target: string | null) => void
   markRegionVisited: (regionId: string) => void
   toggleWorldMap: () => void
+  updateBoundaryBeams: (regionId: string, beams: BoundaryBeam[]) => void
 }
 
 // ── 自定义存储序列化 (Set/Map -> JSON) ──────────────────────────────────
@@ -608,6 +609,16 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
         /** 切换世界地图 */
         toggleWorldMap: () =>
           set((state) => ({ worldMapOpen: !state.worldMapOpen })),
+
+        /** 更新指定区域的入境光束 (跨区域传播) */
+        updateBoundaryBeams: (regionId, beams) =>
+          set((state) => {
+            const regionState = state.regions.get(regionId)
+            if (!regionState) return {}
+            const newRegions = new Map(state.regions)
+            newRegions.set(regionId, { ...regionState, incomingBeams: beams })
+            return { regions: newRegions }
+          }),
       }),
       {
         name: 'odyssey-world-v3',

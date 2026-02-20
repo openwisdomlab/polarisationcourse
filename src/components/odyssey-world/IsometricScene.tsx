@@ -37,6 +37,8 @@ import {
   RegionDecorationsLoader,
   preloadAdjacentRegions,
 } from './regions/RegionDecorations'
+import { useBoundaryBeams } from './hooks/useBoundaryBeams'
+import { BoundaryIndicators } from './BoundaryIndicator'
 
 interface IsometricSceneProps {
   svgTransform: MotionValue<string>
@@ -112,6 +114,10 @@ export const IsometricScene = React.memo(function IsometricScene({
   // 光束段数据 (由 useBeamPhysics 写入 store)
   const beamSegments = useOdysseyWorldStore((s) => s.beamSegments)
   const interactionMode = useOdysseyWorldStore((s) => s.interactionMode)
+  const isTransitioning = useOdysseyWorldStore((s) => s.isTransitioning)
+
+  // 跨区域光束边界检测 (Phase 3 - Plan 03)
+  const { exitBeams, incomingBeams: boundaryIncomingBeams } = useBoundaryBeams()
 
   // 活跃区域信息 (Phase 3: 动态主题和装饰)
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
@@ -329,6 +335,14 @@ export const IsometricScene = React.memo(function IsometricScene({
             {beamSegments.map((segment) => (
               <LightBeam key={segment.id} segment={segment} />
             ))}
+
+            {/* 边界光束指示器 (退出/入口脉冲光晕，仅在非过渡时渲染) */}
+            {!isTransitioning && (
+              <BoundaryIndicators
+                exitBeams={exitBeams}
+                incomingBeams={boundaryIncomingBeams}
+              />
+            )}
           </g>
 
           {/* ── Layer 3.5: 幽灵光束预览 (拖拽时 30% 不透明度, 无指针事件) ── */}

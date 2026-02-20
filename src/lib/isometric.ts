@@ -270,6 +270,103 @@ function quantize(value: number): number {
   return Math.round(value / GRID_QUANTIZE_STEP) * GRID_QUANTIZE_STEP
 }
 
+// ── 光束-区域边界裁剪 ────────────────────────────────────────────────
+
+/** 裁剪结果: 光束段是否退出区域、退出点和退出方向 */
+export interface ClipBeamResult {
+  clippedToX: number
+  clippedToY: number
+  exits: boolean
+  exitDirection: 'north' | 'south' | 'east' | 'west' | ''
+}
+
+/**
+ * 将光束段裁剪到区域边界，检测是否退出
+ *
+ * 使用参数化线段裁剪法:
+ * 对每条区域边界 (minX, maxX, minY, maxY) 计算光束段的交叉参数 t，
+ * 取最小的有效 t (0 < t <= 1) 作为退出点。
+ *
+ * 如果终点在边界内，返回 exits: false。
+ *
+ * @param fromX 光束起点 X (世界坐标)
+ * @param fromY 光束起点 Y (世界坐标)
+ * @param toX 光束终点 X (世界坐标)
+ * @param toY 光束终点 Y (世界坐标)
+ * @param bounds 区域边界
+ * @returns 裁剪结果
+ */
+export function clipBeamToRegion(
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  bounds: RegionBounds,
+): ClipBeamResult {
+  // 终点在区域内 -> 无需裁剪
+  if (
+    toX >= bounds.minX && toX <= bounds.maxX &&
+    toY >= bounds.minY && toY <= bounds.maxY
+  ) {
+    return { clippedToX: toX, clippedToY: toY, exits: false, exitDirection: '' }
+  }
+
+  const dx = toX - fromX
+  const dy = toY - fromY
+
+  // 退化线段
+  if (dx === 0 && dy === 0) {
+    return { clippedToX: fromX, clippedToY: fromY, exits: false, exitDirection: '' }
+  }
+
+  let tExit = 1.0
+  let exitDir: ClipBeamResult['exitDirection'] = ''
+
+  // 检查 X 方向边界
+  if (dx !== 0) {
+    const tLeft = (bounds.minX - fromX) / dx
+    const tRight = (bounds.maxX - fromX) / dx
+    // dx > 0: 向右移动，可能出东边界 (tRight)
+    // dx < 0: 向左移动，可能出西边界 (tLeft)
+    if (dx > 0 && tRight > 0 && tRight < tExit) {
+      tExit = tRight
+      exitDir = 'east'
+    }
+    if (dx < 0 && tLeft > 0 && tLeft < tExit) {
+      tExit = tLeft
+      exitDir = 'west'
+    }
+  }
+
+  // 检查 Y 方向边界
+  if (dy !== 0) {
+    const tTop = (bounds.minY - fromY) / dy
+    const tBottom = (bounds.maxY - fromY) / dy
+    // dy > 0: 向下(南)移动，可能出南边界 (tBottom)
+    // dy < 0: 向上(北)移动，可能出北边界 (tTop)
+    if (dy > 0 && tBottom > 0 && tBottom < tExit) {
+      tExit = tBottom
+      exitDir = 'south'
+    }
+    if (dy < 0 && tTop > 0 && tTop < tExit) {
+      tExit = tTop
+      exitDir = 'north'
+    }
+  }
+
+  if (exitDir === '') {
+    // 终点在区域外但未找到有效裁剪点 (不应发生，安全回退)
+    return { clippedToX: toX, clippedToY: toY, exits: true, exitDirection: 'south' }
+  }
+
+  return {
+    clippedToX: fromX + dx * tExit,
+    clippedToY: fromY + dy * tExit,
+    exits: true,
+    exitDirection: exitDir,
+  }
+}
+
 // ── 多区域坐标工具 ────────────────────────────────────────────────────
 
 /** 区域边界 (世界坐标) */
