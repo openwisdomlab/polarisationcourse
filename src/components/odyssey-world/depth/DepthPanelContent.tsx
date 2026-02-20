@@ -16,6 +16,7 @@ import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import type { ConceptDefinition } from '@/components/odyssey-world/concepts/conceptRegistry'
 import { QualitativeLayer } from './QualitativeLayer'
 import { QuantitativeLayer } from './QuantitativeLayer'
+import { DemoLayer } from './DemoLayer'
 
 interface DepthPanelContentProps {
   concept: ConceptDefinition
@@ -104,14 +105,7 @@ export function DepthPanelContent({ concept }: DepthPanelContentProps) {
               <QuantitativeLayer concept={concept} />
             )}
             {activeTab === 'demo' && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="text-3xl text-white/20">
-                  {/* 占位符图标 -- Plan 03 将实现 DemoLayer */}
-                </div>
-                <p className="mt-2 text-sm text-white/30">
-                  Interactive demo coming soon
-                </p>
-              </div>
+              <DemoLayer concept={concept} />
             )}
           </motion.div>
         </AnimatePresence>
