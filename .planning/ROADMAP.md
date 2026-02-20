@@ -82,11 +82,12 @@ Plans:
   3. Mathematical formulas appear as the culmination of understanding -- they emerge from phenomena the student has already observed, never as prerequisites
   4. Student can access existing demo components from within the world as seamless deep-dive explorations, without leaving the world context
   5. A concept constellation map visualizes which concepts the student has discovered and how they connect to each other
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Concept registry type system, Crystal Lab + Refraction Bench content, store depth panel state, bilingual i18n
+- [ ] 04-02-PLAN.md — Depth panel slide-in overlay, concept tooltip triggers, qualitative and quantitative layer renderers
+- [ ] 04-03-PLAN.md — Demo explorer components with bidirectional world sync, constellation map extension on WorldMap
 
 ### Phase 5: Visual Polish & Full Coverage
 **Goal**: The experience covers all 6 polarization optics units with production-quality illustrated atmosphere in every region, fully localized in Chinese and English
@@ -112,5 +113,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
 | 2. Interaction & Visual Language | 4/4 | Complete    | 2026-02-20 |
 | 3. Multi-Region Isometric World | 3/3 | Complete    | 2026-02-21 |
-| 4. Depth Layers & Content Integration | 0/2 | Not started | - |
+| 4. Depth Layers & Content Integration | 0/3 | Not started | - |
 | 5. Visual Polish & Full Coverage | 0/2 | Not started | - |
