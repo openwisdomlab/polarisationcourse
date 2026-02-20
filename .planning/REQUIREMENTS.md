@@ -21,7 +21,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PHYS-01**: Light beam renders polarization state changes in real-time (color/brightness/shape encodes polarization angle/ellipticity/intensity) using SVG/Canvas beam rendering
 - [x] **PHYS-02**: Beam responds visually within <16ms after optical element manipulation, physically accurate (Mueller/Jones calculation)
 - [x] **PHYS-03**: Unified polarization visual language -- all regions use consistent color/shape/animation encoding for polarization states
-- [ ] **PHYS-04**: Light beam can propagate across regions -- same beam exhibits different polarization phenomena in different environments
+- [x] **PHYS-04**: Light beam can propagate across regions -- same beam exhibits different polarization phenomena in different environments
 - [x] **PHYS-05**: Maintains 60fps desktop, 30fps+ mobile performance budget (2D rendering is inherently lighter than 3D)
 
 ### Interaction
@@ -35,10 +35,10 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Discovery & Learning
 
 - [x] **DISC-01**: Core polarization concepts discovered through environmental interaction, not through text explanation
-- [ ] **DISC-02**: Knowledge-gated progression -- student advances through understanding, gating is invisible (not locked doors)
+- [x] **DISC-02**: Knowledge-gated progression -- student advances through understanding, gating is invisible (not locked doors)
 - [ ] **DISC-03**: Layered information architecture -- intuition (see phenomenon) -> qualitative (understand why) -> quantitative (mathematical description), student chooses depth
 - [x] **DISC-04**: Correct configurations trigger visible environmental changes -- beam changes, color shifts, patterns appear, regions illuminate
-- [ ] **DISC-05**: Cross-concept "aha" connections -- discovery in one region reveals related phenomenon in another region
+- [x] **DISC-05**: Cross-concept "aha" connections -- discovery in one region reveals related phenomenon in another region
 - [x] **DISC-06**: Discovery state persists across sessions -- returning students continue from their last understanding
 
 ### Visual & Aesthetic
@@ -104,25 +104,25 @@ Deferred to future release. Tracked but not in current roadmap.
 |-------------|-------|--------|
 | WRLD-01 | Phase 1 | Complete |
 | WRLD-02 | Phase 3 | Complete |
-| WRLD-03 | Phase 3 | Pending |
+| WRLD-03 | Phase 3 | Complete |
 | WRLD-04 | Phase 1 | Complete |
-| WRLD-05 | Phase 3 | Pending |
+| WRLD-05 | Phase 3 | Complete |
 | WRLD-06 | Phase 3 | Complete |
 | PHYS-01 | Phase 1 | Complete |
 | PHYS-02 | Phase 1 | Complete |
 | PHYS-03 | Phase 2 | Complete |
-| PHYS-04 | Phase 3 | Pending |
+| PHYS-04 | Phase 3 | Complete |
 | PHYS-05 | Phase 1 | Complete |
-| INTR-01 | Phase 2 | In Progress |
-| INTR-02 | Phase 2 | In Progress |
+| INTR-01 | Phase 2 | Complete |
+| INTR-02 | Phase 2 | Complete |
 | INTR-03 | Phase 2 | Complete |
-| INTR-04 | Phase 2 | In Progress |
+| INTR-04 | Phase 2 | Complete |
 | INTR-05 | Phase 2 | Complete |
 | DISC-01 | Phase 2 | Complete |
-| DISC-02 | Phase 3 | Pending |
+| DISC-02 | Phase 3 | Complete |
 | DISC-03 | Phase 4 | Pending |
 | DISC-04 | Phase 2 | Complete |
-| DISC-05 | Phase 3 | Pending |
+| DISC-05 | Phase 3 | Complete |
 | DISC-06 | Phase 3 | Complete |
 | VISL-01 | Phase 5 | Pending |
 | VISL-02 | Phase 1 | Complete |

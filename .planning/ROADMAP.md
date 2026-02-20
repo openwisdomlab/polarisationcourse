@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Minimum Viable Scene** - Single isometric environment with click navigation, SVG light source, beam rendering with polarization encoding, and physics-accurate visualization at 60fps (completed 2026-02-20)
 - [x] **Phase 2: Interaction & Visual Language** - Place/rotate/adjust optical elements with consistent polarization visual encoding and environmental feedback on correct configurations
-- [ ] **Phase 3: Multi-Region Isometric World** - 4-6 interconnected isometric environments with smooth animated transitions, cross-region beams, knowledge-gated progression, and session persistence
+- [x] **Phase 3: Multi-Region Isometric World** - 4-6 interconnected isometric environments with smooth animated transitions, cross-region beams, knowledge-gated progression, and session persistence (completed 2026-02-21)
 - [ ] **Phase 4: Depth Layers & Content Integration** - Layered information architecture (intuition to quantitative), embedded demo deep-dives, concept constellation map, and diegetic theory emergence
 - [ ] **Phase 5: Visual Polish & Full Coverage** - All 6 physics units covered, per-region visual atmosphere at Monument Valley quality, multi-language support, and production-quality illustration
 
@@ -70,7 +70,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Region registry (6 RegionDefinitions with themes/physics/palettes), store restructure with multi-region state, Zustand persist middleware for session persistence
 - [x] 03-02-PLAN.md — Region transitions (smooth camera slides, title cards, avatar teleport, boundary detection), lazy-loaded per-region SVG decorations, dynamic theme rendering
-- [ ] 03-03-PLAN.md — Cross-region beam propagation with boundary indicators, discovery connections with in-scene cues, world map with fast-travel, knowledge-gated equipment palettes
+- [x] 03-03-PLAN.md — Cross-region beam propagation with boundary indicators, discovery connections with in-scene cues, world map with fast-travel, knowledge-gated equipment palettes
 
 ### Phase 4: Depth Layers & Content Integration
 **Goal**: A student who wants to go deeper can transition from intuitive observation to qualitative understanding to quantitative formalism, accessing existing demo components as "deep dives" from within the world
@@ -111,6 +111,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
 | 2. Interaction & Visual Language | 4/4 | Complete    | 2026-02-20 |
-| 3. Multi-Region Isometric World | 2/3 | In progress | - |
+| 3. Multi-Region Isometric World | 3/3 | Complete    | 2026-02-21 |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |
 | 5. Visual Polish & Full Coverage | 0/2 | Not started | - |
