@@ -18,6 +18,8 @@ import { BeamParticles } from './BeamParticles'
 
 interface LightBeamProps {
   segment: BeamSegment
+  /** 幽灵预览模式: 30% 不透明度, 无粒子, 较细虚线, 无辉光滤镜 */
+  ghost?: boolean
 }
 
 /** 每个 Z 层的屏幕空间高度偏移 (像素) */
@@ -33,7 +35,7 @@ const Z_OFFSET = 32
  * 4. 偏振形状标记 (螺旋/椭圆)
  * 5. 流动粒子
  */
-export const LightBeam = React.memo(function LightBeam({ segment }: LightBeamProps) {
+export const LightBeam = React.memo(function LightBeam({ segment, ghost = false }: LightBeamProps) {
   // 全消光: 不渲染
   if (segment.opacity < 0.05) return null
 
@@ -53,6 +55,26 @@ export const LightBeam = React.memo(function LightBeam({ segment }: LightBeamPro
     ],
     [from.x, fromScreenY, to.x, toScreenY],
   )
+
+  // 幽灵模式: 无辉光滤镜, 较细线宽, 虚线 (VISL-03: 保持光束视觉层级)
+  if (ghost) {
+    const ghostStrokeWidth = segment.strokeWidth * 0.7
+    return (
+      <g className="light-beam-ghost">
+        <line
+          x1={from.x}
+          y1={fromScreenY}
+          x2={to.x}
+          y2={toScreenY}
+          stroke={segment.color}
+          strokeWidth={ghostStrokeWidth}
+          strokeLinecap="round"
+          strokeDasharray="6 4"
+          opacity={segment.opacity}
+        />
+      </g>
+    )
+  }
 
   // 选择 glow filter (高/低强度)
   const filterId = segment.opacity > 0.5 ? 'beam-glow' : 'beam-glow-soft'
