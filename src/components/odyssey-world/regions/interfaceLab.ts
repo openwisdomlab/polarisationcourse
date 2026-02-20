@@ -249,11 +249,19 @@ export const interfaceLabDefinition: RegionDefinition = {
       fromDiscoveryId: 'interface-lab-fresnel-reflection',
       toDiscoveryId: 'refraction-bench-brewster-angle',
       toRegionId: 'refraction-bench',
+      connectionTag: 'Fresnel equations predict Brewster angle as zero p-reflectance',
     },
     {
       fromDiscoveryId: 'interface-lab-medium-comparison',
       toDiscoveryId: 'scattering-chamber-rayleigh-polarization',
       toRegionId: 'scattering-chamber',
+      connectionTag: 'Interface effects and scattering both depend on refractive index contrast',
+    },
+    {
+      fromDiscoveryId: 'interface-lab-fresnel-reflection',
+      toDiscoveryId: 'measurement-studio-full-polarimetry',
+      toRegionId: 'measurement-studio',
+      connectionTag: 'Full polarimetry can characterize Fresnel reflection coefficients',
     },
   ],
 }

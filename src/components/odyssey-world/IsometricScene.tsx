@@ -39,6 +39,8 @@ import {
 } from './regions/RegionDecorations'
 import { useBoundaryBeams } from './hooks/useBoundaryBeams'
 import { BoundaryIndicators } from './BoundaryIndicator'
+import { useDiscoveryConnections } from './hooks/useDiscoveryConnections'
+import { DiscoveryConnections } from './DiscoveryConnection'
 
 interface IsometricSceneProps {
   svgTransform: MotionValue<string>
@@ -118,6 +120,9 @@ export const IsometricScene = React.memo(function IsometricScene({
 
   // 跨区域光束边界检测 (Phase 3 - Plan 03)
   const { exitBeams, incomingBeams: boundaryIncomingBeams } = useBoundaryBeams()
+
+  // 跨区域发现连接 (Phase 3 - Plan 03)
+  const { activeConnections } = useDiscoveryConnections()
 
   // 活跃区域信息 (Phase 3: 动态主题和装饰)
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
@@ -295,8 +300,13 @@ export const IsometricScene = React.memo(function IsometricScene({
             <SceneLayer elements={sceneObjects} renderElement={renderSceneObject} />
           </g>
 
-          {/* ── Layer 2.5: 发现环境响应 (在光束后面，维持光束视觉主导) ── */}
+          {/* ── Layer 2.5: 发现环境响应 + 发现连接线 (在光束后面，维持光束视觉主导) ── */}
           <g className="layer-discovery-feedback">
+            {/* 跨区域发现连接视觉线索 */}
+            <DiscoveryConnections
+              activeConnections={activeConnections}
+              activeRegionId={activeRegionId}
+            />
             {/* 发现区域占位组 -- 定位在场景中相关光学元件附近 */}
             <g id="discovery-area-malus" transform={`translate(${worldToScreen(3.5, 3).x}, ${worldToScreen(3.5, 3).y})`}>
               <DiscoveryFeedback

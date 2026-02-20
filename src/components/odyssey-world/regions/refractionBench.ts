@@ -283,11 +283,19 @@ export const refractionBenchDefinition: RegionDefinition = {
       fromDiscoveryId: 'refraction-bench-brewster-angle',
       toDiscoveryId: 'crystal-lab-malus-law-basic',
       toRegionId: 'crystal-lab',
+      connectionTag: 'Brewster angle and Malus law share cos^2 dependence',
     },
     {
       fromDiscoveryId: 'refraction-bench-total-reflection',
       toDiscoveryId: 'interface-lab-fresnel-reflection',
       toRegionId: 'interface-lab',
+      connectionTag: 'Both involve critical angle and interface reflectance',
+    },
+    {
+      fromDiscoveryId: 'refraction-bench-brewster-angle',
+      toDiscoveryId: 'scattering-chamber-rayleigh-polarization',
+      toRegionId: 'scattering-chamber',
+      connectionTag: 'Brewster reflection and Rayleigh scattering both produce linear polarization at 90 degrees',
     },
   ],
 }

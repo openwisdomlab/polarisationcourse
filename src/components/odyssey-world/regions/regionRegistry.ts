@@ -68,7 +68,149 @@ export interface DiscoveryConnection {
   toDiscoveryId: string
   /** 目标区域 ID */
   toRegionId: string
+  /** 连接描述 (星图 tooltip 用) */
+  connectionTag?: string
 }
+
+/** 跨区域大发现 (需要多个区域的发现组合) */
+export interface MetaDiscovery {
+  id: string
+  name: string
+  requiredDiscoveries: { regionId: string; discoveryId: string }[]
+}
+
+/** 设备面板扩充规则 (发现解锁新工具) */
+export interface PaletteEnrichment {
+  /** 触发发现的 ID */
+  requiredDiscoveryId: string
+  /** 目标区域 ID (新工具出现在哪个区域) */
+  targetRegionId: string
+  /** 解锁的工具类型 */
+  elementType: SceneElementType
+  /** 工具属性模板 */
+  properties: Record<string, number | string | boolean>
+}
+
+// ── 跨区域大发现 (meta-discoveries) ──────────────────────────────────
+
+/**
+ * 3 个跨区域大发现，需要组合多个区域的知识
+ */
+export const META_DISCOVERIES: MetaDiscovery[] = [
+  {
+    id: 'meta-wave-particle-duality',
+    name: 'Wave-Particle Duality of Polarization',
+    requiredDiscoveries: [
+      { regionId: 'crystal-lab', discoveryId: 'crystal-lab-circular-polarization' },
+      { regionId: 'wave-platform', discoveryId: 'wave-platform-retardation-series' },
+      { regionId: 'measurement-studio', discoveryId: 'measurement-studio-stokes-measurement' },
+    ],
+  },
+  {
+    id: 'meta-universal-interface-law',
+    name: 'Universal Interface Law',
+    requiredDiscoveries: [
+      { regionId: 'refraction-bench', discoveryId: 'refraction-bench-brewster-angle' },
+      { regionId: 'interface-lab', discoveryId: 'interface-lab-fresnel-reflection' },
+    ],
+  },
+  {
+    id: 'meta-complete-polarization-control',
+    name: 'Complete Polarization Control',
+    requiredDiscoveries: [
+      { regionId: 'crystal-lab', discoveryId: 'crystal-lab-malus-law-basic' },
+      { regionId: 'wave-platform', discoveryId: 'wave-platform-poincare-traverse' },
+      { regionId: 'refraction-bench', discoveryId: 'refraction-bench-total-reflection' },
+    ],
+  },
+  {
+    id: 'meta-nature-of-sky-light',
+    name: 'Nature of Skylight Polarization',
+    requiredDiscoveries: [
+      { regionId: 'scattering-chamber', discoveryId: 'scattering-chamber-rayleigh-polarization' },
+      { regionId: 'measurement-studio', discoveryId: 'measurement-studio-stokes-measurement' },
+    ],
+  },
+]
+
+// ── 设备面板扩充规则 ──────────────────────────────────────────────────
+
+/**
+ * 10 条发现驱动的面板扩充规则
+ * 发现 X -> 区域 Y 解锁新工具 (隐形门禁，DISC-02)
+ */
+export const PALETTE_ENRICHMENTS: PaletteEnrichment[] = [
+  // 发现圆偏振 -> Refraction Bench 解锁波片
+  {
+    requiredDiscoveryId: 'crystal-lab-circular-polarization',
+    targetRegionId: 'refraction-bench',
+    elementType: 'waveplate',
+    properties: { retardation: 90, fastAxis: 0, type: 'quarter-wave' },
+  },
+  // 发现布儒斯特角 -> Wave Platform 解锁环境介质
+  {
+    requiredDiscoveryId: 'refraction-bench-brewster-angle',
+    targetRegionId: 'wave-platform',
+    elementType: 'environment',
+    properties: { medium: 'glass', refractiveIndex: 1.52 },
+  },
+  // 发现半波旋转 -> Scattering Chamber 解锁半波片
+  {
+    requiredDiscoveryId: 'crystal-lab-half-wave-rotation',
+    targetRegionId: 'scattering-chamber',
+    elementType: 'waveplate',
+    properties: { retardation: 180, fastAxis: 0, type: 'half-wave' },
+  },
+  // 发现全反射 -> Interface Lab 解锁棱镜
+  {
+    requiredDiscoveryId: 'refraction-bench-total-reflection',
+    targetRegionId: 'interface-lab',
+    elementType: 'prism',
+    properties: { prismAngle: 45, refractiveIndex: 1.52 },
+  },
+  // 发现瑞利偏振 -> Measurement Studio 解锁偏振片
+  {
+    requiredDiscoveryId: 'scattering-chamber-rayleigh-polarization',
+    targetRegionId: 'measurement-studio',
+    elementType: 'polarizer',
+    properties: { transmissionAxis: 0, type: 'analyzer' },
+  },
+  // 发现 Stokes 测量 -> Crystal Lab 解锁检偏器
+  {
+    requiredDiscoveryId: 'measurement-studio-stokes-measurement',
+    targetRegionId: 'crystal-lab',
+    elementType: 'polarizer',
+    properties: { transmissionAxis: 0, type: 'analyzer' },
+  },
+  // 发现 Fresnel 反射 -> Scattering Chamber 解锁偏振片
+  {
+    requiredDiscoveryId: 'interface-lab-fresnel-reflection',
+    targetRegionId: 'scattering-chamber',
+    elementType: 'polarizer',
+    properties: { transmissionAxis: 0, type: 'linear' },
+  },
+  // 发现相位延迟系列 -> Measurement Studio 解锁波片
+  {
+    requiredDiscoveryId: 'wave-platform-retardation-series',
+    targetRegionId: 'measurement-studio',
+    elementType: 'waveplate',
+    properties: { retardation: 90, fastAxis: 0, type: 'quarter-wave' },
+  },
+  // 发现 Poincare 遍历 -> Interface Lab 解锁波片
+  {
+    requiredDiscoveryId: 'wave-platform-poincare-traverse',
+    targetRegionId: 'interface-lab',
+    elementType: 'waveplate',
+    properties: { retardation: 180, fastAxis: 0, type: 'half-wave' },
+  },
+  // 发现三偏振片惊喜 -> Refraction Bench 解锁检偏器
+  {
+    requiredDiscoveryId: 'crystal-lab-three-polarizer-surprise',
+    targetRegionId: 'refraction-bench',
+    elementType: 'polarizer',
+    properties: { transmissionAxis: 0, type: 'analyzer' },
+  },
+]
 
 /** 完整区域定义 */
 export interface RegionDefinition {

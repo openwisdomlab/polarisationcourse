@@ -272,11 +272,19 @@ export const wavePlatformDefinition: RegionDefinition = {
       fromDiscoveryId: 'wave-platform-retardation-series',
       toDiscoveryId: 'crystal-lab-circular-polarization',
       toRegionId: 'crystal-lab',
+      connectionTag: 'Quarter-wave retardation creates the circular states observed in crystal lab',
     },
     {
       fromDiscoveryId: 'wave-platform-poincare-traverse',
       toDiscoveryId: 'measurement-studio-stokes-measurement',
       toRegionId: 'measurement-studio',
+      connectionTag: 'Poincare sphere trajectories map directly to Stokes parameter measurements',
+    },
+    {
+      fromDiscoveryId: 'wave-platform-retardation-series',
+      toDiscoveryId: 'interface-lab-medium-comparison',
+      toRegionId: 'interface-lab',
+      connectionTag: 'Retardation depends on birefringent medium properties',
     },
   ],
 }

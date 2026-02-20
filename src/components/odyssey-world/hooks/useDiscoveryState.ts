@@ -15,8 +15,9 @@
  * 同时追踪偏振编码方面的发现 (方位角、强度、椭圆度、强度-不透明度映射)。
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useOdysseyWorldStore, type SceneElement, type BeamSegment } from '@/stores/odysseyWorldStore'
+import { getRegionDefinition } from '@/components/odyssey-world/regions/regionRegistry'
 
 // ── 发现配置接口 ────────────────────────────────────────────────────────
 
@@ -290,13 +291,22 @@ export function useDiscoveryState(): UseDiscoveryStateReturn {
   const rotationHistory = useOdysseyWorldStore((s) => s.rotationHistory)
   const discoveredEncodings = useOdysseyWorldStore((s) => s.discoveredEncodings)
 
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
+
   const [newlyAchieved, setNewlyAchieved] = useState<string | null>(null)
+
+  // 获取当前区域的发现配置 (Phase 3: 每个区域有自己的发现列表)
+  const regionDiscoveryConfigs = useMemo(() => {
+    const regionDef = getRegionDefinition(activeRegionId)
+    // 使用区域定义的发现列表；如果区域无定义则回退到全局配置 (Crystal Lab 包含所有 Phase 2 发现)
+    return regionDef?.discoveries ?? DISCOVERY_CONFIGS
+  }, [activeRegionId])
 
   // 节流 ref: 避免每帧都检查发现条件
   const throttleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const encodingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // 发现条件检查 (节流 200ms)
+  // 发现条件检查 (节流 200ms, 使用当前区域的发现配置)
   const checkDiscoveries = useCallback(() => {
     const store = useOdysseyWorldStore.getState()
     const elements = store.sceneElements
@@ -304,7 +314,11 @@ export function useDiscoveryState(): UseDiscoveryStateReturn {
     const history = store.rotationHistory
     const achieved = store.achievedDiscoveries
 
-    for (const config of DISCOVERY_CONFIGS) {
+    // 使用区域特定的发现配置
+    const regionDef = getRegionDefinition(store.activeRegionId)
+    const configs = regionDef?.discoveries ?? DISCOVERY_CONFIGS
+
+    for (const config of configs) {
       if (achieved.has(config.id)) continue
 
       try {
@@ -391,6 +405,6 @@ export function useDiscoveryState(): UseDiscoveryStateReturn {
   return {
     achievedDiscoveries,
     newlyAchieved,
-    discoveryConfigs: DISCOVERY_CONFIGS,
+    discoveryConfigs: regionDiscoveryConfigs,
   }
 }

@@ -286,11 +286,19 @@ export const measurementStudioDefinition: RegionDefinition = {
       fromDiscoveryId: 'measurement-studio-stokes-measurement',
       toDiscoveryId: 'wave-platform-poincare-traverse',
       toRegionId: 'wave-platform',
+      connectionTag: 'Stokes parameters are coordinates on the Poincare sphere',
     },
     {
       fromDiscoveryId: 'measurement-studio-full-polarimetry',
       toDiscoveryId: 'crystal-lab-malus-law-basic',
       toRegionId: 'crystal-lab',
+      connectionTag: 'Full polarimetry generalizes the intensity law of Malus',
+    },
+    {
+      fromDiscoveryId: 'measurement-studio-stokes-measurement',
+      toDiscoveryId: 'scattering-chamber-rayleigh-polarization',
+      toRegionId: 'scattering-chamber',
+      connectionTag: 'Stokes measurement quantifies skylight partial polarization',
     },
   ],
 }

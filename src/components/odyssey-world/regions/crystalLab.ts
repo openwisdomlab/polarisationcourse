@@ -497,11 +497,25 @@ export const crystalLabDefinition: Omit<RegionDefinition, 'theme'> & { theme: Re
       fromDiscoveryId: 'crystal-lab-circular-polarization',
       toDiscoveryId: 'wave-platform-retardation-series',
       toRegionId: 'wave-platform',
+      connectionTag: 'Both involve 90-degree phase shifts creating circular states',
     },
     {
       fromDiscoveryId: 'crystal-lab-malus-law-basic',
       toDiscoveryId: 'refraction-bench-brewster-angle',
       toRegionId: 'refraction-bench',
+      connectionTag: 'Both involve cos^2 intensity relationships',
+    },
+    {
+      fromDiscoveryId: 'crystal-lab-half-wave-rotation',
+      toDiscoveryId: 'wave-platform-poincare-traverse',
+      toRegionId: 'wave-platform',
+      connectionTag: 'Half-wave rotation traces paths on the Poincare sphere',
+    },
+    {
+      fromDiscoveryId: 'crystal-lab-crossed-polarizers',
+      toDiscoveryId: 'measurement-studio-stokes-measurement',
+      toRegionId: 'measurement-studio',
+      connectionTag: 'Extinction reveals polarization state through Stokes analysis',
     },
   ],
 }

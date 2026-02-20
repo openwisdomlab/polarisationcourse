@@ -203,6 +203,13 @@ export const scatteringChamberDefinition: RegionDefinition = {
       fromDiscoveryId: 'scattering-chamber-rayleigh-polarization',
       toDiscoveryId: 'refraction-bench-brewster-angle',
       toRegionId: 'refraction-bench',
+      connectionTag: 'Rayleigh scattering and Brewster angle both produce polarization at 90 degrees',
+    },
+    {
+      fromDiscoveryId: 'scattering-chamber-rayleigh-polarization',
+      toDiscoveryId: 'measurement-studio-stokes-measurement',
+      toRegionId: 'measurement-studio',
+      connectionTag: 'Sky polarization is best quantified by Stokes parameters',
     },
   ],
 }
