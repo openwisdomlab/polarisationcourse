@@ -7,6 +7,7 @@
  *
  * Phase 2 新增: useBeamPreview (幽灵光束预览) 和 containerRef (交互坐标转换)。
  * Phase 2 Plan 04 新增: useDiscoveryState (发现系统) 和 PolarizationLegend (渐进图例)。
+ * Phase 3 Plan 03 新增: WorldMap (星图世界地图) 和 useWorldMap (快速旅行)。
  */
 
 import { useRef, useCallback } from 'react'
@@ -16,11 +17,14 @@ import { useClickToMove } from './hooks/useClickToMove'
 import { useBeamPhysics } from './hooks/useBeamPhysics'
 import { useBeamPreview } from './hooks/useBeamPreview'
 import { useDiscoveryState } from './hooks/useDiscoveryState'
+import { useDiscoveryConnections } from './hooks/useDiscoveryConnections'
 import { useRegionTransition, type BoundaryProximityResult } from './hooks/useRegionTransition'
+import { useWorldMap } from './hooks/useWorldMap'
 import { IsometricScene } from './IsometricScene'
 import { EnvironmentPopup } from './EnvironmentPopup'
 import { PolarizationLegend } from './PolarizationLegend'
 import { RegionTransition } from './RegionTransition'
+import { WorldMap } from './WorldMap'
 import { HUD } from './HUD'
 
 /**
@@ -68,6 +72,12 @@ export function OdysseyWorld() {
   // 将 initiateTransition 存入 ref，供回调使用
   initiateTransitionRef.current = initiateTransition
 
+  // 世界地图系统 (Phase 3 - Plan 03)
+  const { isOpen: worldMapOpen, close: closeWorldMap, fastTravel } = useWorldMap(initiateTransitionRef)
+
+  // 跨区域发现连接 (Phase 3 - Plan 03: 世界地图星图数据)
+  const { allConnections, metaDiscoveries } = useDiscoveryConnections()
+
   // 光束物理计算 (场景元素变化时重新计算偏振态 + 视觉编码)
   useBeamPhysics()
 
@@ -110,6 +120,15 @@ export function OdysseyWorld() {
 
       {/* 区域过渡覆盖层 (标题卡片 + 交互遮罩) */}
       <RegionTransition />
+
+      {/* 世界地图叠加层 (星图风格, z-40) */}
+      <WorldMap
+        isOpen={worldMapOpen}
+        onClose={closeWorldMap}
+        onFastTravel={fastTravel}
+        allConnections={allConnections}
+        metaDiscoveries={metaDiscoveries}
+      />
 
       {/* HUD 叠加层 */}
       <HUD />
