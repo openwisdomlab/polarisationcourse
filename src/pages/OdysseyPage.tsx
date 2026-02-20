@@ -1,11 +1,26 @@
 /**
- * OdysseyPage.tsx — 光之甬道 (The Photon Corridor)
+ * OdysseyPage.tsx -- Odyssey 等距光学世界入口
  *
- * 单页沉浸式交互奥德赛: 滚动驱动 3D 相机沿光束飞行,
- * 23 个物理演示站点分布在连续的光路上。
+ * 初始化场景状态，渲染占位符 (Plan 02 将替换为 OdysseyWorld 组件)。
+ * 组件挂载时初始化场景数据，卸载时清理状态。
  */
-import { OdysseyScrollExperience } from '@/components/odyssey-scroll/OdysseyScrollExperience'
+import { useEffect } from 'react'
+import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 
 export function OdysseyPage() {
-  return <OdysseyScrollExperience />
+  useEffect(() => {
+    // 挂载时初始化场景数据
+    useOdysseyWorldStore.getState().initScene()
+
+    return () => {
+      // 卸载时重置场景加载状态，允许下次重新初始化
+      useOdysseyWorldStore.setState({ sceneLoaded: false })
+    }
+  }, [])
+
+  return (
+    <div className="flex h-screen w-full items-center justify-center bg-gray-900 text-white">
+      <p className="text-lg opacity-60">Odyssey World Loading...</p>
+    </div>
+  )
 }
