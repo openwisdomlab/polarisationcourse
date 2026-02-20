@@ -13,7 +13,7 @@ Transform 23 independent polarization optics demos into a discovery-based isomet
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Minimum Viable Scene** - Single isometric environment with click navigation, SVG light source, beam rendering with polarization encoding, and physics-accurate visualization at 60fps (completed 2026-02-20)
-- [ ] **Phase 2: Interaction & Visual Language** - Place/rotate/adjust optical elements with consistent polarization visual encoding and environmental feedback on correct configurations
+- [x] **Phase 2: Interaction & Visual Language** - Place/rotate/adjust optical elements with consistent polarization visual encoding and environmental feedback on correct configurations
 - [ ] **Phase 3: Multi-Region Isometric World** - 4-6 interconnected isometric environments with smooth animated transitions, cross-region beams, knowledge-gated progression, and session persistence
 - [ ] **Phase 4: Depth Layers & Content Integration** - Layered information architecture (intuition to quantitative), embedded demo deep-dives, concept constellation map, and diegetic theory emergence
 - [ ] **Phase 5: Visual Polish & Full Coverage** - All 6 physics units covered, per-region visual atmosphere at Monument Valley quality, multi-language support, and production-quality illustration
@@ -51,9 +51,9 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Store extension with element CRUD, interaction hooks (drag, rotation, selection, beam preview)
-- [ ] 02-02-PLAN.md — Interactive OpticalElement UI, element palette, ghost beam preview, visual cues
-- [ ] 02-03-PLAN.md — Environment popup with property sliders/dropdowns for material and light source adjustment
-- [ ] 02-04-PLAN.md — Discovery system (5 configurations), environmental feedback, progressive polarization legend
+- [x] 02-02-PLAN.md — Interactive OpticalElement UI, element palette, ghost beam preview, visual cues
+- [x] 02-03-PLAN.md — Environment popup with property sliders/dropdowns for material and light source adjustment
+- [x] 02-04-PLAN.md — Discovery system (5 configurations), environmental feedback, progressive polarization legend
 
 ### Phase 3: Multi-Region Isometric World
 **Goal**: A student can freely move between 4-6 interconnected isometric environments, each with a distinct physics theme, with their discovery progress persisting across sessions
@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Minimum Viable Scene | 3/3 | Complete    | 2026-02-20 |
-| 2. Interaction & Visual Language | 1/4 | In Progress | - |
+| 2. Interaction & Visual Language | 4/4 | Complete    | 2026-02-20 |
 | 3. Multi-Region Isometric World | 0/3 | Not started | - |
 | 4. Depth Layers & Content Integration | 0/2 | Not started | - |
 | 5. Visual Polish & Full Coverage | 0/2 | Not started | - |
