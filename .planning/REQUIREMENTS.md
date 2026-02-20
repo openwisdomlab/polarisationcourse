@@ -20,16 +20,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **PHYS-01**: Light beam renders polarization state changes in real-time (color/brightness/shape encodes polarization angle/ellipticity/intensity) using SVG/Canvas beam rendering
 - [x] **PHYS-02**: Beam responds visually within <16ms after optical element manipulation, physically accurate (Mueller/Jones calculation)
-- [ ] **PHYS-03**: Unified polarization visual language -- all regions use consistent color/shape/animation encoding for polarization states
+- [x] **PHYS-03**: Unified polarization visual language -- all regions use consistent color/shape/animation encoding for polarization states
 - [ ] **PHYS-04**: Light beam can propagate across regions -- same beam exhibits different polarization phenomena in different environments
 - [x] **PHYS-05**: Maintains 60fps desktop, 30fps+ mobile performance budget (2D rendering is inherently lighter than 3D)
 
 ### Interaction
 
-- [ ] **INTR-01**: Student can place optical elements on light path (polarizers, waveplates, crystals, etc.) via drag-and-drop in the isometric scene
-- [ ] **INTR-02**: Student can rotate/adjust placed optical elements, observing real-time beam behavior changes
+- [x] **INTR-01**: Student can place optical elements on light path (polarizers, waveplates, crystals, etc.) via drag-and-drop in the isometric scene
+- [x] **INTR-02**: Student can rotate/adjust placed optical elements, observing real-time beam behavior changes
 - [x] **INTR-03**: Student can change environment/material properties (medium type, refractive index, etc.), observing different light behaviors
-- [ ] **INTR-04**: Interaction uses click-to-move for navigation and drag for element placement -- no text instructions needed, gestures feel natural in the isometric context
+- [x] **INTR-04**: Interaction uses click-to-move for navigation and drag for element placement -- no text instructions needed, gestures feel natural in the isometric context
 - [x] **INTR-05**: Optical element interactability communicated through visual cues (glowing edges, hover hints, subtle animation), not UI buttons
 
 ### Discovery & Learning
@@ -45,7 +45,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **VISL-01**: Each region has unique visual atmosphere (color palette, illustration style, particle effects, geometric motifs), reaching "every frame worth pausing on" quality -- Monument Valley level of visual craft
 - [x] **VISL-02**: Isometric illustration art direction -- 2D scenes with perspective/depth illusion (CSS 3D transforms, parallax layers, SVG depth ordering), geometric precision directs attention to physics phenomena
-- [ ] **VISL-03**: Light beam is the visually most prominent element -- environmental illustrations never overpower physics signals
+- [x] **VISL-03**: Light beam is the visually most prominent element -- environmental illustrations never overpower physics signals
 - [x] **VISL-04**: 2D-primary rendering with selective 3D accents -- SVG scenes and CSS transforms for the world, optional Canvas/WebGL only for beam glow effects or key visual moments
 - [ ] **VISL-05**: Depth layers within the 2D world -- zooming into a phenomenon smoothly reveals deeper information layers (qualitative explanation, then mathematical formalism) without breaking the visual context
 
@@ -110,7 +110,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | WRLD-06 | Phase 3 | Pending |
 | PHYS-01 | Phase 1 | Complete |
 | PHYS-02 | Phase 1 | Complete |
-| PHYS-03 | Phase 2 | Pending |
+| PHYS-03 | Phase 2 | Complete |
 | PHYS-04 | Phase 3 | Pending |
 | PHYS-05 | Phase 1 | Complete |
 | INTR-01 | Phase 2 | In Progress |
@@ -126,7 +126,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | DISC-06 | Phase 3 | Pending |
 | VISL-01 | Phase 5 | Pending |
 | VISL-02 | Phase 1 | Complete |
-| VISL-03 | Phase 2 | Pending |
+| VISL-03 | Phase 2 | Complete |
 | VISL-04 | Phase 1 | Complete |
 | VISL-05 | Phase 4 | Pending |
 | CONT-01 | Phase 5 | Pending |
