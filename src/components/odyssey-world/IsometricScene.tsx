@@ -5,12 +5,18 @@
  * - 摄像机 CSS transform 应用于 motion.div (GPU 合成，无 React 重渲染)
  * - SVG viewBox 2400x1600 (场景大于视口)
  * - 按画家算法分层渲染:
- *   L0: 背景 -> L1: 平台 -> L2: 场景物体 -> L2.5: 发现环境响应
- *   -> L3: 光束 -> L3.5: 幽灵光束预览 -> L4: 头像 -> L5: 设备架
+ *   L0: 背景 -> L1: 平台 -> L1.5: 区域装饰 -> L2: 场景物体
+ *   -> L2.5: 发现环境响应 -> L3: 光束 -> L3.5: 幽灵光束预览
+ *   -> L4: 头像 -> L5: 设备架
  * - 交互事件路由: 点击空白区域 -> 导航/取消选择; 元素点击 -> 阻止冒泡
+ *
+ * Phase 3 扩展:
+ * - 动态应用区域主题色彩 (背景渐变、网格透明度)
+ * - 懒加载区域装饰组件 (RegionDecorationsLoader)
+ * - 替换 DistantSilhouettes 为实际区域装饰
  */
 
-import React, { useMemo, useCallback, type RefObject } from 'react'
+import React, { useMemo, useCallback, useEffect, type RefObject } from 'react'
 import { motion, type MotionValue } from 'framer-motion'
 import type { SceneElement, BeamSegment } from '@/stores/odysseyWorldStore'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
@@ -26,6 +32,11 @@ import { ElementPalette } from './ElementPalette'
 import { DiscoveryFeedback } from './DiscoveryFeedback'
 import { EnvironmentElement } from './EnvironmentElement'
 import { worldToScreen } from '@/lib/isometric'
+import { getRegionDefinition } from './regions/regionRegistry'
+import {
+  RegionDecorationsLoader,
+  preloadAdjacentRegions,
+} from './regions/RegionDecorations'
 
 interface IsometricSceneProps {
   svgTransform: MotionValue<string>
@@ -73,45 +84,7 @@ function generateGridLines(): string {
 
 const GRID_PATH = generateGridLines()
 
-/**
- * 远方轮廓剪影 -- 场景边缘装饰
- * 暗示邻近区域的存在 (为 Phase 3 多区域做铺垫)
- */
-function DistantSilhouettes() {
-  return (
-    <g opacity={0.12}>
-      {/* 左侧 -- 远方实验室建筑轮廓 */}
-      <g transform="translate(-700, 200)">
-        <polygon points="0,-80 30,-120 60,-100 60,-40 40,-40 40,-70 20,-70 20,-40 0,-40" fill="#8890A0" />
-        <polygon points="70,-60 90,-90 110,-70 110,-30 70,-30" fill="#8088A0" />
-        <rect x={-10} y={-40} width={130} height={8} fill="#8890A0" opacity={0.6} />
-      </g>
-
-      {/* 右侧 -- 水晶/结晶体轮廓 */}
-      <g transform="translate(1000, 300)">
-        <polygon points="0,-100 15,-40 -15,-40" fill="#9088B0" />
-        <polygon points="30,-70 42,-30 18,-30" fill="#8878A8" />
-        <polygon points="-20,-50 -10,-20 -30,-20" fill="#9890B0" />
-        <polygon points="50,-55 60,-25 40,-25" fill="#8880A0" />
-      </g>
-
-      {/* 上方 -- 远方山丘/穹顶轮廓 */}
-      <g transform="translate(200, -200)">
-        <ellipse cx={0} cy={0} rx={180} ry={40} fill="#A0A0B0" />
-        <ellipse cx={250} cy={10} rx={120} ry={30} fill="#9898A8" />
-        <ellipse cx={-200} cy={15} rx={100} ry={25} fill="#A0A0B0" />
-      </g>
-
-      {/* 下方 -- 实验台/仪器轮廓 */}
-      <g transform="translate(400, 900)">
-        <rect x={-80} y={0} width={200} height={12} rx={3} fill="#A09898" />
-        <rect x={-60} y={-20} width={30} height={20} rx={2} fill="#989090" />
-        <rect x={20} y={-30} width={20} height={30} rx={2} fill="#A09898" />
-        <circle cx={80} cy={-15} r={12} fill="none" stroke="#989090" strokeWidth={3} />
-      </g>
-    </g>
-  )
-}
+// DistantSilhouettes 已在 Phase 3 中替换为 RegionDecorationsLoader
 
 /**
  * IsometricScene -- 主场景渲染器
@@ -139,6 +112,16 @@ export const IsometricScene = React.memo(function IsometricScene({
   // 光束段数据 (由 useBeamPhysics 写入 store)
   const beamSegments = useOdysseyWorldStore((s) => s.beamSegments)
   const interactionMode = useOdysseyWorldStore((s) => s.interactionMode)
+
+  // 活跃区域信息 (Phase 3: 动态主题和装饰)
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
+  const activeRegion = useMemo(() => getRegionDefinition(activeRegionId), [activeRegionId])
+  const regionTheme = activeRegion?.theme
+
+  // 进入新区域时预加载相邻装饰
+  useEffect(() => {
+    preloadAdjacentRegions(activeRegionId)
+  }, [activeRegionId])
 
   // 分类场景元素
   const { platforms, decorations, lightSources, opticalElements } = useMemo(() => {
@@ -239,10 +222,10 @@ export const IsometricScene = React.memo(function IsometricScene({
         >
           {/* ── 共享 defs (渐变、滤镜) ── */}
           <defs>
-            {/* 背景渐变: 暖白色 */}
+            {/* 背景渐变: 根据区域主题动态变化 */}
             <linearGradient id="bg-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FAFAF5" />
-              <stop offset="100%" stopColor="#F0EDE6" />
+              <stop offset="0%" stopColor={regionTheme?.colorPalette.background[0] ?? '#FAFAF5'} />
+              <stop offset="100%" stopColor={regionTheme?.colorPalette.background[1] ?? '#F0EDE6'} />
             </linearGradient>
 
             {/* 光源光晕渐变 */}
@@ -272,24 +255,33 @@ export const IsometricScene = React.memo(function IsometricScene({
               fill="url(#bg-gradient)"
             />
 
-            {/* 等距网格 (极低透明度，更多是感觉而非看见) */}
+            {/* 等距网格 (透明度根据区域主题变化) */}
             <g transform="translate(200, 200)">
               <path
                 d={GRID_PATH}
                 fill="none"
                 stroke="#C0B8A8"
                 strokeWidth={0.5}
-                opacity={0.02}
+                opacity={regionTheme?.gridOpacity ?? 0.02}
               />
             </g>
-
-            {/* 远方区域轮廓 */}
-            <DistantSilhouettes />
           </g>
 
           {/* ── Layer 1: 平台 (深度排序) ── */}
           <g className="layer-platforms">
             <SceneLayer elements={platforms} renderElement={renderPlatform} />
+          </g>
+
+          {/* ── Layer 1.5: 区域装饰 (懒加载的 SVG 非交互场景元素) ── */}
+          <g className="layer-region-decorations">
+            {activeRegion && regionTheme && (
+              <RegionDecorationsLoader
+                regionId={activeRegionId}
+                gridWidth={activeRegion.gridWidth}
+                gridHeight={activeRegion.gridHeight}
+                theme={regionTheme}
+              />
+            )}
           </g>
 
           {/* ── Layer 2: 场景物体 (光源、光学元件、装饰 -- 深度排序) ── */}

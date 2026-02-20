@@ -4,11 +4,15 @@
  * 渲染单个等距菱形平台 (isometric diamond)。
  * Z > 0 的平台添加侧面 (可见的"墙壁")，营造深度错觉。
  * 使用 React.memo 避免不必要的重渲染。
+ *
+ * Phase 3: 支持区域主题色覆盖 (platformFill, platformStroke)。
  */
 
 import React from 'react'
 import { worldToScreen, TILE_WIDTH_HALF, TILE_HEIGHT_HALF } from '@/lib/isometric'
 import type { SceneElement } from '@/stores/odysseyWorldStore'
+import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { getRegionDefinition } from './regions/regionRegistry'
 
 interface PlatformProps {
   element: SceneElement
@@ -24,6 +28,12 @@ interface PlatformProps {
 const Platform = React.memo(function Platform({ element }: PlatformProps) {
   const { worldX, worldY, worldZ } = element
   const screen = worldToScreen(worldX, worldY)
+
+  // 区域主题色覆盖
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
+  const regionDef = getRegionDefinition(activeRegionId)
+  const themeFill = regionDef?.theme.colorPalette.platformFill
+  const themeStroke = regionDef?.theme.colorPalette.platformStroke
 
   // Z 轴高度偏移 (每层抬升 24 像素)
   const zOffset = worldZ * 24
@@ -41,9 +51,11 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
   const isElevated = worldZ > 0
   const isGlass = element.properties.material === 'glass'
 
-  // 颜色方案
-  const topFill = isGlass ? '#E8EEF4' : isElevated ? '#F5F2EC' : '#F0EDE6'
-  const topStroke = isGlass ? '#C8D4E0' : '#E0DBD3'
+  // 颜色方案 -- 区域主题色优先，玻璃材质特殊处理
+  const defaultFill = isElevated ? '#F5F2EC' : '#F0EDE6'
+  const defaultStroke = '#E0DBD3'
+  const topFill = isGlass ? '#E8EEF4' : (themeFill ?? defaultFill)
+  const topStroke = isGlass ? '#C8D4E0' : (themeStroke ?? defaultStroke)
   const topStrokeOpacity = isGlass ? 0.6 : 0.4
 
   // 侧面高度 (Z > 0 时显示)

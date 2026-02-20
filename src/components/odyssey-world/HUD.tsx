@@ -7,11 +7,12 @@
  */
 
 import { useMemo } from 'react'
-import { ArrowLeft, Settings } from 'lucide-react'
+import { ArrowLeft, Settings, Map } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { worldToScreen, TILE_WIDTH_HALF, TILE_HEIGHT_HALF } from '@/lib/isometric'
+import { getRegionDefinition } from './regions/regionRegistry'
 
 /**
  * HUD 按钮基础样式
@@ -100,10 +101,13 @@ function Minimap() {
  */
 export function HUD() {
   const navigate = useNavigate()
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
+  const regionDef = getRegionDefinition(activeRegionId)
+  const regionName = regionDef?.theme.name ?? 'Unknown'
 
   return (
     <div className="pointer-events-none absolute inset-0 z-10 p-4">
-      {/* 顶部栏 -- 返回按钮 + 设置 */}
+      {/* 顶部栏 -- 返回按钮 + 区域名称 + 设置 */}
       <div className="flex items-start justify-between">
         {/* 返回按钮 */}
         <button
@@ -114,7 +118,21 @@ export function HUD() {
           <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
         </button>
 
-        {/* 设置按钮 (占位，Phase 1 无功能) */}
+        {/* 当前区域名称 -- 顶部中央 */}
+        <div
+          className={cn(
+            'pointer-events-none rounded-lg px-3 py-1.5',
+            'bg-white/50 dark:bg-black/30',
+            'backdrop-blur-sm',
+            'border border-white/20 dark:border-white/10',
+          )}
+        >
+          <span className="text-xs font-light tracking-wider text-gray-500 dark:text-gray-400">
+            {regionName}
+          </span>
+        </div>
+
+        {/* 设置按钮 */}
         <button
           className={cn(hudButtonClass, 'pointer-events-auto h-10 w-10')}
           aria-label="Settings"
@@ -123,8 +141,17 @@ export function HUD() {
         </button>
       </div>
 
-      {/* 底部栏 -- 小地图 */}
-      <div className="absolute bottom-4 right-4 pointer-events-auto">
+      {/* 底部栏 -- 世界地图按钮 + 小地图 */}
+      <div className="absolute bottom-4 right-4 pointer-events-auto flex flex-col items-end gap-2">
+        {/* 世界地图按钮 (Plan 03 实现世界地图，此处添加按钮) */}
+        <button
+          className={cn(hudButtonClass, 'pointer-events-auto h-9 w-9')}
+          onClick={() => useOdysseyWorldStore.getState().toggleWorldMap()}
+          aria-label="World Map"
+        >
+          <Map className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+        </button>
+
         <Minimap />
       </div>
     </div>
