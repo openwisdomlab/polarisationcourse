@@ -23,6 +23,10 @@ import { DepthPanelContent } from './DepthPanelContent'
 // 确保概念注册表已初始化 (副作用导入)
 import '@/components/odyssey-world/concepts/crystalLabConcepts'
 import '@/components/odyssey-world/concepts/refractionBenchConcepts'
+import '@/components/odyssey-world/concepts/wavePlatformConcepts'
+import '@/components/odyssey-world/concepts/scatteringChamberConcepts'
+import '@/components/odyssey-world/concepts/interfaceLabConcepts'
+import '@/components/odyssey-world/concepts/measurementStudioConcepts'
 
 /** Spring 动画参数 (研究验证 ~0.7s 稳定时间) */
 const PANEL_SPRING = {

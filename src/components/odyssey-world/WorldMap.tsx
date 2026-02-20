@@ -36,6 +36,10 @@ import type { ActiveConnection } from './hooks/useDiscoveryConnections'
 // 确保概念注册表已初始化 (副作用导入)
 import './concepts/crystalLabConcepts'
 import './concepts/refractionBenchConcepts'
+import './concepts/wavePlatformConcepts'
+import './concepts/scatteringChamberConcepts'
+import './concepts/interfaceLabConcepts'
+import './concepts/measurementStudioConcepts'
 
 // ── 区域布局配置 (2x3 网格) ──────────────────────────────────────────
 

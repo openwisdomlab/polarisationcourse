@@ -19,6 +19,10 @@ const DEMO_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentT
   'malus-law-explorer': React.lazy(() => import('../demos/MalusLawExplorer')),
   'circular-pol-explorer': React.lazy(() => import('../demos/CircularPolExplorer')),
   'brewster-explorer': React.lazy(() => import('../demos/BrewsterExplorer')),
+  'retardation-explorer': React.lazy(() => import('../demos/RetardationExplorer')),
+  'rayleigh-explorer': React.lazy(() => import('../demos/RayleighExplorer')),
+  'fresnel-explorer': React.lazy(() => import('../demos/FresnelExplorer')),
+  'stokes-explorer': React.lazy(() => import('../demos/StokesExplorer')),
 }
 
 // ── 加载骨架 ──────────────────────────────────────────────────────
