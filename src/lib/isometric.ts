@@ -2,13 +2,15 @@
  * isometric.ts -- 等距坐标系工具模块
  *
  * 提供世界坐标 (grid) 与屏幕坐标 (pixel) 之间的转换，
- * 以及深度排序、缩放夹紧、距离计算等实用函数。
+ * 以及深度排序、缩放夹紧、距离计算、光束路径吸附等实用函数。
  *
  * 使用标准 2:1 等距投影 (tile 宽高比 2:1)，
  * 公式参考: https://clintbellanger.net/articles/isometric_math/
  *
  * 纯函数模块，不依赖 React 或任何状态库。
  */
+
+import type { BeamSegment } from '@/stores/odysseyWorldStore'
 
 // ── 坐标空间类型 ────────────────────────────────────────────────────────
 
@@ -180,4 +182,90 @@ export function clampZoom(zoom: number): number {
  */
 export function tileDistance(ax: number, ay: number, bx: number, by: number): number {
   return Math.abs(ax - bx) + Math.abs(ay - by)
+}
+
+// ── 光束路径吸附 ────────────────────────────────────────────────────────
+
+/** 吸附结果: 世界坐标中最近的光束路径位置 */
+export interface SnapResult {
+  x: number
+  y: number
+}
+
+/** 默认吸附半径 (世界单位) */
+const DEFAULT_SNAP_RADIUS = 1.5
+
+/** 网格量化步长 (世界单位) */
+const GRID_QUANTIZE_STEP = 0.5
+
+/**
+ * 将世界坐标吸附到最近的光束路径位置
+ *
+ * 对每条光束段执行参数化投影:
+ * 1. 将点投影到线段上 (参数 t 夹紧到 [0, 1])
+ * 2. 计算点到投影的垂直距离
+ * 3. 如果距离 < snapRadius，返回量化到 0.5 网格的投影点
+ * 4. 在所有段中选择最近的吸附点
+ *
+ * @param worldX 拖拽位置的世界 X
+ * @param worldY 拖拽位置的世界 Y
+ * @param beamSegments 当前光束段数组
+ * @param snapRadius 吸附半径 (世界单位)，默认 1.5
+ * @returns 最近的吸附点，或 null (不在任何光束路径附近)
+ */
+export function snapToBeamPath(
+  worldX: number,
+  worldY: number,
+  beamSegments: BeamSegment[],
+  snapRadius: number = DEFAULT_SNAP_RADIUS,
+): SnapResult | null {
+  let bestDist = Infinity
+  let bestPoint: SnapResult | null = null
+
+  for (const seg of beamSegments) {
+    // 线段方向向量
+    const dx = seg.toX - seg.fromX
+    const dy = seg.toY - seg.fromY
+    const lenSq = dx * dx + dy * dy
+
+    // 退化线段 (长度为 0)，直接计算点到端点距离
+    if (lenSq === 0) {
+      const dist = Math.hypot(worldX - seg.fromX, worldY - seg.fromY)
+      if (dist < snapRadius && dist < bestDist) {
+        bestDist = dist
+        bestPoint = {
+          x: quantize(seg.fromX),
+          y: quantize(seg.fromY),
+        }
+      }
+      continue
+    }
+
+    // 参数化投影: t = dot(P - A, B - A) / |B - A|^2，夹紧到 [0, 1]
+    const t = Math.max(0, Math.min(1,
+      ((worldX - seg.fromX) * dx + (worldY - seg.fromY) * dy) / lenSq,
+    ))
+
+    // 投影点
+    const projX = seg.fromX + t * dx
+    const projY = seg.fromY + t * dy
+
+    // 垂直距离
+    const dist = Math.hypot(worldX - projX, worldY - projY)
+
+    if (dist < snapRadius && dist < bestDist) {
+      bestDist = dist
+      bestPoint = {
+        x: quantize(projX),
+        y: quantize(projY),
+      }
+    }
+  }
+
+  return bestPoint
+}
+
+/** 量化到最近的 0.5 网格单位 */
+function quantize(value: number): number {
+  return Math.round(value / GRID_QUANTIZE_STEP) * GRID_QUANTIZE_STEP
 }

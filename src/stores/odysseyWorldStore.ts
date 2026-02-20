@@ -52,6 +52,11 @@ export interface BeamSegment {
   shape: 'line' | 'helix' | 'ellipse-markers'
 }
 
+// ── 交互模式类型 ────────────────────────────────────────────────────────
+
+/** 当前指针交互模式 */
+export type InteractionMode = 'navigate' | 'drag' | 'rotate' | 'idle'
+
 // ── Store 状态接口 ──────────────────────────────────────────────────────
 
 interface OdysseyWorldState {
@@ -75,6 +80,12 @@ interface OdysseyWorldState {
   // 场景加载状态
   sceneLoaded: boolean
 
+  // 交互状态 (Phase 2)
+  selectedElementId: string | null
+  hoveredElementId: string | null
+  interactionMode: InteractionMode
+  dragPreviewPos: { worldX: number; worldY: number } | null
+
   // ── 动作 ──
   setCamera: (x: number, y: number) => void
   setZoom: (zoom: number) => void
@@ -83,6 +94,19 @@ interface OdysseyWorldState {
   setSceneElements: (elements: SceneElement[]) => void
   setBeamSegments: (segments: BeamSegment[]) => void
   initScene: () => void
+
+  // 元素 CRUD 动作 (Phase 2)
+  updateElement: (id: string, patch: Partial<SceneElement>) => void
+  addElement: (element: SceneElement) => void
+  removeElement: (id: string) => void
+
+  // 选择/悬停动作 (Phase 2)
+  selectElement: (id: string | null) => void
+  hoverElement: (id: string | null) => void
+
+  // 交互模式动作 (Phase 2)
+  setInteractionMode: (mode: InteractionMode) => void
+  setDragPreviewPos: (pos: { worldX: number; worldY: number } | null) => void
 }
 
 // ── 初始场景定义 ────────────────────────────────────────────────────────
@@ -291,6 +315,12 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
     avatarY: 0,
     sceneLoaded: false,
 
+    // 交互状态 (Phase 2)
+    selectedElementId: null,
+    hoveredElementId: null,
+    interactionMode: 'idle',
+    dragPreviewPos: null,
+
     // ── 动作 ──
 
     setCamera: (x, y) => set({ cameraX: x, cameraY: y }),
@@ -328,5 +358,42 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
         sceneLoaded: true,
       })
     },
+
+    // ── 元素 CRUD 动作 (Phase 2) ──
+
+    /** 更新单个元素 -- 使用 map 创建新数组引用以触发 useBeamPhysics 重新计算 */
+    updateElement: (id, patch) =>
+      set((state) => ({
+        sceneElements: state.sceneElements.map((el) =>
+          el.id === id ? { ...el, ...patch } : el,
+        ),
+      })),
+
+    /** 添加元素到场景 */
+    addElement: (element) =>
+      set((state) => ({
+        sceneElements: [...state.sceneElements, element],
+      })),
+
+    /** 从场景移除元素 */
+    removeElement: (id) =>
+      set((state) => ({
+        sceneElements: state.sceneElements.filter((el) => el.id !== id),
+        // 如果移除的是当前选中元素，清除选择状态
+        selectedElementId: state.selectedElementId === id ? null : state.selectedElementId,
+        hoveredElementId: state.hoveredElementId === id ? null : state.hoveredElementId,
+      })),
+
+    // ── 选择/悬停动作 (Phase 2) ──
+
+    selectElement: (id) => set({ selectedElementId: id }),
+
+    hoverElement: (id) => set({ hoveredElementId: id }),
+
+    // ── 交互模式动作 (Phase 2) ──
+
+    setInteractionMode: (mode) => set({ interactionMode: mode }),
+
+    setDragPreviewPos: (pos) => set({ dragPreviewPos: pos }),
   })),
 )
