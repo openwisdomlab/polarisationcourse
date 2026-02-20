@@ -323,9 +323,10 @@ export const WorldMap = React.memo(function WorldMap({
 }: WorldMapProps) {
   const visitedRegions = useOdysseyWorldStore((s) => s.visitedRegions)
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
-  const achievedDiscoveries = useOdysseyWorldStore((s) => s.achievedDiscoveries)
+  // 使用全局累积发现集合 (跨所有区域) 而非当前活跃区域的工作集
+  const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
 
-  // 计算每个区域的发现进度
+  // 计算每个区域的发现进度 (基于全局累积发现)
   const regionProgress = useMemo(() => {
     const progress = new Map<string, { count: number; total: number }>()
 
@@ -333,7 +334,7 @@ export const WorldMap = React.memo(function WorldMap({
       const total = regionDef.discoveries.length
       let count = 0
       for (const disc of regionDef.discoveries) {
-        if (achievedDiscoveries.has(disc.id)) {
+        if (allTimeDiscoveries.has(disc.id)) {
           count++
         }
       }
@@ -341,7 +342,7 @@ export const WorldMap = React.memo(function WorldMap({
     }
 
     return progress
-  }, [achievedDiscoveries])
+  }, [allTimeDiscoveries])
 
   return (
     <AnimatePresence>

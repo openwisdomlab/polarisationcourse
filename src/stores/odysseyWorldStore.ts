@@ -129,6 +129,8 @@ interface OdysseyWorldState {
 
   // 发现系统状态 (Phase 2 - Plan 04)
   achievedDiscoveries: Set<string>
+  /** 全局累积发现集合 -- 跨所有区域，从不被 switchRegion 覆盖 */
+  allTimeDiscoveries: Set<string>
   discoveredEncodings: DiscoveredEncodings
   rotationHistory: Map<string, number[]>
 
@@ -208,6 +210,9 @@ const customPersistStorage: PersistStorage<Partial<OdysseyWorldState>> = {
     if (stateData.achievedDiscoveries) {
       stateData.achievedDiscoveries = new Set(stateData.achievedDiscoveries as string[])
     }
+    if (stateData.allTimeDiscoveries) {
+      stateData.allTimeDiscoveries = new Set(stateData.allTimeDiscoveries as string[])
+    }
     if (stateData.visitedRegions) {
       stateData.visitedRegions = new Set(stateData.visitedRegions as string[])
     }
@@ -260,6 +265,9 @@ const customPersistStorage: PersistStorage<Partial<OdysseyWorldState>> = {
         ...stateObj,
         achievedDiscoveries: stateObj.achievedDiscoveries
           ? [...stateObj.achievedDiscoveries]
+          : [],
+        allTimeDiscoveries: stateObj.allTimeDiscoveries
+          ? [...stateObj.allTimeDiscoveries]
           : [],
         visitedRegions: stateObj.visitedRegions
           ? [...stateObj.visitedRegions]
@@ -350,6 +358,7 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
 
         // 发现系统状态 (Phase 2 - Plan 04)
         achievedDiscoveries: new Set<string>(),
+        allTimeDiscoveries: new Set<string>(),
         discoveredEncodings: {
           orientation: false,
           intensity: false,
@@ -468,8 +477,13 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
         /** 标记一个发现为已达成 (仅首次有效，Set 保证 O(1) 查询) */
         achieveDiscovery: (discoveryId) => {
           const current = get().achievedDiscoveries
+          const allTime = get().allTimeDiscoveries
           if (current.has(discoveryId)) return
-          set({ achievedDiscoveries: new Set([...current, discoveryId]) })
+          set({
+            achievedDiscoveries: new Set([...current, discoveryId]),
+            // 全局累积: 跨区域发现连接和世界地图读取此集合
+            allTimeDiscoveries: new Set([...allTime, discoveryId]),
+          })
         },
 
         /** 标记一个偏振编码方面已被发现 */
@@ -637,6 +651,7 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
           regions: state.regions,
           visitedRegions: state.visitedRegions,
           achievedDiscoveries: state.achievedDiscoveries,
+          allTimeDiscoveries: state.allTimeDiscoveries,
           discoveredEncodings: state.discoveredEncodings,
           avatarX: state.avatarX,
           avatarY: state.avatarY,

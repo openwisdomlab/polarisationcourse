@@ -202,7 +202,8 @@ const PaletteItem = React.memo(function PaletteItem({ def, index }: PaletteItemP
  */
 export const ElementPalette = React.memo(function ElementPalette() {
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
-  const achievedDiscoveries = useOdysseyWorldStore((s) => s.achievedDiscoveries)
+  // 使用全局累积发现集合: 跨区域发现也能解锁其他区域的工具
+  const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
 
   // 计算面板内容: 基础工具 + 发现解锁的扩充工具
   const paletteItems = useMemo(() => {
@@ -222,7 +223,7 @@ export const ElementPalette = React.memo(function ElementPalette() {
     for (const enrichment of PALETTE_ENRICHMENTS) {
       if (
         enrichment.targetRegionId === activeRegionId &&
-        achievedDiscoveries.has(enrichment.requiredDiscoveryId)
+        allTimeDiscoveries.has(enrichment.requiredDiscoveryId)
       ) {
         // 避免与基础工具重复 (相同 type + 相同关键属性)
         const isDuplicate = baseItems.some(
@@ -242,7 +243,7 @@ export const ElementPalette = React.memo(function ElementPalette() {
     }
 
     return [...baseItems, ...enrichedItems]
-  }, [activeRegionId, achievedDiscoveries])
+  }, [activeRegionId, allTimeDiscoveries])
 
   // 架子宽度根据面板项数量动态调整
   const shelfWidth = Math.max(132, paletteItems.length * 32 + 20)

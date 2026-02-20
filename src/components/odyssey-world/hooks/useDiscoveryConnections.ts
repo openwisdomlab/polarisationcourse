@@ -107,17 +107,18 @@ export interface UseDiscoveryConnectionsReturn {
  * 大发现达成时自动写入 store。
  */
 export function useDiscoveryConnections(): UseDiscoveryConnectionsReturn {
-  const achievedDiscoveries = useOdysseyWorldStore((s) => s.achievedDiscoveries)
+  // 使用全局累积发现集合 (跨所有区域)，而非当前区域的工作集
+  const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
   const achieveDiscovery = useOdysseyWorldStore((s) => s.achieveDiscovery)
 
   // 追踪已处理的大发现，避免重复触发
   const processedMetaRef = useRef<Set<string>>(new Set())
 
-  // 计算全局活跃连接
+  // 计算全局活跃连接 (基于全局累积发现)
   const allConnections = useMemo(
-    () => computeActiveConnections(achievedDiscoveries),
-    [achievedDiscoveries],
+    () => computeActiveConnections(allTimeDiscoveries),
+    [allTimeDiscoveries],
   )
 
   // 过滤当前区域涉及的连接
@@ -131,17 +132,17 @@ export function useDiscoveryConnections(): UseDiscoveryConnectionsReturn {
     [allConnections, activeRegionId],
   )
 
-  // 计算大发现状态
+  // 计算大发现状态 (基于全局累积发现)
   const metaDiscoveries = useMemo(
-    () => computeMetaDiscoveries(achievedDiscoveries),
-    [achievedDiscoveries],
+    () => computeMetaDiscoveries(allTimeDiscoveries),
+    [allTimeDiscoveries],
   )
 
   // 大发现达成时写入 store (响应式)
   useEffect(() => {
     for (const metaId of metaDiscoveries) {
       if (
-        !achievedDiscoveries.has(metaId) &&
+        !allTimeDiscoveries.has(metaId) &&
         !processedMetaRef.current.has(metaId)
       ) {
         processedMetaRef.current.add(metaId)
@@ -151,7 +152,7 @@ export function useDiscoveryConnections(): UseDiscoveryConnectionsReturn {
         })
       }
     }
-  }, [metaDiscoveries, achievedDiscoveries, achieveDiscovery])
+  }, [metaDiscoveries, allTimeDiscoveries, achieveDiscovery])
 
   return {
     activeConnections,
