@@ -30,12 +30,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The environment looks like a coherent illustrated place with isometric perspective and depth illusion (parallax layers, CSS transforms, SVG depth ordering) -- not a demo viewport or flat UI panel
   4. The page loads at /odyssey/ within PolarCraft without breaking other modules (games, studio, calculator), and no memory leaks occur on repeated SPA navigation
   5. Frame rate holds at 60fps on a 2020-era desktop -- the 2D scene architecture should be significantly lighter than the previous 3D approach
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01-PLAN.md — Foundation: isometric coordinate utilities, Zustand scene store, route wiring
+- [ ] 01-02-PLAN.md — Isometric scene rendering with SVG layers, click-to-move navigation, HUD overlay
+- [ ] 01-03-PLAN.md — Light beam rendering with polarization visual encoding, particles, physics bridge
 
 ### Phase 2: Interaction & Visual Language
 **Goal**: A student can place optical elements on a light path, rotate them, and observe real-time polarization changes -- discovering Malus's Law through manipulation without reading any text instructions
