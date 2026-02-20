@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 4 of 5 (Depth Layers & Content Integration)
-Plan: 1 of 3 in current phase (04-01 complete)
+Plan: 2 of 3 in current phase (04-02 complete)
 Status: Executing
-Last activity: 2026-02-21 -- Completed 04-01-PLAN.md (concept data model & store foundation)
+Last activity: 2026-02-21 -- Completed 04-02-PLAN.md (depth panel UI & content layers)
 
-Progress: [########..] 83%
+Progress: [#########.] 87%
 
 ## Performance Metrics
 
@@ -37,6 +37,7 @@ Progress: [########..] 83%
 
 *Updated after each plan completion*
 | Phase 04 P01 | 9min | 2 tasks | 6 files |
+| Phase 04 P02 | 12min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,10 @@ Recent decisions affecting current work:
 - [Phase 04]: 4 Crystal Lab + 3 Refraction Bench concepts with three-layer depth content (intuition/qualitative/quantitative)
 - [Phase 04]: triggerCondition always 'discovered' -- invisible gating per research recommendation
 - [Phase 04]: Depth panel default tab 'qualitative' -- formulas are deepest layer, never shown first
+- [Phase 04]: Side-effect imports in DepthPanel.tsx for concept registry initialization
+- [Phase 04]: WorldMap/DepthPanel mutual exclusivity via store action cross-cleanup
+- [Phase 04]: Spring animation stiffness 120, damping 20 for ~0.7s panel settle time
+- [Phase 04]: SVG physics diagrams at 440x200 viewBox with Framer Motion micro-animations
 
 ### Pending Todos
 
@@ -112,5 +117,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 04-01-PLAN.md (concept data model & store foundation)
+Stopped at: Completed 04-02-PLAN.md (depth panel UI & content layers)
 Resume file: None
