@@ -93,6 +93,7 @@ Recent decisions affecting current work:
 - [03-03]: Meta-discoveries auto-achieved via queueMicrotask when all prerequisites met
 - [03-03]: Per-region discovery configs replace hardcoded global list for scalable region content
 - [03-03]: CSS animations (not Framer Motion) for boundary indicators to maintain beam layer lightweight pattern
+- [03-03]: allTimeDiscoveries Set for global discovery accumulation -- switchRegion only overwrites per-region achievedDiscoveries, not the global set
 
 ### Pending Todos
 
