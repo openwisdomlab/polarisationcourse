@@ -97,11 +97,12 @@ Plans:
   1. All 6 physics units are represented across the world's regions (fundamentals, modulation, interfaces, transparent media, scattering media, polarization measurement) -- no core concept is missing
   2. Each region has a distinct illustrated atmosphere (color palette, geometric motifs, lighting effects, particle animations) that reaches Monument Valley's "every frame worth pausing on" quality standard -- the 2D approach enables pixel-perfect refinement
   3. All student-facing text, labels, and theory content is available in both Chinese and English, switchable without reloading
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — Content expansion: 4 region concept definitions (11 concepts), 4 demo explorers, bilingual i18n (~200 keys)
+- [ ] 05-02-PLAN.md — Visual atmosphere polish: unified cool palette, 6 decoration SVG upgrades, responsive design (desktop/tablet/mobile)
+- [ ] 05-03-PLAN.md — Integration: region name localization, UI string i18n audit, beam effect polish, final verification checkpoint
 
 ## Progress
 
@@ -114,4 +115,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Interaction & Visual Language | 4/4 | Complete    | 2026-02-20 |
 | 3. Multi-Region Isometric World | 3/3 | Complete    | 2026-02-21 |
 | 4. Depth Layers & Content Integration | 0/3 | Not started | - |
-| 5. Visual Polish & Full Coverage | 0/2 | Not started | - |
+| 5. Visual Polish & Full Coverage | 0/3 | Not started | - |
