@@ -9,28 +9,28 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation & Minimum Viable Scene)
-Plan: 2 of 3 in current phase
-Status: Executing phase 1
-Last activity: 2026-02-20 -- Completed 01-02-PLAN.md (isometric scene + click-to-move + HUD)
+Phase: 1 of 5 (Foundation & Minimum Viable Scene) -- COMPLETE
+Plan: 3 of 3 in current phase (all complete)
+Status: Phase 1 complete, ready for Phase 2
+Last activity: 2026-02-20 -- Completed 01-03-PLAN.md (light beam rendering + physics bridge)
 
-Progress: [###.......] 13%
+Progress: [####......] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 5.5 min
-- Total execution time: 0.18 hours
+- Total plans completed: 3
+- Average duration: 6 min
+- Total execution time: 0.3 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 2 | 11 min | 5.5 min |
+| 1 | 3 | 18 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (6 min)
+- Last 5 plans: 01-01 (5 min), 01-02 (6 min), 01-03 (7 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -54,6 +54,9 @@ Recent decisions affecting current work:
 - [01-02]: Camera transform uses scale() then translate() on motion.div for GPU-composited pan/zoom
 - [01-02]: Zoom-toward-cursor preserves world point under cursor by recalculating camera offset
 - [01-02]: Avatar photon orb uses MotionValue-driven position for zero React re-renders during movement
+- [01-03]: Continuous HSL polarization encoding (not discrete 4-color) -- orientation 0-180 deg maps to hue 0-360
+- [01-03]: rAF + direct DOM mutation for beam particles -- not Framer Motion (better for 50-100+ particles)
+- [01-03]: Waveplate fastAxis=0 (not 22.5) for physically correct circular polarization demonstration
 
 ### Pending Todos
 
@@ -68,5 +71,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 01-02-PLAN.md (isometric scene rendering + click-to-move + HUD)
+Stopped at: Completed 01-03-PLAN.md (light beam + physics bridge) -- Phase 1 complete
 Resume file: None

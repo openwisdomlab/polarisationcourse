@@ -18,11 +18,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Light & Physics
 
-- [ ] **PHYS-01**: Light beam renders polarization state changes in real-time (color/brightness/shape encodes polarization angle/ellipticity/intensity) using SVG/Canvas beam rendering
-- [ ] **PHYS-02**: Beam responds visually within <16ms after optical element manipulation, physically accurate (Mueller/Jones calculation)
+- [x] **PHYS-01**: Light beam renders polarization state changes in real-time (color/brightness/shape encodes polarization angle/ellipticity/intensity) using SVG/Canvas beam rendering
+- [x] **PHYS-02**: Beam responds visually within <16ms after optical element manipulation, physically accurate (Mueller/Jones calculation)
 - [ ] **PHYS-03**: Unified polarization visual language -- all regions use consistent color/shape/animation encoding for polarization states
 - [ ] **PHYS-04**: Light beam can propagate across regions -- same beam exhibits different polarization phenomena in different environments
-- [ ] **PHYS-05**: Maintains 60fps desktop, 30fps+ mobile performance budget (2D rendering is inherently lighter than 3D)
+- [x] **PHYS-05**: Maintains 60fps desktop, 30fps+ mobile performance budget (2D rendering is inherently lighter than 3D)
 
 ### Interaction
 
@@ -108,11 +108,11 @@ Deferred to future release. Tracked but not in current roadmap.
 | WRLD-04 | Phase 1 | Complete |
 | WRLD-05 | Phase 3 | Pending |
 | WRLD-06 | Phase 3 | Pending |
-| PHYS-01 | Phase 1 | Pending |
-| PHYS-02 | Phase 1 | Pending |
+| PHYS-01 | Phase 1 | Complete |
+| PHYS-02 | Phase 1 | Complete |
 | PHYS-03 | Phase 2 | Pending |
 | PHYS-04 | Phase 3 | Pending |
-| PHYS-05 | Phase 1 | Pending |
+| PHYS-05 | Phase 1 | Complete |
 | INTR-01 | Phase 2 | Pending |
 | INTR-02 | Phase 2 | Pending |
 | INTR-03 | Phase 2 | Pending |
