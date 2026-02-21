@@ -53,6 +53,11 @@ export const crystalLabConcepts: ConceptDefinition[] = [
       derivationStepsKey: 'odyssey.concepts.malusLaw.quantitative.derivation',
     },
 
+    courseLink: {
+      path: '/demos/malus',
+      labelKey: 'odyssey.courseLink.malusLaw',
+    },
+
     demoComponentId: 'malus-law-explorer',
     triggerElementTypes: ['polarizer'],
     triggerCondition: 'discovered',
@@ -99,6 +104,11 @@ export const crystalLabConcepts: ConceptDefinition[] = [
           labelKey: 'odyssey.concepts.crossedPolarizers.formulas.extinction',
         },
       ],
+    },
+
+    courseLink: {
+      path: '/demos/malus',
+      labelKey: 'odyssey.courseLink.crossedPolarizers',
     },
 
     triggerElementTypes: ['polarizer'],
@@ -156,6 +166,11 @@ export const crystalLabConcepts: ConceptDefinition[] = [
       ],
     },
 
+    courseLink: {
+      path: '/demos/waveplate',
+      labelKey: 'odyssey.courseLink.circularPolarization',
+    },
+
     demoComponentId: 'circular-pol-explorer',
     triggerElementTypes: ['waveplate'],
     triggerCondition: 'discovered',
@@ -202,6 +217,11 @@ export const crystalLabConcepts: ConceptDefinition[] = [
         },
       ],
       derivationStepsKey: 'odyssey.concepts.threePolarizer.quantitative.derivation',
+    },
+
+    courseLink: {
+      path: '/demos/malus',
+      labelKey: 'odyssey.courseLink.threePolarizer',
     },
 
     triggerElementTypes: ['polarizer'],

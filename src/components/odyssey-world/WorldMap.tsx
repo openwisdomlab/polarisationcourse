@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { getCourseInfoForRegion } from './regionCourseMap'
 import {
   REGION_DEFINITIONS,
   META_DISCOVERIES,
@@ -156,7 +157,7 @@ const RegionShape = React.memo(function RegionShape({
       {/* 区域名称 -- i18n */}
       <text
         x={cx}
-        y={cy - 2}
+        y={cy - 8}
         textAnchor="middle"
         dominantBaseline="middle"
         fill={isVisited ? '#fff' : '#999'}
@@ -166,6 +167,24 @@ const RegionShape = React.memo(function RegionShape({
       >
         {t(`odyssey.regions.${layout.label}`)}
       </text>
+
+      {/* 课程单元标签 */}
+      {(() => {
+        const courseInfo = getCourseInfoForRegion(layout.id)
+        return courseInfo ? (
+          <text
+            x={cx}
+            y={cy + 5}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill={isVisited ? 'rgba(255,255,255,0.4)' : 'rgba(153,153,153,0.3)'}
+            fontSize={7}
+            style={{ pointerEvents: 'none', userSelect: 'none' }}
+          >
+            {t(courseInfo.unitLabelKey)}
+          </text>
+        ) : null
+      })()}
 
       {/* 发现进度 -- i18n */}
       <text

@@ -55,6 +55,11 @@ export const scatteringChamberConcepts: ConceptDefinition[] = [
       derivationStepsKey: 'odyssey.concepts.rayleighPolarization.quantitative.derivation',
     },
 
+    courseLink: {
+      path: '/demos/rayleigh',
+      labelKey: 'odyssey.courseLink.rayleighPolarization',
+    },
+
     demoComponentId: 'rayleigh-explorer',
     triggerElementTypes: ['environment'],
     triggerCondition: 'discovered',
@@ -105,6 +110,11 @@ export const scatteringChamberConcepts: ConceptDefinition[] = [
           labelKey: 'odyssey.concepts.skyPolarizationPattern.formulas.gammaDefinition',
         },
       ],
+    },
+
+    courseLink: {
+      path: '/demos/rayleigh',
+      labelKey: 'odyssey.courseLink.skyPolarizationPattern',
     },
 
     triggerElementTypes: ['environment'],

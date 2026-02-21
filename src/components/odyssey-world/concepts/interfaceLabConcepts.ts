@@ -56,6 +56,11 @@ export const interfaceLabConcepts: ConceptDefinition[] = [
       derivationStepsKey: 'odyssey.concepts.fresnelReflection.quantitative.derivation',
     },
 
+    courseLink: {
+      path: '/demos/fresnel',
+      labelKey: 'odyssey.courseLink.fresnelReflection',
+    },
+
     demoComponentId: 'fresnel-explorer',
     triggerElementTypes: ['environment'],
     triggerCondition: 'discovered',
@@ -113,6 +118,11 @@ export const interfaceLabConcepts: ConceptDefinition[] = [
       ],
     },
 
+    courseLink: {
+      path: '/demos/fresnel',
+      labelKey: 'odyssey.courseLink.mediumComparison',
+    },
+
     triggerElementTypes: ['environment'],
     triggerCondition: 'discovered',
 
@@ -162,6 +172,11 @@ export const interfaceLabConcepts: ConceptDefinition[] = [
           labelKey: 'odyssey.concepts.stackedInterfaces.formulas.cumulativeReflection',
         },
       ],
+    },
+
+    courseLink: {
+      path: '/demos/fresnel',
+      labelKey: 'odyssey.courseLink.stackedInterfaces',
     },
 
     triggerElementTypes: ['environment'],

@@ -4575,8 +4575,40 @@
       "interfaceLab": "Interface Lab",
       "measurementStudio": "Measurement Studio"
     },
+    "welcome": {
+      "narrative": "Explore 6 optical laboratories and discover the physics of polarized light. Each lab corresponds to a course unit \u2014 manipulate optical elements, observe light behavior, and uncover fundamental laws.",
+      "unitLabel": {
+        "crystalLab": "Units 0-1: Polarization & Malus's Law",
+        "wavePlatform": "Unit 1: Retardation & Poincar\u00e9 Sphere",
+        "refractionBench": "Unit 2: Brewster & Fresnel",
+        "scatteringChamber": "Unit 4: Rayleigh & Mie Scattering",
+        "interfaceLab": "Unit 2: Fresnel & Total Reflection",
+        "measurementStudio": "Unit 5: Stokes & Mueller"
+      }
+    },
+    "courseLink": {
+      "malusLaw": "Open Malus's Law Demo \u2192",
+      "crossedPolarizers": "Open Malus's Law Demo \u2192",
+      "circularPolarization": "Open Waveplate Demo \u2192",
+      "threePolarizer": "Open Malus's Law Demo \u2192",
+      "brewsterAngle": "Open Brewster's Angle Demo \u2192",
+      "snellPolarization": "Open Fresnel Demo \u2192",
+      "totalInternalReflection": "Open Fresnel Demo \u2192",
+      "retardationSeries": "Open Waveplate Demo \u2192",
+      "waveplateCompensation": "Open Waveplate Demo \u2192",
+      "poincareSphere": "Open Poincar\u00e9 Sphere \u2192",
+      "rayleighPolarization": "Open Rayleigh Demo \u2192",
+      "skyPolarizationPattern": "Open Rayleigh Demo \u2192",
+      "fresnelReflection": "Open Fresnel Demo \u2192",
+      "mediumComparison": "Open Fresnel Demo \u2192",
+      "stackedInterfaces": "Open Fresnel Demo \u2192",
+      "stokesMeasurement": "Open Stokes Demo \u2192",
+      "degreeOfPolarization": "Open Stokes Demo \u2192",
+      "fullPolarimetry": "Open Mueller Demo \u2192"
+    },
     "ui": {
       "backToHome": "Back to home",
+      "backToDemos": "Back to demos",
       "worldMap": "World Map",
       "settings": "Settings",
       "settingsPlaceholder": "Settings coming soon",
@@ -4654,13 +4686,15 @@
     },
     "objectives": {
       "exploreNewRegion": "All discoveries found! Explore a new region \u2192",
-      "keepExploring": "Interact with the optical elements to discover physics"
+      "keepExploring": "Interact with the optical elements to discover physics",
+      "goalPrefix": "Goal"
     },
     "menu": {
       "title": "Discoveries"
     },
     "toast": {
-      "learnMore": "Learn why →"
+      "learnMore": "Learn why \u2192",
+      "goToCourse": "Course Demo \u2192"
     },
     "depth": {
       "discoverMore": "Discover more to unlock"

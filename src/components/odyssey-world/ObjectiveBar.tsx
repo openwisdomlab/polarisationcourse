@@ -35,7 +35,7 @@ export function ObjectiveBar() {
   const discoveries = regionDef?.discoveries ?? []
 
   // 计算进度和下一个目标
-  const { achieved, total, nextHint, allComplete } = useMemo(() => {
+  const { achieved, total, nextHint, nextName, allComplete } = useMemo(() => {
     const achievedCount = discoveries.filter((d) => achievedDiscoveries.has(d.id)).length
     const totalCount = discoveries.length
 
@@ -47,21 +47,23 @@ export function ObjectiveBar() {
       achieved: achievedCount,
       total: totalCount,
       nextHint: next?.hint ?? null,
+      nextName: next?.name ?? null,
       allComplete: achievedCount >= totalCount,
     }
   }, [discoveries, achievedDiscoveries])
 
-  // 教程期间不显示 ObjectiveBar (避免信息过载)
-  if (!tutorialCompleted && tutorialState !== 'idle' && tutorialState !== 'complete') {
-    return null
-  }
+  // 教程期间仍显示 ObjectiveBar，但增加底部偏移避免与教程卡片重叠
+  const isTutorialActive = !tutorialCompleted && tutorialState !== 'idle' && tutorialState !== 'complete'
 
   // 区域名称
   const regionNameKey = activeRegionId.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
   const regionName = t(`odyssey.regions.${regionNameKey}`)
 
   return (
-    <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
+    <div className={cn(
+      'pointer-events-none absolute left-1/2 -translate-x-1/2 z-10',
+      isTutorialActive ? 'bottom-28' : 'bottom-2',
+    )}>
       <AnimatePresence mode="wait">
         <motion.div
           key={`${activeRegionId}-${achieved}`}
@@ -89,7 +91,14 @@ export function ObjectiveBar() {
             </span>
           </div>
 
-          {/* 当前目标 */}
+          {/* 发现目标名称 */}
+          {!allComplete && nextName && (
+            <p className="text-[10px] text-blue-400/70 dark:text-blue-300/50 mb-0.5">
+              {t('odyssey.objectives.goalPrefix')}: {nextName}
+            </p>
+          )}
+
+          {/* 当前目标提示 */}
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300">
             {allComplete
               ? t('odyssey.objectives.exploreNewRegion')

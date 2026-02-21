@@ -12,7 +12,7 @@
  * 渲染为 HTML 叠加层, z-15 (低于 WorldMap/DepthPanel)
  */
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -199,8 +199,8 @@ export function GuidedTutorial() {
       </AnimatePresence>
 
       {/* 脉冲指示环 -- 仅步骤 1 在 highlight 状态显示 */}
-      {tutorialStep === 0 && tutorialState === 'highlight-element' && (
-        <TutorialPulseIndicator />
+      {tutorialStep === 0 && tutorialState === 'highlight-element' && currentStep.targetElementId && (
+        <TutorialPulseIndicator targetElementId={currentStep.targetElementId} />
       )}
     </div>
   )
@@ -209,14 +209,58 @@ export function GuidedTutorial() {
 /**
  * TutorialPulseIndicator -- 渲染脉冲指示环在目标元素上方
  *
- * 使用 CSS 动画而非 framer-motion，避免高频重渲染。
- * 通过查找目标元素的屏幕坐标定位。
+ * 通过 DOM 查询 [data-element-id] 属性获取 SVG 元素的屏幕坐标，
+ * 使用 getBoundingClientRect() 自动适配摄像机平移和缩放。
+ * 以 300ms 间隔轮询位置，5 秒超时后停止查询。
  */
-function TutorialPulseIndicator() {
-  // 使用 SVG 叠加层在场景中的目标元素上渲染脉冲环
-  // 由于元素位置是通过 SVG transform 计算的，我们在这里用简化的方式指向
+function TutorialPulseIndicator({ targetElementId }: { targetElementId: string }) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    let attempts = 0
+    const maxAttempts = 17 // ~5 秒 (17 * 300ms)
+
+    const interval = setInterval(() => {
+      const svgEl = document.querySelector(`[data-element-id="${targetElementId}"]`)
+      if (svgEl) {
+        const rect = svgEl.getBoundingClientRect()
+        setPos({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 })
+      }
+
+      attempts++
+      if (attempts >= maxAttempts && !svgEl) {
+        clearInterval(interval)
+      }
+    }, 300)
+
+    return () => clearInterval(interval)
+  }, [targetElementId])
+
+  if (!pos) {
+    // 回退: 元素未找到时仍显示居中脉冲
+    return (
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        <motion.div
+          className="h-16 w-16 rounded-full border-2 border-blue-400/60 dark:border-blue-300/50"
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.6, 0.2, 0.6],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+    <div
+      className="fixed pointer-events-none"
+      style={{ left: pos.x, top: pos.y, transform: 'translate(-50%, -50%)' }}
+    >
       <motion.div
         className="h-16 w-16 rounded-full border-2 border-blue-400/60 dark:border-blue-300/50"
         animate={{
