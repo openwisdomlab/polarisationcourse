@@ -34,3 +34,12 @@ __pycache__/
 *.egg-info/
 .eggs/
 docs/plans/2026-02-18-genie-polarization-world-prompts.md
+
+# Claude Code
+.claude/
+
+# Playwright MCP
+.playwright-mcp/
+
+# Planning (GSD workflow)
+.planning/
