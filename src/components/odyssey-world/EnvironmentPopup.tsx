@@ -12,6 +12,7 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import {
   useEnvironmentProperties,
@@ -86,6 +87,7 @@ interface LightSourcePanelProps {
 
 /** 光源属性面板: 波长、强度、偏振方式 */
 function LightSourcePanel({ properties, onUpdate }: LightSourcePanelProps) {
+  const { t } = useTranslation()
   const wavelength = (properties.wavelength as number) ?? 550
   const intensity = (properties.intensity as number) ?? 1
   const polarization = (properties.polarization as string) ?? 'horizontal'
@@ -93,13 +95,13 @@ function LightSourcePanel({ properties, onUpdate }: LightSourcePanelProps) {
   return (
     <div className="flex flex-col gap-3">
       <div className="text-xs font-semibold tracking-wider text-amber-300/90 uppercase">
-        Light Source
+        {t('odyssey.ui.lightSource')}
       </div>
 
       {/* 波长滑块 + 颜色预览 */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-white/70">Wavelength</span>
+          <span className="text-xs text-white/70">{t('odyssey.ui.wavelength')}</span>
           <div className="flex items-center gap-1.5">
             <div
               className="h-3 w-3 rounded-full border border-white/20"
@@ -125,7 +127,7 @@ function LightSourcePanel({ properties, onUpdate }: LightSourcePanelProps) {
       {/* 强度滑块 */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-white/70">Intensity</span>
+          <span className="text-xs text-white/70">{t('odyssey.ui.intensity')}</span>
           <span className="text-xs font-mono text-white/90">{intensity.toFixed(2)}</span>
         </div>
         <input
@@ -144,7 +146,7 @@ function LightSourcePanel({ properties, onUpdate }: LightSourcePanelProps) {
 
       {/* 偏振方式下拉 */}
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-white/70">Polarization</span>
+        <span className="text-xs text-white/70">{t('odyssey.ui.polarization')}</span>
         <select
           value={polarization}
           onChange={(e) => onUpdate('polarization', e.target.value)}
@@ -171,6 +173,7 @@ interface EnvironmentPanelProps {
 
 /** 环境属性面板: 介质类型、折射率 */
 function EnvironmentPanel({ properties, onUpdate }: EnvironmentPanelProps) {
+  const { t } = useTranslation()
   const mediumType = (properties.mediumType as string) ?? 'glass'
   const refractiveIndex = (properties.refractiveIndex as number) ?? 1.52
 
@@ -189,12 +192,12 @@ function EnvironmentPanel({ properties, onUpdate }: EnvironmentPanelProps) {
   return (
     <div className="flex flex-col gap-3">
       <div className="text-xs font-semibold tracking-wider text-cyan-300/90 uppercase">
-        Medium
+        {t('odyssey.ui.medium')}
       </div>
 
       {/* 介质类型下拉 */}
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-white/70">Material</span>
+        <span className="text-xs text-white/70">{t('odyssey.ui.material')}</span>
         <select
           value={mediumType}
           onChange={(e) => handleMediumChange(e.target.value)}
@@ -212,7 +215,7 @@ function EnvironmentPanel({ properties, onUpdate }: EnvironmentPanelProps) {
       {/* 折射率滑块 */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-white/70">Refractive Index</span>
+          <span className="text-xs text-white/70">{t('odyssey.ui.refractiveIndex')}</span>
           <span className="text-xs font-mono text-white/90">{refractiveIndex.toFixed(2)}</span>
         </div>
         <input

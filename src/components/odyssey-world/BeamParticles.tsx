@@ -45,9 +45,9 @@ export const BeamParticles = React.memo(function BeamParticles({
           key={i}
           cx={0}
           cy={0}
-          r={2}
+          r={1.8}
           fill={color}
-          opacity={0.6}
+          opacity={0.5}
         />
       ))}
     </g>

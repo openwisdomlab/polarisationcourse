@@ -4595,7 +4595,25 @@
       "colorDirection": "Color = Direction",
       "brightnessIntensity": "Brightness = Intensity",
       "shapePolarizationType": "Shape = Polarization Type",
-      "widthStrength": "Width = Strength"
+      "widthStrength": "Width = Strength",
+      "welcomeTitle": "Welcome to the Optical World",
+      "welcomeClickToMove": "Click to move",
+      "welcomeScrollToZoom": "Scroll to zoom",
+      "welcomeDragElements": "Drag elements to experiment",
+      "welcomePressM": "Press M for world map",
+      "welcomeStartExploring": "Start Exploring",
+      "controlHints": "Click to move | Scroll to zoom | M: Map",
+      "language": "Language",
+      "help": "Help",
+      "lightSource": "Light Source",
+      "wavelength": "Wavelength",
+      "intensity": "Intensity",
+      "polarization": "Polarization",
+      "medium": "Medium",
+      "material": "Material",
+      "refractiveIndex": "Refractive Index",
+      "loadingExplorer": "Loading explorer...",
+      "demoComingSoon": "Demo coming soon"
     }
   },
   "odysseyLab": {

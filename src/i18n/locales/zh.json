@@ -4783,7 +4783,25 @@
       "colorDirection": "颜色 = 方向",
       "brightnessIntensity": "亮度 = 强度",
       "shapePolarizationType": "形状 = 偏振类型",
-      "widthStrength": "线宽 = 强度"
+      "widthStrength": "线宽 = 强度",
+      "welcomeTitle": "欢迎来到光学世界",
+      "welcomeClickToMove": "点击移动",
+      "welcomeScrollToZoom": "滚轮缩放",
+      "welcomeDragElements": "拖拽元素进行实验",
+      "welcomePressM": "按 M 打开世界地图",
+      "welcomeStartExploring": "开始探索",
+      "controlHints": "点击移动 | 滚轮缩放 | M: 地图",
+      "language": "语言",
+      "help": "帮助",
+      "lightSource": "光源",
+      "wavelength": "波长",
+      "intensity": "强度",
+      "polarization": "偏振方式",
+      "medium": "介质",
+      "material": "材料",
+      "refractiveIndex": "折射率",
+      "loadingExplorer": "加载探索器...",
+      "demoComingSoon": "即将推出"
     }
   },
   "odysseyLab": {

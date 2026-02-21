@@ -110,18 +110,18 @@ export const LightBeam = React.memo(function LightBeam({ segment, ghost = false 
 
   return (
     <g className="light-beam-segment">
-      {/* 表面照明效果 -- 光束下方的柔和彩色光带 (Phase 5: 增大半径和透明度) */}
+      {/* 表面照明效果 -- 光束下方的柔和彩色光带 (Phase 5: 增大半径和透明度, 更自然扩散) */}
       <ellipse
         cx={illumination.midX}
         cy={illumination.midY + 8}
-        rx={illumination.length / 2 + 4}
-        ry={16}
+        rx={illumination.length / 2 + 6}
+        ry={20}
         fill={segment.color}
-        opacity={0.08}
+        opacity={0.10}
         transform={`rotate(${illumination.angle} ${illumination.midX} ${illumination.midY + 8})`}
       />
 
-      {/* 辉光光晕 -- 3x 线宽, 20% 透明度, 更亮的颜色 */}
+      {/* 辉光光晕 -- 3x 线宽, 柔和透明度, 更自然的光晕效果 */}
       <line
         x1={from.x}
         y1={fromScreenY}
@@ -130,7 +130,7 @@ export const LightBeam = React.memo(function LightBeam({ segment, ghost = false 
         stroke={segment.color}
         strokeWidth={haloWidth}
         strokeLinecap="round"
-        opacity={segment.opacity * 0.2}
+        opacity={segment.opacity * 0.15}
       />
 
       {/* 光束主体 -- 带 glow filter */}

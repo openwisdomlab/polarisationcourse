@@ -11,6 +11,7 @@
  */
 
 import React, { Suspense } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { ConceptDefinition } from '@/components/odyssey-world/concepts/conceptRegistry'
 
 // ── 惰性加载注册表 ──────────────────────────────────────────────────
@@ -28,6 +29,7 @@ const DEMO_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentT
 // ── 加载骨架 ──────────────────────────────────────────────────────
 
 function LoadingSkeleton() {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-col items-center justify-center py-10">
       <div
@@ -39,7 +41,7 @@ function LoadingSkeleton() {
         }}
       />
       <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
-      <p className="mt-3 text-xs text-white/30">Loading explorer...</p>
+      <p className="mt-3 text-xs text-white/30">{t('odyssey.ui.loadingExplorer')}</p>
     </div>
   )
 }
@@ -57,6 +59,7 @@ interface DemoLayerProps {
  * 若 demoComponentId 不存在或未映射，显示占位符。
  */
 export function DemoLayer({ concept }: DemoLayerProps) {
+  const { t } = useTranslation()
   const demoId = concept.demoComponentId
   const LazyComponent = demoId ? DEMO_COMPONENTS[demoId] : undefined
 
@@ -64,7 +67,7 @@ export function DemoLayer({ concept }: DemoLayerProps) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <p className="text-sm text-white/30">
-          Demo coming soon
+          {t('odyssey.ui.demoComingSoon')}
         </p>
       </div>
     )

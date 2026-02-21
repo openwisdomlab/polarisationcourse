@@ -82,12 +82,14 @@ export const BeamGlowFilters = React.memo(function BeamGlowFilters() {
         </feMerge>
       </filter>
 
-      {/* 表面照明渐变 -- 光束照亮下方表面的效果 (Phase 5: 增强表面照明) */}
+      {/* 表面照明渐变 -- 光束照亮下方表面的效果 (Phase 5: 增强表面照明, 更自然扩散) */}
       <linearGradient id="beam-illumination" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0%" stopColor="currentColor" stopOpacity="0" />
-        <stop offset="25%" stopColor="currentColor" stopOpacity="0.08" />
-        <stop offset="50%" stopColor="currentColor" stopOpacity="0.10" />
-        <stop offset="75%" stopColor="currentColor" stopOpacity="0.08" />
+        <stop offset="20%" stopColor="currentColor" stopOpacity="0.06" />
+        <stop offset="40%" stopColor="currentColor" stopOpacity="0.11" />
+        <stop offset="50%" stopColor="currentColor" stopOpacity="0.12" />
+        <stop offset="60%" stopColor="currentColor" stopOpacity="0.11" />
+        <stop offset="80%" stopColor="currentColor" stopOpacity="0.06" />
         <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
       </linearGradient>
     </>
