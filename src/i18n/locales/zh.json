@@ -4779,6 +4779,7 @@
       "legendContrasting": "对比",
       "pressToggle": "按 M 切换",
       "discoveryProgress": "{{count}}/{{total}} 个发现",
+      "recommended": "推荐",
       "polarization": "偏振编码",
       "colorDirection": "颜色 = 方向",
       "brightnessIntensity": "亮度 = 强度",
@@ -4802,6 +4803,195 @@
       "refractiveIndex": "折射率",
       "loadingExplorer": "加载探索器...",
       "demoComingSoon": "即将推出"
+    },
+    "tutorial": {
+      "step1Title": "旋转这个偏振片",
+      "step1Desc": "点击偏振片并旋转它，观察光的变化",
+      "step2Title": "添加一个元件",
+      "step2Desc": "从面板中拖拽一个新的光学元件到场景中",
+      "step3Title": "观察光的变化",
+      "step3Desc": "观察光束通过元件时如何变化",
+      "skip": "跳过教程"
+    },
+    "hints": {
+      "malusLaw": "将偏振片旋转 90\u00b0，观察强度变化",
+      "crossedPolarizers": "将两个偏振片设为相互垂直",
+      "circularPolarization": "将波片对准 45\u00b0 以产生圆偏振光",
+      "halfWaveRotation": "使用半波片旋转偏振方向",
+      "threePolarizer": "在两个正交偏振片之间放置一个偏振片以恢复光",
+      "birefringentSplitting": "让光通过棱镜，观察分裂的光束",
+      "cascadedWaveplates": "将两个波片串联以产生椭圆偏振",
+      "retardationSeries": "比较不同波片的相位延迟值",
+      "waveplateCompensation": "用两个波片互相抵消效果",
+      "polarizationOrthogonality": "通过波片找到正交偏振态",
+      "poincareTraverse": "使用波片在庞加莱球上描绘轨迹",
+      "brewsterAngle": "找到反射光完全偏振的角度",
+      "totalReflection": "增大角度直到出现全内反射",
+      "angleDependence": "观察偏振如何随入射角变化",
+      "snellPolarization": "观察折射如何影响偏振态",
+      "rayleighPolarization": "观察散射光如何变为偏振光",
+      "skyPattern": "探索偏振在天空中的分布变化",
+      "wavelengthDependence": "比较不同波长的散射效果",
+      "fresnelReflection": "观察玻璃表面的反射系数",
+      "mediumComparison": "比较玻璃和水的反射行为",
+      "stackedInterfaces": "让光通过多个界面",
+      "stokesMeasurement": "测量光束的 Stokes 参数",
+      "dopMeasurement": "测定部分偏振光的偏振度",
+      "fullPolarimetry": "进行完整的偏振态测量",
+      "muellerVerification": "验证光学元件的 Mueller 矩阵"
+    },
+    "objectives": {
+      "exploreNewRegion": "所有发现已完成！探索新的区域 \u2192",
+      "keepExploring": "与光学元件互动以发现物理规律"
+    },
+    "menu": {
+      "title": "发现日志"
+    },
+    "toast": {
+      "learnMore": "了解原因 →"
+    },
+    "depth": {
+      "discoverMore": "发现更多以解锁"
+    },
+    "summary": {
+      "complete": "已完成！",
+      "nextRegion": "下一个区域:"
+    },
+    "beam": {
+      "extinct": "消光",
+      "circularR": "圆偏振 (右旋)",
+      "circularL": "圆偏振 (左旋)",
+      "linear": "线偏振",
+      "elliptical": "椭圆偏振"
+    },
+    "palette": {
+      "polarizer": "偏振片",
+      "waveplate": "波片",
+      "prism": "棱镜",
+      "environment": "介质",
+      "unlocked": "新工具已解锁: {{tool}}"
+    },
+    "discoveries": {
+      "malus-law-basic": {
+        "name": "马吕斯定律",
+        "toast": "光通过偏振片时强度遵循 cos²θ 规律",
+        "description": "旋转检偏器观察强度随角度的变化"
+      },
+      "crossed-polarizers": {
+        "name": "正交偏振",
+        "toast": "两个相互垂直的偏振片完全阻断光线",
+        "description": "正交偏振片产生完全消光"
+      },
+      "circular-polarization": {
+        "name": "圆偏振",
+        "toast": "四分之一波片在 45° 处产生圆偏振光",
+        "description": "电场矢量在空间中描绘螺旋线"
+      },
+      "half-wave-rotation": {
+        "name": "半波旋转",
+        "toast": "半波片将偏振方向旋转 2θ 角度",
+        "description": "控制偏振方位的强大工具"
+      },
+      "three-polarizer-surprise": {
+        "name": "三偏振片惊喜",
+        "toast": "在正交偏振片之间插入第三个偏振片竟然恢复了光！",
+        "description": "揭示投影本质的反直觉实验"
+      },
+      "birefringent-splitting": {
+        "name": "双折射分束",
+        "toast": "双折射晶体将光分成两束偏振光",
+        "description": "寻常光和非寻常光以不同速度传播"
+      },
+      "cascaded-retardation": {
+        "name": "级联延迟",
+        "toast": "多个波片组合产生复杂偏振态",
+        "description": "顺序延迟器可实现任意偏振变换"
+      },
+      "brewster-angle": {
+        "name": "布儒斯特角",
+        "toast": "在布儒斯特角处，反射光为完美线偏振光",
+        "description": "反射偏振取决于入射角"
+      },
+      "total-internal-reflection": {
+        "name": "全内反射",
+        "toast": "超过临界角时，光在介质内完全反射",
+        "description": "全内反射引入改变偏振的相移"
+      },
+      "fresnel-coefficients": {
+        "name": "菲涅尔系数",
+        "toast": "菲涅尔方程描述界面处光的反射和透射量",
+        "description": "s 偏振和 p 偏振分量行为不同"
+      },
+      "evanescent-wave": {
+        "name": "倏逝波",
+        "toast": "全内反射时，倏逝波延伸到表面之外",
+        "description": "一种可以穿隧薄间隙的衰减波"
+      },
+      "standing-wave": {
+        "name": "驻波",
+        "toast": "相向传播的波创建静态干涉图案",
+        "description": "波节和波腹揭示光的波动本质"
+      },
+      "superposition": {
+        "name": "波叠加",
+        "toast": "两个波基于相位进行建设性或破坏性叠加",
+        "description": "干涉现象背后的基本原理"
+      },
+      "group-velocity": {
+        "name": "群速度",
+        "toast": "波包以群速度传播，与相速度不同",
+        "description": "色散导致脉冲在传播过程中展宽"
+      },
+      "beat-frequency": {
+        "name": "拍频",
+        "toast": "两个频率相近的波产生缓慢变化的包络",
+        "description": "拍频图案揭示微小的频率差异"
+      },
+      "rayleigh-scattering": {
+        "name": "瑞利散射",
+        "toast": "小颗粒更强烈地散射短波长光——这就是天空为蓝色的原因！",
+        "description": "散射强度遵循 1/λ⁴ 依赖关系"
+      },
+      "mie-scattering": {
+        "name": "米氏散射",
+        "toast": "较大颗粒几乎均匀地散射所有波长的光",
+        "description": "云朵因水滴散射所有颜色而呈白色"
+      },
+      "polarization-by-scattering": {
+        "name": "散射偏振",
+        "toast": "散射光在垂直于散射平面的方向上变为部分偏振",
+        "description": "90° 散射光偏振度最大"
+      },
+      "stokes-measurement": {
+        "name": "斯托克斯测量",
+        "toast": "四次强度测量完全表征任意偏振态",
+        "description": "斯托克斯矢量 S = [S₀, S₁, S₂, S₃] 包含全部信息"
+      },
+      "jones-vs-stokes": {
+        "name": "琼斯与斯托克斯",
+        "toast": "琼斯矢量描述相干光；斯托克斯矢量处理部分偏振",
+        "description": "偏振分析的两个互补框架"
+      },
+      "mueller-matrix": {
+        "name": "穆勒矩阵",
+        "toast": "穆勒矩阵描述光学元件如何变换斯托克斯矢量",
+        "description": "4×4 矩阵捕获元件的所有偏振效应"
+      },
+      "poincare-sphere": {
+        "name": "庞加莱球",
+        "toast": "庞加莱球将所有偏振态映射到球面上的点",
+        "description": "偏振的优美几何表示"
+      },
+      "dop-concept": {
+        "name": "偏振度",
+        "toast": "偏振度衡量光束的偏振程度",
+        "description": "DOP = √(S₁² + S₂² + S₃²) / S₀，范围 0 到 1"
+      },
+      "snell-polarization": {
+        "name": "斯涅尔-偏振关联",
+        "toast": "斯涅尔定律和菲涅尔方程将折射与偏振联系起来",
+        "description": "折射角决定偏振分裂"
+      }
     }
   },
   "odysseyLab": {

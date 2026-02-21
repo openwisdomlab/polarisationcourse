@@ -67,6 +67,15 @@ export interface BeamSegment {
 /** 当前指针交互模式 */
 export type InteractionMode = 'navigate' | 'drag' | 'rotate' | 'idle'
 
+/** 教程状态机状态 */
+export type TutorialState =
+  | 'idle'
+  | 'highlight-element'
+  | 'await-rotation'
+  | 'show-result'
+  | 'next-task'
+  | 'complete'
+
 // ── 多区域状态类型 (Phase 3) ────────────────────────────────────────────
 
 /** 跨区域传播的光束信息 */
@@ -152,6 +161,18 @@ interface OdysseyWorldState {
   /** 悬停提示的屏幕坐标位置 */
   tooltipPosition: { x: number; y: number } | null
 
+  // ── 引导交互系统状态 (Guided Interaction) ──
+  /** 教程状态机: IDLE→HIGHLIGHT→AWAIT_ROTATION→SHOW_RESULT→NEXT→COMPLETE */
+  tutorialState: TutorialState
+  /** 教程当前步骤 (0-2，共 3 步) */
+  tutorialStep: number
+  /** 教程是否已完成 (持久化，不再显示) */
+  tutorialCompleted: boolean
+  /** 已交互过的元素 ID 集合 (用于停止呼吸脉冲) */
+  interactedElements: Set<string>
+  /** 发现菜单是否打开 */
+  discoveryMenuOpen: boolean
+
   // ── 动作 ──
   setCamera: (x: number, y: number) => void
   setZoom: (zoom: number) => void
@@ -189,6 +210,13 @@ interface OdysseyWorldState {
   setDepthPanelTab: (tab: 'qualitative' | 'quantitative' | 'demo') => void
   showConceptTooltip: (conceptId: string, x: number, y: number) => void
   hideConceptTooltip: () => void
+
+  // ── 引导交互系统动作 ──
+  setTutorialState: (state: TutorialState) => void
+  advanceTutorial: () => void
+  completeTutorial: () => void
+  markElementInteracted: (elementId: string) => void
+  toggleDiscoveryMenu: () => void
 
   // ── 多区域动作 (Phase 3) ──
   switchRegion: (regionId: string, entryPoint?: { x: number; y: number }) => void
@@ -232,6 +260,9 @@ const customPersistStorage: PersistStorage<Partial<OdysseyWorldState>> = {
     }
     if (stateData.visitedRegions) {
       stateData.visitedRegions = new Set(stateData.visitedRegions as string[])
+    }
+    if (stateData.interactedElements) {
+      stateData.interactedElements = new Set(stateData.interactedElements as string[])
     }
 
     // 恢复顶层 rotationHistory Map (截断历史)
@@ -288,6 +319,9 @@ const customPersistStorage: PersistStorage<Partial<OdysseyWorldState>> = {
           : [],
         visitedRegions: stateObj.visitedRegions
           ? [...stateObj.visitedRegions]
+          : [],
+        interactedElements: stateObj.interactedElements
+          ? [...stateObj.interactedElements]
           : [],
         rotationHistory: stateObj.rotationHistory
           ? [...stateObj.rotationHistory].map(
@@ -397,6 +431,13 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
         depthPanelActiveTab: 'qualitative' as const,
         tooltipConceptId: null,
         tooltipPosition: null,
+
+        // 引导交互系统状态 -- tutorialCompleted 持久化, 其余瞬态
+        tutorialState: 'idle' as TutorialState,
+        tutorialStep: 0,
+        tutorialCompleted: false,
+        interactedElements: new Set<string>(),
+        discoveryMenuOpen: false,
 
         // ── 动作 ──
 
@@ -559,6 +600,39 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
             tooltipPosition: null,
           }),
 
+        // ── 引导交互系统动作 ──
+
+        /** 设置教程状态机当前状态 */
+        setTutorialState: (state) =>
+          set({ tutorialState: state }),
+
+        /** 推进教程到下一步 */
+        advanceTutorial: () =>
+          set((s) => {
+            const nextStep = s.tutorialStep + 1
+            if (nextStep >= 3) {
+              return { tutorialState: 'complete' as TutorialState, tutorialStep: nextStep, tutorialCompleted: true }
+            }
+            return { tutorialState: 'highlight-element' as TutorialState, tutorialStep: nextStep }
+          }),
+
+        /** 标记教程为已完成 (跳过或完成) */
+        completeTutorial: () =>
+          set({ tutorialState: 'complete' as TutorialState, tutorialCompleted: true }),
+
+        /** 标记一个元素为已交互 (停止呼吸脉冲) */
+        markElementInteracted: (elementId) =>
+          set((s) => ({
+            interactedElements: new Set([...s.interactedElements, elementId]),
+          })),
+
+        /** 切换发现菜单 (与 WorldMap 和 DepthPanel 互斥) */
+        toggleDiscoveryMenu: () =>
+          set((s) => ({
+            discoveryMenuOpen: !s.discoveryMenuOpen,
+            ...(!s.discoveryMenuOpen ? { worldMapOpen: false, depthPanelConceptId: null } : {}),
+          })),
+
         // ── 多区域动作 (Phase 3) ──
 
         /**
@@ -611,6 +685,8 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
               depthPanelConceptId: null,
               tooltipConceptId: null,
               tooltipPosition: null,
+              // 清除引导 UI 状态
+              discoveryMenuOpen: false,
             }
           }),
 
@@ -724,6 +800,9 @@ export const useOdysseyWorldStore = create<OdysseyWorldState>()(
           sceneElements: state.sceneElements,
           beamSegments: state.beamSegments,
           rotationHistory: state.rotationHistory,
+          // 引导交互系统 -- 持久化完成状态和已交互元素
+          tutorialCompleted: state.tutorialCompleted,
+          interactedElements: state.interactedElements,
         }),
         /**
          * 水合回调 -- persist 恢复保存状态时触发

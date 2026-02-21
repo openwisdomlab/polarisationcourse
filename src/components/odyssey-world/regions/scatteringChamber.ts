@@ -108,6 +108,9 @@ export const scatteringChamberDiscoveries: DiscoveryConfig[] = [
     // 瑞利散射偏振: 90 度散射方向完全偏振化
     id: 'scattering-chamber-rayleigh-polarization',
     name: 'Rayleigh Scattering Polarization',
+    difficulty: 1,
+    hint: 'odyssey.hints.rayleighPolarization',
+    hintElements: ['scattering-chamber-environment-atmosphere', 'scattering-chamber-light-source-1'],
     check: (elements, beamSegments) => {
       const hasAtmosphere = elements.some(
         (el) => el.type === 'environment' && el.properties.mediumType === 'atmosphere',
@@ -128,6 +131,9 @@ export const scatteringChamberDiscoveries: DiscoveryConfig[] = [
     // 天空偏振模式: 不同散射角对应不同偏振度
     id: 'scattering-chamber-sky-pattern',
     name: 'Sky Polarization Pattern',
+    difficulty: 2,
+    hint: 'odyssey.hints.skyPattern',
+    hintElements: ['scattering-chamber-environment-atmosphere', 'scattering-chamber-light-source-1'],
     check: (_elements, beamSegments) => {
       // 需要多个不同偏振度的光束段（代表不同散射角）
       if (beamSegments.length < 3) return false
@@ -145,6 +151,9 @@ export const scatteringChamberDiscoveries: DiscoveryConfig[] = [
     // 散射与波长: 短波长散射更强 (蓝天原理)
     id: 'scattering-chamber-wavelength-dependence',
     name: 'Wavelength-Dependent Scattering',
+    difficulty: 1,
+    hint: 'odyssey.hints.wavelengthDependence',
+    hintElements: ['scattering-chamber-light-source-1', 'scattering-chamber-environment-atmosphere'],
     check: (elements, beamSegments) => {
       const lightSources = elements.filter((el) => el.type === 'light-source')
       if (lightSources.length === 0) return false
@@ -173,7 +182,7 @@ export const scatteringChamberDefinition: RegionDefinition = {
       platformStroke: '#4a5580',
       accentColor: '#5b68a4',
     },
-    gridOpacity: 0.015,
+    gridOpacity: 0.05,
   },
   gridWidth: 12,
   gridHeight: 12,

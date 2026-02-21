@@ -83,11 +83,22 @@ const SVG_HEIGHT = MAP_PADDING * 2 + 3 * CELL_HEIGHT + 2 * CELL_GAP_Y
 
 // ── 单个区域形状 ──────────────────────────────────────────────────────
 
+/** 推荐区域顺序 (按概念难度递增) */
+const RECOMMENDED_ORDER = [
+  'crystal-lab',
+  'wave-platform',
+  'refraction-bench',
+  'scattering-chamber',
+  'interface-lab',
+  'measurement-studio',
+]
+
 interface RegionShapeProps {
   layout: RegionLayout
   regionDef: RegionDefinition | undefined
   isVisited: boolean
   isActive: boolean
+  isRecommended: boolean
   discoveryCount: number
   totalDiscoveries: number
   onFastTravel: (regionId: string) => void
@@ -98,6 +109,7 @@ const RegionShape = React.memo(function RegionShape({
   regionDef,
   isVisited,
   isActive,
+  isRecommended,
   discoveryCount,
   totalDiscoveries,
   onFastTravel,
@@ -167,6 +179,48 @@ const RegionShape = React.memo(function RegionShape({
       >
         {t('odyssey.ui.discoveryProgress', { count: discoveryCount, total: totalDiscoveries })}
       </text>
+
+      {/* 推荐徽章 -- 建议下一个探索的区域 */}
+      {isRecommended && !isActive && (
+        <g>
+          <rect
+            x={cx + REGION_WIDTH / 2 - 50}
+            y={cy - REGION_HEIGHT / 2 - 10}
+            width={40}
+            height={14}
+            rx={7}
+            fill="#f59e0b"
+            fillOpacity={0.8}
+          />
+          <text
+            x={cx + REGION_WIDTH / 2 - 30}
+            y={cy - REGION_HEIGHT / 2 - 3}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="#fff"
+            fontSize={7}
+            fontWeight={600}
+            style={{ pointerEvents: 'none', userSelect: 'none' }}
+          >
+            {t('odyssey.ui.recommended')}
+          </text>
+        </g>
+      )}
+
+      {/* 完成标记 -- 所有发现已完成 */}
+      {discoveryCount === totalDiscoveries && totalDiscoveries > 0 && (
+        <text
+          x={cx + REGION_WIDTH / 2 - 12}
+          y={cy - REGION_HEIGHT / 2 + 12}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="#22c55e"
+          fontSize={14}
+          style={{ pointerEvents: 'none' }}
+        >
+          ✓
+        </text>
+      )}
     </g>
   )
 })
@@ -635,6 +689,19 @@ export const WorldMap = React.memo(function WorldMap({
     return progress
   }, [allTimeDiscoveries])
 
+  // 推荐下一个探索的区域:
+  // 按 RECOMMENDED_ORDER 找到第一个未完成的区域 (非当前活跃区域)
+  const recommendedRegionId = useMemo(() => {
+    for (const regionId of RECOMMENDED_ORDER) {
+      if (regionId === activeRegionId) continue
+      const progress = regionProgress.get(regionId)
+      if (progress && progress.count < progress.total) {
+        return regionId
+      }
+    }
+    return null
+  }, [activeRegionId, regionProgress])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -706,6 +773,7 @@ export const WorldMap = React.memo(function WorldMap({
                     regionDef={regionDef}
                     isVisited={visitedRegions.has(layout.id)}
                     isActive={layout.id === activeRegionId}
+                    isRecommended={layout.id === recommendedRegionId}
                     discoveryCount={progress.count}
                     totalDiscoveries={progress.total}
                     onFastTravel={onFastTravel}

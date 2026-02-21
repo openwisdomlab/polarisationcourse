@@ -282,6 +282,9 @@ export const crystalLabDiscoveries: DiscoveryConfig[] = [
     // 马吕斯定律: 旋转偏振片，观察强度变化
     id: 'crystal-lab-malus-law-basic',
     name: "Malus's Law",
+    difficulty: 1,
+    hint: 'odyssey.hints.malusLaw',
+    hintElements: ['crystal-lab-polarizer-1', 'crystal-lab-polarizer-2'],
     check: (elements, beamSegments, rotationHistory) => {
       const polarizers = elements.filter((el) => el.type === 'polarizer')
       if (polarizers.length < 2) return false
@@ -316,6 +319,9 @@ export const crystalLabDiscoveries: DiscoveryConfig[] = [
     // 完全消光: 两正交偏振片消光
     id: 'crystal-lab-crossed-polarizers',
     name: 'Complete Extinction',
+    difficulty: 1,
+    hint: 'odyssey.hints.crossedPolarizers',
+    hintElements: ['crystal-lab-polarizer-1', 'crystal-lab-polarizer-2'],
     check: (elements, beamSegments) => {
       const polarizers = elements.filter((el) => el.type === 'polarizer')
       if (polarizers.length < 2) return false
@@ -343,6 +349,9 @@ export const crystalLabDiscoveries: DiscoveryConfig[] = [
     // 圆偏振: QWP 在 45 度产生圆偏振
     id: 'crystal-lab-circular-polarization',
     name: 'Circular Polarization',
+    difficulty: 2,
+    hint: 'odyssey.hints.circularPolarization',
+    hintElements: ['crystal-lab-waveplate-1'],
     check: (_elements, beamSegments) => {
       return beamSegments.some(
         (seg) => Math.abs(seg.stokes.s3) > 0.4 && seg.shape === 'helix',
@@ -358,6 +367,9 @@ export const crystalLabDiscoveries: DiscoveryConfig[] = [
     // 半波旋转: HWP 旋转偏振方向而保持强度
     id: 'crystal-lab-half-wave-rotation',
     name: 'Half-Wave Rotation',
+    difficulty: 2,
+    hint: 'odyssey.hints.halfWaveRotation',
+    hintElements: ['crystal-lab-waveplate-2'],
     check: (elements, beamSegments) => {
       const hwps = elements.filter(
         (el) => el.type === 'waveplate' && (el.properties.retardation as number) === 180,
@@ -383,6 +395,9 @@ export const crystalLabDiscoveries: DiscoveryConfig[] = [
     // 三偏振片惊喜: 3 个偏振片恢复消光光束
     id: 'crystal-lab-three-polarizer-surprise',
     name: 'Three-Polarizer Surprise',
+    difficulty: 3,
+    hint: 'odyssey.hints.threePolarizer',
+    hintElements: ['crystal-lab-polarizer-1', 'crystal-lab-polarizer-2', 'crystal-lab-polarizer-3'],
     check: (elements, beamSegments) => {
       const polarizers = elements.filter((el) => el.type === 'polarizer')
       if (polarizers.length !== 3) return false
@@ -421,6 +436,9 @@ export const crystalLabDiscoveries: DiscoveryConfig[] = [
     // 双折射分束: 棱镜将单光束分为两个正交偏振分量
     id: 'crystal-lab-birefringent-splitting',
     name: 'Birefringent Splitting',
+    difficulty: 2,
+    hint: 'odyssey.hints.birefringentSplitting',
+    hintElements: ['crystal-lab-prism-1'],
     check: (elements, beamSegments) => {
       // 场景中有棱镜且输出光束有至少 2 段不同偏振方向
       const hasPrism = elements.some((el) => el.type === 'prism')
@@ -439,6 +457,9 @@ export const crystalLabDiscoveries: DiscoveryConfig[] = [
     // 波片级联: 两个波片串联产生复合相位延迟
     id: 'crystal-lab-cascaded-waveplates',
     name: 'Cascaded Waveplates',
+    difficulty: 3,
+    hint: 'odyssey.hints.cascadedWaveplates',
+    hintElements: ['crystal-lab-waveplate-1', 'crystal-lab-waveplate-2'],
     check: (elements, beamSegments) => {
       // 需要至少 2 个波片且输出有椭圆偏振
       const waveplates = elements.filter((el) => el.type === 'waveplate')
@@ -462,12 +483,12 @@ export const crystalLabDefinition: Omit<RegionDefinition, 'theme'> & { theme: Re
     name: 'Crystal Lab',
     nameKey: 'odyssey.regions.crystalLab',
     colorPalette: {
-      background: ['#e8f4fd', '#b8dff5'],  // 冰蓝渐变 (210deg hue)
-      platformFill: '#d0eaf7',
-      platformStroke: '#8ec5e3',
+      background: ['#0a1628', '#0f1d35'],  // 深海军蓝渐变 (210deg hue)
+      platformFill: '#1a2a44',
+      platformStroke: '#3a5a7a',
       accentColor: '#5b9fd4',
     },
-    gridOpacity: 0.025,
+    gridOpacity: 0.07,
   },
   gridWidth: 13,
   gridHeight: 13,

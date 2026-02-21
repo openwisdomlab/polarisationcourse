@@ -4591,6 +4591,7 @@
       "legendContrasting": "Contrasting",
       "pressToggle": "Press M to toggle",
       "discoveryProgress": "{{count}}/{{total}} discoveries",
+      "recommended": "Next",
       "polarization": "Polarization",
       "colorDirection": "Color = Direction",
       "brightnessIntensity": "Brightness = Intensity",
@@ -4614,6 +4615,195 @@
       "refractiveIndex": "Refractive Index",
       "loadingExplorer": "Loading explorer...",
       "demoComingSoon": "Demo coming soon"
+    },
+    "tutorial": {
+      "step1Title": "Rotate This Polarizer",
+      "step1Desc": "Click on the polarizer and rotate it to see how light changes",
+      "step2Title": "Add an Element",
+      "step2Desc": "Drag a new optical element from the palette onto the scene",
+      "step3Title": "Observe the Light",
+      "step3Desc": "Watch how the light beam changes as it passes through elements",
+      "skip": "Skip tutorial"
+    },
+    "hints": {
+      "malusLaw": "Rotate a polarizer through 90\u00b0 and observe the intensity change",
+      "crossedPolarizers": "Set two polarizers perpendicular to each other",
+      "circularPolarization": "Align the wave plate at 45\u00b0 to create circular polarization",
+      "halfWaveRotation": "Use the half-wave plate to rotate the polarization direction",
+      "threePolarizer": "Place a polarizer between two crossed polarizers to restore light",
+      "birefringentSplitting": "Send light through the prism and observe the split beams",
+      "cascadedWaveplates": "Combine two wave plates in series to create elliptical polarization",
+      "retardationSeries": "Compare different wave plate retardation values",
+      "waveplateCompensation": "Use two wave plates to cancel each other's effect",
+      "polarizationOrthogonality": "Find orthogonal polarization states through the wave plates",
+      "poincareTraverse": "Trace a path across the Poincar\u00e9 sphere using wave plates",
+      "brewsterAngle": "Find the angle where reflected light is perfectly polarized",
+      "totalReflection": "Increase the angle until total internal reflection occurs",
+      "angleDependence": "Observe how polarization changes with the angle of incidence",
+      "snellPolarization": "Watch how refraction affects the polarization state",
+      "rayleighPolarization": "Observe how scattered light becomes polarized",
+      "skyPattern": "Explore how polarization varies across the sky",
+      "wavelengthDependence": "Compare scattering at different wavelengths",
+      "fresnelReflection": "Observe reflection coefficients at a glass surface",
+      "mediumComparison": "Compare reflection behavior between glass and water",
+      "stackedInterfaces": "Send light through multiple interfaces in series",
+      "stokesMeasurement": "Measure the Stokes parameters of a light beam",
+      "dopMeasurement": "Determine the degree of polarization of partially polarized light",
+      "fullPolarimetry": "Perform a complete polarization state measurement",
+      "muellerVerification": "Verify the Mueller matrix of an optical element"
+    },
+    "objectives": {
+      "exploreNewRegion": "All discoveries found! Explore a new region \u2192",
+      "keepExploring": "Interact with the optical elements to discover physics"
+    },
+    "menu": {
+      "title": "Discoveries"
+    },
+    "toast": {
+      "learnMore": "Learn why →"
+    },
+    "depth": {
+      "discoverMore": "Discover more to unlock"
+    },
+    "summary": {
+      "complete": "Complete!",
+      "nextRegion": "Next region:"
+    },
+    "beam": {
+      "extinct": "Extinct",
+      "circularR": "Circular (RH)",
+      "circularL": "Circular (LH)",
+      "linear": "Linear",
+      "elliptical": "Elliptical"
+    },
+    "palette": {
+      "polarizer": "Polarizer",
+      "waveplate": "Wave Plate",
+      "prism": "Prism",
+      "environment": "Medium",
+      "unlocked": "New tool unlocked: {{tool}}"
+    },
+    "discoveries": {
+      "malus-law-basic": {
+        "name": "Malus's Law",
+        "toast": "Light intensity follows cos²θ when passing through polarizers",
+        "description": "Rotate the analyzer to see how intensity varies with angle"
+      },
+      "crossed-polarizers": {
+        "name": "Crossed Polarizers",
+        "toast": "Two perpendicular polarizers completely block light",
+        "description": "Orthogonal polarizers produce total extinction"
+      },
+      "circular-polarization": {
+        "name": "Circular Polarization",
+        "toast": "Quarter-wave plate at 45° creates circularly polarized light",
+        "description": "The electric field vector traces a helix in space"
+      },
+      "half-wave-rotation": {
+        "name": "Half-Wave Rotation",
+        "toast": "Half-wave plate rotates polarization direction by 2θ",
+        "description": "A powerful tool for controlling polarization orientation"
+      },
+      "three-polarizer-surprise": {
+        "name": "Three-Polarizer Surprise",
+        "toast": "Adding a middle polarizer between crossed polarizers restores light!",
+        "description": "A counter-intuitive result that reveals the nature of projection"
+      },
+      "birefringent-splitting": {
+        "name": "Birefringent Splitting",
+        "toast": "Birefringent crystals split light into two polarized beams",
+        "description": "Ordinary and extraordinary rays travel at different speeds"
+      },
+      "cascaded-retardation": {
+        "name": "Cascaded Retardation",
+        "toast": "Multiple wave plates combine to create complex polarization states",
+        "description": "Sequential retarders can produce any polarization transformation"
+      },
+      "brewster-angle": {
+        "name": "Brewster's Angle",
+        "toast": "At Brewster's angle, reflected light is perfectly linearly polarized",
+        "description": "Reflection polarization depends on the angle of incidence"
+      },
+      "total-internal-reflection": {
+        "name": "Total Internal Reflection",
+        "toast": "Above the critical angle, light is completely reflected inside the medium",
+        "description": "TIR introduces a phase shift that changes polarization"
+      },
+      "fresnel-coefficients": {
+        "name": "Fresnel Coefficients",
+        "toast": "Fresnel equations describe how much light reflects and transmits at an interface",
+        "description": "s- and p-polarization components behave differently"
+      },
+      "evanescent-wave": {
+        "name": "Evanescent Wave",
+        "toast": "During total internal reflection, an evanescent wave extends beyond the surface",
+        "description": "A decaying wave that can tunnel through thin gaps"
+      },
+      "standing-wave": {
+        "name": "Standing Wave",
+        "toast": "Counter-propagating waves create a stationary interference pattern",
+        "description": "Nodes and antinodes reveal the wave nature of light"
+      },
+      "superposition": {
+        "name": "Wave Superposition",
+        "toast": "Two waves combine constructively or destructively based on phase",
+        "description": "The fundamental principle behind interference phenomena"
+      },
+      "group-velocity": {
+        "name": "Group Velocity",
+        "toast": "Wave packets travel at the group velocity, which differs from phase velocity",
+        "description": "Dispersion causes pulse broadening as waves travel"
+      },
+      "beat-frequency": {
+        "name": "Beat Frequency",
+        "toast": "Two frequencies close together produce a slowly varying envelope",
+        "description": "Beat patterns reveal small frequency differences"
+      },
+      "rayleigh-scattering": {
+        "name": "Rayleigh Scattering",
+        "toast": "Small particles scatter short wavelengths more — that's why the sky is blue!",
+        "description": "Scattering intensity follows a 1/λ⁴ dependence"
+      },
+      "mie-scattering": {
+        "name": "Mie Scattering",
+        "toast": "Larger particles scatter light nearly equally at all wavelengths",
+        "description": "Clouds appear white because water droplets scatter all colors"
+      },
+      "polarization-by-scattering": {
+        "name": "Polarization by Scattering",
+        "toast": "Scattered light becomes partially polarized perpendicular to the scattering plane",
+        "description": "90° scattered light is maximally polarized"
+      },
+      "stokes-measurement": {
+        "name": "Stokes Measurement",
+        "toast": "Four intensity measurements fully characterize any polarization state",
+        "description": "The Stokes vector S = [S₀, S₁, S₂, S₃] captures everything"
+      },
+      "jones-vs-stokes": {
+        "name": "Jones vs Stokes",
+        "toast": "Jones vectors describe coherent light; Stokes vectors handle partial polarization",
+        "description": "Two complementary frameworks for polarization analysis"
+      },
+      "mueller-matrix": {
+        "name": "Mueller Matrix",
+        "toast": "Mueller matrices describe how optical elements transform Stokes vectors",
+        "description": "A 4×4 matrix that captures all polarization effects of a component"
+      },
+      "poincare-sphere": {
+        "name": "Poincaré Sphere",
+        "toast": "The Poincaré sphere maps all polarization states to points on a sphere",
+        "description": "A beautiful geometric representation of polarization"
+      },
+      "dop-concept": {
+        "name": "Degree of Polarization",
+        "toast": "The degree of polarization measures how polarized a light beam is",
+        "description": "DOP = √(S₁² + S₂² + S₃²) / S₀, ranging from 0 to 1"
+      },
+      "snell-polarization": {
+        "name": "Snell-Polarization Link",
+        "toast": "Snell's law and Fresnel equations connect refraction to polarization",
+        "description": "The angle of refraction determines polarization splitting"
+      }
     }
   },
   "odysseyLab": {

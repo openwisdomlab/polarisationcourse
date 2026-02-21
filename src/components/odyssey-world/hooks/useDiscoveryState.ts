@@ -30,6 +30,12 @@ export interface DiscoveryResponse {
 export interface DiscoveryConfig {
   id: string
   name: string
+  /** 发现难度层级: 1=基础, 2=应用, 3=研究 (用于渐进解锁) */
+  difficulty: 1 | 2 | 3
+  /** 引导提示 i18n 键 (ObjectiveBar 显示) */
+  hint: string
+  /** 需要高亮的元素 ID 列表 (引导用户操作) */
+  hintElements: string[]
   check: (
     elements: SceneElement[],
     beamSegments: BeamSegment[],
@@ -47,6 +53,9 @@ export interface DiscoveryConfig {
 const malusLawDiscovery: DiscoveryConfig = {
   id: 'malus-law-basic',
   name: "Malus's Law",
+  difficulty: 1,
+  hint: 'odyssey.hints.malusLaw',
+  hintElements: ['crystal-lab-polarizer-1', 'crystal-lab-polarizer-2'],
   check: (elements, beamSegments, rotationHistory) => {
     // 需要至少 2 个偏振片
     const polarizers = elements.filter((el) => el.type === 'polarizer')
@@ -102,6 +111,9 @@ const malusLawDiscovery: DiscoveryConfig = {
 const crossedPolarizerDiscovery: DiscoveryConfig = {
   id: 'crossed-polarizers',
   name: 'Complete Extinction',
+  difficulty: 1,
+  hint: 'odyssey.hints.crossedPolarizers',
+  hintElements: ['crystal-lab-polarizer-1', 'crystal-lab-polarizer-2'],
   check: (elements, beamSegments) => {
     const polarizers = elements.filter((el) => el.type === 'polarizer')
     if (polarizers.length < 2) return false
@@ -140,6 +152,9 @@ const crossedPolarizerDiscovery: DiscoveryConfig = {
 const circularPolarizationDiscovery: DiscoveryConfig = {
   id: 'circular-polarization',
   name: 'Circular Polarization',
+  difficulty: 2,
+  hint: 'odyssey.hints.circularPolarization',
+  hintElements: ['crystal-lab-waveplate-1'],
   check: (elements, beamSegments) => {
     // 找到 QWP
     const qwps = elements.filter(
@@ -172,6 +187,9 @@ const circularPolarizationDiscovery: DiscoveryConfig = {
 const halfWaveRotationDiscovery: DiscoveryConfig = {
   id: 'half-wave-rotation',
   name: 'Half-Wave Rotation',
+  difficulty: 2,
+  hint: 'odyssey.hints.halfWaveRotation',
+  hintElements: ['crystal-lab-waveplate-2'],
   check: (elements, beamSegments) => {
     // 找到 HWP
     const hwps = elements.filter(
@@ -212,6 +230,9 @@ const halfWaveRotationDiscovery: DiscoveryConfig = {
 const threePolarizeSurpriseDiscovery: DiscoveryConfig = {
   id: 'three-polarizer-surprise',
   name: 'Three-Polarizer Surprise',
+  difficulty: 3,
+  hint: 'odyssey.hints.threePolarizer',
+  hintElements: ['crystal-lab-polarizer-1', 'crystal-lab-polarizer-2', 'crystal-lab-polarizer-3'],
   check: (elements, beamSegments) => {
     const polarizers = elements.filter((el) => el.type === 'polarizer')
     if (polarizers.length !== 3) return false
@@ -318,8 +339,23 @@ export function useDiscoveryState(): UseDiscoveryStateReturn {
     const regionDef = getRegionDefinition(store.activeRegionId)
     const configs = regionDef?.discoveries ?? DISCOVERY_CONFIGS
 
+    // 计算已解锁的最高难度层级 (渐进解锁链):
+    // - 难度 1 (基础): 始终可用
+    // - 难度 2 (应用): 需要至少一个难度 1 发现
+    // - 难度 3 (研究): 需要至少一个难度 2 发现
+    const hasAnyDifficulty1 = configs.some(
+      (c) => c.difficulty === 1 && achieved.has(c.id),
+    )
+    const hasAnyDifficulty2 = configs.some(
+      (c) => c.difficulty === 2 && achieved.has(c.id),
+    )
+    const maxUnlockedDifficulty = hasAnyDifficulty2 ? 3 : hasAnyDifficulty1 ? 2 : 1
+
     for (const config of configs) {
       if (achieved.has(config.id)) continue
+
+      // 跳过锁定的发现 (难度高于当前解锁层级)
+      if (config.difficulty > maxUnlockedDifficulty) continue
 
       try {
         if (config.check(elements, segments, history)) {

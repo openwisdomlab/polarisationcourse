@@ -146,6 +146,9 @@ export const measurementStudioDiscoveries: DiscoveryConfig[] = [
     // Stokes 测量: 通过旋转偏振片测量 Stokes 参数
     id: 'measurement-studio-stokes-measurement',
     name: 'Stokes Measurement',
+    difficulty: 2,
+    hint: 'odyssey.hints.stokesMeasurement',
+    hintElements: ['measurement-studio-polarizer-1', 'measurement-studio-light-source-1'],
     check: (_elements, beamSegments, rotationHistory) => {
       // 需要大量旋转操作 (至少 4 个不同角度) 来模拟 Stokes 测量
       if (rotationHistory.size === 0) return false
@@ -169,6 +172,9 @@ export const measurementStudioDiscoveries: DiscoveryConfig[] = [
     // 偏振度测量: 区分完全偏振、部分偏振和非偏振光
     id: 'measurement-studio-dop-measurement',
     name: 'Degree of Polarization',
+    difficulty: 2,
+    hint: 'odyssey.hints.dopMeasurement',
+    hintElements: ['measurement-studio-polarizer-1', 'measurement-studio-waveplate-1', 'measurement-studio-light-source-1'],
     check: (_elements, beamSegments) => {
       // 存在不同偏振度的光束段
       if (beamSegments.length < 2) return false
@@ -190,6 +196,9 @@ export const measurementStudioDiscoveries: DiscoveryConfig[] = [
     // 偏振测量技术: 偏振片 + QWP 组合测量全部 4 个 Stokes 参数
     id: 'measurement-studio-full-polarimetry',
     name: 'Full Polarimetry',
+    difficulty: 3,
+    hint: 'odyssey.hints.fullPolarimetry',
+    hintElements: ['measurement-studio-polarizer-1', 'measurement-studio-waveplate-1', 'measurement-studio-light-source-1'],
     check: (elements, beamSegments, rotationHistory) => {
       // 需要偏振片和波片
       const hasPolarizer = elements.some((el) => el.type === 'polarizer')
@@ -216,6 +225,9 @@ export const measurementStudioDiscoveries: DiscoveryConfig[] = [
     // Mueller 矩阵验证: 实验验证 Mueller 矩阵预测
     id: 'measurement-studio-mueller-verification',
     name: 'Mueller Matrix Verification',
+    difficulty: 3,
+    hint: 'odyssey.hints.muellerVerification',
+    hintElements: ['measurement-studio-polarizer-1', 'measurement-studio-waveplate-1', 'measurement-studio-light-source-1'],
     check: (elements, beamSegments) => {
       // 需要偏振片 + 波片串联，且输出与理论预测一致
       const polarizers = elements.filter((el) => el.type === 'polarizer')
@@ -244,12 +256,12 @@ export const measurementStudioDefinition: RegionDefinition = {
     name: 'Measurement Studio',
     nameKey: 'odyssey.regions.measurementStudio',
     colorPalette: {
-      background: ['#eaecf2', '#c8ccd8'],  // 钢灰蓝渐变 (225deg hue)
-      platformFill: '#d8dce8',
-      platformStroke: '#9ca0b8',
+      background: ['#0e1222', '#141a30'],  // 深钢灰蓝渐变 (225deg hue)
+      platformFill: '#1e2238',
+      platformStroke: '#3a4068',
       accentColor: '#7080a8',
     },
-    gridOpacity: 0.02,
+    gridOpacity: 0.06,
   },
   gridWidth: 14,
   gridHeight: 14,

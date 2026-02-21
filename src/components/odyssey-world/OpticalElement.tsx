@@ -282,6 +282,12 @@ const OpticalElement = React.memo(function OpticalElement({
   const showConceptTooltip = useOdysseyWorldStore((s) => s.showConceptTooltip)
   const hideConceptTooltip = useOdysseyWorldStore((s) => s.hideConceptTooltip)
 
+  // 引导系统: 是否已交互过此元素 (用于停止呼吸脉冲)
+  const interactedElements = useOdysseyWorldStore((s) => s.interactedElements)
+  const isInteracted = interactedElements.has(element.id)
+  // 仅对可交互元素 (偏振片/波片) 显示脉冲
+  const showAffordancePulse = !isInteracted && (element.type === 'polarizer' || element.type === 'waveplate')
+
   // 交互 hooks
   const selection = useElementSelection(element.id)
   const drag = useElementDrag(element.id, resolvedContainerRef, resolvedCameraX, resolvedCameraY, resolvedZoom)
@@ -339,6 +345,10 @@ const OpticalElement = React.memo(function OpticalElement({
     e.stopPropagation()
     selection.onPointerDown(e)
     drag.onPointerDown(e)
+    // 标记元素为已交互 (停止呼吸脉冲)
+    if (!isInteracted) {
+      useOdysseyWorldStore.getState().markElementInteracted(element.id)
+    }
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -429,6 +439,33 @@ const OpticalElement = React.memo(function OpticalElement({
       onPointerLeave={handlePointerLeave}
       onWheel={handleWheel}
     >
+      {/* 未交互元素: 呼吸脉冲 -- 引导用户注意力 */}
+      {showAffordancePulse && !isSelected && !isHovered && (
+        <circle
+          cx={0}
+          cy={-2}
+          r={20}
+          fill="none"
+          stroke="#6CB4FF"
+          strokeWidth={1.5}
+          opacity={0.35}
+          style={{ pointerEvents: 'none' }}
+        >
+          <animate
+            attributeName="opacity"
+            values="0.15;0.45;0.15"
+            dur="2.5s"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="r"
+            values="18;22;18"
+            dur="2.5s"
+            repeatCount="indefinite"
+          />
+        </circle>
+      )}
+
       {/* 选中时: 明亮轮廓 */}
       {isSelected && (
         <rect

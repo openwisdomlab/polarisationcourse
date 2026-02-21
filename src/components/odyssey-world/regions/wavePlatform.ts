@@ -148,6 +148,9 @@ export const wavePlatformDiscoveries: DiscoveryConfig[] = [
     // 相位延迟系列: 不同延迟量产生线/椭圆/圆偏振
     id: 'wave-platform-retardation-series',
     name: 'Retardation Series',
+    difficulty: 2,
+    hint: 'odyssey.hints.retardationSeries',
+    hintElements: ['wave-platform-waveplate-1', 'wave-platform-waveplate-2'],
     check: (elements, beamSegments) => {
       // 需要至少 2 个波片且输出包含多种偏振形状
       const waveplates = elements.filter((el) => el.type === 'waveplate')
@@ -165,6 +168,9 @@ export const wavePlatformDiscoveries: DiscoveryConfig[] = [
     // 波片补偿: QWP + HWP 组合可以产生任意偏振态
     id: 'wave-platform-compensation',
     name: 'Waveplate Compensation',
+    difficulty: 2,
+    hint: 'odyssey.hints.waveplateCompensation',
+    hintElements: ['wave-platform-waveplate-1', 'wave-platform-waveplate-2'],
     check: (elements, beamSegments) => {
       const qwps = elements.filter(
         (el) => el.type === 'waveplate' && (el.properties.retardation as number) === 90,
@@ -188,6 +194,9 @@ export const wavePlatformDiscoveries: DiscoveryConfig[] = [
     // 偏振态正交性: 两个正交偏振态的和为非偏振光
     id: 'wave-platform-orthogonality',
     name: 'Polarization Orthogonality',
+    difficulty: 2,
+    hint: 'odyssey.hints.polarizationOrthogonality',
+    hintElements: ['wave-platform-waveplate-1', 'wave-platform-waveplate-2', 'wave-platform-light-source-1'],
     check: (_elements, beamSegments) => {
       // 存在几乎非偏振的光束段 (s1, s2, s3 都接近 0)
       return beamSegments.some(
@@ -208,6 +217,9 @@ export const wavePlatformDiscoveries: DiscoveryConfig[] = [
     // Jones 向量可视化: 通过波片旋转覆盖庞加莱球表面
     id: 'wave-platform-poincare-traverse',
     name: 'Poincare Sphere Traverse',
+    difficulty: 3,
+    hint: 'odyssey.hints.poincareTraverse',
+    hintElements: ['wave-platform-waveplate-1', 'wave-platform-waveplate-2', 'wave-platform-light-source-1'],
     check: (_elements, beamSegments, rotationHistory) => {
       // 需要广泛的旋转历史且产生多种偏振形状
       if (rotationHistory.size === 0) return false
@@ -237,12 +249,12 @@ export const wavePlatformDefinition: RegionDefinition = {
     name: 'Wave Platform',
     nameKey: 'odyssey.regions.wavePlatform',
     colorPalette: {
-      background: ['#ddf0f8', '#a0d8e8'],  // 青蓝渐变 (190deg hue)
-      platformFill: '#c8e4f0',
-      platformStroke: '#6bb8c8',
+      background: ['#081a28', '#0d2535'],  // 深青蓝渐变 (190deg hue)
+      platformFill: '#1a2d40',
+      platformStroke: '#3a5878',
       accentColor: '#4db8c9',
     },
-    gridOpacity: 0.02,
+    gridOpacity: 0.06,
   },
   gridWidth: 15,
   gridHeight: 13,

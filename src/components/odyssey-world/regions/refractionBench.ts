@@ -160,6 +160,9 @@ export const refractionBenchDiscoveries: DiscoveryConfig[] = [
     // 布儒斯特角: 反射光在特定角度完全偏振化
     id: 'refraction-bench-brewster-angle',
     name: "Brewster's Angle",
+    difficulty: 2,
+    hint: 'odyssey.hints.brewsterAngle',
+    hintElements: ['refraction-bench-environment-glass', 'refraction-bench-polarizer-1', 'refraction-bench-light-source-1'],
     check: (elements, beamSegments) => {
       // 需要环境介质和偏振片，且存在高度偏振化的反射光束段
       const hasEnvironment = elements.some((el) => el.type === 'environment')
@@ -180,6 +183,9 @@ export const refractionBenchDiscoveries: DiscoveryConfig[] = [
     // 全内反射: 超过临界角时光完全反射
     id: 'refraction-bench-total-reflection',
     name: 'Total Internal Reflection',
+    difficulty: 3,
+    hint: 'odyssey.hints.totalReflection',
+    hintElements: ['refraction-bench-environment-glass', 'refraction-bench-light-source-2'],
     check: (elements, beamSegments) => {
       const hasEnvironment = elements.some(
         (el) => el.type === 'environment' && (el.properties.refractiveIndex as number) > 1.3,
@@ -198,6 +204,9 @@ export const refractionBenchDiscoveries: DiscoveryConfig[] = [
     // 偏振度随入射角变化: 反射光偏振度与入射角的关系
     id: 'refraction-bench-angle-dependence',
     name: 'Angle-Dependent Polarization',
+    difficulty: 2,
+    hint: 'odyssey.hints.angleDependence',
+    hintElements: ['refraction-bench-environment-glass', 'refraction-bench-polarizer-1'],
     check: (_elements, beamSegments, rotationHistory) => {
       // 需要旋转操作且产生不同偏振度的输出
       if (rotationHistory.size === 0) return false
@@ -217,6 +226,9 @@ export const refractionBenchDiscoveries: DiscoveryConfig[] = [
     // 斯涅尔定律偏振效应: 折射光的 s 和 p 分量不同
     id: 'refraction-bench-snell-polarization',
     name: "Snell's Law Polarization",
+    difficulty: 1,
+    hint: 'odyssey.hints.snellPolarization',
+    hintElements: ['refraction-bench-environment-glass', 'refraction-bench-light-source-1'],
     check: (elements, beamSegments) => {
       const hasEnvironment = elements.some((el) => el.type === 'environment')
       if (!hasEnvironment) return false
@@ -241,12 +253,12 @@ export const refractionBenchDefinition: RegionDefinition = {
     name: 'Refraction Bench',
     nameKey: 'odyssey.regions.refractionBench',
     colorPalette: {
-      background: ['#e4e8f4', '#bcc4e0'],  // 石板蓝渐变 (230deg hue)
-      platformFill: '#d0d6ea',
-      platformStroke: '#8890b8',
+      background: ['#0c1428', '#111d38'],  // 深石板蓝渐变 (230deg hue)
+      platformFill: '#1c2640',
+      platformStroke: '#3a4a70',
       accentColor: '#6b7db4',
     },
-    gridOpacity: 0.025,
+    gridOpacity: 0.07,
   },
   gridWidth: 15,
   gridHeight: 12,

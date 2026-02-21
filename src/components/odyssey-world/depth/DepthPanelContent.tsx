@@ -9,11 +9,14 @@
  * 直觉层始终在顶部显示 (CONT-03 "体验优先" 理念)。
  */
 
+import { useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Lock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import type { ConceptDefinition } from '@/components/odyssey-world/concepts/conceptRegistry'
+import { getRegionDefinition } from '@/components/odyssey-world/regions/regionRegistry'
 import { QualitativeLayer } from './QualitativeLayer'
 import { QuantitativeLayer } from './QuantitativeLayer'
 import { DemoLayer } from './DemoLayer'
@@ -41,14 +44,30 @@ export function DepthPanelContent({ concept }: DepthPanelContentProps) {
   const { t } = useTranslation()
   const activeTab = useOdysseyWorldStore((s) => s.depthPanelActiveTab)
   const setTab = useOdysseyWorldStore((s) => s.setDepthPanelTab)
+  const achievedDiscoveries = useOdysseyWorldStore((s) => s.achievedDiscoveries)
+  const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
 
-  // 构建标签页列表 (demo 标签仅在概念有 demoComponentId 时显示)
-  const tabs: TabConfig[] = [
+  // 计算当前区域的发现数量 (用于渐进解锁标签页)
+  const regionDiscoveryCount = useMemo(() => {
+    const regionDef = getRegionDefinition(activeRegionId)
+    if (!regionDef?.discoveries) return 0
+    return regionDef.discoveries.filter((d) => achievedDiscoveries.has(d.id)).length
+  }, [activeRegionId, achievedDiscoveries])
+
+  // 渐进解锁标签页:
+  // - qualitative: 始终可用 (首次发现即可看到)
+  // - quantitative: 2 个发现后解锁
+  // - demo: 3 个发现后解锁 (且概念有 demoComponentId)
+  const isQuantitativeUnlocked = regionDiscoveryCount >= 2
+  const isDemoUnlocked = regionDiscoveryCount >= 3
+
+  // 构建标签页列表
+  const tabs: (TabConfig & { locked?: boolean })[] = [
     { id: 'qualitative', labelKey: 'odyssey.concepts.depthPanel.tabs.qualitative' },
-    { id: 'quantitative', labelKey: 'odyssey.concepts.depthPanel.tabs.quantitative' },
+    { id: 'quantitative', labelKey: 'odyssey.concepts.depthPanel.tabs.quantitative', locked: !isQuantitativeUnlocked },
   ]
   if (concept.demoComponentId) {
-    tabs.push({ id: 'demo', labelKey: 'odyssey.concepts.depthPanel.tabs.demo' })
+    tabs.push({ id: 'demo', labelKey: 'odyssey.concepts.depthPanel.tabs.demo', locked: !isDemoUnlocked })
   }
 
   return (
@@ -77,12 +96,18 @@ export function DepthPanelContent({ concept }: DepthPanelContentProps) {
             key={tab.id}
             className={cn(
               'rounded-t-md px-3 py-1.5 text-xs font-medium transition-colors',
-              activeTab === tab.id
-                ? 'bg-white/10 text-white/90'
-                : 'text-white/40 hover:text-white/60',
+              'flex items-center gap-1',
+              tab.locked
+                ? 'text-white/20 cursor-not-allowed'
+                : activeTab === tab.id
+                  ? 'bg-white/10 text-white/90'
+                  : 'text-white/40 hover:text-white/60 cursor-pointer',
             )}
-            onClick={() => setTab(tab.id)}
+            onClick={() => !tab.locked && setTab(tab.id)}
+            disabled={tab.locked}
+            title={tab.locked ? t('odyssey.depth.discoverMore') : undefined}
           >
+            {tab.locked && <Lock className="h-3 w-3" />}
             {t(tab.labelKey)}
           </button>
         ))}

@@ -148,6 +148,9 @@ export const interfaceLabDiscoveries: DiscoveryConfig[] = [
     // 菲涅耳反射: 界面反射率随偏振方向不同
     id: 'interface-lab-fresnel-reflection',
     name: 'Fresnel Reflection',
+    difficulty: 1,
+    hint: 'odyssey.hints.fresnelReflection',
+    hintElements: ['interface-lab-environment-glass', 'interface-lab-light-source-1'],
     check: (elements, beamSegments) => {
       const hasEnvironment = elements.some((el) => el.type === 'environment')
       if (!hasEnvironment) return false
@@ -164,6 +167,9 @@ export const interfaceLabDiscoveries: DiscoveryConfig[] = [
     // 界面偏振效应: 不同介质的偏振反射差异
     id: 'interface-lab-medium-comparison',
     name: 'Medium Comparison',
+    difficulty: 2,
+    hint: 'odyssey.hints.mediumComparison',
+    hintElements: ['interface-lab-environment-glass', 'interface-lab-environment-water', 'interface-lab-light-source-1'],
     check: (elements, beamSegments) => {
       // 场景中至少有 2 种不同介质
       const environments = elements.filter((el) => el.type === 'environment')
@@ -186,6 +192,9 @@ export const interfaceLabDiscoveries: DiscoveryConfig[] = [
     // 堆叠界面: 多层介质的累积偏振效应
     id: 'interface-lab-stacked-interfaces',
     name: 'Stacked Interfaces',
+    difficulty: 3,
+    hint: 'odyssey.hints.stackedInterfaces',
+    hintElements: ['interface-lab-environment-glass', 'interface-lab-environment-water', 'interface-lab-light-source-1'],
     check: (elements, beamSegments) => {
       const environments = elements.filter((el) => el.type === 'environment')
       if (environments.length < 2) return false
@@ -214,12 +223,12 @@ export const interfaceLabDefinition: RegionDefinition = {
     name: 'Interface Lab',
     nameKey: 'odyssey.regions.interfaceLab',
     colorPalette: {
-      background: ['#e4eaf2', '#b8c4dc'],  // 冷蓝渐变 (220deg hue)
-      platformFill: '#d0d8ea',
-      platformStroke: '#8898b8',
+      background: ['#0a1225', '#0f1a32'],  // 深冷蓝渐变 (220deg hue)
+      platformFill: '#1a2438',
+      platformStroke: '#384878',
       accentColor: '#5b84b4',
     },
-    gridOpacity: 0.025,
+    gridOpacity: 0.07,
   },
   gridWidth: 13,
   gridHeight: 13,

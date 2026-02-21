@@ -28,6 +28,15 @@ import { WorldMap } from './WorldMap'
 import { DepthPanel } from './depth/DepthPanel'
 import { ConceptTooltip } from './depth/ConceptTooltip'
 import { HUD } from './HUD'
+import { WelcomeOverlay } from './WelcomeOverlay'
+import { GuidedTutorial } from './GuidedTutorial'
+import { ObjectiveBar } from './ObjectiveBar'
+import { DiscoveryMenu } from './DiscoveryMenu'
+import { DiscoveryToast } from './DiscoveryToast'
+import { RotationFeedback } from './RotationFeedback'
+import { BeamTooltip } from './BeamTooltip'
+import { PaletteUnlockToast } from './PaletteUnlockToast'
+import { RegionSummary } from './RegionSummary'
 
 /**
  * OdysseyWorld -- 等距光学世界
@@ -41,7 +50,10 @@ export function OdysseyWorld() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 摄像机系统 (MotionValue 驱动，不触发 React 重渲染)
-  const { cameraX, cameraY, zoom, svgTransform, handleWheel } = useIsometricCamera()
+  const {
+    cameraX, cameraY, zoom, svgTransform, handleWheel,
+    handlePanPointerDown, handlePanPointerMove, handlePanPointerUp,
+  } = useIsometricCamera()
 
   // 区域过渡系统 (需要在 useClickToMove 之前初始化以获取 initiateTransition)
   // avatarScreenX/Y 在 useClickToMove 中创建，因此先初始化占位
@@ -97,7 +109,7 @@ export function OdysseyWorld() {
 
   return (
     <div
-      className="relative h-screen w-screen overflow-hidden bg-[#FAFAF5]"
+      className="relative h-screen w-screen overflow-hidden bg-[#0a1628]"
       style={{
         touchAction: 'none',
         paddingTop: 'env(safe-area-inset-top)',
@@ -114,6 +126,9 @@ export function OdysseyWorld() {
         avatarScreenY={avatarScreenY}
         onSceneClick={handleSceneClick}
         onWheel={handleWheel}
+        onPanPointerDown={handlePanPointerDown}
+        onPanPointerMove={handlePanPointerMove}
+        onPanPointerUp={handlePanPointerUp}
         containerRef={containerRef}
         cameraX={cameraX}
         cameraY={cameraY}
@@ -149,6 +164,33 @@ export function OdysseyWorld() {
 
       {/* HUD 叠加层 */}
       <HUD />
+
+      {/* 引导教程 (WelcomeOverlay 关闭后启动, z-15) */}
+      <GuidedTutorial />
+
+      {/* 持续目标显示 (底部居中, z-10) */}
+      <ObjectiveBar />
+
+      {/* 发现菜单 (右侧面板, z-30/z-40) */}
+      <DiscoveryMenu />
+
+      {/* Phase B: 发现通知弹窗 (顶部中央, z-50) */}
+      <DiscoveryToast />
+
+      {/* Phase B: 旋转实时反馈条 (底部居中, z-15) */}
+      <RotationFeedback />
+
+      {/* Phase B: 光束悬停物理信息 (固定定位, z-20) */}
+      <BeamTooltip />
+
+      {/* Phase B: 面板工具解锁通知 (底部左侧, z-15) */}
+      <PaletteUnlockToast />
+
+      {/* Phase C: 区域完成庆祝卡片 (底部居中, z-30) */}
+      <RegionSummary />
+
+      {/* 首次访问欢迎引导 (z-50, 最顶层) */}
+      <WelcomeOverlay />
     </div>
   )
 }
