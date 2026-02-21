@@ -90,6 +90,9 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
   const { worldX, worldY, worldZ } = element
   const screen = worldToScreen(worldX, worldY)
 
+  // 拖拽模式检测 -- 高亮可放置平台
+  const isDragging = useOdysseyWorldStore((s) => s.interactionMode === 'drag')
+
   // 区域主题色覆盖
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
   const regionDef = getRegionDefinition(activeRegionId)
@@ -179,6 +182,25 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
           fill={`url(#${floorPatternId})`}
           opacity={0.12}
         />
+      )}
+
+      {/* 拖拽时高亮可放置区域 -- 蓝色脉冲边框 */}
+      {isDragging && !isElevated && element.properties.walkable && (
+        <polygon
+          points={topPoints}
+          fill={themeAccent}
+          fillOpacity={0.06}
+          stroke={themeAccent}
+          strokeWidth={1.2}
+          strokeOpacity={0.25}
+        >
+          <animate
+            attributeName="stroke-opacity"
+            values="0.15;0.35;0.15"
+            dur="1.5s"
+            repeatCount="indefinite"
+          />
+        </polygon>
       )}
 
       {/* 玻璃材质的微妙高光 */}

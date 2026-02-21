@@ -14,10 +14,12 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, BookOpen } from 'lucide-react'
+import { Sparkles, BookOpen, GraduationCap } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { getConceptForDiscovery } from './concepts/conceptRegistry'
 
 /** 弹窗显示持续时间 (毫秒) */
 const TOAST_DURATION = 4000
@@ -34,6 +36,7 @@ interface ToastData {
   name: string
   description: string
   conceptId: string | null
+  courseLink: { path: string; labelKey: string } | null
 }
 
 /**
@@ -61,14 +64,16 @@ export function DiscoveryToast() {
               defaultValue: t(`odyssey.discoveries.${id}.description`, { defaultValue: '' }),
             })
 
-            // 查找关联的概念 ID (发现 ID 通常映射到概念 ID)
+            // 查找关联的概念及课程链接
             const conceptId = id
+            const concept = getConceptForDiscovery(id)
 
             setToast({
               discoveryId: id,
               name: toastName,
               description: toastDesc,
               conceptId,
+              courseLink: concept?.courseLink ?? null,
             })
             setVisible(true)
           }
@@ -128,21 +133,39 @@ export function DiscoveryToast() {
             </p>
           )}
 
-          {/* "Learn More" 按钮 */}
-          <button
-            className={cn(
-              'mt-2 flex items-center gap-1.5',
-              'text-xs font-medium',
-              'text-amber-600 dark:text-amber-400',
-              'hover:text-amber-800 dark:hover:text-amber-200',
-              'transition-colors duration-150',
-              'cursor-pointer',
+          {/* 按钮行 -- "Learn More" + 可选 "Go to Course" */}
+          <div className="mt-2 flex items-center gap-4">
+            <button
+              className={cn(
+                'flex items-center gap-1.5',
+                'text-xs font-medium',
+                'text-amber-600 dark:text-amber-400',
+                'hover:text-amber-800 dark:hover:text-amber-200',
+                'transition-colors duration-150',
+                'cursor-pointer',
+              )}
+              onClick={handleLearnMore}
+            >
+              <BookOpen className="h-3 w-3" />
+              <span>{t('odyssey.toast.learnMore')}</span>
+            </button>
+
+            {toast.courseLink && (
+              <Link
+                to={toast.courseLink.path}
+                className={cn(
+                  'flex items-center gap-1.5',
+                  'text-xs font-medium',
+                  'text-blue-500 dark:text-blue-400',
+                  'hover:text-blue-700 dark:hover:text-blue-200',
+                  'transition-colors duration-150',
+                )}
+              >
+                <GraduationCap className="h-3 w-3" />
+                <span>{t('odyssey.toast.goToCourse')}</span>
+              </Link>
             )}
-            onClick={handleLearnMore}
-          >
-            <BookOpen className="h-3 w-3" />
-            <span>{t('odyssey.toast.learnMore')}</span>
-          </button>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

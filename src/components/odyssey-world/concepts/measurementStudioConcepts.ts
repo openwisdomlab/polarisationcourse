@@ -60,6 +60,11 @@ export const measurementStudioConcepts: ConceptDefinition[] = [
       derivationStepsKey: 'odyssey.concepts.stokesMeasurement.quantitative.derivation',
     },
 
+    courseLink: {
+      path: '/demos/stokes',
+      labelKey: 'odyssey.courseLink.stokesMeasurement',
+    },
+
     demoComponentId: 'stokes-explorer',
     triggerElementTypes: ['polarizer', 'waveplate'],
     triggerCondition: 'discovered',
@@ -116,6 +121,11 @@ export const measurementStudioConcepts: ConceptDefinition[] = [
       ],
     },
 
+    courseLink: {
+      path: '/demos/stokes',
+      labelKey: 'odyssey.courseLink.degreeOfPolarization',
+    },
+
     triggerElementTypes: ['polarizer'],
     triggerCondition: 'discovered',
 
@@ -166,6 +176,11 @@ export const measurementStudioConcepts: ConceptDefinition[] = [
         },
       ],
       derivationStepsKey: 'odyssey.concepts.fullPolarimetry.quantitative.derivation',
+    },
+
+    courseLink: {
+      path: '/demos/mueller',
+      labelKey: 'odyssey.courseLink.fullPolarimetry',
     },
 
     triggerElementTypes: ['polarizer', 'waveplate'],

@@ -429,6 +429,7 @@ const OpticalElement = React.memo(function OpticalElement({
 
   return (
     <g
+      data-element-id={element.id}
       transform={`translate(${screen.x}, ${screen.y})`}
       opacity={groupOpacity}
       style={{ cursor, transition: 'opacity 0.2s ease' }}

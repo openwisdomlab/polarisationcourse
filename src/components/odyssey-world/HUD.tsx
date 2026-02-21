@@ -21,7 +21,8 @@ import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { worldToScreen, TILE_WIDTH_HALF, TILE_HEIGHT_HALF } from '@/lib/isometric'
 import { showWelcomeOverlay } from './WelcomeOverlay'
-import { getRegionDefinition } from './regions/regionRegistry'
+import { getRegionDefinition, REGION_DEFINITIONS } from './regions/regionRegistry'
+import { getCourseInfoForRegion } from './regionCourseMap'
 
 /**
  * HUD 按钮基础样式
@@ -184,6 +185,7 @@ export function HUD() {
   const navigate = useNavigate()
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
   const achievedDiscoveries = useOdysseyWorldStore((s) => s.achievedDiscoveries)
+  const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
 
   // 通过 i18n 键获取区域名称 -- 将 kebab-case ID 转换为 camelCase nameKey
   const regionNameKey = activeRegionId.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
@@ -196,6 +198,19 @@ export function HUD() {
     if (!regionDef?.discoveries) return 0
     return regionDef.discoveries.filter((d) => achievedDiscoveries.has(d.id)).length
   }, [regionDef, achievedDiscoveries])
+
+  // 全局进度 -- 所有区域的总发现数
+  const globalProgress = useMemo(() => {
+    let total = 0
+    let achieved = 0
+    for (const [, def] of REGION_DEFINITIONS) {
+      total += def.discoveries.length
+      for (const d of def.discoveries) {
+        if (allTimeDiscoveries.has(d.id)) achieved++
+      }
+    }
+    return { achieved, total }
+  }, [allTimeDiscoveries])
 
   // 设置面板折叠状态
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -220,13 +235,13 @@ export function HUD() {
         {/* 返回按钮 */}
         <button
           className={cn(hudButtonClass, 'pointer-events-auto h-8 w-8 md:h-9 md:w-9 lg:h-10 lg:w-10')}
-          onClick={() => navigate({ to: '/' })}
-          aria-label={t('odyssey.ui.backToHome')}
+          onClick={() => navigate({ to: '/demos' })}
+          aria-label={t('odyssey.ui.backToDemos')}
         >
           <ArrowLeft className="h-4 w-4 md:h-5 md:w-5 text-gray-600 dark:text-gray-300" />
         </button>
 
-        {/* 当前区域名称 + 进度环 -- 顶部中央 */}
+        {/* 当前区域名称 + 课程单元 + 进度环 -- 顶部中央 */}
         <div
           className={cn(
             'pointer-events-none rounded-lg px-2 py-1 md:px-3 md:py-1.5',
@@ -236,11 +251,27 @@ export function HUD() {
             'flex items-center gap-2',
           )}
         >
-          <span className="text-xs md:text-sm font-light tracking-wider text-gray-600 dark:text-gray-300">
-            {regionName}
-          </span>
+          <div className="flex flex-col items-center">
+            <span className="text-xs md:text-sm font-light tracking-wider text-gray-600 dark:text-gray-300">
+              {regionName}
+            </span>
+            {(() => {
+              const courseInfo = getCourseInfoForRegion(activeRegionId)
+              return courseInfo ? (
+                <span className="text-[9px] text-gray-400 dark:text-gray-500">
+                  {t(courseInfo.unitLabelKey)}
+                </span>
+              ) : null
+            })()}
+          </div>
           {totalDiscoveries > 0 && (
             <ProgressRing achieved={achievedCount} total={totalDiscoveries} />
+          )}
+          {/* 全局进度文本 */}
+          {globalProgress.total > 0 && (
+            <span className="text-[8px] text-gray-400/60 dark:text-gray-500/50 hidden md:inline">
+              {t('odyssey.ui.overallProgress', { count: globalProgress.achieved, total: globalProgress.total })}
+            </span>
           )}
         </div>
 

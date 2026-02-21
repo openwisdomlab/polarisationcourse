@@ -56,6 +56,11 @@ export const refractionBenchConcepts: ConceptDefinition[] = [
       derivationStepsKey: 'odyssey.concepts.brewsterAngle.quantitative.derivation',
     },
 
+    courseLink: {
+      path: '/demos/brewster',
+      labelKey: 'odyssey.courseLink.brewsterAngle',
+    },
+
     demoComponentId: 'brewster-explorer',
     triggerElementTypes: ['environment'],
     triggerCondition: 'discovered',
@@ -117,6 +122,11 @@ export const refractionBenchConcepts: ConceptDefinition[] = [
       ],
     },
 
+    courseLink: {
+      path: '/demos/fresnel',
+      labelKey: 'odyssey.courseLink.snellPolarization',
+    },
+
     triggerElementTypes: ['environment'],
     triggerCondition: 'discovered',
 
@@ -166,6 +176,11 @@ export const refractionBenchConcepts: ConceptDefinition[] = [
           labelKey: 'odyssey.concepts.totalInternalReflection.formulas.totalReflection',
         },
       ],
+    },
+
+    courseLink: {
+      path: '/demos/fresnel',
+      labelKey: 'odyssey.courseLink.totalInternalReflection',
     },
 
     triggerElementTypes: ['environment'],

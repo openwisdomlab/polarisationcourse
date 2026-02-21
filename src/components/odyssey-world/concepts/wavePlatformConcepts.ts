@@ -56,6 +56,11 @@ export const wavePlatformConcepts: ConceptDefinition[] = [
       derivationStepsKey: 'odyssey.concepts.retardationSeries.quantitative.derivation',
     },
 
+    courseLink: {
+      path: '/demos/waveplate',
+      labelKey: 'odyssey.courseLink.retardationSeries',
+    },
+
     demoComponentId: 'retardation-explorer',
     triggerElementTypes: ['waveplate'],
     triggerCondition: 'discovered',
@@ -106,6 +111,11 @@ export const wavePlatformConcepts: ConceptDefinition[] = [
           labelKey: 'odyssey.concepts.waveplateCompensation.formulas.netRetardation',
         },
       ],
+    },
+
+    courseLink: {
+      path: '/demos/waveplate',
+      labelKey: 'odyssey.courseLink.waveplateCompensation',
     },
 
     triggerElementTypes: ['waveplate'],
@@ -161,6 +171,11 @@ export const wavePlatformConcepts: ConceptDefinition[] = [
           labelKey: 'odyssey.concepts.poincareSphere.formulas.waveplateRotation',
         },
       ],
+    },
+
+    courseLink: {
+      path: '/calc/poincare',
+      labelKey: 'odyssey.courseLink.poincareSphere',
     },
 
     triggerElementTypes: ['waveplate'],

@@ -4763,8 +4763,48 @@
       "interfaceLab": "界面实验室",
       "measurementStudio": "测量工作室"
     },
+    "welcome": {
+      "narrative": "探索 6 个光学实验室，发现偏振光的物理规律。每个实验室对应一个课程单元 \u2014 操控光学元件，观察光的行为，揭示基本定律。",
+      "unitLabel": {
+        "crystalLab": "单元 0-1: 偏振与马吕斯定律",
+        "wavePlatform": "单元 1: 相位延迟与庞加莱球",
+        "refractionBench": "单元 2: 布儒斯特与菲涅耳",
+        "scatteringChamber": "单元 4: 瑞利与米氏散射",
+        "interfaceLab": "单元 2: 菲涅耳与全反射",
+        "measurementStudio": "单元 5: Stokes 与 Mueller"
+      }
+    },
+    "courseLink": {
+      "malusLaw": "打开马吕斯定律演示 \u2192",
+      "crossedPolarizers": "打开马吕斯定律演示 \u2192",
+      "circularPolarization": "打开波片演示 \u2192",
+      "threePolarizer": "打开马吕斯定律演示 \u2192",
+      "brewsterAngle": "打开布儒斯特角演示 \u2192",
+      "snellPolarization": "打开菲涅耳演示 \u2192",
+      "totalInternalReflection": "打开菲涅耳演示 \u2192",
+      "retardationSeries": "打开波片演示 \u2192",
+      "waveplateCompensation": "打开波片演示 \u2192",
+      "poincareSphere": "打开庞加莱球 \u2192",
+      "rayleighPolarization": "打开瑞利散射演示 \u2192",
+      "skyPolarizationPattern": "打开瑞利散射演示 \u2192",
+      "fresnelReflection": "打开菲涅耳演示 \u2192",
+      "mediumComparison": "打开菲涅耳演示 \u2192",
+      "stackedInterfaces": "打开菲涅耳演示 \u2192",
+      "stokesMeasurement": "打开 Stokes 演示 \u2192",
+      "degreeOfPolarization": "打开 Stokes 演示 \u2192",
+      "fullPolarimetry": "打开 Mueller 演示 \u2192"
+    },
+    "regionDesc": {
+      "crystalLab": "探索偏振片、波片和棱镜。发现马吕斯定律和圆偏振。",
+      "wavePlatform": "实验相位延迟和波片组合。在庞加莱球上遍历。",
+      "refractionBench": "研究界面上的光。找到布儒斯特角并观察全内反射。",
+      "scatteringChamber": "研究瑞利散射和天空偏振模式。",
+      "interfaceLab": "分析不同介质和多层界面的菲涅耳反射系数。",
+      "measurementStudio": "测量 Stokes 参数、偏振度并进行完整偏振测量。"
+    },
     "ui": {
       "backToHome": "返回首页",
+      "backToDemos": "返回演示",
       "worldMap": "世界地图",
       "settings": "设置",
       "settingsPlaceholder": "设置功能即将推出",
@@ -4802,7 +4842,9 @@
       "material": "材料",
       "refractiveIndex": "折射率",
       "loadingExplorer": "加载探索器...",
-      "demoComingSoon": "即将推出"
+      "demoComingSoon": "即将推出",
+      "overallProgress": "总进度: {{count}}/{{total}}",
+      "clickToTravel": "点击前往此区域"
     },
     "tutorial": {
       "step1Title": "旋转这个偏振片",
@@ -4842,13 +4884,17 @@
     },
     "objectives": {
       "exploreNewRegion": "所有发现已完成！探索新的区域 \u2192",
-      "keepExploring": "与光学元件互动以发现物理规律"
+      "keepExploring": "与光学元件互动以发现物理规律",
+      "goalPrefix": "目标"
     },
     "menu": {
-      "title": "发现日志"
+      "title": "发现日志",
+      "currentRegion": "当前区域",
+      "allRegions": "所有区域"
     },
     "toast": {
-      "learnMore": "了解原因 →"
+      "learnMore": "了解原因 \u2192",
+      "goToCourse": "课程演示 \u2192"
     },
     "depth": {
       "discoverMore": "发现更多以解锁"

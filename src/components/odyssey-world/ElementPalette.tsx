@@ -142,9 +142,11 @@ function MiniShapeForType({ def }: { def: PaletteItemDef }) {
 interface PaletteItemProps {
   def: PaletteItemDef
   index: number
+  /** 当前目标提示该类型元素 -- 添加蓝色脉冲提示 */
+  isHinted?: boolean
 }
 
-const PaletteItem = React.memo(function PaletteItem({ def, index }: PaletteItemProps) {
+const PaletteItem = React.memo(function PaletteItem({ def, index, isHinted }: PaletteItemProps) {
   const addElement = useOdysseyWorldStore((s) => s.addElement)
   const selectElement = useOdysseyWorldStore((s) => s.selectElement)
   const setInteractionMode = useOdysseyWorldStore((s) => s.setInteractionMode)
@@ -184,6 +186,13 @@ const PaletteItem = React.memo(function PaletteItem({ def, index }: PaletteItemP
         ease: 'easeInOut',
       }}
     >
+      {/* 目标提示蓝色脉冲环 -- 引导用户关注当前目标相关的元素 */}
+      {isHinted && (
+        <circle cx={0} cy={-2} r={12} fill="none" stroke="#60a5fa" strokeWidth={1.2} opacity={0.5}>
+          <animate attributeName="r" values="12;15;12" dur="1.5s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.5;0.2;0.5" dur="1.5s" repeatCount="indefinite" />
+        </circle>
+      )}
       <MiniShapeForType def={def} />
     </motion.g>
   )
@@ -204,6 +213,7 @@ export const ElementPalette = React.memo(function ElementPalette() {
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
   // 使用全局累积发现集合: 跨区域发现也能解锁其他区域的工具
   const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
+  const achievedDiscoveries = useOdysseyWorldStore((s) => s.achievedDiscoveries)
 
   // 计算面板内容: 基础工具 + 发现解锁的扩充工具
   const paletteItems = useMemo(() => {
@@ -245,6 +255,32 @@ export const ElementPalette = React.memo(function ElementPalette() {
     return [...baseItems, ...enrichedItems]
   }, [activeRegionId, allTimeDiscoveries])
 
+  // 从当前目标的 hintElements 提取元素类型 -- 用于面板工具提示
+  const hintedTypes = useMemo(() => {
+    const regionDef = getRegionDefinition(activeRegionId)
+    if (!regionDef) return new Set<SceneElementType>()
+
+    // 找到下一个未完成的发现 (按 difficulty 排序)
+    const sorted = [...regionDef.discoveries].sort((a, b) => a.difficulty - b.difficulty)
+    const next = sorted.find((d) => !achievedDiscoveries.has(d.id))
+    if (!next?.hintElements) return new Set<SceneElementType>()
+
+    // 从 hintElement ID 中推断元素类型 (如 "crystal-lab-polarizer-1" → "polarizer")
+    const types = new Set<SceneElementType>()
+    for (const elementId of next.hintElements) {
+      // 通用模式: {region}-{type}-{index} 或 {region}-{type}-{variant}-{index}
+      const parts = elementId.split('-')
+      // 跳过区域前缀 (通常 2 段)，尝试匹配已知类型
+      const knownTypes: SceneElementType[] = ['polarizer', 'waveplate', 'prism', 'environment']
+      for (const part of parts) {
+        if (knownTypes.includes(part as SceneElementType)) {
+          types.add(part as SceneElementType)
+        }
+      }
+    }
+    return types
+  }, [activeRegionId, achievedDiscoveries])
+
   // 架子宽度根据面板项数量动态调整
   const shelfWidth = Math.max(132, paletteItems.length * 32 + 20)
 
@@ -282,7 +318,12 @@ export const ElementPalette = React.memo(function ElementPalette() {
       {/* 元件缩略图 (定位在架面上方) */}
       <g transform="translate(12, -24)">
         {paletteItems.map((item, i) => (
-          <PaletteItem key={`palette-${activeRegionId}-${item.type}-${i}`} def={item} index={i} />
+          <PaletteItem
+            key={`palette-${activeRegionId}-${item.type}-${i}`}
+            def={item}
+            index={i}
+            isHinted={hintedTypes.has(item.type)}
+          />
         ))}
       </g>
     </g>

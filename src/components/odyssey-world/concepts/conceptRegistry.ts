@@ -58,6 +58,14 @@ export interface ConceptDefinition {
     derivationStepsKey?: string
   }
 
+  /** 可选: 链接到主课程演示的路径 (如 '/demos/malus') */
+  courseLink?: {
+    /** 路由路径 (如 '/demos/malus') */
+    path: string
+    /** i18n 键: 按钮文本 */
+    labelKey: string
+  }
+
   /** 可选: 惰性加载的探索器组件 ID (用于 CONT-02 demo 嵌入) */
   demoComponentId?: string
 

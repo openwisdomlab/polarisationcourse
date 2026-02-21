@@ -11,8 +11,9 @@
 
 import { useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Lock } from 'lucide-react'
+import { Lock, ExternalLink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import type { ConceptDefinition } from '@/components/odyssey-world/concepts/conceptRegistry'
@@ -56,10 +57,10 @@ export function DepthPanelContent({ concept }: DepthPanelContentProps) {
 
   // 渐进解锁标签页:
   // - qualitative: 始终可用 (首次发现即可看到)
-  // - quantitative: 2 个发现后解锁
-  // - demo: 3 个发现后解锁 (且概念有 demoComponentId)
-  const isQuantitativeUnlocked = regionDiscoveryCount >= 2
-  const isDemoUnlocked = regionDiscoveryCount >= 3
+  // - quantitative: 1 个发现后解锁 (该概念被发现即可)
+  // - demo: 2 个发现后解锁 (鼓励更多探索)
+  const isQuantitativeUnlocked = regionDiscoveryCount >= 1
+  const isDemoUnlocked = regionDiscoveryCount >= 2
 
   // 构建标签页列表
   const tabs: (TabConfig & { locked?: boolean })[] = [
@@ -86,6 +87,21 @@ export function DepthPanelContent({ concept }: DepthPanelContentProps) {
           <p className="text-sm leading-relaxed text-white/70">
             {t(concept.intuition.contentKey)}
           </p>
+
+          {/* 课程链接 -- 导航到对应的课程演示 */}
+          {concept.courseLink && (
+            <Link
+              to={concept.courseLink.path}
+              className={cn(
+                'inline-flex items-center gap-1.5 mt-3',
+                'text-xs font-medium text-blue-400 hover:text-blue-300',
+                'transition-colors',
+              )}
+            >
+              <ExternalLink className="h-3 w-3" />
+              {t(concept.courseLink.labelKey)}
+            </Link>
+          )}
         </div>
       </div>
 
