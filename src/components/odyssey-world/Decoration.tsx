@@ -15,14 +15,31 @@ interface DecorationProps {
   element: SceneElement
 }
 
-/** 浮动动画配置: 轻微 Y 轴振荡 */
-const floatTransition = {
-  y: {
-    repeat: Infinity,
-    repeatType: 'reverse' as const,
-    duration: 3.5,
-    ease: 'easeInOut' as const,
-  },
+/** 基于元素 ID 生成确定性浮动时长 (2.5–4.5s)，避免所有装饰同步浮动 */
+function getFloatDuration(id: string): number {
+  let hash = 0
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0
+  return 2.5 + (Math.abs(hash) % 200) / 100
+}
+
+/** 基于元素 ID 生成确定性起始延迟 (0–2s)，错开动画起点 */
+function getFloatDelay(id: string): number {
+  let hash = 0
+  for (let i = 0; i < id.length; i++) hash = (hash * 37 + id.charCodeAt(i)) | 0
+  return (Math.abs(hash) % 200) / 100
+}
+
+/** 生成每个装饰元素独特的浮动动画配置 */
+function getFloatTransition(id: string) {
+  return {
+    y: {
+      repeat: Infinity,
+      repeatType: 'reverse' as const,
+      duration: getFloatDuration(id),
+      ease: 'easeInOut' as const,
+      delay: getFloatDelay(id),
+    },
+  }
 }
 
 /**
@@ -129,7 +146,7 @@ const Decoration = React.memo(function Decoration({ element }: DecorationProps) 
     <motion.g
       transform={`translate(${screen.x}, ${screen.y})`}
       animate={{ y: [0, -3, 0] }}
-      transition={floatTransition}
+      transition={getFloatTransition(element.id)}
     >
       <g transform={`rotate(${element.rotation})`}>
         {shape}

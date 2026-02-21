@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { worldToScreen, TILE_WIDTH_HALF, TILE_HEIGHT_HALF } from '@/lib/isometric'
 import { showWelcomeOverlay } from './WelcomeOverlay'
-import { getRegionDefinition } from './regions/regionRegistry'
+import { getRegionDefinition, REGION_DEFINITIONS } from './regions/regionRegistry'
 import { getCourseInfoForRegion } from './regionCourseMap'
 
 /**
@@ -185,6 +185,7 @@ export function HUD() {
   const navigate = useNavigate()
   const activeRegionId = useOdysseyWorldStore((s) => s.activeRegionId)
   const achievedDiscoveries = useOdysseyWorldStore((s) => s.achievedDiscoveries)
+  const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
 
   // 通过 i18n 键获取区域名称 -- 将 kebab-case ID 转换为 camelCase nameKey
   const regionNameKey = activeRegionId.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
@@ -197,6 +198,19 @@ export function HUD() {
     if (!regionDef?.discoveries) return 0
     return regionDef.discoveries.filter((d) => achievedDiscoveries.has(d.id)).length
   }, [regionDef, achievedDiscoveries])
+
+  // 全局进度 -- 所有区域的总发现数
+  const globalProgress = useMemo(() => {
+    let total = 0
+    let achieved = 0
+    for (const [, def] of REGION_DEFINITIONS) {
+      total += def.discoveries.length
+      for (const d of def.discoveries) {
+        if (allTimeDiscoveries.has(d.id)) achieved++
+      }
+    }
+    return { achieved, total }
+  }, [allTimeDiscoveries])
 
   // 设置面板折叠状态
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -252,6 +266,12 @@ export function HUD() {
           </div>
           {totalDiscoveries > 0 && (
             <ProgressRing achieved={achievedCount} total={totalDiscoveries} />
+          )}
+          {/* 全局进度文本 */}
+          {globalProgress.total > 0 && (
+            <span className="text-[8px] text-gray-400/60 dark:text-gray-500/50 hidden md:inline">
+              {t('odyssey.ui.overallProgress', { count: globalProgress.achieved, total: globalProgress.total })}
+            </span>
           )}
         </div>
 

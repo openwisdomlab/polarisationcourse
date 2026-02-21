@@ -4606,6 +4606,14 @@
       "degreeOfPolarization": "Open Stokes Demo \u2192",
       "fullPolarimetry": "Open Mueller Demo \u2192"
     },
+    "regionDesc": {
+      "crystalLab": "Explore polarizers, wave plates, and prisms. Discover Malus's Law and circular polarization.",
+      "wavePlatform": "Experiment with retardation and wave plate combinations. Traverse the Poincaré sphere.",
+      "refractionBench": "Study light at surfaces. Find Brewster's angle and observe total internal reflection.",
+      "scatteringChamber": "Investigate Rayleigh scattering and sky polarization patterns.",
+      "interfaceLab": "Analyze Fresnel reflection coefficients across different media and stacked interfaces.",
+      "measurementStudio": "Measure Stokes parameters, degree of polarization, and perform full polarimetry."
+    },
     "ui": {
       "backToHome": "Back to home",
       "backToDemos": "Back to demos",
@@ -4646,7 +4654,9 @@
       "material": "Material",
       "refractiveIndex": "Refractive Index",
       "loadingExplorer": "Loading explorer...",
-      "demoComingSoon": "Demo coming soon"
+      "demoComingSoon": "Demo coming soon",
+      "overallProgress": "Overall: {{count}}/{{total}}",
+      "clickToTravel": "Click to travel here"
     },
     "tutorial": {
       "step1Title": "Rotate This Polarizer",
@@ -4690,7 +4700,9 @@
       "goalPrefix": "Goal"
     },
     "menu": {
-      "title": "Discoveries"
+      "title": "Discoveries",
+      "currentRegion": "Current Region",
+      "allRegions": "All Regions"
     },
     "toast": {
       "learnMore": "Learn why \u2192",

@@ -4794,6 +4794,14 @@
       "degreeOfPolarization": "打开 Stokes 演示 \u2192",
       "fullPolarimetry": "打开 Mueller 演示 \u2192"
     },
+    "regionDesc": {
+      "crystalLab": "探索偏振片、波片和棱镜。发现马吕斯定律和圆偏振。",
+      "wavePlatform": "实验相位延迟和波片组合。在庞加莱球上遍历。",
+      "refractionBench": "研究界面上的光。找到布儒斯特角并观察全内反射。",
+      "scatteringChamber": "研究瑞利散射和天空偏振模式。",
+      "interfaceLab": "分析不同介质和多层界面的菲涅耳反射系数。",
+      "measurementStudio": "测量 Stokes 参数、偏振度并进行完整偏振测量。"
+    },
     "ui": {
       "backToHome": "返回首页",
       "backToDemos": "返回演示",
@@ -4834,7 +4842,9 @@
       "material": "材料",
       "refractiveIndex": "折射率",
       "loadingExplorer": "加载探索器...",
-      "demoComingSoon": "即将推出"
+      "demoComingSoon": "即将推出",
+      "overallProgress": "总进度: {{count}}/{{total}}",
+      "clickToTravel": "点击前往此区域"
     },
     "tutorial": {
       "step1Title": "旋转这个偏振片",
@@ -4878,7 +4888,9 @@
       "goalPrefix": "目标"
     },
     "menu": {
-      "title": "发现日志"
+      "title": "发现日志",
+      "currentRegion": "当前区域",
+      "allRegions": "所有区域"
     },
     "toast": {
       "learnMore": "了解原因 \u2192",

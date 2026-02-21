@@ -10,7 +10,8 @@
  * Phase 3 Plan 03 新增: WorldMap (星图世界地图) 和 useWorldMap (快速旅行)。
  */
 
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
 import { useIsometricCamera } from './hooks/useIsometricCamera'
 import { useClickToMove } from './hooks/useClickToMove'
@@ -37,6 +38,42 @@ import { RotationFeedback } from './RotationFeedback'
 import { BeamTooltip } from './BeamTooltip'
 import { PaletteUnlockToast } from './PaletteUnlockToast'
 import { RegionSummary } from './RegionSummary'
+
+/**
+ * DiscoveryVignette -- 发现触发时的金色渐晕闪光
+ *
+ * 新发现达成时渲染全屏径向渐变闪光 (pointer-events: none)。
+ * 600ms 淡入淡出，营造 "顿悟" 仪式感。
+ */
+function DiscoveryVignette({ newlyAchieved }: { newlyAchieved: string | null }) {
+  // 使用本地状态驱动动画，避免 newlyAchieved 被清除后闪光立即消失
+  const [showVignette, setShowVignette] = useState(false)
+
+  useEffect(() => {
+    if (!newlyAchieved) return
+    setShowVignette(true)
+    const timer = setTimeout(() => setShowVignette(false), 800)
+    return () => clearTimeout(timer)
+  }, [newlyAchieved])
+
+  return (
+    <AnimatePresence>
+      {showVignette && (
+        <motion.div
+          key="discovery-vignette"
+          className="pointer-events-none absolute inset-0 z-[12]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            boxShadow: 'inset 0 0 120px 40px rgba(255, 200, 60, 0.15), inset 0 0 60px 20px rgba(255, 180, 40, 0.08)',
+          }}
+        />
+      )}
+    </AnimatePresence>
+  )
+}
 
 /**
  * OdysseyWorld -- 等距光学世界
@@ -137,6 +174,9 @@ export function OdysseyWorld() {
         achievedDiscoveries={achievedDiscoveries}
         newlyAchieved={newlyAchieved}
       />
+
+      {/* 发现金色渐晕闪光 (z-12, 场景与 HUD 之间) */}
+      <DiscoveryVignette newlyAchieved={newlyAchieved} />
 
       {/* 环境属性弹窗 (HTML 叠加层，定位在场景元素上方) */}
       <EnvironmentPopup />

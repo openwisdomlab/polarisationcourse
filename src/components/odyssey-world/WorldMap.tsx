@@ -100,9 +100,11 @@ interface RegionShapeProps {
   isVisited: boolean
   isActive: boolean
   isRecommended: boolean
+  isHovered: boolean
   discoveryCount: number
   totalDiscoveries: number
   onFastTravel: (regionId: string) => void
+  onHover: (regionId: string | null) => void
 }
 
 const RegionShape = React.memo(function RegionShape({
@@ -111,9 +113,11 @@ const RegionShape = React.memo(function RegionShape({
   isVisited,
   isActive,
   isRecommended,
+  isHovered,
   discoveryCount,
   totalDiscoveries,
   onFastTravel,
+  onHover,
 }: RegionShapeProps) {
   const { t } = useTranslation()
   const { cx, cy } = getRegionCenter(layout.col, layout.row)
@@ -128,6 +132,8 @@ const RegionShape = React.memo(function RegionShape({
   return (
     <g
       onClick={handleClick}
+      onMouseEnter={() => onHover(layout.id)}
+      onMouseLeave={() => onHover(null)}
       style={{ cursor: isVisited ? 'pointer' : 'default' }}
     >
       {/* 区域形状 (圆角矩形) */}
@@ -239,6 +245,36 @@ const RegionShape = React.memo(function RegionShape({
         >
           ✓
         </text>
+      )}
+
+      {/* 悬停预览提示 -- 区域描述 + 发现概览 */}
+      {isHovered && (
+        <foreignObject
+          x={cx - 100}
+          y={cy + REGION_HEIGHT / 2 + 6}
+          width={200}
+          height={60}
+          style={{ pointerEvents: 'none', overflow: 'visible' }}
+        >
+          <div
+            style={{
+              background: 'rgba(0,0,0,0.85)',
+              borderRadius: 6,
+              padding: '6px 8px',
+              backdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+            }}
+          >
+            <p style={{ fontSize: 9, color: '#ccc', margin: 0, lineHeight: 1.3 }}>
+              {t(`odyssey.regionDesc.${layout.label}`)}
+            </p>
+            {isVisited && (
+              <p style={{ fontSize: 8, color: '#888', margin: '3px 0 0', lineHeight: 1.2 }}>
+                {t('odyssey.ui.clickToTravel')}
+              </p>
+            )}
+          </div>
+        </foreignObject>
       )}
     </g>
   )
@@ -675,6 +711,9 @@ export const WorldMap = React.memo(function WorldMap({
   const allTimeDiscoveries = useOdysseyWorldStore((s) => s.allTimeDiscoveries)
   const openDepthPanel = useOdysseyWorldStore((s) => s.openDepthPanel)
 
+  // 区域悬停状态 (本地 UI 状态)
+  const [hoveredRegionId, setHoveredRegionId] = useState<string | null>(null)
+
   // 概念节点悬停状态 (本地 UI 状态)
   const [hoveredConceptId, setHoveredConceptId] = useState<string | null>(null)
 
@@ -793,9 +832,11 @@ export const WorldMap = React.memo(function WorldMap({
                     isVisited={visitedRegions.has(layout.id)}
                     isActive={layout.id === activeRegionId}
                     isRecommended={layout.id === recommendedRegionId}
+                    isHovered={hoveredRegionId === layout.id}
                     discoveryCount={progress.count}
                     totalDiscoveries={progress.total}
                     onFastTravel={onFastTravel}
+                    onHover={setHoveredRegionId}
                   />
                 )
               })}
