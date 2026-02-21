@@ -64,7 +64,7 @@ export default function ScatteringChamberDecorations({ gridWidth, gridHeight, th
   const scatterDots = seededDots(120, gridWidth, gridHeight)
 
   return (
-    <g className="scattering-chamber-decorations" opacity={0.35}>
+    <g className="scattering-chamber-decorations" opacity={0.65}>
       {/* CSS 动画定义 */}
       <style>{SCATTER_ANIMATIONS}</style>
 

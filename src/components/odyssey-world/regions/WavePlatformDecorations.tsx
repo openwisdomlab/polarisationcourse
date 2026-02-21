@@ -40,7 +40,7 @@ export default function WavePlatformDecorations({ gridWidth, gridHeight, theme }
   const accent = theme.colorPalette.accentColor
 
   return (
-    <g className="wave-platform-decorations" opacity={0.35}>
+    <g className="wave-platform-decorations" opacity={0.65}>
       {/* CSS 动画定义 */}
       <style>{WAVE_ANIMATIONS}</style>
 

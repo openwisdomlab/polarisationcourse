@@ -37,7 +37,7 @@ export default function RefractionBenchDecorations({ gridWidth, gridHeight, them
   const accent = theme.colorPalette.accentColor
 
   return (
-    <g className="refraction-bench-decorations" opacity={0.35}>
+    <g className="refraction-bench-decorations" opacity={0.65}>
       {/* CSS 动画定义 */}
       <style>{REFRACTION_ANIMATIONS}</style>
 
@@ -180,7 +180,7 @@ export default function RefractionBenchDecorations({ gridWidth, gridHeight, them
             <polygon
               points="0,-20 18,12 -18,12"
               fill={accent}
-              fillOpacity={0.05}
+              fillOpacity={0.15}
               stroke={accent}
               strokeWidth={0.8}
               opacity={0.35}
@@ -197,7 +197,7 @@ export default function RefractionBenchDecorations({ gridWidth, gridHeight, them
         <polygon
           points="0,-22 18,12 -18,12"
           fill={accent}
-          fillOpacity={0.06}
+          fillOpacity={0.15}
           stroke={accent}
           strokeWidth={1.1}
           opacity={0.4}

@@ -38,7 +38,7 @@ export default function CrystalLabDecorations({ gridWidth, gridHeight, theme }: 
   const accent = theme.colorPalette.accentColor
 
   return (
-    <g className="crystal-lab-decorations" opacity={0.35}>
+    <g className="crystal-lab-decorations" opacity={0.65}>
       {/* CSS 动画定义 */}
       <style>{CRYSTAL_ANIMATIONS}</style>
 
@@ -69,7 +69,7 @@ export default function CrystalLabDecorations({ gridWidth, gridHeight, theme }: 
         <polygon
           points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14"
           fill={accent}
-          fillOpacity={0.08}
+          fillOpacity={0.18}
           stroke={accent}
           strokeWidth={1.4}
           opacity={0.6}
@@ -85,7 +85,7 @@ export default function CrystalLabDecorations({ gridWidth, gridHeight, theme }: 
         <polygon
           points="36,-8 52,-16 52,0 36,8 28,0 28,-16"
           fill={accent}
-          fillOpacity={0.05}
+          fillOpacity={0.15}
           stroke={accent}
           strokeWidth={0.9}
           opacity={0.45}
@@ -95,7 +95,7 @@ export default function CrystalLabDecorations({ gridWidth, gridHeight, theme }: 
         <polygon
           points="-16,28 -8,20 8,24 8,40 -8,44 -16,36"
           fill={accent}
-          fillOpacity={0.06}
+          fillOpacity={0.15}
           stroke={accent}
           strokeWidth={0.8}
           opacity={0.4}
@@ -271,7 +271,7 @@ export default function CrystalLabDecorations({ gridWidth, gridHeight, theme }: 
         <polygon
           points="0,-16 14,-8 14,8 0,16 -14,8 -14,-8"
           fill={accent}
-          fillOpacity={0.12}
+          fillOpacity={0.20}
           stroke={accent}
           strokeWidth={1}
           opacity={0.5}

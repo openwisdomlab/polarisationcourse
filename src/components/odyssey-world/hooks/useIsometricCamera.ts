@@ -10,6 +10,7 @@ import { useCallback, useRef } from 'react'
 import { useMotionValue, useTransform, type MotionValue } from 'framer-motion'
 import { clampZoom } from '@/lib/isometric'
 import { useOdysseyWorldStore } from '@/stores/odysseyWorldStore'
+import { getRegionDefinition } from '@/components/odyssey-world/regions/regionRegistry'
 
 export interface IsometricCameraReturn {
   cameraX: MotionValue<number>
@@ -17,6 +18,41 @@ export interface IsometricCameraReturn {
   zoom: MotionValue<number>
   svgTransform: MotionValue<string>
   handleWheel: (e: React.WheelEvent) => void
+  handlePanPointerDown: (e: React.PointerEvent) => void
+  handlePanPointerMove: (e: React.PointerEvent) => void
+  handlePanPointerUp: (e: React.PointerEvent) => void
+}
+
+/**
+ * 将摄像机位置夹紧到场景边界内
+ *
+ * 基于区域网格尺寸和当前缩放计算允许的最大平移范围，
+ * 添加 50% 内边距以确保场景内容始终可见。
+ *
+ * @param x 摄像机 X 偏移 (屏幕空间)
+ * @param y 摄像机 Y 偏移 (屏幕空间)
+ * @param z 当前缩放倍数
+ * @param gridWidth 区域网格宽度 (格子数)
+ * @param gridHeight 区域网格高度 (格子数)
+ * @returns 夹紧后的摄像机坐标
+ */
+function clampCamera(
+  x: number,
+  y: number,
+  z: number,
+  gridWidth: number,
+  gridHeight: number,
+): { x: number; y: number } {
+  // TILE_WIDTH_HALF = 64, TILE_HEIGHT_HALF = 32
+  // 场景在屏幕空间的半宽/半高，含 50% 内边距
+  const sceneWidthHalf = gridWidth * 64 * 1.5
+  const sceneHeightHalf = gridHeight * 32 * 1.5
+
+  // 缩放越大，允许的摄像机偏移范围越小 (除以 z)
+  const clampedX = Math.max(-sceneWidthHalf / z, Math.min(sceneWidthHalf / z, x))
+  const clampedY = Math.max(-sceneHeightHalf / z, Math.min(sceneHeightHalf / z, y))
+
+  return { x: clampedX, y: clampedY }
 }
 
 /**
@@ -77,8 +113,17 @@ export function useIsometricCamera(): IsometricCameraReturn {
       const newCamY = worldY - cursorY / newZoom
 
       zoom.set(newZoom)
-      cameraX.set(newCamX)
-      cameraY.set(newCamY)
+
+      // 缩放后将摄像机夹紧到场景边界
+      const region = getRegionDefinition(useOdysseyWorldStore.getState().activeRegionId)
+      if (region) {
+        const clamped = clampCamera(newCamX, newCamY, newZoom, region.gridWidth, region.gridHeight)
+        cameraX.set(clamped.x)
+        cameraY.set(clamped.y)
+      } else {
+        cameraX.set(newCamX)
+        cameraY.set(newCamY)
+      }
 
       // 缩放完成后同步到 store
       syncToStore()
@@ -86,5 +131,78 @@ export function useIsometricCamera(): IsometricCameraReturn {
     [cameraX, cameraY, zoom, syncToStore],
   )
 
-  return { cameraX, cameraY, zoom, svgTransform, handleWheel }
+  // ── 鼠标拖拽平移 (仅鼠标，不影响触摸 pinch-to-zoom) ──
+  const dragRef = useRef<{
+    dragging: boolean
+    startX: number
+    startY: number
+    startCamX: number
+    startCamY: number
+  }>({ dragging: false, startX: 0, startY: 0, startCamX: 0, startCamY: 0 })
+
+  const handlePanPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      // 仅处理鼠标主按键拖拽，不拦截触摸事件
+      if (e.pointerType !== 'mouse' || e.button !== 0) return
+      dragRef.current = {
+        dragging: true,
+        startX: e.clientX,
+        startY: e.clientY,
+        startCamX: cameraX.get(),
+        startCamY: cameraY.get(),
+      }
+    },
+    [cameraX, cameraY],
+  )
+
+  const handlePanPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      if (!dragRef.current.dragging) return
+
+      const currentZoom = zoom.get()
+      // 鼠标移动 delta 需要除以缩放比例 (屏幕像素 -> 世界空间偏移)
+      const dx = (e.clientX - dragRef.current.startX) / currentZoom
+      const dy = (e.clientY - dragRef.current.startY) / currentZoom
+
+      // 拖拽方向: 鼠标向右拖 -> 摄像机向左偏移 (减去 delta)
+      let newCamX = dragRef.current.startCamX - dx
+      let newCamY = dragRef.current.startCamY - dy
+
+      // 将摄像机夹紧到场景边界
+      const region = getRegionDefinition(useOdysseyWorldStore.getState().activeRegionId)
+      if (region) {
+        const clamped = clampCamera(newCamX, newCamY, currentZoom, region.gridWidth, region.gridHeight)
+        newCamX = clamped.x
+        newCamY = clamped.y
+      }
+
+      cameraX.set(newCamX)
+      cameraY.set(newCamY)
+    },
+    [cameraX, cameraY, zoom],
+  )
+
+  const handlePanPointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      if (!dragRef.current.dragging) return
+      dragRef.current.dragging = false
+
+      // 拖拽结束后同步到 store
+      syncToStore()
+    },
+    [syncToStore],
+  )
+
+  return {
+    cameraX,
+    cameraY,
+    zoom,
+    svgTransform,
+    handleWheel,
+    handlePanPointerDown,
+    handlePanPointerMove,
+    handlePanPointerUp,
+  }
 }

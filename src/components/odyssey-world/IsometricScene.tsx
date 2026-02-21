@@ -53,6 +53,12 @@ interface IsometricSceneProps {
   avatarScreenY: MotionValue<number>
   onSceneClick: (e: React.MouseEvent<HTMLDivElement>) => void
   onWheel: (e: React.WheelEvent) => void
+  /** 鼠标拖拽平移 -- pointerdown (仅 mouse) */
+  onPanPointerDown: (e: React.PointerEvent) => void
+  /** 鼠标拖拽平移 -- pointermove (仅 mouse) */
+  onPanPointerMove: (e: React.PointerEvent) => void
+  /** 鼠标拖拽平移 -- pointerup (仅 mouse) */
+  onPanPointerUp: (e: React.PointerEvent) => void
   /** 场景容器 DOM 引用 -- 交互 hooks 需要用于坐标转换 */
   containerRef: RefObject<HTMLDivElement | null>
   /** 摄像机 MotionValue -- 交互 hooks 需要用于屏幕/世界坐标转换 */
@@ -132,6 +138,9 @@ export const IsometricScene = React.memo(function IsometricScene({
   avatarScreenY,
   onSceneClick,
   onWheel,
+  onPanPointerDown,
+  onPanPointerMove,
+  onPanPointerUp,
   containerRef,
   cameraX,
   cameraY,
@@ -183,7 +192,9 @@ export const IsometricScene = React.memo(function IsometricScene({
     startZoom: 1,
   })
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+  // 合并触摸 (pinch-to-zoom) 和鼠标 (拖拽平移) 的 pointer 事件
+  // 触摸事件由 handleTouchPointerDown/Move 处理，鼠标事件由 onPanPointerDown/Move/Up 处理
+  const handleTouchPointerDown = useCallback((e: React.PointerEvent) => {
     // 不拦截鼠标事件，只处理 touch
     if (e.pointerType !== 'touch') return
     const el = containerRef.current
@@ -191,12 +202,27 @@ export const IsometricScene = React.memo(function IsometricScene({
     el.setPointerCapture(e.pointerId)
   }, [containerRef])
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+  const handleTouchPointerMove = useCallback((e: React.PointerEvent) => {
     if (e.pointerType !== 'touch') return
     // 双指检测: 检查当前活跃指针数量
     // 使用简化方法: 检测 pinch 状态
     // 由于 React 合成事件不直接提供 touches，我们通过原生事件处理
   }, [])
+
+  // 组合 pointer 处理: 根据 pointerType 分发到 touch/mouse 处理器
+  const handleCombinedPointerDown = useCallback((e: React.PointerEvent) => {
+    handleTouchPointerDown(e)
+    onPanPointerDown(e)
+  }, [handleTouchPointerDown, onPanPointerDown])
+
+  const handleCombinedPointerMove = useCallback((e: React.PointerEvent) => {
+    handleTouchPointerMove(e)
+    onPanPointerMove(e)
+  }, [handleTouchPointerMove, onPanPointerMove])
+
+  const handleCombinedPointerUp = useCallback((e: React.PointerEvent) => {
+    onPanPointerUp(e)
+  }, [onPanPointerUp])
 
   // 使用原生事件监听器进行 pinch-to-zoom (更可靠的双指检测)
   useEffect(() => {
@@ -349,8 +375,9 @@ export const IsometricScene = React.memo(function IsometricScene({
       className="h-full w-full overflow-hidden"
       onClick={handleSceneClick}
       onWheel={onWheel}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
+      onPointerDown={handleCombinedPointerDown}
+      onPointerMove={handleCombinedPointerMove}
+      onPointerUp={handleCombinedPointerUp}
     >
       <motion.div
         className="h-full w-full origin-top-left"
@@ -365,8 +392,8 @@ export const IsometricScene = React.memo(function IsometricScene({
           <defs>
             {/* 背景渐变: 根据区域主题动态变化 */}
             <linearGradient id="bg-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={regionTheme?.colorPalette.background[0] ?? '#FAFAF5'} />
-              <stop offset="100%" stopColor={regionTheme?.colorPalette.background[1] ?? '#F0EDE6'} />
+              <stop offset="0%" stopColor={regionTheme?.colorPalette.background[0] ?? '#0a1628'} />
+              <stop offset="100%" stopColor={regionTheme?.colorPalette.background[1] ?? '#0f1d35'} />
             </linearGradient>
 
             {/* 光源光晕渐变 */}
@@ -401,7 +428,7 @@ export const IsometricScene = React.memo(function IsometricScene({
               <path
                 d={GRID_PATH}
                 fill="none"
-                stroke="#C0B8A8"
+                stroke="#4a6a8a"
                 strokeWidth={0.5}
                 opacity={regionTheme?.gridOpacity ?? 0.02}
               />

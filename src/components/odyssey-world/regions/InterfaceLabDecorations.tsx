@@ -36,7 +36,7 @@ export default function InterfaceLabDecorations({ gridWidth, gridHeight, theme }
   const accent = theme.colorPalette.accentColor
 
   return (
-    <g className="interface-lab-decorations" opacity={0.35}>
+    <g className="interface-lab-decorations" opacity={0.65}>
       {/* CSS 动画定义 */}
       <style>{INTERFACE_ANIMATIONS}</style>
 

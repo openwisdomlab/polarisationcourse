@@ -213,6 +213,8 @@ export function AmbientParticles({
       <svg
         className="absolute inset-0 w-full h-full opacity-30"
         style={{ opacity: isVisible ? 0.15 : 0, transition: 'opacity 2s ease-out' }}
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
       >
         <defs>
           <linearGradient id="connection-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -224,24 +226,24 @@ export function AmbientParticles({
 
         {/* 几条微弱的连接线，创造光学实验的感觉 */}
         <path
-          d="M 10% 20% Q 30% 15%, 50% 25% T 90% 30%"
+          d="M 10 20 Q 30 15, 50 25 T 90 30"
           fill="none"
           stroke="url(#connection-gradient)"
-          strokeWidth="1"
+          strokeWidth="0.2"
           opacity="0.3"
         />
         <path
-          d="M 5% 60% Q 25% 70%, 50% 55% T 95% 65%"
+          d="M 5 60 Q 25 70, 50 55 T 95 65"
           fill="none"
           stroke="url(#connection-gradient)"
-          strokeWidth="1"
+          strokeWidth="0.2"
           opacity="0.2"
         />
         <path
-          d="M 15% 85% Q 40% 90%, 60% 80% T 85% 85%"
+          d="M 15 85 Q 40 90, 60 80 T 85 85"
           fill="none"
           stroke="url(#connection-gradient)"
-          strokeWidth="1"
+          strokeWidth="0.2"
           opacity="0.25"
         />
       </svg>

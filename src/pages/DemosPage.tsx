@@ -2046,6 +2046,19 @@ export function DemosPage() {
                   <BookOpen className="w-4 h-4" />
                   <span>{t('common.course')}</span>
                 </Link>
+                {/* Odyssey immersive experience link */}
+                <Link
+                  to="/odyssey"
+                  className={cn(
+                    'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all',
+                    theme === 'dark'
+                      ? 'text-cyan-300 bg-cyan-400/10 border border-cyan-400/30 hover:bg-cyan-400/20 hover:border-cyan-400/50'
+                      : 'text-cyan-700 bg-cyan-50 border border-cyan-300 hover:bg-cyan-100 hover:border-cyan-400'
+                  )}
+                >
+                  <span className="text-base">✦</span>
+                  <span>{t('odyssey.pageTitle', 'Odyssey')}</span>
+                </Link>
               </>
             )}
             <LanguageThemeSwitcher />

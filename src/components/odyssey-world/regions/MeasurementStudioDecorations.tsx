@@ -36,7 +36,7 @@ export default function MeasurementStudioDecorations({ gridWidth, gridHeight, th
   const accent = theme.colorPalette.accentColor
 
   return (
-    <g className="measurement-studio-decorations" opacity={0.35}>
+    <g className="measurement-studio-decorations" opacity={0.65}>
       {/* CSS 动画定义 */}
       <style>{MEASUREMENT_ANIMATIONS}</style>
 

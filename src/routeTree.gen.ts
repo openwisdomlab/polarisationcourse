@@ -15,6 +15,7 @@ import { Route as StudioRouteImport } from './routes/studio'
 import { Route as MerchandiseRouteImport } from './routes/merchandise'
 import { Route as CourseRouteImport } from './routes/course'
 import { Route as SplatRouteImport } from './routes/$'
+import { Route as OdysseyIndexRouteImport } from './routes/odyssey.index'
 import { Route as DemosIndexRouteImport } from './routes/demos.index'
 
 const LearnLazyRouteImport = createFileRoute('/learn')()
@@ -102,6 +103,11 @@ const CalcIndexLazyRoute = CalcIndexLazyRouteImport.update({
   path: '/calc/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/calc.index.lazy').then((d) => d.Route))
+const OdysseyIndexRoute = OdysseyIndexRouteImport.update({
+  id: '/odyssey/',
+  path: '/odyssey/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/odyssey.index.lazy').then((d) => d.Route))
 const DemosIndexRoute = DemosIndexRouteImport.update({
   id: '/demos/',
   path: '/demos/',
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/games/escape': typeof GamesEscapeLazyRoute
   '/research/applications': typeof ResearchApplicationsLazyRoute
   '/demos/': typeof DemosIndexRoute
+  '/odyssey/': typeof OdysseyIndexRoute
   '/calc/': typeof CalcIndexLazyRoute
   '/gallery/': typeof GalleryIndexLazyRoute
   '/games/': typeof GamesIndexLazyRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/games/escape': typeof GamesEscapeLazyRoute
   '/research/applications': typeof ResearchApplicationsLazyRoute
   '/demos': typeof DemosIndexRoute
+  '/odyssey': typeof OdysseyIndexRoute
   '/calc': typeof CalcIndexLazyRoute
   '/gallery': typeof GalleryIndexLazyRoute
   '/games': typeof GamesIndexLazyRoute
@@ -252,6 +260,7 @@ export interface FileRoutesById {
   '/games/escape': typeof GamesEscapeLazyRoute
   '/research/applications': typeof ResearchApplicationsLazyRoute
   '/demos/': typeof DemosIndexRoute
+  '/odyssey/': typeof OdysseyIndexRoute
   '/calc/': typeof CalcIndexLazyRoute
   '/gallery/': typeof GalleryIndexLazyRoute
   '/games/': typeof GamesIndexLazyRoute
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/games/escape'
     | '/research/applications'
     | '/demos/'
+    | '/odyssey/'
     | '/calc/'
     | '/gallery/'
     | '/games/'
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/games/escape'
     | '/research/applications'
     | '/demos'
+    | '/odyssey'
     | '/calc'
     | '/gallery'
     | '/games'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/games/escape'
     | '/research/applications'
     | '/demos/'
+    | '/odyssey/'
     | '/calc/'
     | '/gallery/'
     | '/games/'
@@ -363,6 +375,7 @@ export interface RootRouteChildren {
   GamesEscapeLazyRoute: typeof GamesEscapeLazyRoute
   ResearchApplicationsLazyRoute: typeof ResearchApplicationsLazyRoute
   DemosIndexRoute: typeof DemosIndexRoute
+  OdysseyIndexRoute: typeof OdysseyIndexRoute
   CalcIndexLazyRoute: typeof CalcIndexLazyRoute
   GalleryIndexLazyRoute: typeof GalleryIndexLazyRoute
   GamesIndexLazyRoute: typeof GamesIndexLazyRoute
@@ -453,6 +466,13 @@ declare module '@tanstack/react-router' {
       path: '/calc'
       fullPath: '/calc/'
       preLoaderRoute: typeof CalcIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/odyssey/': {
+      id: '/odyssey/'
+      path: '/odyssey'
+      fullPath: '/odyssey/'
+      preLoaderRoute: typeof OdysseyIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demos/': {
@@ -571,6 +591,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesEscapeLazyRoute: GamesEscapeLazyRoute,
   ResearchApplicationsLazyRoute: ResearchApplicationsLazyRoute,
   DemosIndexRoute: DemosIndexRoute,
+  OdysseyIndexRoute: OdysseyIndexRoute,
   CalcIndexLazyRoute: CalcIndexLazyRoute,
   GalleryIndexLazyRoute: GalleryIndexLazyRoute,
   GamesIndexLazyRoute: GamesIndexLazyRoute,

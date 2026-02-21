@@ -118,7 +118,7 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
   const defaultStroke = '#E0DBD3'
   const topFill = isGlass ? '#E8EEF4' : (themeFill ?? defaultFill)
   const topStroke = isGlass ? '#C8D4E0' : (themeStroke ?? defaultStroke)
-  const topStrokeOpacity = isGlass ? 0.6 : 0.4
+  const topStrokeOpacity = isGlass ? 0.6 : 0.7
 
   // 侧面高度 (Z > 0 时显示)
   const sideHeight = worldZ * 24
@@ -177,7 +177,7 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
         <polygon
           points={topPoints}
           fill={`url(#${floorPatternId})`}
-          opacity={0.07}
+          opacity={0.12}
         />
       )}
 
@@ -203,7 +203,7 @@ const Platform = React.memo(function Platform({ element }: PlatformProps) {
           rx={TILE_WIDTH_HALF * 0.6}
           ry={6}
           fill="black"
-          opacity={0.06}
+          opacity={0.15}
         />
       )}
     </g>
