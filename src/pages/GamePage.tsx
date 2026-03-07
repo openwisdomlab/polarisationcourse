@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useGameStore } from '@/stores/gameStore'
 import { GameCanvas } from '@/components/game'
+import { Canvas3DErrorBoundary } from '@/components/ui/Canvas3DErrorBoundary'
 import {
   BlockSelector,
   InfoBar,
@@ -46,8 +47,10 @@ export function GamePage() {
 
   return (
     <div className="relative w-full h-dvh min-h-screen overflow-hidden bg-[#0a0a15]">
-      {/* 3D Canvas */}
-      <GameCanvas />
+      {/* 3D Canvas with WebGL error recovery */}
+      <Canvas3DErrorBoundary sceneName="3D Voxel Game">
+        <GameCanvas />
+      </Canvas3DErrorBoundary>
 
       {/* HUD Overlay */}
       <div className="absolute inset-0 pointer-events-none">
