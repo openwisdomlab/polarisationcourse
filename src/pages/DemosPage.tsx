@@ -2,7 +2,7 @@
  * Demos Page - Interactive physics demonstrations for 5 units + Optical Basics
  * Enhanced with i18n, theme support, and improved interactivity indicators
  */
-import { useState, useEffect, useRef, useMemo, Suspense, ReactNode, memo } from 'react'
+import { useState, useEffect, useRef, useMemo, Suspense, ReactNode, memo, lazy, ComponentType } from 'react'
 import { Link, useSearch, useParams, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -18,34 +18,46 @@ import { isDemoAvailable, getRecommendedDemos } from '@/data/learningPaths'
 import { useDiscoveryStore } from '@/stores/discoveryStore'
 import { InquiryProvider, InquiryPanel, getInquiryConfig } from '@/components/demos/inquiry'
 
-// Demo components
-import { MalusLawDemo } from '@/components/demos/unit1/MalusLawDemo'
-import { BirefringenceDemo } from '@/components/demos/unit1/BirefringenceDemo'
-import { WaveplateDemo } from '@/components/demos/unit1/WaveplateDemo'
-import { PolarizationStateDemo } from '@/components/demos/unit1/PolarizationStateDemo'
-import { AragoFresnelDemo } from '@/components/demos/unit1/AragoFresnelDemo'
-import { FresnelDemo } from '@/components/demos/unit2/FresnelDemo'
-import { BrewsterDemo } from '@/components/demos/unit2/BrewsterDemo'
-import { ChromaticDemo } from '@/components/demos/unit3/ChromaticDemo'
-import { OpticalRotationDemo } from '@/components/demos/unit3/OpticalRotationDemo'
-import { AnisotropyDemo } from '@/components/demos/unit3/AnisotropyDemo'
-import { MieScatteringDemo } from '@/components/demos/unit4/MieScatteringDemo'
-import { RayleighScatteringDemo } from '@/components/demos/unit4/RayleighScatteringDemo'
-import { MonteCarloScatteringDemo } from '@/components/demos/unit4/MonteCarloScatteringDemo'
-import { StokesVectorDemo } from '@/components/demos/unit5/StokesVectorDemo'
-import { MuellerMatrixDemo } from '@/components/demos/unit5/MuellerMatrixDemo'
-import { JonesMatrixDemo } from '@/components/demos/unit5/JonesMatrixDemo'
-import { PolarizationCalculatorDemo } from '@/components/demos/unit5/PolarizationCalculatorDemo'
-import { PolarimetricMicroscopyDemo } from '@/components/demos/unit5/PolarimetricMicroscopyDemo'
+// Demo components - 延迟加载 (lazy loading)
+// 每个demo仅在用户选中时才加载，大幅减少初始bundle大小
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function lazyNamed(factory: () => Promise<any>, name: string): ComponentType {
+  return lazy(() => factory().then(m => ({ default: m[name] })))
+}
+
+// Unit 1 demos
+const MalusLawDemo = lazyNamed(() => import('@/components/demos/unit1/MalusLawDemo'), 'MalusLawDemo')
+const BirefringenceDemo = lazyNamed(() => import('@/components/demos/unit1/BirefringenceDemo'), 'BirefringenceDemo')
+const WaveplateDemo = lazyNamed(() => import('@/components/demos/unit1/WaveplateDemo'), 'WaveplateDemo')
+const PolarizationStateDemo = lazyNamed(() => import('@/components/demos/unit1/PolarizationStateDemo'), 'PolarizationStateDemo')
+const AragoFresnelDemo = lazyNamed(() => import('@/components/demos/unit1/AragoFresnelDemo'), 'AragoFresnelDemo')
+
+// Unit 2 demos
+const FresnelDemo = lazyNamed(() => import('@/components/demos/unit2/FresnelDemo'), 'FresnelDemo')
+const BrewsterDemo = lazyNamed(() => import('@/components/demos/unit2/BrewsterDemo'), 'BrewsterDemo')
+
+// Unit 3 demos
+const ChromaticDemo = lazyNamed(() => import('@/components/demos/unit3/ChromaticDemo'), 'ChromaticDemo')
+const OpticalRotationDemo = lazyNamed(() => import('@/components/demos/unit3/OpticalRotationDemo'), 'OpticalRotationDemo')
+const AnisotropyDemo = lazyNamed(() => import('@/components/demos/unit3/AnisotropyDemo'), 'AnisotropyDemo')
+
+// Unit 4 demos
+const MieScatteringDemo = lazyNamed(() => import('@/components/demos/unit4/MieScatteringDemo'), 'MieScatteringDemo')
+const RayleighScatteringDemo = lazyNamed(() => import('@/components/demos/unit4/RayleighScatteringDemo'), 'RayleighScatteringDemo')
+const MonteCarloScatteringDemo = lazyNamed(() => import('@/components/demos/unit4/MonteCarloScatteringDemo'), 'MonteCarloScatteringDemo')
+
+// Unit 5 demos
+const StokesVectorDemo = lazyNamed(() => import('@/components/demos/unit5/StokesVectorDemo'), 'StokesVectorDemo')
+const MuellerMatrixDemo = lazyNamed(() => import('@/components/demos/unit5/MuellerMatrixDemo'), 'MuellerMatrixDemo')
+const JonesMatrixDemo = lazyNamed(() => import('@/components/demos/unit5/JonesMatrixDemo'), 'JonesMatrixDemo')
+const PolarizationCalculatorDemo = lazyNamed(() => import('@/components/demos/unit5/PolarizationCalculatorDemo'), 'PolarizationCalculatorDemo')
+const PolarimetricMicroscopyDemo = lazyNamed(() => import('@/components/demos/unit5/PolarimetricMicroscopyDemo'), 'PolarimetricMicroscopyDemo')
 
 // Optical Basics demos
-import { PolarizationIntroDemo } from '@/components/demos/basics/PolarizationIntroDemo'
-import { InteractiveOpticalBenchDemo } from '@/components/demos/basics/InteractiveOpticalBenchDemo'
-// Unified demos (merged versions)
-// Note: MalusLawGraphDemo removed - functionality integrated into unit1/MalusLawDemo
-// Note: PolarizationLockDemo moved to Optical Design Studio
-import { ElectromagneticWaveDemo } from '@/components/demos/basics/ElectromagneticWaveDemo'
-import { PolarizationTypesUnifiedDemo } from '@/components/demos/basics/PolarizationTypesUnifiedDemo'
+const PolarizationIntroDemo = lazyNamed(() => import('@/components/demos/basics/PolarizationIntroDemo'), 'PolarizationIntroDemo')
+const InteractiveOpticalBenchDemo = lazyNamed(() => import('@/components/demos/basics/InteractiveOpticalBenchDemo'), 'InteractiveOpticalBenchDemo')
+const ElectromagneticWaveDemo = lazyNamed(() => import('@/components/demos/basics/ElectromagneticWaveDemo'), 'ElectromagneticWaveDemo')
+const PolarizationTypesUnifiedDemo = lazyNamed(() => import('@/components/demos/basics/PolarizationTypesUnifiedDemo'), 'PolarizationTypesUnifiedDemo')
 
 // Museum Components
 import { GalleryHero } from '@/components/museum'
