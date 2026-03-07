@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { CourseLoader } from '@/components/ui/RouteLoader'
 
 export type CourseSearch = {
   unit?: string
@@ -10,4 +11,5 @@ export const Route = createFileRoute('/course')({
     unit: search.unit as string | undefined,
     section: search.section as string | undefined,
   }),
+  pendingComponent: CourseLoader,
 })

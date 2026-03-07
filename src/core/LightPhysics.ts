@@ -44,6 +44,7 @@ import {
 } from './types';
 import { logger } from '@/lib/logger';
 import { applyMalusLaw as sharedMalusLaw } from '@/lib/opticsPhysics';
+import { VOXEL_ENERGY_THRESHOLD } from '@/core/physics/constants';
 
 import {
   JonesVector,
@@ -113,12 +114,14 @@ export class LightPhysics {
   static splitLight(input: LightPacket, crystalFacing: Direction): [LightPacket, LightPacket] {
     // 将输入光分解为0度和90度两个分量
     // 使用向量分解：分量强度与cos²和sin²成正比
-    const radians = (input.polarization * Math.PI) / 180;
+    const polarization = isNaN(input.polarization) ? 0 : input.polarization;
+    const radians = (polarization * Math.PI) / 180;
+    const intensity = Math.max(0, input.intensity || 0);
 
     // p光 (transmitted) 强度（与cos²成正比）- 水平偏振分量
-    const pIntensity = Math.floor(input.intensity * Math.pow(Math.cos(radians), 2));
+    const pIntensity = Math.floor(intensity * Math.pow(Math.cos(radians), 2));
     // s光 (reflected/deflected) 强度（与sin²成正比）- 垂直偏振分量
-    const sIntensity = Math.floor(input.intensity * Math.pow(Math.sin(radians), 2));
+    const sIntensity = Math.floor(intensity * Math.pow(Math.sin(radians), 2));
 
     // p光：0度偏振（水平），继续原方向
     const pLight: LightPacket = {
@@ -243,9 +246,14 @@ export class LightPhysics {
     intensity2: number,
     phaseDifferenceRadians: number
   ): number {
+    // Guard against NaN/negative inputs
+    const i1 = Math.max(0, intensity1 || 0);
+    const i2 = Math.max(0, intensity2 || 0);
+    const phase = isNaN(phaseDifferenceRadians) ? 0 : phaseDifferenceRadians;
+
     // Interference formula: I = I₁ + I₂ + 2√(I₁I₂)cos(δ)
-    const interferenceterm = 2 * Math.sqrt(intensity1 * intensity2) * Math.cos(phaseDifferenceRadians);
-    return Math.max(0, intensity1 + intensity2 + interferenceterm);
+    const interferenceterm = 2 * Math.sqrt(i1 * i2) * Math.cos(phase);
+    return Math.max(0, i1 + i2 + interferenceterm);
   }
 
   /**
@@ -692,8 +700,9 @@ export class LightPhysics {
   /**
    * Energy threshold for light propagation termination
    * Light below this intensity will not propagate further
+   * Sourced from centralized constants for consistency.
    */
-  static readonly ENERGY_THRESHOLD = 0.01;
+  static readonly ENERGY_THRESHOLD = VOXEL_ENERGY_THRESHOLD;
 
   /**
    * Create Jones Matrix for a linear polarizer at given angle

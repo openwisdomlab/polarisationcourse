@@ -280,6 +280,13 @@ export const useLabStore = create<LabState>()(
           skills: state.skills,
           publications: state.publications,
         }),
+        onRehydrateStorage: () => (state) => {
+          if (state) {
+            // Reset session state after hydration
+            state.activeTaskId = null
+            state.isModalOpen = false
+          }
+        },
       }
     )
   )

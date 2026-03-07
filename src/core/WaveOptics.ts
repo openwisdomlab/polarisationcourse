@@ -595,7 +595,7 @@ export class JonesVector {
   /**
    * Check if intensity is above threshold
    */
-  isAboveThreshold(threshold: number = 0.01): boolean {
+  isAboveThreshold(threshold: number = VOXEL_ENERGY_THRESHOLD): boolean {
     return this.intensity > threshold;
   }
 
@@ -1449,6 +1449,7 @@ export function superposeLights(lights: WaveLight[]): WaveLight[] {
 // ============== Conversion Functions ==============
 
 import type { LightPacket, PolarizationAngle, Phase } from './types';
+import { VOXEL_ENERGY_THRESHOLD } from '@/core/physics/constants';
 
 /**
  * Convert legacy LightPacket to WaveLight

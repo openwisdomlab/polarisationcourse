@@ -11,6 +11,12 @@ import {
   getMirrorReflection as mirrorReflection,
   type Direction2D as SharedDirection2D,
 } from '@/lib/opticsPhysics'
+import {
+  GAME2D_MAX_TRACE_DEPTH,
+  GAME2D_MIN_TRACE_INTENSITY,
+  GAME2D_MAX_STEPS,
+  GAME2D_HIT_RADIUS,
+} from '@/core/physics/constants'
 
 /**
  * Calculate mirror reflection based on mirror angle
@@ -57,6 +63,63 @@ export function getSplitterOutputs(
   ]
 }
 
+// ============================================
+// Spatial Grid Index for O(1) component lookup
+// ============================================
+
+const GRID_CELL_SIZE = 10 // 100/10 = 10x10 grid
+const GRID_COLS = Math.ceil(100 / GRID_CELL_SIZE)
+
+/**
+ * Spatial grid index for fast component collision detection.
+ * Divides the 100×100 space into cells, each containing refs to overlapping components.
+ */
+class SpatialGrid {
+  private cells: Map<number, OpticalComponent[]> = new Map()
+
+  constructor(components: OpticalComponent[]) {
+    for (const c of components) {
+      if (c.type === 'emitter') continue
+      // Register component in all cells it might overlap (based on hit radius)
+      const minCol = Math.max(0, Math.floor((c.x - GAME2D_HIT_RADIUS) / GRID_CELL_SIZE))
+      const maxCol = Math.min(GRID_COLS - 1, Math.floor((c.x + GAME2D_HIT_RADIUS) / GRID_CELL_SIZE))
+      const minRow = Math.max(0, Math.floor((c.y - GAME2D_HIT_RADIUS) / GRID_CELL_SIZE))
+      const maxRow = Math.min(GRID_COLS - 1, Math.floor((c.y + GAME2D_HIT_RADIUS) / GRID_CELL_SIZE))
+
+      for (let row = minRow; row <= maxRow; row++) {
+        for (let col = minCol; col <= maxCol; col++) {
+          const key = row * GRID_COLS + col
+          let cell = this.cells.get(key)
+          if (!cell) {
+            cell = []
+            this.cells.set(key, cell)
+          }
+          cell.push(c)
+        }
+      }
+    }
+  }
+
+  /**
+   * Find a component near the given point, or null if none.
+   */
+  findNear(x: number, y: number): OpticalComponent | undefined {
+    const col = Math.floor(x / GRID_CELL_SIZE)
+    const row = Math.floor(y / GRID_CELL_SIZE)
+    if (col < 0 || col >= GRID_COLS || row < 0 || row >= GRID_COLS) return undefined
+
+    const cell = this.cells.get(row * GRID_COLS + col)
+    if (!cell) return undefined
+
+    for (const c of cell) {
+      if (Math.abs(c.x - x) < GAME2D_HIT_RADIUS && Math.abs(c.y - y) < GAME2D_HIT_RADIUS) {
+        return c
+      }
+    }
+    return undefined
+  }
+}
+
 /**
  * Trace light path through optical components
  * Returns array of light beam segments for visualization
@@ -70,16 +133,17 @@ export function traceLightPath(
   components: OpticalComponent[],
   sensorStates: Map<string, SensorState>,
   segments: LightBeamSegment[],
-  depth: number = 0
+  depth: number = 0,
+  grid?: SpatialGrid
 ): void {
   // Prevent infinite recursion
-  if (depth > 20 || intensity < 1) {
+  if (depth > GAME2D_MAX_TRACE_DEPTH || intensity < GAME2D_MIN_TRACE_INTENSITY) {
     return
   }
 
   const { dx, dy } = DIRECTION_VECTORS[direction]
   const step = 1 // step size in percentage units
-  const maxSteps = 150 // max distance
+  const maxSteps = GAME2D_MAX_STEPS
 
   let currentX = startX
   let currentY = startY
@@ -103,12 +167,14 @@ export function traceLightPath(
       return
     }
 
-    // Check for component collision (with tolerance)
-    const hitComponent = components.find(c => {
-      const distX = Math.abs(c.x - nextX)
-      const distY = Math.abs(c.y - nextY)
-      return distX < 8 && distY < 8 && c.type !== 'emitter'
-    })
+    // Check for component collision using spatial grid (O(1)) or fallback to linear search
+    const hitComponent = grid
+      ? grid.findNear(nextX, nextY)
+      : components.find(c => {
+          const distX = Math.abs(c.x - nextX)
+          const distY = Math.abs(c.y - nextY)
+          return distX < GAME2D_HIT_RADIUS && distY < GAME2D_HIT_RADIUS && c.type !== 'emitter'
+        })
 
     if (hitComponent) {
       // Add segment up to component
@@ -131,7 +197,8 @@ export function traceLightPath(
         components,
         sensorStates,
         segments,
-        depth
+        depth,
+        grid
       )
       return
     }
@@ -163,7 +230,8 @@ function processComponentInteraction(
   components: OpticalComponent[],
   sensorStates: Map<string, SensorState>,
   segments: LightBeamSegment[],
-  depth: number
+  depth: number,
+  grid?: SpatialGrid
 ): void {
   switch (component.type) {
     case 'polarizer': {
@@ -172,15 +240,8 @@ function processComponentInteraction(
 
       if (newIntensity >= 1) {
         traceLightPath(
-          component.x,
-          component.y,
-          direction,
-          newIntensity,
-          filterAngle,
-          components,
-          sensorStates,
-          segments,
-          depth + 1
+          component.x, component.y, direction, newIntensity, filterAngle,
+          components, sensorStates, segments, depth + 1, grid
         )
       }
       break
@@ -191,15 +252,8 @@ function processComponentInteraction(
       if (newDirection) {
         const newIntensity = intensity * 0.95 // Small loss on reflection
         traceLightPath(
-          component.x,
-          component.y,
-          newDirection,
-          newIntensity,
-          polarization,
-          components,
-          sensorStates,
-          segments,
-          depth + 1
+          component.x, component.y, newDirection, newIntensity, polarization,
+          components, sensorStates, segments, depth + 1, grid
         )
       }
       break
@@ -211,15 +265,8 @@ function processComponentInteraction(
       for (const output of outputs) {
         if (output.intensity >= 1) {
           traceLightPath(
-            component.x,
-            component.y,
-            output.direction,
-            output.intensity,
-            output.polarization,
-            components,
-            sensorStates,
-            segments,
-            depth + 1
+            component.x, component.y, output.direction, output.intensity, output.polarization,
+            components, sensorStates, segments, depth + 1, grid
           )
         }
       }
@@ -232,15 +279,8 @@ function processComponentInteraction(
       const newIntensity = intensity * 0.98 // Small loss
 
       traceLightPath(
-        component.x,
-        component.y,
-        direction,
-        newIntensity,
-        newPolarization,
-        components,
-        sensorStates,
-        segments,
-        depth + 1
+        component.x, component.y, direction, newIntensity, newPolarization,
+        components, sensorStates, segments, depth + 1, grid
       )
       break
     }
@@ -277,6 +317,9 @@ export function calculateLightPaths(
   const segments: LightBeamSegment[] = []
   const sensorStates = new Map<string, SensorState>()
 
+  // Build spatial grid index for O(1) collision detection
+  const grid = new SpatialGrid(components)
+
   // Initialize sensor states
   for (const comp of components) {
     if (comp.type === 'sensor') {
@@ -304,7 +347,8 @@ export function calculateLightPaths(
       components,
       sensorStates,
       segments,
-      0
+      0,
+      grid
     )
   }
 

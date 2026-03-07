@@ -8,6 +8,7 @@ import {
   createDefaultBlockState
 } from '@/core/types'
 import { World, TUTORIAL_LEVELS, LevelData } from '@/core/World'
+import { CommandHistory } from '@/core/CommandHistory'
 import { logger } from '@/lib/logger'
 
 export type CameraMode = 'first-person' | 'isometric' | 'top-down'
@@ -38,6 +39,11 @@ interface GameState {
   currentHintIndex: number
   showHint: boolean
 
+  // Undo/Redo (命令历史)
+  commandHistory: CommandHistory
+  canUndo: boolean
+  canRedo: boolean
+
   // Actions
   initWorld: (size?: number) => void
   loadLevel: (index: number) => void
@@ -59,7 +65,15 @@ interface GameState {
   showNextHint: () => void
   hideHint: () => void
 
+  // Undo/Redo actions
+  undo: () => void
+  redo: () => void
+
   checkLevelCompletion: () => boolean
+
+  // Save/Load state serialization
+  exportState: () => string
+  importState: (json: string) => boolean
 }
 
 // Tutorial hints per level
@@ -108,6 +122,10 @@ export const useGameStore = create<GameState>()(
     currentHintIndex: 0,
     showHint: false,
 
+    commandHistory: new CommandHistory(),
+    canUndo: false,
+    canRedo: false,
+
     // Actions
     initWorld: (size = 32) => {
       const world = new World(size)
@@ -147,10 +165,15 @@ export const useGameStore = create<GameState>()(
 
       world.loadLevel(level)
 
+      // 加载关卡时清空命令历史
+      get().commandHistory.clear()
+
       set({
         currentLevelIndex: index,
         currentLevel: level,
         isLevelComplete: false,
+        canUndo: false,
+        canRedo: false,
         tutorialHints: TUTORIAL_HINTS[index] || [],
         currentHintIndex: 0,
         showHint: true
@@ -180,8 +203,10 @@ export const useGameStore = create<GameState>()(
     },
 
     placeBlock: (position: BlockPosition) => {
-      const { world, selectedBlockType, selectedBlockRotation, selectedPolarizationAngle } = get()
+      const { world, selectedBlockType, selectedBlockRotation, selectedPolarizationAngle, commandHistory } = get()
       if (!world) return
+
+      const previousState = world.getBlock(position.x, position.y, position.z)
 
       // Immutable block state creation — no direct mutation
       const blockState: BlockState = {
@@ -190,23 +215,34 @@ export const useGameStore = create<GameState>()(
         polarizationAngle: selectedPolarizationAngle,
       }
 
+      // 记录命令历史
+      commandHistory.push(CommandHistory.createPlaceCommand(position, previousState, blockState))
+      set({ canUndo: commandHistory.canUndo, canRedo: commandHistory.canRedo })
+
       world.setBlock(position.x, position.y, position.z, blockState)
       get().checkLevelCompletion()
     },
 
     removeBlock: (position: BlockPosition) => {
-      const { world } = get()
+      const { world, commandHistory } = get()
       if (!world) return
 
       // Don't remove ground blocks
       if (position.y === 0) return
+
+      const previousState = world.getBlock(position.x, position.y, position.z)
+      if (!previousState || previousState.type === 'air') return
+
+      // 记录命令历史
+      commandHistory.push(CommandHistory.createRemoveCommand(position, previousState))
+      set({ canUndo: commandHistory.canUndo, canRedo: commandHistory.canRedo })
 
       world.setBlock(position.x, position.y, position.z, createDefaultBlockState('air'))
       get().checkLevelCompletion()
     },
 
     rotateBlockAt: (position: BlockPosition) => {
-      const { world } = get()
+      const { world, commandHistory } = get()
       if (!world) {
         logger.error('Cannot rotate block: World not initialized.')
         return
@@ -220,6 +256,8 @@ export const useGameStore = create<GameState>()(
 
       const block = world.getBlock(position.x, position.y, position.z)
       if (!block || block.type === 'solid' || block.type === 'air') return
+
+      const previousState = { ...block }
 
       // Create a copy and rotate
       const newState: BlockState = { ...block }
@@ -249,6 +287,10 @@ export const useGameStore = create<GameState>()(
           : 0
         newState.rotation = (currentRotation + 90) % 360
       }
+
+      // 记录命令历史
+      commandHistory.push(CommandHistory.createRotateCommand(position, previousState, newState))
+      set({ canUndo: commandHistory.canUndo, canRedo: commandHistory.canRedo })
 
       world.setBlock(position.x, position.y, position.z, newState)
       get().checkLevelCompletion()
@@ -283,6 +325,40 @@ export const useGameStore = create<GameState>()(
 
     hideHint: () => {
       set({ showHint: false })
+    },
+
+    undo: () => {
+      const { world, commandHistory } = get()
+      if (!world || !commandHistory.canUndo) return
+
+      const command = commandHistory.undo()
+      if (!command) return
+
+      // 恢复前一个状态
+      if (command.previousState) {
+        world.setBlock(command.position.x, command.position.y, command.position.z, command.previousState)
+      } else {
+        world.setBlock(command.position.x, command.position.y, command.position.z, createDefaultBlockState('air'))
+      }
+
+      set({ canUndo: commandHistory.canUndo, canRedo: commandHistory.canRedo })
+      get().checkLevelCompletion()
+    },
+
+    redo: () => {
+      const { world, commandHistory } = get()
+      if (!world || !commandHistory.canRedo) return
+
+      const command = commandHistory.redo()
+      if (!command) return
+
+      // 应用新状态
+      if (command.newState) {
+        world.setBlock(command.position.x, command.position.y, command.position.z, command.newState)
+      }
+
+      set({ canUndo: commandHistory.canUndo, canRedo: commandHistory.canRedo })
+      get().checkLevelCompletion()
     },
 
     checkLevelCompletion: () => {
@@ -329,6 +405,75 @@ export const useGameStore = create<GameState>()(
       }
 
       return allActivated
+    },
+
+    exportState: () => {
+      const { world, currentLevelIndex, isLevelComplete, visionMode, cameraMode, showGrid } = get()
+      if (!world) return '{}'
+
+      // Serialize non-ground blocks placed by the player
+      const playerBlocks = world.getAllBlocks()
+        .filter(b => b.state.type !== 'solid' && b.state.type !== 'air')
+        .map(b => ({
+          position: b.position,
+          state: { ...b.state }
+        }))
+
+      const saveData = {
+        version: 1,
+        timestamp: Date.now(),
+        currentLevelIndex,
+        isLevelComplete,
+        visionMode,
+        cameraMode,
+        showGrid,
+        blocks: playerBlocks,
+      }
+
+      return JSON.stringify(saveData, null, 2)
+    },
+
+    importState: (json: string) => {
+      try {
+        const data = JSON.parse(json)
+        if (!data || data.version !== 1 || typeof data.currentLevelIndex !== 'number') {
+          logger.error('Invalid save data format')
+          return false
+        }
+
+        const { loadLevel } = get()
+
+        // Load the level first to set up ground and fixed blocks
+        loadLevel(data.currentLevelIndex)
+
+        const { world } = get()
+        if (!world) return false
+
+        // Restore player-placed blocks
+        if (Array.isArray(data.blocks)) {
+          for (const block of data.blocks) {
+            if (block.position && block.state) {
+              world.setBlock(block.position.x, block.position.y, block.position.z, block.state)
+            }
+          }
+        }
+
+        // Restore view settings
+        set({
+          visionMode: data.visionMode ?? 'normal',
+          cameraMode: data.cameraMode ?? 'first-person',
+          showGrid: data.showGrid ?? true,
+          isLevelComplete: data.isLevelComplete ?? false,
+        })
+
+        // Recalculate light propagation
+        world.updateLightPropagation()
+
+        return true
+      } catch (e) {
+        logger.error('Failed to import game state:', e)
+        return false
+      }
     }
   }))
 )

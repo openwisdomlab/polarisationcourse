@@ -154,6 +154,8 @@ interface OpticalBenchState {
   // Drag state
   isDragging: boolean
   dragOffset: Position | null
+  /** @internal RAF handle for throttled drag updates */
+  _dragRafId: number | null
 
   // Formula display
   showFormulas: boolean
@@ -304,6 +306,7 @@ const initialState: OpticalBenchState = {
 
   isDragging: false,
   dragOffset: null,
+  _dragRafId: null,
 
   showFormulas: true,
   currentFormulas: [],
@@ -783,15 +786,36 @@ export const useOpticalBenchStore = create<OpticalBenchState & OpticalBenchActio
       const state = get()
       if (!state.isDragging || !state.selectedComponentId || !state.dragOffset) return
 
-      get().moveComponent(state.selectedComponentId, {
-        x: position.x - state.dragOffset.x,
-        y: position.y - state.dragOffset.y,
+      // Cancel pending RAF to avoid stale updates
+      if (state._dragRafId !== null) {
+        cancelAnimationFrame(state._dragRafId)
+      }
+
+      // Throttle drag updates to animation frame rate
+      const componentId = state.selectedComponentId
+      const offset = state.dragOffset
+      const rafId = requestAnimationFrame(() => {
+        set({ _dragRafId: null })
+        get().moveComponent(componentId, {
+          x: position.x - offset.x,
+          y: position.y - offset.y,
+        })
       })
+      set({ _dragRafId: rafId })
     },
 
     endDrag: () => {
-      set({ isDragging: false, dragOffset: null })
+      const state = get()
+      // Cancel pending RAF on drag end
+      if (state._dragRafId !== null) {
+        cancelAnimationFrame(state._dragRafId)
+      }
+      set({ isDragging: false, dragOffset: null, _dragRafId: null })
       get().saveToHistory()
+      // Recalculate light paths after drag completes
+      if (state.isSimulating) {
+        get().calculateLightPaths()
+      }
     },
 
     // ========== Reset ==========

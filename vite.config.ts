@@ -5,7 +5,7 @@ import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'path';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     TanStackRouterVite({
       routesDirectory: './src/routes',
@@ -93,7 +93,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: mode !== 'production',
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
@@ -108,8 +108,10 @@ export default defineConfig({
           'vendor-motion': ['framer-motion'],
           // State management and i18n
           'vendor-utils': ['zustand', 'i18next', 'react-i18next'],
+          // Math rendering (heavy, only used in demos/course pages)
+          'vendor-katex': ['katex'],
         },
       },
     },
   },
-});
+}));

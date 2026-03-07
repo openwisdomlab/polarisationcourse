@@ -15,7 +15,7 @@
  * 3. Error visualization: flashing red on conservation violation (physics bug detector)
  */
 
-import { useEffect, useState, useMemo, useRef } from 'react'
+import { useEffect, useState, useMemo, useRef, memo } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { Line } from '@react-three/drei'
@@ -299,7 +299,7 @@ interface LightAtPositionProps {
   debugMode: boolean
 }
 
-function LightAtPosition({ position, state, visionMode, debugMode }: LightAtPositionProps) {
+const LightAtPosition = memo(function LightAtPosition({ position, state, visionMode, debugMode }: LightAtPositionProps) {
   return (
     <group>
       {state.packets.map((packet, index) => (
@@ -313,7 +313,7 @@ function LightAtPosition({ position, state, visionMode, debugMode }: LightAtPosi
       ))}
     </group>
   )
-}
+})
 
 // ========== Single Beam Renderer ==========
 
@@ -324,7 +324,7 @@ interface LightPacketBeamProps {
   debugMode: boolean
 }
 
-function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacketBeamProps) {
+const LightPacketBeam = memo(function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacketBeamProps) {
   // Run physics analysis — this is the single source of truth
   const physicsData = useMemo(() => analyzePacket(packet), [packet])
 
@@ -428,7 +428,7 @@ function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacke
       )}
     </group>
   )
-}
+})
 
 // ========== Error Beam (Flashing Red) ==========
 
@@ -438,7 +438,7 @@ function LightPacketBeam({ position, packet, visionMode, debugMode }: LightPacke
  * This is the "Internal Error Correction" feedback loop --
  * physics bugs become immediately visible in the game world.
  */
-function ErrorBeam({ beamRadius }: { beamRadius: number }) {
+const ErrorBeam = memo(function ErrorBeam({ beamRadius }: { beamRadius: number }) {
   const meshRef = useRef<THREE.Mesh>(null)
   const materialRef = useRef<THREE.MeshBasicMaterial>(null)
 
@@ -461,7 +461,7 @@ function ErrorBeam({ beamRadius }: { beamRadius: number }) {
       />
     </mesh>
   )
-}
+})
 
 // ========== Polarization Arrow (Linear States) ==========
 
@@ -475,7 +475,7 @@ interface PolarizationArrowProps {
  * Draws the E-vector direction as a line segment perpendicular to the beam.
  * Driven by PhysicsInterpreter's semantic analysis.
  */
-function PolarizationArrow({ stateDesc, direction, color }: PolarizationArrowProps) {
+const PolarizationArrow = memo(function PolarizationArrow({ stateDesc, direction, color }: PolarizationArrowProps) {
   const angle = (stateDesc.orientationDeg * Math.PI) / 180
   const arrowLength = 0.2
 
@@ -505,7 +505,7 @@ function PolarizationArrow({ stateDesc, direction, color }: PolarizationArrowPro
       />
     </group>
   )
-}
+})
 
 // ========== E-Vector Ribbon Trail ==========
 
@@ -525,7 +525,7 @@ interface EVectorRibbonProps {
  * - Circular: helical corkscrew (right-hand or left-hand twist)
  * - Elliptical: squashed helix
  */
-function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbonProps) {
+const EVectorRibbon = memo(function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbonProps) {
   const groupRef = useRef<THREE.Group>(null)
   const phaseRef = useRef(0)
 
@@ -624,7 +624,7 @@ function EVectorRibbon({ stateDesc, stokes, direction, intensity }: EVectorRibbo
       />
     </group>
   )
-}
+})
 
 // ========== E-Vector Tip Indicator ==========
 
@@ -641,7 +641,7 @@ interface EVectorTipProps {
  * making it crystal clear whether polarization is linear (back-and-forth),
  * circular (smooth orbit), or elliptical (squashed orbit).
  */
-function EVectorTip({ orientationRad, ellipticityRad, intensity, color, s0 }: EVectorTipProps) {
+const EVectorTip = memo(function EVectorTip({ orientationRad, ellipticityRad, intensity, color, s0 }: EVectorTipProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
   const cosE = Math.cos(ellipticityRad)
@@ -670,4 +670,4 @@ function EVectorTip({ orientationRad, ellipticityRad, intensity, color, s0 }: EV
       <meshBasicMaterial color={color} transparent opacity={0.9} />
     </mesh>
   )
-}
+})
