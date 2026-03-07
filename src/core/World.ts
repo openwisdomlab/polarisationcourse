@@ -29,6 +29,41 @@ import { logger } from '@/lib/logger';
 export type { LevelData } from './LevelData';
 export { TUTORIAL_LEVELS } from './LevelData';
 
+// ============================================
+// Typed Event System (类型安全事件系统)
+// ============================================
+
+/** 方块变化事件数据 */
+export interface BlockChangedEvent {
+  x: number
+  y: number
+  z: number
+  state: BlockState
+}
+
+/** 传感器状态变化事件数据 */
+export interface SensorChangedEvent {
+  position: BlockPosition
+  activated: boolean
+}
+
+/** 光线更新事件数据 */
+export type LightUpdatedEvent = Array<{ position: BlockPosition; state: LightState }>
+
+/** World事件映射 - 所有事件类型及其数据类型 */
+export interface WorldEventMap {
+  blockChanged: BlockChangedEvent
+  lightUpdated: LightUpdatedEvent
+  sensorChanged: SensorChangedEvent
+  worldCleared: null
+}
+
+/** World事件类型 */
+export type WorldEventType = keyof WorldEventMap
+
+/** 类型安全的事件监听器 */
+export type WorldEventListener = <K extends WorldEventType>(type: K, data: WorldEventMap[K]) => void
+
 // 方块键值生成
 function posKey(x: number, y: number, z: number): string {
   return `${x},${y},${z}`;
@@ -64,7 +99,8 @@ function parseKey(key: string): BlockPosition {
 export class World implements BlockAccessor {
   private blocks: Map<string, BlockState> = new Map();
   private worldSize: number;
-  private listeners: Set<(type: string, data: unknown) => void> = new Set();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private listeners: Set<(type: string, data: any) => void> = new Set();
 
   // Delegated light propagation engine
   private propagationEngine: LightPropagationEngine = new LightPropagationEngine();
@@ -117,18 +153,37 @@ export class World implements BlockAccessor {
   }
 
   // ============================================
-  // Event System
+  // Typed Event System (类型安全事件系统)
   // ============================================
 
-  addListener(callback: (type: string, data: unknown) => void): void {
+  /**
+   * 添加事件监听器
+   * 支持两种模式:
+   * - 无参数回调: () => void (用于简单的状态刷新)
+   * - 类型化事件回调: (type, data) => void (用于细粒度事件处理)
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addListener(callback: ((...args: any[]) => void)): void {
     this.listeners.add(callback);
   }
 
-  removeListener(callback: (type: string, data: unknown) => void): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  removeListener(callback: ((...args: any[]) => void)): void {
     this.listeners.delete(callback);
   }
 
-  private emit(type: string, data: unknown): void {
+  /**
+   * 类型安全的事件监听 - 监听特定事件类型
+   */
+  on<K extends WorldEventType>(type: K, callback: (data: WorldEventMap[K]) => void): () => void {
+    const wrappedListener = (eventType: string, data: WorldEventMap[K]) => {
+      if (eventType === type) callback(data);
+    };
+    this.listeners.add(wrappedListener);
+    return () => this.listeners.delete(wrappedListener);
+  }
+
+  private emit<K extends WorldEventType>(type: K, data: WorldEventMap[K]): void {
     for (const listener of this.listeners) {
       listener(type, data);
     }

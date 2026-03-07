@@ -3,7 +3,7 @@
  * Each block type has distinctive visual characteristics
  * 重新设计：增强视觉效果和交互反馈
  */
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import { useEffect, useState, useCallback, useMemo, useRef, memo } from 'react'
 import * as THREE from 'three'
 import { ThreeEvent, useFrame } from '@react-three/fiber'
 import { Line, Float, Html } from '@react-three/drei'
@@ -64,7 +64,7 @@ interface BlockProps {
   onBlockHover: (position: BlockPosition | null, targetPos: BlockPosition | null) => void
 }
 
-function Block({ position, state, visionMode, onBlockClick, onBlockHover }: BlockProps) {
+const Block = memo(function Block({ position, state, visionMode, onBlockClick, onBlockHover }: BlockProps) {
   const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     if (e.face) {
@@ -258,11 +258,11 @@ function Block({ position, state, visionMode, onBlockClick, onBlockHover }: Bloc
     default:
       return null
   }
-}
+})
 
 // Solid Block - Monument Valley inspired architectural blocks
 // 纪念碑谷风格的建筑方块 - 柔和色彩、优雅几何、微妙阴影
-function SolidBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+const SolidBlock = memo(function SolidBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
   const isGround = position.y === 0
 
   // Monument Valley 风格的柔和配色
@@ -348,7 +348,7 @@ function SolidBlock({ position, rotationY, onPointerDown, onPointerEnter, onPoin
       )}
     </group>
   )
-}
+})
 
 // Emitter Block - 发光光源，设计感更强，像真实的激光器
 interface EmitterBlockProps extends BlockComponentProps {
@@ -356,7 +356,7 @@ interface EmitterBlockProps extends BlockComponentProps {
   visionMode: VisionMode
 }
 
-function EmitterBlock({ position, state, rotationY, visionMode, onPointerDown, onPointerEnter, onPointerLeave }: EmitterBlockProps) {
+const EmitterBlock = memo(function EmitterBlock({ position, state, rotationY, visionMode, onPointerDown, onPointerEnter, onPointerLeave }: EmitterBlockProps) {
   const color = visionMode === 'polarized'
     ? POLARIZATION_COLORS[state.polarizationAngle as keyof typeof POLARIZATION_COLORS] || 0xffff00
     : 0xffff00
@@ -445,14 +445,14 @@ function EmitterBlock({ position, state, rotationY, visionMode, onPointerDown, o
       </Html>
     </group>
   )
-}
+})
 
 // Polarizer Block - 偏振片，设计成圆形镜框样式
 interface PolarizerBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function PolarizerBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PolarizerBlockProps) {
+const PolarizerBlock = memo(function PolarizerBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PolarizerBlockProps) {
   const color = POLARIZATION_COLORS[state.polarizationAngle as keyof typeof POLARIZATION_COLORS] || 0x00aaff
 
   return (
@@ -510,14 +510,14 @@ function PolarizerBlock({ position, state, rotationY, onPointerDown, onPointerEn
       </Html>
     </group>
   )
-}
+})
 
 // Rotator Block - 波片/旋转器，设计成晶体光学元件样式
 interface RotatorBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function RotatorBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: RotatorBlockProps) {
+const RotatorBlock = memo(function RotatorBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: RotatorBlockProps) {
   const is90 = state.rotationAmount === 90
   const rotatorRef = useRef<THREE.Group>(null)
 
@@ -592,10 +592,10 @@ function RotatorBlock({ position, state, rotationY, onPointerDown, onPointerEnte
       <pointLight color={primaryColor} intensity={0.3} distance={2} />
     </group>
   )
-}
+})
 
 // Splitter Block - 方解石分光晶体，设计成菱形晶体样式
-function SplitterBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+const SplitterBlock = memo(function SplitterBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
   const crystalRef = useRef<THREE.Group>(null)
 
   // 轻微闪烁动画
@@ -689,14 +689,14 @@ function SplitterBlock({ position, rotationY, onPointerDown, onPointerEnter, onP
       <pointLight color={0x00ffff} intensity={0.4} distance={2.5} />
     </group>
   )
-}
+})
 
 // Sensor Block - 光电探测器，设计成专业探测仪器样式
 interface SensorBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function SensorBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: SensorBlockProps) {
+const SensorBlock = memo(function SensorBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: SensorBlockProps) {
   const activated = state.activated
   const pulseRef = useRef<THREE.Mesh>(null)
 
@@ -799,10 +799,10 @@ function SensorBlock({ position, state, rotationY, onPointerDown, onPointerEnter
       )}
     </group>
   )
-}
+})
 
 // Mirror Block - 反射镜，设计成光学平面镜样式
-function MirrorBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+const MirrorBlock = memo(function MirrorBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
   return (
     <group position={[position.x, position.y, position.z]}>
       {/* 支架底座 */}
@@ -883,12 +883,12 @@ function MirrorBlock({ position, rotationY, onPointerDown, onPointerEnter, onPoi
       </lineSegments>
     </group>
   )
-}
+})
 
 // ============== ADVANCED BLOCK TYPES - Monument Valley Aesthetic ==============
 
 // Prism Block - 棱镜，三角形晶体设计
-function PrismBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+const PrismBlock = memo(function PrismBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
   const prismRef = useRef<THREE.Group>(null)
 
   useFrame(({ clock }) => {
@@ -954,14 +954,14 @@ function PrismBlock({ position, rotationY, onPointerDown, onPointerEnter, onPoin
       <pointLight color={0xffffff} intensity={0.3} distance={2} />
     </group>
   )
-}
+})
 
 // Lens Block - 透镜，优雅的双凸/双凹设计
 interface LensBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function LensBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: LensBlockProps) {
+const LensBlock = memo(function LensBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: LensBlockProps) {
   const isConverging = (state.focalLength ?? 2) > 0
 
   return (
@@ -1038,14 +1038,14 @@ function LensBlock({ position, state, rotationY, onPointerDown, onPointerEnter, 
       <pointLight color={isConverging ? 0x88ddff : 0xffdd88} intensity={0.2} distance={2} />
     </group>
   )
-}
+})
 
 // BeamSplitter Block - 分束器，立方体设计
 interface BeamSplitterBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function BeamSplitterBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BeamSplitterBlockProps) {
+const BeamSplitterBlock = memo(function BeamSplitterBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BeamSplitterBlockProps) {
   const ratio = state.splitRatio ?? 0.5
 
   return (
@@ -1103,10 +1103,10 @@ function BeamSplitterBlock({ position, state, rotationY, onPointerDown, onPointe
       <pointLight color={0x88ccff} intensity={0.3} distance={2} />
     </group>
   )
-}
+})
 
 // QuarterWave Block - 四分之一波片，薄片晶体设计
-function QuarterWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+const QuarterWaveBlock = memo(function QuarterWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
   const waveRef = useRef<THREE.Mesh>(null)
 
   useFrame(({ clock }) => {
@@ -1164,10 +1164,10 @@ function QuarterWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, 
       <pointLight color={0xaa88ff} intensity={0.2} distance={2} />
     </group>
   )
-}
+})
 
 // HalfWave Block - 二分之一波片
-function HalfWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
+const HalfWaveBlock = memo(function HalfWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: BlockComponentProps) {
   const waveRef = useRef<THREE.Mesh>(null)
 
   useFrame(({ clock }) => {
@@ -1229,14 +1229,14 @@ function HalfWaveBlock({ position, rotationY, onPointerDown, onPointerEnter, onP
       <pointLight color={0xff88ff} intensity={0.25} distance={2} />
     </group>
   )
-}
+})
 
 // Absorber Block - 吸收器，深色哑光设计
 interface AbsorberBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function AbsorberBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: AbsorberBlockProps) {
+const AbsorberBlock = memo(function AbsorberBlock({ position, state, rotationY, onPointerDown, onPointerEnter, onPointerLeave }: AbsorberBlockProps) {
   const absorptionRate = state.absorptionRate ?? 0.5
   const darkness = 0.1 + (1 - absorptionRate) * 0.4
 
@@ -1280,14 +1280,14 @@ function AbsorberBlock({ position, state, rotationY, onPointerDown, onPointerEnt
       </Html>
     </group>
   )
-}
+})
 
 // PhaseShifter Block - 相位调制器，环形设计
 interface PhaseShifterBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function PhaseShifterBlock({ position, state, rotationY: _rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PhaseShifterBlockProps) {
+const PhaseShifterBlock = memo(function PhaseShifterBlock({ position, state, rotationY: _rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PhaseShifterBlockProps) {
   const phaseShift = state.phaseShift ?? 90
   const ringRef = useRef<THREE.Group>(null)
 
@@ -1379,14 +1379,14 @@ function PhaseShifterBlock({ position, state, rotationY: _rotationY, onPointerDo
       <pointLight color={color} intensity={0.4} distance={2.5} />
     </group>
   )
-}
+})
 
 // Portal Block - 传送门，神秘的环形设计
 interface PortalBlockProps extends BlockComponentProps {
   state: BlockState
 }
 
-function PortalBlock({ position, state, rotationY: _rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PortalBlockProps) {
+const PortalBlock = memo(function PortalBlock({ position, state, rotationY: _rotationY, onPointerDown, onPointerEnter, onPointerLeave }: PortalBlockProps) {
   const portalRef = useRef<THREE.Group>(null)
   const isLinked = !!state.linkedPortalId
 
@@ -1473,4 +1473,4 @@ function PortalBlock({ position, state, rotationY: _rotationY, onPointerDown, on
       />
     </group>
   )
-}
+})
