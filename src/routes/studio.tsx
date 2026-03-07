@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { StudioLoader } from '@/components/ui/RouteLoader'
 
 type StudioSearch = {
   experiment?: string
@@ -15,4 +16,5 @@ export const Route = createFileRoute('/studio')({
     module: search.module as string | undefined,
     setup: search.setup as string | undefined,
   }),
+  pendingComponent: StudioLoader,
 })

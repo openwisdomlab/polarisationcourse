@@ -497,6 +497,12 @@ export const useDiscoveryStore = create<DiscoveryState>()(
         currentStreak: state.currentStreak,
         bestStreak: state.bestStreak,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Clear session-only state after hydration
+          state.pendingNotifications = []
+        }
+      },
     }
   )
 )

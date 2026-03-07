@@ -70,6 +70,10 @@ interface GameState {
   redo: () => void
 
   checkLevelCompletion: () => boolean
+
+  // Save/Load state serialization
+  exportState: () => string
+  importState: (json: string) => boolean
 }
 
 // Tutorial hints per level
@@ -401,6 +405,75 @@ export const useGameStore = create<GameState>()(
       }
 
       return allActivated
+    },
+
+    exportState: () => {
+      const { world, currentLevelIndex, isLevelComplete, visionMode, cameraMode, showGrid } = get()
+      if (!world) return '{}'
+
+      // Serialize non-ground blocks placed by the player
+      const playerBlocks = world.getAllBlocks()
+        .filter(b => b.state.type !== 'solid' && b.state.type !== 'air')
+        .map(b => ({
+          position: b.position,
+          state: { ...b.state }
+        }))
+
+      const saveData = {
+        version: 1,
+        timestamp: Date.now(),
+        currentLevelIndex,
+        isLevelComplete,
+        visionMode,
+        cameraMode,
+        showGrid,
+        blocks: playerBlocks,
+      }
+
+      return JSON.stringify(saveData, null, 2)
+    },
+
+    importState: (json: string) => {
+      try {
+        const data = JSON.parse(json)
+        if (!data || data.version !== 1 || typeof data.currentLevelIndex !== 'number') {
+          logger.error('Invalid save data format')
+          return false
+        }
+
+        const { loadLevel } = get()
+
+        // Load the level first to set up ground and fixed blocks
+        loadLevel(data.currentLevelIndex)
+
+        const { world } = get()
+        if (!world) return false
+
+        // Restore player-placed blocks
+        if (Array.isArray(data.blocks)) {
+          for (const block of data.blocks) {
+            if (block.position && block.state) {
+              world.setBlock(block.position.x, block.position.y, block.position.z, block.state)
+            }
+          }
+        }
+
+        // Restore view settings
+        set({
+          visionMode: data.visionMode ?? 'normal',
+          cameraMode: data.cameraMode ?? 'first-person',
+          showGrid: data.showGrid ?? true,
+          isLevelComplete: data.isLevelComplete ?? false,
+        })
+
+        // Recalculate light propagation
+        world.updateLightPropagation()
+
+        return true
+      } catch (e) {
+        logger.error('Failed to import game state:', e)
+        return false
+      }
     }
   }))
 )

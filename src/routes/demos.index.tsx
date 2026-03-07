@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { DemosLoader } from '@/components/ui/RouteLoader'
 
 export type DemosSearch = {
   unit?: string
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/demos/')({
     search: search.search as string | undefined,
     demo: search.demo as string | undefined,
   }),
+  pendingComponent: DemosLoader,
   beforeLoad: ({ search }) => {
     // Redirect legacy ?demo=xxx to /demos/$demoId (render-as-you-fetch pattern)
     if (search.demo) {

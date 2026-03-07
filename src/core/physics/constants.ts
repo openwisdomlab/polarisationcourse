@@ -117,6 +117,26 @@ export const LOW_QUALITY_POLARIZER: NonIdealPolarizerParams = {
 // Default Beam Parameters (默认光束参数)
 // ============================================
 
+// ============================================
+// 2D Game Constants (2D游戏常量)
+// ============================================
+
+/** Maximum recursion depth for 2D light tracing */
+export const GAME2D_MAX_TRACE_DEPTH = 20
+
+/** Minimum intensity for 2D light tracing continuation */
+export const GAME2D_MIN_TRACE_INTENSITY = 1
+
+/** Maximum steps per light ray in 2D */
+export const GAME2D_MAX_STEPS = 150
+
+/** Component hit detection radius in 2D */
+export const GAME2D_HIT_RADIUS = 8
+
+// ============================================
+// Default Beam Parameters (默认光束参数)
+// ============================================
+
 /** Default beam width in pixels for visualization */
 export const DEFAULT_BEAM_WIDTH = 10
 
