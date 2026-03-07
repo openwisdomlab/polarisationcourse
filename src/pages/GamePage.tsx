@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useGameStore } from '@/stores/gameStore'
@@ -31,6 +31,22 @@ export function GamePage() {
 
   const isCompact = isMobile || isTablet
 
+  // 键盘快捷键: Ctrl+Z 撤销, Ctrl+Shift+Z / Ctrl+Y 重做
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault()
+      useGameStore.getState().undo()
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'Z' || e.key === 'y')) {
+      e.preventDefault()
+      useGameStore.getState().redo()
+    }
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
+
   // Initialize world on mount
   useEffect(() => {
     if (!world) {
@@ -46,7 +62,7 @@ export function GamePage() {
   }, [world, loadLevel])
 
   return (
-    <div className="relative w-full h-dvh min-h-screen overflow-hidden bg-[#0a0a15]">
+    <div className="relative w-full h-dvh min-h-screen overflow-hidden bg-[#0a0a15]" role="application" aria-label={t('game.title')}>
       {/* 3D Canvas with WebGL error recovery */}
       <Canvas3DErrorBoundary sceneName="3D Voxel Game">
         <GameCanvas />

@@ -19,12 +19,13 @@ export function LevelSelector({ compact = false }: LevelSelectorProps) {
     const canGoNext = currentLevelIndex < TUTORIAL_LEVELS.length - 1
 
     return (
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2" role="navigation" aria-label={t('game.levelNavigation')}>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => canGoPrev && loadLevel(currentLevelIndex - 1)}
           disabled={!canGoPrev}
+          aria-label={t('game.previousLevel')}
           className={cn(
             "w-8 h-8 rounded",
             canGoPrev ? "text-laser hover:text-laser-active hover:bg-laser-dim" : "text-muted-foreground"
@@ -40,6 +41,7 @@ export function LevelSelector({ compact = false }: LevelSelectorProps) {
           size="icon"
           onClick={() => canGoNext && loadLevel(currentLevelIndex + 1)}
           disabled={!canGoNext}
+          aria-label={t('game.nextLevel')}
           className={cn(
             "w-8 h-8 rounded",
             canGoNext ? "text-laser hover:text-laser-active hover:bg-laser-dim" : "text-muted-foreground"
@@ -53,12 +55,14 @@ export function LevelSelector({ compact = false }: LevelSelectorProps) {
 
   // Desktop mode - original layout
   return (
-    <div className="flex gap-1.5">
+    <div className="flex gap-1.5" role="navigation" aria-label={t('game.levelNavigation')}>
       {TUTORIAL_LEVELS.map((_, index) => (
         <Button
           key={index}
           onClick={() => loadLevel(index)}
           variant={currentLevelIndex === index ? "game" : "outline"}
+          aria-label={`${t('game.level')} ${index + 1}`}
+          aria-current={currentLevelIndex === index ? 'true' : undefined}
           className={cn(
             "w-8 h-8 rounded-lg text-xs font-medium p-0",
             currentLevelIndex !== index && "bg-void/50 border-white/10 text-muted-foreground hover:border-laser/50 hover:text-white"
