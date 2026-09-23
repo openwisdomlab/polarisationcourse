@@ -11,13 +11,13 @@ PolarCraft is an educational platform combining polarized light physics (Malus's
 ## Quick Commands
 
 ```bash
-npm install          # Install dependencies
-npm run dev          # Dev server (http://localhost:5173)
-npm run build        # Production build (tsc && vite build)
-npm run preview      # Preview production build
-npm run test         # Run tests (vitest watch)
-npm run test:run     # Run tests once
-npm run test:coverage # Tests with coverage
+pnpm install          # Install dependencies
+pnpm run dev          # Dev server (http://localhost:5173)
+pnpm run build        # Production build (tsc && vite build)
+pnpm run preview      # Preview production build
+pnpm run test         # Run tests (vitest watch)
+pnpm run test:run     # Run tests once
+pnpm run test:coverage # Tests with coverage
 ```
 
 ## Git Workflow

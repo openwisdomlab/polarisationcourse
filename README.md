@@ -27,10 +27,10 @@ PolarCraft is an educational platform that transforms the science of polarized l
 
 ```bash
 # After cloning the repository
-npm install
-npm run dev      # Development mode
-npm run build    # Production build
-npm run preview  # Preview build
+pnpm install
+pnpm run dev      # Development mode
+pnpm run build    # Production build
+pnpm run preview  # Preview build
 ```
 
 Visit `http://localhost:5173` to experience.
@@ -204,10 +204,10 @@ PolarCraft 是一个将偏振光科学转化为可交互、可体验、可创作
 
 ```bash
 # 克隆项目后执行
-npm install
-npm run dev      # 开发模式
-npm run build    # 生产构建
-npm run preview  # 预览构建结果
+pnpm install
+pnpm run dev      # 开发模式
+pnpm run build    # 生产构建
+pnpm run preview  # 预览构建结果
 ```
 
 访问 `http://localhost:5173` 即可体验。

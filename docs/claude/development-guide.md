@@ -181,7 +181,7 @@ function MyComponent() {
 Multiplayer planned but not yet implemented:
 
 ```bash
-cd server && npm run start:dev  # Port 3001
+cd server && pnpm run start:dev  # Port 3001
 ```
 
 - API prefix: `/api`

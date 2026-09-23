@@ -158,19 +158,19 @@ mkdir -p src-clean/{core,pages,components,stores}
 
 ```bash
 # 前端
-npm install          # 安装依赖
-npm run dev          # 启动开发服务器（热重载）
-npm run build        # 生产环境构建 (tsc && vite build)
-npm run preview      # 预览生产环境构建
-npm run test         # 使用 vitest 运行测试
-npm run test:run     # 运行一次测试
-npm run test:coverage # 运行测试并生成覆盖率报告
+pnpm install          # 安装依赖
+pnpm run dev          # 启动开发服务器（热重载）
+pnpm run build        # 生产环境构建 (tsc && vite build)
+pnpm run preview      # 预览生产环境构建
+pnpm run test         # 使用 vitest 运行测试
+pnpm run test:run     # 运行一次测试
+pnpm run test:coverage # 运行测试并生成覆盖率报告
 
 # 后端（在 /server 目录中）
 cd server
-npm install
-npm run start:dev    # 以监视模式启动 NestJS 服务器
-npm run build        # 为生产环境构建
+pnpm install
+pnpm run start:dev    # 以监视模式启动 NestJS 服务器
+pnpm run build        # 为生产环境构建
 ```
 
 ## Git 工作流
@@ -1116,13 +1116,13 @@ function MyComponent() {
 
 ```bash
 # 以监视模式运行测试
-npm run test
+pnpm run test
 
 # 运行一次测试
-npm run test:run
+pnpm run test:run
 
 # 运行测试并生成覆盖率报告
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 测试使用 Vitest 配合 React Testing Library 和 jsdom 进行 DOM 模拟。
@@ -1159,7 +1159,7 @@ world.getLightState(x, y, z) // 获取特定位置的光
 
 ```bash
 cd server
-npm run start:dev  # 在端口 3001 启动
+pnpm run start:dev  # 在端口 3001 启动
 ```
 
 - API 前缀：`/api`
@@ -1171,15 +1171,15 @@ npm run start:dev  # 在端口 3001 启动
 ### 运行开发服务器
 
 ```bash
-npm run dev
+pnpm run dev
 # 在 http://localhost:5173 打开
 ```
 
 ### 为生产环境构建
 
 ```bash
-npm run build
-npm run preview  # 在本地测试生产环境构建
+pnpm run build
+pnpm run preview  # 在本地测试生产环境构建
 ```
 
 ### 添加新语言
