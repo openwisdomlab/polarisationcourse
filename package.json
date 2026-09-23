@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify": "pnpm run typecheck && pnpm run test --run"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
